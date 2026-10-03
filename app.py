@@ -37,7 +37,7 @@ with tabs[0]:
     upcoming=df[df.pdufa_date>=today] if len(df) else df
     m2.metric("Next 7 Days",int(((upcoming.pdufa_date-today).dt.days<=7).sum()) if len(upcoming) else 0)
     m3.metric("Next 30 Days",int(((upcoming.pdufa_date-today).dt.days<=30).sum()) if len(upcoming) else 0)
-    m4.metric("Passing",int((df.signal=="PASSING").sum()) if len(df) else 0)
+    m4.metric("Model Scored",int(pd.to_numeric(df["approval_probability"],errors="coerce").notna().sum()) if len(df) else 0)
     m5.metric("High Confidence",int((df.confidence.str.upper()=="HIGH").sum()) if len(df) else 0)
 
     st.divider()
@@ -62,7 +62,7 @@ with tabs[0]:
                 st.markdown(f"""<div class="hero"><span class="pill">{r.get('application_type','FDA')}</span>
                 <span class="pill">{r.get('confidence','—')} CONFIDENCE</span>
                 <h2>{r.ticker} · {r.drug}</h2><div class="muted">{r.company} · {r.indication}</div>
-                <h1 class="{cls}">{r.signal} — {r.approval_probability}%</h1>
+                <h1 class="{cls}">{r.signal} — {f'{float(r.approval_probability):.0f}% FDA approval' if pd.notna(r.approval_probability) else 'MODEL SCORE PENDING'}</h1>
                 <b>PDUFA:</b> {r.pdufa_date.strftime('%b %d, %Y') if pd.notna(r.pdufa_date) else 'Unknown'}
                 &nbsp; • &nbsp; <b>Evidence cutoff:</b> {r.get('evidence_cutoff','Not connected')}</div>""",unsafe_allow_html=True)
                 a,b,c,d=st.columns(4)
@@ -88,7 +88,7 @@ with tabs[1]:
                 if len(df):
                     hits=df[df.pdufa_date.dt.date==day]
                     for _,r in hits.iterrows():
-                        st.caption(f"{r.ticker} · {r.drug} · {r.approval_probability}%")
+                        st.caption(f"{r.ticker} · {r.drug} · {f'{float(r.approval_probability):.0f}%' if pd.notna(r.approval_probability) else 'Score pending'}")
 
 with tabs[2]:
     st.subheader("Candidate Intelligence")
@@ -99,10 +99,13 @@ with tabs[2]:
         st.markdown(f"## {r.ticker} · {r.drug}")
         st.write(f"**{r.company}** — {r.indication}")
         p1,p2,p3=st.columns(3)
-        p1.metric("FDA Approval Probability",f"{r.approval_probability}%")
+        p1.metric("FDA Approval Probability",f"{float(r.approval_probability):.0f}%" if pd.notna(r.approval_probability) else "Pending")
         p2.metric("Signal",r.signal)
         p3.metric("Confidence",r.confidence)
-        st.progress(min(max(float(r.approval_probability)/100,0),1))
+        if pd.notna(r.approval_probability):
+            st.progress(min(max(float(r.approval_probability)/100,0),1))
+        else:
+            st.info("This is a real saved PDUFA calendar record. Approval probability has not yet been populated by the validated research/model feed.")
         st.markdown("### Science & Efficacy")
         st.write(r.get("science_summary","Awaiting research feed."))
         st.markdown("### FDA / Regulatory")
