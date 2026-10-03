@@ -12,6 +12,11 @@ st.markdown("""<style>
 .muted{color:#94a9bc}.green{color:#32d583}.amber{color:#fdb022}.red{color:#f97066}
 .pill{display:inline-block;padding:4px 9px;border:1px solid #34516b;border-radius:99px;margin:0 6px 6px 0;font-size:.78rem}
 .small{font-size:.86rem}.section{border-left:3px solid #34516b;padding-left:12px}
+a, a:link, a:visited{color:#ffffff !important;text-decoration:none}
+a:hover{color:#ffffff !important;text-decoration:underline}
+a:active, a:focus{color:#ff8a00 !important}
+.stLinkButton a, [data-testid="stLinkButton"] a{color:#ffffff !important}
+.stLinkButton a:active, [data-testid="stLinkButton"] a:active{color:#ff8a00 !important}
 </style>""",unsafe_allow_html=True)
 
 @st.cache_data(ttl=120)
