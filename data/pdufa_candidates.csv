@@ -1,0 +1,2 @@
+ticker,company,drug,indication,pdufa_date,signal,approval_probability,confidence,science_score,regulatory_score,safety_score,cmc_score,science_summary,regulatory_summary,trading_summary
+DEMO,Example Biotech,ExampleDrug,Example indication,2026-12-15,REVIEW,65,LOW,70,64,68,61,"Demo row only — replace with research pipeline output.","Demo row only — no FDA conclusion.","Trading score remains separate from FDA probability."
