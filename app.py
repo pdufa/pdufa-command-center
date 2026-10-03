@@ -18,7 +18,7 @@ st.set_page_config(
 
 st.markdown(
     """<style>
-.stApp{background:#07111e;color:#eef5fb}.block-container{padding-top:1rem;max-width:1550px}
+.stApp{background:#dff5e1;color:#17301d}.block-container{padding-top:1rem;max-width:1550px}
 [data-testid="stMetric"]{background:#0d1d2d;border:1px solid #21394f;border-radius:14px;padding:12px}
 .card{background:#0d1d2d;border:1px solid #21394f;border-radius:16px;padding:18px;margin:10px 0}
 .hero{background:linear-gradient(120deg,#0d1d2d,#103149);border:1px solid #31516d;border-radius:18px;padding:20px}
