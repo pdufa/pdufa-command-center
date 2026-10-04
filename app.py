@@ -699,29 +699,76 @@ elif page == "2. MARKET CAP GROUPS":
 
 elif page == "3. CALENDAR":
     st.markdown("## 3. PDUFA CALENDAR")
+    st.caption("Four weeks at a time. Move backward or forward in 4-week blocks without losing the event drill-down.")
+
+    if "calendar_offset_weeks" not in st.session_state:
+        st.session_state.calendar_offset_weeks = 0
+
+    nav1, nav2, nav3 = st.columns([1,1,1])
+    with nav1:
+        if st.button("← PREVIOUS 4 WEEKS", use_container_width=True):
+            st.session_state.calendar_offset_weeks -= 4
+            st.rerun()
+    with nav2:
+        if st.button("TODAY", use_container_width=True):
+            st.session_state.calendar_offset_weeks = 0
+            st.rerun()
+    with nav3:
+        if st.button("NEXT 4 WEEKS →", use_container_width=True):
+            st.session_state.calendar_offset_weeks += 4
+            st.rerun()
+
+    window_start = today + pd.Timedelta(weeks=st.session_state.calendar_offset_weeks)
+    window_end = window_start + pd.Timedelta(days=27)
+
+    st.markdown(
+        f"### {window_start.strftime('%b %d, %Y')} – {window_end.strftime('%b %d, %Y')}"
+    )
+
     week_sets = []
     for i in range(4):
-        start = today + pd.Timedelta(days=7*i)
-        end = start + pd.Timedelta(days=6)
-        hits = future[(future["pdufa_date"] >= start) & (future["pdufa_date"] <= end)].copy()
-        week_sets.append((start,end,hits))
+        week_start = window_start + pd.Timedelta(days=7*i)
+        week_end = week_start + pd.Timedelta(days=6)
+        hits = df[
+            df["pdufa_date"].notna() &
+            (df["pdufa_date"] >= week_start) &
+            (df["pdufa_date"] <= week_end)
+        ].copy().sort_values(["pdufa_date","ticker"])
+        week_sets.append((week_start,week_end,hits))
 
-    st.metric("NEXT 4 WEEKS — PDUFA DECISIONS", sum(len(x[2]) for x in week_sets))
+    st.metric("PDUFA DECISIONS IN THIS 4-WEEK WINDOW", sum(len(x[2]) for x in week_sets))
+
     cols = st.columns(4)
-    for i,(start,end,hits) in enumerate(week_sets):
+    for i,(week_start,week_end,hits) in enumerate(week_sets):
         with cols[i]:
-            st.metric(f"Week {i+1}: {start.strftime('%b %d')}–{end.strftime('%b %d')}", len(hits))
+            st.metric(
+                f"Week {i+1}: {week_start.strftime('%b %d')}–{week_end.strftime('%b %d')}",
+                len(hits)
+            )
 
-    week_pick = st.radio("Drill into week", ["Week 1","Week 2","Week 3","Week 4"], horizontal=True)
+    week_pick = st.radio(
+        "Drill into week",
+        ["Week 1","Week 2","Week 3","Week 4"],
+        horizontal=True,
+        key=f"calendar_week_pick_{st.session_state.calendar_offset_weeks}"
+    )
     wi = int(week_pick[-1]) - 1
     wstart,wend,whits = week_sets[wi]
+
     st.markdown(f"### {week_pick}: {wstart.strftime('%b %d, %Y')} – {wend.strftime('%b %d, %Y')}")
     if whits.empty:
         st.info("No saved PDUFA events in this week.")
     else:
         display = table_view(whits)
-        event = st.dataframe(display, use_container_width=True, hide_index=True,
-                             on_select="rerun", selection_mode="single-row")
+        event = st.dataframe(
+            display,
+            use_container_width=True,
+            hide_index=True,
+            height=min(560, 110 + 36*len(display)),
+            on_select="rerun",
+            selection_mode="single-row",
+            key=f"calendar_week_table_{st.session_state.calendar_offset_weeks}_{wi}"
+        )
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = whits.iloc[ridx]
@@ -730,24 +777,33 @@ elif page == "3. CALENDAR":
 
     st.divider()
     st.markdown("### Month Calendar")
-    months = sorted({(d.year,d.month) for d in future["pdufa_date"].dropna()})
+    months = sorted({(d.year,d.month) for d in df["pdufa_date"].dropna()})
     opts = [f"{calendar.month_name[m]} {y}" for y,m in months] or [date.today().strftime("%B %Y")]
-    choice = st.selectbox("Month", opts)
+
+    window_month_label = f"{calendar.month_name[window_start.month]} {window_start.year}"
+    default_month_index = opts.index(window_month_label) if window_month_label in opts else 0
+
+    choice = st.selectbox("Month", opts, index=default_month_index)
     mi = opts.index(choice)
     y,m = months[mi] if months else (date.today().year,date.today().month)
 
     hdr = st.columns(7)
     for col,n in zip(hdr,["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]):
         col.markdown(f"**{n}**")
+
     for week in calendar.Calendar().monthdatescalendar(y,m):
         cols = st.columns(7)
         for col,day in zip(cols,week):
             with col:
-                st.markdown(f"**{day.day}**" if day.month == m else f"<span class='muted'>{day.day}</span>", unsafe_allow_html=True)
+                st.markdown(
+                    f"**{day.day}**" if day.month == m
+                    else f"<span class='muted'>{day.day}</span>",
+                    unsafe_allow_html=True
+                )
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
                     if st.button(
-                        f"{r.ticker} · {fmt_pct(r.get("approval_probability"))}",
+                        f"{r.ticker} · {fmt_pct(r.get('approval_probability'))}",
                         key=f"cal_{day}_{r.ticker}_{hit_idx}",
                         use_container_width=True
                     ):
