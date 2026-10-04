@@ -560,8 +560,15 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     )
     out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
     out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Not available")
+    if "_detail_source" not in out:
+        out["_detail_source"] = "live"
     out["Ticker Link"] = out.apply(
-        lambda r: event_detail_url(r, source="live", return_page=return_page), axis=1
+        lambda r: event_detail_url(
+            r,
+            source=safe_text(r.get("_detail_source"), "live"),
+            return_page=return_page
+        ),
+        axis=1
     )
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
@@ -577,6 +584,9 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     out["Confidence"] = out["confidence"].fillna("Not scored").astype(str)
     out["Outcome"] = out["outcome"].fillna("Pending").astype(str)
     out["Application"] = out["application_type"].fillna("Not available").astype(str)
+    out["Record Source"] = out["_detail_source"].apply(
+        lambda v: "Historical Model" if str(v) == "history" else "Saved Feed"
+    )
 
     for c in ["ticker","company","drug","indication"]:
         out[c] = out[c].fillna("Not available").astype(str)
@@ -587,7 +597,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     })[[
         "Ticker","App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
         "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
-        "Financing","Phase","Short %","IV (30d)"
+        "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
 
 query_event = st.query_params.get("event")
@@ -644,7 +654,43 @@ if page == "1. ALL PDUFA":
     st.markdown("## 1. ALL PDUFA — SAVED EVENT FEED")
     st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
-    master = df.copy()
+    live_master = df.copy()
+    live_master["_detail_source"] = "live"
+
+    # Include historical PDUFA cases already researched by the Prediction Engine.
+    hist = prediction_history.copy()
+    if not hist.empty:
+        keep_hist = hist["count_in_audited_accuracy"].fillna("YES").astype(str).str.upper().eq("YES")
+        hist = hist[keep_hist].copy()
+        hist["_canonical_date"] = pd.to_datetime(hist.get("canonical_pdufa_date"), errors="coerce")
+        hist["_original_date"] = pd.to_datetime(hist.get("pdufa_date"), errors="coerce")
+        hist["pdufa_date"] = hist["_canonical_date"].fillna(hist["_original_date"])
+        hist["company"] = "Historical validation record"
+        hist["drug"] = "Not captured in validation file"
+        hist["indication"] = "Not captured in validation file"
+        hist["approval_probability"] = pd.to_numeric(hist.get("p_approval"), errors="coerce")
+        hist["market_cap"] = pd.to_numeric(hist.get("historical_market_cap_billions"), errors="coerce") * 1_000_000_000
+        hist["trade_score"] = pd.NA
+        hist["financing_status"] = "Historical"
+        hist["setup_phase"] = "Historical PDUFA"
+        hist["short_interest"] = pd.NA
+        hist["iv_30d"] = pd.NA
+        hist["signal"] = hist.get("model_class", pd.Series(index=hist.index, dtype="object"))
+        hist["confidence"] = hist.get("audit_status", pd.Series(index=hist.index, dtype="object")).fillna("Historical")
+        hist["outcome"] = hist.get("actual_outcome", pd.Series(index=hist.index, dtype="object"))
+        hist["application_type"] = "Historical validation"
+        hist["_detail_source"] = "history"
+
+        for col in live_master.columns:
+            if col not in hist:
+                hist[col] = pd.NA
+        hist = hist[live_master.columns]
+        live_keys = set(live_master["event_key"].astype(str))
+        hist = hist[~hist["event_key"].astype(str).isin(live_keys)]
+        master = pd.concat([live_master, hist], ignore_index=True, sort=False)
+    else:
+        master = live_master
+
     master["time_status"] = master["pdufa_date"].apply(
         lambda d: "Unknown" if pd.isna(d) else (
             "Past" if pd.Timestamp(d).date() < date.today()
@@ -881,7 +927,9 @@ if page == "1. ALL PDUFA":
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = view.iloc[ridx]
-            go_individual(selected_row.get("ticker"), make_event_key(selected_row), source="live", return_page=page)
+            detail_source = safe_text(selected_row.get("_detail_source"), "live")
+            detail_key = safe_text(selected_row.get("event_key"), "") if detail_source == "history" else make_event_key(selected_row)
+            go_individual(selected_row.get("ticker"), detail_key, source=detail_source, return_page=page)
             st.rerun()
 
         open1,open2 = st.columns([3,1])
@@ -904,7 +952,9 @@ if page == "1. ALL PDUFA":
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="master_open"):
                 quick_row = quick_view[quick_view["event_key_ui"] == quick].iloc[0]
-                go_individual(quick_row.get("ticker"), quick, source="live", return_page=page)
+                detail_source = safe_text(quick_row.get("_detail_source"), "live")
+                detail_key = safe_text(quick_row.get("event_key"), "") if detail_source == "history" else quick
+                go_individual(quick_row.get("ticker"), detail_key, source=detail_source, return_page=page)
                 st.rerun()
 
         csv_bytes = display.to_csv(index=False).encode("utf-8")
@@ -1788,7 +1838,54 @@ else:
             st.caption("Approval probability and trading attractiveness remain separate.")
         with subtabs[9]:
             st.markdown("### Historical Analogs")
-            st.write("Validated analog comparisons will appear here when the analog feed is connected. No result is fabricated.")
+            st.caption("Uses only historical cases already loaded in the Prediction Engine. Invalid/excluded audit rows are not used.")
+            analogs = prediction_history.copy()
+            if analogs.empty:
+                st.info("No historical prediction cases are loaded.")
+            else:
+                analogs = analogs[
+                    analogs["count_in_audited_accuracy"].fillna("YES").astype(str).str.upper().eq("YES")
+                ].copy()
+                analogs["_p"] = pd.to_numeric(analogs["p_approval"], errors="coerce")
+                analogs["_cap"] = pd.to_numeric(analogs["historical_market_cap_billions"], errors="coerce")
+                current_p = r.get("approval_probability")
+                current_bucket = safe_text(r.get("market_cap_bucket"), "")
+                if pd.notna(current_p):
+                    cp = float(current_p)
+                    if cp > 1:
+                        cp /= 100.0
+                    analogs["_distance"] = (analogs["_p"] - cp).abs()
+                else:
+                    analogs["_distance"] = 999.0
+
+                same_bucket = analogs[
+                    analogs["market_cap_bucket"].fillna("").astype(str).eq(current_bucket)
+                ] if current_bucket else analogs.iloc[0:0]
+                pool = same_bucket if not same_bucket.empty else analogs
+                pool = pool.sort_values(["_distance","pdufa_date"]).head(10).copy()
+                pool["PDUFA Date"] = pd.to_datetime(pool["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+                pool["App %"] = pool["_p"].apply(lambda v: fmt_app_pct(v, 1))
+                pool["Historical Cap"] = pool["_cap"].apply(
+                    lambda v: "NA" if pd.isna(v) else "$" + f"{float(v):.2f}B"
+                )
+                pool["Result"] = pool["correct"].astype(str).map(
+                    {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
+                ).fillna("NA")
+                analog_display = pool[[
+                    "ticker","PDUFA Date","App %","model_class","actual_outcome",
+                    "Historical Cap","market_cap_bucket","Result","audit_status"
+                ]].rename(columns={
+                    "ticker":"Ticker",
+                    "model_class":"Prediction",
+                    "actual_outcome":"Actual FDA",
+                    "market_cap_bucket":"Cap Bucket",
+                    "audit_status":"Audit Status"
+                })
+                st.dataframe(analog_display, use_container_width=True, hide_index=True)
+                if not same_bucket.empty:
+                    st.success(f"Showing the closest historical cases from the same market-cap bucket: {current_bucket}.")
+                else:
+                    st.info("No same-bucket historical cases were available, so the closest loaded cases by approval probability are shown.")
 
 st.divider()
 st.caption("FDA probabilities are model estimates, not FDA determinations. Missing fields are labeled Not available or Not scored rather than being invented.")
