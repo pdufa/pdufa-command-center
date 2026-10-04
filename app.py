@@ -79,7 +79,7 @@ def load_data():
         "financing_evidence_url","new_dilution_flag","financing_proceeds"
     ]
     optional_numeric = [
-        "approval_probability","science_score","regulatory_score","safety_score",
+        "approval_probability","public_approval_probability","science_score","regulatory_score","safety_score",
         "cmc_score","market_cap","trade_score","short_interest","iv_30d",
         "price_last","return_30d_pct","avg_volume_20d","short_ratio","shares_float",
         "institutional_ownership_pct","cash"
@@ -103,6 +103,9 @@ def load_data():
 
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
     x["approval_probability"] = x["approval_probability"].apply(
+        lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
+    )
+    x["public_approval_probability"] = x["public_approval_probability"].apply(
         lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
     )
     return x
@@ -572,7 +575,8 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     )
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
-    out["PoA"] = out["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+    out["I PoA"] = out["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+    out["P PoA"] = out["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     out["Trade Score"] = out["trade_score"].apply(
         lambda v: "Not scored" if pd.isna(v) else f"{float(v):.0f}"
     )
@@ -593,9 +597,9 @@ def table_view(frame, return_page="1. ALL PDUFA"):
 
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication",
-        "PoA":"App %","Ticker Link":"Ticker"
+        "I PoA":"I App %","P PoA":"P App %","Ticker Link":"Ticker"
     })[[
-        "Ticker","App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "Ticker","I App %","P App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
         "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
@@ -634,6 +638,7 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("I App % = internal intelligence/model approval probability. P App % = separate approval estimate built only from public evidence; the two values are never blended.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
@@ -669,6 +674,7 @@ if page == "1. ALL PDUFA":
         hist["drug"] = "Not captured in validation file"
         hist["indication"] = "Not captured in validation file"
         hist["approval_probability"] = pd.to_numeric(hist.get("p_approval"), errors="coerce")
+        hist["public_approval_probability"] = pd.NA
         hist["market_cap"] = pd.to_numeric(hist.get("historical_market_cap_billions"), errors="coerce") * 1_000_000_000
         hist["trade_score"] = pd.NA
         hist["financing_status"] = "Historical"
@@ -782,7 +788,7 @@ if page == "1. ALL PDUFA":
         )
 
     with row2b:
-        min_poa = st.slider("Minimum App %", 0, 100, 0)
+        min_poa = st.slider("Minimum I App %", 0, 100, 0)
 
     with row2c:
         min_trade = st.slider("Minimum Trade Score", 0, 100, 0)
@@ -794,7 +800,7 @@ if page == "1. ALL PDUFA":
     with row2e:
         sort_choice = st.selectbox(
             "Sort",
-            ["PDUFA date ↑","PDUFA date ↓","Market cap ↓","App % ↓","Trade score ↓","Ticker A–Z"]
+            ["PDUFA date ↑","PDUFA date ↓","Market cap ↓","I App % ↓","Trade score ↓","Ticker A–Z"]
         )
 
     if cap_presets == "Custom":
@@ -864,7 +870,7 @@ if page == "1. ALL PDUFA":
         view = view.sort_values(["pdufa_date","ticker"], ascending=[False,True], na_position="last")
     elif sort_choice == "Market cap ↓":
         view = view.sort_values(["market_cap","pdufa_date"], ascending=[False,True], na_position="last")
-    elif sort_choice == "App % ↓":
+    elif sort_choice == "I App % ↓":
         view = view.sort_values(["approval_probability","pdufa_date"], ascending=[False,True], na_position="last")
     elif sort_choice == "Trade score ↓":
         view = view.sort_values(["trade_score","pdufa_date"], ascending=[False,True], na_position="last")
@@ -1197,7 +1203,7 @@ elif page == "3. CALENDAR":
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
                     st.link_button(
-                        f"{r.ticker} · {fmt_app_pct(r.get('approval_probability'), 1)} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}",
+                        f"{r.ticker} · I {fmt_app_pct(r.get('approval_probability'), 1)} · P {fmt_app_pct(r.get('public_approval_probability'), 1)} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}",
                         event_detail_url(r, source="live", return_page="3. CALENDAR"),
                         use_container_width=True,
                         help="Open this exact PDUFA detail page"
@@ -1213,7 +1219,7 @@ elif page == "4. PREDICTION ENGINE":
         (hist["pdufa_date"] >= pd.Timestamp("2025-01-01")) &
         (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
     ].copy()
-    hist["App %"] = hist["p_approval"].apply(lambda v: fmt_app_pct(v, 1))
+    hist["I App %"] = hist["p_approval"].apply(lambda v: fmt_app_pct(v, 1))
     hist["Correct / Wrong"] = hist["correct"].astype(str).map(
         {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
     ).fillna("NA")
@@ -1282,7 +1288,7 @@ elif page == "4. PREDICTION ENGINE":
     p1.metric("Selected Cases", len(hview))
     p2.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
     p3.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
-    p4.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    p4.metric("Avg I App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Clean Cases", clean_keep_count)
@@ -1301,7 +1307,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","App %","PDUFA Date","model_class","actual_outcome",
+        "Ticker","I App %","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1449,7 +1455,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","App %","PDUFA Date","drug","indication",
+            "Ticker","I App %","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
@@ -1597,15 +1603,19 @@ else:
         st.info("No candidates loaded.")
     else:
         r = ordered[ordered["event_key"] == st.session_state.selected_event_key].iloc[0]
-        st.markdown(f"## {r.ticker} · {fmt_app_pct(r.get('approval_probability'), 1)} — {r.company}")
+        st.markdown(
+            f"## {r.ticker} · I {fmt_app_pct(r.get('approval_probability'), 1)} "
+            f"· P {fmt_app_pct(r.get('public_approval_probability'), 1)} — {r.company}"
+        )
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
-        k1,k2,k3,k4 = st.columns(4)
+        k1,k2,k3,k4,k5 = st.columns(5)
         k1.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
         k2.metric("Days Left", "Not available" if days_left is None else days_left)
-        k3.metric("App %", fmt_app_pct(r.get("approval_probability"), 1))
-        k4.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
+        k3.metric("I App %", fmt_app_pct(r.get("approval_probability"), 1))
+        k4.metric("P App %", fmt_app_pct(r.get("public_approval_probability"), 1))
+        k5.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
 
         k5,k6,k7,k8 = st.columns(4)
         k5.metric("Market Cap", fmt_cap(r.get("market_cap")))
