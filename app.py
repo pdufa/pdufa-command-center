@@ -577,6 +577,30 @@ def internal_direction_state(row):
     return "REVIEW"
 
 
+def bpw_score_value(row):
+    """Consensus score combining I App and P App when both are available."""
+    i = row.get("approval_probability", row.get("p_approval"))
+    p = row.get("public_approval_probability")
+    if i is None or p is None or pd.isna(i) or pd.isna(p):
+        return pd.NA
+    i = float(i)
+    p = float(p)
+    if 0 <= i <= 1:
+        i *= 100
+    if 0 <= p <= 1:
+        p *= 100
+    return (i + p) / 2.0
+
+
+def bpw_direction_state(row):
+    """Consensus direction: call only when I and P directions agree."""
+    i_dir = internal_direction_state(row)
+    p_dir = public_direction_state(row)
+    if i_dir in ["APPROVED","CRL"] and i_dir == p_dir:
+        return i_dir
+    return "REVIEW"
+
+
 def make_event_key(row):
     source_key = safe_text(row.get("event_key"), "")
     if source_key:
@@ -655,8 +679,10 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
     out["I PoA"] = out["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     out["P PoA"] = out["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+    out["BPW Score"] = out.apply(lambda r: fmt_app_pct(bpw_score_value(r), 1), axis=1)
     out["I Direction"] = out.apply(internal_direction_state, axis=1)
     out["P Direction"] = out.apply(public_direction_state, axis=1)
+    out["BPW Direction"] = out.apply(bpw_direction_state, axis=1)
     out["Trade Score"] = out["trade_score"].apply(
         lambda v: "Not scored" if pd.isna(v) else f"{float(v):.0f}"
     )
@@ -679,7 +705,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
         "company":"Company","drug":"Drug","indication":"Indication",
         "I PoA":"I App %","P PoA":"P App %","Ticker Link":"Ticker"
     })[[
-        "Ticker","I App %","P App %","I Direction","P Direction","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "Ticker","I App %","P App %","BPW Score","I Direction","P Direction","BPW Direction","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
         "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
@@ -984,7 +1010,7 @@ if page == "1. ALL PDUFA":
     m7.metric("Future", future_n)
     m8.metric("Next 4 Weeks", next_4w_n)
 
-    st.caption("I App % = internal/model approval estimate. P App % = public-evidence-only approval estimate. P App/P Direction are isolated from internal model inputs and may use only decision-safe public sources.")
+    st.caption("I App % = internal/model approval estimate. P App % = public-evidence-only approval estimate. BPW Score = 50/50 consensus of I and P when both are available. BPW Direction calls APPROVED/CRL only when I and P Direction agree; otherwise REVIEW. P App/P Direction remain isolated from internal model inputs.")
 
     st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
 
@@ -1011,7 +1037,7 @@ if page == "1. ALL PDUFA":
         display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("FIRST FIVE COLUMNS: Ticker | I App % | P App % | I Direction | P Direction")
+        st.caption("FIRST SEVEN COLUMNS: Ticker | I App % | P App % | BPW Score | I Direction | P Direction | BPW Direction")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1317,6 +1343,7 @@ elif page == "3. CALENDAR":
                     calendar_label = html.escape(
                         f"{r.ticker} · I {calendar_app_text(r, 'approval_probability')} · "
                         f"P {calendar_app_text(r, 'public_approval_probability')} · "
+                        f"BPW {fmt_app_pct(bpw_score_value(r), 1)} · "
                         f"{pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}"
                     )
                     calendar_url = html.escape(
@@ -1342,8 +1369,10 @@ elif page == "4. PREDICTION ENGINE":
     if "public_approval_probability" not in hist:
         hist["public_approval_probability"] = pd.NA
     hist["P App %"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+    hist["BPW Score"] = hist.apply(lambda r: fmt_app_pct(bpw_score_value(r), 1), axis=1)
     hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
     hist["P Direction"] = hist.apply(public_direction_state, axis=1)
+    hist["BPW Direction"] = hist.apply(bpw_direction_state, axis=1)
     hist["Correct / Wrong"] = hist["correct"].astype(str).map(
         {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
     ).fillna("NA")
@@ -1460,11 +1489,19 @@ elif page == "4. PREDICTION ENGINE":
     st.caption("Coverage is completion. Avg I/P App % are probability averages and are not supposed to equal 100%.")
 
     st.markdown("### DIRECTION ACCURACY")
-    d1,d2,d3,d4 = st.columns(4)
+    audited["BPW Direction"] = audited.apply(bpw_direction_state, axis=1)
+    bpw_dir_called = audited[audited["BPW Direction"].isin(["APPROVED","CRL"])].copy()
+    bpw_dir_correct = bpw_dir_called["BPW Direction"].eq(bpw_dir_called["actual_outcome"].astype(str).str.upper())
+    bpw_direction_accuracy = float("nan") if bpw_dir_called.empty else bpw_dir_correct.mean() * 100
+    bpw_direction_coverage = 0.0 if audited.empty else len(bpw_dir_called) / len(audited) * 100
+
+    d1,d2,d3,d4,d5,d6 = st.columns(6)
     d1.metric("I Direction Accuracy", "NA" if pd.isna(i_direction_accuracy) else f"{i_direction_accuracy:.1f}%")
-    d2.metric("I Direction Coverage", f"{i_direction_coverage:.1f}%")
+    d2.metric("I Coverage", f"{i_direction_coverage:.1f}%")
     d3.metric("P Direction Accuracy", "NA" if pd.isna(p_direction_accuracy) else f"{p_direction_accuracy:.1f}%")
-    d4.metric("P Direction Coverage", f"{p_direction_coverage:.1f}%")
+    d4.metric("P Coverage", f"{p_direction_coverage:.1f}%")
+    d5.metric("BPW Direction Accuracy", "NA" if pd.isna(bpw_direction_accuracy) else f"{bpw_direction_accuracy:.1f}%")
+    d6.metric("BPW Coverage", f"{bpw_direction_coverage:.1f}%")
     st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. I Direction may use decision-safe internal research and model evidence. P Direction is PUBLIC-ONLY: no I App %, no internal scores, no internal audit labels, and no hidden/internal references may influence it. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
 
     st.markdown("### 100% HISTORICAL PRECISION MODES")
@@ -1498,7 +1535,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","I App %","P App %","I Direction","P Direction","PDUFA Date","model_class","actual_outcome",
+        "Ticker","I App %","P App %","BPW Score","I Direction","P Direction","BPW Direction","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
