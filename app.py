@@ -408,12 +408,25 @@ def fmt_pct(v, decimals=0):
     return f"{x:.{decimals}f}%"
 
 def fmt_app_pct(v, decimals=1):
-    if pd.isna(v):
-        return "NA"
-    x = float(v)
+    if v is None or pd.isna(v):
+        return "Not scored"
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return "Not scored"
     if 0 <= x <= 1:
         x *= 100
     return f"{x:.{decimals}f}%"
+
+def calendar_app_text(row, field):
+    """Never display a missing/unscored calendar probability as 0%."""
+    value = row.get(field)
+    if value is None or pd.isna(value):
+        return "Not scored"
+    confidence = safe_text(row.get("confidence"), "").upper()
+    if float(value) == 0 and confidence in ["", "NOT SCORED", "UNSCORED"]:
+        return "Not scored"
+    return fmt_app_pct(value, 1)
 
 def fmt_num(v, decimals=0):
     if pd.isna(v):
@@ -1302,8 +1315,8 @@ elif page == "3. CALENDAR":
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
                     calendar_label = html.escape(
-                        f"{r.ticker} · I {fmt_app_pct(r.get('approval_probability'), 1)} · "
-                        f"P {fmt_app_pct(r.get('public_approval_probability'), 1)} · "
+                        f"{r.ticker} · I {calendar_app_text(r, 'approval_probability')} · "
+                        f"P {calendar_app_text(r, 'public_approval_probability')} · "
                         f"{pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}"
                     )
                     calendar_url = html.escape(
