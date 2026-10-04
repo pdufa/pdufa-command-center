@@ -694,24 +694,41 @@ elif page == "3. CALENDAR":
             with col:
                 st.markdown(f"**{day.day}**" if day.month == m else f"<span class='muted'>{day.day}</span>", unsafe_allow_html=True)
                 hits = df[df["pdufa_date"].dt.date == day]
-                for _,r in hits.iterrows():
-                    if st.button(f"{r.ticker} · {fmt_pct(r.approval_probability)}",
-                                 key=f"cal_{day}_{r.ticker}", use_container_width=True):
-                        go_individual(r.ticker)
+                for hit_idx, r in hits.iterrows():
+                    if st.button(
+                        f"{r.ticker} · {fmt_pct(r.approval_probability)}",
+                        key=f"cal_{day}_{r.ticker}_{hit_idx}",
+                        use_container_width=True
+                    ):
+                        go_individual(r.ticker, make_event_key(r))
                         st.rerun()
 
 else:
-    ordered = df.sort_values("pdufa_date")
-    tickers = ordered["ticker"].dropna().astype(str).drop_duplicates().tolist()
-    selected = st.session_state.selected_ticker
-    if tickers and selected not in tickers:
-        selected = tickers[0]
+    ordered = df.sort_values(["ticker","pdufa_date","drug"], na_position="last").copy()
+    ordered["event_key"] = ordered.apply(make_event_key, axis=1)
+    ordered["event_label"] = ordered.apply(
+        lambda x: f"{safe_text(x.get('ticker'))} — {safe_text(x.get('drug'))} — " +
+                  ("Date pending" if pd.isna(x.get("pdufa_date")) else pd.Timestamp(x.get("pdufa_date")).strftime("%b %d, %Y")),
+        axis=1
+    )
+    event_keys = ordered["event_key"].tolist()
+    selected_key = st.session_state.selected_event_key
+    if event_keys and selected_key not in event_keys:
+        ticker_matches = ordered[ordered["ticker"].astype(str) == str(st.session_state.selected_ticker)]
+        selected_key = ticker_matches.iloc[0]["event_key"] if not ticker_matches.empty else event_keys[0]
 
     csel,b1,b2 = st.columns([3,1,1])
     with csel:
-        selected = st.selectbox("Company", tickers, index=tickers.index(selected) if selected in tickers else 0,
-                                key="individual_selector")
-        st.session_state.selected_ticker = selected
+        selected_key = st.selectbox(
+            "Company / Drug / PDUFA Event",
+            event_keys,
+            index=event_keys.index(selected_key) if selected_key in event_keys else 0,
+            format_func=lambda k: ordered.loc[ordered["event_key"] == k, "event_label"].iloc[0],
+            key="individual_selector"
+        )
+        st.session_state.selected_event_key = selected_key
+        selected_row = ordered[ordered["event_key"] == selected_key].iloc[0]
+        st.session_state.selected_ticker = str(selected_row["ticker"])
     with b1:
         st.write("")
         st.write("")
@@ -725,12 +742,12 @@ else:
             st.session_state.nav = "2. MARKET CAP GROUPS"
             st.rerun()
 
-    if not tickers:
+    if ordered.empty:
         st.info("No candidates loaded.")
     else:
-        r = ordered[ordered["ticker"].astype(str) == selected].iloc[0]
+        r = ordered[ordered["event_key"] == st.session_state.selected_event_key].iloc[0]
         st.markdown(f"## {r.ticker} — {r.company}")
-        st.caption(f"{r.get('drug','')} · {r.get('indication','')}")
+        st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.pdufa_date) else int((r.pdufa_date - today).days)
 
         k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
@@ -747,17 +764,17 @@ else:
             a,b = st.columns(2)
             with a:
                 st.markdown("### Candidate")
-                st.write(f"**Drug:** {r.get('drug','Pending')}")
-                st.write(f"**Indication:** {r.get('indication','Pending')}")
-                st.write(f"**Application:** {r.get('application_type','Pending')}")
-                st.write(f"**Setup Phase:** {r.get('setup_phase','Pending')}")
-                st.write(f"**Financing:** {r.get('financing_status','Pending')}")
+                st.write(f"**Drug:** {safe_text(r.get('drug'))}")
+                st.write(f"**Indication:** {safe_text(r.get('indication'))}")
+                st.write(f"**Application:** {safe_text(r.get('application_type'))}")
+                st.write(f"**Setup Phase:** {safe_text(r.get('setup_phase'))}")
+                st.write(f"**Financing:** {safe_text(r.get('financing_status'))}")
             with b:
                 st.markdown("### Evidence")
-                st.write(f"**Signal:** {r.get('signal','Pending')}")
-                st.write(f"**Confidence:** {r.get('confidence','Pending')}")
-                st.write(f"**Evidence cutoff:** {r.get('evidence_cutoff','Pending')}")
-                st.write(r.get("evidence_summary") or "Evidence feed pending.")
+                st.write(f"**Signal:** {safe_text(r.get('signal'))}")
+                st.write(f"**Confidence:** {safe_text(r.get('confidence'))}")
+                st.write(f"**Evidence cutoff:** {safe_text(r.get('evidence_cutoff'))}")
+                st.write(safe_text(r.get("evidence_summary"), "Evidence feed pending."))
         with subtabs[1]:
             ptitle, pwatch = st.columns([4,1])
             with ptitle:
@@ -855,21 +872,21 @@ else:
             st.write(f"🎯 **PDUFA:** {'Pending' if pd.isna(r.pdufa_date) else r.pdufa_date.strftime('%b %d, %Y')}")
         with subtabs[3]:
             st.markdown("### Clinical")
-            st.write(r.get("science_summary") or "Clinical research feed pending.")
+            st.write(safe_text(r.get("science_summary"), "Clinical research feed pending."))
             v = r.get("science_score")
             st.metric("Science Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
         with subtabs[4]:
             st.markdown("### FDA / Regulatory")
-            st.write(r.get("regulatory_summary") or "Regulatory research feed pending.")
+            st.write(safe_text(r.get("regulatory_summary"), "Regulatory research feed pending."))
             v = r.get("regulatory_score")
             st.metric("Regulatory Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
         with subtabs[5]:
             st.markdown("### Financing")
-            st.metric("Financing Status", str(r.get("financing_status") or "Pending"))
-            st.write(r.get("financing_summary") or "Financing detail feed pending.")
+            st.metric("Financing Status", safe_text(r.get("financing_status")))
+            st.write(safe_text(r.get("financing_summary"), "Financing detail feed pending."))
         with subtabs[6]:
             st.markdown("### Trading")
-            st.write(r.get("trading_summary") or "Trading intelligence feed pending.")
+            st.write(safe_text(r.get("trading_summary"), "Trading intelligence feed pending."))
             t1,t2,t3 = st.columns(3)
             t1.metric("Trade Score", "Pending" if pd.isna(r.trade_score) else f"{float(r.trade_score):.0f}/100")
             t2.metric("Short Interest", fmt_pct(r.short_interest))
