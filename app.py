@@ -139,8 +139,13 @@ def load_prediction_history():
         x["failure_reason"] = pd.NA
         x["count_in_audited_accuracy"] = pd.NA
         x["verified_note"] = pd.NA
+        x["source_url"] = pd.NA
 
-    x["audit_status"] = x["audit_status"].fillna("UNREVIEWED_OR_CLEAN")
+    if "source_url" not in x:
+        x["source_url"] = pd.NA
+    x["audit_status"] = x["audit_status"].fillna("UNREVIEWED")
+    # YES here means "keep in adjusted score unless a verified invalid mapping
+    # has been explicitly excluded". It is not a claim that every row is fully audited.
     x["count_in_audited_accuracy"] = x["count_in_audited_accuracy"].fillna("YES")
     return x
 
@@ -1104,8 +1109,8 @@ elif page == "4. PREDICTION ENGINE":
     p3.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
     p4.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
     p5.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
-    p6.metric("Audited Cases", len(audited))
-    p7.metric("Audited Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
+    p6.metric("Adjusted Cases", len(audited))
+    p7.metric("Adjusted Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
 
     st.caption(
         f"Filtered selection: {len(hview)} of {len(hist)} cases. "
@@ -1120,7 +1125,7 @@ elif page == "4. PREDICTION ENGINE":
     hdisplay = hview[[
         "Ticker","App %","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong",
-        "audit_status","failure_reason","count_in_audited_accuracy",
+        "audit_status","failure_reason","count_in_audited_accuracy","source_url",
         "validation_period","independence_status"
     ]].rename(columns={
         "model_class":"Model Prediction",
@@ -1128,7 +1133,8 @@ elif page == "4. PREDICTION ENGINE":
         "market_cap_bucket":"Market Cap Bucket",
         "audit_status":"Audit Status",
         "failure_reason":"Failure Reason",
-        "count_in_audited_accuracy":"Count in Audited Accuracy",
+        "count_in_audited_accuracy":"Count in Adjusted Accuracy",
+        "source_url":"Audit Source",
         "validation_period":"Validation Period",
         "independence_status":"Validation Role"
     })
@@ -1144,11 +1150,19 @@ elif page == "4. PREDICTION ENGINE":
                 "Ticker",
                 display_text=r"ticker=([^&]+)",
                 help="Open this historical PDUFA model case"
+            ),
+            "Audit Source": st.column_config.LinkColumn(
+                "Audit Source",
+                display_text="Source",
+                help="Primary source used for audited failure classification"
             )
         }
     )
 
-    st.info("Ticker detail for historical cases shows the exact saved model/outcome/cap/validation record. Company/drug fields are not invented when they are absent from the canonical cohort file.")
+    st.info(
+        "Adjusted Accuracy removes only rows with a verified invalid event date or company/product identity mapping. "
+        "It does not mean all 62 rows have completed manual audit yet."
+    )
 
 else:
     if st.session_state.selected_detail_source == "history":
