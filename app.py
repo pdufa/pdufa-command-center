@@ -813,7 +813,12 @@ if page == "1. ALL PDUFA":
         hist["drug"] = "Not captured in validation file"
         hist["indication"] = "Not captured in validation file"
         hist["approval_probability"] = pd.to_numeric(hist.get("p_approval"), errors="coerce")
-        hist["public_approval_probability"] = pd.NA
+        hist["public_approval_probability"] = pd.to_numeric(
+            hist.get("public_approval_probability"), errors="coerce"
+        )
+        hist["biopharmawatch_probability"] = pd.to_numeric(
+            hist.get("biopharmawatch_probability"), errors="coerce"
+        )
         hist["market_cap"] = pd.to_numeric(hist.get("historical_market_cap_billions"), errors="coerce") * 1_000_000_000
         hist["trade_score"] = pd.NA
         hist["financing_status"] = "Historical"
