@@ -432,6 +432,107 @@ def combined_probability_direction(row):
         return ""
     return f"{p} · {f}"
 
+
+def optimizer_original_direction(row):
+    """Frozen/pre-decision direction used for historical threshold optimization."""
+    model = safe_text(row.get("model_class"), "").upper()
+    if model in ["APPROVED", "CRL"]:
+        return model
+    return predicted_fda_direction(row)
+
+
+def optimizer_gate_call(row, approve_min, crl_max):
+    """High-confidence overlay: keep an original direction only beyond locked probability thresholds."""
+    p = displayed_probability_value(row)
+    if p is None or pd.isna(p):
+        return "REVIEW"
+    p = float(p)
+    base = optimizer_original_direction(row)
+    if base == "APPROVED" and p >= float(approve_min):
+        return "APPROVED"
+    if base == "CRL" and p <= float(crl_max):
+        return "CRL"
+    return "REVIEW"
+
+
+def optimizer_metrics(frame, approve_min, crl_max):
+    """Return called-case Match % and coverage without counting REVIEW as a miss."""
+    if frame is None or frame.empty:
+        return {"eligible":0, "calls":0, "correct":0, "match_pct":pd.NA, "coverage_pct":pd.NA}
+
+    calls = frame.apply(lambda r: optimizer_gate_call(r, approve_min, crl_max), axis=1)
+    actual = frame.apply(
+        lambda r: normalize_fda_direction(r.get("actual_outcome", r.get("outcome"))), axis=1
+    )
+    eligible_mask = actual.isin(["APPROVED","CRL"])
+    called_mask = calls.isin(["APPROVED","CRL"]) & eligible_mask
+    eligible = int(eligible_mask.sum())
+    n_calls = int(called_mask.sum())
+    correct = int((calls[called_mask] == actual[called_mask]).sum()) if n_calls else 0
+    match_pct = pd.NA if n_calls == 0 else correct / n_calls * 100.0
+    coverage_pct = pd.NA if eligible == 0 else n_calls / eligible * 100.0
+    return {
+        "eligible": eligible,
+        "calls": n_calls,
+        "correct": correct,
+        "match_pct": match_pct,
+        "coverage_pct": coverage_pct,
+    }
+
+
+def optimize_match_gate(frame, minimum_coverage_pct=30.0, minimum_calls=5):
+    """Tune thresholds on one cohort only. Maximize Match %, then coverage, then calls."""
+    if frame is None or frame.empty:
+        return None
+
+    best = None
+    # Conservative search: CRL threshold 5-45; approval threshold 55-99.
+    for crl_max in range(5, 46):
+        for approve_min in range(55, 100):
+            if crl_max >= approve_min:
+                continue
+            m = optimizer_metrics(frame, approve_min, crl_max)
+            if m["calls"] < int(minimum_calls):
+                continue
+            if pd.isna(m["coverage_pct"]) or float(m["coverage_pct"]) < float(minimum_coverage_pct):
+                continue
+            key = (
+                float(m["match_pct"]) if not pd.isna(m["match_pct"]) else -1.0,
+                float(m["coverage_pct"]) if not pd.isna(m["coverage_pct"]) else -1.0,
+                int(m["calls"]),
+                float(approve_min - crl_max),
+            )
+            if best is None or key > best["key"]:
+                best = {
+                    "approve_min": approve_min,
+                    "crl_max": crl_max,
+                    "metrics": m,
+                    "key": key,
+                }
+    return best
+
+
+def optimizer_case_table(frame, approve_min, crl_max):
+    """Case-level audit table for the locked gate."""
+    if frame is None or frame.empty:
+        return pd.DataFrame()
+    out = frame.copy()
+    out["P%"] = out.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+    out["Original F"] = out.apply(optimizer_original_direction, axis=1)
+    out["Optimized F"] = out.apply(lambda r: optimizer_gate_call(r, approve_min, crl_max), axis=1)
+    out["Actual FDA"] = out.apply(
+        lambda r: normalize_fda_direction(r.get("actual_outcome", r.get("outcome"))) or "", axis=1
+    )
+    out["Match %"] = out.apply(
+        lambda r: (
+            "100%" if r["Optimized F"] in ["APPROVED","CRL"] and r["Optimized F"] == r["Actual FDA"]
+            else ("0%" if r["Optimized F"] in ["APPROVED","CRL"] and r["Actual FDA"] in ["APPROVED","CRL"] else "")
+        ),
+        axis=1,
+    )
+    return out
+
+
 def calendar_app_text(row, field):
     """Never display a missing/unscored calendar probability as 0%."""
     value = row.get(field)
@@ -924,15 +1025,15 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-04 · P% / F / MATCH % / C ACTIVE")
-st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("BUILD 2026-10-04 · P% / F / MATCH % / C + MATCH OPTIMIZER ACTIVE")
+st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCAN"]
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCAN","6. MATCH OPTIMIZER"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -1940,6 +2041,213 @@ elif page == "4. PREDICTION ENGINE":
             "A high-confidence V2 call requires verified event identity, adequate pivotal evidence, no unresolved conflict, "
             "and complete clinical/regulatory/safety/CMC component scores. Otherwise the engine deliberately returns REVIEW."
         )
+
+
+
+elif page == "6. MATCH OPTIMIZER":
+    st.markdown("## 6. MATCH OPTIMIZER — ALL STEPS TOGETHER")
+    st.caption(
+        "Goal: maximize called-case direction accuracy without pretending uncertain cases are certain. "
+        "REVIEW is an abstention and is excluded from Match %, while Coverage % shows how often the gate actually makes a call."
+    )
+
+    opt = prediction_history.copy()
+    opt["pdufa_date"] = pd.to_datetime(opt.get("pdufa_date"), errors="coerce")
+    opt["Year"] = opt["pdufa_date"].dt.year
+    opt["P Value"] = opt.apply(displayed_probability_value, axis=1)
+    opt["Actual FDA"] = opt.apply(
+        lambda r: normalize_fda_direction(r.get("actual_outcome", r.get("outcome"))), axis=1
+    )
+
+    if "count_in_audited_accuracy" in opt:
+        audited_ok = opt["count_in_audited_accuracy"].fillna("YES").astype(str).str.upper().eq("YES")
+    else:
+        audited_ok = pd.Series(True, index=opt.index)
+
+    if "needs_rescore" in opt:
+        rescore_ok = ~opt["needs_rescore"].fillna("NO").astype(str).str.upper().eq("YES")
+    else:
+        rescore_ok = pd.Series(True, index=opt.index)
+
+    opt["Eligible"] = (
+        audited_ok &
+        rescore_ok &
+        opt["P Value"].notna() &
+        opt["Actual FDA"].isin(["APPROVED","CRL"]) &
+        opt["Year"].notna()
+    )
+
+    years = sorted([int(y) for y in opt.loc[opt["Eligible"], "Year"].dropna().unique().tolist()])
+
+    st.markdown("### STEP 1 — Historical cohorts")
+    if years:
+        cohort_rows = []
+        for yy in years:
+            yr_all = opt[opt["Year"] == yy]
+            yr_el = yr_all[yr_all["Eligible"]]
+            cohort_rows.append({
+                "Year": yy,
+                "Historical rows": len(yr_all),
+                "Optimizer eligible": len(yr_el),
+                "Approvals": int((yr_el["Actual FDA"] == "APPROVED").sum()),
+                "CRLs": int((yr_el["Actual FDA"] == "CRL").sum()),
+            })
+        st.dataframe(pd.DataFrame(cohort_rows), use_container_width=True, hide_index=True)
+    else:
+        st.error("No audited historical rows currently have both a probability score and final FDA outcome.")
+
+    if 2024 not in years:
+        st.warning(
+            "2024 is not loaded into the historical prediction dataset yet. "
+            "The optimizer can run a provisional development test on the years currently available, "
+            "but the preferred validation remains: tune on 2024 → lock rules → test unchanged on 2025."
+        )
+
+    if len(years) >= 2:
+        default_tune = 2024 if 2024 in years else years[0]
+        later_years = [y for y in years if y > default_tune]
+        default_holdout = 2025 if default_tune == 2024 and 2025 in years else (later_years[0] if later_years else years[-1])
+    elif len(years) == 1:
+        default_tune = years[0]
+        default_holdout = years[0]
+    else:
+        default_tune = None
+        default_holdout = None
+
+    ctl1,ctl2,ctl3,ctl4 = st.columns(4)
+    with ctl1:
+        tune_year = st.selectbox(
+            "Tune year",
+            years if years else [date.today().year],
+            index=(years.index(default_tune) if years and default_tune in years else 0),
+            key="match_opt_tune_year",
+        )
+    with ctl2:
+        holdout_choices = [y for y in years if y != tune_year] or years or [date.today().year]
+        holdout_index = holdout_choices.index(default_holdout) if default_holdout in holdout_choices else 0
+        holdout_year = st.selectbox(
+            "Holdout year",
+            holdout_choices,
+            index=holdout_index,
+            key="match_opt_holdout_year",
+        )
+    with ctl3:
+        minimum_coverage = st.slider(
+            "Minimum coverage",
+            min_value=5,
+            max_value=90,
+            value=30,
+            step=5,
+            format="%d%%",
+            key="match_opt_min_coverage",
+        )
+    with ctl4:
+        max_calls = int(opt[opt["Year"] == tune_year]["Eligible"].sum()) if tune_year is not None else 0
+        safe_max_calls = max(1, max_calls)
+        minimum_calls = st.number_input(
+            "Minimum calls",
+            min_value=1,
+            max_value=safe_max_calls,
+            value=min(5, safe_max_calls),
+            step=1,
+            key="match_opt_min_calls",
+        )
+
+    st.markdown("### STEP 2 — Decision-safe eligibility gate")
+    tune = opt[(opt["Year"] == tune_year) & opt["Eligible"]].copy() if tune_year is not None else pd.DataFrame()
+    holdout = opt[(opt["Year"] == holdout_year) & opt["Eligible"]].copy() if holdout_year is not None else pd.DataFrame()
+    e1,e2,e3,e4 = st.columns(4)
+    e1.metric("Tune Eligible", len(tune))
+    e2.metric("Holdout Eligible", len(holdout))
+    e3.metric("Excluded / Rescore", int((~opt["Eligible"]).sum()))
+    e4.metric("Leakage Rule", "PRE-DECISION ONLY")
+    st.caption(
+        "Rows requiring rescore or lacking a valid final FDA outcome/probability are excluded from optimization. "
+        "Thresholds are selected from the tune year only."
+    )
+
+    st.markdown("### STEP 3 — Tune the high-confidence F gate")
+    best = optimize_match_gate(tune, minimum_coverage_pct=float(minimum_coverage), minimum_calls=int(minimum_calls))
+    if best is None:
+        st.warning(
+            "No threshold pair meets the current minimum coverage/call requirements. "
+            "Lower Minimum coverage or Minimum calls, or add more audited historical cases."
+        )
+    else:
+        bm = best["metrics"]
+        t1,t2,t3,t4,t5 = st.columns(5)
+        t1.metric("Approve ≥", f"{best['approve_min']}%")
+        t2.metric("CRL ≤", f"{best['crl_max']}%")
+        t3.metric("Tune Match %", f"{bm['match_pct']:.1f}%")
+        t4.metric("Tune Coverage %", f"{bm['coverage_pct']:.1f}%")
+        t5.metric("Tune Calls", f"{bm['calls']}/{bm['eligible']}")
+
+        st.markdown("### STEP 4 — Analyze every tune-year miss")
+        tune_cases = optimizer_case_table(tune, best["approve_min"], best["crl_max"])
+        tune_misses = tune_cases[tune_cases["Match %"] == "0%"].copy()
+        if tune_misses.empty:
+            st.success("No wrong actionable calls under this tune-year gate.")
+        else:
+            miss_cols = [x for x in [
+                "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA",
+                "failure_reason","audit_status","source_url"
+            ] if x in tune_misses.columns]
+            st.dataframe(
+                tune_misses[miss_cols].rename(columns={
+                    "ticker":"Ticker","pdufa_date":"PDUFA Date",
+                    "failure_reason":"Miss / Audit Reason","audit_status":"Audit Status",
+                    "source_url":"Audit Source"
+                }),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        st.markdown("### STEP 5 — Lock thresholds and test the untouched holdout")
+        hm = optimizer_metrics(holdout, best["approve_min"], best["crl_max"])
+        h1,h2,h3,h4 = st.columns(4)
+        h1.metric("Holdout Match %", "" if pd.isna(hm["match_pct"]) else f"{hm['match_pct']:.1f}%")
+        h2.metric("Holdout Coverage %", "" if pd.isna(hm["coverage_pct"]) else f"{hm['coverage_pct']:.1f}%")
+        h3.metric("Correct Calls", hm["correct"])
+        h4.metric("Total Calls", f"{hm['calls']}/{hm['eligible']}")
+
+        if int(holdout_year) == int(date.today().year):
+            st.warning(
+                f"{holdout_year} is still an in-progress year, so this is a provisional holdout result, not a final full-year validation."
+            )
+
+        holdout_cases = optimizer_case_table(holdout, best["approve_min"], best["crl_max"])
+        if not holdout_cases.empty:
+            holdout_show = holdout_cases[holdout_cases["Optimized F"].isin(["APPROVED","CRL"])].copy()
+            show_cols = [x for x in [
+                "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA","Match %"
+            ] if x in holdout_show.columns]
+            st.dataframe(
+                holdout_show[show_cols].rename(columns={"ticker":"Ticker","pdufa_date":"PDUFA Date"}),
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        st.markdown("### STEP 6 — Recommended prospective F gate")
+        r1,r2,r3 = st.columns(3)
+        r1.metric("APPROVED Gate", f"P% ≥ {best['approve_min']}%")
+        r2.metric("CRL Gate", f"P% ≤ {best['crl_max']}%")
+        r3.metric("Middle Zone", "REVIEW")
+        st.info(
+            "Recommended rule: preserve the underlying direction only when its P% clears the locked high-confidence threshold. "
+            "Everything between the CRL and APPROVED thresholds becomes REVIEW. "
+            "Do not claim 100% prospective accuracy unless the locked rule achieves it on untouched holdout data and continues to do so prospectively."
+        )
+
+        if not pd.isna(hm["match_pct"]) and float(hm["match_pct"]) == 100.0:
+            st.success(
+                f"The locked gate achieved 100% called-case Match on the available {holdout_year} holdout "
+                f"at {hm['coverage_pct']:.1f}% coverage ({hm['calls']} calls). This is historical evidence, not a guarantee of future FDA decisions."
+            )
+        elif not pd.isna(hm["match_pct"]):
+            st.caption(
+                f"Current locked holdout result: {hm['match_pct']:.1f}% Match at {hm['coverage_pct']:.1f}% Coverage. "
+                "Adding 2024 is the next priority so 2024 can be the tuning cohort and 2025 can remain untouched for a stronger validation."
+            )
 
 
 elif page == "5. SCAN":
