@@ -886,7 +886,7 @@ elif page == "2. MARKET CAP GROUPS":
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = cap_data.iloc[ridx]
-            go_individual(selected_row.get("ticker"), make_event_key(selected_row))
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row), source="live", return_page=page)
             st.rerun()
         c1,c2 = st.columns([3,1])
         cap_open = cap_data.copy()
@@ -908,7 +908,7 @@ elif page == "2. MARKET CAP GROUPS":
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="cap_open"):
                 quick_row = cap_open[cap_open["event_key_ui"] == quick].iloc[0]
-                go_individual(quick_row.get("ticker"), quick)
+                go_individual(quick_row.get("ticker"), quick, source="live", return_page=page)
                 st.rerun()
 
 elif page == "3. CALENDAR":
