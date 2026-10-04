@@ -22,4 +22,8 @@ streamlit run app.py
 Deploy this repository with Streamlit Community Cloud and set the main file to `app.py`.
 
 ## Data
-The included CSV contains a DEMO row only. The next integration step is to replace it with an automated export from the existing Google/Colab PDUFA research pipeline. Historical research files are not modified by this app.
+- `data/pdufa_candidates.csv` is the current saved/live PDUFA event feed.
+- Prediction Engine history, audit, and rescore files are loaded from `data/`.
+- ALL PDUFA combines the saved feed with eligible historical Prediction Engine cases while keeping the record source visible.
+- Historical rows excluded by the audit are not silently restored to the master list.
+- Missing company/drug/indication details in validation-only historical files are labeled as not captured rather than invented.
