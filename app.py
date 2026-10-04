@@ -1636,48 +1636,11 @@ elif page == "4. PREDICTION ENGINE":
     clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
     clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
 
-    st.markdown("### SCORING COVERAGE")
-    c1,c2,c3 = st.columns(3)
-    c1.metric("Public Score Coverage", f"{p_coverage:.1f}%")
-    c2.metric("All-Sources Score Coverage", f"{all_coverage:.1f}%")
-    c3.metric("Selected Cases", len(hview))
-
     st.markdown("### AVERAGE APPROVAL PROBABILITY")
-    p1,p2,p3,p4 = st.columns(4)
+    p1,p2 = st.columns(2)
     p1.metric("Probability of Approval % — Public", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
     p2.metric("Probability of Approval % — All Sources", "Not scored" if pd.isna(filtered_avg_all) else f"{filtered_avg_all:.1f}%")
-    p3.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
-    p4.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
     st.caption("Only the two user-facing approval probabilities are shown here. Internal component scores remain backend inputs.")
-
-    st.markdown("### DIRECTION ACCURACY")
-    audited["I+P Direction"] = audited.apply(ip_consensus_direction, axis=1)
-    bpw_dir_called = audited[audited["I+P Direction"].isin(["APPROVED","CRL"])].copy()
-    bpw_dir_correct = bpw_dir_called["I+P Direction"].eq(bpw_dir_called["actual_outcome"].astype(str).str.upper())
-    bpw_direction_accuracy = float("nan") if bpw_dir_called.empty else bpw_dir_correct.mean() * 100
-    bpw_direction_coverage = 0.0 if audited.empty else len(bpw_dir_called) / len(audited) * 100
-
-    d1,d2,d3,d4,d5,d6 = st.columns(6)
-    d1.metric("I Direction Accuracy", "NA" if pd.isna(i_direction_accuracy) else f"{i_direction_accuracy:.1f}%")
-    d2.metric("I Coverage", f"{i_direction_coverage:.1f}%")
-    d3.metric("P Direction Accuracy", "NA" if pd.isna(p_direction_accuracy) else f"{p_direction_accuracy:.1f}%")
-    d4.metric("P Coverage", f"{p_direction_coverage:.1f}%")
-    d5.metric("I+P Direction Accuracy", "NA" if pd.isna(bpw_direction_accuracy) else f"{bpw_direction_accuracy:.1f}%")
-    d6.metric("I+P Coverage", f"{bpw_direction_coverage:.1f}%")
-    st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. I Direction may use decision-safe internal research and model evidence. P Direction is PUBLIC-ONLY: no I App %, no internal scores, no internal audit labels, and no hidden/internal references may influence it. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
-
-    st.markdown("### HISTORICAL PRECISION CHECK")
-    z1,z2,z3,z4,z5,z6 = st.columns(6)
-    z1.metric("Internal Direction Accuracy", "NA" if pd.isna(precision_accuracy) else f"{precision_accuracy:.1f}%")
-    z2.metric("Internal Actionable Coverage", f"{precision_coverage:.1f}%")
-    z3.metric("Internal Called Cases", f"{len(precision_called)}/{len(audited)}")
-    z4.metric("Public Direction Accuracy", "NA" if pd.isna(public_precision_accuracy) else f"{public_precision_accuracy:.1f}%")
-    z5.metric("Public Actionable Coverage", f"{public_precision_coverage:.1f}%")
-    z6.metric("Public Called Cases", f"{len(public_called)}/{len(audited)}")
-    st.caption(
-        "These are direction-validation statistics, not additional user-facing probability columns. "
-        "The visible probability columns remain Public and All Sources only."
-    )
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Clean Cases", clean_keep_count)
