@@ -1314,6 +1314,10 @@ elif page == "4. PREDICTION ENGINE":
     filtered_avg_p = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").mean()
     if pd.notna(filtered_avg_p) and filtered_avg_p <= 1:
         filtered_avg_p = filtered_avg_p * 100
+    i_scored = pd.to_numeric(hview["p_approval"], errors="coerce").notna().sum()
+    p_scored = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").notna().sum()
+    i_coverage = 0.0 if hview.empty else (i_scored / len(hview)) * 100
+    p_coverage = 0.0 if hview.empty else (p_scored / len(hview)) * 100
     audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
     audited_correct = audited["Correct / Wrong"].eq("Correct")
 
@@ -1322,13 +1326,19 @@ elif page == "4. PREDICTION ENGINE":
     clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
     clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
 
-    st.markdown("### APPROVAL PROBABILITY")
-    p1,p2,p3,p4,p5 = st.columns(5)
-    p1.metric("Selected Cases", len(hview))
-    p2.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
-    p3.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
-    p4.metric("Avg I App %", "NA" if pd.isna(filtered_avg_i) else f"{filtered_avg_i:.1f}%")
-    p5.metric("Avg P App %", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    st.markdown("### SCORING COVERAGE")
+    c1,c2,c3 = st.columns(3)
+    c1.metric("I App Coverage", f"{i_coverage:.1f}%")
+    c2.metric("P App Coverage", f"{p_coverage:.1f}%")
+    c3.metric("Selected Cases", len(hview))
+
+    st.markdown("### AVERAGE APPROVAL PROBABILITY")
+    p1,p2,p3,p4 = st.columns(4)
+    p1.metric("Avg I App %", "NA" if pd.isna(filtered_avg_i) else f"{filtered_avg_i:.1f}%")
+    p2.metric("Avg P App %", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    p3.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
+    p4.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
+    st.caption("Coverage is completion. Avg I/P App % are probability averages and are not supposed to equal 100%.")
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Clean Cases", clean_keep_count)
