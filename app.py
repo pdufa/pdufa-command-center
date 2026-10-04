@@ -549,7 +549,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     defaults = {
         "ticker":"", "company":"Not available", "drug":"Not available", "indication":"Not available",
         "pdufa_date":pd.NaT, "market_cap":pd.NA, "market_cap_bucket":"Not available",
-        "approval_probability":pd.NA, "trade_score":pd.NA, "financing_status":"Not available",
+        "approval_probability":pd.NA, "public_approval_probability":pd.NA, "trade_score":pd.NA, "financing_status":"Not available",
         "setup_phase":"Not available", "short_interest":pd.NA, "iv_30d":pd.NA, "signal":"Not available",
         "confidence":"Not scored", "outcome":"Pending", "application_type":"FDA"
     }
@@ -883,13 +883,22 @@ if page == "1. ALL PDUFA":
     active_n = int(master["time_status"].isin(["Today","Future"]).sum())
     next_4w_n = int(((master["days_from_today"] >= 0) & (master["days_from_today"] <= 27)).sum())
 
-    m1,m2,m3,m4,m5,m6 = st.columns(6)
-    m1.metric("Saved PDUFA Events", len(master))
-    m2.metric("Past", past_n)
-    m3.metric("Present / Active", active_n)
-    m4.metric("Today", today_n)
-    m5.metric("Future", future_n)
-    m6.metric("Next 4 Weeks", next_4w_n)
+    avg_i_app = pd.to_numeric(view.get("approval_probability"), errors="coerce").mean()
+    avg_p_app = pd.to_numeric(view.get("public_approval_probability"), errors="coerce").mean()
+
+    m1,m2,m3,m4 = st.columns(4)
+    m1.metric("I App %", "Not scored" if pd.isna(avg_i_app) else f"{float(avg_i_app):.1f}%")
+    m2.metric("P App %", "Not scored" if pd.isna(avg_p_app) else f"{float(avg_p_app):.1f}%")
+    m3.metric("Saved PDUFA Events", len(master))
+    m4.metric("Present / Active", active_n)
+
+    m5,m6,m7,m8 = st.columns(4)
+    m5.metric("Past", past_n)
+    m6.metric("Today", today_n)
+    m7.metric("Future", future_n)
+    m8.metric("Next 4 Weeks", next_4w_n)
+
+    st.caption("I App % = internal/model approval estimate. P App % = public-evidence-only approval estimate. These remain separate.")
 
     st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
 
@@ -925,7 +934,17 @@ if page == "1. ALL PDUFA":
                     "Ticker",
                     display_text=r"ticker=([^&]+)",
                     help="Open this exact PDUFA detail page",
-                )
+                ),
+                "I App %": st.column_config.TextColumn(
+                    "I App %",
+                    help="Internal intelligence/model approval probability",
+                    width="small",
+                ),
+                "P App %": st.column_config.TextColumn(
+                    "P App %",
+                    help="Approval probability calculated from public evidence only",
+                    width="small",
+                ),
             },
             on_select="rerun",
             selection_mode="single-row",
@@ -1057,7 +1076,9 @@ elif page == "2. MARKET CAP GROUPS":
                     "Ticker",
                     display_text=r"ticker=([^&]+)",
                     help="Open this exact PDUFA detail page",
-                )
+                ),
+                "I App %": st.column_config.TextColumn("I App %", help="Internal/model approval probability", width="small"),
+                "P App %": st.column_config.TextColumn("P App %", help="Public-evidence-only approval probability", width="small"),
             },
             on_select="rerun",
             selection_mode="single-row",
@@ -1163,7 +1184,9 @@ elif page == "3. CALENDAR":
                     "Ticker",
                     display_text=r"ticker=([^&]+)",
                     help="Open this exact PDUFA detail page",
-                )
+                ),
+                "I App %": st.column_config.TextColumn("I App %", help="Internal/model approval probability", width="small"),
+                "P App %": st.column_config.TextColumn("P App %", help="Public-evidence-only approval probability", width="small"),
             },
             on_select="rerun",
             selection_mode="single-row",
