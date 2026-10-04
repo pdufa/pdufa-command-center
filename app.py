@@ -140,6 +140,9 @@ def load_prediction_history():
         x["count_in_audited_accuracy"] = pd.NA
         x["verified_note"] = pd.NA
         x["source_url"] = pd.NA
+        x["canonical_pdufa_date"] = pd.NA
+        x["audit_action"] = pd.NA
+        x["needs_rescore"] = pd.NA
 
     if "source_url" not in x:
         x["source_url"] = pd.NA
@@ -1103,14 +1106,21 @@ elif page == "4. PREDICTION ENGINE":
     audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
     audited_correct = audited["Correct / Wrong"].eq("Correct")
 
-    p1,p2,p3,p4,p5,p6,p7 = st.columns(7)
+    excluded_count = int((hview["count_in_audited_accuracy"].astype(str).str.upper() == "NO").sum())
+    rescore_count = int((hview["needs_rescore"].astype(str).str.upper() == "YES").sum())
+    unreviewed_count = int((hview["audit_status"].astype(str) == "UNREVIEWED").sum())
+
+    p1,p2,p3,p4 = st.columns(4)
     p1.metric("Selected Cases", len(hview))
-    p2.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
-    p3.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
-    p4.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
-    p5.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
-    p6.metric("Adjusted Cases", len(audited))
-    p7.metric("Adjusted Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
+    p2.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
+    p3.metric("Adjusted Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
+    p4.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+
+    q1,q2,q3,q4 = st.columns(4)
+    q1.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
+    q2.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
+    q3.metric("Excluded / Needs Rescore", max(excluded_count, rescore_count))
+    q4.metric("Unreviewed", unreviewed_count)
 
     st.caption(
         f"Filtered selection: {len(hview)} of {len(hist)} cases. "
@@ -1125,14 +1135,17 @@ elif page == "4. PREDICTION ENGINE":
     hdisplay = hview[[
         "Ticker","App %","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong",
-        "audit_status","failure_reason","count_in_audited_accuracy","source_url",
-        "validation_period","independence_status"
+        "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
+        "count_in_audited_accuracy","source_url","validation_period","independence_status"
     ]].rename(columns={
         "model_class":"Model Prediction",
         "actual_outcome":"Actual FDA Outcome",
         "market_cap_bucket":"Market Cap Bucket",
         "audit_status":"Audit Status",
         "failure_reason":"Failure Reason",
+        "canonical_pdufa_date":"Canonical PDUFA",
+        "audit_action":"Audit Action",
+        "needs_rescore":"Needs Rescore",
         "count_in_audited_accuracy":"Count in Adjusted Accuracy",
         "source_url":"Audit Source",
         "validation_period":"Validation Period",
@@ -1160,8 +1173,8 @@ elif page == "4. PREDICTION ENGINE":
     )
 
     st.info(
-        "Adjusted Accuracy removes only rows with a verified invalid event date or company/product identity mapping. "
-        "It does not mean all 62 rows have completed manual audit yet."
+        "Adjusted Accuracy is provisional: it excludes rows with a verified date/identity/duplicate/leakage problem. "
+        "Rows marked Needs Rescore must be rebuilt using the corrected event and a strictly pre-decision cutoff before they can return to the clean validation set."
     )
 
 else:
