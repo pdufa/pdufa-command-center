@@ -46,11 +46,39 @@ def load_data():
     if "\\n" in raw:
         raw = raw.replace("\\n", "\n")
     x = pd.read_csv(StringIO(raw))
+
+    required = ["ticker","company","drug","indication","pdufa_date"]
+    for c in required:
+        if c not in x:
+            x[c] = pd.NA
+
+    optional_text = [
+        "signal","confidence","science_summary","regulatory_summary","trading_summary",
+        "evidence_cutoff","evidence_summary","application_type","financing_status",
+        "setup_phase","outcome","financing_summary"
+    ]
+    optional_numeric = [
+        "approval_probability","science_score","regulatory_score","safety_score",
+        "cmc_score","market_cap","trade_score","short_interest","iv_30d"
+    ]
+    optional_dates = [
+        "phase1_date","phase2_date","phase3_date","nda_submission_date",
+        "fda_acceptance_date","decision_date"
+    ]
+
+    for c in optional_text:
+        if c not in x:
+            x[c] = pd.NA
+    for c in optional_numeric:
+        if c not in x:
+            x[c] = pd.NA
+        x[c] = pd.to_numeric(x[c], errors="coerce")
+    for c in optional_dates:
+        if c not in x:
+            x[c] = pd.NaT
+        x[c] = pd.to_datetime(x[c], errors="coerce")
+
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
-    x["approval_probability"] = pd.to_numeric(x["approval_probability"], errors="coerce")
-    for c in ["science_score", "regulatory_score", "safety_score", "cmc_score"]:
-        if c in x:
-            x[c] = pd.to_numeric(x[c], errors="coerce")
     return x
 
 
@@ -831,6 +859,8 @@ else:
             known_dates = [(name, pd.Timestamp(dt)) for name,dt,_ in stages if pd.notna(dt)]
             if pd.notna(r.get("decision_date")):
                 current_stage = "FDA Decision"
+            elif pd.notna(r.get("pdufa_date")) and pd.Timestamp(r.get("pdufa_date")) < today:
+                current_stage = "FDA Decision"
             elif pd.notna(r.get("pdufa_date")):
                 current_stage = "PDUFA Review"
             elif pd.notna(r.get("fda_acceptance_date")):
@@ -856,8 +886,12 @@ else:
                 else:
                     date_text = "Pending"
                 if current_index is not None and i < current_index:
-                    icon = "✅"
-                    status = "Completed"
+                    if pd.notna(dt):
+                        icon = "✅"
+                        status = "Completed — date verified"
+                    else:
+                        icon = "✓"
+                        status = "Completed / inferred — date pending"
                 elif current_index is not None and i == current_index:
                     icon = "🔵"
                     status = "Current"
@@ -876,7 +910,8 @@ else:
                     "Stage": name,
                     "Date": "Pending" if pd.isna(dt) else pd.Timestamp(dt).strftime("%Y-%m-%d"),
                     "Status": (
-                        "Completed" if current_index is not None and i < current_index
+                        ("Completed — date verified" if pd.notna(dt) else "Completed / inferred — date pending")
+                        if current_index is not None and i < current_index
                         else "Current" if current_index is not None and i == current_index
                         else "Upcoming / Pending"
                     ),
