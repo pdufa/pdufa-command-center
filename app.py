@@ -212,6 +212,21 @@ def _story_timestamp(value):
 
 
 df = load_data()
+
+# Startup data validation: fail loudly on structural problems instead of silently
+# rendering a misleading one-row/partial dashboard.
+required_source_columns = ["ticker","company","drug","indication","pdufa_date"]
+missing_source_columns = [c for c in required_source_columns if c not in df.columns]
+if missing_source_columns:
+    st.error("DATA ERROR — missing required column(s): " + ", ".join(missing_source_columns))
+    st.stop()
+if len(df) <= 1:
+    st.error("DATA ERROR — PDUFA feed contains one or fewer parsed rows.")
+    st.stop()
+if df["ticker"].isna().all():
+    st.error("DATA ERROR — ticker column is empty.")
+    st.stop()
+
 today = pd.Timestamp(date.today())
 future = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
 future["days"] = (future["pdufa_date"] - today).dt.days
@@ -264,12 +279,14 @@ def safe_text(v, default="Pending"):
 
 def make_event_key(row):
     pdate = "nodate" if pd.isna(row.get("pdufa_date")) else pd.Timestamp(row.get("pdufa_date")).strftime("%Y-%m-%d")
-    return " | ".join([
+    base = " | ".join([
         safe_text(row.get("ticker"), ""),
         safe_text(row.get("drug"), ""),
         safe_text(row.get("indication"), ""),
         pdate,
     ])
+    # Include the source index so exact duplicate rows still have unique UI identities.
+    return f"{base} | row:{row.name}"
 
 df["event_key"] = df.apply(make_event_key, axis=1)
 
@@ -701,7 +718,7 @@ elif page == "3. CALENDAR":
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
                     if st.button(
-                        f"{r.ticker} · {fmt_pct(r.approval_probability)}",
+                        f"{r.ticker} · {fmt_pct(r.get("approval_probability"))}",
                         key=f"cal_{day}_{r.ticker}_{hit_idx}",
                         use_container_width=True
                     ):
@@ -753,16 +770,16 @@ else:
         r = ordered[ordered["event_key"] == st.session_state.selected_event_key].iloc[0]
         st.markdown(f"## {r.ticker} — {r.company}")
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
-        days_left = None if pd.isna(r.pdufa_date) else int((r.pdufa_date - today).days)
+        days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
         k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
-        k1.metric("Market Cap", fmt_cap(r.market_cap))
-        k2.metric("PDUFA Date", "Pending" if pd.isna(r.pdufa_date) else r.pdufa_date.strftime("%b %d, %Y"))
+        k1.metric("Market Cap", fmt_cap(r.get("market_cap")))
+        k2.metric("PDUFA Date", "Pending" if pd.isna(r.pdufa_date) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
         k3.metric("Days Left", "Pending" if days_left is None else days_left)
         k4.metric("Approval Probability", fmt_pct(r.approval_probability))
-        k5.metric("Trade Score", "Pending" if pd.isna(r.trade_score) else f"{float(r.trade_score):.0f}/100")
-        k6.metric("Short Interest", fmt_pct(r.short_interest))
-        k7.metric("IV (30d)", fmt_pct(r.iv_30d))
+        k5.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get("trade_score")):.0f}/100")
+        k6.metric("Short Interest", fmt_pct(r.get("short_interest")))
+        k7.metric("IV (30d)", fmt_pct(r.get("iv_30d")))
 
         subtabs = st.tabs(["Overview","Pipeline Tracker","PDUFA Timeline","Clinical","FDA","Financing","Trading","News","Scoring","Analogs"])
         with subtabs[0]:
@@ -871,10 +888,18 @@ else:
 
         with subtabs[2]:
             st.markdown("### PDUFA Timeline")
-            st.write("✅ Phase 3 / pivotal evidence")
-            st.write("✅ NDA/BLA submission and acceptance when captured")
-            st.write("🔵 Current PDUFA window")
-            st.write(f"🎯 **PDUFA:** {'Pending' if pd.isna(r.pdufa_date) else r.pdufa_date.strftime('%b %d, %Y')}")
+            phase3_status = "✅ Completed" if pd.notna(r.get("phase3_date")) else "○ Date pending"
+            nda_status = "✅ Submitted" if pd.notna(r.get("nda_submission_date")) else "○ Date pending"
+            accept_status = "✅ Accepted" if pd.notna(r.get("fda_acceptance_date")) else "○ Date pending"
+            decision_status = (
+                "✅ FDA decision recorded" if pd.notna(r.get("decision_date"))
+                else ("🔵 In PDUFA review window" if pd.notna(r.get("pdufa_date")) else "○ PDUFA date pending")
+            )
+            st.write(f"**Phase 3 / pivotal:** {phase3_status}")
+            st.write(f"**NDA/BLA submission:** {nda_status}")
+            st.write(f"**FDA acceptance:** {accept_status}")
+            st.write(f"**Current regulatory status:** {decision_status}")
+            st.write(f"🎯 **PDUFA:** {'Pending' if pd.isna(r.get('pdufa_date')) else pd.Timestamp(r.get('pdufa_date')).strftime('%b %d, %Y')}")
         with subtabs[3]:
             st.markdown("### Clinical")
             st.write(safe_text(r.get("science_summary"), "Clinical research feed pending."))
@@ -898,7 +923,12 @@ else:
             t3.metric("IV (30d)", fmt_pct(r.iv_30d))
         with subtabs[7]:
             st.markdown("### Recent News")
-            stories,error = fetch_ticker_news(str(r.ticker), str(r.company), str(r.get("drug","")), 14)
+            stories,error = fetch_ticker_news(
+                safe_text(r.get("ticker"), ""),
+                safe_text(r.get("company"), ""),
+                safe_text(r.get("drug"), ""),
+                14
+            )
             if error:
                 st.warning(f"News feed unavailable: {error}")
             elif not stories:
