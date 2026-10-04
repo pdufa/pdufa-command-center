@@ -637,6 +637,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
+st.caption("BUILD 2026-10-04 · I/P APP SPLIT ACTIVE")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("I App % = internal intelligence/model approval probability. P App % = separate approval estimate built only from public evidence; the two values are never blended.")
 
@@ -886,9 +887,14 @@ if page == "1. ALL PDUFA":
     avg_i_app = pd.to_numeric(view.get("approval_probability"), errors="coerce").mean()
     avg_p_app = pd.to_numeric(view.get("public_approval_probability"), errors="coerce").mean()
 
+    st.markdown("### APPROVAL PROBABILITY")
     m1,m2,m3,m4 = st.columns(4)
-    m1.metric("I App %", "Not scored" if pd.isna(avg_i_app) else f"{float(avg_i_app):.1f}%")
-    m2.metric("P App %", "Not scored" if pd.isna(avg_p_app) else f"{float(avg_p_app):.1f}%")
+    with m1:
+        st.markdown("#### I APP %")
+        st.metric("Internal / Model", "Not scored" if pd.isna(avg_i_app) else f"{float(avg_i_app):.1f}%")
+    with m2:
+        st.markdown("#### P APP %")
+        st.metric("Public Evidence", "Not scored" if pd.isna(avg_p_app) else f"{float(avg_p_app):.1f}%")
     m3.metric("Saved PDUFA Events", len(master))
     m4.metric("Present / Active", active_n)
 
@@ -924,11 +930,14 @@ if page == "1. ALL PDUFA":
         display = table_view(view, return_page="1. ALL PDUFA")
         display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
+        st.markdown("### MASTER PDUFA TABLE")
+        st.caption("FIRST THREE COLUMNS: Ticker | I App % | P App %")
         event = st.dataframe(
             display,
             use_container_width=True,
             hide_index=True,
             height=650,
+            column_order=list(display.columns),
             column_config={
                 "Ticker": st.column_config.LinkColumn(
                     "Ticker",
