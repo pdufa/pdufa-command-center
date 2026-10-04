@@ -364,10 +364,11 @@ def table_view(frame):
         out[c] = out[c].fillna("Pending").astype(str)
 
     return out.rename(columns={
-        "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication"
+        "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication",
+        "PoA":"App %"
     })[[
-        "Ticker","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
-        "PoA","Trade Score","Outcome","Signal","Confidence","Application",
+        "Ticker","App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)"
     ]]
 
