@@ -255,21 +255,49 @@ def go_individual(ticker):
 
 def table_view(frame):
     out = frame.copy()
-    out["PDUFA Date"] = out["pdufa_date"].dt.strftime("%Y-%m-%d")
-    out["Days Left"] = (out["pdufa_date"] - today).dt.days
+
+    # Guarantee every master-table column exists even if the source feed is incomplete.
+    defaults = {
+        "ticker":"", "company":"Pending", "drug":"Pending", "indication":"Pending",
+        "pdufa_date":pd.NaT, "market_cap":pd.NA, "approval_probability":pd.NA,
+        "trade_score":pd.NA, "financing_status":"Pending", "setup_phase":"Pending",
+        "short_interest":pd.NA, "iv_30d":pd.NA, "signal":"Pending",
+        "confidence":"Pending", "outcome":"Pending", "application_type":"Pending"
+    }
+    for c, default in defaults.items():
+        if c not in out:
+            out[c] = default
+
+    out["pdufa_date"] = pd.to_datetime(out["pdufa_date"], errors="coerce")
+    out["PDUFA Date"] = out["pdufa_date"].apply(
+        lambda d: "Pending" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
+    )
+    out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
+    out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Pending")
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
     out["PoA"] = out["approval_probability"].map(fmt_pct)
-    out["Trade Score"] = out["trade_score"].apply(lambda v: "Pending" if pd.isna(v) else f"{float(v):.0f}")
-    out["Financing"] = out["financing_status"].fillna("Pending")
-    out["Phase"] = out["setup_phase"].fillna("Pending")
+    out["Trade Score"] = out["trade_score"].apply(
+        lambda v: "Pending" if pd.isna(v) else f"{float(v):.0f}"
+    )
+    out["Financing"] = out["financing_status"].fillna("Pending").astype(str)
+    out["Phase"] = out["setup_phase"].fillna("Pending").astype(str)
+    out["Short %"] = out["short_interest"].map(fmt_pct)
+    out["IV (30d)"] = out["iv_30d"].map(fmt_pct)
+    out["Signal"] = out["signal"].fillna("Pending").astype(str)
+    out["Confidence"] = out["confidence"].fillna("Pending").astype(str)
+    out["Outcome"] = out["outcome"].fillna("Pending").astype(str)
+    out["Application"] = out["application_type"].fillna("Pending").astype(str)
+
     for c in ["ticker","company","drug","indication"]:
-        if c not in out:
-            out[c] = ""
+        out[c] = out[c].fillna("Pending").astype(str)
+
     return out.rename(columns={
-        "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication",
-        "short_interest":"Short %","iv_30d":"IV (30d)"
-    })[["Ticker","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
-        "PoA","Trade Score","Financing","Phase","Short %","IV (30d)"]]
+        "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication"
+    })[[
+        "Ticker","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "PoA","Trade Score","Outcome","Signal","Confidence","Application",
+        "Financing","Phase","Short %","IV (30d)"
+    ]]
 
 if "nav" not in st.session_state:
     st.session_state.nav = "1. ALL PDUFA"
@@ -292,7 +320,13 @@ if page == "1. ALL PDUFA":
 
     master = df.copy()
     master["time_status"] = master["pdufa_date"].apply(
-        lambda d: "Unknown" if pd.isna(d) else ("Past" if d.date() < date.today() else ("Today" if d.date() == date.today() else "Future"))
+        lambda d: "Unknown" if pd.isna(d) else (
+            "Past" if pd.Timestamp(d).date() < date.today()
+            else ("Today" if pd.Timestamp(d).date() == date.today() else "Future")
+        )
+    )
+    master["active_status"] = master["time_status"].apply(
+        lambda s: "Present / Active" if s in ["Today","Future"] else s
     )
     master["year"] = master["pdufa_date"].dt.year
     master["days_from_today"] = (master["pdufa_date"] - today).dt.days
@@ -300,10 +334,11 @@ if page == "1. ALL PDUFA":
     top1, top2, top3, top4, top5 = st.columns([1.25,1.25,1.25,1.25,2.2])
 
     with top1:
-        status_filter = st.multiselect(
+        time_view = st.selectbox(
             "Past / Present / Future",
-            ["Past","Today","Future","Unknown"],
-            default=["Past","Today","Future"]
+            ["All","Past","Present / Active","Today","Future","Unknown"],
+            index=0,
+            help="Present / Active includes today and all upcoming PDUFA dates."
         )
 
     with top2:
@@ -410,8 +445,16 @@ if page == "1. ALL PDUFA":
         cmin,cmax = cap_map.get(cap_presets,(None,None))
 
     view = master.copy()
-    if status_filter:
-        view = view[view["time_status"].isin(status_filter)]
+    if time_view == "Past":
+        view = view[view["time_status"] == "Past"]
+    elif time_view == "Present / Active":
+        view = view[view["time_status"].isin(["Today","Future"])]
+    elif time_view == "Today":
+        view = view[view["time_status"] == "Today"]
+    elif time_view == "Future":
+        view = view[view["time_status"] == "Future"]
+    elif time_view == "Unknown":
+        view = view[view["time_status"] == "Unknown"]
     if year_mode == "Specific year" and year_filter is not None:
         view = view[view["year"] == year_filter]
     elif year_mode == "Year range" and year_start is not None and year_end is not None:
@@ -456,14 +499,16 @@ if page == "1. ALL PDUFA":
     past_n = int((master["time_status"] == "Past").sum())
     today_n = int((master["time_status"] == "Today").sum())
     future_n = int((master["time_status"] == "Future").sum())
+    active_n = int(master["time_status"].isin(["Today","Future"]).sum())
     next_4w_n = int(((master["days_from_today"] >= 0) & (master["days_from_today"] <= 27)).sum())
 
-    m1,m2,m3,m4,m5 = st.columns(5)
+    m1,m2,m3,m4,m5,m6 = st.columns(6)
     m1.metric("All PDUFA Records", len(master))
     m2.metric("Past", past_n)
-    m3.metric("Today", today_n)
-    m4.metric("Future", future_n)
-    m5.metric("Next 4 Weeks", next_4w_n)
+    m3.metric("Present / Active", active_n)
+    m4.metric("Today", today_n)
+    m5.metric("Future", future_n)
+    m6.metric("Next 4 Weeks", next_4w_n)
 
     st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
 
@@ -471,9 +516,7 @@ if page == "1. ALL PDUFA":
         st.info("No PDUFA records match the current filters.")
     else:
         display = table_view(view)
-        display.insert(5, "Time", view["time_status"].values)
-        if "outcome" in view:
-            display.insert(6, "Outcome", view["outcome"].fillna("Pending").astype(str).values)
+        display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         event = st.dataframe(
             display,
