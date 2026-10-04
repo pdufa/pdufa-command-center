@@ -316,7 +316,7 @@ future = future.sort_values("pdufa_date")
 
 def fmt_cap(v):
     if pd.isna(v):
-        return "Pending"
+        return "Not available"
     v = float(v)
     if v >= 1_000_000_000:
         return "$" + f"{v/1_000_000_000:.1f}B"
@@ -382,27 +382,27 @@ def table_view(frame):
 
     out["pdufa_date"] = pd.to_datetime(out["pdufa_date"], errors="coerce")
     out["PDUFA Date"] = out["pdufa_date"].apply(
-        lambda d: "Pending" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
+        lambda d: "Not available" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
     )
     out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
-    out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Pending")
+    out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Not available")
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
     out["PoA"] = out["approval_probability"].apply(lambda v: fmt_pct(v, 1))
     out["Trade Score"] = out["trade_score"].apply(
-        lambda v: "Pending" if pd.isna(v) else f"{float(v):.0f}"
+        lambda v: "Not scored" if pd.isna(v) else f"{float(v):.0f}"
     )
-    out["Financing"] = out["financing_status"].fillna("Pending").astype(str)
-    out["Phase"] = out["setup_phase"].fillna("Pending").astype(str)
+    out["Financing"] = out["financing_status"].fillna("Not available").astype(str)
+    out["Phase"] = out["setup_phase"].fillna("Not available").astype(str)
     out["Short %"] = out["short_interest"].map(fmt_pct)
     out["IV (30d)"] = out["iv_30d"].map(fmt_pct)
-    out["Signal"] = out["signal"].fillna("Pending").astype(str)
-    out["Confidence"] = out["confidence"].fillna("Pending").astype(str)
+    out["Signal"] = out["signal"].fillna("Not available").astype(str)
+    out["Confidence"] = out["confidence"].fillna("Not scored").astype(str)
     out["Outcome"] = out["outcome"].fillna("Pending").astype(str)
-    out["Application"] = out["application_type"].fillna("Pending").astype(str)
+    out["Application"] = out["application_type"].fillna("Not available").astype(str)
 
     for c in ["ticker","company","drug","indication"]:
-        out[c] = out[c].fillna("Pending").astype(str)
+        out[c] = out[c].fillna("Not available").astype(str)
 
     return out.rename(columns={
         "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication",
@@ -893,7 +893,7 @@ else:
         ticker_matches = ordered[ordered["ticker"].astype(str) == str(st.session_state.selected_ticker)]
         selected_key = ticker_matches.iloc[0]["event_key"] if not ticker_matches.empty else event_keys[0]
 
-    csel,b1,b2 = st.columns([3,1,1])
+    csel,b1,b2,b3 = st.columns([3,1,1,1])
     with csel:
         selected_key = st.selectbox(
             "Company / Drug / PDUFA Event",
@@ -912,6 +912,12 @@ else:
             go_page("1. ALL PDUFA")
             st.rerun()
     with b2:
+        st.write("")
+        st.write("")
+        if st.button("← CALENDAR", use_container_width=True):
+            go_page("3. CALENDAR")
+            st.rerun()
+    with b3:
         st.write("")
         st.write("")
         if st.button("← MARKET CAP", use_container_width=True):
@@ -1159,11 +1165,11 @@ else:
                 (s3,"Safety","safety_score"),(s4,"CMC","cmc_score"),(s5,"Trade","trade_score")
             ]:
                 v = r.get(key,pd.NA)
-                col.metric(label, "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
+                col.metric(label, "Not scored" if pd.isna(v) else f"{float(v):.0f}/100")
             st.caption("Approval probability and trading attractiveness remain separate.")
         with subtabs[9]:
             st.markdown("### Historical Analogs")
             st.write("Validated analog comparisons will appear here when the analog feed is connected. No result is fabricated.")
 
 st.divider()
-st.caption("FDA probabilities are model estimates, not FDA determinations. Missing values remain Pending rather than being invented.")
+st.caption("FDA probabilities are model estimates, not FDA determinations. Missing fields are labeled Not available or Not scored rather than being invented.")
