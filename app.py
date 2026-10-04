@@ -474,8 +474,8 @@ if page != "4. INDIVIDUAL COMPANY" and len(st.query_params):
     st.query_params.clear()
 
 if page == "1. ALL PDUFA":
-    st.markdown("## 1. MASTER PDUFA SPREADSHEET — Past + Present + Future")
-    st.caption("One sortable master list for every PDUFA case in the saved system. Use the controls above the table to narrow the universe without losing the direct path to the Individual Company page.")
+    st.markdown("## 1. ALL PDUFA — SAVED EVENT FEED")
+    st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
     master = df.copy()
     master["time_status"] = master["pdufa_date"].apply(
@@ -569,7 +569,7 @@ if page == "1. ALL PDUFA":
         )
 
     with row2b:
-        min_poa = st.slider("Minimum Approval Probability", 0, 100, 0)
+        min_poa = st.slider("Minimum App %", 0, 100, 0)
 
     with row2c:
         min_trade = st.slider("Minimum Trade Score", 0, 100, 0)
@@ -581,7 +581,7 @@ if page == "1. ALL PDUFA":
     with row2e:
         sort_choice = st.selectbox(
             "Sort",
-            ["PDUFA date ↑","PDUFA date ↓","Market cap ↓","Approval probability ↓","Trade score ↓","Ticker A–Z"]
+            ["PDUFA date ↑","PDUFA date ↓","Market cap ↓","App % ↓","Trade score ↓","Ticker A–Z"]
         )
 
     if cap_presets == "Custom":
@@ -651,7 +651,7 @@ if page == "1. ALL PDUFA":
         view = view.sort_values(["pdufa_date","ticker"], ascending=[False,True], na_position="last")
     elif sort_choice == "Market cap ↓":
         view = view.sort_values(["market_cap","pdufa_date"], ascending=[False,True], na_position="last")
-    elif sort_choice == "Approval probability ↓":
+    elif sort_choice == "App % ↓":
         view = view.sort_values(["approval_probability","pdufa_date"], ascending=[False,True], na_position="last")
     elif sort_choice == "Trade score ↓":
         view = view.sort_values(["trade_score","pdufa_date"], ascending=[False,True], na_position="last")
@@ -665,7 +665,7 @@ if page == "1. ALL PDUFA":
     next_4w_n = int(((master["days_from_today"] >= 0) & (master["days_from_today"] <= 27)).sum())
 
     m1,m2,m3,m4,m5,m6 = st.columns(6)
-    m1.metric("All PDUFA Records", len(master))
+    m1.metric("Saved PDUFA Events", len(master))
     m2.metric("Past", past_n)
     m3.metric("Present / Active", active_n)
     m4.metric("Today", today_n)
