@@ -673,14 +673,26 @@ if page == "1. ALL PDUFA":
             st.rerun()
 
         open1,open2 = st.columns([3,1])
+        quick_view = view.copy()
+        quick_view["event_key_ui"] = quick_view.apply(make_event_key, axis=1)
+        quick_view["event_label_ui"] = quick_view.apply(
+            lambda x: f"{safe_text(x.get('ticker'))} — {safe_text(x.get('drug'))} — " +
+                      ("Date unavailable" if pd.isna(x.get("pdufa_date")) else pd.Timestamp(x.get("pdufa_date")).strftime("%b %d, %Y")),
+            axis=1
+        )
         with open1:
-            quick = st.selectbox("Open a specific company", view["ticker"].astype(str).tolist(), key="master_quick")
+            quick = st.selectbox(
+                "Open a specific PDUFA event",
+                quick_view["event_key_ui"].tolist(),
+                format_func=lambda k: quick_view.loc[quick_view["event_key_ui"] == k, "event_label_ui"].iloc[0],
+                key="master_quick"
+            )
         with open2:
             st.write("")
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="master_open"):
-                quick_row = view[view["ticker"].astype(str) == str(quick)].iloc[0]
-                go_individual(quick, make_event_key(quick_row))
+                quick_row = quick_view[quick_view["event_key_ui"] == quick].iloc[0]
+                go_individual(quick_row.get("ticker"), quick)
                 st.rerun()
 
         csv_bytes = display.to_csv(index=False).encode("utf-8")
@@ -717,7 +729,7 @@ elif page == "2. MARKET CAP GROUPS":
         (future["market_cap"] < high)
     ].copy()
 
-    st.markdown(f"### {selected_cap} Market Cap ({len(cap_data)} companies)")
+    st.markdown(f"### {selected_cap} Market Cap ({len(cap_data)} PDUFA events)")
     if future["market_cap"].isna().all():
         st.warning("Market-cap data is not yet present in the saved feed. This view will populate automatically when market_cap is supplied.")
     elif cap_data.empty:
@@ -732,14 +744,26 @@ elif page == "2. MARKET CAP GROUPS":
             go_individual(selected_row.get("ticker"), make_event_key(selected_row))
             st.rerun()
         c1,c2 = st.columns([3,1])
+        cap_open = cap_data.copy()
+        cap_open["event_key_ui"] = cap_open.apply(make_event_key, axis=1)
+        cap_open["event_label_ui"] = cap_open.apply(
+            lambda x: f"{safe_text(x.get('ticker'))} — {safe_text(x.get('drug'))} — " +
+                      ("Date unavailable" if pd.isna(x.get("pdufa_date")) else pd.Timestamp(x.get("pdufa_date")).strftime("%b %d, %Y")),
+            axis=1
+        )
         with c1:
-            quick = st.selectbox("Open company from this group", cap_data["ticker"].astype(str).tolist(), key="cap_quick")
+            quick = st.selectbox(
+                "Open PDUFA event from this group",
+                cap_open["event_key_ui"].tolist(),
+                format_func=lambda k: cap_open.loc[cap_open["event_key_ui"] == k, "event_label_ui"].iloc[0],
+                key="cap_quick"
+            )
         with c2:
             st.write("")
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="cap_open"):
-                quick_row = cap_data[cap_data["ticker"].astype(str) == str(quick)].iloc[0]
-                go_individual(quick, make_event_key(quick_row))
+                quick_row = cap_open[cap_open["event_key_ui"] == quick].iloc[0]
+                go_individual(quick_row.get("ticker"), quick)
                 st.rerun()
 
 elif page == "3. CALENDAR":
