@@ -498,14 +498,18 @@ def prospective_gate_state(row):
 
 
 def public_direction_state(row):
-    """Public-evidence-only directional call."""
+    """PUBLIC-ONLY direction. Never uses I App %, internal model scores, audit labels, or internal direction."""
     explicit = safe_text(row.get("public_model_class"), "").upper()
     if explicit in ["APPROVED", "CRL"]:
         return explicit
+
     p = row.get("public_approval_probability")
     p = None if pd.isna(p) else float(p)
     if p is not None and 0 <= p <= 1:
         p *= 100
+
+    # The public field itself must be produced only from decision-safe public evidence.
+    # If it is missing or ambiguous, abstain.
     if p is None:
         return "REVIEW"
     if p >= 90:
@@ -513,7 +517,6 @@ def public_direction_state(row):
     if p <= 10:
         return "CRL"
     return "REVIEW"
-
 
 def internal_direction_state(row):
     """Full-intelligence direction: internal model plus hard public-evidence veto/confirmation."""
@@ -947,7 +950,7 @@ if page == "1. ALL PDUFA":
     m7.metric("Future", future_n)
     m8.metric("Next 4 Weeks", next_4w_n)
 
-    st.caption("I App % = internal/model approval estimate. P App % = public-evidence-only approval estimate. These remain separate.")
+    st.caption("I App % = internal/model approval estimate. P App % = public-evidence-only approval estimate. P App/P Direction are isolated from internal model inputs and may use only decision-safe public sources.")
 
     st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
 
@@ -1421,7 +1424,7 @@ elif page == "4. PREDICTION ENGINE":
     d2.metric("I Direction Coverage", f"{i_direction_coverage:.1f}%")
     d3.metric("P Direction Accuracy", "NA" if pd.isna(p_direction_accuracy) else f"{p_direction_accuracy:.1f}%")
     d4.metric("P Direction Coverage", f"{p_direction_coverage:.1f}%")
-    st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
+    st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. P Direction is PUBLIC-ONLY: no I App %, no internal scores, no internal audit labels, and no hidden/internal references may influence it. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
 
     st.markdown("### 100% HISTORICAL PRECISION MODES")
     z1,z2,z3,z4,z5,z6 = st.columns(6)
