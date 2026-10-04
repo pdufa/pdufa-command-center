@@ -1232,7 +1232,7 @@ elif page == "4. PREDICTION ENGINE":
 
     st.caption(
         f"Filtered selection: {len(hview)} of {len(hist)} cases. "
-        "The table and all six summary boxes recalculate from the same selected rows."
+        "The table and all summary boxes recalculate from the same selected rows."
     )
 
     hview = hview.sort_values(["pdufa_date","ticker"]).copy()
@@ -1284,6 +1284,35 @@ elif page == "4. PREDICTION ENGINE":
         "Clean-as-is Accuracy is NOT the final model accuracy. It uses only rows that survived the first-pass audit without requiring reconstruction. "
         "Rows in the Rebuild / Rescore Queue must be corrected to the canonical event and rescored with a strictly pre-decision cutoff before final validation metrics are calculated."
     )
+
+    with st.expander("REBUILD / RESCORE WORK QUEUE", expanded=False):
+        queue = hist[hist["V2 Status"] == "REBUILD / RESCORE"].copy()
+        queue["Original PDUFA"] = queue["pdufa_date"].dt.strftime("%Y-%m-%d")
+        queue["App %"] = queue["p_approval"].apply(lambda v: fmt_app_pct(v, 1))
+        queue_display = queue[[
+            "ticker","App %","Original PDUFA","canonical_pdufa_date","audit_status",
+            "audit_action","failure_reason","source_url"
+        ]].rename(columns={
+            "ticker":"Ticker",
+            "canonical_pdufa_date":"Canonical PDUFA",
+            "audit_status":"Audit Status",
+            "audit_action":"Required Action",
+            "failure_reason":"Reason",
+            "source_url":"Source"
+        })
+        r1,r2,r3 = st.columns(3)
+        r1.metric("Queue Rows", len(queue))
+        r2.metric("Canonical Rescore", int(queue["audit_action"].astype(str).str.contains("RESCORE", na=False).sum()))
+        r3.metric("Drop / Remove", int(queue["audit_action"].astype(str).str.startswith("DROP", na=False).sum()))
+        st.dataframe(
+            queue_display,
+            use_container_width=True,
+            hide_index=True,
+            height=min(650, 120 + 32*len(queue_display)),
+            column_config={
+                "Source": st.column_config.LinkColumn("Source", display_text="Source")
+            }
+        )
 
     st.divider()
     st.markdown("### Prediction Engine V2 — Prospective Decision Layer")
