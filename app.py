@@ -810,7 +810,7 @@ elif page == "3. CALENDAR":
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
                     if st.button(
-                        f"{r.ticker} · {fmt_pct(r.get('approval_probability'))}",
+                        f"{r.ticker} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')} · {fmt_pct(r.get('approval_probability'))}",
                         key=f"cal_{day}_{r.ticker}_{hit_idx}",
                         use_container_width=True
                     ):
@@ -872,6 +872,12 @@ else:
         k5.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get('trade_score')):.0f}/100")
         k6.metric("Short Interest", fmt_pct(r.get("short_interest")))
         k7.metric("IV (30d)", fmt_pct(r.get("iv_30d")))
+
+        if pd.notna(r.get("pdufa_date")):
+            pdufa_date_text = pd.Timestamp(r.get("pdufa_date")).strftime("%A, %B %d, %Y")
+            st.success(f"✅ **PDUFA DATE SET:** {pdufa_date_text}")
+        else:
+            st.warning("⚠️ **PDUFA DATE:** Not yet set in the saved event feed")
 
         subtabs = st.tabs(["Overview","Pipeline Tracker","PDUFA Timeline","Clinical","FDA","Financing","Trading","News","Scoring","Analogs"])
         with subtabs[0]:
