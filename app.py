@@ -636,7 +636,9 @@ elif page == "2. MARKET CAP GROUPS":
         event = st.dataframe(display, use_container_width=True, hide_index=True, height=560,
                              on_select="rerun", selection_mode="single-row")
         if event.selection.rows:
-            go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
+            ridx = event.selection.rows[0]
+            selected_row = cap_data.iloc[ridx]
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row))
             st.rerun()
         c1,c2 = st.columns([3,1])
         with c1:
@@ -645,7 +647,8 @@ elif page == "2. MARKET CAP GROUPS":
             st.write("")
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="cap_open"):
-                go_individual(quick)
+                quick_row = cap_data[cap_data["ticker"].astype(str) == str(quick)].iloc[0]
+                go_individual(quick, make_event_key(quick_row))
                 st.rerun()
 
 elif page == "3. CALENDAR":
@@ -674,7 +677,9 @@ elif page == "3. CALENDAR":
         event = st.dataframe(display, use_container_width=True, hide_index=True,
                              on_select="rerun", selection_mode="single-row")
         if event.selection.rows:
-            go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
+            ridx = event.selection.rows[0]
+            selected_row = whits.iloc[ridx]
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row))
             st.rerun()
 
     st.divider()
