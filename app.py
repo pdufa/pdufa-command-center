@@ -125,6 +125,9 @@ def load_data():
     x["public_approval_probability"] = x["public_approval_probability"].apply(
         lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
     )
+    x["biopharmawatch_probability"] = x["biopharmawatch_probability"].apply(
+        lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
+    )
     return x
 
 
@@ -144,6 +147,9 @@ def load_prediction_history():
             x[col] = pd.NA
     x["public_approval_probability"] = pd.to_numeric(x["public_approval_probability"], errors="coerce")
     x["biopharmawatch_probability"] = pd.to_numeric(x["biopharmawatch_probability"], errors="coerce")
+    x["biopharmawatch_probability"] = x["biopharmawatch_probability"].apply(
+        lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
+    )
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
     x["p_approval"] = pd.to_numeric(x["p_approval"], errors="coerce")
     x["historical_market_cap_billions"] = pd.to_numeric(
@@ -1021,11 +1027,12 @@ if page == "1. ALL PDUFA":
 
     avg_i_app = pd.to_numeric(view.get("approval_probability"), errors="coerce").mean()
     avg_p_app = pd.to_numeric(view.get("public_approval_probability"), errors="coerce").mean()
-    bpw_series = view.apply(ip_consensus_value, axis=1)
-    avg_bpw = pd.to_numeric(bpw_series, errors="coerce").mean()
+    avg_bpw = pd.to_numeric(view.get("biopharmawatch_probability"), errors="coerce").mean()
+    all_source_series = view.apply(all_source_probability_value, axis=1)
+    avg_all_source = pd.to_numeric(all_source_series, errors="coerce").mean()
 
     st.markdown("### APPROVAL PROBABILITY")
-    m1,m2,m3,m4,m5 = st.columns(5)
+    m1,m2,m3,m4,m5,m6 = st.columns(6)
     with m1:
         st.markdown("#### I APP %")
         st.metric("Internal / Model", "Not scored" if pd.isna(avg_i_app) else f"{float(avg_i_app):.1f}%")
@@ -1033,10 +1040,13 @@ if page == "1. ALL PDUFA":
         st.markdown("#### P APP %")
         st.metric("Public Evidence", "Not scored" if pd.isna(avg_p_app) else f"{float(avg_p_app):.1f}%")
     with m3:
-        st.markdown("#### I+P SCORE")
-        st.metric("I + P Consensus", "Not scored" if pd.isna(avg_bpw) else f"{float(avg_bpw):.1f}%")
-    m4.metric("Saved PDUFA Events", len(master))
-    m5.metric("Present / Active", active_n)
+        st.markdown("#### BPW %")
+        st.metric("BiopharmaWatch", "Not scored" if pd.isna(avg_bpw) else f"{float(avg_bpw):.1f}%")
+    with m4:
+        st.markdown("#### PROBABILITY OF APPROVAL %")
+        st.metric("All Sources", "Not scored" if pd.isna(avg_all_source) else f"{float(avg_all_source):.1f}%")
+    m5.metric("Saved PDUFA Events", len(master))
+    m6.metric("Present / Active", active_n)
 
     m5,m6,m7,m8 = st.columns(4)
     m5.metric("Past", past_n)
@@ -1071,7 +1081,7 @@ if page == "1. ALL PDUFA":
         display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("FIRST SEVEN COLUMNS: Ticker | I App % | P App % | I+P Consensus | I Direction | P Direction | I+P Direction")
+        st.caption("LEADING COLUMNS: Ticker | I App % | P App % | BPW % | Probability of Approval % | I+P Consensus | Directions")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1093,6 +1103,16 @@ if page == "1. ALL PDUFA":
                     "P App %",
                     help="Approval probability calculated from public evidence only",
                     width="small",
+                ),
+                "BPW %": st.column_config.TextColumn(
+                    "BPW %",
+                    help="Actual BiopharmaWatch probability when available",
+                    width="small",
+                ),
+                "Probability of Approval %": st.column_config.TextColumn(
+                    "Probability of Approval %",
+                    help="Equal-weight composite of I App, P App, and BPW; requires all three",
+                    width="medium",
                 ),
                 "I+P Consensus": st.column_config.TextColumn(
                     "I+P Consensus",
@@ -1579,7 +1599,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","I App %","P App %","I+P Consensus","I Direction","P Direction","I+P Direction","PDUFA Date","model_class","actual_outcome",
+        "Ticker","I App %","P App %","BPW %","Probability of Approval %","I+P Consensus","I Direction","P Direction","I+P Direction","All-Source Direction","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1734,7 +1754,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","I App %","P App %","I+P Consensus","I+P Direction","PDUFA Date","drug","indication",
+            "Ticker","I App %","P App %","BPW %","Probability of Approval %","I+P Consensus","I+P Direction","All-Source Direction","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
@@ -2168,6 +2188,8 @@ else:
                 pool["PDUFA Date"] = pd.to_datetime(pool["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
                 pool["I App %"] = pool["_p"].apply(lambda v: fmt_app_pct(v, 1))
                 pool["P App %"] = pd.to_numeric(pool.get("public_approval_probability"), errors="coerce").apply(lambda v: fmt_app_pct(v, 1))
+                pool["BPW %"] = pd.to_numeric(pool.get("biopharmawatch_probability"), errors="coerce").apply(lambda v: fmt_app_pct(v, 1))
+                pool["Probability of Approval %"] = pool.apply(lambda rr: fmt_app_pct(all_source_probability_value(rr), 1), axis=1)
                 pool["I+P Consensus"] = pool.apply(lambda rr: fmt_app_pct(ip_consensus_value(rr), 1), axis=1)
                 pool["Historical Cap"] = pool["_cap"].apply(
                     lambda v: "NA" if pd.isna(v) else "$" + f"{float(v):.2f}B"
@@ -2176,7 +2198,7 @@ else:
                     {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
                 ).fillna("NA")
                 analog_display = pool[[
-                    "ticker","PDUFA Date","I App %","P App %","I+P Consensus","model_class","actual_outcome",
+                    "ticker","PDUFA Date","I App %","P App %","BPW %","Probability of Approval %","I+P Consensus","model_class","actual_outcome",
                     "Historical Cap","market_cap_bucket","Result","audit_status"
                 ]].rename(columns={
                     "ticker":"Ticker",
