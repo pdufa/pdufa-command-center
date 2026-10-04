@@ -49,6 +49,23 @@ a:hover{color:#ffffff !important;text-decoration:underline}
 a:active,a:focus{color:#ff8a00 !important}
 .stLinkButton a,[data-testid="stLinkButton"] a{color:#ffffff !important}
 .stLinkButton a:active,[data-testid="stLinkButton"] a:active{color:#ff8a00 !important}
+.calendar-event-link{
+  display:block;
+  background:#ffffff;
+  border:1px solid #111111;
+  border-radius:8px;
+  padding:7px 9px;
+  margin:4px 0;
+  color:#17211a !important;
+  font-weight:600;
+  text-decoration:none !important;
+  line-height:1.25;
+}
+.calendar-event-link:link,
+.calendar-event-link:visited,
+.calendar-event-link:hover{color:#17211a !important}
+.calendar-event-link:active,
+.calendar-event-link:focus{color:#b45309 !important}
 </style>""",
     unsafe_allow_html=True,
 )
@@ -1284,11 +1301,18 @@ elif page == "3. CALENDAR":
                 )
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
-                    st.link_button(
-                        f"{r.ticker} · I {fmt_app_pct(r.get('approval_probability'), 1)} · P {fmt_app_pct(r.get('public_approval_probability'), 1)} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}",
+                    calendar_label = html.escape(
+                        f"{r.ticker} · I {fmt_app_pct(r.get('approval_probability'), 1)} · "
+                        f"P {fmt_app_pct(r.get('public_approval_probability'), 1)} · "
+                        f"{pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}"
+                    )
+                    calendar_url = html.escape(
                         event_detail_url(r, source="live", return_page="3. CALENDAR"),
-                        use_container_width=True,
-                        help="Open this exact PDUFA detail page"
+                        quote=True
+                    )
+                    st.markdown(
+                        f'<a class="calendar-event-link" href="{calendar_url}" target="_self">{calendar_label}</a>',
+                        unsafe_allow_html=True
                     )
 
 elif page == "4. PREDICTION ENGINE":
