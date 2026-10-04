@@ -427,8 +427,8 @@ def fmt_app_pct(v, decimals=1):
 
 def combined_probability_direction(row):
     p = displayed_probability_text(row, 1)
-    f = all_source_direction_state(row)
-    if not p:
+    f = predicted_fda_direction(row)
+    if not p or f not in ["APPROVED", "CRL", "REVIEW"]:
         return ""
     return f"{p} · {f}"
 
@@ -1183,7 +1183,7 @@ if page == "1. ALL PDUFA":
     avg_all_source = pd.to_numeric(all_source_series, errors="coerce").mean()
 
     st.markdown("### PREDICTION SUMMARY")
-    direction_summary = view.apply(all_source_direction_state, axis=1) if not view.empty else pd.Series(dtype="object")
+    direction_summary = view.apply(predicted_fda_direction, axis=1) if not view.empty else pd.Series(dtype="object")
     f_a = int((direction_summary == "APPROVED").sum())
     f_c = int((direction_summary == "CRL").sum())
     f_r = int((direction_summary == "REVIEW").sum())
@@ -1234,7 +1234,7 @@ if page == "1. ALL PDUFA":
     else:
         display = table_view(view, return_page="1. ALL PDUFA")
         display["P%"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
-        display["F"] = view.apply(all_source_direction_state, axis=1).values
+        display["F"] = view.apply(predicted_fda_direction, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
         display["Public P%"] = view["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1)).values
@@ -1265,7 +1265,7 @@ if page == "1. ALL PDUFA":
                 ),
                 "P%": st.column_config.TextColumn(
                     "P%",
-                    help="All-sources Probability of Approval",
+                    help="Displayed Probability of Approval: stored approval score when available; otherwise all-source fallback",
                     width="small",
                 ),
                 "F": st.column_config.TextColumn(
@@ -1602,7 +1602,7 @@ elif page == "4. PREDICTION ENGINE":
     hist["Probability of Approval % — Public"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
     hist["P%"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
-    hist["F"] = hist.apply(all_source_direction_state, axis=1)
+    hist["F"] = hist.apply(predicted_fda_direction, axis=1)
     hist["Match %"] = hist.apply(match_percent_display, axis=1)
     hist["C"] = hist.apply(combined_probability_direction, axis=1)
     hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
@@ -1716,7 +1716,7 @@ elif page == "4. PREDICTION ENGINE":
     clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
 
     st.markdown("### PREDICTION SUMMARY")
-    pred_dirs = hview.apply(all_source_direction_state, axis=1) if not hview.empty else pd.Series(dtype="object")
+    pred_dirs = hview.apply(predicted_fda_direction, axis=1) if not hview.empty else pd.Series(dtype="object")
     pred_a = int((pred_dirs == "APPROVED").sum())
     pred_c = int((pred_dirs == "CRL").sum())
     pred_r = int((pred_dirs == "REVIEW").sum())
@@ -1783,7 +1783,7 @@ elif page == "4. PREDICTION ENGINE":
                 display_text=r"ticker=([^&]+)",
                 help="Open this historical PDUFA model case"
             ),
-            "P%": st.column_config.TextColumn("P%", help="All-sources Probability of Approval", width="small"),
+            "P%": st.column_config.TextColumn("P%", help="Displayed Probability of Approval: stored approval score when available; otherwise all-source fallback", width="small"),
             "F": st.column_config.TextColumn("F", help="FDA direction", width="small"),
             "Match %": st.column_config.TextColumn("Match %", help="100% if F matched actual FDA outcome, 0% if it missed, Pending before outcome", width="small"),
             "C": st.column_config.TextColumn("C", help="Combined P% + FDA direction", width="medium"),
@@ -1888,7 +1888,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
         live_v2["P%"] = live_v2.apply(lambda r: displayed_probability_text(r, 1), axis=1)
-        live_v2["F"] = live_v2.apply(all_source_direction_state, axis=1)
+        live_v2["F"] = live_v2.apply(predicted_fda_direction, axis=1)
         live_v2["Match %"] = live_v2.apply(match_percent_display, axis=1)
         live_v2["C"] = live_v2.apply(combined_probability_direction, axis=1)
         live_v2["All-Source Direction"] = live_v2["F"]
