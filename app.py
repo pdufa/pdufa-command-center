@@ -307,8 +307,39 @@ if page == "1. ALL PDUFA":
         )
 
     with top2:
-        years = sorted([int(x) for x in master["year"].dropna().unique()])
-        year_filter = st.multiselect("PDUFA Year", years, default=years)
+        year_mode = st.selectbox("PDUFA Year", ["All years","Specific year","Year range"])
+        year_filter = None
+        year_start = None
+        year_end = None
+        if year_mode == "Specific year":
+            year_filter = int(st.number_input(
+                "Enter year",
+                min_value=1990,
+                max_value=2100,
+                value=int(date.today().year),
+                step=1,
+                key="specific_pdufa_year"
+            ))
+        elif year_mode == "Year range":
+            yr1, yr2 = st.columns(2)
+            with yr1:
+                year_start = int(st.number_input(
+                    "From",
+                    min_value=1990,
+                    max_value=2100,
+                    value=2020,
+                    step=1,
+                    key="pdufa_year_from"
+                ))
+            with yr2:
+                year_end = int(st.number_input(
+                    "To",
+                    min_value=1990,
+                    max_value=2100,
+                    value=int(date.today().year + 1),
+                    step=1,
+                    key="pdufa_year_to"
+                ))
 
     with top3:
         outcome_values = sorted([str(x) for x in master["outcome"].dropna().unique() if str(x).strip()])
@@ -381,8 +412,12 @@ if page == "1. ALL PDUFA":
     view = master.copy()
     if status_filter:
         view = view[view["time_status"].isin(status_filter)]
-    if year_filter:
-        view = view[view["year"].isin(year_filter)]
+    if year_mode == "Specific year" and year_filter is not None:
+        view = view[view["year"] == year_filter]
+    elif year_mode == "Year range" and year_start is not None and year_end is not None:
+        lo_year = min(year_start, year_end)
+        hi_year = max(year_start, year_end)
+        view = view[view["year"].between(lo_year, hi_year)]
     if outcome_filter:
         view = view[view["outcome"].astype(str).isin(outcome_filter)]
     if signal_filter:
