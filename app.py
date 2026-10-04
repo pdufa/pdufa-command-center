@@ -330,6 +330,14 @@ def fmt_pct(v, decimals=0):
         x *= 100
     return f"{x:.{decimals}f}%"
 
+def fmt_app_pct(v, decimals=1):
+    if pd.isna(v):
+        return "NA"
+    x = float(v)
+    if 0 <= x <= 1:
+        x *= 100
+    return f"{x:.{decimals}f}%"
+
 def fmt_num(v, decimals=0):
     if pd.isna(v):
         return "Not available"
@@ -352,6 +360,15 @@ def make_event_key(row):
         safe_text(row.get("indication"), ""),
         pdate,
     ])
+
+APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"
+
+def event_detail_url(row):
+    return APP_BASE_URL + "?" + urllib.parse.urlencode({
+        "page": "detail",
+        "event": make_event_key(row),
+        "ticker": safe_text(row.get("ticker"), ""),
+    })
 
 df["event_key"] = df.apply(make_event_key, axis=1)
 
@@ -386,9 +403,10 @@ def table_view(frame):
     )
     out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
     out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Not available")
+    out["Ticker Link"] = out.apply(event_detail_url, axis=1)
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
-    out["PoA"] = out["approval_probability"].apply(lambda v: fmt_pct(v, 1))
+    out["PoA"] = out["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     out["Trade Score"] = out["trade_score"].apply(
         lambda v: "Not scored" if pd.isna(v) else f"{float(v):.0f}"
     )
@@ -405,13 +423,22 @@ def table_view(frame):
         out[c] = out[c].fillna("Not available").astype(str)
 
     return out.rename(columns={
-        "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication",
-        "PoA":"App %"
+        "company":"Company","drug":"Drug","indication":"Indication",
+        "PoA":"App %","Ticker Link":"Ticker"
     })[[
         "Ticker","App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
         "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)"
     ]]
+
+query_event = st.query_params.get("event")
+query_ticker = st.query_params.get("ticker")
+query_page = st.query_params.get("page")
+if query_page == "detail" and query_event:
+    st.session_state.selected_event_key = str(query_event)
+    if query_ticker:
+        st.session_state.selected_ticker = str(query_ticker)
+    st.session_state._pending_nav = "4. INDIVIDUAL COMPANY"
 
 if "nav" not in st.session_state:
     st.session_state.nav = "1. ALL PDUFA"
@@ -663,6 +690,13 @@ if page == "1. ALL PDUFA":
             use_container_width=True,
             hide_index=True,
             height=650,
+            column_config={
+                "Ticker": st.column_config.LinkColumn(
+                    "Ticker",
+                    display_text=r"ticker=([^&]+)",
+                    help="Open this exact PDUFA detail page",
+                )
+            },
             on_select="rerun",
             selection_mode="single-row",
         )
@@ -676,7 +710,7 @@ if page == "1. ALL PDUFA":
         quick_view = view.copy()
         quick_view["event_key_ui"] = quick_view.apply(make_event_key, axis=1)
         quick_view["event_label_ui"] = quick_view.apply(
-            lambda x: f"{safe_text(x.get('ticker'))} — {safe_text(x.get('drug'))} — " +
+            lambda x: f"{safe_text(x.get('ticker'))} · {fmt_app_pct(x.get('approval_probability'), 1)} — {safe_text(x.get('drug'))} — " +
                       ("Date unavailable" if pd.isna(x.get("pdufa_date")) else pd.Timestamp(x.get("pdufa_date")).strftime("%b %d, %Y")),
             axis=1
         )
@@ -736,8 +770,21 @@ elif page == "2. MARKET CAP GROUPS":
         st.info("No future PDUFA candidates currently fall in this band.")
     else:
         display = table_view(cap_data)
-        event = st.dataframe(display, use_container_width=True, hide_index=True, height=560,
-                             on_select="rerun", selection_mode="single-row")
+        event = st.dataframe(
+            display,
+            use_container_width=True,
+            hide_index=True,
+            height=560,
+            column_config={
+                "Ticker": st.column_config.LinkColumn(
+                    "Ticker",
+                    display_text=r"ticker=([^&]+)",
+                    help="Open this exact PDUFA detail page",
+                )
+            },
+            on_select="rerun",
+            selection_mode="single-row",
+        )
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = cap_data.iloc[ridx]
@@ -747,7 +794,7 @@ elif page == "2. MARKET CAP GROUPS":
         cap_open = cap_data.copy()
         cap_open["event_key_ui"] = cap_open.apply(make_event_key, axis=1)
         cap_open["event_label_ui"] = cap_open.apply(
-            lambda x: f"{safe_text(x.get('ticker'))} — {safe_text(x.get('drug'))} — " +
+            lambda x: f"{safe_text(x.get('ticker'))} · {fmt_app_pct(x.get('approval_probability'), 1)} — {safe_text(x.get('drug'))} — " +
                       ("Date unavailable" if pd.isna(x.get("pdufa_date")) else pd.Timestamp(x.get("pdufa_date")).strftime("%b %d, %Y")),
             axis=1
         )
@@ -834,6 +881,13 @@ elif page == "3. CALENDAR":
             use_container_width=True,
             hide_index=True,
             height=min(560, 110 + 36*len(display)),
+            column_config={
+                "Ticker": st.column_config.LinkColumn(
+                    "Ticker",
+                    display_text=r"ticker=([^&]+)",
+                    help="Open this exact PDUFA detail page",
+                )
+            },
             on_select="rerun",
             selection_mode="single-row",
             key=f"calendar_week_table_{st.session_state.calendar_offset_weeks}_{wi}"
@@ -872,7 +926,7 @@ elif page == "3. CALENDAR":
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
                     if st.button(
-                        f"{r.ticker} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')} · {fmt_pct(r.get('approval_probability'))}",
+                        f"{r.ticker} · {fmt_app_pct(r.get('approval_probability'), 1)} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}",
                         key=f"cal_{day}_{r.ticker}_{hit_idx}",
                         use_container_width=True
                     ):
@@ -883,7 +937,7 @@ else:
     ordered = df.sort_values(["ticker","pdufa_date","drug"], na_position="last").copy()
     ordered["event_key"] = ordered.apply(make_event_key, axis=1)
     ordered["event_label"] = ordered.apply(
-        lambda x: f"{safe_text(x.get('ticker'))} — {safe_text(x.get('drug'))} — " +
+        lambda x: f"{safe_text(x.get('ticker'))} · {fmt_app_pct(x.get('approval_probability'), 1)} — {safe_text(x.get('drug'))} — " +
                   ("Date pending" if pd.isna(x.get("pdufa_date")) else pd.Timestamp(x.get("pdufa_date")).strftime("%b %d, %Y")),
         axis=1
     )
@@ -928,14 +982,14 @@ else:
         st.info("No candidates loaded.")
     else:
         r = ordered[ordered["event_key"] == st.session_state.selected_event_key].iloc[0]
-        st.markdown(f"## {r.ticker} — {r.company}")
+        st.markdown(f"## {r.ticker} · {fmt_app_pct(r.get('approval_probability'), 1)} — {r.company}")
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
         k1,k2,k3,k4 = st.columns(4)
         k1.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
         k2.metric("Days Left", "Not available" if days_left is None else days_left)
-        k3.metric("App %", fmt_pct(r.get("approval_probability"), 1))
+        k3.metric("App %", fmt_app_pct(r.get("approval_probability"), 1))
         k4.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
 
         k5,k6,k7,k8 = st.columns(4)
