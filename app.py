@@ -1048,16 +1048,6 @@ elif page == "4. PREDICTION ENGINE":
         lambda v: "NA" if pd.isna(v) else f"${float(v):.2f}B"
     )
 
-    correct_mask = hist["Correct / Wrong"].eq("Correct")
-    avg_p = hist["p_approval"].mean() * 100 if not hist.empty else float("nan")
-    p1,p2,p3,p4,p5,p6 = st.columns(6)
-    p1.metric("Historical Cases", len(hist))
-    p2.metric("Avg App %", "NA" if pd.isna(avg_p) else f"{avg_p:.1f}%")
-    p3.metric("Pred APPROVED", int((hist["model_class"] == "APPROVED").sum()))
-    p4.metric("Pred CRL", int((hist["model_class"] == "CRL").sum()))
-    p5.metric("Correct", int(correct_mask.sum()))
-    p6.metric("Accuracy", "NA" if hist.empty else f"{correct_mask.mean()*100:.1f}%")
-
     f1,f2,f3,f4,f5 = st.columns([1.1,1.2,1.2,1.4,2.0])
     with f1:
         year_pick = st.selectbox("Year", ["All",2025,2026], key="pred_year")
@@ -1087,6 +1077,22 @@ elif page == "4. PREDICTION ENGINE":
             hview["ticker"].astype(str).str.lower().str.contains(q, na=False) |
             hview["event_key"].astype(str).str.lower().str.contains(q, na=False)
         ]
+
+    # Recalculate every summary box from the CURRENT filtered selection.
+    filtered_correct = hview["Correct / Wrong"].eq("Correct")
+    filtered_avg_p = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
+    p1,p2,p3,p4,p5,p6 = st.columns(6)
+    p1.metric("Selected Cases", len(hview))
+    p2.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    p3.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
+    p4.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
+    p5.metric("Correct", int(filtered_correct.sum()))
+    p6.metric("Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
+
+    st.caption(
+        f"Filtered selection: {len(hview)} of {len(hist)} cases. "
+        "The table and all six summary boxes recalculate from the same selected rows."
+    )
 
     hview = hview.sort_values(["pdufa_date","ticker"]).copy()
     hview["Ticker"] = hview.apply(
