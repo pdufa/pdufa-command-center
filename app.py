@@ -370,11 +370,11 @@ def table_view(frame):
 
     # Guarantee every master-table column exists even if the source feed is incomplete.
     defaults = {
-        "ticker":"", "company":"Pending", "drug":"Pending", "indication":"Pending",
-        "pdufa_date":pd.NaT, "market_cap":pd.NA, "approval_probability":pd.NA,
-        "trade_score":pd.NA, "financing_status":"Pending", "setup_phase":"Pending",
-        "short_interest":pd.NA, "iv_30d":pd.NA, "signal":"Pending",
-        "confidence":"Pending", "outcome":"Pending", "application_type":"Pending"
+        "ticker":"", "company":"Not available", "drug":"Not available", "indication":"Not available",
+        "pdufa_date":pd.NaT, "market_cap":pd.NA, "market_cap_bucket":"Not available",
+        "approval_probability":pd.NA, "trade_score":pd.NA, "financing_status":"Not available",
+        "setup_phase":"Not available", "short_interest":pd.NA, "iv_30d":pd.NA, "signal":"Not available",
+        "confidence":"Not scored", "outcome":"Pending", "application_type":"FDA"
     }
     for c, default in defaults.items():
         if c not in out:
@@ -387,7 +387,8 @@ def table_view(frame):
     out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
     out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Pending")
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
-    out["PoA"] = out["approval_probability"].map(fmt_pct)
+    out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
+    out["PoA"] = out["approval_probability"].apply(lambda v: fmt_pct(v, 1))
     out["Trade Score"] = out["trade_score"].apply(
         lambda v: "Pending" if pd.isna(v) else f"{float(v):.0f}"
     )
@@ -408,7 +409,7 @@ def table_view(frame):
         "PoA":"App %"
     })[[
         "Ticker","App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
-        "Trade Score","Outcome","Signal","Confidence","Application",
+        "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)"
     ]]
 
@@ -884,13 +885,13 @@ else:
         st.write("")
         st.write("")
         if st.button("← ALL PDUFA", use_container_width=True):
-            st.session_state.nav = "1. ALL PDUFA"
+            go_page("1. ALL PDUFA")
             st.rerun()
     with b2:
         st.write("")
         st.write("")
         if st.button("← MARKET CAP", use_container_width=True):
-            st.session_state.nav = "2. MARKET CAP GROUPS"
+            go_page("2. MARKET CAP GROUPS")
             st.rerun()
 
     if ordered.empty:
