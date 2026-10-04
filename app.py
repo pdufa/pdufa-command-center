@@ -696,13 +696,14 @@ def direction_fda_display(row):
 
 
 def match_percent_display(row):
-    """Strict direction-vs-FDA result column. No FDA result = Pending."""
-    predicted = predicted_fda_direction(row)
+    """Populate only when both approval probability and final FDA decision exist."""
+    approval = all_source_probability_value(row)
     actual = normalize_fda_direction(row.get("actual_outcome", row.get("outcome")))
-    if actual is None:
-        return "Pending"
+    if approval is None or pd.isna(approval) or actual is None:
+        return ""
+    predicted = predicted_fda_direction(row)
     if predicted not in ["APPROVED", "CRL"]:
-        return "Not scored"
+        return ""
     return "100%" if predicted == actual else "0%"
 
 
@@ -1166,7 +1167,7 @@ if page == "1. ALL PDUFA":
     f_summary = f"A {f_a} · C {f_c} · R {f_r}"
     match_values = view.apply(match_percent_display, axis=1) if not view.empty else pd.Series(dtype="object")
     decided_matches = match_values[match_values.isin(["100%","0%"])]
-    match_summary = "Pending" if decided_matches.empty else f"{(decided_matches == '100%').mean()*100:.1f}%"
+    match_summary = "" if decided_matches.empty else f"{(decided_matches == '100%').mean()*100:.1f}%"
     c_summary = f"{p_summary} · {f_summary}"
     m1,m2,m3,m4,m5,m6 = st.columns(6)
     m1.metric("P%", p_summary, help="Average all-sources Probability of Approval for the current filtered selection")
@@ -1697,7 +1698,7 @@ elif page == "4. PREDICTION ENGINE":
     pred_f = f"A {pred_a} · C {pred_c} · R {pred_r}"
     pred_match_values = hview.apply(match_percent_display, axis=1) if not hview.empty else pd.Series(dtype="object")
     pred_decided_matches = pred_match_values[pred_match_values.isin(["100%","0%"])]
-    pred_match = "Pending" if pred_decided_matches.empty else f"{(pred_decided_matches == '100%').mean()*100:.1f}%"
+    pred_match = "" if pred_decided_matches.empty else f"{(pred_decided_matches == '100%').mean()*100:.1f}%"
     pred_combined = f"{pred_p} · {pred_f}"
     p1,p2,p3,p4 = st.columns(4)
     p1.metric("P%", pred_p, help="Average all-sources Probability of Approval for the filtered Prediction Engine cases")
