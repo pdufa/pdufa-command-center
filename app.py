@@ -1386,6 +1386,19 @@ else:
         a5.metric("Result", correct_text)
         a6.metric("Historical Cap", hcap)
 
+        st.markdown("### V2 Audit / Validation Status")
+        vs1,vs2,vs3,vs4 = st.columns(4)
+        v2_status = prediction_v2_history_status(hr)
+        vs1.metric("V2 Status", v2_status)
+        vs2.metric("Audit Status", safe_text(hr.get("audit_status"), "UNREVIEWED"))
+        vs3.metric("Needs Rescore", safe_text(hr.get("needs_rescore"), "NO"))
+        vs4.metric("Canonical PDUFA", safe_text(hr.get("canonical_pdufa_date"), "NA"))
+        st.write(f"**Audit Action:** {safe_text(hr.get('audit_action'), 'NA')}")
+        st.write(f"**Failure / Audit Reason:** {safe_text(hr.get('failure_reason'), 'NA')}")
+        audit_source = safe_text(hr.get("source_url"), "")
+        if audit_source:
+            st.link_button("OPEN AUDIT SOURCE", audit_source, use_container_width=False)
+
         st.markdown("### Model / Validation Record")
         v1,v2,v3 = st.columns(3)
         with v1:
