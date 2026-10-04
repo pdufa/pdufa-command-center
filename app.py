@@ -319,11 +319,14 @@ def make_event_key(row):
 df["event_key"] = df.apply(make_event_key, axis=1)
 
 def go_individual(ticker=None, event_key=None):
+    # Navigation widgets cannot safely have their bound state changed after
+    # they are instantiated in the same Streamlit run. Store the destination
+    # and apply it before the Navigation radio is rendered on the next rerun.
     if ticker is not None:
         st.session_state.selected_ticker = str(ticker)
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
-    st.session_state.nav = "4. INDIVIDUAL COMPANY"
+    st.session_state._pending_nav = "4. INDIVIDUAL COMPANY"
 
 def table_view(frame):
     out = frame.copy()
@@ -385,6 +388,10 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("ALL → MARKET CAP GROUPS → INDIVIDUAL, with direct ALL → INDIVIDUAL navigation and a rolling 4-week PDUFA calendar")
+
+# Apply deferred navigation before creating the bound radio widget.
+if "_pending_nav" in st.session_state:
+    st.session_state.nav = st.session_state.pop("_pending_nav")
 
 nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. INDIVIDUAL COMPANY"]
 st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
