@@ -427,7 +427,7 @@ def fmt_app_pct(v, decimals=1):
 
 def combined_probability_direction(row):
     p = fmt_app_pct(all_source_probability_value(row), 1)
-    f = direction_fda_display(row)
+    f = all_source_direction_state(row)
     return f"{p} · {f}"
 
 def calendar_app_text(row, field):
@@ -1146,16 +1146,20 @@ if page == "1. ALL PDUFA":
     all_source_series = view.apply(all_source_probability_value, axis=1)
     avg_all_source = pd.to_numeric(all_source_series, errors="coerce").mean()
 
-    st.markdown("### APPROVAL PROBABILITY")
-    m1,m2,m3,m4 = st.columns(4)
-    with m1:
-        st.markdown("#### PUBLIC")
-        st.metric("Probability of Approval % — Public", "Not scored" if pd.isna(avg_p_app) else f"{float(avg_p_app):.1f}%")
-    with m2:
-        st.markdown("#### ALL SOURCES")
-        st.metric("Probability of Approval % — All Sources", "Not scored" if pd.isna(avg_all_source) else f"{float(avg_all_source):.1f}%")
-    m3.metric("Saved PDUFA Events", len(master))
-    m4.metric("Present / Active", active_n)
+    st.markdown("### PREDICTION SUMMARY")
+    direction_summary = view.apply(all_source_direction_state, axis=1) if not view.empty else pd.Series(dtype="object")
+    f_a = int((direction_summary == "APPROVED").sum())
+    f_c = int((direction_summary == "CRL").sum())
+    f_r = int((direction_summary == "REVIEW").sum())
+    p_summary = "Not scored" if pd.isna(avg_all_source) else f"{float(avg_all_source):.1f}%"
+    f_summary = f"A {f_a} · C {f_c} · R {f_r}"
+    c_summary = f"{p_summary} · {f_summary}"
+    m1,m2,m3,m4,m5 = st.columns(5)
+    m1.metric("P%", p_summary, help="Average all-sources Probability of Approval for the current filtered selection")
+    m2.metric("F", f_summary, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
+    m3.metric("C", c_summary, help="Combined P% + FDA direction")
+    m4.metric("Saved PDUFA Events", len(master))
+    m5.metric("Present / Active", active_n)
 
     m5,m6,m7,m8 = st.columns(4)
     m5.metric("Past", past_n)
@@ -1187,10 +1191,23 @@ if page == "1. ALL PDUFA":
         st.info("No PDUFA records match the current filters.")
     else:
         display = table_view(view, return_page="1. ALL PDUFA")
-        display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
+        display["P%"] = view.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1).values
+        display["F"] = view.apply(all_source_direction_state, axis=1).values
+        display["C"] = view.apply(combined_probability_direction, axis=1).values
+        display["Public P%"] = view["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1)).values
+        drop_front = [
+            "Probability of Approval % — Public",
+            "Probability of Approval % — All Sources",
+            "Direction / FDA Match",
+            "All-Source Direction"
+        ]
+        display = display.drop(columns=[x for x in drop_front if x in display.columns])
+        front = ["Ticker","P%","F","C"]
+        display = display[front + [x for x in display.columns if x not in front]]
+        display.insert(7 if len(display.columns) >= 7 else len(display.columns), "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("LEADING COLUMNS: Ticker | Probability of Approval % — Public | Probability of Approval % — All Sources | Direction / FDA Match")
+        st.caption("LEADING BOXED CELLS: Ticker | P% | F | C")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1203,14 +1220,19 @@ if page == "1. ALL PDUFA":
                     display_text=r"ticker=([^&]+)",
                     help="Open this exact PDUFA detail page",
                 ),
-                "Probability of Approval % — Public": st.column_config.TextColumn(
-                    "Probability of Approval % — Public",
-                    help="Approval probability calculated from public evidence only",
-                    width="medium",
+                "P%": st.column_config.TextColumn(
+                    "P%",
+                    help="All-sources Probability of Approval",
+                    width="small",
                 ),
-                "Probability of Approval % — All Sources": st.column_config.TextColumn(
-                    "Probability of Approval % — All Sources",
-                    help="All-source composite using internal, public, and BiopharmaWatch inputs when available",
+                "F": st.column_config.TextColumn(
+                    "F",
+                    help="FDA direction: APPROVED, CRL, or REVIEW",
+                    width="small",
+                ),
+                "C": st.column_config.TextColumn(
+                    "C",
+                    help="Combined P% + FDA direction",
                     width="medium",
                 ),
                 "I+P Consensus": st.column_config.TextColumn(
@@ -1531,6 +1553,9 @@ elif page == "4. PREDICTION ENGINE":
         hist["public_approval_probability"] = pd.NA
     hist["Probability of Approval % — Public"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
+    hist["P%"] = hist["Probability of Approval % — All Sources"]
+    hist["F"] = hist.apply(all_source_direction_state, axis=1)
+    hist["C"] = hist.apply(combined_probability_direction, axis=1)
     hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
     hist["P Direction"] = hist.apply(public_direction_state, axis=1)
     hist["I+P Direction"] = hist.apply(ip_consensus_direction, axis=1)
@@ -1641,11 +1666,18 @@ elif page == "4. PREDICTION ENGINE":
     clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
     clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
 
-    st.markdown("### AVERAGE APPROVAL PROBABILITY")
-    p1,p2 = st.columns(2)
-    p1.metric("Probability of Approval % — Public", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
-    p2.metric("Probability of Approval % — All Sources", "Not scored" if pd.isna(filtered_avg_all) else f"{filtered_avg_all:.1f}%")
-    st.caption("Only the two user-facing approval probabilities are shown here. Internal component scores remain backend inputs.")
+    st.markdown("### PREDICTION SUMMARY")
+    pred_dirs = hview.apply(all_source_direction_state, axis=1) if not hview.empty else pd.Series(dtype="object")
+    pred_a = int((pred_dirs == "APPROVED").sum())
+    pred_c = int((pred_dirs == "CRL").sum())
+    pred_r = int((pred_dirs == "REVIEW").sum())
+    pred_p = "Not scored" if pd.isna(filtered_avg_all) else f"{filtered_avg_all:.1f}%"
+    pred_f = f"A {pred_a} · C {pred_c} · R {pred_r}"
+    pred_combined = f"{pred_p} · {pred_f}"
+    p1,p2,p3 = st.columns(3)
+    p1.metric("P%", pred_p, help="Average all-sources Probability of Approval for the filtered Prediction Engine cases")
+    p2.metric("F", pred_f, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
+    p3.metric("C", pred_combined, help="Combined P% + FDA direction")
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Clean Cases", clean_keep_count)
@@ -1664,7 +1696,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","PDUFA Date","model_class","actual_outcome",
+        "Ticker","P%","F","C","Probability of Approval % — Public","I Direction","P Direction","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1684,7 +1716,7 @@ elif page == "4. PREDICTION ENGINE":
     })
 
     st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
-    st.caption("FIRST THREE COLUMNS: Ticker | I App % | P App %")
+    st.caption("LEADING BOXED CELLS: Ticker | P% | F | C")
     st.dataframe(
         hdisplay,
         use_container_width=True,
@@ -1696,6 +1728,9 @@ elif page == "4. PREDICTION ENGINE":
                 display_text=r"ticker=([^&]+)",
                 help="Open this historical PDUFA model case"
             ),
+            "P%": st.column_config.TextColumn("P%", help="All-sources Probability of Approval", width="small"),
+            "F": st.column_config.TextColumn("F", help="FDA direction", width="small"),
+            "C": st.column_config.TextColumn("C", help="Combined P% + FDA direction", width="medium"),
             "Audit Source": st.column_config.LinkColumn(
                 "Audit Source",
                 display_text="Source",
@@ -1796,7 +1831,10 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
         live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
-        live_v2["All-Source Direction"] = live_v2.apply(all_source_direction_state, axis=1)
+        live_v2["P%"] = live_v2["Probability of Approval % — All Sources"]
+        live_v2["F"] = live_v2.apply(all_source_direction_state, axis=1)
+        live_v2["C"] = live_v2.apply(combined_probability_direction, axis=1)
+        live_v2["All-Source Direction"] = live_v2["F"]
         live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
@@ -1816,7 +1854,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","All-Source Direction","PDUFA Date","drug","indication",
+            "Ticker","P%","F","C","Probability of Approval % — Public","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
