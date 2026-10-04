@@ -276,6 +276,8 @@ if "nav" not in st.session_state:
 if "selected_ticker" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
+if "watchlist" not in st.session_state:
+    st.session_state.watchlist = []
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("ALL → MARKET CAP GROUPS → INDIVIDUAL, with direct ALL → INDIVIDUAL navigation and a rolling 4-week PDUFA calendar")
@@ -503,8 +505,25 @@ else:
                 st.write(f"**Evidence cutoff:** {r.get('evidence_cutoff','Pending')}")
                 st.write(r.get("evidence_summary") or "Evidence feed pending.")
         with subtabs[1]:
-            st.markdown("### Development Pipeline — Phase 1 to Now")
-            st.caption("One continuous tracker for the selected drug/indication. Exact milestone dates appear when present in the validated feed; unknown dates remain Pending.")
+            ptitle, pwatch = st.columns([4,1])
+            with ptitle:
+                st.markdown("### Development Pipeline — Phase 1 to Now")
+                st.caption("One continuous tracker for the selected drug/indication. Exact milestone dates appear when present in the validated feed; unknown dates remain Pending.")
+            with pwatch:
+                ticker_key = str(r.ticker)
+                on_watchlist = ticker_key in st.session_state.watchlist
+                watch_label = "★ REMOVE WATCHLIST" if on_watchlist else "☆ ADD TO WATCHLIST"
+                if st.button(watch_label, use_container_width=True, key=f"pipeline_watch_{ticker_key}"):
+                    if on_watchlist:
+                        st.session_state.watchlist = [x for x in st.session_state.watchlist if x != ticker_key]
+                        st.toast(f"{ticker_key} removed from watchlist")
+                    else:
+                        st.session_state.watchlist.append(ticker_key)
+                        st.toast(f"{ticker_key} added to watchlist")
+                    st.rerun()
+
+            if ticker_key in st.session_state.watchlist:
+                st.success(f"★ {ticker_key} is on your watchlist")
 
             stages = [
                 ("Phase 1", r.get("phase1_date"), "Early safety / dose finding"),
