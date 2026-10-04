@@ -1113,14 +1113,14 @@ elif page == "4. PREDICTION ENGINE":
     p1,p2,p3,p4 = st.columns(4)
     p1.metric("Selected Cases", len(hview))
     p2.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
-    p3.metric("Adjusted Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
+    p3.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
     p4.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
     q2.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
-    q3.metric("Excluded / Needs Rescore", max(excluded_count, rescore_count))
-    q4.metric("Unreviewed", unreviewed_count)
+    q3.metric("Rebuild / Rescore Queue", max(excluded_count, rescore_count))
+    q4.metric("Audit Reviewed", f"{len(hview) - unreviewed_count}/{len(hview)}")
 
     st.caption(
         f"Filtered selection: {len(hview)} of {len(hist)} cases. "
@@ -1173,8 +1173,8 @@ elif page == "4. PREDICTION ENGINE":
     )
 
     st.info(
-        "Adjusted Accuracy is provisional: it excludes rows with a verified date/identity/duplicate/leakage problem. "
-        "Rows marked Needs Rescore must be rebuilt using the corrected event and a strictly pre-decision cutoff before they can return to the clean validation set."
+        "Clean-as-is Accuracy is NOT the final model accuracy. It uses only rows that survived the first-pass audit without requiring reconstruction. "
+        "Rows in the Rebuild / Rescore Queue must be corrected to the canonical event and rescored with a strictly pre-decision cutoff before final validation metrics are calculated."
     )
 
 else:
