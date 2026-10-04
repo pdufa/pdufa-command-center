@@ -1161,6 +1161,10 @@ elif page == "4. PREDICTION ENGINE":
         lambda v: "NA" if pd.isna(v) else f"${float(v):.2f}B"
     )
 
+    hist["V2 Status"] = hist.apply(prediction_v2_history_status, axis=1)
+    hist["Audit Eligible"] = hist["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")
+    hist["Needs Rescore Bool"] = hist["needs_rescore"].astype(str).str.upper().eq("YES")
+
     f1,f2,f3,f4,f5 = st.columns([1.1,1.2,1.2,1.4,2.0])
     with f1:
         year_pick = st.selectbox("Year", ["All",2025,2026], key="pred_year")
@@ -1175,6 +1179,16 @@ elif page == "4. PREDICTION ENGINE":
     with f5:
         pred_search = st.text_input("Search ticker or event key", key="pred_search")
 
+    g1,g2 = st.columns([1.5,4])
+    with g1:
+        v2_pick = st.selectbox(
+            "V2 Audit State",
+            ["All","CLEAN / KEEP","CLEAN MODEL MISS","REBUILD / RESCORE","REVIEW"],
+            key="pred_v2_state"
+        )
+    with g2:
+        st.caption("V2 never overwrites legacy predictions. Rows that fail identity/date/leakage checks are blocked from validation until rebuilt.")
+
     hview = hist.copy()
     if year_pick != "All":
         hview = hview[hview["pdufa_date"].dt.year == int(year_pick)]
@@ -1184,6 +1198,8 @@ elif page == "4. PREDICTION ENGINE":
         hview = hview[hview["actual_outcome"] == actual_pick]
     if bucket_pick != "All":
         hview = hview[hview["market_cap_bucket"] == bucket_pick]
+    if v2_pick != "All":
+        hview = hview[hview["V2 Status"] == v2_pick]
     if pred_search:
         q = pred_search.lower()
         hview = hview[
