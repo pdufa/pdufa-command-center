@@ -774,10 +774,10 @@ else:
 
         k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
         k1.metric("Market Cap", fmt_cap(r.get("market_cap")))
-        k2.metric("PDUFA Date", "Pending" if pd.isna(r.pdufa_date) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
+        k2.metric("PDUFA Date", "Pending" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
         k3.metric("Days Left", "Pending" if days_left is None else days_left)
-        k4.metric("Approval Probability", fmt_pct(r.approval_probability))
-        k5.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get("trade_score")):.0f}/100")
+        k4.metric("Approval Probability", fmt_pct(r.get("approval_probability")))
+        k5.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get('trade_score')):.0f}/100")
         k6.metric("Short Interest", fmt_pct(r.get("short_interest")))
         k7.metric("IV (30d)", fmt_pct(r.get("iv_30d")))
 
@@ -918,9 +918,9 @@ else:
             st.markdown("### Trading")
             st.write(safe_text(r.get("trading_summary"), "Trading intelligence feed pending."))
             t1,t2,t3 = st.columns(3)
-            t1.metric("Trade Score", "Pending" if pd.isna(r.trade_score) else f"{float(r.trade_score):.0f}/100")
-            t2.metric("Short Interest", fmt_pct(r.short_interest))
-            t3.metric("IV (30d)", fmt_pct(r.iv_30d))
+            t1.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get('trade_score')):.0f}/100")
+            t2.metric("Short Interest", fmt_pct(r.get("short_interest")))
+            t3.metric("IV (30d)", fmt_pct(r.get("iv_30d")))
         with subtabs[7]:
             st.markdown("### Recent News")
             stories,error = fetch_ticker_news(
