@@ -1215,7 +1215,8 @@ elif page == "4. PREDICTION ENGINE":
 
     excluded_count = int((hview["count_in_audited_accuracy"].astype(str).str.upper() == "NO").sum())
     rescore_count = int((hview["needs_rescore"].astype(str).str.upper() == "YES").sum())
-    unreviewed_count = int((hview["audit_status"].astype(str) == "UNREVIEWED").sum())
+    clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
+    clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
 
     p1,p2,p3,p4 = st.columns(4)
     p1.metric("Selected Cases", len(hview))
@@ -1224,10 +1225,10 @@ elif page == "4. PREDICTION ENGINE":
     p4.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
 
     q1,q2,q3,q4 = st.columns(4)
-    q1.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
-    q2.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
+    q1.metric("Clean Cases", clean_keep_count)
+    q2.metric("Clean Model Misses", clean_miss_count)
     q3.metric("Rebuild / Rescore Queue", max(excluded_count, rescore_count))
-    q4.metric("Audit Reviewed", f"{len(hview) - unreviewed_count}/{len(hview)}")
+    q4.metric("Audit Reviewed", f"{len(hview)}/{len(hview)}")
 
     st.caption(
         f"Filtered selection: {len(hview)} of {len(hist)} cases. "
@@ -1241,7 +1242,7 @@ elif page == "4. PREDICTION ENGINE":
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
         "Ticker","App %","PDUFA Date","model_class","actual_outcome",
-        "Historical Market Cap","market_cap_bucket","Correct / Wrong",
+        "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
     ]].rename(columns={
