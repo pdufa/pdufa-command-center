@@ -122,7 +122,7 @@ def load_prediction_history():
     for col in required:
         if col not in x:
             x[col] = pd.NA
-    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","public_model_class","public_evidence_note"]:
+    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","public_model_class","public_evidence_note","internal_direction_class","internal_direction_note"]:
         if col not in x:
             x[col] = pd.NA
     x["public_approval_probability"] = pd.to_numeric(x["public_approval_probability"], errors="coerce")
@@ -519,7 +519,11 @@ def public_direction_state(row):
     return "REVIEW"
 
 def internal_direction_state(row):
-    """Full-intelligence direction: internal model plus hard public-evidence veto/confirmation."""
+    """Full-intelligence direction using decision-safe internal research plus model/public evidence."""
+    explicit_internal = safe_text(row.get("internal_direction_class"), "").upper()
+    if explicit_internal in ["APPROVED", "CRL"]:
+        return explicit_internal
+
     p_public_dir = public_direction_state(row)
     p = row.get("approval_probability", row.get("p_approval"))
     p = None if pd.isna(p) else float(p)
@@ -1424,7 +1428,7 @@ elif page == "4. PREDICTION ENGINE":
     d2.metric("I Direction Coverage", f"{i_direction_coverage:.1f}%")
     d3.metric("P Direction Accuracy", "NA" if pd.isna(p_direction_accuracy) else f"{p_direction_accuracy:.1f}%")
     d4.metric("P Direction Coverage", f"{p_direction_coverage:.1f}%")
-    st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. P Direction is PUBLIC-ONLY: no I App %, no internal scores, no internal audit labels, and no hidden/internal references may influence it. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
+    st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. I Direction may use decision-safe internal research and model evidence. P Direction is PUBLIC-ONLY: no I App %, no internal scores, no internal audit labels, and no hidden/internal references may influence it. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
 
     st.markdown("### 100% HISTORICAL PRECISION MODES")
     z1,z2,z3,z4,z5,z6 = st.columns(6)
