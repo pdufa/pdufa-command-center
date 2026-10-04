@@ -221,7 +221,7 @@ if "market_cap" not in df:
 if "trade_score" not in df:
     score_cols = [c for c in ["science_score","regulatory_score","safety_score","cmc_score"] if c in df]
     df["trade_score"] = df[score_cols].mean(axis=1) if score_cols else pd.NA
-for c in ["financing_status","setup_phase","short_interest","iv_30d",
+for c in ["financing_status","setup_phase","short_interest","iv_30d","outcome",
           "phase1_date","phase2_date","phase3_date","nda_submission_date",
           "fda_acceptance_date","decision_date"]:
     if c not in df:
@@ -287,69 +287,193 @@ st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility
 page = st.session_state.nav
 
 if page == "1. ALL PDUFA":
-    st.markdown("## 1. ALL PDUFA — Complete Universe")
-    f1,f2,f3,f4 = st.columns([1.2,1.2,1.2,2])
-    with f1:
-        horizon = st.selectbox("PDUFA Window", ["All future","Next 30 days","Next 60 days","Next 90 days","Next 180 days"])
-    with f2:
-        min_poa = st.slider("Minimum PoA", 0, 100, 0)
-    with f3:
-        phases = ["All"] + sorted([str(x) for x in df["setup_phase"].dropna().unique()])
-        phase = st.selectbox("Setup Phase", phases)
-    with f4:
-        search = st.text_input("Search ticker, company, drug or indication")
+    st.markdown("## 1. MASTER PDUFA SPREADSHEET — Past + Present + Future")
+    st.caption("One sortable master list for every PDUFA case in the saved system. Use the controls above the table to narrow the universe without losing the direct path to the Individual Company page.")
 
-    view = future.copy()
-    limits = {"Next 30 days":30,"Next 60 days":60,"Next 90 days":90,"Next 180 days":180}
-    if horizon in limits:
-        view = view[view["days"] <= limits[horizon]]
+    master = df.copy()
+    master["time_status"] = master["pdufa_date"].apply(
+        lambda d: "Unknown" if pd.isna(d) else ("Past" if d.date() < date.today() else ("Today" if d.date() == date.today() else "Future"))
+    )
+    master["year"] = master["pdufa_date"].dt.year
+    master["days_from_today"] = (master["pdufa_date"] - today).dt.days
+
+    top1, top2, top3, top4, top5 = st.columns([1.25,1.25,1.25,1.25,2.2])
+
+    with top1:
+        status_filter = st.multiselect(
+            "Past / Present / Future",
+            ["Past","Today","Future","Unknown"],
+            default=["Past","Today","Future"]
+        )
+
+    with top2:
+        years = sorted([int(x) for x in master["year"].dropna().unique()])
+        year_filter = st.multiselect("PDUFA Year", years, default=years)
+
+    with top3:
+        outcome_values = sorted([str(x) for x in master["outcome"].dropna().unique() if str(x).strip()])
+        outcome_filter = st.multiselect(
+            "FDA Outcome",
+            outcome_values if outcome_values else ["Approved","CRL","Withdrawn","Pending"],
+            default=[]
+        )
+
+    with top4:
+        signal_values = sorted([str(x) for x in master["signal"].dropna().unique()])
+        signal_filter = st.multiselect("Status / Signal", signal_values, default=[])
+
+    with top5:
+        search = st.text_input("Search ticker, company, drug, indication")
+
+    row2a, row2b, row2c, row2d, row2e = st.columns([1.4,1.4,1.4,1.4,1.8])
+
+    known_caps = master["market_cap"].dropna()
+    cap_min_default = 300_000_000
+    cap_max_default = 10_000_000_000
+    if not known_caps.empty:
+        cap_min_default = int(max(0, known_caps.min()))
+        cap_max_default = int(max(known_caps.max(), cap_min_default + 1))
+
+    with row2a:
+        cap_presets = st.selectbox(
+            "Market Cap",
+            ["All","$300M–$500M","$500M–$750M","$750M–$1B","$1B–$2B","$2B–$3B","$3B–$5B","$5B–$7.5B","$7.5B–$10B","Custom"]
+        )
+
+    with row2b:
+        min_poa = st.slider("Minimum Approval Probability", 0, 100, 0)
+
+    with row2c:
+        min_trade = st.slider("Minimum Trade Score", 0, 100, 0)
+
+    with row2d:
+        financing_values = sorted([str(x) for x in master["financing_status"].dropna().unique()])
+        financing_filter = st.multiselect("Financing", financing_values, default=[])
+
+    with row2e:
+        sort_choice = st.selectbox(
+            "Sort",
+            ["PDUFA date ↑","PDUFA date ↓","Market cap ↓","Approval probability ↓","Trade score ↓","Ticker A–Z"]
+        )
+
+    if cap_presets == "Custom":
+        cmin,cmax = st.slider(
+            "Custom market-cap range",
+            min_value=0,
+            max_value=max(cap_max_default,10_000_000_000),
+            value=(min(cap_min_default,300_000_000), min(max(cap_max_default,10_000_000_000),10_000_000_000)),
+            step=50_000_000,
+            format="$%d"
+        )
+    else:
+        cap_map = {
+            "$300M–$500M":(300_000_000,500_000_000),
+            "$500M–$750M":(500_000_000,750_000_000),
+            "$750M–$1B":(750_000_000,1_000_000_000),
+            "$1B–$2B":(1_000_000_000,2_000_000_000),
+            "$2B–$3B":(2_000_000_000,3_000_000_000),
+            "$3B–$5B":(3_000_000_000,5_000_000_000),
+            "$5B–$7.5B":(5_000_000_000,7_500_000_000),
+            "$7.5B–$10B":(7_500_000_000,10_000_000_001),
+        }
+        cmin,cmax = cap_map.get(cap_presets,(None,None))
+
+    view = master.copy()
+    if status_filter:
+        view = view[view["time_status"].isin(status_filter)]
+    if year_filter:
+        view = view[view["year"].isin(year_filter)]
+    if outcome_filter:
+        view = view[view["outcome"].astype(str).isin(outcome_filter)]
+    if signal_filter:
+        view = view[view["signal"].astype(str).isin(signal_filter)]
+    if financing_filter:
+        view = view[view["financing_status"].astype(str).isin(financing_filter)]
     view = view[view["approval_probability"].fillna(0) >= min_poa]
-    if phase != "All":
-        view = view[view["setup_phase"].astype(str) == phase]
+    view = view[view["trade_score"].fillna(0) >= min_trade]
+
+    if cmin is not None:
+        # Keep unknown-cap rows visible only when "All" is selected.
+        view = view[view["market_cap"].notna() & (view["market_cap"] >= cmin) & (view["market_cap"] < cmax)]
+
     if search:
         q = search.lower()
-        mask = (
+        view = view[
             view["ticker"].astype(str).str.lower().str.contains(q, na=False) |
             view["company"].astype(str).str.lower().str.contains(q, na=False) |
             view["drug"].astype(str).str.lower().str.contains(q, na=False) |
             view["indication"].astype(str).str.lower().str.contains(q, na=False)
-        )
-        view = view[mask]
+        ]
 
-    week_sets = []
-    for i in range(4):
-        start = today + pd.Timedelta(days=7*i)
-        end = start + pd.Timedelta(days=6)
-        hits = future[(future["pdufa_date"] >= start) & (future["pdufa_date"] <= end)]
-        week_sets.append(hits)
+    if sort_choice == "PDUFA date ↑":
+        view = view.sort_values(["pdufa_date","ticker"], ascending=[True,True], na_position="last")
+    elif sort_choice == "PDUFA date ↓":
+        view = view.sort_values(["pdufa_date","ticker"], ascending=[False,True], na_position="last")
+    elif sort_choice == "Market cap ↓":
+        view = view.sort_values(["market_cap","pdufa_date"], ascending=[False,True], na_position="last")
+    elif sort_choice == "Approval probability ↓":
+        view = view.sort_values(["approval_probability","pdufa_date"], ascending=[False,True], na_position="last")
+    elif sort_choice == "Trade score ↓":
+        view = view.sort_values(["trade_score","pdufa_date"], ascending=[False,True], na_position="last")
+    else:
+        view = view.sort_values("ticker")
 
-    m1,m2,m3,m4,m5,m6 = st.columns(6)
-    m1.metric("Total Future", len(future))
-    m2.metric("Next 4 Weeks", sum(len(x) for x in week_sets))
-    m3.metric("Week 1", len(week_sets[0]))
-    m4.metric("Week 2", len(week_sets[1]))
-    m5.metric("Week 3", len(week_sets[2]))
-    m6.metric("Week 4", len(week_sets[3]))
+    past_n = int((master["time_status"] == "Past").sum())
+    today_n = int((master["time_status"] == "Today").sum())
+    future_n = int((master["time_status"] == "Future").sum())
+    next_4w_n = int(((master["days_from_today"] >= 0) & (master["days_from_today"] <= 27)).sum())
 
-    st.caption("Select a row to go DIRECTLY from the full list to its Individual Company page.")
+    m1,m2,m3,m4,m5 = st.columns(5)
+    m1.metric("All PDUFA Records", len(master))
+    m2.metric("Past", past_n)
+    m3.metric("Today", today_n)
+    m4.metric("Future", future_n)
+    m5.metric("Next 4 Weeks", next_4w_n)
+
+    st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
+
     if view.empty:
-        st.info("No candidates match the current filters.")
+        st.info("No PDUFA records match the current filters.")
     else:
         display = table_view(view)
-        event = st.dataframe(display, use_container_width=True, hide_index=True, height=560,
-                             on_select="rerun", selection_mode="single-row")
+        display.insert(5, "Time", view["time_status"].values)
+        if "outcome" in view:
+            display.insert(6, "Outcome", view["outcome"].fillna("Pending").astype(str).values)
+
+        event = st.dataframe(
+            display,
+            use_container_width=True,
+            hide_index=True,
+            height=650,
+            on_select="rerun",
+            selection_mode="single-row",
+        )
         if event.selection.rows:
             go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
             st.rerun()
-        c1,c2 = st.columns([3,1])
-        with c1:
-            quick = st.selectbox("Open a specific company", view["ticker"].astype(str).tolist(), key="all_quick")
-        with c2:
+
+        open1,open2 = st.columns([3,1])
+        with open1:
+            quick = st.selectbox("Open a specific company", view["ticker"].astype(str).tolist(), key="master_quick")
+        with open2:
             st.write("")
             st.write("")
-            if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="all_open"):
+            if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="master_open"):
                 go_individual(quick)
                 st.rerun()
+
+        csv_bytes = display.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            "DOWNLOAD CURRENT MASTER VIEW (.CSV)",
+            data=csv_bytes,
+            file_name="pdufa_master_filtered.csv",
+            mime="text/csv",
+        )
+
+    if master["market_cap"].isna().all():
+        st.info("Market-cap filtering is ready, but the current saved feed does not yet contain market-cap values. Rows remain visible under Market Cap = All until that field is populated.")
+    if master["outcome"].isna().all():
+        st.info("FDA outcome filtering is ready. Historical rows will become much more useful once APPROVED / CRL / other final outcomes are added to the master feed.")
 
 elif page == "2. MARKET CAP GROUPS":
     st.markdown("## 2. MARKET CAP GROUPS — Select a Range")
