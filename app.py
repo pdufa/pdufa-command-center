@@ -1164,13 +1164,17 @@ if page == "1. ALL PDUFA":
     f_r = int((direction_summary == "REVIEW").sum())
     p_summary = "Not scored" if pd.isna(avg_all_source) else f"{float(avg_all_source):.1f}%"
     f_summary = f"A {f_a} · C {f_c} · R {f_r}"
+    match_values = view.apply(match_percent_display, axis=1) if not view.empty else pd.Series(dtype="object")
+    decided_matches = match_values[match_values.isin(["100%","0%"])]
+    match_summary = "Pending" if decided_matches.empty else f"{(decided_matches == '100%').mean()*100:.1f}%"
     c_summary = f"{p_summary} · {f_summary}"
-    m1,m2,m3,m4,m5 = st.columns(5)
+    m1,m2,m3,m4,m5,m6 = st.columns(6)
     m1.metric("P%", p_summary, help="Average all-sources Probability of Approval for the current filtered selection")
     m2.metric("F", f_summary, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
-    m3.metric("C", c_summary, help="Combined P% + FDA direction")
-    m4.metric("Saved PDUFA Events", len(master))
-    m5.metric("Present / Active", active_n)
+    m3.metric("Match %", match_summary, help="Direction-pick accuracy on cases with final FDA outcomes in the current filtered selection")
+    m4.metric("C", c_summary, help="Combined P% + FDA direction")
+    m5.metric("Saved PDUFA Events", len(master))
+    m6.metric("Present / Active", active_n)
 
     m5,m6,m7,m8 = st.columns(4)
     m5.metric("Past", past_n)
@@ -1691,11 +1695,15 @@ elif page == "4. PREDICTION ENGINE":
     pred_r = int((pred_dirs == "REVIEW").sum())
     pred_p = "Not scored" if pd.isna(filtered_avg_all) else f"{filtered_avg_all:.1f}%"
     pred_f = f"A {pred_a} · C {pred_c} · R {pred_r}"
+    pred_match_values = hview.apply(match_percent_display, axis=1) if not hview.empty else pd.Series(dtype="object")
+    pred_decided_matches = pred_match_values[pred_match_values.isin(["100%","0%"])]
+    pred_match = "Pending" if pred_decided_matches.empty else f"{(pred_decided_matches == '100%').mean()*100:.1f}%"
     pred_combined = f"{pred_p} · {pred_f}"
-    p1,p2,p3 = st.columns(3)
+    p1,p2,p3,p4 = st.columns(4)
     p1.metric("P%", pred_p, help="Average all-sources Probability of Approval for the filtered Prediction Engine cases")
     p2.metric("F", pred_f, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
-    p3.metric("C", pred_combined, help="Combined P% + FDA direction")
+    p3.metric("Match %", pred_match, help="Direction-pick accuracy on historical cases with final FDA outcomes in the current filtered selection")
+    p4.metric("C", pred_combined, help="Combined P% + FDA direction")
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Clean Cases", clean_keep_count)
