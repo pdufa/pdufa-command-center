@@ -993,7 +993,7 @@ elif page == "3. CALENDAR":
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = whits.iloc[ridx]
-            go_individual(selected_row.get("ticker"), make_event_key(selected_row))
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row), source="live", return_page="3. CALENDAR")
             st.rerun()
 
     st.divider()
