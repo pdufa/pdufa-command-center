@@ -38,7 +38,14 @@ a:active, a:focus{color:#ff8a00 !important}
 
 @st.cache_data(ttl=120)
 def load_data():
-    x = pd.read_csv("data/pdufa_candidates.csv")
+    # Defensive repair: older exports accidentally used literal "\\n" between CSV rows.
+    # Read as text first and normalize before parsing so the master list never collapses to one record.
+    from io import StringIO
+    with open("data/pdufa_candidates.csv", "r", encoding="utf-8") as f:
+        raw = f.read()
+    if "\\n" in raw:
+        raw = raw.replace("\\n", "\n")
+    x = pd.read_csv(StringIO(raw))
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
     x["approval_probability"] = pd.to_numeric(x["approval_probability"], errors="coerce")
     for c in ["science_score", "regulatory_score", "safety_score", "cmc_score"]:
