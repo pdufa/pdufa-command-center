@@ -1,0 +1,8 @@
+event_key,audit_status,failure_reason,count_in_audited_accuracy,verified_note
+CORT|2025-12-30,CLEAN_MODEL_MISS,High-confidence false approval; FDA required additional evidence of effectiveness despite positive pivotal/confirmatory data,YES,Genuine blind-holdout miss
+LNTH|2026-03-02|lnth-2501,INVALID_EVENT,Wrong PDUFA date / duplicate LNTH-2501 representation,NO,Official LNTH-2501 PDUFA was 2026-03-29 then extended to 2026-06-29
+LNTH|2026-03-06|lnth-2501,INVALID_EVENT,Wrong product/date mapping for LNTH-2501,NO,2026-03-06 was associated with a different Lantheus application; LNTH-2501 had 2026-03-29 then 2026-06-29
+SRRK|2026-03-31|apitegromab upon the successful fda reinspection of catalent indiana,INVALID_EVENT,Resubmission date treated as PDUFA decision date,NO,2026-03-31 was BLA resubmission; new PDUFA was 2026-09-30
+TLX|2026-04-10|tlx101-px (pixclara,INVALID_EVENT,NDA acceptance/resubmission date treated as PDUFA date,NO,2026-04-10 was FDA acceptance; actual PDUFA was 2026-09-11
+LNTH|2026-08-13|mk-6240,CLEAN_MODEL_MISS,False CRL; model underweighted strong pivotal diagnostic evidence and Fast Track context,YES,Official PDUFA 2026-08-13; FDA approved Tauklarify
+EWTX|2026-09-30|camzyos in adolescents with ohcm,INVALID_EVENT,Company/product identity mismatch,NO,Camzyos/mavacamten is not an Edgewise Therapeutics PDUFA event
