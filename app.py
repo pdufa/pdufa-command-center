@@ -1881,7 +1881,7 @@ elif page == "4. PREDICTION ENGINE":
 
 elif page == "5. SCAN":
     st.markdown("## 5. SCAN — MANUAL ACTION CENTER")
-    st.caption("Six manual controls. Each button maps one-to-one to a named Streamlit action function in app.py.")
+    st.caption("One-click controls: pressing a button selects that scope and immediately triggers its matching action. No second Run/Submit step.")
     st.info("Today = PDUFA events due today. Week = today through the next 7 days. All = all active/future PDUFA events currently loaded.")
 
     left, right = st.columns(2)
@@ -1891,15 +1891,15 @@ elif page == "5. SCAN":
         st.caption("Refresh the deployed input dataset/cache for the selected scope.")
         a1, a2, a3 = st.columns(3)
         with a1:
-            if st.button("TODAY", key="scan_inputs_today_btn", use_container_width=True):
+            if st.button("▶ RUN TODAY", key="scan_inputs_today_btn", use_container_width=True):
                 frame, req = scan_inputs_today()
                 st.session_state.scan_preview = frame
         with a2:
-            if st.button("WEEK", key="scan_inputs_week_btn", use_container_width=True):
+            if st.button("▶ RUN WEEK", key="scan_inputs_week_btn", use_container_width=True):
                 frame, req = scan_inputs_week()
                 st.session_state.scan_preview = frame
         with a3:
-            if st.button("ALL", key="scan_inputs_all_btn", use_container_width=True):
+            if st.button("▶ RUN ALL", key="scan_inputs_all_btn", use_container_width=True):
                 frame, req = scan_inputs_all()
                 st.session_state.scan_preview = frame
 
@@ -1910,15 +1910,15 @@ elif page == "5. SCAN":
         st.caption("Refresh the prediction cache and recompute displayed approval outputs for the selected scope.")
         b1, b2, b3 = st.columns(3)
         with b1:
-            if st.button("TODAY", key="scan_approval_today_btn", use_container_width=True):
+            if st.button("▶ RUN TODAY", key="scan_approval_today_btn", use_container_width=True):
                 frame, req = scan_approval_today()
                 st.session_state.scan_preview = frame
         with b2:
-            if st.button("WEEK", key="scan_approval_week_btn", use_container_width=True):
+            if st.button("▶ RUN WEEK", key="scan_approval_week_btn", use_container_width=True):
                 frame, req = scan_approval_week()
                 st.session_state.scan_preview = frame
         with b3:
-            if st.button("ALL", key="scan_approval_all_btn", use_container_width=True):
+            if st.button("▶ RUN ALL", key="scan_approval_all_btn", use_container_width=True):
                 frame, req = scan_approval_all()
                 st.session_state.scan_preview = frame
 
