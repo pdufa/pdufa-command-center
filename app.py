@@ -745,7 +745,7 @@ if "selected_event_key" not in st.session_state:
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-04 · I/P APP SPLIT ACTIVE")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE. Company/PDUFA detail opens only when an event is clicked.")
-st.caption("I App % = internal intelligence/model approval probability. P App % = separate approval estimate built only from public evidence; the two values are never blended.")
+st.caption("I App % = internal intelligence/model approval probability. P App % = public-only approval probability. BPW Score = 50/50 I+P consensus when both exist; BPW Direction requires I/P agreement.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
@@ -992,17 +992,22 @@ if page == "1. ALL PDUFA":
 
     avg_i_app = pd.to_numeric(view.get("approval_probability"), errors="coerce").mean()
     avg_p_app = pd.to_numeric(view.get("public_approval_probability"), errors="coerce").mean()
+    bpw_series = view.apply(bpw_score_value, axis=1)
+    avg_bpw = pd.to_numeric(bpw_series, errors="coerce").mean()
 
     st.markdown("### APPROVAL PROBABILITY")
-    m1,m2,m3,m4 = st.columns(4)
+    m1,m2,m3,m4,m5 = st.columns(5)
     with m1:
         st.markdown("#### I APP %")
         st.metric("Internal / Model", "Not scored" if pd.isna(avg_i_app) else f"{float(avg_i_app):.1f}%")
     with m2:
         st.markdown("#### P APP %")
         st.metric("Public Evidence", "Not scored" if pd.isna(avg_p_app) else f"{float(avg_p_app):.1f}%")
-    m3.metric("Saved PDUFA Events", len(master))
-    m4.metric("Present / Active", active_n)
+    with m3:
+        st.markdown("#### BPW SCORE")
+        st.metric("I + P Consensus", "Not scored" if pd.isna(avg_bpw) else f"{float(avg_bpw):.1f}%")
+    m4.metric("Saved PDUFA Events", len(master))
+    m5.metric("Present / Active", active_n)
 
     m5,m6,m7,m8 = st.columns(4)
     m5.metric("Past", past_n)
@@ -1058,6 +1063,11 @@ if page == "1. ALL PDUFA":
                 "P App %": st.column_config.TextColumn(
                     "P App %",
                     help="Approval probability calculated from public evidence only",
+                    width="small",
+                ),
+                "BPW Score": st.column_config.TextColumn(
+                    "BPW Score",
+                    help="50/50 consensus of I App and P App when both are scored",
                     width="small",
                 ),
             },
@@ -1194,6 +1204,7 @@ elif page == "2. MARKET CAP GROUPS":
                 ),
                 "I App %": st.column_config.TextColumn("I App %", help="Internal/model approval probability", width="small"),
                 "P App %": st.column_config.TextColumn("P App %", help="Public-evidence-only approval probability", width="small"),
+                "BPW Score": st.column_config.TextColumn("BPW Score", help="50/50 I+P consensus", width="small"),
             },
             on_select="rerun",
             selection_mode="single-row",
@@ -1667,6 +1678,8 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
         live_v2["I App %"] = live_v2["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["P App %"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+        live_v2["BPW Score"] = live_v2.apply(lambda r: fmt_app_pct(bpw_score_value(r), 1), axis=1)
+        live_v2["BPW Direction"] = live_v2.apply(bpw_direction_state, axis=1)
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
             lambda r: event_detail_url(r, source="live", return_page="4. PREDICTION ENGINE"), axis=1
@@ -1685,7 +1698,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","I App %","P App %","PDUFA Date","drug","indication",
+            "Ticker","I App %","P App %","BPW Score","BPW Direction","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
@@ -1746,14 +1759,16 @@ else:
 
         public_hist = hr.get("public_approval_probability", pd.NA)
         public_hist_text = fmt_app_pct(public_hist, 1)
-        a1,a2,a3,a4,a5,a6,a7 = st.columns(7)
+        bpw_hist_text = fmt_app_pct(bpw_score_value(hr), 1)
+        a1,a2,a3,a4,a5,a6,a7,a8 = st.columns(8)
         a1.metric("PDUFA Date", hdate)
         a2.metric("I App %", app_text)
         a3.metric("P App %", public_hist_text)
-        a4.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
-        a5.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
-        a6.metric("Result", correct_text)
-        a7.metric("Historical Cap", hcap)
+        a4.metric("BPW Score", bpw_hist_text)
+        a5.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
+        a6.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
+        a7.metric("Result", correct_text)
+        a8.metric("Historical Cap", hcap)
 
         st.markdown("### V2 Audit / Validation Status")
         vs1,vs2,vs3,vs4 = st.columns(4)
@@ -1838,17 +1853,19 @@ else:
         r = ordered[ordered["event_key"] == st.session_state.selected_event_key].iloc[0]
         st.markdown(
             f"## {r.ticker} · I {fmt_app_pct(r.get('approval_probability'), 1)} "
-            f"· P {fmt_app_pct(r.get('public_approval_probability'), 1)} — {r.company}"
+            f"· P {fmt_app_pct(r.get('public_approval_probability'), 1)} "
+            f"· BPW {fmt_app_pct(bpw_score_value(r), 1)} — {r.company}"
         )
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
-        k1,k2,k3,k4,k5 = st.columns(5)
+        k1,k2,k3,k4,k5,k6 = st.columns(6)
         k1.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
         k2.metric("Days Left", "Not available" if days_left is None else days_left)
         k3.metric("I App %", fmt_app_pct(r.get("approval_probability"), 1))
         k4.metric("P App %", fmt_app_pct(r.get("public_approval_probability"), 1))
-        k5.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
+        k5.metric("BPW Score", fmt_app_pct(bpw_score_value(r), 1))
+        k6.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
 
         k5,k6,k7,k8 = st.columns(4)
         k5.metric("Market Cap", fmt_cap(r.get("market_cap")))
@@ -2108,6 +2125,8 @@ else:
                 pool = pool.sort_values(["_distance","pdufa_date"]).head(10).copy()
                 pool["PDUFA Date"] = pd.to_datetime(pool["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
                 pool["I App %"] = pool["_p"].apply(lambda v: fmt_app_pct(v, 1))
+                pool["P App %"] = pd.to_numeric(pool.get("public_approval_probability"), errors="coerce").apply(lambda v: fmt_app_pct(v, 1))
+                pool["BPW Score"] = pool.apply(lambda rr: fmt_app_pct(bpw_score_value(rr), 1), axis=1)
                 pool["Historical Cap"] = pool["_cap"].apply(
                     lambda v: "NA" if pd.isna(v) else "$" + f"{float(v):.2f}B"
                 )
@@ -2115,7 +2134,7 @@ else:
                     {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
                 ).fillna("NA")
                 analog_display = pool[[
-                    "ticker","PDUFA Date","I App %","model_class","actual_outcome",
+                    "ticker","PDUFA Date","I App %","P App %","BPW Score","model_class","actual_outcome",
                     "Historical Cap","market_cap_bucket","Result","audit_status"
                 ]].rename(columns={
                     "ticker":"Ticker",
