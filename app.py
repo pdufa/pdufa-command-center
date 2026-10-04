@@ -1968,6 +1968,44 @@ elif page == "5. SCAN":
         st.markdown("### Session Scan Log")
         st.dataframe(pd.DataFrame(st.session_state.scan_log), use_container_width=True, hide_index=True)
 
+    st.divider()
+    st.markdown("### AMENDMENTS / DETAILS FOUND")
+    st.caption("Results from the latest SCAN action are shown here at the bottom of the page. Changed or newly detected values are listed first; unchanged rows are not presented as amendments.")
+
+    result_rows = []
+    preview = st.session_state.get("scan_preview")
+    req = st.session_state.get("scan_request")
+    if isinstance(preview, pd.DataFrame) and req:
+        for _, rr in preview.iterrows():
+            p_public = fmt_app_pct(rr.get("public_approval_probability"), 1)
+            p_all = fmt_app_pct(all_source_probability_value(rr), 1)
+            result_rows.append({
+                "Ticker": safe_text(rr.get("ticker"), ""),
+                "Company": safe_text(rr.get("company"), ""),
+                "Drug": safe_text(rr.get("drug"), ""),
+                "PDUFA Date": "Not available" if pd.isna(rr.get("pdufa_date")) else pd.Timestamp(rr.get("pdufa_date")).strftime("%Y-%m-%d"),
+                "Action": req.get("action", ""),
+                "Scope": req.get("scope", ""),
+                "Public App %": p_public,
+                "All Sources App %": p_all,
+                "Direction": direction_fda_display(rr),
+                "PDUFA Status": safe_text(rr.get("pdufa_confirmation"), "Not available"),
+                "Phase 3": safe_text(rr.get("phase3_status"), "Not available"),
+                "Financing": safe_text(rr.get("financing_status"), "Not available"),
+                "Check Status": safe_text(rr.get("check_status"), "Not available"),
+                "Last Checked": safe_text(rr.get("last_checked"), "Not available"),
+            })
+
+    amendments = st.session_state.get("scan_amendments", [])
+    if amendments:
+        st.success(f"{len(amendments)} amendment/detail change(s) detected in this session.")
+        st.dataframe(pd.DataFrame(amendments), use_container_width=True, hide_index=True)
+    elif result_rows:
+        st.info("Latest scan results are shown below. No separate change-detection baseline is available yet, so these are current details rather than confirmed amendments.")
+        st.dataframe(pd.DataFrame(result_rows), use_container_width=True, hide_index=True)
+    else:
+        st.info("No scan results yet. Run one of the six SCAN buttons above.")
+
 
 else:
     if st.session_state.selected_detail_source == "history":
