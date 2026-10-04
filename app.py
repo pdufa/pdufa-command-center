@@ -71,17 +71,22 @@ def load_data():
             x[c] = pd.NA
 
     optional_text = [
-        "signal","confidence","science_summary","regulatory_summary","trading_summary",
+        "event_key","signal","confidence","science_summary","regulatory_summary","trading_summary",
         "evidence_cutoff","evidence_summary","application_type","financing_status",
-        "setup_phase","outcome","financing_summary"
+        "setup_phase","outcome","financing_summary","pdufa_confirmation","market_cap_bucket",
+        "reported_p_values","phase3_status","nct_id","conflict_flag","monitor_eligibility",
+        "check_status","last_checked","pdufa_evidence_url","trial_evidence_url",
+        "financing_evidence_url","new_dilution_flag","financing_proceeds"
     ]
     optional_numeric = [
         "approval_probability","science_score","regulatory_score","safety_score",
-        "cmc_score","market_cap","trade_score","short_interest","iv_30d"
+        "cmc_score","market_cap","trade_score","short_interest","iv_30d",
+        "price_last","return_30d_pct","avg_volume_20d","short_ratio","shares_float",
+        "institutional_ownership_pct","cash"
     ]
     optional_dates = [
         "phase1_date","phase2_date","phase3_date","nda_submission_date",
-        "fda_acceptance_date","decision_date"
+        "fda_acceptance_date","decision_date","financing_close_date"
     ]
 
     for c in optional_text:
@@ -97,6 +102,9 @@ def load_data():
         x[c] = pd.to_datetime(x[c], errors="coerce")
 
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
+    x["approval_probability"] = x["approval_probability"].apply(
+        lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
+    )
     return x
 
 
@@ -314,37 +322,48 @@ def fmt_cap(v):
         return "$" + f"{v/1_000_000_000:.1f}B"
     return "$" + f"{v/1_000_000:.0f}M"
 
-def fmt_pct(v):
-    return "Pending" if pd.isna(v) else f"{float(v):.0f}%"
+def fmt_pct(v, decimals=0):
+    if pd.isna(v):
+        return "Not available"
+    x = float(v)
+    if -1 <= x <= 1:
+        x *= 100
+    return f"{x:.{decimals}f}%"
 
-def safe_text(v, default="Pending"):
+def fmt_num(v, decimals=0):
+    if pd.isna(v):
+        return "Not available"
+    return f"{float(v):,.{decimals}f}"
+
+def safe_text(v, default="Not available"):
     if v is None or pd.isna(v):
         return default
     s = str(v).strip()
     return default if not s or s.lower() in ["nan", "none", "<na>"] else s
 
 def make_event_key(row):
+    source_key = safe_text(row.get("event_key"), "")
+    if source_key:
+        return source_key
     pdate = "nodate" if pd.isna(row.get("pdufa_date")) else pd.Timestamp(row.get("pdufa_date")).strftime("%Y-%m-%d")
-    base = " | ".join([
+    return " | ".join([
         safe_text(row.get("ticker"), ""),
         safe_text(row.get("drug"), ""),
         safe_text(row.get("indication"), ""),
         pdate,
     ])
-    # Include the source index so exact duplicate rows still have unique UI identities.
-    return f"{base} | row:{row.name}"
 
 df["event_key"] = df.apply(make_event_key, axis=1)
 
+def go_page(page_name):
+    st.session_state._pending_nav = page_name
+
 def go_individual(ticker=None, event_key=None):
-    # Navigation widgets cannot safely have their bound state changed after
-    # they are instantiated in the same Streamlit run. Store the destination
-    # and apply it before the Navigation radio is rendered on the next rerun.
     if ticker is not None:
         st.session_state.selected_ticker = str(ticker)
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
-    st.session_state._pending_nav = "4. INDIVIDUAL COMPANY"
+    go_page("4. INDIVIDUAL COMPANY")
 
 def table_view(frame):
     out = frame.copy()
