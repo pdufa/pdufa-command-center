@@ -1252,6 +1252,9 @@ elif page == "4. PREDICTION ENGINE":
         (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
     ].copy()
     hist["I App %"] = hist["p_approval"].apply(lambda v: fmt_app_pct(v, 1))
+    if "public_approval_probability" not in hist:
+        hist["public_approval_probability"] = pd.NA
+    hist["P App %"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     hist["Correct / Wrong"] = hist["correct"].astype(str).map(
         {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
     ).fillna("NA")
@@ -1307,7 +1310,10 @@ elif page == "4. PREDICTION ENGINE":
 
     # Recalculate every summary box from the CURRENT filtered selection.
     filtered_correct = hview["Correct / Wrong"].eq("Correct")
-    filtered_avg_p = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
+    filtered_avg_i = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
+    filtered_avg_p = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").mean()
+    if pd.notna(filtered_avg_p) and filtered_avg_p <= 1:
+        filtered_avg_p = filtered_avg_p * 100
     audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
     audited_correct = audited["Correct / Wrong"].eq("Correct")
 
@@ -1316,11 +1322,13 @@ elif page == "4. PREDICTION ENGINE":
     clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
     clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
 
-    p1,p2,p3,p4 = st.columns(4)
+    st.markdown("### APPROVAL PROBABILITY")
+    p1,p2,p3,p4,p5 = st.columns(5)
     p1.metric("Selected Cases", len(hview))
     p2.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
     p3.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
-    p4.metric("Avg I App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    p4.metric("Avg I App %", "NA" if pd.isna(filtered_avg_i) else f"{filtered_avg_i:.1f}%")
+    p5.metric("Avg P App %", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
 
     q1,q2,q3,q4 = st.columns(4)
     q1.metric("Clean Cases", clean_keep_count)
@@ -1339,7 +1347,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","I App %","PDUFA Date","model_class","actual_outcome",
+        "Ticker","I App %","P App %","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1359,6 +1367,7 @@ elif page == "4. PREDICTION ENGINE":
     })
 
     st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
+    st.caption("FIRST THREE COLUMNS: Ticker | I App % | P App %")
     st.dataframe(
         hdisplay,
         use_container_width=True,
@@ -1469,6 +1478,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["V2 Confidence"] = [x[1] for x in gate_results]
         live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
         live_v2["I App %"] = live_v2["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+        live_v2["P App %"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
             lambda r: event_detail_url(r, source="live", return_page="4. PREDICTION ENGINE"), axis=1
@@ -1487,7 +1497,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","I App %","PDUFA Date","drug","indication",
+            "Ticker","I App %","P App %","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
@@ -1546,13 +1556,16 @@ else:
         st.markdown(f"## {safe_text(hr.get('ticker'))} · {app_text} — Historical PDUFA")
         st.caption(f"Event key: {safe_text(hr.get('event_key'))}")
 
-        a1,a2,a3,a4,a5,a6 = st.columns(6)
+        public_hist = hr.get("public_approval_probability", pd.NA)
+        public_hist_text = fmt_app_pct(public_hist, 1)
+        a1,a2,a3,a4,a5,a6,a7 = st.columns(7)
         a1.metric("PDUFA Date", hdate)
         a2.metric("I App %", app_text)
-        a3.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
-        a4.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
-        a5.metric("Result", correct_text)
-        a6.metric("Historical Cap", hcap)
+        a3.metric("P App %", public_hist_text)
+        a4.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
+        a5.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
+        a6.metric("Result", correct_text)
+        a7.metric("Historical Cap", hcap)
 
         st.markdown("### V2 Audit / Validation Status")
         vs1,vs2,vs3,vs4 = st.columns(4)
