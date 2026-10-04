@@ -426,8 +426,10 @@ def fmt_app_pct(v, decimals=1):
     return f"{x:.{decimals}f}%"
 
 def combined_probability_direction(row):
-    p = fmt_app_pct(all_source_probability_value(row), 1)
+    p = displayed_probability_text(row, 1)
     f = all_source_direction_state(row)
+    if not p:
+        return ""
     return f"{p} · {f}"
 
 def calendar_app_text(row, field):
@@ -613,6 +615,28 @@ def ip_consensus_direction(row):
     return "REVIEW"
 
 
+def displayed_probability_value(row):
+    """Primary P% shown in Streamlit. Use stored approval_probability when available;
+    fall back to the all-source composite only when needed. Missing stays blank."""
+    v = row.get("approval_probability", row.get("p_approval"))
+    if v is not None and not pd.isna(v):
+        x = float(v)
+        if 0 <= x <= 1:
+            x *= 100
+        return x
+    score = all_source_probability_value(row)
+    if score is None or pd.isna(score):
+        return pd.NA
+    return float(score)
+
+
+def displayed_probability_text(row, decimals=1):
+    v = displayed_probability_value(row)
+    if v is None or pd.isna(v):
+        return ""
+    return f"{float(v):.{decimals}f}%"
+
+
 def all_source_probability_value(row):
     """All-source PoA: equal-weight I App, P App, and actual BiopharmaWatch PoA.
     Requires all three inputs so the displayed score really is an all-source score.
@@ -697,7 +721,7 @@ def direction_fda_display(row):
 
 def match_percent_display(row):
     """Populate only when both approval probability and final FDA decision exist."""
-    approval = all_source_probability_value(row)
+    approval = displayed_probability_value(row)
     actual = normalize_fda_direction(row.get("actual_outcome", row.get("outcome")))
     if approval is None or pd.isna(approval) or actual is None:
         return ""
@@ -1163,7 +1187,9 @@ if page == "1. ALL PDUFA":
     f_a = int((direction_summary == "APPROVED").sum())
     f_c = int((direction_summary == "CRL").sum())
     f_r = int((direction_summary == "REVIEW").sum())
-    p_summary = "Not scored" if pd.isna(avg_all_source) else f"{float(avg_all_source):.1f}%"
+    displayed_p_series = view.apply(displayed_probability_value, axis=1) if not view.empty else pd.Series(dtype="float64")
+    displayed_p_avg = pd.to_numeric(displayed_p_series, errors="coerce").mean()
+    p_summary = "" if pd.isna(displayed_p_avg) else f"{float(displayed_p_avg):.1f}%"
     f_summary = f"A {f_a} · C {f_c} · R {f_r}"
     match_values = view.apply(match_percent_display, axis=1) if not view.empty else pd.Series(dtype="object")
     decided_matches = match_values[match_values.isin(["100%","0%"])]
@@ -1207,7 +1233,7 @@ if page == "1. ALL PDUFA":
         st.info("No PDUFA records match the current filters.")
     else:
         display = table_view(view, return_page="1. ALL PDUFA")
-        display["P%"] = view.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1).values
+        display["P%"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
         display["F"] = view.apply(all_source_direction_state, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
@@ -1575,7 +1601,7 @@ elif page == "4. PREDICTION ENGINE":
         hist["public_approval_probability"] = pd.NA
     hist["Probability of Approval % — Public"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
-    hist["P%"] = hist["Probability of Approval % — All Sources"]
+    hist["P%"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
     hist["F"] = hist.apply(all_source_direction_state, axis=1)
     hist["Match %"] = hist.apply(match_percent_display, axis=1)
     hist["C"] = hist.apply(combined_probability_direction, axis=1)
@@ -1694,7 +1720,9 @@ elif page == "4. PREDICTION ENGINE":
     pred_a = int((pred_dirs == "APPROVED").sum())
     pred_c = int((pred_dirs == "CRL").sum())
     pred_r = int((pred_dirs == "REVIEW").sum())
-    pred_p = "Not scored" if pd.isna(filtered_avg_all) else f"{filtered_avg_all:.1f}%"
+    pred_displayed_p = hview.apply(displayed_probability_value, axis=1) if not hview.empty else pd.Series(dtype="float64")
+    pred_displayed_avg = pd.to_numeric(pred_displayed_p, errors="coerce").mean()
+    pred_p = "" if pd.isna(pred_displayed_avg) else f"{pred_displayed_avg:.1f}%"
     pred_f = f"A {pred_a} · C {pred_c} · R {pred_r}"
     pred_match_values = hview.apply(match_percent_display, axis=1) if not hview.empty else pd.Series(dtype="object")
     pred_decided_matches = pred_match_values[pred_match_values.isin(["100%","0%"])]
@@ -1859,7 +1887,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
         live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
-        live_v2["P%"] = live_v2["Probability of Approval % — All Sources"]
+        live_v2["P%"] = live_v2.apply(lambda r: displayed_probability_text(r, 1), axis=1)
         live_v2["F"] = live_v2.apply(all_source_direction_state, axis=1)
         live_v2["Match %"] = live_v2.apply(match_percent_display, axis=1)
         live_v2["C"] = live_v2.apply(combined_probability_direction, axis=1)
@@ -2075,7 +2103,7 @@ else:
         public_hist_text = fmt_app_pct(public_hist, 1)
         all_hist_text = fmt_app_pct(all_source_probability_value(hr), 1)
         a1,a2,a3,a4,a5,a6 = st.columns(6)
-        a1.metric("P%", all_hist_text, help="All-sources Probability of Approval")
+        a1.metric("P%", displayed_probability_text(hr, 1), help="Stored Probability of Approval; blank when no score exists")
         a2.metric("F", direction_fda_display(hr), help="FDA direction")
         a3.metric("C", combined_probability_direction(hr), help="Combined P% + FDA direction")
         a4.metric("PDUFA Date", hdate)
@@ -2171,7 +2199,7 @@ else:
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
         k1,k2,k3,k4,k5,k6 = st.columns(6)
-        k1.metric("P%", fmt_app_pct(all_source_probability_value(r), 1), help="All-sources Probability of Approval")
+        k1.metric("P%", displayed_probability_text(r, 1), help="Stored Probability of Approval; blank when no score exists")
         k2.metric("F", direction_fda_display(r), help="FDA direction")
         k3.metric("C", combined_probability_direction(r), help="Combined P% + FDA direction")
         k4.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
