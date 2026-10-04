@@ -206,352 +206,354 @@ def _story_timestamp(value):
 
 df = load_data()
 today = pd.Timestamp(date.today())
-future = df[df.pdufa_date >= today].copy()
-future["days"] = (future.pdufa_date - today).dt.days
+future = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
+future["days"] = (future["pdufa_date"] - today).dt.days
 future = future.sort_values("pdufa_date")
 
-st.title("PDUFA COMMAND CENTER")
-st.caption("FDA decision calendar • Science & efficacy • Regulatory • Safety • CMC • Trading intelligence • Live news")
-tabs = st.tabs(
-    [
-        "OVERVIEW",
-        "PDUFA CALENDAR",
-        "CANDIDATE INTELLIGENCE",
-        "ALL CANDIDATES",
-        "NEWS CENTER",
-        "SYSTEM",
-    ]
-)
-
-with tabs[0]:
-    a, b, c, d, e = st.columns(5)
-    a.metric("Saved PDUFA Events", len(df))
-    b.metric("Next 30 Days", int((future.days <= 30).sum()))
-    c.metric("Next 90 Days", int((future.days <= 90).sum()))
-    d.metric("Model Scored", int(df.approval_probability.notna().sum()))
-    e.metric("Data As Of", "Oct 2, 2026")
-    st.markdown("### Next FDA action dates")
-    if future.empty:
-        st.info("No future saved PDUFA events in the current feed.")
+# Normalize optional fields used by the new functional display.
+if "market_cap" not in df:
+    for alt in ["market_cap_usd", "mkt_cap", "marketcap"]:
+        if alt in df:
+            df["market_cap"] = pd.to_numeric(df[alt], errors="coerce")
+            break
     else:
-        for _, r in future.head(8).iterrows():
-            prob = (
-                f"{r.approval_probability:.0f}%"
-                if pd.notna(r.approval_probability)
-                else "PENDING"
-            )
-            st.markdown(
-                f"""<div class="hero"><span class="pill">{int(r.days)} DAYS</span><span class="pill">{r.signal}</span>
-                <h2>{r.ticker} · {r.company}</h2><div class="muted">{r.drug} · {r.indication}</div>
-                <h3 class="amber">{prob} FDA approval estimate</h3>
-                <b>PDUFA:</b> {r.pdufa_date.strftime('%b %d, %Y')}</div>""",
-                unsafe_allow_html=True,
-            )
-    st.warning(
-        "Calendar records are real saved records from your Google Sheet snapshot. "
-        "Unscored records remain PENDING until the validated research/model feed supplies a probability."
-    )
+        df["market_cap"] = pd.NA
+if "trade_score" not in df:
+    score_cols = [c for c in ["science_score","regulatory_score","safety_score","cmc_score"] if c in df]
+    df["trade_score"] = df[score_cols].mean(axis=1) if score_cols else pd.NA
+for c in ["financing_status","setup_phase","short_interest","iv_30d"]:
+    if c not in df:
+        df[c] = pd.NA
+for c in ["market_cap","trade_score","short_interest","iv_30d"]:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
 
-with tabs[1]:
-    st.markdown("### Graphical PDUFA Calendar")
-    months = sorted({(d.year, d.month) for d in future.pdufa_date.dropna()})
-    opts = [
-        f"{calendar.month_name[m]} {y}" for y, m in months
-    ] or [date.today().strftime("%B %Y")]
-    choice = st.selectbox("Month", opts)
-    mi = opts.index(choice)
-    if months:
-        y, m = months[mi]
-    else:
-        y, m = date.today().year, date.today().month
-    hdr = st.columns(7)
-    for col, n in zip(hdr, ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]):
-        col.markdown(f"**{n}**")
-    for week in calendar.Calendar().monthdatescalendar(y, m):
-        cols = st.columns(7)
-        for col, day in zip(cols, week):
-            with col:
-                st.markdown(
-                    f"**{day.day}**"
-                    if day.month == m
-                    else f"<span class='muted'>{day.day}</span>",
-                    unsafe_allow_html=True,
-                )
-                hits = df[df.pdufa_date.dt.date == day]
-                for _, r in hits.iterrows():
-                    score_text = (
-                        "Score pending"
-                        if pd.isna(r.approval_probability)
-                        else f"{r.approval_probability:.0f}%"
-                    )
-                    st.markdown(
-                        f"<div class='card small'><b>{r.ticker}</b><br>{r.company[:22]}<br>"
-                        f"<span class='amber'>{score_text}</span></div>",
-                        unsafe_allow_html=True,
-                    )
+# Refresh normalized values into future.
+future = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
+future["days"] = (future["pdufa_date"] - today).dt.days
+future = future.sort_values("pdufa_date")
 
-with tabs[2]:
-    ordered = df.sort_values("pdufa_date")
-    labels = [
-        f"{r.ticker} — {r.company} — "
-        f"{r.pdufa_date.strftime('%b %d, %Y') if pd.notna(r.pdufa_date) else 'Date unknown'}"
-        for _, r in ordered.iterrows()
-    ]
-    pick = st.selectbox("Open candidate", labels)
-    r = ordered.iloc[labels.index(pick)]
-    prob = (
-        f"{r.approval_probability:.0f}%"
-        if pd.notna(r.approval_probability)
-        else "PENDING"
-    )
-    st.markdown(f"## {r.ticker} · {r.company}")
-    st.markdown(
-        f"<span class='pill'>{r.get('application_type','FDA')}</span>"
-        f"<span class='pill'>{r.signal}</span>"
-        f"<span class='pill'>{r.confidence} CONFIDENCE</span>",
-        unsafe_allow_html=True,
-    )
-    p1, p2, p3 = st.columns(3)
-    p1.metric("FDA Approval Probability", prob)
-    p2.metric("PDUFA", r.pdufa_date.strftime("%b %d, %Y"))
-    p3.metric("Evidence Cutoff", str(r.evidence_cutoff))
-    if pd.notna(r.approval_probability):
-        st.progress(float(r.approval_probability) / 100)
-    else:
-        st.info(
-            "Validated model score has not been loaded for this candidate; "
-            "no probability is being invented."
+def fmt_cap(v):
+    if pd.isna(v):
+        return "Pending"
+    v = float(v)
+    if v >= 1_000_000_000:
+        return "$" + f"{v/1_000_000_000:.1f}B"
+    return "$" + f"{v/1_000_000:.0f}M"
+
+def fmt_pct(v):
+    return "Pending" if pd.isna(v) else f"{float(v):.0f}%"
+
+def go_individual(ticker):
+    st.session_state.selected_ticker = str(ticker)
+    st.session_state.nav = "4. INDIVIDUAL COMPANY"
+
+def table_view(frame):
+    out = frame.copy()
+    out["PDUFA Date"] = out["pdufa_date"].dt.strftime("%Y-%m-%d")
+    out["Days Left"] = (out["pdufa_date"] - today).dt.days
+    out["Market Cap"] = out["market_cap"].map(fmt_cap)
+    out["PoA"] = out["approval_probability"].map(fmt_pct)
+    out["Trade Score"] = out["trade_score"].apply(lambda v: "Pending" if pd.isna(v) else f"{float(v):.0f}")
+    out["Financing"] = out["financing_status"].fillna("Pending")
+    out["Phase"] = out["setup_phase"].fillna("Pending")
+    for c in ["ticker","company","drug","indication"]:
+        if c not in out:
+            out[c] = ""
+    return out.rename(columns={
+        "ticker":"Ticker","company":"Company","drug":"Drug","indication":"Indication",
+        "short_interest":"Short %","iv_30d":"IV (30d)"
+    })[["Ticker","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "PoA","Trade Score","Financing","Phase","Short %","IV (30d)"]]
+
+if "nav" not in st.session_state:
+    st.session_state.nav = "1. ALL PDUFA"
+if "selected_ticker" not in st.session_state:
+    base = future if not future.empty else df
+    st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
+
+st.title("🧬 BIO PDUFA COMMAND CENTER")
+st.caption("ALL → MARKET CAP GROUPS → INDIVIDUAL, with direct ALL → INDIVIDUAL navigation and a rolling 4-week PDUFA calendar")
+
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. INDIVIDUAL COMPANY"]
+st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
+page = st.session_state.nav
+
+if page == "1. ALL PDUFA":
+    st.markdown("## 1. ALL PDUFA — Complete Universe")
+    f1,f2,f3,f4 = st.columns([1.2,1.2,1.2,2])
+    with f1:
+        horizon = st.selectbox("PDUFA Window", ["All future","Next 30 days","Next 60 days","Next 90 days","Next 180 days"])
+    with f2:
+        min_poa = st.slider("Minimum PoA", 0, 100, 0)
+    with f3:
+        phases = ["All"] + sorted([str(x) for x in df["setup_phase"].dropna().unique()])
+        phase = st.selectbox("Setup Phase", phases)
+    with f4:
+        search = st.text_input("Search ticker, company, drug or indication")
+
+    view = future.copy()
+    limits = {"Next 30 days":30,"Next 60 days":60,"Next 90 days":90,"Next 180 days":180}
+    if horizon in limits:
+        view = view[view["days"] <= limits[horizon]]
+    view = view[view["approval_probability"].fillna(0) >= min_poa]
+    if phase != "All":
+        view = view[view["setup_phase"].astype(str) == phase]
+    if search:
+        q = search.lower()
+        mask = (
+            view["ticker"].astype(str).str.lower().str.contains(q, na=False) |
+            view["company"].astype(str).str.lower().str.contains(q, na=False) |
+            view["drug"].astype(str).str.lower().str.contains(q, na=False) |
+            view["indication"].astype(str).str.lower().str.contains(q, na=False)
         )
-    s1, s2, s3, s4 = st.columns(4)
-    for col, title, key in [
-        (s1, "Science", "science_score"),
-        (s2, "Regulatory", "regulatory_score"),
-        (s3, "Safety", "safety_score"),
-        (s4, "CMC", "cmc_score"),
-    ]:
-        v = r.get(key)
-        col.metric(title, "Pending" if pd.isna(v) else f"{v:.0f}/100")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("### Science & Efficacy")
-        st.write(r.get("science_summary") or "Research feed pending.")
-        st.markdown("### FDA / Regulatory")
-        st.write(r.get("regulatory_summary") or "Research feed pending.")
-    with c2:
-        st.markdown("### Safety / CMC")
-        st.write(r.get("safety_summary", "Research feed pending.") or "Research feed pending.")
-        st.write(r.get("cmc_summary", "Research feed pending.") or "Research feed pending.")
-        st.markdown("### Trading Intelligence")
-        st.write(r.get("trading_summary") or "Market feed pending.")
-    st.markdown("### Evidence & Traceability")
-    st.write(r.get("evidence_summary") or "Evidence feed pending.")
+        view = view[mask]
 
-with tabs[3]:
-    show = df.sort_values("pdufa_date").copy()
-    show["PDUFA"] = show.pdufa_date.dt.strftime("%Y-%m-%d")
-    show["FDA %"] = show.approval_probability
-    st.dataframe(
-        show[
-            ["ticker", "company", "PDUFA", "signal", "FDA %", "confidence"]
-        ].rename(
-            columns={
-                "ticker": "Ticker",
-                "company": "Company",
-                "signal": "Status",
-                "confidence": "Confidence",
-            }
-        ),
-        use_container_width=True,
-        hide_index=True,
-        height=650,
-    )
+    week_sets = []
+    for i in range(4):
+        start = today + pd.Timedelta(days=7*i)
+        end = start + pd.Timedelta(days=6)
+        hits = future[(future["pdufa_date"] >= start) & (future["pdufa_date"] <= end)]
+        week_sets.append(hits)
 
-with tabs[4]:
-    st.markdown("### PDUFA News Center")
-    st.caption(
-        "Live company-specific headlines for the PDUFA names you trade. "
-        "Stories are automatically tagged by topic and urgency; classification is a screening aid, not an FDA determination."
-    )
+    m1,m2,m3,m4,m5,m6 = st.columns(6)
+    m1.metric("Total Future", len(future))
+    m2.metric("Next 4 Weeks", sum(len(x) for x in week_sets))
+    m3.metric("Week 1", len(week_sets[0]))
+    m4.metric("Week 2", len(week_sets[1]))
+    m5.metric("Week 3", len(week_sets[2]))
+    m6.metric("Week 4", len(week_sets[3]))
 
-    ticker_rows = (
-        df.sort_values("pdufa_date")
-        .drop_duplicates("ticker")
-        .set_index("ticker", drop=False)
-    )
-    ticker_options = sorted(ticker_rows.index.dropna().astype(str).unique().tolist())
+    st.caption("Select a row to go DIRECTLY from the full list to its Individual Company page.")
+    if view.empty:
+        st.info("No candidates match the current filters.")
+    else:
+        display = table_view(view)
+        event = st.dataframe(display, use_container_width=True, hide_index=True, height=560,
+                             on_select="rerun", selection_mode="single-row")
+        if event.selection.rows:
+            go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
+            st.rerun()
+        c1,c2 = st.columns([3,1])
+        with c1:
+            quick = st.selectbox("Open a specific company", view["ticker"].astype(str).tolist(), key="all_quick")
+        with c2:
+            st.write("")
+            st.write("")
+            if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="all_open"):
+                go_individual(quick)
+                st.rerun()
 
-    if "my_trades" not in st.session_state:
-        st.session_state["my_trades"] = []
+elif page == "2. MARKET CAP GROUPS":
+    st.markdown("## 2. MARKET CAP GROUPS — Select a Range")
+    cap_ranges = [
+        ("$300M–$500M",300_000_000,500_000_000),
+        ("$500M–$750M",500_000_000,750_000_000),
+        ("$750M–$1B",750_000_000,1_000_000_000),
+        ("$1B–$2B",1_000_000_000,2_000_000_000),
+        ("$2B–$3B",2_000_000_000,3_000_000_000),
+        ("$3B–$5B",3_000_000_000,5_000_000_000),
+        ("$5B–$7.5B",5_000_000_000,7_500_000_000),
+        ("$7.5B–$10B",7_500_000_000,10_000_000_001),
+    ]
+    labels = [x[0] for x in cap_ranges]
+    selected_cap = st.radio("Market-cap band", labels, horizontal=True)
+    low,high = next((lo,hi) for label,lo,hi in cap_ranges if label == selected_cap)
+    cap_data = future[
+        future["market_cap"].notna() &
+        (future["market_cap"] >= low) &
+        (future["market_cap"] < high)
+    ].copy()
 
-    st.multiselect(
-        "MY TRADES — choose the PDUFA stocks you are actively trading",
-        ticker_options,
-        key="my_trades",
-        help="Your selection stays active for this browser session.",
-    )
+    st.markdown(f"### {selected_cap} Market Cap ({len(cap_data)} companies)")
+    if future["market_cap"].isna().all():
+        st.warning("Market-cap data is not yet present in the saved feed. This view will populate automatically when market_cap is supplied.")
+    elif cap_data.empty:
+        st.info("No future PDUFA candidates currently fall in this band.")
+    else:
+        display = table_view(cap_data)
+        event = st.dataframe(display, use_container_width=True, hide_index=True, height=560,
+                             on_select="rerun", selection_mode="single-row")
+        if event.selection.rows:
+            go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
+            st.rerun()
+        c1,c2 = st.columns([3,1])
+        with c1:
+            quick = st.selectbox("Open company from this group", cap_data["ticker"].astype(str).tolist(), key="cap_quick")
+        with c2:
+            st.write("")
+            st.write("")
+            if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="cap_open"):
+                go_individual(quick)
+                st.rerun()
 
-    c_scope, c_days, c_refresh = st.columns([2, 1, 1])
-    with c_scope:
-        scope = st.radio(
-            "News scope",
-            ["MY TRADES", "NEXT 90 DAYS", "SINGLE TICKER"],
-            horizontal=True,
-        )
-    with c_days:
-        days = st.selectbox("Lookback", [1, 3, 7, 14, 30], index=2)
-    with c_refresh:
-        st.write("")
-        st.write("")
-        if st.button("↻ REFRESH NEWS", use_container_width=True):
-            fetch_ticker_news.clear()
+elif page == "3. CALENDAR":
+    st.markdown("## 3. PDUFA CALENDAR")
+    week_sets = []
+    for i in range(4):
+        start = today + pd.Timedelta(days=7*i)
+        end = start + pd.Timedelta(days=6)
+        hits = future[(future["pdufa_date"] >= start) & (future["pdufa_date"] <= end)].copy()
+        week_sets.append((start,end,hits))
+
+    st.metric("NEXT 4 WEEKS — PDUFA DECISIONS", sum(len(x[2]) for x in week_sets))
+    cols = st.columns(4)
+    for i,(start,end,hits) in enumerate(week_sets):
+        with cols[i]:
+            st.metric(f"Week {i+1}: {start.strftime('%b %d')}–{end.strftime('%b %d')}", len(hits))
+
+    week_pick = st.radio("Drill into week", ["Week 1","Week 2","Week 3","Week 4"], horizontal=True)
+    wi = int(week_pick[-1]) - 1
+    wstart,wend,whits = week_sets[wi]
+    st.markdown(f"### {week_pick}: {wstart.strftime('%b %d, %Y')} – {wend.strftime('%b %d, %Y')}")
+    if whits.empty:
+        st.info("No saved PDUFA events in this week.")
+    else:
+        display = table_view(whits)
+        event = st.dataframe(display, use_container_width=True, hide_index=True,
+                             on_select="rerun", selection_mode="single-row")
+        if event.selection.rows:
+            go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
             st.rerun()
 
-    if scope == "MY TRADES":
-        scope_tickers = list(st.session_state["my_trades"])
-        if not scope_tickers:
-            st.info("Select one or more tickers in MY TRADES to build your trading-news feed.")
-    elif scope == "NEXT 90 DAYS":
-        scope_tickers = (
-            future[future["days"].between(0, 90)]["ticker"]
-            .dropna()
-            .astype(str)
-            .drop_duplicates()
-            .head(15)
-            .tolist()
-        )
-        if len(scope_tickers) == 15:
-            st.caption("Live feed is limited to the first 15 upcoming PDUFA tickers to keep the page fast.")
+    st.divider()
+    st.markdown("### Month Calendar")
+    months = sorted({(d.year,d.month) for d in future["pdufa_date"].dropna()})
+    opts = [f"{calendar.month_name[m]} {y}" for y,m in months] or [date.today().strftime("%B %Y")]
+    choice = st.selectbox("Month", opts)
+    mi = opts.index(choice)
+    y,m = months[mi] if months else (date.today().year,date.today().month)
+
+    hdr = st.columns(7)
+    for col,n in zip(hdr,["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]):
+        col.markdown(f"**{n}**")
+    for week in calendar.Calendar().monthdatescalendar(y,m):
+        cols = st.columns(7)
+        for col,day in zip(cols,week):
+            with col:
+                st.markdown(f"**{day.day}**" if day.month == m else f"<span class='muted'>{day.day}</span>", unsafe_allow_html=True)
+                hits = df[df["pdufa_date"].dt.date == day]
+                for _,r in hits.iterrows():
+                    if st.button(f"{r.ticker} · {fmt_pct(r.approval_probability)}",
+                                 key=f"cal_{day}_{r.ticker}", use_container_width=True):
+                        go_individual(r.ticker)
+                        st.rerun()
+
+else:
+    ordered = df.sort_values("pdufa_date")
+    tickers = ordered["ticker"].dropna().astype(str).drop_duplicates().tolist()
+    selected = st.session_state.selected_ticker
+    if tickers and selected not in tickers:
+        selected = tickers[0]
+
+    csel,b1,b2 = st.columns([3,1,1])
+    with csel:
+        selected = st.selectbox("Company", tickers, index=tickers.index(selected) if selected in tickers else 0,
+                                key="individual_selector")
+        st.session_state.selected_ticker = selected
+    with b1:
+        st.write("")
+        st.write("")
+        if st.button("← ALL PDUFA", use_container_width=True):
+            st.session_state.nav = "1. ALL PDUFA"
+            st.rerun()
+    with b2:
+        st.write("")
+        st.write("")
+        if st.button("← MARKET CAP", use_container_width=True):
+            st.session_state.nav = "2. MARKET CAP GROUPS"
+            st.rerun()
+
+    if not tickers:
+        st.info("No candidates loaded.")
     else:
-        single = st.selectbox("Ticker", ticker_options, key="news_single_ticker")
-        scope_tickers = [single]
+        r = ordered[ordered["ticker"].astype(str) == selected].iloc[0]
+        st.markdown(f"## {r.ticker} — {r.company}")
+        st.caption(f"{r.get('drug','')} · {r.get('indication','')}")
+        days_left = None if pd.isna(r.pdufa_date) else int((r.pdufa_date - today).days)
 
-    categories = [
-        "FDA / REGULATORY",
-        "CLINICAL",
-        "FINANCING / SEC",
-        "TRADING",
-        "COMPANY",
-    ]
-    priorities = ["CRITICAL", "IMPORTANT", "ROUTINE"]
+        k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
+        k1.metric("Market Cap", fmt_cap(r.market_cap))
+        k2.metric("PDUFA Date", "Pending" if pd.isna(r.pdufa_date) else r.pdufa_date.strftime("%b %d, %Y"))
+        k3.metric("Days Left", "Pending" if days_left is None else days_left)
+        k4.metric("Approval Probability", fmt_pct(r.approval_probability))
+        k5.metric("Trade Score", "Pending" if pd.isna(r.trade_score) else f"{float(r.trade_score):.0f}/100")
+        k6.metric("Short Interest", fmt_pct(r.short_interest))
+        k7.metric("IV (30d)", fmt_pct(r.iv_30d))
 
-    f1, f2 = st.columns(2)
-    with f1:
-        category_filter = st.multiselect(
-            "Categories",
-            categories,
-            default=categories,
-        )
-    with f2:
-        priority_filter = st.multiselect(
-            "Priority",
-            priorities,
-            default=priorities,
-        )
-
-    all_stories = []
-    errors = []
-
-    if scope_tickers:
-        with st.spinner("Loading live PDUFA news..."):
-            for ticker in scope_tickers:
-                if ticker not in ticker_rows.index:
-                    continue
-                row = ticker_rows.loc[ticker]
-                company = str(row.get("company", "") or "")
-                drug = str(row.get("drug", "") or "")
-                stories, error = fetch_ticker_news(
-                    ticker=ticker,
-                    company=company,
-                    drug=drug,
-                    days=days,
-                )
-                all_stories.extend(stories)
-                if error:
-                    errors.append((ticker, error))
-
-    all_stories.sort(key=lambda s: _story_timestamp(s.get("published")), reverse=True)
-    filtered = [
-        s
-        for s in all_stories
-        if s["category"] in category_filter and s["priority"] in priority_filter
-    ]
-
-    n_critical = sum(1 for s in filtered if s["priority"] == "CRITICAL")
-    n_reg = sum(1 for s in filtered if s["category"] == "FDA / REGULATORY")
-    n_fin = sum(1 for s in filtered if s["category"] == "FINANCING / SEC")
-
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Stories", len(filtered))
-    m2.metric("Critical", n_critical)
-    m3.metric("FDA / Regulatory", n_reg)
-    m4.metric("Financing / SEC", n_fin)
-
-    if errors:
-        with st.expander(f"Feed warnings ({len(errors)})"):
-            for ticker, error in errors:
-                st.write(f"{ticker}: {error}")
-
-    if scope_tickers and not filtered and not errors:
-        st.info("No matching stories were found for the current tickers, filters and lookback window.")
-
-    for story in filtered[:75]:
-        priority = story["priority"]
-        css = {
-            "CRITICAL": "news-critical",
-            "IMPORTANT": "news-important",
-            "ROUTINE": "news-routine",
-        }[priority]
-        pclass = {
-            "CRITICAL": "red",
-            "IMPORTANT": "amber",
-            "ROUTINE": "green",
-        }[priority]
-
-        published_text = "Time unavailable"
-        if story.get("published"):
-            try:
-                ts = pd.Timestamp(story["published"])
-                published_text = ts.strftime("%b %d, %Y • %I:%M %p %Z")
-            except Exception:
-                pass
-
-        safe_title = html.escape(story["title"])
-        safe_ticker = html.escape(story["ticker"])
-        safe_source = html.escape(story["source"])
-        safe_category = html.escape(story["category"])
-
-        st.markdown(
-            f"""<div class="card {css}">
-            <span class="pill">{safe_ticker}</span>
-            <span class="pill">{safe_category}</span>
-            <span class="pill {pclass}">{priority}</span>
-            <h3>{safe_title}</h3>
-            <div class="muted small">{safe_source} · {published_text}</div>
-            </div>""",
-            unsafe_allow_html=True,
-        )
-        if story.get("link"):
-            st.link_button("READ SOURCE", story["link"])
-
-with tabs[5]:
-    st.markdown("### System status")
-    st.success("WEB APP: DEPLOYED")
-    st.success(f"CALENDAR FEED: {len(df)} saved PDUFA event records loaded")
-    st.success("NEWS CENTER: live ticker-specific RSS/news feed enabled with 15-minute cache")
-    st.info(
-        "MODEL/DEEP-RESEARCH FEED: awaiting automated export from the Colab/Drive Level-17 system"
-    )
-    st.markdown(
-        """<div class="card"><b>Data integrity rule</b><br>
-        The web layer does not write into historical research files. Calendar, science,
-        regulatory, CMC, safety and trading outputs are presentation copies. Missing model
-        outputs display as PENDING rather than fabricated values. News classification is
-        automated and should be verified against the linked source before acting.</div>""",
-        unsafe_allow_html=True,
-    )
+        subtabs = st.tabs(["Overview","PDUFA Timeline","Clinical","FDA","Financing","Trading","News","Scoring","Analogs"])
+        with subtabs[0]:
+            a,b = st.columns(2)
+            with a:
+                st.markdown("### Candidate")
+                st.write(f"**Drug:** {r.get('drug','Pending')}")
+                st.write(f"**Indication:** {r.get('indication','Pending')}")
+                st.write(f"**Application:** {r.get('application_type','Pending')}")
+                st.write(f"**Setup Phase:** {r.get('setup_phase','Pending')}")
+                st.write(f"**Financing:** {r.get('financing_status','Pending')}")
+            with b:
+                st.markdown("### Evidence")
+                st.write(f"**Signal:** {r.get('signal','Pending')}")
+                st.write(f"**Confidence:** {r.get('confidence','Pending')}")
+                st.write(f"**Evidence cutoff:** {r.get('evidence_cutoff','Pending')}")
+                st.write(r.get("evidence_summary") or "Evidence feed pending.")
+        with subtabs[1]:
+            st.markdown("### PDUFA Timeline")
+            st.write("✅ Phase 3 / pivotal evidence")
+            st.write("✅ NDA/BLA submission and acceptance when captured")
+            st.write("🔵 Current PDUFA window")
+            st.write(f"🎯 **PDUFA:** {'Pending' if pd.isna(r.pdufa_date) else r.pdufa_date.strftime('%b %d, %Y')}")
+        with subtabs[2]:
+            st.markdown("### Clinical")
+            st.write(r.get("science_summary") or "Clinical research feed pending.")
+            v = r.get("science_score")
+            st.metric("Science Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
+        with subtabs[3]:
+            st.markdown("### FDA / Regulatory")
+            st.write(r.get("regulatory_summary") or "Regulatory research feed pending.")
+            v = r.get("regulatory_score")
+            st.metric("Regulatory Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
+        with subtabs[4]:
+            st.markdown("### Financing")
+            st.metric("Financing Status", str(r.get("financing_status") or "Pending"))
+            st.write(r.get("financing_summary") or "Financing detail feed pending.")
+        with subtabs[5]:
+            st.markdown("### Trading")
+            st.write(r.get("trading_summary") or "Trading intelligence feed pending.")
+            t1,t2,t3 = st.columns(3)
+            t1.metric("Trade Score", "Pending" if pd.isna(r.trade_score) else f"{float(r.trade_score):.0f}/100")
+            t2.metric("Short Interest", fmt_pct(r.short_interest))
+            t3.metric("IV (30d)", fmt_pct(r.iv_30d))
+        with subtabs[6]:
+            st.markdown("### Recent News")
+            stories,error = fetch_ticker_news(str(r.ticker), str(r.company), str(r.get("drug","")), 14)
+            if error:
+                st.warning(f"News feed unavailable: {error}")
+            elif not stories:
+                st.info("No matching recent stories found.")
+            else:
+                for story in stories[:12]:
+                    st.markdown(
+                        f"""<div class="card"><span class="pill">{story['category']}</span>
+                        <span class="pill">{story['priority']}</span>
+                        <b>{html.escape(story['title'])}</b><br>
+                        <span class="muted">{html.escape(story['source'])}</span></div>""",
+                        unsafe_allow_html=True,
+                    )
+                    if story["link"]:
+                        st.link_button("READ SOURCE", story["link"])
+        with subtabs[7]:
+            st.markdown("### Scoring")
+            s1,s2,s3,s4,s5 = st.columns(5)
+            for col,label,key in [
+                (s1,"Science","science_score"),(s2,"Regulatory","regulatory_score"),
+                (s3,"Safety","safety_score"),(s4,"CMC","cmc_score"),(s5,"Trade","trade_score")
+            ]:
+                v = r.get(key,pd.NA)
+                col.metric(label, "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
+            st.caption("Approval probability and trading attractiveness remain separate.")
+        with subtabs[8]:
+            st.markdown("### Historical Analogs")
+            st.write("Validated analog comparisons will appear here when the analog feed is connected. No result is fabricated.")
 
 st.divider()
-st.caption(
-    "FDA probabilities are model estimates, not FDA determinations. "
-    "Regulatory probability and trading attractiveness are kept separate."
-)
+st.caption("FDA probabilities are model estimates, not FDA determinations. Missing values remain Pending rather than being invented.")
