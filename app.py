@@ -902,20 +902,23 @@ else:
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
-        k1,k2,k3,k4,k5,k6,k7 = st.columns(7)
-        k1.metric("Market Cap", fmt_cap(r.get("market_cap")))
-        k2.metric("PDUFA Date", "Pending" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
-        k3.metric("Days Left", "Pending" if days_left is None else days_left)
-        k4.metric("Approval Probability", fmt_pct(r.get("approval_probability")))
-        k5.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get('trade_score')):.0f}/100")
-        k6.metric("Short Interest", fmt_pct(r.get("short_interest")))
-        k7.metric("IV (30d)", fmt_pct(r.get("iv_30d")))
+        k1,k2,k3,k4 = st.columns(4)
+        k1.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
+        k2.metric("Days Left", "Not available" if days_left is None else days_left)
+        k3.metric("App %", fmt_pct(r.get("approval_probability"), 1))
+        k4.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
+
+        k5,k6,k7,k8 = st.columns(4)
+        k5.metric("Market Cap", fmt_cap(r.get("market_cap")))
+        k6.metric("Cap Bucket", safe_text(r.get("market_cap_bucket")))
+        k7.metric("Phase 3", safe_text(r.get("phase3_status")))
+        k8.metric("Eligibility", safe_text(r.get("monitor_eligibility")))
 
         if pd.notna(r.get("pdufa_date")):
             pdufa_date_text = pd.Timestamp(r.get("pdufa_date")).strftime("%A, %B %d, %Y")
-            st.success(f"✅ **PDUFA DATE SET:** {pdufa_date_text}")
+            st.success(f"✅ **PDUFA DATE SET:** {pdufa_date_text} · {safe_text(r.get('pdufa_confirmation'))}")
         else:
-            st.warning("⚠️ **PDUFA DATE:** Not yet set in the saved event feed")
+            st.warning("⚠️ No PDUFA date is stored for this event.")
 
         subtabs = st.tabs(["Overview","Pipeline Tracker","PDUFA Timeline","Clinical","FDA","Financing","Trading","News","Scoring","Analogs"])
         with subtabs[0]:
@@ -925,19 +928,35 @@ else:
                 st.write(f"**Drug:** {safe_text(r.get('drug'))}")
                 st.write(f"**Indication:** {safe_text(r.get('indication'))}")
                 st.write(f"**Application:** {safe_text(r.get('application_type'))}")
-                st.write(f"**Setup Phase:** {safe_text(r.get('setup_phase'))}")
-                st.write(f"**Financing:** {safe_text(r.get('financing_status'))}")
+                st.write(f"**Signal / gate:** {safe_text(r.get('signal'))}")
+                st.write(f"**Conflict flag:** {safe_text(r.get('conflict_flag'))}")
+                st.write(f"**Check status:** {safe_text(r.get('check_status'))}")
             with b:
-                st.markdown("### Evidence")
-                st.write(f"**Signal:** {safe_text(r.get('signal'))}")
-                st.write(f"**Confidence:** {safe_text(r.get('confidence'))}")
-                st.write(f"**Evidence cutoff:** {safe_text(r.get('evidence_cutoff'))}")
-                st.write(safe_text(r.get("evidence_summary"), "Evidence feed pending."))
+                st.markdown("### Evidence snapshot")
+                st.write(f"**Phase 3 status:** {safe_text(r.get('phase3_status'))}")
+                st.write(f"**Phase 3 date:** {'Not captured' if pd.isna(r.get('phase3_date')) else pd.Timestamp(r.get('phase3_date')).strftime('%b %d, %Y')}")
+                st.write(f"**NCT ID(s):** {safe_text(r.get('nct_id'))}")
+                st.write(f"**Reported p-value(s):** {safe_text(r.get('reported_p_values'))}")
+                st.write(f"**Financing:** {safe_text(r.get('financing_status'))}")
+                st.write(f"**Last checked:** {safe_text(r.get('last_checked'))}")
+                st.write(f"**Model confidence:** {safe_text(r.get('confidence'), 'Not scored')}")
+            s1,s2,s3 = st.columns(3)
+            if safe_text(r.get("pdufa_evidence_url"), ""):
+                with s1:
+                    st.link_button("OPEN PDUFA / FDA SOURCE", r.get("pdufa_evidence_url"), use_container_width=True)
+            if safe_text(r.get("trial_evidence_url"), ""):
+                with s2:
+                    st.link_button("OPEN PHASE 3 SOURCE", r.get("trial_evidence_url"), use_container_width=True)
+            if safe_text(r.get("financing_evidence_url"), ""):
+                with s3:
+                    st.link_button("OPEN FINANCING SOURCE", r.get("financing_evidence_url"), use_container_width=True)
+            with st.expander("Full saved event notes", expanded=False):
+                st.write(safe_text(r.get("evidence_summary"), "No saved notes."))
         with subtabs[1]:
             ptitle, pwatch = st.columns([4,1])
             with ptitle:
                 st.markdown("### Development Pipeline — Phase 1 to Now")
-                st.caption("One continuous tracker for the selected drug/indication. Exact milestone dates appear when present in the validated feed; unknown dates remain Pending.")
+                st.caption("One continuous tracker for the selected drug/indication. Missing milestone dates are labeled Not captured; they are not treated as failed or unknown outcomes.")
             with pwatch:
                 ticker_key = str(r.ticker)
                 on_watchlist = ticker_key in st.session_state.watchlist
@@ -992,20 +1011,20 @@ else:
                 if pd.notna(dt):
                     date_text = pd.Timestamp(dt).strftime("%b %d, %Y")
                 else:
-                    date_text = "Pending"
+                    date_text = "Not captured"
                 if current_index is not None and i < current_index:
                     if pd.notna(dt):
                         icon = "✅"
                         status = "Completed — date verified"
                     else:
                         icon = "✓"
-                        status = "Completed / inferred — date pending"
+                        status = "Completed / inferred — date not captured"
                 elif current_index is not None and i == current_index:
                     icon = "🔵"
                     status = "Current"
                 else:
                     icon = "○"
-                    status = "Upcoming / Pending"
+                    status = "Upcoming / not captured"
                 with col:
                     st.markdown(f"### {icon} {name}")
                     st.write(f"**{status}**")
