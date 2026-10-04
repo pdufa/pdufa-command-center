@@ -1436,7 +1436,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["V2 Call"] = [x[0] for x in gate_results]
         live_v2["V2 Confidence"] = [x[1] for x in gate_results]
         live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
-        live_v2["App %"] = live_v2["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+        live_v2["I App %"] = live_v2["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
             lambda r: event_detail_url(r, source="live", return_page="4. PREDICTION ENGINE"), axis=1
@@ -1516,7 +1516,7 @@ else:
 
         a1,a2,a3,a4,a5,a6 = st.columns(6)
         a1.metric("PDUFA Date", hdate)
-        a2.metric("App %", app_text)
+        a2.metric("I App %", app_text)
         a3.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
         a4.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
         a5.metric("Result", correct_text)
@@ -1874,7 +1874,7 @@ else:
                 pool = same_bucket if not same_bucket.empty else analogs
                 pool = pool.sort_values(["_distance","pdufa_date"]).head(10).copy()
                 pool["PDUFA Date"] = pd.to_datetime(pool["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
-                pool["App %"] = pool["_p"].apply(lambda v: fmt_app_pct(v, 1))
+                pool["I App %"] = pool["_p"].apply(lambda v: fmt_app_pct(v, 1))
                 pool["Historical Cap"] = pool["_cap"].apply(
                     lambda v: "NA" if pd.isna(v) else "$" + f"{float(v):.2f}B"
                 )
@@ -1882,7 +1882,7 @@ else:
                     {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
                 ).fillna("NA")
                 analog_display = pool[[
-                    "ticker","PDUFA Date","App %","model_class","actual_outcome",
+                    "ticker","PDUFA Date","I App %","model_class","actual_outcome",
                     "Historical Cap","market_cap_bucket","Result","audit_status"
                 ]].rename(columns={
                     "ticker":"Ticker",
