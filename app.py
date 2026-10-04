@@ -395,6 +395,97 @@ def safe_text(v, default="Not available"):
     s = str(v).strip()
     return default if not s or s.lower() in ["nan", "none", "<na>"] else s
 
+def prediction_v2_history_status(row):
+    """Audit-safe status for historical validation rows."""
+    count_ok = str(row.get("count_in_audited_accuracy", "")).upper() == "YES"
+    needs_rescore = str(row.get("needs_rescore", "")).upper() == "YES"
+    status = safe_text(row.get("audit_status"), "UNREVIEWED")
+    if needs_rescore or not count_ok:
+        return "REBUILD / RESCORE"
+    if status == "CLEAN_MODEL_MISS":
+        return "CLEAN MODEL MISS"
+    if status in ["CLEAN_CORRECT", "VALID_PDUFA_DELAYED_ACTION"]:
+        return "CLEAN / KEEP"
+    return "REVIEW"
+
+
+def prospective_gate_state(row):
+    """Conservative V2 decision layer for live/future PDUFA rows."""
+    reasons = []
+
+    pdufa_status = safe_text(row.get("pdufa_confirmation"), "").lower()
+    monitor = safe_text(row.get("monitor_eligibility"), "").upper()
+    conflict = safe_text(row.get("conflict_flag"), "").upper()
+    phase3 = safe_text(row.get("phase3_status"), "").lower()
+    pdufa_url = safe_text(row.get("pdufa_evidence_url"), "")
+    trial_url = safe_text(row.get("trial_evidence_url"), "")
+
+    identity_ok = bool(pdufa_url) and (
+        "verified" in pdufa_status or "confirmed" in pdufa_status or monitor == "PASS"
+    )
+    if not identity_ok:
+        reasons.append("PDUFA identity/evidence not fully verified")
+
+    evidence_ok = bool(trial_url) or ("phase 3" in phase3) or ("pivotal" in phase3) or ("complete" in phase3)
+    if not evidence_ok:
+        reasons.append("pivotal/Phase 3 evidence incomplete")
+
+    if conflict not in ["", "NONE", "NO", "FALSE", "0", "PASS"]:
+        reasons.append("unresolved evidence conflict")
+
+    component_cols = ["science_score","regulatory_score","safety_score","cmc_score"]
+    components = {}
+    for col in component_cols:
+        value = row.get(col)
+        components[col] = None if pd.isna(value) else float(value)
+
+    for col,label in [
+        ("science_score","clinical"),
+        ("regulatory_score","regulatory"),
+        ("safety_score","safety"),
+        ("cmc_score","CMC/manufacturing"),
+    ]:
+        if components[col] is None:
+            reasons.append(f"{label} score missing")
+
+    hard_fail = False
+    if components["cmc_score"] is not None and components["cmc_score"] < 50:
+        hard_fail = True
+        reasons.append("CMC/manufacturing hard gate failed")
+    if components["safety_score"] is not None and components["safety_score"] < 50:
+        hard_fail = True
+        reasons.append("safety hard gate failed")
+    if components["regulatory_score"] is not None and components["regulatory_score"] < 50:
+        hard_fail = True
+        reasons.append("regulatory hard gate failed")
+
+    p = row.get("approval_probability")
+    p = None if pd.isna(p) else float(p)
+    if p is not None and 0 <= p <= 1:
+        p *= 100
+
+    if hard_fail:
+        call = "CRL RISK / REVIEW"
+        confidence = "HIGH RISK"
+    elif reasons:
+        call = "REVIEW"
+        confidence = "INSUFFICIENT EVIDENCE"
+    elif p is None:
+        call = "REVIEW"
+        confidence = "NO APP %"
+    elif p >= 85:
+        call = "APPROVED"
+        confidence = "HIGH"
+    elif p <= 20:
+        call = "CRL"
+        confidence = "HIGH"
+    else:
+        call = "REVIEW"
+        confidence = "AMBIGUOUS"
+
+    return call, confidence, " | ".join(dict.fromkeys(reasons)) if reasons else "All V2 gates passed"
+
+
 def make_event_key(row):
     source_key = safe_text(row.get("event_key"), "")
     if source_key:
