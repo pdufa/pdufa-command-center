@@ -128,6 +128,20 @@ def load_prediction_history():
         x["historical_market_cap_billions"], errors="coerce"
     )
     x["correct"] = x["correct"].astype("string")
+
+    try:
+        audit = pd.read_csv("data/prediction_engine_audit.csv")
+        audit["event_key"] = audit["event_key"].astype(str)
+        x["event_key"] = x["event_key"].astype(str)
+        x = x.merge(audit, on="event_key", how="left")
+    except Exception:
+        x["audit_status"] = pd.NA
+        x["failure_reason"] = pd.NA
+        x["count_in_audited_accuracy"] = pd.NA
+        x["verified_note"] = pd.NA
+
+    x["audit_status"] = x["audit_status"].fillna("UNREVIEWED_OR_CLEAN")
+    x["count_in_audited_accuracy"] = x["count_in_audited_accuracy"].fillna("YES")
     return x
 
 
@@ -1081,13 +1095,17 @@ elif page == "4. PREDICTION ENGINE":
     # Recalculate every summary box from the CURRENT filtered selection.
     filtered_correct = hview["Correct / Wrong"].eq("Correct")
     filtered_avg_p = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
-    p1,p2,p3,p4,p5,p6 = st.columns(6)
+    audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
+    audited_correct = audited["Correct / Wrong"].eq("Correct")
+
+    p1,p2,p3,p4,p5,p6,p7 = st.columns(7)
     p1.metric("Selected Cases", len(hview))
     p2.metric("Avg App %", "NA" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
     p3.metric("Pred APPROVED", int((hview["model_class"] == "APPROVED").sum()))
     p4.metric("Pred CRL", int((hview["model_class"] == "CRL").sum()))
-    p5.metric("Correct", int(filtered_correct.sum()))
-    p6.metric("Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
+    p5.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
+    p6.metric("Audited Cases", len(audited))
+    p7.metric("Audited Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
 
     st.caption(
         f"Filtered selection: {len(hview)} of {len(hist)} cases. "
@@ -1102,11 +1120,15 @@ elif page == "4. PREDICTION ENGINE":
     hdisplay = hview[[
         "Ticker","App %","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong",
+        "audit_status","failure_reason","count_in_audited_accuracy",
         "validation_period","independence_status"
     ]].rename(columns={
         "model_class":"Model Prediction",
         "actual_outcome":"Actual FDA Outcome",
         "market_cap_bucket":"Market Cap Bucket",
+        "audit_status":"Audit Status",
+        "failure_reason":"Failure Reason",
+        "count_in_audited_accuracy":"Count in Audited Accuracy",
         "validation_period":"Validation Period",
         "independence_status":"Validation Role"
     })
