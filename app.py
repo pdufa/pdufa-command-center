@@ -256,8 +256,28 @@ def fmt_cap(v):
 def fmt_pct(v):
     return "Pending" if pd.isna(v) else f"{float(v):.0f}%"
 
-def go_individual(ticker):
-    st.session_state.selected_ticker = str(ticker)
+def safe_text(v, default="Pending"):
+    if v is None or pd.isna(v):
+        return default
+    s = str(v).strip()
+    return default if not s or s.lower() in ["nan", "none", "<na>"] else s
+
+def make_event_key(row):
+    pdate = "nodate" if pd.isna(row.get("pdufa_date")) else pd.Timestamp(row.get("pdufa_date")).strftime("%Y-%m-%d")
+    return " | ".join([
+        safe_text(row.get("ticker"), ""),
+        safe_text(row.get("drug"), ""),
+        safe_text(row.get("indication"), ""),
+        pdate,
+    ])
+
+df["event_key"] = df.apply(make_event_key, axis=1)
+
+def go_individual(ticker=None, event_key=None):
+    if ticker is not None:
+        st.session_state.selected_ticker = str(ticker)
+    if event_key is not None:
+        st.session_state.selected_event_key = str(event_key)
     st.session_state.nav = "4. INDIVIDUAL COMPANY"
 
 def table_view(frame):
@@ -313,6 +333,9 @@ if "selected_ticker" not in st.session_state:
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
 if "watchlist" not in st.session_state:
     st.session_state.watchlist = []
+if "selected_event_key" not in st.session_state:
+    base = future if not future.empty else df
+    st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("ALL → MARKET CAP GROUPS → INDIVIDUAL, with direct ALL → INDIVIDUAL navigation and a rolling 4-week PDUFA calendar")
@@ -337,6 +360,9 @@ if page == "1. ALL PDUFA":
     )
     master["year"] = master["pdufa_date"].dt.year
     master["days_from_today"] = (master["pdufa_date"] - today).dt.days
+    master["outcome_display"] = master["outcome"].apply(lambda v: safe_text(v, "Pending"))
+    master["signal_display"] = master["signal"].apply(lambda v: safe_text(v, "Pending"))
+    master["financing_display"] = master["financing_status"].apply(lambda v: safe_text(v, "Pending"))
 
     top1, top2, top3, top4, top5 = st.columns([1.25,1.25,1.25,1.25,2.2])
 
@@ -384,15 +410,15 @@ if page == "1. ALL PDUFA":
                 ))
 
     with top3:
-        outcome_values = sorted([str(x) for x in master["outcome"].dropna().unique() if str(x).strip()])
+        outcome_values = sorted(master["outcome_display"].dropna().astype(str).unique().tolist())
         outcome_filter = st.multiselect(
             "FDA Outcome",
-            outcome_values if outcome_values else ["Approved","CRL","Withdrawn","Pending"],
+            outcome_values,
             default=[]
         )
 
     with top4:
-        signal_values = sorted([str(x) for x in master["signal"].dropna().unique()])
+        signal_values = sorted(master["signal_display"].dropna().astype(str).unique().tolist())
         signal_filter = st.multiselect("Status / Signal", signal_values, default=[])
 
     with top5:
@@ -420,7 +446,7 @@ if page == "1. ALL PDUFA":
         min_trade = st.slider("Minimum Trade Score", 0, 100, 0)
 
     with row2d:
-        financing_values = sorted([str(x) for x in master["financing_status"].dropna().unique()])
+        financing_values = sorted(master["financing_display"].dropna().astype(str).unique().tolist())
         financing_filter = st.multiselect("Financing", financing_values, default=[])
 
     with row2e:
@@ -469,11 +495,11 @@ if page == "1. ALL PDUFA":
         hi_year = max(year_start, year_end)
         view = view[view["year"].between(lo_year, hi_year)]
     if outcome_filter:
-        view = view[view["outcome"].astype(str).isin(outcome_filter)]
+        view = view[view["outcome_display"].isin(outcome_filter)]
     if signal_filter:
-        view = view[view["signal"].astype(str).isin(signal_filter)]
+        view = view[view["signal_display"].isin(signal_filter)]
     if financing_filter:
-        view = view[view["financing_status"].astype(str).isin(financing_filter)]
+        view = view[view["financing_display"].isin(financing_filter)]
     view = view[view["approval_probability"].fillna(0) >= min_poa]
     view = view[view["trade_score"].fillna(0) >= min_trade]
 
@@ -519,6 +545,22 @@ if page == "1. ALL PDUFA":
 
     st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
 
+    valid_dates = int(master["pdufa_date"].notna().sum())
+    unique_events = int(master["event_key"].nunique())
+    unique_tickers = int(master["ticker"].astype(str).nunique())
+    with st.expander("DATA INTEGRITY CHECK", expanded=False):
+        q1,q2,q3,q4 = st.columns(4)
+        q1.metric("Parsed Rows", len(master))
+        q2.metric("Valid PDUFA Dates", valid_dates)
+        q3.metric("Unique Events", unique_events)
+        q4.metric("Unique Tickers", unique_tickers)
+        if len(master) <= 1:
+            st.error("DATA ERROR: master feed collapsed to one row.")
+        elif valid_dates != len(master):
+            st.warning(f"{len(master)-valid_dates} row(s) have missing/invalid PDUFA dates.")
+        else:
+            st.success("Row parsing and PDUFA date parsing passed.")
+
     if view.empty:
         st.info("No PDUFA records match the current filters.")
     else:
@@ -534,7 +576,9 @@ if page == "1. ALL PDUFA":
             selection_mode="single-row",
         )
         if event.selection.rows:
-            go_individual(display.iloc[event.selection.rows[0]]["Ticker"])
+            ridx = event.selection.rows[0]
+            selected_row = view.iloc[ridx]
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row))
             st.rerun()
 
         open1,open2 = st.columns([3,1])
@@ -544,7 +588,8 @@ if page == "1. ALL PDUFA":
             st.write("")
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="master_open"):
-                go_individual(quick)
+                quick_row = view[view["ticker"].astype(str) == str(quick)].iloc[0]
+                go_individual(quick, make_event_key(quick_row))
                 st.rerun()
 
         csv_bytes = display.to_csv(index=False).encode("utf-8")
