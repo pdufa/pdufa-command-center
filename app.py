@@ -633,6 +633,63 @@ def all_source_direction_state(row):
         return "REVIEW"
     return "APPROVED" if float(score) >= 50 else "CRL"
 
+
+def normalize_fda_direction(value):
+    """Map a final FDA outcome into the same APPROVED/CRL direction vocabulary."""
+    text_value = safe_text(value, "").upper()
+    if not text_value or text_value in ["PENDING", "NA", "N/A", "UNKNOWN", "NOT AVAILABLE"]:
+        return None
+    if "APPROV" in text_value:
+        return "APPROVED"
+    if "CRL" in text_value or "COMPLETE RESPONSE" in text_value or "REJECT" in text_value or "DECLIN" in text_value:
+        return "CRL"
+    return None
+
+
+def predicted_fda_direction(row):
+    """Best decision-safe direction available before FDA acts.
+
+    Priority:
+    1) all-source call when all source inputs exist and agree;
+    2) I+P consensus when both independent direction layers agree;
+    3) prospective V2 call when its hard gates produce an actionable call.
+    Conflicts/weak evidence remain REVIEW rather than being forced.
+    """
+    all_dir = all_source_direction_state(row)
+    if all_dir in ["APPROVED", "CRL"]:
+        return all_dir
+
+    consensus_dir = ip_consensus_direction(row)
+    if consensus_dir in ["APPROVED", "CRL"]:
+        return consensus_dir
+
+    try:
+        v2_call = prospective_gate_state(row)[0]
+    except Exception:
+        v2_call = "REVIEW"
+    if v2_call in ["APPROVED", "CRL"]:
+        return v2_call
+
+    return "REVIEW"
+
+
+def direction_fda_display(row):
+    """Lifecycle display: prediction before FDA action; 100%/0% match after FDA action."""
+    predicted = predicted_fda_direction(row)
+    actual = normalize_fda_direction(row.get("actual_outcome", row.get("outcome")))
+
+    if actual is None:
+        return predicted
+
+    if predicted not in ["APPROVED", "CRL"]:
+        return f"Not scored · FDA {actual}"
+
+    if predicted == actual:
+        return f"100% MATCH · {actual}"
+
+    return f"0% MATCH · Pred {predicted} / FDA {actual}"
+
+
 def make_event_key(row):
     source_key = safe_text(row.get("event_key"), "")
     if source_key:
@@ -716,6 +773,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     out["I Direction"] = out.apply(internal_direction_state, axis=1)
     out["P Direction"] = out.apply(public_direction_state, axis=1)
     out["All-Source Direction"] = out.apply(all_source_direction_state, axis=1)
+    out["Direction / FDA Match"] = out.apply(direction_fda_display, axis=1)
     out["Trade Score"] = out["trade_score"].apply(
         lambda v: "Not scored" if pd.isna(v) else f"{float(v):.0f}"
     )
@@ -737,7 +795,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
-        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","I Direction","P Direction","All-Source Direction","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
         "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
@@ -777,7 +835,7 @@ if "selected_event_key" not in st.session_state:
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-04 · I/P APP SPLIT ACTIVE")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE. Company/PDUFA detail opens only when an event is clicked.")
-st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available.")
+st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
@@ -1077,7 +1135,7 @@ if page == "1. ALL PDUFA":
         display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("LEADING COLUMNS: Ticker | Probability of Approval % — Public | Probability of Approval % — All Sources")
+        st.caption("LEADING COLUMNS: Ticker | Probability of Approval % — Public | Probability of Approval % — All Sources | Direction / FDA Match")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1392,6 +1450,7 @@ elif page == "3. CALENDAR":
                     calendar_label = html.escape(
                         f"{r.ticker} · Public {calendar_app_text(r, 'public_approval_probability')} · "
                         f"All {fmt_app_pct(all_source_probability_value(r), 1)} · "
+                        f"Dir {direction_fda_display(r)} · "
                         f"{pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}"
                     )
                     calendar_url = html.escape(
@@ -1421,6 +1480,7 @@ elif page == "4. PREDICTION ENGINE":
     hist["P Direction"] = hist.apply(public_direction_state, axis=1)
     hist["I+P Direction"] = hist.apply(ip_consensus_direction, axis=1)
     hist["All-Source Direction"] = hist.apply(all_source_direction_state, axis=1)
+    hist["Direction / FDA Match"] = hist.apply(direction_fda_display, axis=1)
     hist["Correct / Wrong"] = hist["correct"].astype(str).map(
         {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
     ).fillna("NA")
@@ -1586,7 +1646,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","I Direction","P Direction","All-Source Direction","PDUFA Date","model_class","actual_outcome",
+        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1719,6 +1779,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
         live_v2["All-Source Direction"] = live_v2.apply(all_source_direction_state, axis=1)
+        live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
             lambda r: event_detail_url(r, source="live", return_page="4. PREDICTION ENGINE"), axis=1
@@ -1737,7 +1798,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","All-Source Direction","PDUFA Date","drug","indication",
+            "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","All-Source Direction","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
@@ -1799,13 +1860,14 @@ else:
         public_hist = hr.get("public_approval_probability", pd.NA)
         public_hist_text = fmt_app_pct(public_hist, 1)
         all_hist_text = fmt_app_pct(all_source_probability_value(hr), 1)
-        a1,a2,a3,a4,a5,a6 = st.columns(6)
+        a1,a2,a3,a4,a5,a6,a7 = st.columns(7)
         a1.metric("PDUFA Date", hdate)
         a2.metric("Probability of Approval % — Public", public_hist_text)
         a3.metric("Probability of Approval % — All Sources", all_hist_text)
-        a4.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
-        a5.metric("Result", correct_text)
-        a6.metric("Historical Cap", hcap)
+        a4.metric("Direction / FDA Match", direction_fda_display(hr))
+        a5.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
+        a6.metric("Result", correct_text)
+        a7.metric("Historical Cap", hcap)
 
         st.markdown("### V2 Audit / Validation Status")
         vs1,vs2,vs3,vs4 = st.columns(4)
@@ -1895,12 +1957,13 @@ else:
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
-        k1,k2,k3,k4,k5 = st.columns(5)
+        k1,k2,k3,k4,k5,k6 = st.columns(6)
         k1.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
         k2.metric("Days Left", "Not available" if days_left is None else days_left)
         k3.metric("Probability of Approval % — Public", fmt_app_pct(r.get("public_approval_probability"), 1))
         k4.metric("Probability of Approval % — All Sources", fmt_app_pct(all_source_probability_value(r), 1))
-        k5.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
+        k5.metric("Direction / FDA Match", direction_fda_display(r))
+        k6.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
 
         k5,k6,k7,k8 = st.columns(4)
         k5.metric("Market Cap", fmt_cap(r.get("market_cap")))
@@ -2130,7 +2193,8 @@ else:
             ]:
                 v = r.get(key,pd.NA)
                 col.metric(label, "Not scored" if pd.isna(v) else f"{float(v):.0f}/100")
-            st.caption("Approval probability and trading attractiveness remain separate.")
+            st.metric("Direction / FDA Match", direction_fda_display(r))
+            st.caption("Before FDA acts, this shows the best decision-safe predicted direction. After FDA acts, it becomes 100% MATCH when the prediction and FDA direction agree, or 0% MATCH when they disagree. Approval probability and trading attractiveness remain separate.")
         with subtabs[9]:
             st.markdown("### Historical Analogs")
             st.caption("Uses only historical cases already loaded in the Prediction Engine. Invalid/excluded audit rows are not used.")
@@ -2165,6 +2229,7 @@ else:
                 pool["Probability of Approval % — All Sources"] = pool.apply(
                     lambda rr: fmt_app_pct(all_source_probability_value(rr), 1), axis=1
                 )
+                pool["Direction / FDA Match"] = pool.apply(direction_fda_display, axis=1)
                 pool["Historical Cap"] = pool["_cap"].apply(
                     lambda v: "NA" if pd.isna(v) else "$" + f"{float(v):.2f}B"
                 )
@@ -2172,7 +2237,7 @@ else:
                     {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
                 ).fillna("NA")
                 analog_display = pool[[
-                    "ticker","PDUFA Date","Probability of Approval % — Public","Probability of Approval % — All Sources","actual_outcome",
+                    "ticker","PDUFA Date","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","actual_outcome",
                     "Historical Cap","market_cap_bucket","Result","audit_status"
                 ]].rename(columns={
                     "ticker":"Ticker",
@@ -2187,4 +2252,4 @@ else:
                     st.info("No same-bucket historical cases were available, so the closest loaded cases by approval probability are shown.")
 
 st.divider()
-st.caption("FDA probabilities are model estimates, not FDA determinations. Missing fields are labeled Not available or Not scored rather than being invented.")
+st.caption("FDA probabilities are model estimates, not FDA determinations. Direction / FDA Match is a result score, not an approval probability: before a final FDA outcome it shows the predicted direction; after the outcome it shows 100% for a matching direction or 0% for a miss. Missing fields are labeled Not available or Not scored rather than being invented.")
