@@ -1400,7 +1400,7 @@ elif page == "3. CALENDAR":
 
 elif page == "4. PREDICTION ENGINE":
     st.markdown("## 4. PREDICTION ENGINE — JAN 2025 TO SEP 2026")
-    st.caption("Canonical $300M–$10B final historical cohort. 2025 is external/blind holdout; Jan–Sep 2026 is model-development/in-sample and must not be interpreted as independent blind accuracy.")
+    st.caption("Canonical $300M–$10B historical cohort. User-facing approval probabilities are limited to Public and All Sources; internal component scores remain backend inputs for validation.")
 
     hist = prediction_history.copy()
     hist = hist[
@@ -1479,6 +1479,10 @@ elif page == "4. PREDICTION ENGINE":
     p_scored = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").notna().sum()
     i_coverage = 0.0 if hview.empty else (i_scored / len(hview)) * 100
     p_coverage = 0.0 if hview.empty else (p_scored / len(hview)) * 100
+    hview["_all_source_score"] = hview.apply(all_source_probability_value, axis=1)
+    all_scored = pd.to_numeric(hview["_all_source_score"], errors="coerce").notna().sum()
+    all_coverage = 0.0 if hview.empty else (all_scored / len(hview)) * 100
+    filtered_avg_all = pd.to_numeric(hview["_all_source_score"], errors="coerce").mean()
     audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
     audited_correct = audited["Correct / Wrong"].eq("Correct")
 
@@ -1519,17 +1523,17 @@ elif page == "4. PREDICTION ENGINE":
 
     st.markdown("### SCORING COVERAGE")
     c1,c2,c3 = st.columns(3)
-    c1.metric("I App Coverage", f"{i_coverage:.1f}%")
-    c2.metric("P App Coverage", f"{p_coverage:.1f}%")
+    c1.metric("Public Score Coverage", f"{p_coverage:.1f}%")
+    c2.metric("All-Sources Score Coverage", f"{all_coverage:.1f}%")
     c3.metric("Selected Cases", len(hview))
 
     st.markdown("### AVERAGE APPROVAL PROBABILITY")
     p1,p2,p3,p4 = st.columns(4)
-    p1.metric("Avg I App %", "NA" if pd.isna(filtered_avg_i) else f"{filtered_avg_i:.1f}%")
-    p2.metric("Avg P App %", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    p1.metric("Probability of Approval % — Public", "Not scored" if pd.isna(filtered_avg_p) else f"{filtered_avg_p:.1f}%")
+    p2.metric("Probability of Approval % — All Sources", "Not scored" if pd.isna(filtered_avg_all) else f"{filtered_avg_all:.1f}%")
     p3.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
     p4.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
-    st.caption("Coverage is completion. Avg I/P App % are probability averages and are not supposed to equal 100%.")
+    st.caption("Only the two user-facing approval probabilities are shown here. Internal component scores remain backend inputs.")
 
     st.markdown("### DIRECTION ACCURACY")
     audited["I+P Direction"] = audited.apply(ip_consensus_direction, axis=1)
@@ -1547,18 +1551,17 @@ elif page == "4. PREDICTION ENGINE":
     d6.metric("I+P Coverage", f"{bpw_direction_coverage:.1f}%")
     st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. I Direction may use decision-safe internal research and model evidence. P Direction is PUBLIC-ONLY: no I App %, no internal scores, no internal audit labels, and no hidden/internal references may influence it. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
 
-    st.markdown("### 100% HISTORICAL PRECISION MODES")
+    st.markdown("### HISTORICAL PRECISION CHECK")
     z1,z2,z3,z4,z5,z6 = st.columns(6)
-    z1.metric("I Correct Accuracy", "NA" if pd.isna(precision_accuracy) else f"{precision_accuracy:.1f}%")
-    z2.metric("I Actionable Coverage", f"{precision_coverage:.1f}%")
-    z3.metric("I Called Cases", f"{len(precision_called)}/{len(audited)}")
-    z4.metric("P Correct Accuracy", "NA" if pd.isna(public_precision_accuracy) else f"{public_precision_accuracy:.1f}%")
-    z5.metric("P Actionable Coverage", f"{public_precision_coverage:.1f}%")
-    z6.metric("P Called Cases", f"{len(public_called)}/{len(audited)}")
+    z1.metric("Internal Direction Accuracy", "NA" if pd.isna(precision_accuracy) else f"{precision_accuracy:.1f}%")
+    z2.metric("Internal Actionable Coverage", f"{precision_coverage:.1f}%")
+    z3.metric("Internal Called Cases", f"{len(precision_called)}/{len(audited)}")
+    z4.metric("Public Direction Accuracy", "NA" if pd.isna(public_precision_accuracy) else f"{public_precision_accuracy:.1f}%")
+    z5.metric("Public Actionable Coverage", f"{public_precision_coverage:.1f}%")
+    z6.metric("Public Called Cases", f"{len(public_called)}/{len(audited)}")
     st.caption(
-        "I precision rule: APPROVED only at I App >=95%; otherwise REVIEW/ABSTAIN. "
-        "P precision rule: APPROVED at P App >=90%, CRL at P App <=10%, otherwise REVIEW/ABSTAIN. "
-        "Both are historical backtests on the clean cohort, not guarantees of future 100% accuracy."
+        "These are direction-validation statistics, not additional user-facing probability columns. "
+        "The visible probability columns remain Public and All Sources only."
     )
 
     q1,q2,q3,q4 = st.columns(4)
