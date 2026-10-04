@@ -373,6 +373,8 @@ def event_detail_url(row):
 df["event_key"] = df.apply(make_event_key, axis=1)
 
 def go_page(page_name):
+    if len(st.query_params):
+        st.query_params.clear()
     st.session_state._pending_nav = page_name
 
 def go_individual(ticker=None, event_key=None):
@@ -434,11 +436,16 @@ def table_view(frame):
 query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
+
+# Deep links are consumed once. Clear them immediately after copying the
+# destination into session state so stale ?page=detail parameters cannot trap
+# the user on the Individual Company page or break return navigation.
 if query_page == "detail" and query_event:
     st.session_state.selected_event_key = str(query_event)
     if query_ticker:
         st.session_state.selected_ticker = str(query_ticker)
     st.session_state._pending_nav = "4. INDIVIDUAL COMPANY"
+    st.query_params.clear()
 
 if "nav" not in st.session_state:
     st.session_state.nav = "1. ALL PDUFA"
@@ -461,6 +468,8 @@ if "_pending_nav" in st.session_state:
 nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. INDIVIDUAL COMPANY"]
 st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
 page = st.session_state.nav
+if page != "4. INDIVIDUAL COMPANY" and len(st.query_params):
+    st.query_params.clear()
 
 if page == "1. ALL PDUFA":
     st.markdown("## 1. MASTER PDUFA SPREADSHEET — Past + Present + Future")
