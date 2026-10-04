@@ -1340,8 +1340,12 @@ elif page == "3. CALENDAR":
                     display_text=r"ticker=([^&]+)",
                     help="Open this exact PDUFA detail page",
                 ),
-                "I App %": st.column_config.TextColumn("I App %", help="Internal/model approval probability", width="small"),
-                "P App %": st.column_config.TextColumn("P App %", help="Public-evidence-only approval probability", width="small"),
+                "Probability of Approval % — Public": st.column_config.TextColumn(
+                    "Probability of Approval % — Public", help="Public-only approval probability", width="medium"
+                ),
+                "Probability of Approval % — All Sources": st.column_config.TextColumn(
+                    "Probability of Approval % — All Sources", help="All-source approval probability", width="medium"
+                ),
             },
             on_select="rerun",
             selection_mode="single-row",
@@ -1781,25 +1785,19 @@ else:
         with b2:
             st.caption("Historical Prediction Engine event detail")
 
-        st.markdown(f"## {safe_text(hr.get('ticker'))} · {app_text} — Historical PDUFA")
+        st.markdown(f"## {safe_text(hr.get('ticker'))} — Historical PDUFA")
         st.caption(f"Event key: {safe_text(hr.get('event_key'))}")
 
         public_hist = hr.get("public_approval_probability", pd.NA)
         public_hist_text = fmt_app_pct(public_hist, 1)
-        ip_hist_text = fmt_app_pct(ip_consensus_value(hr), 1)
-        bpw_hist_text = fmt_app_pct(hr.get("biopharmawatch_probability"), 1)
         all_hist_text = fmt_app_pct(all_source_probability_value(hr), 1)
-        a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 = st.columns(10)
+        a1,a2,a3,a4,a5,a6 = st.columns(6)
         a1.metric("PDUFA Date", hdate)
-        a2.metric("I App %", app_text)
-        a3.metric("P App %", public_hist_text)
-        a4.metric("BPW %", bpw_hist_text)
-        a5.metric("Probability of Approval %", all_hist_text)
-        a6.metric("I+P Consensus", ip_hist_text)
-        a7.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
-        a8.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
-        a9.metric("Result", correct_text)
-        a10.metric("Historical Cap", hcap)
+        a2.metric("Probability of Approval % — Public", public_hist_text)
+        a3.metric("Probability of Approval % — All Sources", all_hist_text)
+        a4.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
+        a5.metric("Result", correct_text)
+        a6.metric("Historical Cap", hcap)
 
         st.markdown("### V2 Audit / Validation Status")
         vs1,vs2,vs3,vs4 = st.columns(4)
@@ -2153,11 +2151,12 @@ else:
                 pool = same_bucket if not same_bucket.empty else analogs
                 pool = pool.sort_values(["_distance","pdufa_date"]).head(10).copy()
                 pool["PDUFA Date"] = pd.to_datetime(pool["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
-                pool["I App %"] = pool["_p"].apply(lambda v: fmt_app_pct(v, 1))
-                pool["P App %"] = pd.to_numeric(pool.get("public_approval_probability"), errors="coerce").apply(lambda v: fmt_app_pct(v, 1))
-                pool["BPW %"] = pd.to_numeric(pool.get("biopharmawatch_probability"), errors="coerce").apply(lambda v: fmt_app_pct(v, 1))
-                pool["Probability of Approval %"] = pool.apply(lambda rr: fmt_app_pct(all_source_probability_value(rr), 1), axis=1)
-                pool["I+P Consensus"] = pool.apply(lambda rr: fmt_app_pct(ip_consensus_value(rr), 1), axis=1)
+                pool["Probability of Approval % — Public"] = pd.to_numeric(
+                    pool.get("public_approval_probability"), errors="coerce"
+                ).apply(lambda v: fmt_app_pct(v, 1))
+                pool["Probability of Approval % — All Sources"] = pool.apply(
+                    lambda rr: fmt_app_pct(all_source_probability_value(rr), 1), axis=1
+                )
                 pool["Historical Cap"] = pool["_cap"].apply(
                     lambda v: "NA" if pd.isna(v) else "$" + f"{float(v):.2f}B"
                 )
@@ -2165,11 +2164,10 @@ else:
                     {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
                 ).fillna("NA")
                 analog_display = pool[[
-                    "ticker","PDUFA Date","I App %","P App %","BPW %","Probability of Approval %","I+P Consensus","model_class","actual_outcome",
+                    "ticker","PDUFA Date","Probability of Approval % — Public","Probability of Approval % — All Sources","actual_outcome",
                     "Historical Cap","market_cap_bucket","Result","audit_status"
                 ]].rename(columns={
                     "ticker":"Ticker",
-                    "model_class":"Prediction",
                     "actual_outcome":"Actual FDA",
                     "market_cap_bucket":"Cap Bucket",
                     "audit_status":"Audit Status"
