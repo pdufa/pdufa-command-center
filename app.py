@@ -695,6 +695,17 @@ def direction_fda_display(row):
     return f"0% MATCH · Pred {predicted} / FDA {actual}"
 
 
+def match_percent_display(row):
+    """Strict direction-vs-FDA result column. No FDA result = Pending."""
+    predicted = predicted_fda_direction(row)
+    actual = normalize_fda_direction(row.get("actual_outcome", row.get("outcome")))
+    if actual is None:
+        return "Pending"
+    if predicted not in ["APPROVED", "CRL"]:
+        return "Not scored"
+    return "100%" if predicted == actual else "0%"
+
+
 def make_event_key(row):
     source_key = safe_text(row.get("event_key"), "")
     if source_key:
@@ -1193,6 +1204,7 @@ if page == "1. ALL PDUFA":
         display = table_view(view, return_page="1. ALL PDUFA")
         display["P%"] = view.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1).values
         display["F"] = view.apply(all_source_direction_state, axis=1).values
+        display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
         display["Public P%"] = view["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1)).values
         drop_front = [
@@ -1202,12 +1214,12 @@ if page == "1. ALL PDUFA":
             "All-Source Direction"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","P%","F","C"]
+        front = ["Ticker","P%","F","Match %","C"]
         display = display[front + [x for x in display.columns if x not in front]]
         display.insert(7 if len(display.columns) >= 7 else len(display.columns), "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("LEADING BOXED CELLS: Ticker | P% | F | C")
+        st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1228,6 +1240,11 @@ if page == "1. ALL PDUFA":
                 "F": st.column_config.TextColumn(
                     "F",
                     help="FDA direction: APPROVED, CRL, or REVIEW",
+                    width="small",
+                ),
+                "Match %": st.column_config.TextColumn(
+                    "Match %",
+                    help="100% when our direction pick matches the final FDA outcome; 0% when it misses; Pending before FDA action",
                     width="small",
                 ),
                 "C": st.column_config.TextColumn(
@@ -1555,6 +1572,7 @@ elif page == "4. PREDICTION ENGINE":
     hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
     hist["P%"] = hist["Probability of Approval % — All Sources"]
     hist["F"] = hist.apply(all_source_direction_state, axis=1)
+    hist["Match %"] = hist.apply(match_percent_display, axis=1)
     hist["C"] = hist.apply(combined_probability_direction, axis=1)
     hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
     hist["P Direction"] = hist.apply(public_direction_state, axis=1)
@@ -1696,7 +1714,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","P%","F","C","Probability of Approval % — Public","I Direction","P Direction","PDUFA Date","model_class","actual_outcome",
+        "Ticker","P%","F","Match %","C","Probability of Approval % — Public","I Direction","P Direction","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1716,7 +1734,7 @@ elif page == "4. PREDICTION ENGINE":
     })
 
     st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
-    st.caption("LEADING BOXED CELLS: Ticker | P% | F | C")
+    st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C")
     st.dataframe(
         hdisplay,
         use_container_width=True,
@@ -1730,6 +1748,7 @@ elif page == "4. PREDICTION ENGINE":
             ),
             "P%": st.column_config.TextColumn("P%", help="All-sources Probability of Approval", width="small"),
             "F": st.column_config.TextColumn("F", help="FDA direction", width="small"),
+            "Match %": st.column_config.TextColumn("Match %", help="100% if F matched actual FDA outcome, 0% if it missed, Pending before outcome", width="small"),
             "C": st.column_config.TextColumn("C", help="Combined P% + FDA direction", width="medium"),
             "Audit Source": st.column_config.LinkColumn(
                 "Audit Source",
@@ -1833,6 +1852,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
         live_v2["P%"] = live_v2["Probability of Approval % — All Sources"]
         live_v2["F"] = live_v2.apply(all_source_direction_state, axis=1)
+        live_v2["Match %"] = live_v2.apply(match_percent_display, axis=1)
         live_v2["C"] = live_v2.apply(combined_probability_direction, axis=1)
         live_v2["All-Source Direction"] = live_v2["F"]
         live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
@@ -1854,7 +1874,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","P%","F","C","Probability of Approval % — Public","PDUFA Date","drug","indication",
+            "Ticker","P%","F","Match %","C","Probability of Approval % — Public","PDUFA Date","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
