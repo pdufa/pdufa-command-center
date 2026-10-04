@@ -221,9 +221,15 @@ if "market_cap" not in df:
 if "trade_score" not in df:
     score_cols = [c for c in ["science_score","regulatory_score","safety_score","cmc_score"] if c in df]
     df["trade_score"] = df[score_cols].mean(axis=1) if score_cols else pd.NA
-for c in ["financing_status","setup_phase","short_interest","iv_30d"]:
+for c in ["financing_status","setup_phase","short_interest","iv_30d",
+          "phase1_date","phase2_date","phase3_date","nda_submission_date",
+          "fda_acceptance_date","decision_date"]:
     if c not in df:
         df[c] = pd.NA
+
+for c in ["phase1_date","phase2_date","phase3_date","nda_submission_date",
+          "fda_acceptance_date","decision_date"]:
+    df[c] = pd.to_datetime(df[c], errors="coerce")
 for c in ["market_cap","trade_score","short_interest","iv_30d"]:
     df[c] = pd.to_numeric(df[c], errors="coerce")
 
@@ -480,7 +486,7 @@ else:
         k6.metric("Short Interest", fmt_pct(r.short_interest))
         k7.metric("IV (30d)", fmt_pct(r.iv_30d))
 
-        subtabs = st.tabs(["Overview","PDUFA Timeline","Clinical","FDA","Financing","Trading","News","Scoring","Analogs"])
+        subtabs = st.tabs(["Overview","Pipeline Tracker","PDUFA Timeline","Clinical","FDA","Financing","Trading","News","Scoring","Analogs"])
         with subtabs[0]:
             a,b = st.columns(2)
             with a:
@@ -497,33 +503,105 @@ else:
                 st.write(f"**Evidence cutoff:** {r.get('evidence_cutoff','Pending')}")
                 st.write(r.get("evidence_summary") or "Evidence feed pending.")
         with subtabs[1]:
+            st.markdown("### Development Pipeline — Phase 1 to Now")
+            st.caption("One continuous tracker for the selected drug/indication. Exact milestone dates appear when present in the validated feed; unknown dates remain Pending.")
+
+            stages = [
+                ("Phase 1", r.get("phase1_date"), "Early safety / dose finding"),
+                ("Phase 2", r.get("phase2_date"), "Proof of concept / dose refinement"),
+                ("Phase 3 / Pivotal", r.get("phase3_date"), "Confirmatory efficacy and safety"),
+                ("NDA/BLA Submitted", r.get("nda_submission_date"), "Regulatory application submitted"),
+                ("FDA Accepted", r.get("fda_acceptance_date"), "Application accepted for review"),
+                ("PDUFA Review", r.get("pdufa_date"), "FDA review period / decision date"),
+                ("FDA Decision", r.get("decision_date"), "Approval / CRL / other action"),
+            ]
+
+            known_dates = [(name, pd.Timestamp(dt)) for name,dt,_ in stages if pd.notna(dt)]
+            if pd.notna(r.get("decision_date")):
+                current_stage = "FDA Decision"
+            elif pd.notna(r.get("pdufa_date")):
+                current_stage = "PDUFA Review"
+            elif pd.notna(r.get("fda_acceptance_date")):
+                current_stage = "FDA Accepted"
+            elif pd.notna(r.get("nda_submission_date")):
+                current_stage = "NDA/BLA Submitted"
+            elif pd.notna(r.get("phase3_date")):
+                current_stage = "Phase 3 / Pivotal"
+            elif pd.notna(r.get("phase2_date")):
+                current_stage = "Phase 2"
+            elif pd.notna(r.get("phase1_date")):
+                current_stage = "Phase 1"
+            else:
+                current_stage = str(r.get("setup_phase")) if pd.notna(r.get("setup_phase")) else "Current stage not yet dated"
+
+            st.info(f"Current tracked stage: **{current_stage}**")
+
+            cols = st.columns(7)
+            current_index = next((i for i,(name,_,_) in enumerate(stages) if name == current_stage), None)
+            for i, ((name,dt,desc), col) in enumerate(zip(stages, cols)):
+                if pd.notna(dt):
+                    date_text = pd.Timestamp(dt).strftime("%b %d, %Y")
+                else:
+                    date_text = "Pending"
+                if current_index is not None and i < current_index:
+                    icon = "✅"
+                    status = "Completed"
+                elif current_index is not None and i == current_index:
+                    icon = "🔵"
+                    status = "Current"
+                else:
+                    icon = "○"
+                    status = "Upcoming / Pending"
+                with col:
+                    st.markdown(f"### {icon} {name}")
+                    st.write(f"**{status}**")
+                    st.write(date_text)
+                    st.caption(desc)
+
+            st.divider()
+            pipeline_table = pd.DataFrame([
+                {
+                    "Stage": name,
+                    "Date": "Pending" if pd.isna(dt) else pd.Timestamp(dt).strftime("%Y-%m-%d"),
+                    "Status": (
+                        "Completed" if current_index is not None and i < current_index
+                        else "Current" if current_index is not None and i == current_index
+                        else "Upcoming / Pending"
+                    ),
+                    "Purpose": desc,
+                }
+                for i,(name,dt,desc) in enumerate(stages)
+            ])
+            st.dataframe(pipeline_table, use_container_width=True, hide_index=True)
+
+        with subtabs[2]:
             st.markdown("### PDUFA Timeline")
             st.write("✅ Phase 3 / pivotal evidence")
             st.write("✅ NDA/BLA submission and acceptance when captured")
             st.write("🔵 Current PDUFA window")
             st.write(f"🎯 **PDUFA:** {'Pending' if pd.isna(r.pdufa_date) else r.pdufa_date.strftime('%b %d, %Y')}")
-        with subtabs[2]:
+        with subtabs[3]:
             st.markdown("### Clinical")
             st.write(r.get("science_summary") or "Clinical research feed pending.")
             v = r.get("science_score")
             st.metric("Science Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
-        with subtabs[3]:
+        with subtabs[4]:
             st.markdown("### FDA / Regulatory")
             st.write(r.get("regulatory_summary") or "Regulatory research feed pending.")
             v = r.get("regulatory_score")
             st.metric("Regulatory Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
-        with subtabs[4]:
+        with subtabs[5]:
             st.markdown("### Financing")
             st.metric("Financing Status", str(r.get("financing_status") or "Pending"))
             st.write(r.get("financing_summary") or "Financing detail feed pending.")
-        with subtabs[5]:
+        with subtabs[6]:
             st.markdown("### Trading")
             st.write(r.get("trading_summary") or "Trading intelligence feed pending.")
             t1,t2,t3 = st.columns(3)
             t1.metric("Trade Score", "Pending" if pd.isna(r.trade_score) else f"{float(r.trade_score):.0f}/100")
             t2.metric("Short Interest", fmt_pct(r.short_interest))
             t3.metric("IV (30d)", fmt_pct(r.iv_30d))
-        with subtabs[6]:
+        with subtabs[7]:
             st.markdown("### Recent News")
             stories,error = fetch_ticker_news(str(r.ticker), str(r.company), str(r.get("drug","")), 14)
             if error:
@@ -541,7 +619,7 @@ else:
                     )
                     if story["link"]:
                         st.link_button("READ SOURCE", story["link"])
-        with subtabs[7]:
+        with subtabs[8]:
             st.markdown("### Scoring")
             s1,s2,s3,s4,s5 = st.columns(5)
             for col,label,key in [
@@ -551,7 +629,7 @@ else:
                 v = r.get(key,pd.NA)
                 col.metric(label, "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
             st.caption("Approval probability and trading attractiveness remain separate.")
-        with subtabs[8]:
+        with subtabs[9]:
             st.markdown("### Historical Analogs")
             st.write("Validated analog comparisons will appear here when the analog feed is connected. No result is fabricated.")
 
