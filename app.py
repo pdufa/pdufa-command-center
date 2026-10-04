@@ -153,6 +153,15 @@ def load_prediction_history():
     return x
 
 
+@st.cache_data(ttl=120)
+def load_prediction_rescore_queue():
+    try:
+        q = pd.read_csv("data/prediction_engine_rescore_queue.csv")
+    except Exception:
+        q = pd.DataFrame()
+    return q
+
+
 def _plain_text(value):
     value = html.unescape(value or "")
     value = re.sub(r"<[^>]+>", " ", value)
@@ -312,6 +321,7 @@ def _story_timestamp(value):
 
 df = load_data()
 prediction_history = load_prediction_history()
+prediction_rescore_queue = load_prediction_rescore_queue()
 
 # Startup data validation: fail loudly on structural problems instead of silently
 # rendering a misleading one-row/partial dashboard.
@@ -1286,33 +1296,74 @@ elif page == "4. PREDICTION ENGINE":
     )
 
     with st.expander("REBUILD / RESCORE WORK QUEUE", expanded=False):
-        queue = hist[hist["V2 Status"] == "REBUILD / RESCORE"].copy()
-        queue["Original PDUFA"] = queue["pdufa_date"].dt.strftime("%Y-%m-%d")
-        queue["App %"] = queue["p_approval"].apply(lambda v: fmt_app_pct(v, 1))
-        queue_display = queue[[
-            "ticker","App %","Original PDUFA","canonical_pdufa_date","audit_status",
-            "audit_action","failure_reason","source_url"
-        ]].rename(columns={
-            "ticker":"Ticker",
-            "canonical_pdufa_date":"Canonical PDUFA",
-            "audit_status":"Audit Status",
-            "audit_action":"Required Action",
-            "failure_reason":"Reason",
-            "source_url":"Source"
-        })
-        r1,r2,r3 = st.columns(3)
-        r1.metric("Queue Rows", len(queue))
-        r2.metric("Canonical Rescore", int(queue["audit_action"].astype(str).str.contains("RESCORE", na=False).sum()))
-        r3.metric("Drop / Remove", int(queue["audit_action"].astype(str).str.startswith("DROP", na=False).sum()))
-        st.dataframe(
-            queue_display,
-            use_container_width=True,
-            hide_index=True,
-            height=min(650, 120 + 32*len(queue_display)),
-            column_config={
-                "Source": st.column_config.LinkColumn("Source", display_text="Source")
-            }
-        )
+        queue = prediction_rescore_queue.copy()
+        if queue.empty:
+            st.info("Rescore queue is not available.")
+        else:
+            work = queue[queue["queue_class"] != "KEEP_AS_IS"].copy()
+            rescore = work[
+                work["queue_class"].isin([
+                    "REBUILD_CANONICAL_EVENT",
+                    "REBUILD_DECISION_SAFE_CUTOFF",
+                    "VERIFY_THEN_RESCORE",
+                    "REBUILD_REVIEW",
+                ])
+            ].copy()
+            remove_only = work[work["queue_class"] == "REMOVE_ONLY"].copy()
+
+            r1,r2,r3,r4 = st.columns(4)
+            r1.metric("Historical Rows", len(queue))
+            r2.metric("Remove Only", len(remove_only))
+            r3.metric("True Rescore Cases", len(rescore))
+            r4.metric(
+                "Existing Artifacts",
+                int((rescore["artifact_status"] == "EXISTING_LEVEL8_LEVEL9_MATCH").sum())
+            )
+
+            st.caption(
+                "Remove-only rows are duplicates, wrong identities, post-outcome rows, or out-of-period events. "
+                "They are not rescored. Only the True Rescore Cases require a new canonical prediction."
+            )
+
+            queue_filter = st.radio(
+                "Work queue view",
+                ["True Rescore Cases","Remove Only","All Blocked Rows"],
+                horizontal=True,
+                key="prediction_rescore_view"
+            )
+            if queue_filter == "True Rescore Cases":
+                qview = rescore
+            elif queue_filter == "Remove Only":
+                qview = remove_only
+            else:
+                qview = work
+
+            qdisplay = qview[[
+                "ticker","original_event_key","canonical_pdufa_date","queue_class",
+                "cutoff_rule","artifact_status","audit_status","audit_action",
+                "failure_reason","source_url"
+            ]].rename(columns={
+                "ticker":"Ticker",
+                "original_event_key":"Original Event",
+                "canonical_pdufa_date":"Canonical PDUFA",
+                "queue_class":"Queue Class",
+                "cutoff_rule":"Cutoff Rule",
+                "artifact_status":"Artifact Status",
+                "audit_status":"Audit Status",
+                "audit_action":"Required Action",
+                "failure_reason":"Reason",
+                "source_url":"Source"
+            })
+
+            st.dataframe(
+                qdisplay,
+                use_container_width=True,
+                hide_index=True,
+                height=min(700, 120 + 32*len(qdisplay)),
+                column_config={
+                    "Source": st.column_config.LinkColumn("Source", display_text="Source")
+                }
+            )
 
     st.divider()
     st.markdown("### Prediction Engine V2 — Prospective Decision Layer")
