@@ -122,9 +122,10 @@ def load_prediction_history():
     for col in required:
         if col not in x:
             x[col] = pd.NA
-    for col in ["cap_recovery_confidence","cap_recovery_method"]:
+    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","public_model_class","public_evidence_note"]:
         if col not in x:
             x[col] = pd.NA
+    x["public_approval_probability"] = pd.to_numeric(x["public_approval_probability"], errors="coerce")
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
     x["p_approval"] = pd.to_numeric(x["p_approval"], errors="coerce")
     x["historical_market_cap_billions"] = pd.to_numeric(
@@ -1327,6 +1328,16 @@ elif page == "4. PREDICTION ENGINE":
     precision_accuracy = float("nan") if precision_called.empty else precision_correct.mean() * 100
     precision_coverage = 0.0 if audited.empty else len(precision_called) / len(audited) * 100
 
+    # Public-evidence precision backtest.
+    audited["_p_public_pct"] = pd.to_numeric(audited.get("public_approval_probability"), errors="coerce") * 100
+    public_called = audited[
+        (audited["_p_public_pct"] >= 90) | (audited["_p_public_pct"] <= 10)
+    ].copy()
+    public_expected = public_called["_p_public_pct"].apply(lambda v: "APPROVED" if v >= 90 else "CRL")
+    public_correct = public_expected.eq(public_called["actual_outcome"].astype(str).str.upper())
+    public_precision_accuracy = float("nan") if public_called.empty else public_correct.mean() * 100
+    public_precision_coverage = 0.0 if audited.empty else len(public_called) / len(audited) * 100
+
     excluded_count = int((hview["count_in_audited_accuracy"].astype(str).str.upper() == "NO").sum())
     rescore_count = int((hview["needs_rescore"].astype(str).str.upper() == "YES").sum())
     clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
@@ -1346,14 +1357,18 @@ elif page == "4. PREDICTION ENGINE":
     p4.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
     st.caption("Coverage is completion. Avg I/P App % are probability averages and are not supposed to equal 100%.")
 
-    st.markdown("### 100% HISTORICAL PRECISION MODE")
-    z1,z2,z3 = st.columns(3)
-    z1.metric("Correct Outcome Accuracy", "NA" if pd.isna(precision_accuracy) else f"{precision_accuracy:.1f}%")
-    z2.metric("Actionable Coverage", f"{precision_coverage:.1f}%")
-    z3.metric("Called Cases", f"{len(precision_called)}/{len(audited)}")
+    st.markdown("### 100% HISTORICAL PRECISION MODES")
+    z1,z2,z3,z4,z5,z6 = st.columns(6)
+    z1.metric("I Correct Accuracy", "NA" if pd.isna(precision_accuracy) else f"{precision_accuracy:.1f}%")
+    z2.metric("I Actionable Coverage", f"{precision_coverage:.1f}%")
+    z3.metric("I Called Cases", f"{len(precision_called)}/{len(audited)}")
+    z4.metric("P Correct Accuracy", "NA" if pd.isna(public_precision_accuracy) else f"{public_precision_accuracy:.1f}%")
+    z5.metric("P Actionable Coverage", f"{public_precision_coverage:.1f}%")
+    z6.metric("P Called Cases", f"{len(public_called)}/{len(audited)}")
     st.caption(
-        "Rule: call APPROVED only when I App % is at least 95%; otherwise REVIEW/ABSTAIN. "
-        "This is 100% on the current clean historical cohort, but it is not yet proof of future 100% accuracy."
+        "I precision rule: APPROVED only at I App >=95%; otherwise REVIEW/ABSTAIN. "
+        "P precision rule: APPROVED at P App >=90%, CRL at P App <=10%, otherwise REVIEW/ABSTAIN. "
+        "Both are historical backtests on the clean cohort, not guarantees of future 100% accuracy."
     )
 
     q1,q2,q3,q4 = st.columns(4)
