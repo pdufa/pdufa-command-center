@@ -755,30 +755,73 @@ if page == "1. ALL PDUFA":
 
 elif page == "2. MARKET CAP GROUPS":
     st.markdown("## 2. MARKET CAP GROUPS — Select a Range")
-    cap_ranges = [
-        ("$300M–$500M",300_000_000,500_000_000),
-        ("$500M–$750M",500_000_000,750_000_000),
-        ("$750M–$1B",750_000_000,1_000_000_000),
-        ("$1B–$2B",1_000_000_000,2_000_000_000),
-        ("$2B–$3B",2_000_000_000,3_000_000_000),
-        ("$3B–$5B",3_000_000_000,5_000_000_000),
-        ("$5B–$7.5B",5_000_000_000,7_500_000_000),
-        ("$7.5B–$10B",7_500_000_000,10_000_000_001),
-    ]
-    labels = [x[0] for x in cap_ranges]
-    selected_cap = st.radio("Market-cap band", labels, horizontal=True)
-    low,high = next((lo,hi) for label,lo,hi in cap_ranges if label == selected_cap)
-    cap_data = future[
-        future["market_cap"].notna() &
-        (future["market_cap"] >= low) &
-        (future["market_cap"] < high)
-    ].copy()
+    st.caption("Exact bands require an exact saved market cap. Validated bucket views also include events whose exact market cap has not yet been captured.")
 
-    st.markdown(f"### {selected_cap} Market Cap ({len(cap_data)} PDUFA events)")
-    if future["market_cap"].isna().all():
-        st.warning("Market-cap data is not yet present in the saved feed. This view will populate automatically when market_cap is supplied.")
-    elif cap_data.empty:
-        st.info("No future PDUFA candidates currently fall in this band.")
+    group_mode = st.radio(
+        "Grouping method",
+        ["Validated buckets","Exact market-cap bands"],
+        horizontal=True,
+        key="cap_group_mode"
+    )
+
+    if group_mode == "Validated buckets":
+        bucket_labels = ["$300M–$1B","$1B–$3B","$3B–$10B"]
+        selected_cap = st.radio("Market-cap bucket", bucket_labels, horizontal=True, key="cap_bucket_radio")
+        cap_data = future[
+            future["market_cap_bucket"].fillna("").astype(str).eq(selected_cap)
+        ].copy()
+
+        # If an exact cap is present but bucket text is missing, derive only the
+        # broad validated bucket; never guess a finer band.
+        if selected_cap == "$300M–$1B":
+            exact_fallback = future[
+                future["market_cap"].notna() &
+                (future["market_cap"] >= 300_000_000) &
+                (future["market_cap"] < 1_000_000_000) &
+                ~future.index.isin(cap_data.index)
+            ]
+        elif selected_cap == "$1B–$3B":
+            exact_fallback = future[
+                future["market_cap"].notna() &
+                (future["market_cap"] >= 1_000_000_000) &
+                (future["market_cap"] < 3_000_000_000) &
+                ~future.index.isin(cap_data.index)
+            ]
+        else:
+            exact_fallback = future[
+                future["market_cap"].notna() &
+                (future["market_cap"] >= 3_000_000_000) &
+                (future["market_cap"] <= 10_000_000_000) &
+                ~future.index.isin(cap_data.index)
+            ]
+        cap_data = pd.concat([cap_data, exact_fallback]).sort_values(["pdufa_date","ticker"])
+        st.markdown(f"### {selected_cap} ({len(cap_data)} PDUFA events)")
+    else:
+        cap_ranges = [
+            ("$300M–$500M",300_000_000,500_000_000),
+            ("$500M–$750M",500_000_000,750_000_000),
+            ("$750M–$1B",750_000_000,1_000_000_000),
+            ("$1B–$2B",1_000_000_000,2_000_000_000),
+            ("$2B–$3B",2_000_000_000,3_000_000_000),
+            ("$3B–$5B",3_000_000_000,5_000_000_000),
+            ("$5B–$7.5B",5_000_000_000,7_500_000_000),
+            ("$7.5B–$10B",7_500_000_000,10_000_000_001),
+        ]
+        labels = [x[0] for x in cap_ranges]
+        selected_cap = st.radio("Exact market-cap band", labels, horizontal=True, key="cap_exact_radio")
+        low,high = next((lo,hi) for label,lo,hi in cap_ranges if label == selected_cap)
+        cap_data = future[
+            future["market_cap"].notna() &
+            (future["market_cap"] >= low) &
+            (future["market_cap"] < high)
+        ].copy()
+        st.markdown(f"### {selected_cap} exact-cap view ({len(cap_data)} PDUFA events)")
+
+    if cap_data.empty:
+        if group_mode == "Exact market-cap bands":
+            st.info("No future PDUFA events with an exact saved market cap currently fall in this band. Try Validated buckets for events with bucket-only market-cap data.")
+        else:
+            st.info("No future PDUFA events currently fall in this validated market-cap bucket.")
     else:
         display = table_view(cap_data)
         event = st.dataframe(
