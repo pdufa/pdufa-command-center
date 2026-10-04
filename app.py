@@ -1035,12 +1035,12 @@ else:
             pipeline_table = pd.DataFrame([
                 {
                     "Stage": name,
-                    "Date": "Pending" if pd.isna(dt) else pd.Timestamp(dt).strftime("%Y-%m-%d"),
+                    "Date": "Not captured" if pd.isna(dt) else pd.Timestamp(dt).strftime("%Y-%m-%d"),
                     "Status": (
-                        ("Completed — date verified" if pd.notna(dt) else "Completed / inferred — date pending")
+                        ("Completed — date verified" if pd.notna(dt) else "Completed / inferred — date not captured")
                         if current_index is not None and i < current_index
                         else "Current" if current_index is not None and i == current_index
-                        else "Upcoming / Pending"
+                        else "Upcoming / not captured"
                     ),
                     "Purpose": desc,
                 }
@@ -1050,39 +1050,60 @@ else:
 
         with subtabs[2]:
             st.markdown("### PDUFA Timeline")
-            phase3_status = "✅ Completed" if pd.notna(r.get("phase3_date")) else "○ Date pending"
-            nda_status = "✅ Submitted" if pd.notna(r.get("nda_submission_date")) else "○ Date pending"
-            accept_status = "✅ Accepted" if pd.notna(r.get("fda_acceptance_date")) else "○ Date pending"
-            decision_status = (
-                "✅ FDA decision recorded" if pd.notna(r.get("decision_date"))
-                else ("🔵 In PDUFA review window" if pd.notna(r.get("pdufa_date")) else "○ PDUFA date pending")
-            )
-            st.write(f"**Phase 3 / pivotal:** {phase3_status}")
-            st.write(f"**NDA/BLA submission:** {nda_status}")
-            st.write(f"**FDA acceptance:** {accept_status}")
-            st.write(f"**Current regulatory status:** {decision_status}")
-            st.write(f"🎯 **PDUFA:** {'Pending' if pd.isna(r.get('pdufa_date')) else pd.Timestamp(r.get('pdufa_date')).strftime('%b %d, %Y')}")
+            t1,t2,t3,t4 = st.columns(4)
+            t1.metric("PDUFA", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
+            t2.metric("Confirmation", safe_text(r.get("pdufa_confirmation")))
+            t3.metric("Phase 3 status", safe_text(r.get("phase3_status")))
+            t4.metric("FDA check", safe_text(r.get("check_status")))
+            st.write(f"**Phase 3 date:** {'Not captured' if pd.isna(r.get('phase3_date')) else pd.Timestamp(r.get('phase3_date')).strftime('%b %d, %Y')}")
+            st.write(f"**NCT ID(s):** {safe_text(r.get('nct_id'))}")
+            st.write(f"**Reported p-value(s):** {safe_text(r.get('reported_p_values'))}")
+            st.write(f"**Conflict:** {safe_text(r.get('conflict_flag'))}")
+            st.write(f"**Monitoring eligibility:** {safe_text(r.get('monitor_eligibility'))}")
+            if safe_text(r.get("pdufa_evidence_url"), ""):
+                st.link_button("OPEN PDUFA EVIDENCE", r.get("pdufa_evidence_url"))
         with subtabs[3]:
-            st.markdown("### Clinical")
-            st.write(safe_text(r.get("science_summary"), "Clinical research feed pending."))
-            v = r.get("science_score")
-            st.metric("Science Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
+            st.markdown("### Clinical / Phase 3")
+            c1,c2,c3 = st.columns(3)
+            c1.metric("Phase 3 status", safe_text(r.get("phase3_status")))
+            c2.metric("P-value(s)", safe_text(r.get("reported_p_values")))
+            c3.metric("NCT", safe_text(r.get("nct_id")))
+            st.write(f"**Phase 3 date:** {'Not captured' if pd.isna(r.get('phase3_date')) else pd.Timestamp(r.get('phase3_date')).strftime('%b %d, %Y')}")
+            if safe_text(r.get("trial_evidence_url"), ""):
+                st.link_button("OPEN CLINICAL / TRIAL SOURCE", r.get("trial_evidence_url"))
+            st.write(safe_text(r.get("science_summary"), "No additional clinical summary stored."))
         with subtabs[4]:
             st.markdown("### FDA / Regulatory")
-            st.write(safe_text(r.get("regulatory_summary"), "Regulatory research feed pending."))
-            v = r.get("regulatory_score")
-            st.metric("Regulatory Score", "Pending" if pd.isna(v) else f"{float(v):.0f}/100")
+            f1,f2,f3 = st.columns(3)
+            f1.metric("PDUFA date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
+            f2.metric("Confirmation", safe_text(r.get("pdufa_confirmation")))
+            f3.metric("Check status", safe_text(r.get("check_status")))
+            if safe_text(r.get("pdufa_evidence_url"), ""):
+                st.link_button("OPEN REGULATORY SOURCE", r.get("pdufa_evidence_url"))
+            st.write(safe_text(r.get("regulatory_summary"), "No additional regulatory notes stored."))
         with subtabs[5]:
             st.markdown("### Financing")
-            st.metric("Financing Status", safe_text(r.get("financing_status")))
-            st.write(safe_text(r.get("financing_summary"), "Financing detail feed pending."))
+            f1,f2,f3,f4 = st.columns(4)
+            f1.metric("Status", safe_text(r.get("financing_status")))
+            f2.metric("Close date", "Not captured" if pd.isna(r.get("financing_close_date")) else pd.Timestamp(r.get("financing_close_date")).strftime("%b %d, %Y"))
+            f3.metric("Proceeds", safe_text(r.get("financing_proceeds")))
+            f4.metric("New dilution flag", safe_text(r.get("new_dilution_flag")))
+            if safe_text(r.get("financing_evidence_url"), ""):
+                st.link_button("OPEN FINANCING EVIDENCE", r.get("financing_evidence_url"))
+            st.write(safe_text(r.get("financing_summary"), "No additional financing summary stored."))
         with subtabs[6]:
-            st.markdown("### Trading")
-            st.write(safe_text(r.get("trading_summary"), "Trading intelligence feed pending."))
-            t1,t2,t3 = st.columns(3)
-            t1.metric("Trade Score", "Pending" if pd.isna(r.get("trade_score")) else f"{float(r.get('trade_score')):.0f}/100")
-            t2.metric("Short Interest", fmt_pct(r.get("short_interest")))
-            t3.metric("IV (30d)", fmt_pct(r.get("iv_30d")))
+            st.markdown("### Trading / Market")
+            t1,t2,t3,t4 = st.columns(4)
+            t1.metric("Market Cap", fmt_cap(r.get("market_cap")))
+            t2.metric("Cap Bucket", safe_text(r.get("market_cap_bucket")))
+            t3.metric("Price", "Not available" if pd.isna(r.get("price_last")) else f"${float(r.get('price_last')):,.2f}")
+            t4.metric("30D Return", fmt_pct(r.get("return_30d_pct"), 1))
+            t5,t6,t7,t8 = st.columns(4)
+            t5.metric("Avg Volume 20D", fmt_num(r.get("avg_volume_20d")))
+            t6.metric("Short Interest", fmt_pct(r.get("short_interest"), 1))
+            t7.metric("Short Ratio", fmt_num(r.get("short_ratio"), 2))
+            t8.metric("Institutional Ownership", fmt_pct(r.get("institutional_ownership_pct"), 1))
+            st.write(safe_text(r.get("trading_summary"), "No additional trading narrative stored."))
         with subtabs[7]:
             st.markdown("### Recent News")
             stories,error = fetch_ticker_news(
