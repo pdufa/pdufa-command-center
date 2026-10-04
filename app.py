@@ -108,6 +108,29 @@ def load_data():
     return x
 
 
+@st.cache_data(ttl=120)
+def load_prediction_history():
+    x = pd.read_csv("data/prediction_engine_history.csv")
+    required = [
+        "ticker","pdufa_date","event_key","p_approval","model_class","actual_outcome",
+        "validation_period","independence_status","historical_market_cap_billions",
+        "market_cap_match_method","market_cap_bucket","correct"
+    ]
+    for col in required:
+        if col not in x:
+            x[col] = pd.NA
+    for col in ["cap_recovery_confidence","cap_recovery_method"]:
+        if col not in x:
+            x[col] = pd.NA
+    x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
+    x["p_approval"] = pd.to_numeric(x["p_approval"], errors="coerce")
+    x["historical_market_cap_billions"] = pd.to_numeric(
+        x["historical_market_cap_billions"], errors="coerce"
+    )
+    x["correct"] = x["correct"].astype("string")
+    return x
+
+
 def _plain_text(value):
     value = html.unescape(value or "")
     value = re.sub(r"<[^>]+>", " ", value)
@@ -266,6 +289,7 @@ def _story_timestamp(value):
 
 
 df = load_data()
+prediction_history = load_prediction_history()
 
 # Startup data validation: fail loudly on structural problems instead of silently
 # rendering a misleading one-row/partial dashboard.
@@ -363,30 +387,36 @@ def make_event_key(row):
 
 APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"
 
-def event_detail_url(row):
+def event_detail_url(row, source="live", return_page="1. ALL PDUFA"):
+    event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
     return APP_BASE_URL + "?" + urllib.parse.urlencode({
         "page": "detail",
-        "event": make_event_key(row),
+        "event": event_key,
         "ticker": safe_text(row.get("ticker"), ""),
+        "source": source,
+        "return": return_page,
     })
 
 df["event_key"] = df.apply(make_event_key, axis=1)
 
 def go_page(page_name):
-    # Store destination before touching query params so a query-param rerun
-    # cannot lose the requested navigation target.
     st.session_state._pending_nav = page_name
+    st.session_state.detail_open = False
     if len(st.query_params):
         st.query_params.clear()
 
-def go_individual(ticker=None, event_key=None):
+def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if ticker is not None:
         st.session_state.selected_ticker = str(ticker)
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
-    go_page("4. INDIVIDUAL COMPANY")
+    st.session_state.selected_detail_source = source
+    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "1. ALL PDUFA")
+    st.session_state.detail_open = True
+    if len(st.query_params):
+        st.query_params.clear()
 
-def table_view(frame):
+def table_view(frame, return_page="1. ALL PDUFA"):
     out = frame.copy()
 
     # Guarantee every master-table column exists even if the source feed is incomplete.
@@ -407,7 +437,9 @@ def table_view(frame):
     )
     out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
     out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Not available")
-    out["Ticker Link"] = out.apply(event_detail_url, axis=1)
+    out["Ticker Link"] = out.apply(
+        lambda r: event_detail_url(r, source="live", return_page=return_page), axis=1
+    )
     out["Market Cap"] = out["market_cap"].map(fmt_cap)
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
     out["PoA"] = out["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
@@ -438,19 +470,26 @@ def table_view(frame):
 query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
+query_source = st.query_params.get("source") or "live"
+query_return = st.query_params.get("return") or "1. ALL PDUFA"
 
-# Deep links are consumed once. Clear them immediately after copying the
-# destination into session state so stale ?page=detail parameters cannot trap
-# the user on the Individual Company page or break return navigation.
 if query_page == "detail" and query_event:
     st.session_state.selected_event_key = str(query_event)
     if query_ticker:
         st.session_state.selected_ticker = str(query_ticker)
-    st.session_state._pending_nav = "4. INDIVIDUAL COMPANY"
+    st.session_state.selected_detail_source = str(query_source)
+    st.session_state.detail_return_page = str(query_return)
+    st.session_state.detail_open = True
     st.query_params.clear()
 
 if "nav" not in st.session_state:
     st.session_state.nav = "1. ALL PDUFA"
+if "detail_open" not in st.session_state:
+    st.session_state.detail_open = False
+if "selected_detail_source" not in st.session_state:
+    st.session_state.selected_detail_source = "live"
+if "detail_return_page" not in st.session_state:
+    st.session_state.detail_return_page = "1. ALL PDUFA"
 if "selected_ticker" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
@@ -461,17 +500,22 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("ALL → MARKET CAP GROUPS → INDIVIDUAL, with direct ALL → INDIVIDUAL navigation and a rolling 4-week PDUFA calendar")
+st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 
-# Apply deferred navigation before creating the bound radio widget.
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
+    st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. INDIVIDUAL COMPANY"]
-st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
-page = st.session_state.nav
-if page != "4. INDIVIDUAL COMPANY" and len(st.query_params):
-    st.query_params.clear()
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE"]
+if st.session_state.detail_open:
+    page = "__DETAIL__"
+else:
+    if st.session_state.nav not in nav_options:
+        st.session_state.nav = "1. ALL PDUFA"
+    st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
+    page = st.session_state.nav
+    if len(st.query_params):
+        st.query_params.clear()
 
 if page == "1. ALL PDUFA":
     st.markdown("## 1. ALL PDUFA — SAVED EVENT FEED")
@@ -693,7 +737,7 @@ if page == "1. ALL PDUFA":
     if view.empty:
         st.info("No PDUFA records match the current filters.")
     else:
-        display = table_view(view)
+        display = table_view(view, return_page="1. ALL PDUFA")
         display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         event = st.dataframe(
@@ -714,7 +758,7 @@ if page == "1. ALL PDUFA":
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = view.iloc[ridx]
-            go_individual(selected_row.get("ticker"), make_event_key(selected_row))
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row), source="live", return_page=page)
             st.rerun()
 
         open1,open2 = st.columns([3,1])
@@ -737,7 +781,7 @@ if page == "1. ALL PDUFA":
             st.write("")
             if st.button("VIEW INDIVIDUAL →", use_container_width=True, key="master_open"):
                 quick_row = quick_view[quick_view["event_key_ui"] == quick].iloc[0]
-                go_individual(quick_row.get("ticker"), quick)
+                go_individual(quick_row.get("ticker"), quick, source="live", return_page=page)
                 st.rerun()
 
         csv_bytes = display.to_csv(index=False).encode("utf-8")
@@ -823,7 +867,7 @@ elif page == "2. MARKET CAP GROUPS":
         else:
             st.info("No future PDUFA events currently fall in this validated market-cap bucket.")
     else:
-        display = table_view(cap_data)
+        display = table_view(cap_data, return_page="2. MARKET CAP GROUPS")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -929,7 +973,7 @@ elif page == "3. CALENDAR":
     if whits.empty:
         st.info("No saved PDUFA events in this week.")
     else:
-        display = table_view(whits)
+        display = table_view(whits, return_page="3. CALENDAR")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -981,12 +1025,160 @@ elif page == "3. CALENDAR":
                 for hit_idx, r in hits.iterrows():
                     st.link_button(
                         f"{r.ticker} · {fmt_app_pct(r.get('approval_probability'), 1)} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}",
-                        event_detail_url(r),
+                        event_detail_url(r, source="live", return_page="3. CALENDAR"),
                         use_container_width=True,
                         help="Open this exact PDUFA detail page"
                     )
 
+elif page == "4. PREDICTION ENGINE":
+    st.markdown("## 4. PREDICTION ENGINE — JAN 2025 TO SEP 2026")
+    st.caption("Canonical $300M–$10B final historical cohort. 2025 is external/blind holdout; Jan–Sep 2026 is model-development/in-sample and must not be interpreted as independent blind accuracy.")
+
+    hist = prediction_history.copy()
+    hist = hist[
+        hist["pdufa_date"].notna() &
+        (hist["pdufa_date"] >= pd.Timestamp("2025-01-01")) &
+        (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
+    ].copy()
+    hist["App %"] = hist["p_approval"].apply(lambda v: fmt_app_pct(v, 1))
+    hist["Correct / Wrong"] = hist["correct"].astype(str).map(
+        {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
+    ).fillna("NA")
+    hist["Historical Market Cap"] = hist["historical_market_cap_billions"].apply(
+        lambda v: "NA" if pd.isna(v) else f"${float(v):.2f}B"
+    )
+
+    correct_mask = hist["Correct / Wrong"].eq("Correct")
+    avg_p = hist["p_approval"].mean() * 100 if not hist.empty else float("nan")
+    p1,p2,p3,p4,p5,p6 = st.columns(6)
+    p1.metric("Historical Cases", len(hist))
+    p2.metric("Avg App %", "NA" if pd.isna(avg_p) else f"{avg_p:.1f}%")
+    p3.metric("Pred APPROVED", int((hist["model_class"] == "APPROVED").sum()))
+    p4.metric("Pred CRL", int((hist["model_class"] == "CRL").sum()))
+    p5.metric("Correct", int(correct_mask.sum()))
+    p6.metric("Accuracy", "NA" if hist.empty else f"{correct_mask.mean()*100:.1f}%")
+
+    f1,f2,f3,f4,f5 = st.columns([1.1,1.2,1.2,1.4,2.0])
+    with f1:
+        year_pick = st.selectbox("Year", ["All",2025,2026], key="pred_year")
+    with f2:
+        pred_pick = st.selectbox("Prediction", ["All","APPROVED","CRL"], key="pred_class")
+    with f3:
+        actual_pick = st.selectbox("Actual FDA", ["All","APPROVED","CRL"], key="pred_actual")
+    with f4:
+        bucket_pick = st.selectbox(
+            "Market Cap Bucket", ["All","$300M–$1B","$1B–$3B","$3B–$10B"], key="pred_bucket"
+        )
+    with f5:
+        pred_search = st.text_input("Search ticker or event key", key="pred_search")
+
+    hview = hist.copy()
+    if year_pick != "All":
+        hview = hview[hview["pdufa_date"].dt.year == int(year_pick)]
+    if pred_pick != "All":
+        hview = hview[hview["model_class"] == pred_pick]
+    if actual_pick != "All":
+        hview = hview[hview["actual_outcome"] == actual_pick]
+    if bucket_pick != "All":
+        hview = hview[hview["market_cap_bucket"] == bucket_pick]
+    if pred_search:
+        q = pred_search.lower()
+        hview = hview[
+            hview["ticker"].astype(str).str.lower().str.contains(q, na=False) |
+            hview["event_key"].astype(str).str.lower().str.contains(q, na=False)
+        ]
+
+    hview = hview.sort_values(["pdufa_date","ticker"]).copy()
+    hview["Ticker"] = hview.apply(
+        lambda r: event_detail_url(r, source="history", return_page="4. PREDICTION ENGINE"), axis=1
+    )
+    hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
+    hdisplay = hview[[
+        "Ticker","App %","PDUFA Date","model_class","actual_outcome",
+        "Historical Market Cap","market_cap_bucket","Correct / Wrong",
+        "validation_period","independence_status"
+    ]].rename(columns={
+        "model_class":"Model Prediction",
+        "actual_outcome":"Actual FDA Outcome",
+        "market_cap_bucket":"Market Cap Bucket",
+        "validation_period":"Validation Period",
+        "independence_status":"Validation Role"
+    })
+
+    st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
+    st.dataframe(
+        hdisplay,
+        use_container_width=True,
+        hide_index=True,
+        height=690,
+        column_config={
+            "Ticker": st.column_config.LinkColumn(
+                "Ticker",
+                display_text=r"ticker=([^&]+)",
+                help="Open this historical PDUFA model case"
+            )
+        }
+    )
+
+    st.info("Ticker detail for historical cases shows the exact saved model/outcome/cap/validation record. Company/drug fields are not invented when they are absent from the canonical cohort file.")
+
 else:
+    if st.session_state.selected_detail_source == "history":
+        hmatches = prediction_history[
+            prediction_history["event_key"].astype(str) == str(st.session_state.selected_event_key)
+        ]
+        if hmatches.empty:
+            st.error("Historical PDUFA event not found in the loaded prediction cohort.")
+            if st.button("← PREDICTION ENGINE", use_container_width=True):
+                go_page("4. PREDICTION ENGINE")
+                st.rerun()
+            st.stop()
+
+        hr = hmatches.iloc[0]
+        app_text = fmt_app_pct(hr.get("p_approval"), 1)
+        hdate = "NA" if pd.isna(hr.get("pdufa_date")) else pd.Timestamp(hr.get("pdufa_date")).strftime("%b %d, %Y")
+        hcap = "NA" if pd.isna(hr.get("historical_market_cap_billions")) else f"${float(hr.get('historical_market_cap_billions')):.2f}B"
+        correct_text = "Correct" if str(hr.get("correct")).lower() == "true" else "Wrong" if str(hr.get("correct")).lower() == "false" else "NA"
+
+        b1,b2 = st.columns([1,5])
+        with b1:
+            if st.button("← PREDICTION ENGINE", use_container_width=True):
+                go_page(st.session_state.detail_return_page or "4. PREDICTION ENGINE")
+                st.rerun()
+        with b2:
+            st.caption("Historical Prediction Engine event detail")
+
+        st.markdown(f"## {safe_text(hr.get('ticker'))} · {app_text} — Historical PDUFA")
+        st.caption(f"Event key: {safe_text(hr.get('event_key'))}")
+
+        a1,a2,a3,a4,a5,a6 = st.columns(6)
+        a1.metric("PDUFA Date", hdate)
+        a2.metric("App %", app_text)
+        a3.metric("Prediction", safe_text(hr.get("model_class"), "NA"))
+        a4.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
+        a5.metric("Result", correct_text)
+        a6.metric("Historical Cap", hcap)
+
+        st.markdown("### Model / Validation Record")
+        v1,v2,v3 = st.columns(3)
+        with v1:
+            st.write(f"**Market Cap Bucket:** {safe_text(hr.get('market_cap_bucket'), 'NA')}")
+            st.write(f"**Cap Match Method:** {safe_text(hr.get('market_cap_match_method'), 'NA')}")
+        with v2:
+            st.write(f"**Validation Period:** {safe_text(hr.get('validation_period'), 'NA')}")
+            st.write(f"**Validation Role:** {safe_text(hr.get('independence_status'), 'NA')}")
+        with v3:
+            st.write(f"**Cap Recovery Confidence:** {safe_text(hr.get('cap_recovery_confidence'), 'NA')}")
+            st.write(f"**Cap Recovery Method:** {safe_text(hr.get('cap_recovery_method'), 'NA')}")
+
+        if safe_text(hr.get("independence_status"), "") == "IN_SAMPLE_NOT_EXTERNAL_VALIDATION":
+            st.warning("This 2026 case is model-development/in-sample, not an independent blind validation case.")
+        else:
+            st.success("This case is labeled as an external holdout in the canonical cohort file.")
+
+        st.caption("Historical detail is limited to fields present in the canonical final cohort; company/drug/indication are not fabricated.")
+        st.stop()
+
     ordered = df.sort_values(["ticker","pdufa_date","drug"], na_position="last").copy()
     ordered["event_key"] = ordered.apply(make_event_key, axis=1)
     ordered["event_label"] = ordered.apply(
