@@ -1285,6 +1285,70 @@ elif page == "4. PREDICTION ENGINE":
         "Rows in the Rebuild / Rescore Queue must be corrected to the canonical event and rescored with a strictly pre-decision cutoff before final validation metrics are calculated."
     )
 
+    st.divider()
+    st.markdown("### Prediction Engine V2 — Prospective Decision Layer")
+    st.caption(
+        "V2 is conservative by design: it refuses weak-data calls. It does not rewrite frozen Q4 predictions "
+        "or retroactively tune historical probabilities."
+    )
+
+    live_v2 = future.copy()
+    if live_v2.empty:
+        st.info("No future PDUFA rows are currently available for the V2 gate.")
+    else:
+        gate_results = live_v2.apply(prospective_gate_state, axis=1)
+        live_v2["V2 Call"] = [x[0] for x in gate_results]
+        live_v2["V2 Confidence"] = [x[1] for x in gate_results]
+        live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
+        live_v2["App %"] = live_v2["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+        live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
+        live_v2["Ticker"] = live_v2.apply(
+            lambda r: event_detail_url(r, source="live", return_page="4. PREDICTION ENGINE"), axis=1
+        )
+
+        actionable = live_v2[live_v2["V2 Call"].isin(["APPROVED","CRL"])]
+        review = live_v2[~live_v2["V2 Call"].isin(["APPROVED","CRL"])]
+
+        z1,z2,z3,z4 = st.columns(4)
+        z1.metric("Future Candidates", len(live_v2))
+        z2.metric("High-Confidence Calls", len(actionable))
+        z3.metric("Review / Abstain", len(review))
+        z4.metric(
+            "Actionable Coverage",
+            "0.0%" if live_v2.empty else f"{len(actionable)/len(live_v2)*100:.1f}%"
+        )
+
+        v2display = live_v2[[
+            "Ticker","App %","PDUFA Date","drug","indication",
+            "V2 Call","V2 Confidence","V2 Gate Reason",
+            "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
+        ]].rename(columns={
+            "drug":"Drug",
+            "indication":"Indication",
+            "pdufa_confirmation":"PDUFA Verification",
+            "phase3_status":"Phase 3",
+            "monitor_eligibility":"Eligibility",
+            "conflict_flag":"Conflict"
+        })
+
+        st.dataframe(
+            v2display,
+            use_container_width=True,
+            hide_index=True,
+            height=min(650, 120 + 34*len(v2display)),
+            column_config={
+                "Ticker": st.column_config.LinkColumn(
+                    "Ticker",
+                    display_text=r"ticker=([^&]+)",
+                    help="Open this future PDUFA detail page"
+                )
+            }
+        )
+        st.caption(
+            "A high-confidence V2 call requires verified event identity, adequate pivotal evidence, no unresolved conflict, "
+            "and complete clinical/regulatory/safety/CMC component scores. Otherwise the engine deliberately returns REVIEW."
+        )
+
 else:
     if st.session_state.selected_detail_source == "history":
         hmatches = prediction_history[
