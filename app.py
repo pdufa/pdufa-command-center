@@ -425,6 +425,11 @@ def fmt_app_pct(v, decimals=1):
         x *= 100
     return f"{x:.{decimals}f}%"
 
+def combined_probability_direction(row):
+    p = fmt_app_pct(all_source_probability_value(row), 1)
+    f = direction_fda_display(row)
+    return f"{p} · {f}"
+
 def calendar_app_text(row, field):
     """Never display a missing/unscored calendar probability as 0%."""
     value = row.get(field)
@@ -2002,14 +2007,13 @@ else:
         public_hist = hr.get("public_approval_probability", pd.NA)
         public_hist_text = fmt_app_pct(public_hist, 1)
         all_hist_text = fmt_app_pct(all_source_probability_value(hr), 1)
-        a1,a2,a3,a4,a5,a6,a7 = st.columns(7)
-        a1.metric("PDUFA Date", hdate)
-        a2.metric("Probability of Approval % — Public", public_hist_text)
-        a3.metric("Probability of Approval % — All Sources", all_hist_text)
-        a4.metric("Direction / FDA Match", direction_fda_display(hr))
+        a1,a2,a3,a4,a5,a6 = st.columns(6)
+        a1.metric("P%", all_hist_text, help="All-sources Probability of Approval")
+        a2.metric("F", direction_fda_display(hr), help="FDA direction")
+        a3.metric("C", combined_probability_direction(hr), help="Combined P% + FDA direction")
+        a4.metric("PDUFA Date", hdate)
         a5.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
-        a6.metric("Result", correct_text)
-        a7.metric("Historical Cap", hcap)
+        a6.metric("Historical Cap", hcap)
 
         st.markdown("### V2 Audit / Validation Status")
         vs1,vs2,vs3,vs4 = st.columns(4)
@@ -2093,18 +2097,18 @@ else:
     else:
         r = ordered[ordered["event_key"] == st.session_state.selected_event_key].iloc[0]
         st.markdown(
-            f"## {r.ticker} · Public {fmt_app_pct(r.get('public_approval_probability'), 1)} "
-            f"· All Sources {fmt_app_pct(all_source_probability_value(r), 1)} — {r.company}"
+            f"## {r.ticker} · P% {fmt_app_pct(all_source_probability_value(r), 1)} "
+            f"· F {direction_fda_display(r)} — {r.company}"
         )
         st.caption(f"{safe_text(r.get('drug'))} · {safe_text(r.get('indication'))}")
         days_left = None if pd.isna(r.get("pdufa_date")) else int((pd.Timestamp(r.get("pdufa_date")) - today).days)
 
         k1,k2,k3,k4,k5,k6 = st.columns(6)
-        k1.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
-        k2.metric("Days Left", "Not available" if days_left is None else days_left)
-        k3.metric("Probability of Approval % — Public", fmt_app_pct(r.get("public_approval_probability"), 1))
-        k4.metric("Probability of Approval % — All Sources", fmt_app_pct(all_source_probability_value(r), 1))
-        k5.metric("Direction / FDA Match", direction_fda_display(r))
+        k1.metric("P%", fmt_app_pct(all_source_probability_value(r), 1), help="All-sources Probability of Approval")
+        k2.metric("F", direction_fda_display(r), help="FDA direction")
+        k3.metric("C", combined_probability_direction(r), help="Combined P% + FDA direction")
+        k4.metric("PDUFA Date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
+        k5.metric("Days Left", "Not available" if days_left is None else days_left)
         k6.metric("PDUFA Status", safe_text(r.get("pdufa_confirmation")))
 
         k5,k6,k7,k8 = st.columns(4)
