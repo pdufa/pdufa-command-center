@@ -373,9 +373,11 @@ def event_detail_url(row):
 df["event_key"] = df.apply(make_event_key, axis=1)
 
 def go_page(page_name):
+    # Store destination before touching query params so a query-param rerun
+    # cannot lose the requested navigation target.
+    st.session_state._pending_nav = page_name
     if len(st.query_params):
         st.query_params.clear()
-    st.session_state._pending_nav = page_name
 
 def go_individual(ticker=None, event_key=None):
     if ticker is not None:
@@ -934,13 +936,12 @@ elif page == "3. CALENDAR":
                 )
                 hits = df[df["pdufa_date"].dt.date == day]
                 for hit_idx, r in hits.iterrows():
-                    if st.button(
+                    st.link_button(
                         f"{r.ticker} · {fmt_app_pct(r.get('approval_probability'), 1)} · {pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}",
-                        key=f"cal_{day}_{r.ticker}_{hit_idx}",
-                        use_container_width=True
-                    ):
-                        go_individual(r.ticker, make_event_key(r))
-                        st.rerun()
+                        event_detail_url(r),
+                        use_container_width=True,
+                        help="Open this exact PDUFA detail page"
+                    )
 
 else:
     ordered = df.sort_values(["ticker","pdufa_date","drug"], na_position="last").copy()
