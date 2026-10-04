@@ -497,6 +497,49 @@ def prospective_gate_state(row):
     return call, confidence, " | ".join(dict.fromkeys(reasons)) if reasons else "All V2 gates passed"
 
 
+def public_direction_state(row):
+    """Public-evidence-only directional call."""
+    explicit = safe_text(row.get("public_model_class"), "").upper()
+    if explicit in ["APPROVED", "CRL"]:
+        return explicit
+    p = row.get("public_approval_probability")
+    p = None if pd.isna(p) else float(p)
+    if p is not None and 0 <= p <= 1:
+        p *= 100
+    if p is None:
+        return "REVIEW"
+    if p >= 90:
+        return "APPROVED"
+    if p <= 10:
+        return "CRL"
+    return "REVIEW"
+
+
+def internal_direction_state(row):
+    """Full-intelligence direction: internal model plus hard public-evidence veto/confirmation."""
+    p_public_dir = public_direction_state(row)
+    p = row.get("approval_probability", row.get("p_approval"))
+    p = None if pd.isna(p) else float(p)
+    if p is not None and 0 <= p <= 1:
+        p *= 100
+
+    # Strong decision-safe public evidence can override a misleading raw I App probability.
+    if p_public_dir in ["APPROVED", "CRL"]:
+        return p_public_dir
+
+    # If public evidence is mixed, abstain rather than force a directional call.
+    if p_public_dir == "REVIEW":
+        return "REVIEW"
+
+    if p is None:
+        return "REVIEW"
+    if p >= 95:
+        return "APPROVED"
+    if p <= 10:
+        return "CRL"
+    return "REVIEW"
+
+
 def make_event_key(row):
     source_key = safe_text(row.get("event_key"), "")
     if source_key:
@@ -575,6 +618,8 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     out["Cap Bucket"] = out["market_cap_bucket"].fillna("Not available").astype(str)
     out["I PoA"] = out["approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     out["P PoA"] = out["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+    out["I Direction"] = out.apply(internal_direction_state, axis=1)
+    out["P Direction"] = out.apply(public_direction_state, axis=1)
     out["Trade Score"] = out["trade_score"].apply(
         lambda v: "Not scored" if pd.isna(v) else f"{float(v):.0f}"
     )
@@ -597,7 +642,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
         "company":"Company","drug":"Drug","indication":"Indication",
         "I PoA":"I App %","P PoA":"P App %","Ticker Link":"Ticker"
     })[[
-        "Ticker","I App %","P App %","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
+        "Ticker","I App %","P App %","I Direction","P Direction","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
         "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
@@ -929,7 +974,7 @@ if page == "1. ALL PDUFA":
         display.insert(5, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("FIRST THREE COLUMNS: Ticker | I App % | P App %")
+        st.caption("FIRST FIVE COLUMNS: Ticker | I App % | P App % | I Direction | P Direction")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1253,6 +1298,8 @@ elif page == "4. PREDICTION ENGINE":
     if "public_approval_probability" not in hist:
         hist["public_approval_probability"] = pd.NA
     hist["P App %"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+    hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
+    hist["P Direction"] = hist.apply(public_direction_state, axis=1)
     hist["Correct / Wrong"] = hist["correct"].astype(str).map(
         {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
     ).fillna("NA")
@@ -1338,6 +1385,17 @@ elif page == "4. PREDICTION ENGINE":
     public_precision_accuracy = float("nan") if public_called.empty else public_correct.mean() * 100
     public_precision_coverage = 0.0 if audited.empty else len(public_called) / len(audited) * 100
 
+    audited["I Direction"] = audited.apply(internal_direction_state, axis=1)
+    audited["P Direction"] = audited.apply(public_direction_state, axis=1)
+    i_dir_called = audited[audited["I Direction"].isin(["APPROVED","CRL"])].copy()
+    p_dir_called = audited[audited["P Direction"].isin(["APPROVED","CRL"])].copy()
+    i_dir_correct = i_dir_called["I Direction"].eq(i_dir_called["actual_outcome"].astype(str).str.upper())
+    p_dir_correct = p_dir_called["P Direction"].eq(p_dir_called["actual_outcome"].astype(str).str.upper())
+    i_direction_accuracy = float("nan") if i_dir_called.empty else i_dir_correct.mean() * 100
+    p_direction_accuracy = float("nan") if p_dir_called.empty else p_dir_correct.mean() * 100
+    i_direction_coverage = 0.0 if audited.empty else len(i_dir_called) / len(audited) * 100
+    p_direction_coverage = 0.0 if audited.empty else len(p_dir_called) / len(audited) * 100
+
     excluded_count = int((hview["count_in_audited_accuracy"].astype(str).str.upper() == "NO").sum())
     rescore_count = int((hview["needs_rescore"].astype(str).str.upper() == "YES").sum())
     clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
@@ -1356,6 +1414,14 @@ elif page == "4. PREDICTION ENGINE":
     p3.metric("Raw Accuracy", "NA" if hview.empty else f"{filtered_correct.mean()*100:.1f}%")
     p4.metric("Clean-as-is Accuracy", "NA" if audited.empty else f"{audited_correct.mean()*100:.1f}%")
     st.caption("Coverage is completion. Avg I/P App % are probability averages and are not supposed to equal 100%.")
+
+    st.markdown("### DIRECTION ACCURACY")
+    d1,d2,d3,d4 = st.columns(4)
+    d1.metric("I Direction Accuracy", "NA" if pd.isna(i_direction_accuracy) else f"{i_direction_accuracy:.1f}%")
+    d2.metric("I Direction Coverage", f"{i_direction_coverage:.1f}%")
+    d3.metric("P Direction Accuracy", "NA" if pd.isna(p_direction_accuracy) else f"{p_direction_accuracy:.1f}%")
+    d4.metric("P Direction Coverage", f"{p_direction_coverage:.1f}%")
+    st.caption("Direction accuracy measures APPROVED vs CRL correctness only on cases actually called. REVIEW/ABSTAIN is excluded from accuracy and counted against coverage.")
 
     st.markdown("### 100% HISTORICAL PRECISION MODES")
     z1,z2,z3,z4,z5,z6 = st.columns(6)
@@ -1388,7 +1454,7 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hdisplay = hview[[
-        "Ticker","I App %","P App %","PDUFA Date","model_class","actual_outcome",
+        "Ticker","I App %","P App %","I Direction","P Direction","PDUFA Date","model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
