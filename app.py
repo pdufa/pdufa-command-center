@@ -815,6 +815,56 @@ if query_page == "detail" and query_event:
     st.session_state.detail_open = True
     st.query_params.clear()
 
+
+def _scan_scope_frame(scope):
+    scope = str(scope).upper()
+    active = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
+    if scope == "TODAY":
+        return active[active["pdufa_date"].dt.date == date.today()].copy()
+    if scope == "WEEK":
+        end = today + pd.Timedelta(days=7)
+        return active[(active["pdufa_date"] >= today) & (active["pdufa_date"] <= end)].copy()
+    return active.copy()
+
+def _record_streamlit_scan(action, scope):
+    frame = _scan_scope_frame(scope)
+    stamp = pd.Timestamp.now(tz="America/Los_Angeles").strftime("%Y-%m-%d %H:%M:%S %Z")
+    request = {
+        "action": action,
+        "scope": scope,
+        "requested_at": stamp,
+        "candidate_count": int(len(frame)),
+    }
+    st.session_state.scan_request = request
+    log = st.session_state.get("scan_log", [])
+    log.insert(0, request)
+    st.session_state.scan_log = log[:25]
+    return frame, request
+
+def scan_inputs_today():
+    load_data.clear()
+    return _record_streamlit_scan("RESCAN INPUTS", "TODAY")
+
+def scan_inputs_week():
+    load_data.clear()
+    return _record_streamlit_scan("RESCAN INPUTS", "WEEK")
+
+def scan_inputs_all():
+    load_data.clear()
+    return _record_streamlit_scan("RESCAN INPUTS", "ALL")
+
+def scan_approval_today():
+    load_prediction_history.clear()
+    return _record_streamlit_scan("PROBABILITY OF APPROVAL", "TODAY")
+
+def scan_approval_week():
+    load_prediction_history.clear()
+    return _record_streamlit_scan("PROBABILITY OF APPROVAL", "WEEK")
+
+def scan_approval_all():
+    load_prediction_history.clear()
+    return _record_streamlit_scan("PROBABILITY OF APPROVAL", "ALL")
+
 if "nav" not in st.session_state:
     st.session_state.nav = "1. ALL PDUFA"
 if "detail_open" not in st.session_state:
@@ -834,14 +884,14 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-04 · I/P APP SPLIT ACTIVE")
-st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE"]
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCAN"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -1827,6 +1877,97 @@ elif page == "4. PREDICTION ENGINE":
             "A high-confidence V2 call requires verified event identity, adequate pivotal evidence, no unresolved conflict, "
             "and complete clinical/regulatory/safety/CMC component scores. Otherwise the engine deliberately returns REVIEW."
         )
+
+
+elif page == "5. SCAN":
+    st.markdown("## 5. SCAN — MANUAL ACTION CENTER")
+    st.caption("Six manual controls. Each button maps one-to-one to a named Streamlit action function in app.py.")
+    st.info("Today = PDUFA events due today. Week = today through the next 7 days. All = all active/future PDUFA events currently loaded.")
+
+    left, right = st.columns(2)
+
+    with left:
+        st.markdown("### RESCAN INPUTS")
+        st.caption("Refresh the deployed input dataset/cache for the selected scope.")
+        a1, a2, a3 = st.columns(3)
+        with a1:
+            if st.button("TODAY", key="scan_inputs_today_btn", use_container_width=True):
+                frame, req = scan_inputs_today()
+                st.session_state.scan_preview = frame
+        with a2:
+            if st.button("WEEK", key="scan_inputs_week_btn", use_container_width=True):
+                frame, req = scan_inputs_week()
+                st.session_state.scan_preview = frame
+        with a3:
+            if st.button("ALL", key="scan_inputs_all_btn", use_container_width=True):
+                frame, req = scan_inputs_all()
+                st.session_state.scan_preview = frame
+
+        st.caption("Script mapping: scan_inputs_today() · scan_inputs_week() · scan_inputs_all()")
+
+    with right:
+        st.markdown("### PROBABILITY OF APPROVAL")
+        st.caption("Refresh the prediction cache and recompute displayed approval outputs for the selected scope.")
+        b1, b2, b3 = st.columns(3)
+        with b1:
+            if st.button("TODAY", key="scan_approval_today_btn", use_container_width=True):
+                frame, req = scan_approval_today()
+                st.session_state.scan_preview = frame
+        with b2:
+            if st.button("WEEK", key="scan_approval_week_btn", use_container_width=True):
+                frame, req = scan_approval_week()
+                st.session_state.scan_preview = frame
+        with b3:
+            if st.button("ALL", key="scan_approval_all_btn", use_container_width=True):
+                frame, req = scan_approval_all()
+                st.session_state.scan_preview = frame
+
+        st.caption("Script mapping: scan_approval_today() · scan_approval_week() · scan_approval_all()")
+
+    req = st.session_state.get("scan_request")
+    if req:
+        st.success(
+            f"Triggered: {req['action']} · {req['scope']} · "
+            f"{req['candidate_count']} candidate(s) · {req['requested_at']}"
+        )
+
+    preview = st.session_state.get("scan_preview")
+    if isinstance(preview, pd.DataFrame):
+        if preview.empty:
+            st.info("No active PDUFA candidates match this scope.")
+        else:
+            view = preview.copy()
+            view["PDUFA Date"] = pd.to_datetime(view["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+            view["Probability of Approval % — Public"] = view["public_approval_probability"].apply(
+                lambda v: fmt_app_pct(v, 1)
+            )
+            view["Probability of Approval % — All Sources"] = view.apply(
+                lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1
+            )
+            show_cols = [
+                "ticker","company","drug","PDUFA Date",
+                "Probability of Approval % — Public",
+                "Probability of Approval % — All Sources"
+            ]
+            st.dataframe(
+                view[show_cols].rename(columns={
+                    "ticker":"Ticker","company":"Company","drug":"Drug"
+                }),
+                use_container_width=True,
+                hide_index=True
+            )
+
+    st.warning(
+        "These Streamlit buttons now trigger the matching app.py functions immediately. "
+        "They refresh/recompute from the dataset available to the deployed app. "
+        "A deep public-source rescan (FDA/SEC/ClinicalTrials.gov) still requires the external cloud scan worker; "
+        "the Streamlit app does not currently have an authenticated Google Sheets/Apps Script write connection."
+    )
+
+    if st.session_state.get("scan_log"):
+        st.markdown("### Session Scan Log")
+        st.dataframe(pd.DataFrame(st.session_state.scan_log), use_container_width=True, hide_index=True)
+
 
 else:
     if st.session_state.selected_detail_source == "history":
