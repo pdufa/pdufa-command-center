@@ -80,9 +80,11 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
 .merged-pdufa-table th.angle-head > span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
 .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
-.merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
-.merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
-.merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
+.merged-pdufa-table th.group-head{height:38px;background:#111111 !important;color:#ffffff !important;font-weight:900;border:2px solid #000000;border-bottom:2px solid #000000;font-size:15px}
+.merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:92px;width:92px;max-width:92px;top:38px}
+.merged-pdufa-table th.financing-subhead{background:#fff3bf !important;border-left:2px solid #000000;border-right:1px solid #000000}
+.merged-pdufa-table th.financing-subhead .sort-head{white-space:normal !important;line-height:1.15 !important}
+.merged-pdufa-table td.second-fin-cell{min-width:92px;width:92px;max-width:92px;font-weight:900;border-left:1px solid #000000}
 .merged-pdufa-table td.second-fin-verified{background:#d9f7df !important;color:#0b6419 !important;font-size:19px !important;font-weight:900 !important}
 .merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
 .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
@@ -1135,6 +1137,11 @@ def load_second_financing_backfill():
 
 
 SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]
+SECOND_FINANCING_HEADER_LABELS = {
+    "Announced": "2F Announced",
+    "Running": "2F Running",
+    "Closed": "2F Closed",
+}
 
 
 def _second_financing_flags(row):
@@ -1431,7 +1438,13 @@ def render_merged_table(frame, heading, height_px=690):
                 if not financing_started:
                     header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
                     financing_started = True
-                header_bottom.append(f'<th class="group-subhead">{sort_button}</th>')
+                visible_button = _sort_header_button(
+                    SECOND_FINANCING_HEADER_LABELS.get(col, col), col_index
+                ).replace(
+                    f'data-col-index="{int(col_index)}"',
+                    f'data-col-index="{int(col_index)}" data-source-col="{html.escape(str(col), quote=True)}"'
+                )
+                header_bottom.append(f'<th class="group-subhead financing-subhead">{visible_button}</th>')
                 continue
 
             if col in APPLICATION_COLUMNS:
@@ -1520,9 +1533,11 @@ def render_merged_table(frame, heading, height_px=690):
     .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
     .merged-pdufa-table th.ticker-head{z-index:6}
     .merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
-    .merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
-    .merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
+    .merged-pdufa-table th.group-head{height:38px;background:#111 !important;color:#fff !important;font-weight:900;border:2px solid #000;border-bottom:2px solid #000;font-size:15px}
+    .merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:92px;width:92px;max-width:92px;top:38px}
+    .merged-pdufa-table th.financing-subhead{background:#fff3bf !important;border-left:2px solid #000;border-right:1px solid #000}
+    .merged-pdufa-table th.financing-subhead .sort-head{white-space:normal !important;line-height:1.15 !important}
+    .merged-pdufa-table td.second-fin-cell{min-width:92px;width:92px;max-width:92px;font-weight:900;border-left:1px solid #000}
     .merged-pdufa-table td.second-fin-verified{background:#d9f7df !important;color:#0b6419 !important;font-size:19px !important;font-weight:900 !important}
     .merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
     .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
@@ -2164,8 +2179,12 @@ if page == "1. ALL PDUFA":
         verified_second_financing_n = int(
             (second_fin["Closed"].astype(str) == "✓").sum()
         )
+        st.markdown(
+            "**2ND FINANCING is immediately after P:** "
+            "**2F Announced | 2F Running | 2F Closed**"
+        )
         st.caption(
-            f"2nd Financing verified closed: {verified_second_financing_n} event(s). "
+            f"Verified second-financing closed events in this view: {verified_second_financing_n}. "
             "Verified milestones are highlighted in green."
         )
         render_merged_table(display, "MASTER PDUFA TABLE", height_px=650)
