@@ -1,0 +1,58 @@
+name: Daily PDUFA Recheck
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_key:
+        description: Exact event_key to recheck; leave blank for all
+        required: false
+        default: ""
+      categories:
+        description: Comma-separated categories
+        required: false
+        default: "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"
+  schedule:
+    - cron: "0 5 * * *"
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install pandas
+      - name: Gate scheduled runs to 10 PM America/Los_Angeles
+        if: github.event_name == 'schedule'
+        run: |
+          HOUR=$(TZ=America/Los_Angeles date +%H)
+          if [ "$HOUR" != "22" ]; then
+            echo "Not 10 PM Pacific; exiting duplicate DST-safe schedule."
+            exit 0
+          fi
+      - name: Recheck exact event
+        if: github.event_name == 'workflow_dispatch' && inputs.event_key != ''
+        run: python scripts/recheck_events.py --event-key "${{ inputs.event_key }}" --categories "${{ inputs.categories }}"
+      - name: Recheck all current events
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.event_key == '')
+        run: python scripts/recheck_events.py --all --categories "${{ inputs.categories || 'pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders' }}"
+      - name: Run repository checks
+        run: python smoke_test.py
+      - name: Commit persisted recheck results
+        run: |
+          git config user.name "pdufa-recheck-bot"
+          git config user.email "pdufa-recheck-bot@users.noreply.github.com"
+          git add data/pdufa_candidates.csv data/recheck_status.csv
+          if git diff --cached --quiet; then
+            echo "No persisted recheck changes."
+          else
+            git commit -m "Update PDUFA recheck results"
+            git push
+          fi
