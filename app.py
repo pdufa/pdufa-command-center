@@ -897,7 +897,6 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
 
 SPECIAL_PROVISION_COLUMNS = [
     ("Orphan Drug", ("orphan_drug", "orphan")),
-    ("Need", ("unmet_need",)),
     ("No Available Therapy", ("no_available_therapy", "no_therapy")),
     ("Serious Condition", ("serious_condition",)),
     ("Life-Threatening", ("life_threatening", "life_threatening_condition")),
@@ -954,7 +953,7 @@ def special_provision_column_config():
 
 
 def render_merged_table(frame, heading, height_px=690):
-    """Render one merged table; the 17 Special Provision headers are rotated 45 degrees."""
+    """Render one merged table; the 16 Special Provision headers are rotated 45 degrees."""
     if frame is None or frame.empty:
         return
 
@@ -999,7 +998,7 @@ def render_merged_table(frame, heading, height_px=690):
         + '</tbody></table></div>'
     )
     st.markdown(f"### {heading}")
-    st.caption("Single merged table. The 17 Special Provision headers are rotated 45°. Scroll horizontally to view all columns.")
+    st.caption("Single merged table. The 16 Special Provision headers are rotated 45°. Scroll horizontally to view all columns.")
     st.markdown(table_html, unsafe_allow_html=True)
 
 
@@ -1155,7 +1154,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-04 · MERGED TABLE + 17 SPECIAL PROVISION COLUMNS ACTIVE")
+st.caption("BUILD 2026-10-04 · MERGED TABLE + 16 SPECIAL PROVISION COLUMNS ACTIVE")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
