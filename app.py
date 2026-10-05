@@ -107,6 +107,26 @@ def load_data():
         raw = raw.replace("\\n", "\n")
     x = pd.read_csv(StringIO(raw))
 
+    # Persistent second-financing milestone backfill. Kept separate from the
+    # primary candidate feed so financing verification can be audited/updated
+    # without rewriting unrelated PDUFA fields.
+    try:
+        sf = pd.read_csv("data/second_financing_status.csv", keep_default_na=False)
+        sf["event_key"] = sf["event_key"].astype(str)
+        x["event_key"] = x["event_key"].astype(str)
+        keep = [
+            "event_key","second_financing_status","second_financing_announced",
+            "second_financing_running","second_financing_closed",
+            "first_financing_date","first_financing_source",
+            "second_financing_date","second_financing_source",
+            "second_financing_audit_status","second_financing_evidence_note",
+            "verified_as_of",
+        ]
+        sf = sf[[c for c in keep if c in sf.columns]].copy()
+        x = x.merge(sf, on="event_key", how="left", validate="one_to_one")
+    except Exception:
+        pass
+
     required = ["ticker","company","drug","indication","pdufa_date"]
     for c in required:
         if c not in x:
