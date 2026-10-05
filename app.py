@@ -10,6 +10,8 @@ import re
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import subprocess
+import sys
 from email.utils import parsedate_to_datetime
 
 st.set_page_config(
@@ -150,7 +152,7 @@ def load_data():
         "approval_probability","public_approval_probability","biopharmawatch_probability","science_score","regulatory_score","safety_score",
         "cmc_score","market_cap","trade_score","short_interest","iv_30d",
         "price_last","return_30d_pct","avg_volume_20d","short_ratio","shares_float",
-        "institutional_ownership_pct","cash"
+        "institutional_ownership_pct","cash","cash_runway_months"
     ]
     optional_dates = [
         "phase1_date","phase2_date","phase3_date","nda_submission_date",
@@ -289,6 +291,48 @@ def load_prediction_rescore_queue():
     except Exception:
         q = pd.DataFrame()
     return q
+
+
+@st.cache_data(ttl=60)
+def load_recheck_status():
+    try:
+        x = pd.read_csv("data/recheck_status.csv", keep_default_na=False)
+    except Exception:
+        x = pd.DataFrame()
+    required = [
+        "event_key","ticker","company","drug","pdufa_date","run_status","requested_scope",
+        "started_at_utc","completed_at_utc","last_successful_recheck_utc","change_count","error_count"
+    ]
+    for cat in ["pdufa_date","phase3","financing","cash_runway","market_data","ownership_insiders"]:
+        required += [f"{cat}_status", f"{cat}_note", f"{cat}_source"]
+    for col in required:
+        if col not in x:
+            x[col] = ""
+    return x[required]
+
+
+def run_recheck_worker(event_key=None, run_all=False, categories=None):
+    categories = categories or ["pdufa_date","phase3","financing","cash_runway","market_data","ownership_insiders"]
+    cmd = [sys.executable, "scripts/recheck_events.py", "--categories", ",".join(categories)]
+    if run_all:
+        cmd.append("--all")
+    elif event_key:
+        cmd += ["--event-key", str(event_key)]
+    else:
+        raise ValueError("event_key or run_all is required")
+    result = subprocess.run(
+        cmd,
+        cwd=str(Path(__file__).resolve().parent),
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if result.returncode != 0:
+        raise RuntimeError((result.stderr or result.stdout or "Recheck failed").strip())
+    load_data.clear()
+    load_recheck_status.clear()
+    payload = (result.stdout or "").strip().splitlines()
+    return payload[-1] if payload else "Recheck completed"
 
 
 def _plain_text(value):
@@ -1806,14 +1850,14 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-04B · FINANCING CACHE FIX · P COLUMN ACTIVE · 2020–2026 DESIGNATION BACKFILL")
-st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER → RECHECK. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCAN","6. MATCH OPTIMIZER"]
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCAN","6. MATCH OPTIMIZER","7. RECHECK"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -3176,6 +3220,138 @@ elif page == "5. SCAN":
         st.dataframe(pd.DataFrame(result_rows), use_container_width=True, hide_index=True)
     else:
         st.info("No scan results yet. Run one of the six SCAN buttons above.")
+
+
+elif page == "7. RECHECK":
+    st.markdown("## 7. RECHECK — EXACT EVENT / PUBLIC SOURCE AUDIT")
+    st.caption(
+        "Recheck is locked to the exact event_key. It never substitutes another company's event. "
+        "The six categories are PDUFA/FDA, Phase 3/p-value, financing closure, cash runway, market data, and ownership/insiders."
+    )
+
+    lookup = st.text_input("Ticker lookup", value="", placeholder="Example: SRRK or CABA", key="recheck_ticker_lookup").strip().upper()
+    lookup_rows = df[df["ticker"].fillna("").astype(str).str.upper().eq(lookup)].copy() if lookup else pd.DataFrame()
+    if lookup and lookup_rows.empty:
+        st.warning(f"{lookup} has no current PDUFA event in the saved event feed. No other ticker/event will be substituted.")
+
+    event_rows = lookup_rows if lookup and not lookup_rows.empty else df.copy()
+    event_rows = event_rows.sort_values(["pdufa_date","ticker"], na_position="last")
+    event_keys = event_rows["event_key"].astype(str).tolist()
+    if not event_keys:
+        st.info("No PDUFA events are available to recheck.")
+    else:
+        current_key = str(st.session_state.get("selected_event_key",""))
+        default_idx = event_keys.index(current_key) if current_key in event_keys else 0
+        selected_recheck_key = st.selectbox(
+            "Exact PDUFA event",
+            event_keys,
+            index=default_idx,
+            format_func=lambda k: (
+                f"{event_rows.loc[event_rows['event_key'].astype(str).eq(k), 'ticker'].iloc[0]} · "
+                f"{safe_text(event_rows.loc[event_rows['event_key'].astype(str).eq(k), 'drug'].iloc[0])} · "
+                f"{safe_text(event_rows.loc[event_rows['event_key'].astype(str).eq(k), 'pdufa_date'].iloc[0])}"
+            ),
+            key="recheck_event_key",
+        )
+        selected_row = event_rows[event_rows["event_key"].astype(str).eq(selected_recheck_key)].iloc[0]
+        st.code(selected_recheck_key, language=None)
+        st.caption(
+            f"Locked target: {safe_text(selected_row.get('ticker'))} · "
+            f"{safe_text(selected_row.get('drug'))} · "
+            f"{safe_text(selected_row.get('pdufa_date'))}"
+        )
+
+        st.markdown("### Six recheck categories")
+        q1,q2,q3 = st.columns(3)
+        q4,q5,q6 = st.columns(3)
+        checks = {
+            "pdufa_date": q1.checkbox("PDUFA date / FDA decision", value=True, key="recheck_c1"),
+            "phase3": q2.checkbox("Phase 3 results / p-value", value=True, key="recheck_c2"),
+            "financing": q3.checkbox("Financing closure", value=True, key="recheck_c3"),
+            "cash_runway": q4.checkbox("Cash runway", value=True, key="recheck_c4"),
+            "market_data": q5.checkbox("Market data", value=True, key="recheck_c5"),
+            "ownership_insiders": q6.checkbox("Options / ownership / insiders", value=True, key="recheck_c6"),
+        }
+        chosen = [k for k,v in checks.items() if v]
+
+        b1,b2 = st.columns(2)
+        with b1:
+            if st.button("▶ RUN RECHECK — SELECTED EVENT", use_container_width=True, disabled=not chosen):
+                with st.spinner("Running exact-event public-source recheck..."):
+                    try:
+                        st.session_state.recheck_last_result = run_recheck_worker(
+                            event_key=selected_recheck_key, categories=chosen
+                        )
+                        st.session_state.selected_event_key = selected_recheck_key
+                        st.session_state.recheck_last_error = ""
+                    except Exception as exc:
+                        st.session_state.recheck_last_error = str(exc)
+                st.rerun()
+        with b2:
+            if st.button("▶ RUN RECHECK — ALL EVENTS", use_container_width=True, disabled=not chosen):
+                with st.spinner("Running all-event public-source recheck..."):
+                    try:
+                        st.session_state.recheck_last_result = run_recheck_worker(
+                            run_all=True, categories=chosen
+                        )
+                        st.session_state.recheck_last_error = ""
+                    except Exception as exc:
+                        st.session_state.recheck_last_error = str(exc)
+                st.rerun()
+
+    if st.session_state.get("recheck_last_error"):
+        st.error(st.session_state.recheck_last_error)
+    elif st.session_state.get("recheck_last_result"):
+        st.success(st.session_state.recheck_last_result)
+
+    rs = load_recheck_status()
+    if not rs.empty:
+        completed = rs[rs["last_successful_recheck_utc"].astype(str).str.strip().ne("")]
+        r1,r2,r3,r4 = st.columns(4)
+        r1.metric("Tracked Events", len(rs))
+        r2.metric("Completed Successfully", len(completed))
+        r3.metric("With Errors", int(rs["run_status"].astype(str).str.contains("ERROR", case=False, na=False).sum()))
+        latest = completed["last_successful_recheck_utc"].max() if not completed.empty else "Not run"
+        r4.metric("Last Successful Recheck", latest)
+
+        target_key = str(st.session_state.get("recheck_event_key", st.session_state.get("selected_event_key","")))
+        one = rs[rs["event_key"].astype(str).eq(target_key)]
+        if not one.empty:
+            rr = one.iloc[0]
+            st.markdown("### Selected event recheck results")
+            rows = []
+            labels = {
+                "pdufa_date":"PDUFA date / FDA decision",
+                "phase3":"Phase 3 results / p-value",
+                "financing":"Financing closure",
+                "cash_runway":"Cash runway",
+                "market_data":"Market data",
+                "ownership_insiders":"Options / ownership / insiders",
+            }
+            for cat,label in labels.items():
+                rows.append({
+                    "Category": label,
+                    "Status": safe_text(rr.get(cat+"_status"), "Not run"),
+                    "Details": safe_text(rr.get(cat+"_note"), "Not run"),
+                    "Source": safe_text(rr.get(cat+"_source"), ""),
+                })
+            st.dataframe(
+                pd.DataFrame(rows),
+                use_container_width=True,
+                hide_index=True,
+                column_config={"Source": st.column_config.LinkColumn("Source", display_text="Open source")}
+            )
+            st.caption(
+                f"Run status: {safe_text(rr.get('run_status'),'Not run')} · "
+                f"Last success: {safe_text(rr.get('last_successful_recheck_utc'),'Not run')} · "
+                f"Field changes: {safe_text(rr.get('change_count'),'0')} · "
+                f"Errors: {safe_text(rr.get('error_count'),'0')}"
+            )
+
+    st.info(
+        "Persistence: the same worker is scheduled in GitHub every day at 10 PM Pacific. "
+        "The workflow uses two UTC cron entries with a Pacific-time gate so daylight-saving changes do not shift the intended local run time."
+    )
 
 
 else:
