@@ -793,6 +793,13 @@ def predicted_fda_direction(row):
     if consensus_dir in ["APPROVED", "CRL"]:
         return consensus_dir
 
+    # Historical validation rows carry a frozen pre-decision model_class.
+    # Use it before the prospective V2 fallback so historical F/Match reflect
+    # the prediction that was actually frozen for that case.
+    frozen_model = safe_text(row.get("model_class"), "").upper()
+    if frozen_model in ["APPROVED", "CRL"]:
+        return frozen_model
+
     try:
         v2_call = prospective_gate_state(row)[0]
     except Exception:
@@ -1689,13 +1696,13 @@ elif page == "3. CALENDAR":
                     )
 
 elif page == "4. PREDICTION ENGINE":
-    st.markdown("## 4. PREDICTION ENGINE — JAN 2025 TO SEP 2026")
+    st.markdown("## 4. PREDICTION ENGINE — 2024 TO SEP 2026")
     st.caption("Canonical $300M–$10B historical cohort. User-facing approval probabilities are limited to Public and All Sources; internal component scores remain backend inputs for validation.")
 
     hist = prediction_history.copy()
     hist = hist[
         hist["pdufa_date"].notna() &
-        (hist["pdufa_date"] >= pd.Timestamp("2025-01-01")) &
+        (hist["pdufa_date"] >= pd.Timestamp("2024-01-01")) &
         (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
     ].copy()
     if "public_approval_probability" not in hist:
@@ -1724,7 +1731,8 @@ elif page == "4. PREDICTION ENGINE":
 
     f1,f2,f3,f4,f5 = st.columns([1.1,1.2,1.2,1.4,2.0])
     with f1:
-        year_pick = st.selectbox("Year", ["All",2025,2026], key="pred_year")
+        available_pred_years = sorted(hist["pdufa_date"].dropna().dt.year.astype(int).unique().tolist())
+        year_pick = st.selectbox("Year", ["All"] + available_pred_years, key="pred_year")
     with f2:
         pred_pick = st.selectbox("Prediction", ["All","APPROVED","CRL"], key="pred_class")
     with f3:
