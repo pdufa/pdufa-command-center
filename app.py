@@ -187,6 +187,33 @@ def load_prediction_history():
 
     if "source_url" not in x:
         x["source_url"] = pd.NA
+
+    # Persistent regulatory-designation backfill. This is kept separate from
+    # the frozen prediction history so display research cannot rewrite model inputs.
+    try:
+        designations = pd.read_csv("data/prediction_engine_designations.csv", keep_default_na=False)
+        designations["event_key"] = designations["event_key"].astype(str)
+        x["event_key"] = x["event_key"].astype(str)
+        designation_fields = [
+            "orphan_drug","no_available_therapy","serious_condition","life_threatening",
+            "fast_track","breakthrough_therapy","priority_review","accelerated_approval",
+            "rmat","qidp","rare_pediatric_disease","priority_review_voucher",
+            "rolling_review","rtor","project_orbis","spa",
+            "designation_audit_status","designation_source_url","designation_evidence_note",
+        ]
+        keep_cols = ["event_key"] + [c for c in designation_fields if c in designations.columns]
+        x = x.merge(designations[keep_cols], on="event_key", how="left", validate="one_to_one")
+    except Exception:
+        for col in [
+            "orphan_drug","no_available_therapy","serious_condition","life_threatening",
+            "fast_track","breakthrough_therapy","priority_review","accelerated_approval",
+            "rmat","qidp","rare_pediatric_disease","priority_review_voucher",
+            "rolling_review","rtor","project_orbis","spa",
+            "designation_audit_status","designation_source_url","designation_evidence_note",
+        ]:
+            if col not in x:
+                x[col] = ""
+
     x["audit_status"] = x["audit_status"].fillna("UNREVIEWED")
     # YES here means "keep in adjusted score unless a verified invalid mapping
     # has been explicitly excluded". It is not a claim that every row is fully audited.
@@ -1247,7 +1274,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-04 · MERGED TABLE + 16 SPECIAL PROVISION COLUMNS ACTIVE")
+st.caption("BUILD 2026-10-04 · 2020–2026 DESIGNATION BACKFILL ACTIVE · MERGED 16-COLUMN VIEW")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
