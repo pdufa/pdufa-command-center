@@ -75,7 +75,7 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.angle-head > span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
 .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
 .merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
-.merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px}
+.merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
 .merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
 .merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .merged-pdufa-table th.ticker-head{z-index:6}
