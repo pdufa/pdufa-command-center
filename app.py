@@ -73,6 +73,7 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111111;background:#ffffff;white-space:nowrap}
 .merged-pdufa-table th a.sort-head{color:#111111 !important;text-decoration:none !important;font-weight:800;display:block;width:100%;height:100%;cursor:pointer}
 .merged-pdufa-table th a.sort-head:hover{text-decoration:underline !important}
+.merged-pdufa-table th .sort-icon{display:inline-block !important;margin-left:5px;padding:1px 4px;border:1.5px solid #000000;border-radius:4px;background:#ffffff;color:#000000 !important;font-size:14px !important;line-height:1.05 !important;font-weight:900 !important;vertical-align:middle}
 .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
 .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
 .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
@@ -1294,16 +1295,20 @@ def _merged_table_sort_series(frame, col):
 def _sort_header_link(sort_key, col, current_col, current_dir):
     """Create a same-page header link that toggles ascending/descending."""
     next_dir = "desc" if current_col == col and current_dir == "asc" else "asc"
-    arrow = " ↕"
+    icon = "⇅"
     if current_col == col:
-        arrow = " ▲" if current_dir == "asc" else " ▼"
+        icon = "▲" if current_dir == "asc" else "▼"
     href = (
         "?sort_table=" + urllib.parse.quote(str(sort_key), safe="")
         + "&sort_col=" + urllib.parse.quote(str(col), safe="")
         + "&sort_dir=" + urllib.parse.quote(next_dir, safe="")
     )
-    label = html.escape(str(col)) + arrow
-    return f'<a class="sort-head" href="{href}" target="_self" title="Click to sort {html.escape(str(col), quote=True)}">{label}</a>'
+    label = html.escape(str(col))
+    return (
+        f'<a class="sort-head" href="{href}" target="_self" '
+        f'title="Click to sort {html.escape(str(col), quote=True)}">'
+        f'{label}<span class="sort-icon">{icon}</span></a>'
+    )
 
 
 def render_merged_table(frame, heading, height_px=690):
