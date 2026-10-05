@@ -1242,7 +1242,7 @@ def _merged_table_sort_series(frame, col):
         return text_values.apply(ticker_label)
 
     lower_col = str(col).lower()
-    if "date" in lower_col or col == "Canonical PDUFA":
+    if "date" in lower_col or col in {"Canonical PDUFA", "PDUFA"}:
         parsed_dates = pd.to_datetime(text_values.replace({"":"NaT", "Not available":"NaT", "NA":"NaT"}), errors="coerce")
         if parsed_dates.notna().any():
             return parsed_dates
@@ -1885,6 +1885,9 @@ if page == "1. ALL PDUFA":
         application_flags = add_application_columns(view)
         for col in APPLICATION_COLUMNS:
             display[col] = application_flags[col].values
+        display["PDUFA"] = view["pdufa_date"].apply(
+            lambda d: "" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
+        ).values
         display["F"] = view.apply(predicted_fda_direction, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
@@ -1896,7 +1899,8 @@ if page == "1. ALL PDUFA":
             "All-Source Direction"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C"]
+        display = display.drop(columns=["PDUFA Date"], errors="ignore")
+        front = ["Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"PDUFA","F","Match %","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2353,15 +2357,15 @@ elif page == "4. PREDICTION ENGINE":
     hview["Ticker"] = hview.apply(
         lambda r: event_detail_url(r, source="history", return_page="4. PREDICTION ENGINE"), axis=1
     )
-    hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
+    hview["PDUFA"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
     hview = add_second_financing_columns(hview)
     hview = add_application_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C",
+        "Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"PDUFA","F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
-        "Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
+        "Probability of Approval % — Public","I Direction","P Direction",
         "model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
