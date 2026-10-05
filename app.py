@@ -2196,21 +2196,24 @@ if page == "1. ALL PDUFA":
         )
         sf_all = load_second_financing_backfill()
         verified_second_financing_total = 0
+        financing_researched_total = 0
         if not sf_all.empty and "second_financing_audit_status" in sf_all.columns:
+            audit_status = sf_all["second_financing_audit_status"].astype(str).str.strip()
             verified_second_financing_total = int(
-                sf_all["second_financing_audit_status"]
-                .astype(str)
-                .eq("VERIFIED_SECOND_POST_PHASE3_FINANCING")
-                .sum()
+                audit_status.eq("VERIFIED_SECOND_POST_PHASE3_FINANCING").sum()
+            )
+            financing_researched_total = int(
+                audit_status.ne("").sum()
             )
         st.markdown(
             "**2ND FINANCING is immediately after P:** "
             "**2F Announced | 2F Running | 2F Closed**"
         )
         st.caption(
+            f"Financing research coverage: {financing_researched_total}/{len(sf_all)} live events · "
             f"Verified second-financing closes: {verified_second_financing_total} total · "
             f"{verified_second_financing_n} in the current view. "
-            "Verified milestones are highlighted in green."
+            "Verified milestones are highlighted in green; blank checks mean the strict second-close rule was not verified."
         )
         render_merged_table(display, "MASTER PDUFA TABLE", height_px=650)
         open1,open2 = st.columns([3,1])
