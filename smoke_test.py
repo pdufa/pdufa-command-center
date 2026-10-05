@@ -208,6 +208,7 @@ required_ui_contracts = [
     'sort_col',
     'sort_dir',
     'Click any column heading to sort',
+    'arrow = " ↕"',
     'SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]',
     'colspan="3">2nd Financing',
     'APPLICATION_COLUMNS = ["N", "B"]',
