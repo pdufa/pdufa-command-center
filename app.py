@@ -74,6 +74,9 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
 .merged-pdufa-table th.angle-head > span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
 .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
+.merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
+.merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px}
+.merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
 .merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .merged-pdufa-table th.ticker-head{z-index:6}
 .merged-pdufa-table td.provision-yes{font-weight:800;font-size:18px}
@@ -107,7 +110,10 @@ def load_data():
         "setup_phase","outcome","financing_summary","pdufa_confirmation","market_cap_bucket",
         "reported_p_values","phase3_status","nct_id","conflict_flag","monitor_eligibility",
         "check_status","last_checked","pdufa_evidence_url","trial_evidence_url",
-        "financing_evidence_url","new_dilution_flag","financing_proceeds"
+        "financing_evidence_url","new_dilution_flag","financing_proceeds",
+        "second_financing_status","second_financing_announced","second_financing_running",
+        "second_financing_closed","second_financing_announcement",
+        "second_financing_in_progress","second_financing_close_verified"
     ]
     optional_numeric = [
         "approval_probability","public_approval_probability","biopharmawatch_probability","science_score","regulatory_score","safety_score",
@@ -1085,6 +1091,83 @@ def add_special_provision_columns(frame):
     return out
 
 
+SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]
+
+
+def _second_financing_flags(row):
+    """Return explicit second-financing stage flags without inferring from generic financing."""
+    explicit_map = {
+        "Announced": ["second_financing_announced", "second_financing_announcement"],
+        "Running": ["second_financing_running", "second_financing_in_progress"],
+        "Closed": ["second_financing_closed", "second_financing_close_verified"],
+    }
+    result = {name: "" for name in SECOND_FINANCING_COLUMNS}
+
+    for label, aliases in explicit_map.items():
+        for alias in aliases:
+            if alias in row.index:
+                if _provision_status(row.get(alias)) == "✓":
+                    result[label] = "✓"
+                    break
+
+    explicit_status = safe_text(row.get("second_financing_status"), "").strip().lower()
+    if explicit_status:
+        if any(k in explicit_status for k in ["closed", "complete", "completed"]):
+            result["Closed"] = "✓"
+        elif any(k in explicit_status for k in ["running", "in progress", "pending", "open"]):
+            result["Running"] = "✓"
+        elif any(k in explicit_status for k in ["announced", "priced", "launched"]):
+            result["Announced"] = "✓"
+
+    evidence = " ".join(
+        safe_text(row.get(field), "")
+        for field in [
+            "financing_summary", "evidence_summary", "regulatory_summary",
+            "trading_summary", "financing_status"
+        ]
+        if field in row.index
+    ).lower()
+
+    if not evidence:
+        return result
+
+    negative = [
+        "does not establish second financing sequence",
+        "second financing remains unverified",
+        "second financing sequence remains unverified",
+        "second-close sequence not verified",
+        "second close sequence not verified",
+        "no post-phase-3 sequence proven",
+        "does not satisfy any post-readout second-close rule",
+    ]
+    if any(phrase in evidence for phrase in negative):
+        return result
+
+    if not re.search(r"\b(second|2nd)[ -]?(financing|finance|close|offering)\b", evidence):
+        return result
+
+    if re.search(r"\b(second|2nd)[ -]?(financing|finance|offering)\b.{0,80}\b(announced|priced|launched)\b", evidence):
+        result["Announced"] = "✓"
+    if re.search(r"\b(second|2nd)[ -]?(financing|finance|offering)\b.{0,100}\b(running|in progress|pending|open|expected to close)\b", evidence):
+        result["Running"] = "✓"
+    if re.search(r"\b(second|2nd)[ -]?(financing|finance|close|offering)\b.{0,100}\b(closed|completed|complete|verified)\b", evidence):
+        result["Closed"] = "✓"
+
+    return result
+
+
+def add_second_financing_columns(frame):
+    out = frame.copy()
+    if out.empty:
+        for col in SECOND_FINANCING_COLUMNS:
+            out[col] = ""
+        return out
+    flags = out.apply(_second_financing_flags, axis=1)
+    for col in SECOND_FINANCING_COLUMNS:
+        out[col] = flags.apply(lambda d: d.get(col, ""))
+    return out
+
+
 def special_provision_column_config():
     return {
         label: st.column_config.TextColumn(
@@ -1101,7 +1184,7 @@ def _merged_table_sort_series(frame, col):
     raw = frame[col]
     text_values = raw.fillna("").astype(str).str.strip()
 
-    if col in SPECIAL_PROVISION_LABELS:
+    if col in SPECIAL_PROVISION_LABELS or col in SECOND_FINANCING_COLUMNS:
         return text_values.eq("✓").astype(int)
 
     if col == "Ticker":
@@ -1194,16 +1277,39 @@ def render_merged_table(frame, heading, height_px=690):
         ).drop(columns=["_sort_key"])
 
     cols = list(rendered_frame.columns)
+    has_second_financing_group = all(col in cols for col in SECOND_FINANCING_COLUMNS)
     header_cells = []
-    for col in cols:
-        safe_col = html.escape(str(col))
-        if col in SPECIAL_PROVISION_LABELS:
-            header_cells.append(f'<th class="angle-head"><span>{safe_col}</span></th>')
-        else:
-            extra = ' ticker-head' if col == "Ticker" else ''
-            if col in {"P%", "P"}:
-                extra += ' compact-p'
-            header_cells.append(f'<th class="normal-head{extra}">{safe_col}</th>')
+    header_top = []
+    header_bottom = []
+
+    if has_second_financing_group:
+        group_started = False
+        for col in cols:
+            safe_col = html.escape(str(col))
+            if col in SECOND_FINANCING_COLUMNS:
+                if not group_started:
+                    header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
+                    group_started = True
+                header_bottom.append(f'<th class="group-subhead">{safe_col}</th>')
+                continue
+
+            if col in SPECIAL_PROVISION_LABELS:
+                header_top.append(f'<th class="angle-head" rowspan="2"><span>{safe_col}</span></th>')
+            else:
+                extra = ' ticker-head' if col == "Ticker" else ''
+                if col in {"P%", "P"}:
+                    extra += ' compact-p'
+                header_top.append(f'<th class="normal-head{extra}" rowspan="2">{safe_col}</th>')
+    else:
+        for col in cols:
+            safe_col = html.escape(str(col))
+            if col in SPECIAL_PROVISION_LABELS:
+                header_cells.append(f'<th class="angle-head"><span>{safe_col}</span></th>')
+            else:
+                extra = ' ticker-head' if col == "Ticker" else ''
+                if col in {"P%", "P"}:
+                    extra += ' compact-p'
+                header_cells.append(f'<th class="normal-head{extra}">{safe_col}</th>')
 
     rows = []
     for _, row in rendered_frame.iterrows():
@@ -1225,14 +1331,24 @@ def render_merged_table(frame, heading, height_px=690):
                 cells.append(f'<td class="{cls.strip()}">{rendered}</td>')
             else:
                 extra_cls = " compact-p" if col in {"P%", "P"} else ""
+                if col in SECOND_FINANCING_COLUMNS:
+                    extra_cls += " second-fin-cell"
                 cells.append(f'<td class="{(cls + extra_cls).strip()}">{html.escape(val)}</td>')
         rows.append("<tr>" + "".join(cells) + "</tr>")
 
+    if has_second_financing_group:
+        thead_html = (
+            '<thead><tr>' + "".join(header_top) + '</tr>'
+            '<tr>' + "".join(header_bottom) + '</tr></thead>'
+        )
+    else:
+        thead_html = '<thead><tr>' + "".join(header_cells) + '</tr></thead>'
+
     table_html = (
         f'<div class="merged-table-wrap" style="max-height:{int(height_px)}px">'
-        '<table class="merged-pdufa-table"><thead><tr>'
-        + "".join(header_cells)
-        + '</tr></thead><tbody>'
+        '<table class="merged-pdufa-table">'
+        + thead_html
+        + '<tbody>'
         + "".join(rows)
         + '</tbody></table></div>'
     )
@@ -1706,6 +1822,9 @@ if page == "1. ALL PDUFA":
         display = table_view(view, return_page="1. ALL PDUFA")
         display["P%"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
         display["P"] = view["reported_p_values"].apply(lambda v: safe_text(v, "")).values
+        second_fin = add_second_financing_columns(view)
+        for col in SECOND_FINANCING_COLUMNS:
+            display[col] = second_fin[col].values
         display["F"] = view.apply(predicted_fda_direction, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
@@ -1717,7 +1836,7 @@ if page == "1. ALL PDUFA":
             "All-Source Direction"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","P%","P","F","Match %","C"]
+        front = ["Ticker","P%","P",*SECOND_FINANCING_COLUMNS,"F","Match %","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2176,9 +2295,10 @@ elif page == "4. PREDICTION ENGINE":
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
+    hview = add_second_financing_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","P","F","Match %","C",
+        "Ticker","P%","P",*SECOND_FINANCING_COLUMNS,"F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
         "model_class","actual_outcome",
