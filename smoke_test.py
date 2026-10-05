@@ -166,6 +166,9 @@ required_ui_contracts = [
     "calendar-event-link",
     "color:#17211a !important",
     'return "Not scored"',
+    'def _merged_table_sort_series',
+    '"Sort column"',
+    '"Ascending", "Descending"',
 ]
 for label in required_ui_contracts:
     if label not in app:
