@@ -66,6 +66,16 @@ a:active,a:focus{color:#ff8a00 !important}
 .calendar-event-link:hover{color:#17211a !important}
 .calendar-event-link:active,
 .calendar-event-link:focus{color:#b45309 !important}
+.special-provision-wrap{overflow-x:auto;overflow-y:visible;background:#ffffff;border:2px solid #000000;border-radius:12px;padding:10px 10px 14px;margin:8px 0 18px;color:#111111}
+.special-provision-table{border-collapse:collapse;background:#ffffff;color:#111111;min-width:1550px;width:max-content;font-size:13px}
+.special-provision-table th,.special-provision-table td{border:1px solid #777;padding:5px 7px;text-align:center;color:#111111;background:#ffffff}
+.special-provision-table th.ticker-head{min-width:82px;width:82px;height:158px;vertical-align:bottom;font-weight:700;background:#f4f4f4}
+.special-provision-table th.angle-head{position:relative;min-width:76px;width:76px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
+.special-provision-table th.angle-head > span{position:absolute;left:40px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
+.special-provision-table td.ticker-cell{font-weight:700;text-align:left;white-space:nowrap;background:#fafafa}
+.special-provision-table td.provision-yes{font-weight:700}
+.special-provision-table td.provision-no{color:#555555}
+.special-provision-table td.provision-unknown{color:#7a7a7a;font-style:italic}
 </style>""",
     unsafe_allow_html=True,
 )
@@ -940,6 +950,42 @@ def special_provision_column_config():
     }
 
 
+def render_special_provisions_table(frame, heading="SPECIAL PROVISIONS — 17 COLUMNS"):
+    """Render all 17 provision fields in an unmistakable dedicated table with 45-degree headers."""
+    if frame is None or frame.empty:
+        return
+    pv = add_special_provision_columns(frame)
+    ticker_source = "ticker" if "ticker" in pv.columns else ("Ticker" if "Ticker" in pv.columns else None)
+    if ticker_source is None:
+        pv["ticker"] = ""
+        ticker_source = "ticker"
+    header_cells = ['<th class="ticker-head">Ticker</th>']
+    header_cells += [
+        f'<th class="angle-head"><span>{html.escape(label)}</span></th>'
+        for label in SPECIAL_PROVISION_LABELS
+    ]
+    rows = []
+    for _, row in pv.iterrows():
+        ticker = html.escape(safe_text(row.get(ticker_source), "—"))
+        cells = [f'<td class="ticker-cell">{ticker}</td>']
+        for label in SPECIAL_PROVISION_LABELS:
+            val = safe_text(row.get(label), "Unknown") or "Unknown"
+            cls = "provision-yes" if val == "Yes" else ("provision-no" if val == "No" else "provision-unknown")
+            cells.append(f'<td class="{cls}">{html.escape(val)}</td>')
+        rows.append("<tr>" + "".join(cells) + "</tr>")
+    st.markdown(f"### {heading}")
+    st.caption("Exactly 17 Special Provision columns. Header names are rotated 45°. Scroll horizontally only if your screen is too narrow.")
+    table_html = (
+        '<div class="special-provision-wrap">'
+        '<table class="special-provision-table"><thead><tr>'
+        + "".join(header_cells)
+        + '</tr></thead><tbody>'
+        + "".join(rows)
+        + '</tbody></table></div>'
+    )
+    st.markdown(table_html, unsafe_allow_html=True)
+
+
 def table_view(frame, return_page="1. ALL PDUFA"):
     out = frame.copy()
 
@@ -1471,6 +1517,8 @@ if page == "1. ALL PDUFA":
             go_individual(selected_row.get("ticker"), detail_key, source=detail_source, return_page=page)
             st.rerun()
 
+        render_special_provisions_table(view, "MASTER PDUFA — SPECIAL PROVISIONS (17 COLUMNS)")
+
         open1,open2 = st.columns([3,1])
         quick_view = view.copy()
         quick_view["event_key_ui"] = quick_view.apply(make_event_key, axis=1)
@@ -1971,6 +2019,8 @@ elif page == "4. PREDICTION ENGINE":
             )
         }
     )
+
+    render_special_provisions_table(hview, "PREDICTION ENGINE — SPECIAL PROVISIONS (17 COLUMNS)")
 
     st.info(
         "Clean-as-is Accuracy is NOT the final model accuracy. It uses only rows that survived the first-pass audit without requiring reconstruction. "
