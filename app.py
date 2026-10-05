@@ -882,6 +882,64 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if len(st.query_params):
         st.query_params.clear()
 
+SPECIAL_PROVISION_COLUMNS = [
+    ("Orphan Drug", ("orphan_drug", "orphan")),
+    ("Unmet Need", ("unmet_need",)),
+    ("No Available Therapy", ("no_available_therapy", "no_therapy")),
+    ("Serious Condition", ("serious_condition",)),
+    ("Life-Threatening", ("life_threatening", "life_threatening_condition")),
+    ("Fast Track", ("fast_track", "fast_track_designation")),
+    ("Breakthrough", ("breakthrough_therapy", "breakthrough", "btd")),
+    ("Priority Review", ("priority_review",)),
+    ("Accelerated Approval", ("accelerated_approval",)),
+    ("RMAT", ("rmat", "rmat_designation")),
+    ("QIDP", ("qidp",)),
+    ("Rare Pediatric", ("rare_pediatric_disease", "rare_pediatric")),
+    ("PRV", ("priority_review_voucher", "prv")),
+    ("Rolling Review", ("rolling_review",)),
+    ("RTOR", ("rtor", "real_time_oncology_review")),
+    ("Project Orbis", ("project_orbis",)),
+    ("SPA", ("spa", "special_protocol_assessment")),
+]
+SPECIAL_PROVISION_LABELS = [label for label, _ in SPECIAL_PROVISION_COLUMNS]
+
+
+def _provision_status(value):
+    if value is None or (not isinstance(value, (list, tuple, dict, set)) and pd.isna(value)):
+        return "Unknown"
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    text = str(value).strip()
+    if not text:
+        return "Unknown"
+    low = text.lower()
+    if low in {"true", "yes", "y", "1", "granted", "designated", "eligible", "applicable", "active"}:
+        return "Yes"
+    if low in {"false", "no", "n", "0", "not granted", "not designated", "not applicable", "none"}:
+        return "No"
+    return text
+
+
+def add_special_provision_columns(frame):
+    """Add the 17 regulatory-provision display columns without fabricating missing designations."""
+    out = frame.copy()
+    for label, aliases in SPECIAL_PROVISION_COLUMNS:
+        source = next((name for name in aliases if name in out.columns), None)
+        out[label] = out[source].apply(_provision_status) if source else "Unknown"
+    return out
+
+
+def special_provision_column_config():
+    return {
+        label: st.column_config.TextColumn(
+            label,
+            help=f"{label}: Yes / No / Unknown unless a source provides a more specific verified status.",
+            width="small",
+        )
+        for label in SPECIAL_PROVISION_LABELS
+    }
+
+
 def table_view(frame, return_page="1. ALL PDUFA"):
     out = frame.copy()
 
@@ -937,6 +995,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     out["Record Source"] = out["_detail_source"].apply(
         lambda v: "Historical Model" if str(v) == "history" else "Saved Feed"
     )
+    out = add_special_provision_columns(out)
 
     for c in ["ticker","company","drug","indication"]:
         out[c] = out[c].fillna("Not available").astype(str)
@@ -944,8 +1003,9 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
-        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication","PDUFA Date","Days Left","Market Cap",
-        "Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
+        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication","PDUFA Date",
+        *SPECIAL_PROVISION_LABELS,
+        "Days Left","Market Cap","Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
 
@@ -1396,6 +1456,7 @@ if page == "1. ALL PDUFA":
                     help="50/50 consensus of I App and P App when both are scored",
                     width="small",
                 ),
+                **special_provision_column_config(),
             },
             on_select="rerun",
             selection_mode="single-row",
@@ -1859,8 +1920,11 @@ elif page == "4. PREDICTION ENGINE":
         lambda r: event_detail_url(r, source="history", return_page="4. PREDICTION ENGINE"), axis=1
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
+    hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","F","Match %","C","Probability of Approval % — Public","I Direction","P Direction","PDUFA Date","model_class","actual_outcome",
+        "Ticker","P%","F","Match %","C","Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
+        *SPECIAL_PROVISION_LABELS,
+        "model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
@@ -1896,6 +1960,7 @@ elif page == "4. PREDICTION ENGINE":
             "F": st.column_config.TextColumn("F", help="FDA direction", width="small"),
             "Match %": st.column_config.TextColumn("Match %", help="100% if F matched actual FDA outcome, 0% if it missed, Pending before outcome", width="small"),
             "C": st.column_config.TextColumn("C", help="Combined P% + FDA direction", width="medium"),
+            **special_provision_column_config(),
             "Audit Source": st.column_config.LinkColumn(
                 "Audit Source",
                 display_text="Source",
