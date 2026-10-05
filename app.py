@@ -74,6 +74,7 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
 .merged-pdufa-table th.angle-head > span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
 .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
+.merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .merged-pdufa-table th.ticker-head{z-index:6}
 .merged-pdufa-table td.provision-yes{font-weight:800;font-size:18px}
 .merged-pdufa-table td.provision-no{color:#555555}
@@ -1085,6 +1086,8 @@ def render_merged_table(frame, heading, height_px=690):
             header_cells.append(f'<th class="angle-head"><span>{safe_col}</span></th>')
         else:
             extra = ' ticker-head' if col == "Ticker" else ''
+            if col in {"P%", "P"}:
+                extra += ' compact-p'
             header_cells.append(f'<th class="normal-head{extra}">{safe_col}</th>')
 
     rows = []
@@ -1106,7 +1109,8 @@ def render_merged_table(frame, heading, height_px=690):
                 rendered = f'<a href="{html.escape(val, quote=True)}" target="_blank">Source</a>'
                 cells.append(f'<td class="{cls.strip()}">{rendered}</td>')
             else:
-                cells.append(f'<td class="{cls.strip()}">{html.escape(val)}</td>')
+                extra_cls = " compact-p" if col in {"P%", "P"} else ""
+                cells.append(f'<td class="{(cls + extra_cls).strip()}">{html.escape(val)}</td>')
         rows.append("<tr>" + "".join(cells) + "</tr>")
 
     table_html = (
