@@ -1,0 +1,57 @@
+name: Daily Company Discovery
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 12 * * *"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/discover_new_companies.py"
+      - "data/company_registry.csv"
+      - ".github/workflows/discovery.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install discovery dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas requests
+
+      - name: Run event-first discovery
+        env:
+          DISCOVERY_LOOKBACK_DAYS: "10"
+          DISCOVERY_CT_LIMIT: "200"
+          DISCOVERY_SEC_DOCS_PER_COMPANY: "3"
+          DISCOVERY_SEC_PAUSE_SECONDS: "0.12"
+        run: python scripts/discover_new_companies.py
+
+      - name: Run repository checks
+        run: python smoke_test.py
+
+      - name: Commit discovery updates
+        run: |
+          git config user.name "pdufa-discovery-bot"
+          git config user.email "pdufa-discovery-bot@users.noreply.github.com"
+          git add data/company_registry.csv data/discovery_events.csv data/discovery_backfill_queue.csv data/discovery_run_state.json
+          if git diff --cached --quiet; then
+            echo "No discovery changes."
+          else
+            git commit -m "Update discovered biotech companies and events"
+            git push
+          fi
