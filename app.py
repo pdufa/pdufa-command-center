@@ -155,7 +155,7 @@ def load_prediction_history():
     for col in required:
         if col not in x:
             x[col] = pd.NA
-    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","biopharmawatch_probability","public_model_class","public_evidence_note","internal_direction_class","internal_direction_note"]:
+    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","biopharmawatch_probability","public_model_class","public_evidence_note","internal_direction_class","internal_direction_note","reported_p_values"]:
         if col not in x:
             x[col] = pd.NA
     x["public_approval_probability"] = pd.to_numeric(x["public_approval_probability"], errors="coerce")
@@ -1274,7 +1274,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-04 · 2020–2026 DESIGNATION BACKFILL ACTIVE · MERGED 16-COLUMN VIEW")
+st.caption("BUILD 2026-10-04 · P COLUMN ACTIVE · 2020–2026 DESIGNATION BACKFILL")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -1584,6 +1584,7 @@ if page == "1. ALL PDUFA":
     else:
         display = table_view(view, return_page="1. ALL PDUFA")
         display["P%"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
+        display["P"] = view["reported_p_values"].apply(lambda v: safe_text(v, "")).values
         display["F"] = view.apply(predicted_fda_direction, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
@@ -1595,7 +1596,7 @@ if page == "1. ALL PDUFA":
             "All-Source Direction"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","P%","F","Match %","C"]
+        front = ["Ticker","P%","P","F","Match %","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2053,9 +2054,10 @@ elif page == "4. PREDICTION ENGINE":
         lambda r: event_detail_url(r, source="history", return_page="4. PREDICTION ENGINE"), axis=1
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
+    hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","F","Match %","C",
+        "Ticker","P%","P","F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
         "model_class","actual_outcome",
