@@ -246,7 +246,7 @@ required_ui_contracts = [
     'Click the boxed ⇅ icon',
     'def load_second_financing_backfill',
     'second-fin-verified',
-    '2nd Financing verified closed:',
+    'Verified second-financing closed events in this view:',
     '"2F Announced"',
     '"2F Running"',
     '"2F Closed"',
