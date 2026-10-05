@@ -1696,13 +1696,13 @@ elif page == "3. CALENDAR":
                     )
 
 elif page == "4. PREDICTION ENGINE":
-    st.markdown("## 4. PREDICTION ENGINE — 2024 TO SEP 2026")
-    st.caption("Canonical $300M–$10B historical cohort. User-facing approval probabilities are limited to Public and All Sources; internal component scores remain backend inputs for validation.")
+    st.markdown("## 4. PREDICTION ENGINE — 2023 TO SEP 2026")
+    st.caption("Canonical $300M–$10B historical cohort. 2023 is retrospective tuning, 2024 is the first locked validation year, 2025 is the stronger later holdout, and 2026 is model-development/current history. Missing historical vendor/public probabilities are never fabricated.")
 
     hist = prediction_history.copy()
     hist = hist[
         hist["pdufa_date"].notna() &
-        (hist["pdufa_date"] >= pd.Timestamp("2024-01-01")) &
+        (hist["pdufa_date"] >= pd.Timestamp("2023-01-01")) &
         (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
     ].copy()
     if "public_approval_probability" not in hist:
@@ -2104,17 +2104,16 @@ elif page == "6. MATCH OPTIMIZER":
     else:
         st.error("No audited historical rows currently have both a probability score and final FDA outcome.")
 
-    if 2024 not in years:
+    if 2023 not in years:
         st.warning(
-            "2024 is not loaded into the historical prediction dataset yet. "
-            "The optimizer can run a provisional development test on the years currently available, "
-            "but the preferred validation remains: tune on 2024 → lock rules → test unchanged on 2025."
+            "2023 is not loaded into the historical prediction dataset yet. "
+            "Preferred validation is: tune on 2023 → lock rules → validate on 2024 → confirm again on 2025."
         )
 
     if len(years) >= 2:
-        default_tune = 2024 if 2024 in years else years[0]
+        default_tune = 2023 if 2023 in years else years[0]
         later_years = [y for y in years if y > default_tune]
-        default_holdout = 2025 if default_tune == 2024 and 2025 in years else (later_years[0] if later_years else years[-1])
+        default_holdout = 2024 if default_tune == 2023 and 2024 in years else (later_years[0] if later_years else years[-1])
     elif len(years) == 1:
         default_tune = years[0]
         default_holdout = years[0]
@@ -2254,7 +2253,7 @@ elif page == "6. MATCH OPTIMIZER":
         elif not pd.isna(hm["match_pct"]):
             st.caption(
                 f"Current locked holdout result: {hm['match_pct']:.1f}% Match at {hm['coverage_pct']:.1f}% Coverage. "
-                "Adding 2024 is the next priority so 2024 can be the tuning cohort and 2025 can remain untouched for a stronger validation."
+                "Use the year controls to validate the locked gate sequentially: 2023 tune → 2024 validation → 2025 later holdout. Do not retune after viewing a holdout."
             )
 
 
