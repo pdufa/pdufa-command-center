@@ -171,6 +171,8 @@ required_ui_contracts = [
     '"Ascending", "Descending"',
     'SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]',
     'colspan="3">2nd Financing',
+    'APPLICATION_COLUMNS = ["N", "B"]',
+    'colspan="2">Application',
 ]
 for label in required_ui_contracts:
     if label not in app:
