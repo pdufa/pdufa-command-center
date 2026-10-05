@@ -66,16 +66,19 @@ a:active,a:focus{color:#ff8a00 !important}
 .calendar-event-link:hover{color:#17211a !important}
 .calendar-event-link:active,
 .calendar-event-link:focus{color:#b45309 !important}
-.special-provision-wrap{overflow-x:auto;overflow-y:visible;background:#ffffff;border:2px solid #000000;border-radius:12px;padding:10px 10px 14px;margin:8px 0 18px;color:#111111}
-.special-provision-table{border-collapse:collapse;background:#ffffff;color:#111111;min-width:1550px;width:max-content;font-size:13px}
-.special-provision-table th,.special-provision-table td{border:1px solid #777;padding:5px 7px;text-align:center;color:#111111;background:#ffffff}
-.special-provision-table th.ticker-head{min-width:82px;width:82px;height:158px;vertical-align:bottom;font-weight:700;background:#f4f4f4}
-.special-provision-table th.angle-head{position:relative;min-width:76px;width:76px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
-.special-provision-table th.angle-head > span{position:absolute;left:40px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
-.special-provision-table td.ticker-cell{font-weight:700;text-align:left;white-space:nowrap;background:#fafafa}
-.special-provision-table td.provision-yes{font-weight:700}
-.special-provision-table td.provision-no{color:#555555}
-.special-provision-table td.provision-unknown{color:#7a7a7a;font-style:italic}
+.merged-table-wrap{overflow:auto;background:#ffffff;border:2px solid #000000;border-radius:12px;padding:0;margin:8px 0 18px;color:#111111}
+.merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#ffffff;color:#111111;width:max-content;min-width:100%;font-size:13px}
+.merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111111;background:#ffffff;white-space:nowrap}
+.merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
+.merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
+.merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:76px;width:76px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
+.merged-pdufa-table th.angle-head > span{position:absolute;left:40px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
+.merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
+.merged-pdufa-table th.ticker-head{z-index:6}
+.merged-pdufa-table td.provision-yes{font-weight:700}
+.merged-pdufa-table td.provision-no{color:#555555}
+.merged-pdufa-table td.provision-unknown{color:#7a7a7a;font-style:italic}
+.merged-pdufa-table a,.merged-pdufa-table a:link,.merged-pdufa-table a:visited{color:#0b57d0 !important;text-decoration:underline !important}
 </style>""",
     unsafe_allow_html=True,
 )
@@ -950,39 +953,53 @@ def special_provision_column_config():
     }
 
 
-def render_special_provisions_table(frame, heading="SPECIAL PROVISIONS — 17 COLUMNS"):
-    """Render all 17 provision fields in an unmistakable dedicated table with 45-degree headers."""
+def render_merged_table(frame, heading, height_px=690):
+    """Render one merged table; the 17 Special Provision headers are rotated 45 degrees."""
     if frame is None or frame.empty:
         return
-    pv = add_special_provision_columns(frame)
-    ticker_source = "ticker" if "ticker" in pv.columns else ("Ticker" if "Ticker" in pv.columns else None)
-    if ticker_source is None:
-        pv["ticker"] = ""
-        ticker_source = "ticker"
-    header_cells = ['<th class="ticker-head">Ticker</th>']
-    header_cells += [
-        f'<th class="angle-head"><span>{html.escape(label)}</span></th>'
-        for label in SPECIAL_PROVISION_LABELS
-    ]
+
+    cols = list(frame.columns)
+    header_cells = []
+    for col in cols:
+        safe_col = html.escape(str(col))
+        if col in SPECIAL_PROVISION_LABELS:
+            header_cells.append(f'<th class="angle-head"><span>{safe_col}</span></th>')
+        else:
+            extra = ' ticker-head' if col == "Ticker" else ''
+            header_cells.append(f'<th class="normal-head{extra}">{safe_col}</th>')
+
     rows = []
-    for _, row in pv.iterrows():
-        ticker = html.escape(safe_text(row.get(ticker_source), "—"))
-        cells = [f'<td class="ticker-cell">{ticker}</td>']
-        for label in SPECIAL_PROVISION_LABELS:
-            val = safe_text(row.get(label), "Unknown") or "Unknown"
-            cls = "provision-yes" if val == "Yes" else ("provision-no" if val == "No" else "provision-unknown")
-            cells.append(f'<td class="{cls}">{html.escape(val)}</td>')
+    for _, row in frame.iterrows():
+        cells = []
+        for col in cols:
+            raw = row.get(col, "")
+            val = "" if pd.isna(raw) else str(raw)
+            cls = ""
+            if col in SPECIAL_PROVISION_LABELS:
+                cls = " provision-yes" if val == "Yes" else (" provision-no" if val == "No" else " provision-unknown")
+            if col == "Ticker" and val.startswith("http"):
+                parsed = urllib.parse.urlparse(val)
+                ticker_label = urllib.parse.parse_qs(parsed.query).get("ticker", ["Open"])[0]
+                shown = html.escape(ticker_label)
+                rendered = f'<a href="{html.escape(val, quote=True)}" target="_self">{shown}</a>'
+                cells.append(f'<td class="ticker-cell{cls}">{rendered}</td>')
+            elif col == "Audit Source" and val.startswith("http"):
+                rendered = f'<a href="{html.escape(val, quote=True)}" target="_blank">Source</a>'
+                cells.append(f'<td class="{cls.strip()}">{rendered}</td>')
+            else:
+                cells.append(f'<td class="{cls.strip()}">{html.escape(val)}</td>')
         rows.append("<tr>" + "".join(cells) + "</tr>")
-    st.markdown(f"### {heading}")
-    st.caption("Exactly 17 Special Provision columns. Header names are rotated 45°. Scroll horizontally only if your screen is too narrow.")
+
     table_html = (
-        '<div class="special-provision-wrap">'
-        '<table class="special-provision-table"><thead><tr>'
+        f'<div class="merged-table-wrap" style="max-height:{int(height_px)}px">'
+        '<table class="merged-pdufa-table"><thead><tr>'
         + "".join(header_cells)
         + '</tr></thead><tbody>'
         + "".join(rows)
         + '</tbody></table></div>'
     )
+    st.markdown(f"### {heading}")
+    st.caption("Single merged table. The 17 Special Provision headers are rotated 45°. Scroll horizontally to view all columns.")
     st.markdown(table_html, unsafe_allow_html=True)
 
 
@@ -1465,60 +1482,7 @@ if page == "1. ALL PDUFA":
         time_pos = min(len(front) + len(special_front), len(display.columns))
         display.insert(time_pos, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
-        st.markdown("### MASTER PDUFA TABLE")
-        st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C · NEXT 17 COLUMNS: SPECIAL PROVISIONS")
-        event = st.dataframe(
-            display,
-            use_container_width=True,
-            hide_index=True,
-            height=650,
-            column_order=list(display.columns),
-            column_config={
-                "Ticker": st.column_config.LinkColumn(
-                    "Ticker",
-                    display_text=r"ticker=([^&]+)",
-                    help="Open this exact PDUFA detail page",
-                ),
-                "P%": st.column_config.TextColumn(
-                    "P%",
-                    help="Displayed Probability of Approval: stored approval score when available; otherwise all-source fallback",
-                    width="small",
-                ),
-                "F": st.column_config.TextColumn(
-                    "F",
-                    help="FDA direction: APPROVED, CRL, or REVIEW",
-                    width="small",
-                ),
-                "Match %": st.column_config.TextColumn(
-                    "Match %",
-                    help="100% when our direction pick matches the final FDA outcome; 0% when it misses; Pending before FDA action",
-                    width="small",
-                ),
-                "C": st.column_config.TextColumn(
-                    "C",
-                    help="Combined P% + FDA direction",
-                    width="medium",
-                ),
-                "I+P Consensus": st.column_config.TextColumn(
-                    "I+P Consensus",
-                    help="50/50 consensus of I App and P App when both are scored",
-                    width="small",
-                ),
-                **special_provision_column_config(),
-            },
-            on_select="rerun",
-            selection_mode="single-row",
-        )
-        if event.selection.rows:
-            ridx = event.selection.rows[0]
-            selected_row = view.iloc[ridx]
-            detail_source = safe_text(selected_row.get("_detail_source"), "live")
-            detail_key = safe_text(selected_row.get("event_key"), "") if detail_source == "history" else make_event_key(selected_row)
-            go_individual(selected_row.get("ticker"), detail_key, source=detail_source, return_page=page)
-            st.rerun()
-
-        render_special_provisions_table(view, "MASTER PDUFA — SPECIAL PROVISIONS (17 COLUMNS)")
-
+        render_merged_table(display, "MASTER PDUFA TABLE", height_px=650)
         open1,open2 = st.columns([3,1])
         quick_view = view.copy()
         quick_view["event_key_ui"] = quick_view.apply(make_event_key, axis=1)
@@ -1995,32 +1959,7 @@ elif page == "4. PREDICTION ENGINE":
     })
 
     st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
-    st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C · NEXT 17 COLUMNS: SPECIAL PROVISIONS")
-    st.dataframe(
-        hdisplay,
-        use_container_width=True,
-        hide_index=True,
-        height=690,
-        column_config={
-            "Ticker": st.column_config.LinkColumn(
-                "Ticker",
-                display_text=r"ticker=([^&]+)",
-                help="Open this historical PDUFA model case"
-            ),
-            "P%": st.column_config.TextColumn("P%", help="Displayed Probability of Approval: stored approval score when available; otherwise all-source fallback", width="small"),
-            "F": st.column_config.TextColumn("F", help="FDA direction", width="small"),
-            "Match %": st.column_config.TextColumn("Match %", help="100% if F matched actual FDA outcome, 0% if it missed, Pending before outcome", width="small"),
-            "C": st.column_config.TextColumn("C", help="Combined P% + FDA direction", width="medium"),
-            **special_provision_column_config(),
-            "Audit Source": st.column_config.LinkColumn(
-                "Audit Source",
-                display_text="Source",
-                help="Primary source used for audited failure classification"
-            )
-        }
-    )
-
-    render_special_provisions_table(hview, "PREDICTION ENGINE — SPECIAL PROVISIONS (17 COLUMNS)")
+    render_merged_table(hdisplay, "PREDICTION ENGINE TABLE", height_px=690)
 
     st.info(
         "Clean-as-is Accuracy is NOT the final model accuracy. It uses only rows that survived the first-pass audit without requiring reconstruction. "
