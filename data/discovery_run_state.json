@@ -1,11 +1,11 @@
 {
   "status": "COMPLETE",
-  "completed_at_utc": "2026-10-05T03:02:37.554239+00:00",
+  "completed_at_utc": "2026-10-05T03:04:25.191303+00:00",
   "registry_before": 716,
   "registry_after": 716,
   "companies_auto_added": 0,
   "events_total": 135,
-  "backfill_queue_total": 131,
+  "backfill_queue_total": 135,
   "ctgov_error": "",
   "sec_identity_mode": "NASDAQ_SYMBOL_DIRECTORY",
   "sec_identity_error": "exchange map: RuntimeError: GET failed https://www.sec.gov/files/company_tickers_exchange.json: HTTP 403 | ticker map: RuntimeError: GET failed https://www.sec.gov/files/company_tickers.json: HTTP 403",
