@@ -15,6 +15,14 @@ REQUIRED = {
     },
     "data/prediction_engine_audit.csv": {"event_key", "audit_status", "count_in_audited_accuracy"},
     "data/prediction_engine_rescore_queue.csv": {"original_event_key", "ticker", "audit_status", "needs_rescore"},
+    "data/prediction_engine_designations.csv": {
+        "event_key","ticker","pdufa_date","orphan_drug","no_available_therapy",
+        "serious_condition","life_threatening","fast_track","breakthrough_therapy",
+        "priority_review","accelerated_approval","rmat","qidp",
+        "rare_pediatric_disease","priority_review_voucher","rolling_review",
+        "rtor","project_orbis","spa","designation_audit_status",
+        "designation_source_url","designation_evidence_note",
+    },
 }
 
 EXPECTED_LIVE_EVENT_COUNT = 38
@@ -64,6 +72,37 @@ history = read_csv(ROOT / "data/prediction_engine_history.csv")
 hkeys = [r["event_key"].strip() for r in history]
 if len(hkeys) != len(set(hkeys)):
     raise SystemExit("prediction_engine_history.csv: duplicate event_key")
+
+designations = read_csv(ROOT / "data/prediction_engine_designations.csv")
+dkeys = [r["event_key"].strip() for r in designations]
+if len(dkeys) != len(set(dkeys)):
+    raise SystemExit("prediction_engine_designations.csv: duplicate event_key")
+if len(designations) != len(history):
+    raise SystemExit(
+        f"prediction_engine_designations.csv: expected {len(history)} rows, found {len(designations)}"
+    )
+if set(dkeys) != set(hkeys):
+    raise SystemExit("prediction_engine_designations.csv: event_key set does not exactly match history")
+
+designation_fields = [
+    "orphan_drug","no_available_therapy","serious_condition","life_threatening",
+    "fast_track","breakthrough_therapy","priority_review","accelerated_approval",
+    "rmat","qidp","rare_pediatric_disease","priority_review_voucher",
+    "rolling_review","rtor","project_orbis","spa",
+]
+bad_values = []
+verified_checks = 0
+for r in designations:
+    for field in designation_fields:
+        v = (r.get(field) or "").strip()
+        if v not in {"", "YES"}:
+            bad_values.append((r["event_key"], field, v))
+        if v == "YES":
+            verified_checks += 1
+if bad_values:
+    raise SystemExit(f"prediction_engine_designations.csv: invalid designation values {bad_values[:5]}")
+if verified_checks < 1:
+    raise SystemExit("prediction_engine_designations.csv: no verified positive designations found")
 
 for year, expected in ((2020, 20), (2021, 24), (2022, 22)):
     year_rows = [r for r in history if (r.get("pdufa_date") or "").startswith(f"{year}-")]
@@ -118,5 +157,5 @@ for row in candidates:
 
 print(
     f"smoke test passed: {len(candidates)} live events, "
-    f"{len(history)} historical rows, authoritative event reconciliation locked"
+    f"{len(history)} historical rows, {verified_checks} verified designation checks, authoritative event reconciliation locked"
 )
