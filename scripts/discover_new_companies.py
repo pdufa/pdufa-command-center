@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os, re, json, time, html
+from io import StringIO
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 from difflib import SequenceMatcher
@@ -57,7 +58,12 @@ def clean(v):
 def norm_name(v):
     s = clean(v).lower()
     s = re.sub(r"[/\\]", " ", s)
-    s = re.sub(r"\b(incorporated|inc|corp|corporation|company|co|plc|ltd|limited|holdings|holding|group|sa|se|nv|ag|de|llc)\b", " ", s)
+    s = re.sub(
+        r"\b(incorporated|inc|corp|corporation|company|co|plc|ltd|limited|holdings|holding|group|sa|se|nv|ag|de|llc|"
+        r"common|stock|shares?|ordinary|class|american|depositary|depository|ads|adr)\b",
+        " ",
+        s,
+    )
     s = re.sub(r"[^a-z0-9]+", " ", s)
     return re.sub(r"\s+", " ", s).strip()
 
@@ -135,6 +141,60 @@ def sec_ticker_map(fallback_registry):
     except Exception as exc:
         errors.append(f"ticker map: {type(exc).__name__}: {exc}")
 
+    # Official Nasdaq Trader symbol directory is the exchange-level fallback
+    # when SEC blocks hosted runners. It covers Nasdaq plus other U.S. exchanges.
+    try:
+        listing_frames = []
+
+        nasdaq_text = req(
+            "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+            timeout=20,
+        ).text
+        nq = pd.read_csv(StringIO(nasdaq_text), sep="|", dtype=str, keep_default_na=False)
+        if not nq.empty:
+            nq = nq[
+                ~nq["Symbol"].astype(str).str.startswith("File Creation Time", na=False)
+            ].copy()
+            if "Test Issue" in nq:
+                nq = nq[nq["Test Issue"].astype(str).str.upper().ne("Y")]
+            if "ETF" in nq:
+                nq = nq[nq["ETF"].astype(str).str.upper().ne("Y")]
+            nq = nq.rename(columns={"Symbol":"ticker", "Security Name":"company"})
+            nq["cik10"] = ""
+            nq["exchange"] = "Nasdaq"
+            listing_frames.append(nq[["ticker","company","cik10","exchange"]])
+
+        other_text = req(
+            "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+            timeout=20,
+        ).text
+        ot = pd.read_csv(StringIO(other_text), sep="|", dtype=str, keep_default_na=False)
+        if not ot.empty:
+            symbol_col = "ACT Symbol" if "ACT Symbol" in ot.columns else "NASDAQ Symbol"
+            ot = ot[
+                ~ot[symbol_col].astype(str).str.startswith("File Creation Time", na=False)
+            ].copy()
+            if "Test Issue" in ot:
+                ot = ot[ot["Test Issue"].astype(str).str.upper().ne("Y")]
+            if "ETF" in ot:
+                ot = ot[ot["ETF"].astype(str).str.upper().ne("Y")]
+            exchange_map = {
+                "A":"NYSE American", "N":"NYSE", "P":"NYSE Arca",
+                "Z":"Cboe BZX", "V":"IEX",
+            }
+            ot = ot.rename(columns={symbol_col:"ticker", "Security Name":"company"})
+            ot["cik10"] = ""
+            ot["exchange"] = ot.get("Exchange", "").map(exchange_map).fillna(ot.get("Exchange", ""))
+            listing_frames.append(ot[["ticker","company","cik10","exchange"]])
+
+        if listing_frames:
+            listed = pd.concat(listing_frames, ignore_index=True)
+            listed = _normalize_ticker_frame(listed)
+            if not listed.empty:
+                return listed, "NASDAQ_SYMBOL_DIRECTORY", " | ".join(errors)
+    except Exception as exc:
+        errors.append(f"Nasdaq symbol directory: {type(exc).__name__}: {exc}")
+
     # Critical fail-safe: the 716-company registry remains usable as an identity map.
     # Unknown sponsors are NOT discarded; they continue into the review/backfill queue.
     fallback = fallback_registry.copy()
@@ -174,6 +234,24 @@ def qualify_sec_company(row, submission_cache):
         "sic_description": clean(sub.get("sicDescription")),
         "status": "AUTO_ADDED_DISCOVERY",
     }
+
+def qualify_exchange_company(row, score):
+    """Conservative fallback when SEC is blocked but an exchange identity match is strong."""
+    ticker = clean(row.get("ticker")).upper()
+    company = clean(row.get("company"))
+    exchange = clean(row.get("exchange"))
+    if not ticker or not company or not exchange or score < 0.96:
+        return None
+    return {
+        "ticker": ticker,
+        "company": company,
+        "cik10": "",
+        "exchange": exchange,
+        "sic": "",
+        "sic_description": "",
+        "status": "AUTO_ADDED_DISCOVERY_EXCHANGE_VERIFIED",
+    }
+
 
 def match_sponsor(sponsor, registry, secmap):
     target = norm_name(sponsor)
@@ -330,9 +408,15 @@ try:
             cik = clean((match or {}).get("cik10"))
             company_status = "IN_DB" if ticker and ticker in set(registry["ticker"]) else "REVIEW"
             if ticker and company_status != "IN_DB" and score >= 0.90:
-                qualified = qualify_sec_company(match, submission_cache)
+                if sec_identity_mode.startswith("SEC_"):
+                    qualified = qualify_sec_company(match, submission_cache)
+                else:
+                    qualified = qualify_exchange_company(match, score)
                 if qualified:
-                    registry = pd.concat([registry, pd.DataFrame([{**qualified, "name_norm": norm_name(qualified["company"])}])], ignore_index=True)
+                    registry = pd.concat(
+                        [registry, pd.DataFrame([{**qualified, "name_norm": norm_name(qualified["company"])}])],
+                        ignore_index=True,
+                    )
                     registry = registry.drop_duplicates("ticker", keep="first")
                     added_companies.append(qualified)
                     company_status = "AUTO_ADDED"
