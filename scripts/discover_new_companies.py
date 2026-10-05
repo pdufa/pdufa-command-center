@@ -344,7 +344,43 @@ registry["cik10"] = registry["cik10"].astype(str).str.replace(r"\D","",regex=Tru
 registry["name_norm"] = registry["company"].map(norm_name)
 initial_registry_n = len(registry)
 candidate_df = load_csv(CANDIDATES)
-tracked_tickers = set(candidate_df.get("ticker", pd.Series(dtype=str)).astype(str).str.upper().str.strip())
+if "ticker" not in candidate_df:
+    candidate_df["ticker"] = ""
+candidate_df["ticker"] = candidate_df["ticker"].astype(str).str.upper().str.strip()
+
+def is_already_tracked(rec):
+    """Match the exact program/event, never ticker alone."""
+    ticker = clean(rec.get("ticker")).upper()
+    if not ticker:
+        return False
+    rows = candidate_df[candidate_df["ticker"].eq(ticker)]
+    if rows.empty:
+        return False
+
+    nct = clean(rec.get("nct_id")).upper()
+    if nct and "nct_id" in rows:
+        for saved in rows["nct_id"].astype(str):
+            saved_ncts = {clean(x).upper() for x in re.split(r"[|,;/ ]+", saved) if clean(x)}
+            if nct in saved_ncts:
+                return True
+
+    pdate = clean(rec.get("pdufa_date"))
+    if pdate and "pdufa_date" in rows:
+        if rows["pdufa_date"].astype(str).str.strip().eq(pdate).any():
+            return True
+
+    drug = norm_name(rec.get("drug"))
+    indication = norm_name(rec.get("indication"))
+    if drug and "drug" in rows:
+        for _, saved in rows.iterrows():
+            saved_drug = norm_name(saved.get("drug"))
+            saved_indication = norm_name(saved.get("indication"))
+            if drug == saved_drug and (
+                not indication or not saved_indication or indication == saved_indication
+            ):
+                return True
+
+    return False
 
 old_events = load_csv(EVENTS, EVENT_COLUMNS)
 old_queue = load_csv(QUEUE, QUEUE_COLUMNS)
@@ -362,7 +398,7 @@ def add_event(rec):
     ])
     rec["discovery_key"] = re.sub(r"[^A-Za-z0-9._|:/-]+", "_", key_basis)[:500]
     rec["discovered_at_utc"] = now()
-    rec["pipeline_status"] = "ALREADY_TRACKED" if clean(rec.get("ticker")).upper() in tracked_tickers else "BACKFILL_REQUIRED"
+    rec["pipeline_status"] = "ALREADY_TRACKED" if is_already_tracked(rec) else "BACKFILL_REQUIRED"
     for c in EVENT_COLUMNS:
         rec.setdefault(c, "")
     new_events.append({c: clean(rec.get(c)) for c in EVENT_COLUMNS})
