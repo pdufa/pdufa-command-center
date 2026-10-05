@@ -189,6 +189,29 @@ def load_prediction_history():
     if "source_url" not in x:
         x["source_url"] = pd.NA
 
+    # Persistent Phase 3 p-value backfill. This is display/audit evidence only;
+    # it does not rewrite the frozen historical prediction inputs.
+    try:
+        pvalues = pd.read_csv("data/prediction_engine_pvalues.csv", keep_default_na=False)
+        pvalues["event_key"] = pvalues["event_key"].astype(str)
+        x["event_key"] = x["event_key"].astype(str)
+        p_keep = [
+            "event_key","reported_p_values","p_value_audit_status",
+            "p_value_source_url","p_value_evidence_note",
+        ]
+        pvalues = pvalues[[c for c in p_keep if c in pvalues.columns]].copy()
+        pvalues = pvalues.rename(columns={"reported_p_values":"reported_p_values_backfill"})
+        x = x.merge(pvalues, on="event_key", how="left", validate="one_to_one")
+        if "reported_p_values_backfill" in x:
+            existing_p = x["reported_p_values"].fillna("").astype(str).str.strip()
+            backfill_p = x["reported_p_values_backfill"].fillna("").astype(str).str.strip()
+            x["reported_p_values"] = existing_p.where(existing_p.ne(""), backfill_p)
+            x = x.drop(columns=["reported_p_values_backfill"])
+    except Exception:
+        for col in ["p_value_audit_status","p_value_source_url","p_value_evidence_note"]:
+            if col not in x:
+                x[col] = ""
+
     # Persistent regulatory-designation backfill. This is kept separate from
     # the frozen prediction history so display research cannot rewrite model inputs.
     try:
