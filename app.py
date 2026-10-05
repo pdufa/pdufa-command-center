@@ -897,7 +897,7 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
 
 SPECIAL_PROVISION_COLUMNS = [
     ("Orphan Drug", ("orphan_drug", "orphan")),
-    ("Unmet Need", ("unmet_need",)),
+    ("Need", ("unmet_need",)),
     ("No Available Therapy", ("no_available_therapy", "no_therapy")),
     ("Serious Condition", ("serious_condition",)),
     ("Life-Threatening", ("life_threatening", "life_threatening_condition")),
