@@ -59,5 +59,6 @@ jobs:
             echo "No generated changes"
           else
             git commit -m "Add frozen 2024 $300M-$10B PDUFA cohort"
+            git pull --rebase origin main
             git push
           fi
