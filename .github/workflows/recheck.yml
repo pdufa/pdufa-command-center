@@ -1,6 +1,14 @@
 name: Daily PDUFA Recheck
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/recheck_events.py"
+      - ".github/workflows/recheck.yml"
+      - "smoke_test.py"
+      - "app.py"
+      - "data/recheck_status.csv"
   workflow_dispatch:
     inputs:
       event_key:
@@ -41,7 +49,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.event_key != ''
         run: python scripts/recheck_events.py --event-key "${{ inputs.event_key }}" --categories "${{ inputs.categories }}"
       - name: Recheck all current events
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.event_key == '')
+        if: github.event_name == 'schedule' || github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.event_key == '')
         run: python scripts/recheck_events.py --all --categories "${{ inputs.categories || 'pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders' }}"
       - name: Run repository checks
         run: python smoke_test.py
