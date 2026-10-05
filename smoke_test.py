@@ -140,9 +140,9 @@ for r in second_financing:
             raise SystemExit(f"second_financing_status.csv: verified row missing source: {r['event_key']}")
         if not (r.get("second_financing_evidence_note") or "").strip():
             raise SystemExit(f"second_financing_status.csv: verified row missing evidence note: {r['event_key']}")
-if verified_second_financing < 16:
+if verified_second_financing < 17:
     raise SystemExit(
-        f"second_financing_status.csv: expected at least 16 verified second-financing rows, found {verified_second_financing}"
+        f"second_financing_status.csv: expected at least 17 verified second-financing rows, found {verified_second_financing}"
     )
 unresearched_financing = [
     r["event_key"] for r in second_financing
