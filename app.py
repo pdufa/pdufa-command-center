@@ -925,19 +925,110 @@ def _provision_status(value):
     if not text:
         return ""
     low = text.lower()
-    if low in {"true", "yes", "y", "1", "granted", "designated", "eligible", "applicable", "active"}:
+    if low in {"true", "yes", "y", "1", "granted", "designated", "verified", "confirmed", "applicable", "active"}:
         return "✓"
-    if low in {"false", "no", "n", "0", "not granted", "not designated", "not applicable", "none"}:
+    if low in {
+        "false", "no", "n", "0", "not granted", "not designated", "not applicable",
+        "none", "unknown", "unverified", "not verified", "pending", "review"
+    }:
         return ""
-    return "✓"
+    return ""
+
+
+def _designation_from_evidence(row, label):
+    """Use only explicit positive statements already saved for this exact event."""
+    evidence_fields = [
+        "regulatory_summary", "evidence_summary", "science_summary",
+        "public_evidence_note", "internal_direction_note"
+    ]
+    text = " ".join(
+        safe_text(row.get(field), "")
+        for field in evidence_fields
+        if field in row.index
+    ).lower()
+    if not text:
+        return ""
+
+    negative_phrases = {
+        "Priority Review": [
+            "priority review was not granted", "priority review not granted",
+            "did not grant priority review", "standard review"
+        ],
+        "Fast Track": [
+            "fast track was not granted", "fast track not granted",
+            "fast track for low-light indication must not transfer",
+            "fast track must not transfer"
+        ],
+        "Breakthrough": [
+            "breakthrough was not granted", "breakthrough not granted",
+            "breakthrough designation not granted"
+        ],
+        "Orphan Drug": [
+            "orphan was not granted", "orphan not granted",
+            "orphan designation not granted"
+        ],
+        "Accelerated Approval": [
+            "accelerated approval is a pathway, not designation",
+            "accelerated approval pathway separate from designation",
+            "eligibility issue noted"
+        ],
+    }
+    if any(phrase in text for phrase in negative_phrases.get(label, [])):
+        return ""
+
+    positive_patterns = {
+        "Orphan Drug": [
+            r"orphan drug designation", r"orphan designation",
+            r"orphan designations", r"granted orphan", r"grants orphan"
+        ],
+        "No Available Therapy": [
+            r"no available therap", r"no approved therap", r"no fda-approved treatment"
+        ],
+        "Serious Condition": [r"serious condition"],
+        "Life-Threatening": [r"life-threatening condition", r"life threatening condition"],
+        "Fast Track": [
+            r"fast track designation", r"granted fast track", r"grants fast track"
+        ],
+        "Breakthrough": [
+            r"breakthrough therapy designation", r"breakthrough designation",
+            r"breakthrough and orphan designations", r"granted breakthrough", r"grants breakthrough"
+        ],
+        "Priority Review": [
+            r"priority review goal", r"grants priority review", r"granted priority review",
+            r"confirms .*priority review", r"supports .*priority review"
+        ],
+        "Accelerated Approval": [
+            r"granted accelerated approval", r"under accelerated approval",
+            r"accelerated approval pathway accepted", r"accelerated approval application"
+        ],
+        "RMAT": [
+            r"rmat designation", r"regenerative medicine advanced therapy designation",
+            r"granted rmat", r"grants rmat"
+        ],
+        "QIDP": [
+            r"qidp designation", r"qualified infectious disease product designation",
+            r"granted qidp", r"grants qidp"
+        ],
+        "Rare Pediatric": [
+            r"rare pediatric disease designation", r"granted rare pediatric", r"grants rare pediatric"
+        ],
+        "PRV": [r"priority review voucher", r"\bprv\b"],
+        "Rolling Review": [r"rolling review"],
+        "RTOR": [r"real-time oncology review", r"real time oncology review", r"\brtor\b"],
+        "Project Orbis": [r"project orbis"],
+        "SPA": [r"special protocol assessment", r"\bspa agreement\b", r"fda .* spa"],
+    }
+    return "✓" if any(re.search(pattern, text) for pattern in positive_patterns.get(label, [])) else ""
 
 
 def add_special_provision_columns(frame):
-    """Add the 17 regulatory-provision display columns without fabricating missing designations."""
+    """Add special-provision columns; show ✓ only when explicit saved evidence supports it."""
     out = frame.copy()
     for label, aliases in SPECIAL_PROVISION_COLUMNS:
         source = next((name for name in aliases if name in out.columns), None)
-        out[label] = out[source].apply(_provision_status) if source else ""
+        explicit = out[source].apply(_provision_status) if source else pd.Series("", index=out.index, dtype="object")
+        fallback = out.apply(lambda row: _designation_from_evidence(row, label), axis=1)
+        out[label] = explicit.where(explicit == "✓", fallback)
     return out
 
 
