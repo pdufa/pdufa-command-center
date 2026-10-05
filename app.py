@@ -3096,6 +3096,69 @@ elif page == "6. MATCH OPTIMIZER":
 
 elif page == "5. SCANS":
     st.markdown("## 5. SCANS — MASTER SCAN GANTT + ACTION CENTER")
+
+    # Historical financing scan counter. Prefer the persistent pursuit log when
+    # available; otherwise combine the frozen historical universe with the
+    # current second-financing audit without inventing historical findings.
+    hist_total = int(len(prediction_history))
+    live_total = int(len(df))
+    financing_total = hist_total + live_total
+    verified_second_close = 0
+    found_leads = 0
+    financing_checked = 0
+    financing_last_scan = "Waiting for scan data"
+    currently_checking = "Historical financing backlog"
+
+    try:
+        pursuit = pd.read_csv("data/financing_pursuit_log.csv", keep_default_na=False)
+        if "event_key" in pursuit:
+            pursuit = pursuit.drop_duplicates(subset=["event_key"], keep="last")
+        status_col = next((x for x in ["status","financing_status","pursuit_status"] if x in pursuit.columns), None)
+        if status_col:
+            statuses = pursuit[status_col].fillna("").astype(str).str.upper().str.strip()
+            verified_second_close = int(statuses.eq("VERIFIED_SECOND_CLOSE").sum())
+            found_leads = int(statuses.isin(["FOUND_LEAD","VERIFIED_SECOND_CLOSE"]).sum())
+            financing_checked = int(statuses.ne("").sum())
+        date_col = next((x for x in ["last_checked_utc","last_checked","verified_as_of"] if x in pursuit.columns), None)
+        if date_col and not pursuit.empty:
+            dates = pd.to_datetime(pursuit[date_col], errors="coerce", utc=True).dropna()
+            if not dates.empty:
+                financing_last_scan = dates.max().strftime("%Y-%m-%d %H:%M UTC")
+        active_col = next((x for x in ["scan_status","work_status"] if x in pursuit.columns), None)
+        if active_col:
+            active = pursuit[pursuit[active_col].fillna("").astype(str).str.upper().isin(["RUNNING","IN_PROGRESS"])]
+            if not active.empty:
+                ar = active.iloc[-1]
+                currently_checking = str(ar.get("ticker", "")) or currently_checking
+    except Exception:
+        # Current live audit is authoritative for already verified closes.
+        if "second_financing_audit_status" in df.columns:
+            live_status = df["second_financing_audit_status"].fillna("").astype(str).str.upper().str.strip()
+            verified_second_close = int(live_status.eq("VERIFIED_SECOND_POST_PHASE3_FINANCING").sum())
+            found_leads = verified_second_close
+            financing_checked = live_total
+        if "verified_as_of" in df.columns:
+            dates = pd.to_datetime(df["verified_as_of"], errors="coerce", utc=True).dropna()
+            if not dates.empty:
+                financing_last_scan = dates.max().strftime("%Y-%m-%d %H:%M UTC")
+
+    financing_left = max(financing_total - found_leads, 0)
+    st.markdown("### 🔎 HISTORICAL FINANCING SCAN — LIVE COUNT")
+    fc1, fc2, fc3, fc4 = st.columns(4)
+    fc1.metric("TOTAL PDUFA", f"{financing_total:,}")
+    fc2.metric("FOUND LEAD", f"{found_leads:,}")
+    fc3.metric("VERIFIED 2ND CLOSE", f"{verified_second_close:,}")
+    fc4.metric("LEFT", f"{financing_left:,}")
+    st.markdown(
+        f"""<div class="card"><b>Scan status:</b> ACTIVE &nbsp; | &nbsp;
+        <b>Reviewed/classified:</b> {financing_checked:,}/{financing_total:,} &nbsp; | &nbsp;
+        <b>Last evidence update:</b> {html.escape(financing_last_scan)} &nbsp; | &nbsp;
+        <b>Currently checking:</b> {html.escape(currently_checking)}</div>""",
+        unsafe_allow_html=True,
+    )
+    st.caption("FOUND LEAD = a credible financing notice was discovered. VERIFIED 2ND CLOSE = the second distinct post–Phase-3 financing has reliable closing/funding evidence. LEFT is based on records without a found lead.")
+
+
     st.caption("Variable PDUFA-relative Gantt chart for the scan families currently used by the command center. Change the horizon and each scan window below; Day 0 is the PDUFA decision date.")
 
     gantt_defs = [
