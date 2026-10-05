@@ -5,6 +5,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 
 REQUIRED = {
+    "data/company_registry.csv": {
+        "ticker","company","cik10","exchange","sic","sic_description","status",
+    },
+    "data/discovery_events.csv": {
+        "discovery_key","discovered_at_utc","source_type","event_type","ticker","company",
+        "cik10","drug","indication","nct_id","application_type","pdufa_date",
+        "source_date","source_url","evidence","company_status","match_confidence","pipeline_status",
+    },
+    "data/discovery_backfill_queue.csv": {
+        "discovery_key","ticker","company","cik10","event_type","drug","indication","nct_id",
+        "application_type","pdufa_date","source_url","evidence","company_status",
+        "match_confidence","backfill_status","first_seen_utc","last_seen_utc",
+    },
     "data/pdufa_candidates.csv": {
         "event_key", "ticker", "company", "drug", "indication", "pdufa_date",
         "approval_probability", "public_approval_probability", "biopharmawatch_probability",
@@ -49,6 +62,29 @@ for rel, required in REQUIRED.items():
     missing = required - headers
     if missing:
         raise SystemExit(f"{rel}: missing columns {sorted(missing)}")
+
+registry = read_csv(ROOT / "data/company_registry.csv")
+registry_tickers = [(r.get("ticker") or "").strip().upper() for r in registry]
+if len(registry) < 716:
+    raise SystemExit(f"company_registry.csv: registry shrank below original 716 companies: {len(registry)}")
+if any(not t for t in registry_tickers):
+    raise SystemExit("company_registry.csv: blank ticker")
+if len(registry_tickers) != len(set(registry_tickers)):
+    raise SystemExit("company_registry.csv: duplicate ticker")
+
+discovery_events = read_csv(ROOT / "data/discovery_events.csv")
+discovery_keys = [(r.get("discovery_key") or "").strip() for r in discovery_events]
+if any(not k for k in discovery_keys):
+    raise SystemExit("discovery_events.csv: blank discovery_key")
+if len(discovery_keys) != len(set(discovery_keys)):
+    raise SystemExit("discovery_events.csv: duplicate discovery_key")
+
+discovery_queue = read_csv(ROOT / "data/discovery_backfill_queue.csv")
+queue_keys = [(r.get("discovery_key") or "").strip() for r in discovery_queue]
+if any(not k for k in queue_keys):
+    raise SystemExit("discovery_backfill_queue.csv: blank discovery_key")
+if len(queue_keys) != len(set(queue_keys)):
+    raise SystemExit("discovery_backfill_queue.csv: duplicate discovery_key")
 
 candidates = read_csv(ROOT / "data/pdufa_candidates.csv")
 keys = [r["event_key"].strip() for r in candidates]
@@ -174,6 +210,9 @@ required_ui_contracts = [
     'APPLICATION_COLUMNS = ["N", "B"]',
     'colspan="2">Application',
     '"PDUFA"',
+    '"NEW COMPANY / EVENT DISCOVERY"',
+    '"Company Registry"',
+    '"Needs Backfill"',
 ]
 for label in required_ui_contracts:
     if label not in app:
@@ -189,6 +228,6 @@ for row in candidates:
             continue
 
 print(
-    f"smoke test passed: {len(candidates)} live events, "
+    f"smoke test passed: {len(registry)} company registry rows, {len(candidates)} live events, "
     f"{len(history)} historical rows, {verified_checks} verified designation checks, {verified_pvalues} verified P values, authoritative event reconciliation locked"
 )
