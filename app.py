@@ -1414,11 +1414,12 @@ if page == "1. ALL PDUFA":
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
         front = ["Ticker","P%","F","Match %","C"]
-        display = display[front + [x for x in display.columns if x not in front]]
+        special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
+        display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         display.insert(7 if len(display.columns) >= 7 else len(display.columns), "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
-        st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C")
+        st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C · NEXT 17 COLUMNS: SPECIAL PROVISIONS")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -1922,8 +1923,9 @@ elif page == "4. PREDICTION ENGINE":
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","F","Match %","C","Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
+        "Ticker","P%","F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
+        "Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
         "model_class","actual_outcome",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
@@ -1944,7 +1946,7 @@ elif page == "4. PREDICTION ENGINE":
     })
 
     st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
-    st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C")
+    st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C · NEXT 17 COLUMNS: SPECIAL PROVISIONS")
     st.dataframe(
         hdisplay,
         use_container_width=True,
