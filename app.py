@@ -77,6 +77,8 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
 .merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
 .merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
+.merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
+.merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
 .merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .merged-pdufa-table th.ticker-head{z-index:6}
 .merged-pdufa-table td.provision-yes{font-weight:800;font-size:18px}
@@ -1168,6 +1170,49 @@ def add_second_financing_columns(frame):
     return out
 
 
+APPLICATION_COLUMNS = ["N", "B"]
+
+
+def _application_flags(row):
+    """Return NDA/BLA flags only when the exact application type is explicit."""
+    result = {"N": "", "B": ""}
+    fields = [
+        safe_text(row.get("application_type"), ""),
+        safe_text(row.get("regulatory_summary"), ""),
+        safe_text(row.get("evidence_summary"), ""),
+        safe_text(row.get("public_evidence_note"), ""),
+        safe_text(row.get("internal_direction_note"), ""),
+    ]
+    text = " ".join(fields).lower()
+
+    # Explicit application type takes priority.
+    app_type = safe_text(row.get("application_type"), "").strip().lower()
+    if re.search(r"\bs?nda\b|new drug application", app_type):
+        result["N"] = "✓"
+    if re.search(r"\bs?bla\b|biologics license application|biologic license application", app_type):
+        result["B"] = "✓"
+
+    # Fallback to exact saved evidence when application_type is generic/blank.
+    if not result["N"] and re.search(r"\b(snda|nda)\b|new drug application", text):
+        result["N"] = "✓"
+    if not result["B"] and re.search(r"\b(sbla|bla)\b|biologics license application|biologic license application", text):
+        result["B"] = "✓"
+
+    return result
+
+
+def add_application_columns(frame):
+    out = frame.copy()
+    if out.empty:
+        for col in APPLICATION_COLUMNS:
+            out[col] = ""
+        return out
+    flags = out.apply(_application_flags, axis=1)
+    for col in APPLICATION_COLUMNS:
+        out[col] = flags.apply(lambda d: d.get(col, ""))
+    return out
+
+
 def special_provision_column_config():
     return {
         label: st.column_config.TextColumn(
@@ -1184,7 +1229,7 @@ def _merged_table_sort_series(frame, col):
     raw = frame[col]
     text_values = raw.fillna("").astype(str).str.strip()
 
-    if col in SPECIAL_PROVISION_LABELS or col in SECOND_FINANCING_COLUMNS:
+    if col in SPECIAL_PROVISION_LABELS or col in SECOND_FINANCING_COLUMNS or col in APPLICATION_COLUMNS:
         return text_values.eq("✓").astype(int)
 
     if col == "Ticker":
@@ -1278,19 +1323,29 @@ def render_merged_table(frame, heading, height_px=690):
 
     cols = list(rendered_frame.columns)
     has_second_financing_group = all(col in cols for col in SECOND_FINANCING_COLUMNS)
+    has_application_group = all(col in cols for col in APPLICATION_COLUMNS)
+    has_grouped_headers = has_second_financing_group or has_application_group
     header_cells = []
     header_top = []
     header_bottom = []
 
-    if has_second_financing_group:
-        group_started = False
+    if has_grouped_headers:
+        financing_started = False
+        application_started = False
         for col in cols:
             safe_col = html.escape(str(col))
             if col in SECOND_FINANCING_COLUMNS:
-                if not group_started:
+                if not financing_started:
                     header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
-                    group_started = True
+                    financing_started = True
                 header_bottom.append(f'<th class="group-subhead">{safe_col}</th>')
+                continue
+
+            if col in APPLICATION_COLUMNS:
+                if not application_started:
+                    header_top.append('<th class="group-head" colspan="2">Application</th>')
+                    application_started = True
+                header_bottom.append(f'<th class="application-subhead">{safe_col}</th>')
                 continue
 
             if col in SPECIAL_PROVISION_LABELS:
@@ -1333,10 +1388,12 @@ def render_merged_table(frame, heading, height_px=690):
                 extra_cls = " compact-p" if col in {"P%", "P"} else ""
                 if col in SECOND_FINANCING_COLUMNS:
                     extra_cls += " second-fin-cell"
+                if col in APPLICATION_COLUMNS:
+                    extra_cls += " application-cell"
                 cells.append(f'<td class="{(cls + extra_cls).strip()}">{html.escape(val)}</td>')
         rows.append("<tr>" + "".join(cells) + "</tr>")
 
-    if has_second_financing_group:
+    if has_grouped_headers:
         thead_html = (
             '<thead><tr>' + "".join(header_top) + '</tr>'
             '<tr>' + "".join(header_bottom) + '</tr></thead>'
@@ -1825,6 +1882,9 @@ if page == "1. ALL PDUFA":
         second_fin = add_second_financing_columns(view)
         for col in SECOND_FINANCING_COLUMNS:
             display[col] = second_fin[col].values
+        application_flags = add_application_columns(view)
+        for col in APPLICATION_COLUMNS:
+            display[col] = application_flags[col].values
         display["F"] = view.apply(predicted_fda_direction, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
@@ -1836,7 +1896,7 @@ if page == "1. ALL PDUFA":
             "All-Source Direction"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","P%","P",*SECOND_FINANCING_COLUMNS,"F","Match %","C"]
+        front = ["Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2296,9 +2356,10 @@ elif page == "4. PREDICTION ENGINE":
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
     hview = add_second_financing_columns(hview)
+    hview = add_application_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","P",*SECOND_FINANCING_COLUMNS,"F","Match %","C",
+        "Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction","PDUFA Date",
         "model_class","actual_outcome",
