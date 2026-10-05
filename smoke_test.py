@@ -169,6 +169,8 @@ required_ui_contracts = [
     'def _merged_table_sort_series',
     '"Sort column"',
     '"Ascending", "Descending"',
+    'SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]',
+    'colspan="3">2nd Financing',
 ]
 for label in required_ui_contracts:
     if label not in app:
