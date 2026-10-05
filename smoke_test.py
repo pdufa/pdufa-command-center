@@ -65,6 +65,17 @@ hkeys = [r["event_key"].strip() for r in history]
 if len(hkeys) != len(set(hkeys)):
     raise SystemExit("prediction_engine_history.csv: duplicate event_key")
 
+for year, expected in ((2020, 20), (2021, 24), (2022, 22)):
+    year_rows = [r for r in history if (r.get("pdufa_date") or "").startswith(f"{year}-")]
+    if len(year_rows) != expected:
+        raise SystemExit(f"prediction_engine_history.csv: expected {expected} audited {year} rows, found {len(year_rows)}")
+    for r in year_rows:
+        cap = float(r["historical_market_cap_billions"])
+        if not (0.3 <= cap <= 10.0):
+            raise SystemExit(f"{year} history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
+        if (r.get("public_approval_probability") or "").strip() or (r.get("biopharmawatch_probability") or "").strip():
+            raise SystemExit(f"{year} row fabricates unavailable historical public/vendor probability: {r['event_key']}")
+
 history_2023 = [r for r in history if (r.get("pdufa_date") or "").startswith("2023-")]
 if len(history_2023) != 24:
     raise SystemExit(f"prediction_engine_history.csv: expected 24 audited 2023 rows, found {len(history_2023)}")
