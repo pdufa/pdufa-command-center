@@ -149,21 +149,38 @@ def cash_check(cik):
                 if monthly>0: runway=cash/monthly; msg+=" Simple runway ~"+format(runway,".1f")+" months."
         return {"status":"RUNWAY_ESTIMATED" if runway is not None else "CASH_UPDATED","note":msg,"source":u,"cash":cash,"runway":runway}
     except Exception as e:
-        return {"status":"CHECK_ERROR","note":note("SEC Companyfacts failed: "+str(e)),"source":u}
+        return {"status":"SOURCE_BLOCKED_RETAINED","note":note("SEC Companyfacts unavailable from worker; retained stored cash/runway values. "+str(e)),"source":u}
 
 def market_check(ticker):
-    u="https://stooq.com/q/d/l/?s="+urllib.parse.quote(s(ticker).lower()+".us")+"&i=d"
+    symbol=s(ticker).upper()
+    u="https://query1.finance.yahoo.com/v8/finance/chart/"+urllib.parse.quote(symbol)+"?range=3mo&interval=1d&events=history"
     try:
-        rows=list(csv.DictReader(get(u).splitlines())); g=[]
+        o=json.loads(get(u,timeout=18,accept="application/json"))
+        result=((o.get("chart") or {}).get("result") or [])
+        if result:
+            q=((result[0].get("indicators") or {}).get("quote") or [{}])[0]
+            closes=q.get("close") or []; vols=q.get("volume") or []; times=result[0].get("timestamp") or []
+            g=[(times[i],float(closes[i]),float(vols[i] or 0)) for i in range(min(len(times),len(closes),len(vols))) if closes[i] is not None]
+            if g:
+                g=g[-35:]; last=g[-1]; vv=[x[2] for x in g[-20:] if x[2]>0]; av=sum(vv)/len(vv) if vv else None
+                ret=(last[1]/g[0][1]-1)*100 if len(g)>1 and g[0][1] else None
+                d=datetime.fromtimestamp(last[0],timezone.utc).date().isoformat()
+                return {"status":"MARKET_UPDATED","note":"Latest public close USD "+format(last[1],".2f")+" on "+d+".","source":u,"price":last[1],"volume":av,"return30":ret}
+    except Exception as e:
+        yahoo_error=str(e)
+    stooq="https://stooq.com/q/d/l/?s="+urllib.parse.quote(s(ticker).lower()+".us")+"&i=d"
+    try:
+        rows=list(csv.DictReader(get(stooq).splitlines())); g=[]
         for x in rows:
             try:g.append((x["Date"],float(x["Close"]),float(x.get("Volume") or 0)))
             except Exception:pass
-        if not g:return {"status":"CHECKED_NO_DATA","note":"No usable public daily market rows.","source":u}
-        g=g[-35:]; last=g[-1]; vols=[x[2] for x in g[-20:] if x[2]>0]; av=sum(vols)/len(vols) if vols else None
-        ret=(last[1]/g[0][1]-1)*100 if len(g)>1 and g[0][1] else None
-        return {"status":"MARKET_UPDATED","note":"Latest close USD "+format(last[1],".2f")+" on "+last[0]+".","source":u,"price":last[1],"volume":av,"return30":ret}
+        if g:
+            g=g[-35:]; last=g[-1]; vv=[x[2] for x in g[-20:] if x[2]>0]; av=sum(vv)/len(vv) if vv else None
+            ret=(last[1]/g[0][1]-1)*100 if len(g)>1 and g[0][1] else None
+            return {"status":"MARKET_UPDATED","note":"Latest public close USD "+format(last[1],".2f")+" on "+last[0]+".","source":stooq,"price":last[1],"volume":av,"return30":ret}
     except Exception as e:
-        return {"status":"CHECK_ERROR","note":note("Market data failed: "+str(e)),"source":u}
+        stooq_error=str(e)
+    return {"status":"SOURCE_UNAVAILABLE","note":"Public market sources returned no usable data; retained stored market values. Yahoo: "+locals().get("yahoo_error","no rows")+"; Stooq: "+locals().get("stooq_error","no rows"),"source":u}
 
 def ownership_check(files,sub):
     own=[x for x in files if x["form"].startswith("SC 13")]; ins=[x for x in files if x["form"] in {"3","4"}]
@@ -213,7 +230,7 @@ def main():
             res["phase3"]=p3_check(r); pv=res["phase3"].get("pvalues")
             if pv and not s(r.get("reported_p_values")): ch+=setv(c,i,"reported_p_values",pv)
         if "financing" in cats:
-            res["financing"]={"status":"CHECK_ERROR","note":"SEC submissions failed: "+secerr,"source":""} if secerr and not s(r.get("financing_evidence_url")) else financing_check(r,files)
+            res["financing"]={"status":"SOURCE_BLOCKED_RETAINED","note":"SEC submissions endpoint unavailable from worker; retained existing event financing data. "+secerr,"source":s(r.get("financing_evidence_url"))} if secerr and not s(r.get("financing_evidence_url")) else financing_check(r,files)
             if res["financing"].get("closed") and s(r.get("financing_status")).upper() in {"","UNKNOWN","NOT AVAILABLE","RUNNING","ANNOUNCED"}:
                 ch+=setv(c,i,"financing_status","CLOSED"); ch+=setv(c,i,"financing_evidence_url",res["financing"].get("source"))
         if "cash_runway" in cats:
@@ -221,7 +238,7 @@ def main():
         if "market_data" in cats:
             res["market_data"]=market_check(r["ticker"]); ch+=setv(c,i,"price_last",res["market_data"].get("price")); ch+=setv(c,i,"avg_volume_20d",res["market_data"].get("volume")); ch+=setv(c,i,"return_30d_pct",res["market_data"].get("return30"))
         if "ownership_insiders" in cats:
-            res["ownership_insiders"]={"status":"CHECK_ERROR","note":"SEC submissions failed: "+secerr,"source":""} if secerr else ownership_check(files,sub)
+            res["ownership_insiders"]={"status":"SOURCE_BLOCKED_RETAINED","note":"SEC submissions endpoint unavailable from worker; no ownership/insider inference made. "+secerr,"source":""} if secerr else ownership_check(files,sub)
         for cat,x in res.items():
             st.at[j,cat+"_status"]=s(x.get("status")); st.at[j,cat+"_note"]=s(x.get("note")); st.at[j,cat+"_source"]=s(x.get("source"))
             if "ERROR" in s(x.get("status")).upper():er+=1
