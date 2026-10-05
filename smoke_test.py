@@ -15,6 +15,10 @@ REQUIRED = {
     },
     "data/prediction_engine_audit.csv": {"event_key", "audit_status", "count_in_audited_accuracy"},
     "data/prediction_engine_rescore_queue.csv": {"original_event_key", "ticker", "audit_status", "needs_rescore"},
+    "data/prediction_engine_pvalues.csv": {
+        "event_key","ticker","pdufa_date","reported_p_values",
+        "p_value_audit_status","p_value_source_url","p_value_evidence_note",
+    },
     "data/prediction_engine_designations.csv": {
         "event_key","ticker","pdufa_date","orphan_drug","no_available_therapy",
         "serious_condition","life_threatening","fast_track","breakthrough_therapy",
@@ -72,6 +76,27 @@ history = read_csv(ROOT / "data/prediction_engine_history.csv")
 hkeys = [r["event_key"].strip() for r in history]
 if len(hkeys) != len(set(hkeys)):
     raise SystemExit("prediction_engine_history.csv: duplicate event_key")
+
+pvalues = read_csv(ROOT / "data/prediction_engine_pvalues.csv")
+pkeys = [r["event_key"].strip() for r in pvalues]
+if len(pkeys) != len(set(pkeys)):
+    raise SystemExit("prediction_engine_pvalues.csv: duplicate event_key")
+if len(pvalues) != len(history):
+    raise SystemExit(
+        f"prediction_engine_pvalues.csv: expected {len(history)} rows, found {len(pvalues)}"
+    )
+if set(pkeys) != set(hkeys):
+    raise SystemExit("prediction_engine_pvalues.csv: event_key set does not exactly match history")
+verified_pvalues = sum(
+    1 for r in pvalues
+    if (r.get("reported_p_values") or "").strip()
+    and (r.get("p_value_audit_status") or "").strip() == "VERIFIED_PRIMARY_OR_PIVOTAL"
+)
+if verified_pvalues < 1:
+    raise SystemExit("prediction_engine_pvalues.csv: no verified historical P values found")
+for r in pvalues:
+    if (r.get("reported_p_values") or "").strip() and not (r.get("p_value_source_url") or "").strip():
+        raise SystemExit(f"prediction_engine_pvalues.csv: populated P without source: {r['event_key']}")
 
 designations = read_csv(ROOT / "data/prediction_engine_designations.csv")
 dkeys = [r["event_key"].strip() for r in designations]
@@ -157,5 +182,5 @@ for row in candidates:
 
 print(
     f"smoke test passed: {len(candidates)} live events, "
-    f"{len(history)} historical rows, {verified_checks} verified designation checks, authoritative event reconciliation locked"
+    f"{len(history)} historical rows, {verified_checks} verified designation checks, {verified_pvalues} verified P values, authoritative event reconciliation locked"
 )
