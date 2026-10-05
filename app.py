@@ -83,6 +83,7 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
 .merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
 .merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
+.merged-pdufa-table td.second-fin-verified{background:#d9f7df !important;color:#0b6419 !important;font-size:19px !important;font-weight:900 !important}
 .merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
 .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
 .merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1120,6 +1121,19 @@ def add_special_provision_columns(frame):
     return out
 
 
+@st.cache_data(ttl=120)
+def load_second_financing_backfill():
+    """Load auditable second-financing milestones keyed to exact live PDUFA events."""
+    try:
+        sf = pd.read_csv("data/second_financing_status.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+    if "event_key" not in sf.columns:
+        return pd.DataFrame()
+    sf["event_key"] = sf["event_key"].astype(str)
+    return sf.drop_duplicates("event_key", keep="last").set_index("event_key", drop=False)
+
+
 SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]
 
 
@@ -1186,14 +1200,45 @@ def _second_financing_flags(row):
 
 
 def add_second_financing_columns(frame):
+    """Add 2nd-financing checks from exact event-key verification first, then saved row evidence."""
     out = frame.copy()
     if out.empty:
         for col in SECOND_FINANCING_COLUMNS:
             out[col] = ""
         return out
-    flags = out.apply(_second_financing_flags, axis=1)
+
+    sf = load_second_financing_backfill()
+    flags = []
+
+    for _, row in out.iterrows():
+        result = _second_financing_flags(row)
+        event_key = safe_text(row.get("event_key"), "")
+
+        if event_key and not sf.empty and event_key in sf.index:
+            saved = sf.loc[event_key]
+            if isinstance(saved, pd.DataFrame):
+                saved = saved.iloc[-1]
+
+            if _provision_status(saved.get("second_financing_announced")) == "✓":
+                result["Announced"] = "✓"
+            if _provision_status(saved.get("second_financing_running")) == "✓":
+                result["Running"] = "✓"
+            if _provision_status(saved.get("second_financing_closed")) == "✓":
+                result["Closed"] = "✓"
+
+            status = safe_text(saved.get("second_financing_status"), "").upper()
+            audit = safe_text(saved.get("second_financing_audit_status"), "").upper()
+            if status == "CLOSED" and audit == "VERIFIED_SECOND_POST_PHASE3_FINANCING":
+                # A verified completed second financing necessarily passed through
+                # announced/running/closed stages, so all three milestones display.
+                result["Announced"] = "✓"
+                result["Running"] = "✓"
+                result["Closed"] = "✓"
+
+        flags.append(result)
+
     for col in SECOND_FINANCING_COLUMNS:
-        out[col] = flags.apply(lambda d: d.get(col, ""))
+        out[col] = [d.get(col, "") for d in flags]
     return out
 
 
@@ -1444,6 +1489,8 @@ def render_merged_table(frame, heading, height_px=690):
                 extra_cls = " compact-p" if col in {"P%", "P"} else ""
                 if col in SECOND_FINANCING_COLUMNS:
                     extra_cls += " second-fin-cell"
+                    if val == "✓":
+                        extra_cls += " second-fin-verified"
                 if col in APPLICATION_COLUMNS:
                     extra_cls += " application-cell"
                 cells.append(
@@ -1476,6 +1523,7 @@ def render_merged_table(frame, heading, height_px=690):
     .merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
     .merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
     .merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
+    .merged-pdufa-table td.second-fin-verified{background:#d9f7df !important;color:#0b6419 !important;font-size:19px !important;font-weight:900 !important}
     .merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
     .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
     .merged-pdufa-table .provision-yes{font-weight:900}
@@ -2113,6 +2161,13 @@ if page == "1. ALL PDUFA":
         time_pos = min(len(front) + len(special_front), len(display.columns))
         display.insert(time_pos, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
+        verified_second_financing_n = int(
+            (second_fin["Closed"].astype(str) == "✓").sum()
+        )
+        st.caption(
+            f"2nd Financing verified closed: {verified_second_financing_n} event(s). "
+            "Verified milestones are highlighted in green."
+        )
         render_merged_table(display, "MASTER PDUFA TABLE", height_px=650)
         open1,open2 = st.columns([3,1])
         quick_view = view.copy()
