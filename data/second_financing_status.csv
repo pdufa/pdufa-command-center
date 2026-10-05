@@ -34,6 +34,6 @@ event_key,second_financing_status,second_financing_announced,second_financing_ru
 "AXSM|AXS12_CATAPLEXY_20270501","","","","","","","","","NOT_VERIFIED","",""
 "BBIO|ENCALERET_ADH1","","","","","","","","","NOT_VERIFIED","",""
 "BMY|MEZIGDOMIDE_RRMM_20270513","","","","","","","","","NOT_VERIFIED","",""
-"ZBIO|OBEXELIMAB_IGG4RD_20270527","","","","","","","","","NOT_VERIFIED","",""
-"SVRA|MOLBREEVI_PAP_20261122","","","","","","","","","NOT_VERIFIED","",""
+"ZBIO|OBEXELIMAB_IGG4RD_20270527","CLOSED","YES","YES","YES","2026-03-27","https://www.sec.gov/Archives/edgar/data/1953926/000110465926095448/zbio-20260630x10q.htm","2026-03-31","https://www.sec.gov/Archives/edgar/data/1953926/000110465926037821/tm2610711d1_8k.htm","VERIFIED_SECOND_POST_PHASE3_FINANCING","VERIFIED: INDIGO Phase 3 positive results were announced 2026-01-05. Zenas drew $75M under its Pharmakon term loan on 2026-03-27 (about $73M net). A separate public convertible-notes offering completed 2026-03-31 for $200M principal, establishing a second post-Phase-3 financing close.","2026-10-04"
+"SVRA|MOLBREEVI_PAP_20261122","CLOSED","YES","YES","YES","2025-03-26","https://www.sec.gov/Archives/edgar/data/1160308/000119312525064145/d936539d8k.htm","2025-10-31","https://www.sec.gov/Archives/edgar/data/1160308/000119312526105076/svra-20251231.htm","VERIFIED_SECOND_POST_PHASE3_FINANCING","VERIFIED: IMPALA-2 Phase 3 positive topline was announced 2024-06-26. Savara entered the Hercules debt financing on 2025-03-26 with $30M funded at close. A later underwritten public offering closed 2025-10-31 and produced approximately $140.2M net proceeds, establishing a second separate post-Phase-3 financing.","2026-10-04"
 "COGT|BEZUCLASTINIB_GIST_20261130","","","","","","","","","NOT_VERIFIED","",""
