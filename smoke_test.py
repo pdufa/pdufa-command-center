@@ -65,6 +65,14 @@ hkeys = [r["event_key"].strip() for r in history]
 if len(hkeys) != len(set(hkeys)):
     raise SystemExit("prediction_engine_history.csv: duplicate event_key")
 
+history_2024 = [r for r in history if (r.get("pdufa_date") or "").startswith("2024-")]
+if len(history_2024) != 22:
+    raise SystemExit(f"prediction_engine_history.csv: expected 22 audited 2024 rows, found {len(history_2024)}")
+for r in history_2024:
+    cap = float(r["historical_market_cap_billions"])
+    if not (0.3 <= cap <= 10.0):
+        raise SystemExit(f"2024 history row outside $300M-$10B gate: {r['event_key']} cap={cap}")
+
 app = (ROOT / "app.py").read_text(encoding="utf-8")
 required_ui_contracts = [
     "Probability of Approval % — Public",
