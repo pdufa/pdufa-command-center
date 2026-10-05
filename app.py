@@ -1123,8 +1123,17 @@ def add_special_provision_columns(frame):
     return out
 
 
-@st.cache_data(ttl=120)
-def load_second_financing_backfill():
+def _second_financing_file_version():
+    try:
+        p = Path("data/second_financing_status.csv")
+        stt = p.stat()
+        return f"{stt.st_mtime_ns}:{stt.st_size}"
+    except Exception:
+        return "missing"
+
+
+@st.cache_data(ttl=15)
+def _load_second_financing_backfill(version):
     """Load auditable second-financing milestones keyed to exact live PDUFA events."""
     try:
         sf = pd.read_csv("data/second_financing_status.csv", keep_default_na=False)
@@ -1134,6 +1143,12 @@ def load_second_financing_backfill():
         return pd.DataFrame()
     sf["event_key"] = sf["event_key"].astype(str)
     return sf.drop_duplicates("event_key", keep="last").set_index("event_key", drop=False)
+
+
+def load_second_financing_backfill():
+    # File version participates in the cache key, so a data-only deploy cannot
+    # leave the old 3-row verified state cached after the CSV changes.
+    return _load_second_financing_backfill(_second_financing_file_version())
 
 
 SECOND_FINANCING_COLUMNS = ["Announced", "Running", "Closed"]
@@ -1790,7 +1805,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-04 · P COLUMN ACTIVE · 2020–2026 DESIGNATION BACKFILL")
+st.caption("BUILD 2026-10-04B · FINANCING CACHE FIX · P COLUMN ACTIVE · 2020–2026 DESIGNATION BACKFILL")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -2179,12 +2194,22 @@ if page == "1. ALL PDUFA":
         verified_second_financing_n = int(
             (second_fin["Closed"].astype(str) == "✓").sum()
         )
+        sf_all = load_second_financing_backfill()
+        verified_second_financing_total = 0
+        if not sf_all.empty and "second_financing_audit_status" in sf_all.columns:
+            verified_second_financing_total = int(
+                sf_all["second_financing_audit_status"]
+                .astype(str)
+                .eq("VERIFIED_SECOND_POST_PHASE3_FINANCING")
+                .sum()
+            )
         st.markdown(
             "**2ND FINANCING is immediately after P:** "
             "**2F Announced | 2F Running | 2F Closed**"
         )
         st.caption(
-            f"Verified second-financing closed events in this view: {verified_second_financing_n}. "
+            f"Verified second-financing closes: {verified_second_financing_total} total · "
+            f"{verified_second_financing_n} in the current view. "
             "Verified milestones are highlighted in green."
         )
         render_merged_table(display, "MASTER PDUFA TABLE", height_px=650)
