@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import json
 from pathlib import Path
@@ -1292,54 +1293,63 @@ def _merged_table_sort_series(frame, col):
     return text_values.str.lower()
 
 
-def _sort_header_link(sort_key, col, current_col, current_dir):
-    """Create a same-page header link that toggles ascending/descending."""
-    next_dir = "desc" if current_col == col and current_dir == "asc" else "asc"
-    icon = "⇅"
-    if current_col == col:
-        icon = "▲" if current_dir == "asc" else "▼"
-    href = (
-        "?sort_table=" + urllib.parse.quote(str(sort_key), safe="")
-        + "&sort_col=" + urllib.parse.quote(str(col), safe="")
-        + "&sort_dir=" + urllib.parse.quote(next_dir, safe="")
-    )
+def _sort_header_button(col, col_index):
+    """Render a real client-side table sort button."""
     label = html.escape(str(col))
     return (
-        f'<a class="sort-head" href="{href}" target="_self" '
+        f'<button type="button" class="sort-head" data-col-index="{int(col_index)}" '
         f'title="Click to sort {html.escape(str(col), quote=True)}">'
-        f'{label}<span class="sort-icon">{icon}</span></a>'
+        f'<span class="sort-label">{label}</span>'
+        f'<span class="sort-icon">⇅</span></button>'
     )
+
+
+def _merged_sort_payload(frame, col):
+    """Return browser-ready sort type and values using the same value-aware rules."""
+    series = _merged_table_sort_series(frame, col)
+
+    if pd.api.types.is_datetime64_any_dtype(series):
+        values = []
+        for v in series:
+            if pd.isna(v):
+                values.append("")
+            else:
+                values.append(str(pd.Timestamp(v).value))
+        return "number", values
+
+    if pd.api.types.is_numeric_dtype(series):
+        values = []
+        for v in series:
+            if pd.isna(v):
+                values.append("")
+            else:
+                try:
+                    values.append(str(float(v)))
+                except Exception:
+                    values.append("")
+        return "number", values
+
+    return "text", [
+        "" if pd.isna(v) else str(v).strip().lower()
+        for v in series
+    ]
 
 
 def render_merged_table(frame, heading, height_px=690):
-    """Render one merged table with sortable columns and 45-degree provision headers."""
+    """Render one merged table with immediate client-side sortable headers."""
     if frame is None or frame.empty:
         return
 
     st.markdown(f"### {heading}")
 
-    sort_key = re.sub(r"[^a-z0-9]+", "_", heading.lower()).strip("_")
-
-    query_sort_table = str(st.query_params.get("sort_table", "") or "")
-    query_sort_col = urllib.parse.unquote(str(st.query_params.get("sort_col", "") or ""))
-    query_sort_dir = str(st.query_params.get("sort_dir", "asc") or "asc").lower()
-
-    current_sort_col = query_sort_col if (
-        query_sort_table == sort_key and query_sort_col in frame.columns
-    ) else ""
-    current_sort_dir = query_sort_dir if query_sort_dir in {"asc", "desc"} else "asc"
-
     rendered_frame = frame.copy()
-    if current_sort_col:
-        rendered_frame["_sort_key"] = _merged_table_sort_series(rendered_frame, current_sort_col)
-        rendered_frame = rendered_frame.sort_values(
-            "_sort_key",
-            ascending=(current_sort_dir == "asc"),
-            na_position="last",
-            kind="mergesort",
-        ).drop(columns=["_sort_key"])
-
     cols = list(rendered_frame.columns)
+
+    sort_meta = {}
+    for col_index, col in enumerate(cols):
+        kind, values = _merged_sort_payload(rendered_frame, col)
+        sort_meta[col] = {"kind": kind, "values": values, "index": col_index}
+
     has_second_financing_group = all(col in cols for col in SECOND_FINANCING_COLUMNS)
     has_application_group = all(col in cols for col in APPLICATION_COLUMNS)
     has_grouped_headers = has_second_financing_group or has_application_group
@@ -1350,42 +1360,42 @@ def render_merged_table(frame, heading, height_px=690):
     if has_grouped_headers:
         financing_started = False
         application_started = False
-        for col in cols:
-            sort_link = _sort_header_link(sort_key, col, current_sort_col, current_sort_dir)
+        for col_index, col in enumerate(cols):
+            sort_button = _sort_header_button(col, col_index)
             if col in SECOND_FINANCING_COLUMNS:
                 if not financing_started:
                     header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
                     financing_started = True
-                header_bottom.append(f'<th class="group-subhead">{sort_link}</th>')
+                header_bottom.append(f'<th class="group-subhead">{sort_button}</th>')
                 continue
 
             if col in APPLICATION_COLUMNS:
                 if not application_started:
                     header_top.append('<th class="group-head" colspan="2">Application</th>')
                     application_started = True
-                header_bottom.append(f'<th class="application-subhead">{sort_link}</th>')
+                header_bottom.append(f'<th class="application-subhead">{sort_button}</th>')
                 continue
 
             if col in SPECIAL_PROVISION_LABELS:
-                header_top.append(f'<th class="angle-head" rowspan="2"><span>{sort_link}</span></th>')
+                header_top.append(f'<th class="angle-head" rowspan="2"><span>{sort_button}</span></th>')
             else:
                 extra = ' ticker-head' if col == "Ticker" else ''
                 if col in {"P%", "P"}:
                     extra += ' compact-p'
-                header_top.append(f'<th class="normal-head{extra}" rowspan="2">{sort_link}</th>')
+                header_top.append(f'<th class="normal-head{extra}" rowspan="2">{sort_button}</th>')
     else:
-        for col in cols:
-            sort_link = _sort_header_link(sort_key, col, current_sort_col, current_sort_dir)
+        for col_index, col in enumerate(cols):
+            sort_button = _sort_header_button(col, col_index)
             if col in SPECIAL_PROVISION_LABELS:
-                header_cells.append(f'<th class="angle-head"><span>{sort_link}</span></th>')
+                header_cells.append(f'<th class="angle-head"><span>{sort_button}</span></th>')
             else:
                 extra = ' ticker-head' if col == "Ticker" else ''
                 if col in {"P%", "P"}:
                     extra += ' compact-p'
-                header_cells.append(f'<th class="normal-head{extra}">{sort_link}</th>')
+                header_cells.append(f'<th class="normal-head{extra}">{sort_button}</th>')
 
     rows = []
-    for _, row in rendered_frame.iterrows():
+    for row_pos, (_, row) in enumerate(rendered_frame.iterrows()):
         cells = []
         for col in cols:
             raw = row.get(col, "")
@@ -1393,23 +1403,34 @@ def render_merged_table(frame, heading, height_px=690):
             cls = ""
             if col in SPECIAL_PROVISION_LABELS:
                 cls = " provision-yes" if val == "✓" else " provision-unknown"
+
+            meta = sort_meta[col]
+            sort_value = meta["values"][row_pos]
+            sort_attrs = (
+                f' data-sort="{html.escape(str(sort_value), quote=True)}"'
+                f' data-sort-type="{meta["kind"]}"'
+            )
+
             if col == "Ticker" and val.startswith("http"):
                 parsed = urllib.parse.urlparse(val)
                 ticker_label = urllib.parse.parse_qs(parsed.query).get("ticker", ["Open"])[0]
                 shown = html.escape(ticker_label)
-                rendered = f'<a href="{html.escape(val, quote=True)}" target="_self">{shown}</a>'
-                cells.append(f'<td class="ticker-cell{cls}">{rendered}</td>')
+                rendered = f'<a href="{html.escape(val, quote=True)}" target="_parent">{shown}</a>'
+                cells.append(f'<td class="ticker-cell{cls}"{sort_attrs}>{rendered}</td>')
             elif col == "Audit Source" and val.startswith("http"):
                 rendered = f'<a href="{html.escape(val, quote=True)}" target="_blank">Source</a>'
-                cells.append(f'<td class="{cls.strip()}">{rendered}</td>')
+                cells.append(f'<td class="{cls.strip()}"{sort_attrs}>{rendered}</td>')
             else:
                 extra_cls = " compact-p" if col in {"P%", "P"} else ""
                 if col in SECOND_FINANCING_COLUMNS:
                     extra_cls += " second-fin-cell"
                 if col in APPLICATION_COLUMNS:
                     extra_cls += " application-cell"
-                cells.append(f'<td class="{(cls + extra_cls).strip()}">{html.escape(val)}</td>')
-        rows.append("<tr>" + "".join(cells) + "</tr>")
+                cells.append(
+                    f'<td class="{(cls + extra_cls).strip()}"{sort_attrs}>'
+                    f'{html.escape(val)}</td>'
+                )
+        rows.append(f'<tr data-original-index="{row_pos}">' + "".join(cells) + "</tr>")
 
     if has_grouped_headers:
         thead_html = (
@@ -1419,19 +1440,119 @@ def render_merged_table(frame, heading, height_px=690):
     else:
         thead_html = '<thead><tr>' + "".join(header_cells) + '</tr></thead>'
 
+    local_css = """
+    <style>
+    html,body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;color:#111}
+    .merged-table-wrap{overflow:auto;background:#fff;border:2px solid #000;border-radius:12px;max-height:%dpx}
+    .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:max-content;min-width:100%%;font-size:13px}
+    .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;white-space:nowrap}
+    .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
+    .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
+    .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
+    .merged-pdufa-table th.angle-head>span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111}
+    .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
+    .merged-pdufa-table th.ticker-head{z-index:6}
+    .merged-pdufa-table th.compact-p,.merged-pdufa-table td.compact-p{width:64px;min-width:64px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .merged-pdufa-table th.group-head{height:34px;background:#ececec;font-weight:800;border-bottom:1px solid #777}
+    .merged-pdufa-table th.group-subhead{height:124px;vertical-align:bottom;font-weight:700;min-width:58px;width:58px;max-width:58px;top:34px}
+    .merged-pdufa-table td.second-fin-cell{min-width:58px;width:58px;max-width:58px;font-weight:800}
+    .merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
+    .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
+    .merged-pdufa-table .provision-yes{font-weight:900}
+    .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;width:100%%;height:100%%}
+    .sort-head:hover .sort-icon,.sort-head:focus .sort-icon{background:#111;color:#fff}
+    .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
+    a{color:#111}
+    </style>
+    """ % int(height_px)
+
+    sort_js = """
+    <script>
+    (() => {
+      const table = document.querySelector('.merged-pdufa-table');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const buttons = Array.from(table.querySelectorAll('button.sort-head'));
+      let activeIndex = null;
+      let ascending = true;
+
+      const compare = (a, b, index, asc) => {
+        const ca = a.children[index];
+        const cb = b.children[index];
+        const va = (ca?.dataset.sort ?? '').trim();
+        const vb = (cb?.dataset.sort ?? '').trim();
+        const type = ca?.dataset.sortType || 'text';
+
+        const aEmpty = va === '';
+        const bEmpty = vb === '';
+        if (aEmpty && bEmpty) {
+          return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+        }
+        if (aEmpty) return 1;
+        if (bEmpty) return -1;
+
+        let cmp = 0;
+        if (type === 'number') {
+          const na = Number(va);
+          const nb = Number(vb);
+          cmp = (na === nb) ? 0 : (na < nb ? -1 : 1);
+        } else {
+          cmp = va.localeCompare(vb, undefined, {numeric:true, sensitivity:'base'});
+        }
+        if (cmp === 0) {
+          cmp = Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+        }
+        return asc ? cmp : -cmp;
+      };
+
+      const setIcons = () => {
+        buttons.forEach(btn => {
+          const idx = Number(btn.dataset.colIndex);
+          const icon = btn.querySelector('.sort-icon');
+          if (!icon) return;
+          icon.textContent = idx === activeIndex ? (ascending ? '▲' : '▼') : '⇅';
+        });
+      };
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const index = Number(btn.dataset.colIndex);
+          if (activeIndex === index) {
+            ascending = !ascending;
+          } else {
+            activeIndex = index;
+            ascending = true;
+          }
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((a,b) => compare(a,b,index,ascending));
+          rows.forEach(row => tbody.appendChild(row));
+          setIcons();
+        });
+      });
+
+      setIcons();
+    })();
+    </script>
+    """
+
     table_html = (
-        f'<div class="merged-table-wrap" style="max-height:{int(height_px)}px">'
-        '<table class="merged-pdufa-table">'
+        local_css
+        + f'<div class="merged-table-wrap">'
+        + '<table class="merged-pdufa-table">'
         + thead_html
         + '<tbody>'
         + "".join(rows)
         + '</tbody></table></div>'
+        + sort_js
     )
+
     st.caption(
-        "Click any column heading to sort. Click the same heading again to switch ▲ ascending / ▼ descending. "
-        "Percentages, Phase 3 P values, dates, market caps and checkmarks use value-aware sorting."
+        "Click the boxed ⇅ icon in any column heading to sort immediately. "
+        "The icon changes to ▲ ascending or ▼ descending; click it again to reverse the order."
     )
-    st.markdown(table_html, unsafe_allow_html=True)
+    components.html(table_html, height=int(height_px) + 25, scrolling=False)
 
 
 def table_view(frame, return_page="1. ALL PDUFA"):
