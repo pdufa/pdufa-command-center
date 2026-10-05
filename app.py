@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import json
+from pathlib import Path
 from datetime import date
 import calendar
 import html
@@ -1872,6 +1874,54 @@ if page == "1. ALL PDUFA":
             st.warning(f"{len(master)-valid_dates} row(s) have missing/invalid PDUFA dates.")
         else:
             st.success("Row parsing and PDUFA date parsing passed.")
+
+    with st.expander("NEW COMPANY / EVENT DISCOVERY", expanded=False):
+        registry_path = Path("data/company_registry.csv")
+        discovery_path = Path("data/discovery_events.csv")
+        queue_path = Path("data/discovery_backfill_queue.csv")
+        state_path = Path("data/discovery_run_state.json")
+
+        registry_count = 0
+        discovery_count = 0
+        queue_count = 0
+        discovery_state = {}
+        try:
+            if registry_path.exists():
+                registry_count = len(pd.read_csv(registry_path, dtype=str))
+            if discovery_path.exists():
+                discovery_log = pd.read_csv(discovery_path, dtype=str, keep_default_na=False)
+                discovery_count = len(discovery_log)
+            else:
+                discovery_log = pd.DataFrame()
+            if queue_path.exists():
+                discovery_queue = pd.read_csv(queue_path, dtype=str, keep_default_na=False)
+                queue_count = len(discovery_queue)
+            else:
+                discovery_queue = pd.DataFrame()
+            if state_path.exists():
+                discovery_state = json.loads(state_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            st.warning(f"Discovery status could not be loaded: {type(exc).__name__}")
+            discovery_log = pd.DataFrame()
+            discovery_queue = pd.DataFrame()
+
+        d1,d2,d3,d4 = st.columns(4)
+        d1.metric("Company Registry", registry_count)
+        d2.metric("Discovered Events", discovery_count)
+        d3.metric("Needs Backfill", queue_count)
+        d4.metric("Auto-Added Last Run", int(discovery_state.get("companies_auto_added", 0) or 0))
+        st.caption(
+            "Discovery is event-first: recent Phase 3 records and regulatory filings are checked independently. "
+            "A missing public biotech company is added to the registry only after a high-confidence SEC identity/SIC match; "
+            "the event is then sent to the full backfill queue instead of being discarded."
+        )
+        if not discovery_queue.empty:
+            qshow = discovery_queue.tail(25).iloc[::-1].copy()
+            keep = [c for c in [
+                "ticker","company","event_type","drug","indication","application_type",
+                "pdufa_date","company_status","match_confidence","backfill_status","source_url"
+            ] if c in qshow.columns]
+            st.dataframe(qshow[keep], use_container_width=True, hide_index=True)
 
     if view.empty:
         st.info("No PDUFA records match the current filters.")
