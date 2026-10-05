@@ -18,6 +18,13 @@ REQUIRED = {
         "application_type","pdufa_date","source_url","evidence","company_status",
         "match_confidence","backfill_status","first_seen_utc","last_seen_utc",
     },
+    "data/second_financing_status.csv": {
+        "event_key","second_financing_status","second_financing_announced",
+        "second_financing_running","second_financing_closed",
+        "first_financing_date","first_financing_source",
+        "second_financing_date","second_financing_source",
+        "second_financing_audit_status","second_financing_evidence_note","verified_as_of",
+    },
     "data/pdufa_candidates.csv": {
         "event_key", "ticker", "company", "drug", "indication", "pdufa_date",
         "approval_probability", "public_approval_probability", "biopharmawatch_probability",
@@ -107,6 +114,34 @@ for r in candidates:
     d = r["pdufa_date"].strip()
     if d:
         datetime.strptime(d, "%Y-%m-%d")
+
+second_financing = read_csv(ROOT / "data/second_financing_status.csv")
+sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
+if len(sf_keys) != len(set(sf_keys)):
+    raise SystemExit("second_financing_status.csv: duplicate event_key")
+if len(second_financing) != len(candidates):
+    raise SystemExit(
+        f"second_financing_status.csv: expected {len(candidates)} rows, found {len(second_financing)}"
+    )
+if set(sf_keys) != set(keys):
+    raise SystemExit("second_financing_status.csv: event_key set does not exactly match live candidates")
+
+verified_second_financing = 0
+for r in second_financing:
+    status = (r.get("second_financing_audit_status") or "").strip()
+    if status == "VERIFIED_SECOND_POST_PHASE3_FINANCING":
+        verified_second_financing += 1
+        if (r.get("second_financing_status") or "").strip() != "CLOSED":
+            raise SystemExit(f"second_financing_status.csv: verified row is not CLOSED: {r['event_key']}")
+        for field in ("second_financing_announced","second_financing_running","second_financing_closed"):
+            if (r.get(field) or "").strip().upper() != "YES":
+                raise SystemExit(f"second_financing_status.csv: verified row missing {field}: {r['event_key']}")
+        if not (r.get("second_financing_source") or "").strip():
+            raise SystemExit(f"second_financing_status.csv: verified row missing source: {r['event_key']}")
+        if not (r.get("second_financing_evidence_note") or "").strip():
+            raise SystemExit(f"second_financing_status.csv: verified row missing evidence note: {r['event_key']}")
+if verified_second_financing < 1:
+    raise SystemExit("second_financing_status.csv: no verified second financing rows")
 
 history = read_csv(ROOT / "data/prediction_engine_history.csv")
 hkeys = [r["event_key"].strip() for r in history]
@@ -215,6 +250,7 @@ required_ui_contracts = [
     'colspan="2">Application',
     '"PDUFA"',
     '"NEW COMPANY / EVENT DISCOVERY"',
+    '"data/second_financing_status.csv"',
     '"Company Registry"',
     '"Needs Backfill"',
 ]
@@ -233,5 +269,6 @@ for row in candidates:
 
 print(
     f"smoke test passed: {len(registry)} company registry rows, {len(candidates)} live events, "
+    f"{verified_second_financing} verified second-financing rows, "
     f"{len(history)} historical rows, {verified_checks} verified designation checks, {verified_pvalues} verified P values, authoritative event reconciliation locked"
 )
