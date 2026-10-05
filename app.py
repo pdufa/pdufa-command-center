@@ -1096,12 +1096,104 @@ def special_provision_column_config():
     }
 
 
+def _merged_table_sort_series(frame, col):
+    """Build a display-aware sort key so visible values sort numerically when appropriate."""
+    raw = frame[col]
+    text_values = raw.fillna("").astype(str).str.strip()
+
+    if col in SPECIAL_PROVISION_LABELS:
+        return text_values.eq("✓").astype(int)
+
+    if col == "Ticker":
+        def ticker_label(value):
+            value = str(value)
+            if value.startswith("http"):
+                parsed = urllib.parse.urlparse(value)
+                return urllib.parse.parse_qs(parsed.query).get("ticker", [""])[0].upper()
+            return value.upper()
+        return text_values.apply(ticker_label)
+
+    lower_col = str(col).lower()
+    if "date" in lower_col or col == "Canonical PDUFA":
+        parsed_dates = pd.to_datetime(text_values.replace({"":"NaT", "Not available":"NaT", "NA":"NaT"}), errors="coerce")
+        if parsed_dates.notna().any():
+            return parsed_dates
+
+    if col == "F":
+        return text_values.str.upper().map({"CRL":0, "REVIEW":1, "APPROVED":2}).fillna(-1)
+
+    if col == "P":
+        extracted = text_values.str.extract(r"(?i)p\s*(?:=|<|≤|>)?\s*([0-9]*\.?[0-9]+)", expand=False)
+        return pd.to_numeric(extracted, errors="coerce")
+
+    if col == "C" or "%" in str(col):
+        extracted = text_values.str.extract(r"(-?[0-9]+(?:\.[0-9]+)?)", expand=False)
+        return pd.to_numeric(extracted, errors="coerce")
+
+    if "market cap" in lower_col:
+        def cap_number(value):
+            value = str(value).strip().upper().replace("$", "").replace(",", "")
+            if value in {"", "NA", "NOT AVAILABLE"}:
+                return float("nan")
+            mult = 1.0
+            if value.endswith("B"):
+                mult = 1_000_000_000.0
+                value = value[:-1]
+            elif value.endswith("M"):
+                mult = 1_000_000.0
+                value = value[:-1]
+            elif value.endswith("K"):
+                mult = 1_000.0
+                value = value[:-1]
+            try:
+                return float(value) * mult
+            except Exception:
+                return float("nan")
+        return text_values.apply(cap_number)
+
+    numeric = pd.to_numeric(text_values.str.replace(",", "", regex=False), errors="coerce")
+    if numeric.notna().sum() >= max(1, int(len(frame) * 0.5)):
+        return numeric
+
+    return text_values.str.lower()
+
+
 def render_merged_table(frame, heading, height_px=690):
-    """Render one merged table; the 16 Special Provision headers are rotated 45 degrees."""
+    """Render one merged table with sortable columns and 45-degree provision headers."""
     if frame is None or frame.empty:
         return
 
-    cols = list(frame.columns)
+    st.markdown(f"### {heading}")
+
+    sort_key = re.sub(r"[^a-z0-9]+", "_", heading.lower()).strip("_")
+    sort_col_key = f"{sort_key}_sort_column"
+    sort_dir_key = f"{sort_key}_sort_direction"
+
+    c1, c2 = st.columns([3, 1])
+    with c1:
+        sort_col = st.selectbox(
+            "Sort column",
+            ["Current order"] + list(frame.columns),
+            key=sort_col_key,
+        )
+    with c2:
+        sort_direction = st.selectbox(
+            "Order",
+            ["Ascending", "Descending"],
+            key=sort_dir_key,
+        )
+
+    rendered_frame = frame.copy()
+    if sort_col != "Current order":
+        rendered_frame["_sort_key"] = _merged_table_sort_series(rendered_frame, sort_col)
+        rendered_frame = rendered_frame.sort_values(
+            "_sort_key",
+            ascending=(sort_direction == "Ascending"),
+            na_position="last",
+            kind="mergesort",
+        ).drop(columns=["_sort_key"])
+
+    cols = list(rendered_frame.columns)
     header_cells = []
     for col in cols:
         safe_col = html.escape(str(col))
@@ -1114,7 +1206,7 @@ def render_merged_table(frame, heading, height_px=690):
             header_cells.append(f'<th class="normal-head{extra}">{safe_col}</th>')
 
     rows = []
-    for _, row in frame.iterrows():
+    for _, row in rendered_frame.iterrows():
         cells = []
         for col in cols:
             raw = row.get(col, "")
@@ -1144,8 +1236,10 @@ def render_merged_table(frame, heading, height_px=690):
         + "".join(rows)
         + '</tbody></table></div>'
     )
-    st.markdown(f"### {heading}")
-    st.caption("Single merged table. The 16 Special Provision headers are rotated 45°. Scroll horizontally to view all columns.")
+    st.caption(
+        "Choose any visible column above, then Ascending or Descending. "
+        "Numeric percentages, Phase 3 P values, dates, market caps and checkmarks use value-aware sorting."
+    )
     st.markdown(table_html, unsafe_allow_html=True)
 
 
