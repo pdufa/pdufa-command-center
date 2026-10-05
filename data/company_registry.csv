@@ -1,717 +1,717 @@
 ticker,company,cik10,exchange,sic,sic_description,status
-AIDX,"20/20 Biolabs, Inc.",0001139685,Nasdaq,8734,Services-Testing Laboratories,OK
-FDMT,"4D Molecular Therapeutics, Inc.",0001650648,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SXTP,"60 DEGREES PHARMACEUTICALS, INC.",0001946563,Nasdaq,2834,Pharmaceutical Preparations,OK
-ABT,ABBOTT LABORATORIES,0000001800,NYSE,2834,Pharmaceutical Preparations,OK
+AAPG,ASCENTAGE PHARMA GROUP INTERNATIONAL,0002023311,Nasdaq,2834,Pharmaceutical Preparations,OK
+AARD,"Aardvark Therapeutics, Inc.",0001774857,Nasdaq,2834,Pharmaceutical Preparations,OK
+ABBV,AbbVie Inc.,0001551152,NYSE,2834,Pharmaceutical Preparations,OK
+ABCL,AbCellera Biologics Inc.,0001703057,Nasdaq,2834,Pharmaceutical Preparations,OK
 ABEO,ABEONA THERAPEUTICS INC.,0000318306,Nasdaq,2834,Pharmaceutical Preparations,OK
+ABOS,"Acumen Pharmaceuticals, Inc.",0001576885,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ABSI,Absci Corp,0001672688,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+ABT,ABBOTT LABORATORIES,0000001800,NYSE,2834,Pharmaceutical Preparations,OK
+ABUS,Arbutus Biopharma Corp,0001447028,Nasdaq,2834,Pharmaceutical Preparations,OK
 ABVC,"ABVC BIOPHARMA, INC.",0001173313,Nasdaq,2834,Pharmaceutical Preparations,OK
-ACIU,AC Immune SA,0001651625,Nasdaq,2834,Pharmaceutical Preparations,OK
+ABVX,Abivax S.A.,0001956827,Nasdaq,2834,Pharmaceutical Preparations,OK
 ACAD,ACADIA PHARMACEUTICALS INC,0001070494,Nasdaq,2834,Pharmaceutical Preparations,OK
+ACB,AURORA CANNABIS INC,0001683541,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+ACET,"Adicet Bio, Inc.",0001720580,Nasdaq,2834,Pharmaceutical Preparations,OK
 ACHV,"ACHIEVE LIFE SCIENCES, INC.",0000949858,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+ACIU,AC Immune SA,0001651625,Nasdaq,2834,Pharmaceutical Preparations,OK
+ACOG,Alpha Cognition Inc.,0001655923,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ACRS,"Aclaris Therapeutics, Inc.",0001557746,Nasdaq,2834,Pharmaceutical Preparations,OK
+ACRV,"Acrivon Therapeutics, Inc.",0001781174,Nasdaq,2834,Pharmaceutical Preparations,OK
 ACTU,"ACTUATE THERAPEUTICS, INC.",0001652935,Nasdaq,2834,Pharmaceutical Preparations,OK
+ACXP,"Acurx Pharmaceuticals, Inc.",0001736243,Nasdaq,2834,Pharmaceutical Preparations,OK
+ADAG,Adagene Inc.,0001818838,Nasdaq,2834,Pharmaceutical Preparations,OK
 ADCT,ADC Therapeutics SA,0001771910,NYSE,2834,Pharmaceutical Preparations,OK
 ADIL,"ADIAL PHARMACEUTICALS, INC.",0001513525,Nasdaq,2834,Pharmaceutical Preparations,OK
 ADMA,"ADMA BIOLOGICS, INC.",0001368514,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ADPT,Adaptive Biotechnologies Corp,0001478320,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ADXN,Addex Therapeutics Ltd.,0001574232,Nasdaq,2834,Pharmaceutical Preparations,OK
 AEON,"AEON Biopharma, Inc.",0001837607,NYSE,2834,Pharmaceutical Preparations,OK
 AGEN,AGENUS INC,0001098972,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 AGIO,"AGIOS PHARMACEUTICALS, INC.",0001439222,Nasdaq,2834,Pharmaceutical Preparations,OK
+AGMB,AgomAb Therapeutics NV,0002020932,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+AIDX,"20/20 Biolabs, Inc.",0001139685,Nasdaq,8734,Services-Testing Laboratories,OK
 AIM,AIM ImmunoTech Inc.,0000946644,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
 AKAN,AKANDA CORP.,0001888014,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-ALNY,"ALNYLAM PHARMACEUTICALS, INC.",0001178670,Nasdaq,2834,Pharmaceutical Preparations,OK
-ATHE,ALTERITY THERAPEUTICS LTD,0001131343,Nasdaq,2834,Pharmaceutical Preparations,OK
-ALMS,ALUMIS INC.,0001847367,Nasdaq,2834,Pharmaceutical Preparations,OK
-ALXO,ALX ONCOLOGY HOLDINGS INC,0001810182,Nasdaq,2834,Pharmaceutical Preparations,OK
-AMRN,AMARIN CORP PLC\UK,0000897448,Nasdaq,2834,Pharmaceutical Preparations,OK
-AMGN,AMGEN INC,0000318154,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ANTX,"AN2 Therapeutics, Inc.",0001880438,Nasdaq,2834,Pharmaceutical Preparations,OK
-ANAB,"ANAPTYSBIO, INC",0001370053,Nasdaq,2834,Pharmaceutical Preparations,OK
-AVXL,ANAVEX LIFE SCIENCES CORP.,0001314052,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ANIP,ANI PHARMACEUTICALS INC,0001023024,Nasdaq,2834,Pharmaceutical Preparations,OK
-ARDX,"ARDELYX, INC.",0001437402,Nasdaq,2834,Pharmaceutical Preparations,OK
-ARGX,ARGENX SE,0001697862,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ARWR,"ARROWHEAD PHARMACEUTICALS, INC.",0000879407,Nasdaq,2834,Pharmaceutical Preparations,OK
-SPRY,"ARS Pharmaceuticals, Inc.",0001671858,Nasdaq,2834,Pharmaceutical Preparations,OK
-ARTL,"ARTELO BIOSCIENCES, INC.",0001621221,Nasdaq,2834,Pharmaceutical Preparations,OK
-ARVN,"ARVINAS, INC.",0001655759,Nasdaq,2834,Pharmaceutical Preparations,OK
-AAPG,ASCENTAGE PHARMA GROUP INTERNATIONAL,0002023311,Nasdaq,2834,Pharmaceutical Preparations,OK
-ASMB,"ASSEMBLY BIOSCIENCES, INC.",0001426800,Nasdaq,2834,Pharmaceutical Preparations,OK
-AZN,ASTRAZENECA PLC,0000901832,NYSE,2834,Pharmaceutical Preparations,OK
-ATOS,"ATOSSA THERAPEUTICS, INC.",0001488039,Nasdaq,2834,Pharmaceutical Preparations,OK
-ACB,AURORA CANNABIS INC,0001683541,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-AYTU,"AYTU BIOPHARMA, INC",0001385818,Nasdaq,2834,Pharmaceutical Preparations,OK
-AARD,"Aardvark Therapeutics, Inc.",0001774857,Nasdaq,2834,Pharmaceutical Preparations,OK
-ABCL,AbCellera Biologics Inc.,0001703057,Nasdaq,2834,Pharmaceutical Preparations,OK
-ABBV,AbbVie Inc.,0001551152,NYSE,2834,Pharmaceutical Preparations,OK
-ABVX,Abivax S.A.,0001956827,Nasdaq,2834,Pharmaceutical Preparations,OK
-ABSI,Absci Corp,0001672688,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-ACRS,"Aclaris Therapeutics, Inc.",0001557746,Nasdaq,2834,Pharmaceutical Preparations,OK
-ACRV,"Acrivon Therapeutics, Inc.",0001781174,Nasdaq,2834,Pharmaceutical Preparations,OK
-ATNM,"Actinium Pharmaceuticals, Inc.",0001388320,NYSE,2834,Pharmaceutical Preparations,OK
-ABOS,"Acumen Pharmaceuticals, Inc.",0001576885,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ACXP,"Acurx Pharmaceuticals, Inc.",0001736243,Nasdaq,2834,Pharmaceutical Preparations,OK
-ADAG,Adagene Inc.,0001818838,Nasdaq,2834,Pharmaceutical Preparations,OK
-ADPT,Adaptive Biotechnologies Corp,0001478320,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ADXN,Addex Therapeutics Ltd.,0001574232,Nasdaq,2834,Pharmaceutical Preparations,OK
-ACET,"Adicet Bio, Inc.",0001720580,Nasdaq,2834,Pharmaceutical Preparations,OK
-ANL,Adlai Nortye Group Ltd.,0001944552,Nasdaq,2834,Pharmaceutical Preparations,OK
-AGMB,AgomAb Therapeutics NV,0002020932,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-AKTX,Akari Therapeutics Plc,0001541157,Nasdaq,2834,Pharmaceutical Preparations,OK
 AKBA,"Akebia Therapeutics, Inc.",0001517022,Nasdaq,2834,Pharmaceutical Preparations,OK
 AKTS,"Aktis Oncology, Inc.",0002035832,Nasdaq,2834,Pharmaceutical Preparations,OK
-TCRT,"Alaunos Therapeutics, Inc.",0001107421,Nasdaq,2834,Pharmaceutical Preparations,OK
+AKTX,Akari Therapeutics Plc,0001541157,Nasdaq,2834,Pharmaceutical Preparations,OK
 ALDX,"Aldeyra Therapeutics, Inc.",0001341235,Nasdaq,2834,Pharmaceutical Preparations,OK
 ALEC,"Alector, Inc.",0001653087,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 ALGS,"Aligos Therapeutics, Inc.",0001799448,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 ALKS,Alkermes plc.,0001520262,Nasdaq,2834,Pharmaceutical Preparations,OK
-ALLR,"Allarity Therapeutics, Inc.",0001860657,Nasdaq,2834,Pharmaceutical Preparations,OK
 ALLO,"Allogene Therapeutics, Inc.",0001737287,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ACOG,Alpha Cognition Inc.,0001655923,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TKNO,"Alpha Teknova, Inc.",0001850902,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+ALLR,"Allarity Therapeutics, Inc.",0001860657,Nasdaq,2834,Pharmaceutical Preparations,OK
+ALMS,ALUMIS INC.,0001847367,Nasdaq,2834,Pharmaceutical Preparations,OK
+ALNY,"ALNYLAM PHARMACEUTICALS, INC.",0001178670,Nasdaq,2834,Pharmaceutical Preparations,OK
 ALT,"Altimmune, Inc.",0001326190,Nasdaq,2834,Pharmaceutical Preparations,OK
-ANRO,"Alto Neuroscience, Inc.",0001999480,NYSE,2834,Pharmaceutical Preparations,OK
 ALVO,Alvotech,0001898416,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ALXO,ALX ONCOLOGY HOLDINGS INC,0001810182,Nasdaq,2834,Pharmaceutical Preparations,OK
 ALZN,"Alzamend Neuro, Inc.",0001677077,Nasdaq,2834,Pharmaceutical Preparations,OK
-AMRX,"Amneal Pharmaceuticals, Inc.",0001723128,Nasdaq,2834,Pharmaceutical Preparations,OK
-AMPH,"Amphastar Pharmaceuticals, Inc.",0001297184,Nasdaq,2834,Pharmaceutical Preparations,OK
+AMGN,AMGEN INC,0000318154,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 AMLX,"Amylyx Pharmaceuticals, Inc.",0001658551,Nasdaq,2834,Pharmaceutical Preparations,OK
-NNNN,Anbio Biotechnology,0001982708,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+AMPH,"Amphastar Pharmaceuticals, Inc.",0001297184,Nasdaq,2834,Pharmaceutical Preparations,OK
+AMRN,AMARIN CORP PLC\UK,0000897448,Nasdaq,2834,Pharmaceutical Preparations,OK
+AMRX,"Amneal Pharmaceuticals, Inc.",0001723128,Nasdaq,2834,Pharmaceutical Preparations,OK
+ANAB,"ANAPTYSBIO, INC",0001370053,Nasdaq,2834,Pharmaceutical Preparations,OK
+ANIP,ANI PHARMACEUTICALS INC,0001023024,Nasdaq,2834,Pharmaceutical Preparations,OK
 ANIX,Anixa Biosciences Inc,0000715446,Nasdaq,2834,Pharmaceutical Preparations,OK
+ANL,Adlai Nortye Group Ltd.,0001944552,Nasdaq,2834,Pharmaceutical Preparations,OK
 ANNX,"Annexon, Inc.",0001528115,Nasdaq,2834,Pharmaceutical Preparations,OK
+ANRO,"Alto Neuroscience, Inc.",0001999480,NYSE,2834,Pharmaceutical Preparations,OK
+ANTX,"AN2 Therapeutics, Inc.",0001880438,Nasdaq,2834,Pharmaceutical Preparations,OK
 ANVS,"Annovis Bio, Inc.",0001477845,NYSE,2834,Pharmaceutical Preparations,OK
-APUS,"Apimeds Pharmaceuticals US, Inc.",0001894525,NYSE,2834,Pharmaceutical Preparations,OK
-APMD,"Apnimed, Inc.",0001745648,Nasdaq,2834,Pharmaceutical Preparations,OK
 APLM,Apollomics Inc.,0001944885,Nasdaq,2834,Pharmaceutical Preparations,OK
+APMD,"Apnimed, Inc.",0001745648,Nasdaq,2834,Pharmaceutical Preparations,OK
 APRE,"Aprea Therapeutics, Inc.",0001781983,Nasdaq,2834,Pharmaceutical Preparations,OK
+APUS,"Apimeds Pharmaceuticals US, Inc.",0001894525,NYSE,2834,Pharmaceutical Preparations,OK
 APVO,Aptevo Therapeutics Inc.,0001671584,Nasdaq,2834,Pharmaceutical Preparations,OK
 AQST,"Aquestive Therapeutics, Inc.",0001398733,Nasdaq,2834,Pharmaceutical Preparations,OK
-ABUS,Arbutus Biopharma Corp,0001447028,Nasdaq,2834,Pharmaceutical Preparations,OK
 ARCT,Arcturus Therapeutics Holdings Inc.,0001768224,Nasdaq,2834,Pharmaceutical Preparations,OK
-RCUS,"Arcus Biosciences, Inc.",0001724521,NYSE,2834,Pharmaceutical Preparations,OK
-ARQT,"Arcutis Biotherapeutics, Inc.",0001787306,Nasdaq,2834,Pharmaceutical Preparations,OK
+ARDX,"ARDELYX, INC.",0001437402,Nasdaq,2834,Pharmaceutical Preparations,OK
+ARGX,ARGENX SE,0001697862,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 ARMP,"Armata Pharmaceuticals, Inc.",0000921114,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
-AVBP,"ArriVent BioPharma, Inc.",0001868279,Nasdaq,2834,Pharmaceutical Preparations,OK
+ARQT,"Arcutis Biotherapeutics, Inc.",0001787306,Nasdaq,2834,Pharmaceutical Preparations,OK
+ARTL,"ARTELO BIOSCIENCES, INC.",0001621221,Nasdaq,2834,Pharmaceutical Preparations,OK
 ARTV,"Artiva Biotherapeutics, Inc.",0001817241,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ASND,Ascendis Pharma A/S,0001612042,Nasdaq,2834,Pharmaceutical Preparations,OK
+ARVN,"ARVINAS, INC.",0001655759,Nasdaq,2834,Pharmaceutical Preparations,OK
+ARWR,"ARROWHEAD PHARMACEUTICALS, INC.",0000879407,Nasdaq,2834,Pharmaceutical Preparations,OK
 ASBP,"Aspire Biopharma Holdings, Inc.",0001847345,Nasdaq,2834,Pharmaceutical Preparations,OK
+ASMB,"ASSEMBLY BIOSCIENCES, INC.",0001426800,Nasdaq,2834,Pharmaceutical Preparations,OK
+ASND,Ascendis Pharma A/S,0001612042,Nasdaq,2834,Pharmaceutical Preparations,OK
+ATHE,ALTERITY THERAPEUTICS LTD,0001131343,Nasdaq,2834,Pharmaceutical Preparations,OK
+ATNM,"Actinium Pharmaceuticals, Inc.",0001388320,NYSE,2834,Pharmaceutical Preparations,OK
+ATOS,"ATOSSA THERAPEUTICS, INC.",0001488039,Nasdaq,2834,Pharmaceutical Preparations,OK
 ATRA,"Atara Biotherapeutics, Inc.",0001604464,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-AVIR,"Atea Pharmaceuticals, Inc.",0001593899,Nasdaq,2834,Pharmaceutical Preparations,OK
-RNA,"Atrium Therapeutics, Inc.",0002093101,Nasdaq,2834,Pharmaceutical Preparations,OK
 ATTO,"Attovia Therapeutics, Inc.",0002058707,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-AURA,"Aura Biosciences, Inc.",0001501796,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ATYR,aTYR PHARMA INC,0001339970,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 AUPH,Aurinia Pharmaceuticals Inc.,0001600620,Nasdaq,2834,Pharmaceutical Preparations,OK
+AURA,"Aura Biosciences, Inc.",0001501796,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 AUTL,Autolus Therapeutics plc,0001730463,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-AVTX,"Avalo Therapeutics, Inc.",0001534120,Nasdaq,2834,Pharmaceutical Preparations,OK
+AVBP,"ArriVent BioPharma, Inc.",0001868279,Nasdaq,2834,Pharmaceutical Preparations,OK
+AVIR,"Atea Pharmaceuticals, Inc.",0001593899,Nasdaq,2834,Pharmaceutical Preparations,OK
 AVLN,Avalyn Pharma Inc.,0001540171,Nasdaq,2834,Pharmaceutical Preparations,OK
+AVTX,"Avalo Therapeutics, Inc.",0001534120,Nasdaq,2834,Pharmaceutical Preparations,OK
+AVXL,ANAVEX LIFE SCIENCES CORP.,0001314052,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 AXSM,"Axsome Therapeutics, Inc.",0001579428,Nasdaq,2834,Pharmaceutical Preparations,OK
+AYTU,"AYTU BIOPHARMA, INC",0001385818,Nasdaq,2834,Pharmaceutical Preparations,OK
+AZN,ASTRAZENECA PLC,0000901832,NYSE,2834,Pharmaceutical Preparations,OK
 AZTR,"Azitra, Inc.",0001701478,NYSE,2834,Pharmaceutical Preparations,OK
-BLTE,"BELITE BIO, INC",0001889109,Nasdaq,2834,Pharmaceutical Preparations,OK
-BGM,BGM Group Ltd.,0001779578,Nasdaq,2834,Pharmaceutical Preparations,OK
-BCYC,BICYCLE THERAPEUTICS PLC,0001761612,Nasdaq,2834,Pharmaceutical Preparations,OK
-TECH,BIO-TECHNE Corp,0000842023,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BCRX,BIOCRYST PHARMACEUTICALS INC,0000882796,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BIIB,BIOGEN INC.,0000875045,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BHST,BIOHARVEST SCIENCES INC.,0001723464,Nasdaq,2834,Pharmaceutical Preparations,OK
-BMRN,BIOMARIN PHARMACEUTICAL INC,0001048477,Nasdaq,2834,Pharmaceutical Preparations,OK
-BMRA,BIOMERICA INC,0000073290,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-BIVI,BIOVIE INC.,0001580149,Nasdaq,2834,Pharmaceutical Preparations,OK
-DRUG,BRIGHT MINDS BIOSCIENCES INC.,0001827401,Nasdaq,2834,Pharmaceutical Preparations,OK
-BMY,BRISTOL MYERS SQUIBB CO,0000014272,NYSE,2834,Pharmaceutical Preparations,OK
-BHC,Bausch Health Companies Inc.,0000885590,NYSE,2834,Pharmaceutical Preparations,OK
-ONC,BeOne Medicines Ltd.,0001651308,Nasdaq,2834,Pharmaceutical Preparations,OK
-BEAM,Beam Therapeutics Inc.,0001745999,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BNTC,Benitec Biopharma Inc.,0001808898,Nasdaq,2834,Pharmaceutical Preparations,OK
-BYSI,BeyondSpring Inc.,0001677940,Nasdaq,2834,Pharmaceutical Preparations,OK
+BBIO,"BridgeBio Pharma, Inc.",0001743881,Nasdaq,2834,Pharmaceutical Preparations,OK
+BBOT,"BridgeBio Oncology Therapeutics, Inc.",0001869105,Nasdaq,2834,Pharmaceutical Preparations,OK
 BCAX,Bicara Therapeutics Inc.,0002023658,Nasdaq,2834,Pharmaceutical Preparations,OK
-BIOA,"BioAge Labs, Inc.",0001709941,Nasdaq,2834,Pharmaceutical Preparations,OK
 BCDA,"BioCardia, Inc.",0000925741,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BLRX,BioLineRx Ltd.,0001498403,Nasdaq,2834,Pharmaceutical Preparations,OK
-BNTX,BioNTech SE,0001776985,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BSEM,"BioStem Technologies, Inc.",0001658678,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BCRX,BIOCRYST PHARMACEUTICALS INC,0000882796,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BCTX,BriaCell Therapeutics Corp.,0001610820,Nasdaq,2834,Pharmaceutical Preparations,OK
+BCYC,BICYCLE THERAPEUTICS PLC,0001761612,Nasdaq,2834,Pharmaceutical Preparations,OK
 BDRX,Biodexa Pharmaceuticals Plc,0001643918,Nasdaq,2834,Pharmaceutical Preparations,OK
-BFRI,Biofrontera Inc.,0001858685,Nasdaq,2834,Pharmaceutical Preparations,OK
-BHVN,Biohaven Ltd.,0001935979,NYSE,2834,Pharmaceutical Preparations,OK
-BMEA,"Biomea Fusion, Inc.",0001840439,Nasdaq,2834,Pharmaceutical Preparations,OK
 BDTX,"Black Diamond Therapeutics, Inc.",0001701541,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BEAM,Beam Therapeutics Inc.,0001745999,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BFRG,"BullFrog AI Holdings, Inc.",0001829247,Nasdaq,2834,Pharmaceutical Preparations,OK
+BFRI,Biofrontera Inc.,0001858685,Nasdaq,2834,Pharmaceutical Preparations,OK
+BGM,BGM Group Ltd.,0001779578,Nasdaq,2834,Pharmaceutical Preparations,OK
+BHC,Bausch Health Companies Inc.,0000885590,NYSE,2834,Pharmaceutical Preparations,OK
+BHST,BIOHARVEST SCIENCES INC.,0001723464,Nasdaq,2834,Pharmaceutical Preparations,OK
+BHVN,Biohaven Ltd.,0001935979,NYSE,2834,Pharmaceutical Preparations,OK
+BIAF,"bioAffinity Technologies, Inc.",0001712762,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+BIIB,BIOGEN INC.,0000875045,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BIOA,"BioAge Labs, Inc.",0001709941,Nasdaq,2834,Pharmaceutical Preparations,OK
+BIVI,BIOVIE INC.,0001580149,Nasdaq,2834,Pharmaceutical Preparations,OK
 BKHA,Black Hawk Acquisition Corp,0002000775,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BLRX,BioLineRx Ltd.,0001498403,Nasdaq,2834,Pharmaceutical Preparations,OK
 BLSM,"BlossomHill Therapeutics, Inc.",0001839970,Nasdaq,2834,Pharmaceutical Preparations,OK
+BLTE,"BELITE BIO, INC",0001889109,Nasdaq,2834,Pharmaceutical Preparations,OK
+BMEA,"Biomea Fusion, Inc.",0001840439,Nasdaq,2834,Pharmaceutical Preparations,OK
+BMRA,BIOMERICA INC,0000073290,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+BMRN,BIOMARIN PHARMACEUTICAL INC,0001048477,Nasdaq,2834,Pharmaceutical Preparations,OK
+BMY,BRISTOL MYERS SQUIBB CO,0000014272,NYSE,2834,Pharmaceutical Preparations,OK
+BNTC,Benitec Biopharma Inc.,0001808898,Nasdaq,2834,Pharmaceutical Preparations,OK
+BNTX,BioNTech SE,0001776985,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BOLD,"Boundless Bio, Inc.",0001782303,Nasdaq,2834,Pharmaceutical Preparations,OK
 BOLT,"Bolt Biotherapeutics, Inc.",0001641281,Nasdaq,2834,Pharmaceutical Preparations,OK
 BON,Bon Natural Life Ltd,0001816815,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-BOLD,"Boundless Bio, Inc.",0001782303,Nasdaq,2834,Pharmaceutical Preparations,OK
 BRVE,"Braveheart Bio, Inc.",0002131524,Nasdaq,2834,Pharmaceutical Preparations,OK
-BCTX,BriaCell Therapeutics Corp.,0001610820,Nasdaq,2834,Pharmaceutical Preparations,OK
-BBOT,"BridgeBio Oncology Therapeutics, Inc.",0001869105,Nasdaq,2834,Pharmaceutical Preparations,OK
-BBIO,"BridgeBio Pharma, Inc.",0001743881,Nasdaq,2834,Pharmaceutical Preparations,OK
-BFRG,"BullFrog AI Holdings, Inc.",0001829247,Nasdaq,2834,Pharmaceutical Preparations,OK
-CCCC,"C4 Therapeutics, Inc.",0001662579,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CAPR,"CAPRICOR THERAPEUTICS, INC.",0001133869,Nasdaq,2834,Pharmaceutical Preparations,OK
-CDT,CDT Equity Inc.,0001896212,Nasdaq,2834,Pharmaceutical Preparations,OK
-CVM,CEL SCI CORP,0000725363,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
-CGON,"CG Oncology, Inc.",0001991792,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CSBR,"CHAMPIONS ONCOLOGY, INC.",0000771856,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CRL,"CHARLES RIVER LABORATORIES INTERNATIONAL, INC.",0001100682,NYSE,8731,Services-Commercial Physical & Biological Research,OK
-CPHI,"CHINA PHARMA HOLDINGS, INC.",0001106644,NYSE,2834,Pharmaceutical Preparations,OK
-CTOR,"CITIUS ONCOLOGY, INC.",0001851484,Nasdaq,2834,Pharmaceutical Preparations,OK
-CNSP,"CNS Pharmaceuticals, Inc.",0001729427,Nasdaq,2834,Pharmaceutical Preparations,OK
-CGTX,COGNITION THERAPEUTICS INC,0001455365,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-COLL,"COLLEGIUM PHARMACEUTICAL, INC",0001267565,Nasdaq,2834,Pharmaceutical Preparations,OK
-CMPS,COMPASS Pathways plc,0001816590,Nasdaq,2834,Pharmaceutical Preparations,OK
-CGEN,COMPUGEN LTD,0001119774,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CORT,CORCEPT THERAPEUTICS INC,0001088856,Nasdaq,2834,Pharmaceutical Preparations,OK
-CELZ,"CREATIVE MEDICAL TECHNOLOGY HOLDINGS, INC.",0001187953,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CBIO,"CRESCENT BIOPHARMA, INC.",0001253689,Nasdaq,2834,Pharmaceutical Preparations,OK
-CRSP,CRISPR Therapeutics AG,0001674416,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CPIX,CUMBERLAND PHARMACEUTICALS INC,0001087294,Nasdaq,2834,Pharmaceutical Preparations,OK
-CRIS,CURIS INC,0001108205,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-HELP,CYBIN INC.,0001833141,Nasdaq,2834,Pharmaceutical Preparations,OK
-CYPH,CYPHERPUNK TECHNOLOGIES INC.,0001509745,Nasdaq,2834,Pharmaceutical Preparations,OK
-CYTK,CYTOKINETICS INC,0001061983,Nasdaq,2834,Pharmaceutical Preparations,OK
+BSEM,"BioStem Technologies, Inc.",0001658678,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+BTMD,biote Corp.,0001819253,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+BYSI,BeyondSpring Inc.,0001677940,Nasdaq,2834,Pharmaceutical Preparations,OK
 CABA,"Cabaletta Bio, Inc.",0001759138,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CVKD,"Cadrenal Therapeutics, Inc.",0001937993,Nasdaq,2834,Pharmaceutical Preparations,OK
+CADL,"Candel Therapeutics, Inc.",0001841387,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 CALC,"CalciMedica, Inc.",0001534133,Nasdaq,2834,Pharmaceutical Preparations,OK
-CLDI,"Calidi Biotherapeutics, Inc.",0001855485,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
 CAMP,Camp4 Therapeutics Corp,0001736730,Nasdaq,2834,Pharmaceutical Preparations,OK
 CANF,Can-Fite BioPharma Ltd.,0001536196,NYSE,2834,Pharmaceutical Preparations,OK
-CADL,"Candel Therapeutics, Inc.",0001841387,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CGC,Canopy Growth Corp,0001737927,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-CRDF,"Cardiff Oncology, Inc.",0001213037,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CAPR,"CAPRICOR THERAPEUTICS, INC.",0001133869,Nasdaq,2834,Pharmaceutical Preparations,OK
+CATX,"Perspective Therapeutics, Inc.",0000728387,NYSE,2834,Pharmaceutical Preparations,OK
+CBIO,"CRESCENT BIOPHARMA, INC.",0001253689,Nasdaq,2834,Pharmaceutical Preparations,OK
+CCCC,"C4 Therapeutics, Inc.",0001662579,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 CDIO,"Cardio Diagnostics Holdings, Inc.",0001870144,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-CRDL,Cardiol Therapeutics Inc.,0001702123,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CRBU,"Caribou Biosciences, Inc.",0001619856,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-RNAC,"Cartesian Therapeutics, Inc.",0001453687,Nasdaq,2834,Pharmaceutical Preparations,OK
-CLDX,"Celldex Therapeutics, Inc.",0000744218,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-CLRB,"Cellectar Biosciences, Inc.",0001279704,Nasdaq,2834,Pharmaceutical Preparations,OK
-CLLS,Cellectis S.A.,0001627281,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CDT,CDT Equity Inc.,0001896212,Nasdaq,2834,Pharmaceutical Preparations,OK
 CELU,Celularity Inc,0001752828,Nasdaq,2834,Pharmaceutical Preparations,OK
-IPSC,"Century Therapeutics, Inc.",0001850119,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CRVO,CervoMed Inc.,0001053691,Nasdaq,2834,Pharmaceutical Preparations,OK
-CMMB,Chemomab Therapeutics Ltd.,0001534248,Nasdaq,2834,Pharmaceutical Preparations,OK
-SXTC,"China SXT Pharmaceuticals, Inc.",0001723980,Nasdaq,2834,Pharmaceutical Preparations,OK
-CING,Cingulate Inc.,0001862150,Nasdaq,2834,Pharmaceutical Preparations,OK
-CTXR,"Citius Pharmaceuticals, Inc.",0001506251,Nasdaq,2834,Pharmaceutical Preparations,OK
-CMND,Clearmind Medicine Inc.,0001892500,Nasdaq,2834,Pharmaceutical Preparations,OK
-CLNN,Clene Inc.,0001822791,Nasdaq,2834,Pharmaceutical Preparations,OK
-CLYM,"Climb Bio, Inc.",0001768446,Nasdaq,2834,Pharmaceutical Preparations,OK
-COCP,"Cocrystal Pharma, Inc.",0001412486,Nasdaq,2834,Pharmaceutical Preparations,OK
-COGT,"Cogent Biosciences, Inc.",0001622229,Nasdaq,2834,Pharmaceutical Preparations,OK
+CELZ,"CREATIVE MEDICAL TECHNOLOGY HOLDINGS, INC.",0001187953,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CGC,Canopy Growth Corp,0001737927,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+CGEM,"Cullinan Therapeutics, Inc.",0001789972,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CGEN,COMPUGEN LTD,0001119774,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CGON,"CG Oncology, Inc.",0001991792,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CGTX,COGNITION THERAPEUTICS INC,0001455365,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 CHRS,"Coherus Oncology, Inc.",0001512762,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CING,Cingulate Inc.,0001862150,Nasdaq,2834,Pharmaceutical Preparations,OK
+CLDI,"Calidi Biotherapeutics, Inc.",0001855485,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
+CLDX,"Celldex Therapeutics, Inc.",0000744218,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+CLLS,Cellectis S.A.,0001627281,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CLNN,Clene Inc.,0001822791,Nasdaq,2834,Pharmaceutical Preparations,OK
+CLRB,"Cellectar Biosciences, Inc.",0001279704,Nasdaq,2834,Pharmaceutical Preparations,OK
+CLYM,"Climb Bio, Inc.",0001768446,Nasdaq,2834,Pharmaceutical Preparations,OK
+CMMB,Chemomab Therapeutics Ltd.,0001534248,Nasdaq,2834,Pharmaceutical Preparations,OK
+CMND,Clearmind Medicine Inc.,0001892500,Nasdaq,2834,Pharmaceutical Preparations,OK
+CMPS,COMPASS Pathways plc,0001816590,Nasdaq,2834,Pharmaceutical Preparations,OK
 CMPX,"Compass Therapeutics, Inc.",0001738021,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CNSP,"CNS Pharmaceuticals, Inc.",0001729427,Nasdaq,2834,Pharmaceutical Preparations,OK
 CNTB,Connect Biopharma Holdings Ltd,0001835268,Nasdaq,2834,Pharmaceutical Preparations,OK
 CNTX,Context Therapeutics Inc.,0001842952,Nasdaq,2834,Pharmaceutical Preparations,OK
-CTNM,"Contineum Therapeutics, Inc.",0001855175,Nasdaq,2834,Pharmaceutical Preparations,OK
-CRMD,CorMedix Inc.,0001410098,Nasdaq,2834,Pharmaceutical Preparations,OK
-CRBP,"Corbus Pharmaceuticals Holdings, Inc.",0001595097,Nasdaq,2834,Pharmaceutical Preparations,OK
-CRVS,"Corvus Pharmaceuticals, Inc.",0001626971,Nasdaq,2834,Pharmaceutical Preparations,OK
+COAG,"Hemab Therapeutics Holdings, Inc.",0002114044,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+COCP,"Cocrystal Pharma, Inc.",0001412486,Nasdaq,2834,Pharmaceutical Preparations,OK
+COGT,"Cogent Biosciences, Inc.",0001622229,Nasdaq,2834,Pharmaceutical Preparations,OK
+COLL,"COLLEGIUM PHARMACEUTICAL, INC",0001267565,Nasdaq,2834,Pharmaceutical Preparations,OK
+CORT,CORCEPT THERAPEUTICS INC,0001088856,Nasdaq,2834,Pharmaceutical Preparations,OK
 COYA,"Coya Therapeutics, Inc.",0001835022,Nasdaq,2834,Pharmaceutical Preparations,OK
+CPHI,"CHINA PHARMA HOLDINGS, INC.",0001106644,NYSE,2834,Pharmaceutical Preparations,OK
+CPIX,CUMBERLAND PHARMACEUTICALS INC,0001087294,Nasdaq,2834,Pharmaceutical Preparations,OK
+CRBP,"Corbus Pharmaceuticals Holdings, Inc.",0001595097,Nasdaq,2834,Pharmaceutical Preparations,OK
+CRBU,"Caribou Biosciences, Inc.",0001619856,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CRDF,"Cardiff Oncology, Inc.",0001213037,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CRDL,Cardiol Therapeutics Inc.,0001702123,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CRIS,CURIS INC,0001108205,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CRL,"CHARLES RIVER LABORATORIES INTERNATIONAL, INC.",0001100682,NYSE,8731,Services-Commercial Physical & Biological Research,OK
+CRMD,CorMedix Inc.,0001410098,Nasdaq,2834,Pharmaceutical Preparations,OK
 CRON,Cronos Group Inc.,0001656472,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-CYRX,"Cryoport, Inc.",0001124524,Nasdaq,2834,Pharmaceutical Preparations,OK
-CUE,"Cue Biopharma, Inc.",0001645460,Nasdaq,2834,Pharmaceutical Preparations,OK
-CGEM,"Cullinan Therapeutics, Inc.",0001789972,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-CURX,Curanex Pharmaceuticals Inc,0002025942,Nasdaq,2834,Pharmaceutical Preparations,OK
-GDTC,CytoMed Therapeutics Ltd,0001873093,Nasdaq,2834,Pharmaceutical Preparations,OK
+CRSP,CRISPR Therapeutics AG,0001674416,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+CRVO,CervoMed Inc.,0001053691,Nasdaq,2834,Pharmaceutical Preparations,OK
+CRVS,"Corvus Pharmaceuticals, Inc.",0001626971,Nasdaq,2834,Pharmaceutical Preparations,OK
+CSBR,"CHAMPIONS ONCOLOGY, INC.",0000771856,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 CTMX,"CytomX Therapeutics, Inc.",0001501989,Nasdaq,2834,Pharmaceutical Preparations,OK
-DBVT,DBV Technologies S.A.,0001613780,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-RDY,DR REDDYS LABORATORIES LTD,0001135951,NYSE,2834,Pharmaceutical Preparations,OK
-DYAI,DYADIC INTERNATIONAL INC,0001213809,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-DMRA,"Damora Therapeutics, Inc.",0001800315,Nasdaq,2834,Pharmaceutical Preparations,OK
+CTNM,"Contineum Therapeutics, Inc.",0001855175,Nasdaq,2834,Pharmaceutical Preparations,OK
+CTOR,"CITIUS ONCOLOGY, INC.",0001851484,Nasdaq,2834,Pharmaceutical Preparations,OK
+CTXR,"Citius Pharmaceuticals, Inc.",0001506251,Nasdaq,2834,Pharmaceutical Preparations,OK
+CUE,"Cue Biopharma, Inc.",0001645460,Nasdaq,2834,Pharmaceutical Preparations,OK
+CURX,Curanex Pharmaceuticals Inc,0002025942,Nasdaq,2834,Pharmaceutical Preparations,OK
+CVKD,"Cadrenal Therapeutics, Inc.",0001937993,Nasdaq,2834,Pharmaceutical Preparations,OK
+CVM,CEL SCI CORP,0000725363,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
+CYPH,CYPHERPUNK TECHNOLOGIES INC.,0001509745,Nasdaq,2834,Pharmaceutical Preparations,OK
+CYRX,"Cryoport, Inc.",0001124524,Nasdaq,2834,Pharmaceutical Preparations,OK
+CYTK,CYTOKINETICS INC,0001061983,Nasdaq,2834,Pharmaceutical Preparations,OK
 DARE,"Dare Bioscience, Inc.",0001401914,Nasdaq,2834,Pharmaceutical Preparations,OK
+DBVT,DBV Technologies S.A.,0001613780,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 DCOY,Decoy Therapeutics Inc.,0001615219,Nasdaq,2834,Pharmaceutical Preparations,OK
+DERM,Journey Medical Corp,0001867066,Nasdaq,2834,Pharmaceutical Preparations,OK
 DFTX,"Definium Therapeutics, Inc.",0001813814,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-DNLI,Denali Therapeutics Inc.,0001714899,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-DRMA,"Dermata Therapeutics, Inc.",0001853816,Nasdaq,2834,Pharmaceutical Preparations,OK
-DSGN,"Design Therapeutics, Inc.",0001807120,Nasdaq,2834,Pharmaceutical Preparations,OK
 DMAC,DiaMedica Therapeutics Inc.,0001401040,Nasdaq,2834,Pharmaceutical Preparations,OK
+DMRA,"Damora Therapeutics, Inc.",0001800315,Nasdaq,2834,Pharmaceutical Preparations,OK
+DNA,"Ginkgo Bioworks Holdings, Inc.",0001830214,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
+DNLI,Denali Therapeutics Inc.,0001714899,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 DNTH,"Dianthus Therapeutics, Inc. /DE/",0001690585,Nasdaq,2834,Pharmaceutical Preparations,OK
-IRON,"Disc Medicine, Inc.",0001816736,Nasdaq,2834,Pharmaceutical Preparations,OK
+DRMA,"Dermata Therapeutics, Inc.",0001853816,Nasdaq,2834,Pharmaceutical Preparations,OK
+DRUG,BRIGHT MINDS BIOSCIENCES INC.,0001827401,Nasdaq,2834,Pharmaceutical Preparations,OK
+DSGN,"Design Therapeutics, Inc.",0001807120,Nasdaq,2834,Pharmaceutical Preparations,OK
+DTIL,PRECISION BIOSCIENCES INC,0001357874,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 DWTX,"Dogwood Therapeutics, Inc.",0001818844,Nasdaq,2834,Pharmaceutical Preparations,OK
+DYAI,DYADIC INTERNATIONAL INC,0001213809,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 DYN,"Dyne Therapeutics, Inc.",0001818794,Nasdaq,2834,Pharmaceutical Preparations,OK
-LLY,ELI LILLY & Co,0000059478,NYSE,2834,Pharmaceutical Preparations,OK
-ELUT,ELUTIA INC.,0001708527,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ENTA,ENANTA PHARMACEUTICALS INC,0001177648,Nasdaq,2834,Pharmaceutical Preparations,OK
-EPRX,EUPRAXIA PHARMACEUTICALS INC.,0001581178,Nasdaq,2834,Pharmaceutical Preparations,OK
-EXEL,"EXELIXIS, INC.",0000939767,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-XCUR,"EXICURE, INC.",0001698530,Nasdaq,2834,Pharmaceutical Preparations,OK
-EXOZ,EXOZYMES INC.,0002010788,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-EDSA,"Edesa Biotech, Inc.",0001540159,Nasdaq,2834,Pharmaceutical Preparations,OK
-EWTX,"Edgewise Therapeutics, Inc.",0001710072,Nasdaq,2834,Pharmaceutical Preparations,OK
-EDIT,"Editas Medicine, Inc.",0001650664,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-EIKN,"Eikon Therapeutics, Inc.",0001861123,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ELAN,Elanco Animal Health Inc,0001739104,NYSE,2834,Pharmaceutical Preparations,OK
-ETRA,"Electra Therapeutics, Inc.",0002088082,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-ELDN,"Eledon Pharmaceuticals, Inc.",0001404281,Nasdaq,2834,Pharmaceutical Preparations,OK
-ELTX,"Elicio Therapeutics, Inc.",0001601485,Nasdaq,2834,Pharmaceutical Preparations,OK
-ELOX,"Eloxx Pharmaceuticals, Inc.",0001035354,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 EBS,Emergent BioSolutions Inc.,0001367644,NYSE,2834,Pharmaceutical Preparations,OK
+EDIT,"Editas Medicine, Inc.",0001650664,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+EDSA,"Edesa Biotech, Inc.",0001540159,Nasdaq,2834,Pharmaceutical Preparations,OK
+EIKN,"Eikon Therapeutics, Inc.",0001861123,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ELAB,PMGC Holdings Inc.,0001840563,Nasdaq,2834,Pharmaceutical Preparations,OK
+ELAN,Elanco Animal Health Inc,0001739104,NYSE,2834,Pharmaceutical Preparations,OK
+ELDN,"Eledon Pharmaceuticals, Inc.",0001404281,Nasdaq,2834,Pharmaceutical Preparations,OK
+ELOX,"Eloxx Pharmaceuticals, Inc.",0001035354,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ELTX,"Elicio Therapeutics, Inc.",0001601485,Nasdaq,2834,Pharmaceutical Preparations,OK
+ELUT,ELUTIA INC.,0001708527,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 ELVN,"Enliven Therapeutics, Inc.",0001672619,Nasdaq,2834,Pharmaceutical Preparations,OK
+ENGN,enGene Therapeutics Inc.,0001980845,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 ENLV,Enlivex Ltd.,0001596812,Nasdaq,2834,Pharmaceutical Preparations,OK
 ENSC,"Ensysce Biosciences, Inc.",0001716947,Nasdaq,2834,Pharmaceutical Preparations,OK
+ENTA,ENANTA PHARMACEUTICALS INC,0001177648,Nasdaq,2834,Pharmaceutical Preparations,OK
 ENTX,Entera Bio Ltd.,0001638097,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TRDA,"Entrada Therapeutics, Inc.",0001689375,Nasdaq,2834,Pharmaceutical Preparations,OK
 ENVB,"Enveric Biosciences, Inc.",0000890821,Nasdaq,2834,Pharmaceutical Preparations,OK
+EOCN,Galmed Pharmaceuticals Ltd.,0001595353,Nasdaq,2834,Pharmaceutical Preparations,OK
+EOLS,"Evolus, Inc.",0001570562,Nasdaq,2834,Pharmaceutical Preparations,OK
+EPRX,EUPRAXIA PHARMACEUTICALS INC.,0001581178,Nasdaq,2834,Pharmaceutical Preparations,OK
 EQ,"Equillium, Inc.",0001746466,Nasdaq,2834,Pharmaceutical Preparations,OK
 ERAS,"Erasca, Inc.",0001761918,Nasdaq,2834,Pharmaceutical Preparations,OK
 ERNA,Ernexa Therapeutics Inc.,0000748592,Nasdaq,2834,Pharmaceutical Preparations,OK
 ESLA,"Estrella Immunopharma, Inc.",0001844417,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 ETON,"Eton Pharmaceuticals, Inc.",0001710340,Nasdaq,2834,Pharmaceutical Preparations,OK
+ETRA,"Electra Therapeutics, Inc.",0002088082,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 EVAX,Evaxion A/S,0001828253,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-EOLS,"Evolus, Inc.",0001570562,Nasdaq,2834,Pharmaceutical Preparations,OK
 EVMN,"Evommune, Inc.",0002044725,NYSE,2834,Pharmaceutical Preparations,OK
 EVO,Evotec SE,0001412558,Nasdaq,2834,Pharmaceutical Preparations,OK
+EWTX,"Edgewise Therapeutics, Inc.",0001710072,Nasdaq,2834,Pharmaceutical Preparations,OK
+EXEL,"EXELIXIS, INC.",0000939767,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+EXOZ,EXOZYMES INC.,0002010788,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 FATE,FATE THERAPEUTICS INC,0001434316,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-FENC,FENNEC PHARMACEUTICALS INC.,0001211583,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-FLNA,"FILANA THERAPEUTICS, INC.",0001069530,Nasdaq,2834,Pharmaceutical Preparations,OK
-FTLF,"FITLIFE BRANDS, INC.",0001374328,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-FTH,"Faeth Therapeutics, Inc.",0001829802,Nasdaq,2834,Pharmaceutical Preparations,OK
-FBLG,"FibroBiologics, Inc.",0001958777,Nasdaq,2834,Pharmaceutical Preparations,OK
-TRAX,"First Tracks Biotherapeutics, Inc.",0002091349,Nasdaq,2834,Pharmaceutical Preparations,OK
-FHTX,Foghorn Therapeutics Inc.,0001822462,Nasdaq,2834,Pharmaceutical Preparations,OK
 FBIO,"Fortress Biotech, Inc.",0001429260,Nasdaq,2834,Pharmaceutical Preparations,OK
+FBLG,"FibroBiologics, Inc.",0001958777,Nasdaq,2834,Pharmaceutical Preparations,OK
+FDMT,"4D Molecular Therapeutics, Inc.",0001650648,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+FENC,FENNEC PHARMACEUTICALS INC.,0001211583,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+FHTX,Foghorn Therapeutics Inc.,0001822462,Nasdaq,2834,Pharmaceutical Preparations,OK
+FLNA,"FILANA THERAPEUTICS, INC.",0001069530,Nasdaq,2834,Pharmaceutical Preparations,OK
+FTH,"Faeth Therapeutics, Inc.",0001829802,Nasdaq,2834,Pharmaceutical Preparations,OK
+FTLF,"FITLIFE BRANDS, INC.",0001374328,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
 FULC,"Fulcrum Therapeutics, Inc.",0001680581,Nasdaq,2834,Pharmaceutical Preparations,OK
 GALT,GALECTIN THERAPEUTICS INC,0001133416,Nasdaq,2834,Pharmaceutical Preparations,OK
-GNLX,GENELUX Corp,0001231457,Nasdaq,2834,Pharmaceutical Preparations,OK
-GMAB,GENMAB A/S,0001434265,Nasdaq,2834,Pharmaceutical Preparations,OK
+GANX,"Gain Therapeutics, Inc.",0001819411,Nasdaq,2834,Pharmaceutical Preparations,OK
+GDTC,CytoMed Therapeutics Ltd,0001873093,Nasdaq,2834,Pharmaceutical Preparations,OK
+GELS,Gelteq Ltd,0001920092,Nasdaq,2834,Pharmaceutical Preparations,OK
+GENB,"Generate Biomedicines, Inc.",0002100782,Nasdaq,2834,Pharmaceutical Preparations,OK
 GERN,GERON CORP,0000886744,Nasdaq,2834,Pharmaceutical Preparations,OK
 GHRS,GH Research PLC,0001855129,Nasdaq,2834,Pharmaceutical Preparations,OK
 GILD,"GILEAD SCIENCES, INC.",0000882095,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+GLAS,Glass House Brands Inc.,0001848731,NYSE,2833,Medicinal Chemicals & Botanical Products,OK
+GLSI,"Greenwich LifeSciences, Inc.",0001799788,Nasdaq,2834,Pharmaceutical Preparations,OK
+GLUE,"Monte Rosa Therapeutics, Inc.",0001826457,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+GMAB,GENMAB A/S,0001434265,Nasdaq,2834,Pharmaceutical Preparations,OK
+GNLX,GENELUX Corp,0001231457,Nasdaq,2834,Pharmaceutical Preparations,OK
+GNPX,"Genprex, Inc.",0001595248,Nasdaq,2834,Pharmaceutical Preparations,OK
+GNTA,Genenta Science S.p.A.,0001838716,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+GOSS,"Gossamer Bio, Inc.",0001728117,Nasdaq,2834,Pharmaceutical Preparations,OK
+GOVX,"GeoVax Labs, Inc.",0000832489,Nasdaq,2834,Pharmaceutical Preparations,OK
+GPCR,Structure Therapeutics Inc.,0001888886,Nasdaq,2834,Pharmaceutical Preparations,OK
+GRCE,"Grace Therapeutics, Inc.",0001444192,Nasdaq,2834,Pharmaceutical Preparations,OK
+GRFS,Grifols SA,0001438569,Nasdaq,2834,Pharmaceutical Preparations,OK
 GRI,"GRI Bio, Inc.",0001824293,Nasdaq,2834,Pharmaceutical Preparations,OK
+GRML,Greenland Mines Ltd,0001907223,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 GSK,GSK plc,0001131399,NYSE,2834,Pharmaceutical Preparations,OK
 GTBP,"GT Biopharma, Inc.",0000109657,Nasdaq,2834,Pharmaceutical Preparations,OK
 GYRE,"GYRE THERAPEUTICS, INC.",0001124105,Nasdaq,2834,Pharmaceutical Preparations,OK
-GANX,"Gain Therapeutics, Inc.",0001819411,Nasdaq,2834,Pharmaceutical Preparations,OK
-EOCN,Galmed Pharmaceuticals Ltd.,0001595353,Nasdaq,2834,Pharmaceutical Preparations,OK
-GELS,Gelteq Ltd,0001920092,Nasdaq,2834,Pharmaceutical Preparations,OK
-GNTA,Genenta Science S.p.A.,0001838716,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-GENB,"Generate Biomedicines, Inc.",0002100782,Nasdaq,2834,Pharmaceutical Preparations,OK
-GNPX,"Genprex, Inc.",0001595248,Nasdaq,2834,Pharmaceutical Preparations,OK
-GOVX,"GeoVax Labs, Inc.",0000832489,Nasdaq,2834,Pharmaceutical Preparations,OK
-DNA,"Ginkgo Bioworks Holdings, Inc.",0001830214,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
-GLAS,Glass House Brands Inc.,0001848731,NYSE,2833,Medicinal Chemicals & Botanical Products,OK
-GOSS,"Gossamer Bio, Inc.",0001728117,Nasdaq,2834,Pharmaceutical Preparations,OK
-GRCE,"Grace Therapeutics, Inc.",0001444192,Nasdaq,2834,Pharmaceutical Preparations,OK
-GRML,Greenland Mines Ltd,0001907223,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-GLSI,"Greenwich LifeSciences, Inc.",0001799788,Nasdaq,2834,Pharmaceutical Preparations,OK
-GRFS,Grifols SA,0001438569,Nasdaq,2834,Pharmaceutical Preparations,OK
 HALO,"HALOZYME THERAPEUTICS, INC.",0001159036,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-HROW,"HARROW, INC.",0001360214,Nasdaq,2834,Pharmaceutical Preparations,OK
-HCWB,HCW Biologics Inc.,0001828673,Nasdaq,2834,Pharmaceutical Preparations,OK
-HRTX,"HERON THERAPEUTICS, INC. /DE/",0000818033,Nasdaq,2834,Pharmaceutical Preparations,OK
 HCM,HUTCHMED (China) Ltd,0001648257,Nasdaq,2834,Pharmaceutical Preparations,OK
-HYPD,"HYPERION DEFI, INC.",0001682639,Nasdaq,2834,Pharmaceutical Preparations,OK
+HCWB,HCW Biologics Inc.,0001828673,Nasdaq,2834,Pharmaceutical Preparations,OK
+HELP,CYBIN INC.,0001833141,Nasdaq,2834,Pharmaceutical Preparations,OK
+HIND,"Vyome Holdings, Inc",0001427570,Nasdaq,2834,Pharmaceutical Preparations,OK
+HOWL,"Werewolf Therapeutics, Inc.",0001785530,Nasdaq,2834,Pharmaceutical Preparations,OK
 HRMY,"Harmony Biosciences Holdings, Inc.",0001802665,Nasdaq,2834,Pharmaceutical Preparations,OK
-COAG,"Hemab Therapeutics Holdings, Inc.",0002114044,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+HROW,"HARROW, INC.",0001360214,Nasdaq,2834,Pharmaceutical Preparations,OK
+HRTX,"HERON THERAPEUTICS, INC. /DE/",0000818033,Nasdaq,2834,Pharmaceutical Preparations,OK
 HUMA,"Humacyte, Inc.",0001818382,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+HURA,"TuHURA Biosciences, Inc./NV",0001498382,Nasdaq,2834,Pharmaceutical Preparations,OK
+HYFT,MindWalk Holdings Corp.,0001715925,Nasdaq,2834,Pharmaceutical Preparations,OK
+HYPD,"HYPERION DEFI, INC.",0001682639,Nasdaq,2834,Pharmaceutical Preparations,OK
 IBAC,IB Acquisition Corp.,0001998781,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-ICLR,ICON PLC,0001060955,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-IDYA,"IDEAYA Biosciences, Inc.",0001676725,Nasdaq,2834,Pharmaceutical Preparations,OK
-IDXX,IDEXX LABORATORIES INC /DE,0000874716,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-IGC,"IGC Pharma, Inc.",0001326205,NYSE,2834,Pharmaceutical Preparations,OK
-IMCC,IM Cannabis Corp.,0001792030,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-ICCC,IMMUCELL CORP /DE/,0000811641,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-IMUX,"IMMUNIC, INC.",0001280776,Nasdaq,2834,Pharmaceutical Preparations,OK
-IMMP,IMMUTEP Ltd,0001506184,Nasdaq,2834,Pharmaceutical Preparations,OK
+IBIO,"iBio, Inc.",0001420720,Nasdaq,2834,Pharmaceutical Preparations,OK
 IBO,IMPACT BIOMEDICAL INC.,0001834105,NYSE,2834,Pharmaceutical Preparations,OK
+IBRX,"ImmunityBio, Inc.",0001326110,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ICCC,IMMUCELL CORP /DE/,0000811641,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+ICLR,ICON PLC,0001060955,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+IDXX,IDEXX LABORATORIES INC /DE,0000874716,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+IDYA,"IDEAYA Biosciences, Inc.",0001676725,Nasdaq,2834,Pharmaceutical Preparations,OK
+IFRX,InflaRx N.V.,0001708688,Nasdaq,2834,Pharmaceutical Preparations,OK
+IGC,"IGC Pharma, Inc.",0001326205,NYSE,2834,Pharmaceutical Preparations,OK
+IKT,"Inhibikase Therapeutics, Inc.",0001750149,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+IMA,"ImageneBio, Inc.",0001835579,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+IMCC,IM Cannabis Corp.,0001792030,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+IMCR,Immunocore Holdings plc,0001671927,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+IMDX,Insight Molecular Diagnostics Inc.,0001642380,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+IMMP,IMMUTEP Ltd,0001506184,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMMX,"Immix Biopharma, Inc.",0001873835,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMNM,Immunome Inc.,0001472012,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMNN,"Imunon, Inc.",0000749647,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMRN,Immuron Ltd,0001660046,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMRX,Immuneering Corp,0001790340,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMTX,Immatics N.V.,0001809196,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+IMUX,"IMMUNIC, INC.",0001280776,Nasdaq,2834,Pharmaceutical Preparations,OK
+IMVT,"Immunovant, Inc.",0001764013,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 INAB,"IN8BIO, INC.",0001740279,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+INBX,"Inhibrx Biosciences, Inc.",0002007919,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+INCR,Intercure Ltd.,0001857030,Nasdaq,2834,Pharmaceutical Preparations,OK
 INCY,INCYTE CORP,0000879169,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+INDP,"Indaptus Therapeutics, Inc.",0001857044,Nasdaq,2834,Pharmaceutical Preparations,OK
+INDV,"Indivior Pharmaceuticals, Inc.",0001625297,Nasdaq,2834,Pharmaceutical Preparations,OK
+INKT,"MiNK Therapeutics, Inc.",0001840229,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+INM,InMed Pharmaceuticals Inc.,0001728328,Nasdaq,2834,Pharmaceutical Preparations,OK
+INMB,"Inmune Bio, Inc.",0001711754,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 INO,"INOVIO PHARMACEUTICALS, INC.",0001055726,Nasdaq,2834,Pharmaceutical Preparations,OK
 INSM,INSMED Inc,0001104506,Nasdaq,2834,Pharmaceutical Preparations,OK
 INTS,"INTENSITY THERAPEUTICS, INC.",0001567264,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+INVA,"Innoviva, Inc.",0001080014,Nasdaq,2834,Pharmaceutical Preparations,OK
 IONS,IONIS PHARMACEUTICALS INC,0000874015,Nasdaq,2834,Pharmaceutical Preparations,OK
 IOVA,"IOVANCE BIOTHERAPEUTICS, INC.",0001425205,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IQV,IQVIA HOLDINGS INC.,0001478242,NYSE,8731,Services-Commercial Physical & Biological Research,OK
-IRWD,IRONWOOD PHARMACEUTICALS INC,0001446847,Nasdaq,2834,Pharmaceutical Preparations,OK
-IMA,"ImageneBio, Inc.",0001835579,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IMTX,Immatics N.V.,0001809196,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IMMX,"Immix Biopharma, Inc.",0001873835,Nasdaq,2834,Pharmaceutical Preparations,OK
-IMRX,Immuneering Corp,0001790340,Nasdaq,2834,Pharmaceutical Preparations,OK
-IBRX,"ImmunityBio, Inc.",0001326110,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IMCR,Immunocore Holdings plc,0001671927,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IMNM,Immunome Inc.,0001472012,Nasdaq,2834,Pharmaceutical Preparations,OK
-IMVT,"Immunovant, Inc.",0001764013,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IMRN,Immuron Ltd,0001660046,Nasdaq,2834,Pharmaceutical Preparations,OK
-IMNN,"Imunon, Inc.",0000749647,Nasdaq,2834,Pharmaceutical Preparations,OK
-INM,InMed Pharmaceuticals Inc.,0001728328,Nasdaq,2834,Pharmaceutical Preparations,OK
-IXHL,Incannex Healthcare Inc.,0001873875,Nasdaq,2834,Pharmaceutical Preparations,OK
-INDP,"Indaptus Therapeutics, Inc.",0001857044,Nasdaq,2834,Pharmaceutical Preparations,OK
-INDV,"Indivior Pharmaceuticals, Inc.",0001625297,Nasdaq,2834,Pharmaceutical Preparations,OK
-IFRX,InflaRx N.V.,0001708688,Nasdaq,2834,Pharmaceutical Preparations,OK
-IKT,"Inhibikase Therapeutics, Inc.",0001750149,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-INBX,"Inhibrx Biosciences, Inc.",0002007919,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-INMB,"Inmune Bio, Inc.",0001711754,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 IPHA,Innate Pharma SA,0001598599,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-INVA,"Innoviva, Inc.",0001080014,Nasdaq,2834,Pharmaceutical Preparations,OK
-IMDX,Insight Molecular Diagnostics Inc.,0001642380,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-TIL,"Instil Bio, Inc.",0001789769,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-NTLA,"Intellia Therapeutics, Inc.",0001652130,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-INCR,Intercure Ltd.,0001857030,Nasdaq,2834,Pharmaceutical Preparations,OK
+IPSC,"Century Therapeutics, Inc.",0001850119,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+IQV,IQVIA HOLDINGS INC.,0001478242,NYSE,8731,Services-Commercial Physical & Biological Research,OK
+IRD,"Opus Genetics, Inc.",0001228627,Nasdaq,2834,Pharmaceutical Preparations,OK
+IRON,"Disc Medicine, Inc.",0001816736,Nasdaq,2834,Pharmaceutical Preparations,OK
+IRWD,IRONWOOD PHARMACEUTICALS INC,0001446847,Nasdaq,2834,Pharmaceutical Preparations,OK
+ISPC,iSpecimen Inc.,0001558569,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
 IVA,Inventiva S.A.,0001756594,Nasdaq,2834,Pharmaceutical Preparations,OK
 IVVD,"Invivyd, Inc.",0001832038,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-JNJ,JOHNSON & JOHNSON,0000200406,NYSE,2834,Pharmaceutical Preparations,OK
-JUNS,"JUPITER NEUROSCIENCES, INC.",0001679628,Nasdaq,2834,Pharmaceutical Preparations,OK
-JBIO,"Jade Biosciences, Inc.",0001798749,Nasdaq,2834,Pharmaceutical Preparations,OK
+IXHL,Incannex Healthcare Inc.,0001873875,Nasdaq,2834,Pharmaceutical Preparations,OK
 JAGX,"Jaguar Health, Inc.",0001585608,Nasdaq,2834,Pharmaceutical Preparations,OK
 JANX,"Janux Therapeutics, Inc.",0001817713,Nasdaq,2834,Pharmaceutical Preparations,OK
-JSPR,"Jasper Therapeutics, Inc.",0001788028,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 JAZZ,Jazz Pharmaceuticals plc,0001232524,Nasdaq,2834,Pharmaceutical Preparations,OK
-DERM,Journey Medical Corp,0001867066,Nasdaq,2834,Pharmaceutical Preparations,OK
-MENS,Jyong Biotech Ltd.,0001954488,Nasdaq,2834,Pharmaceutical Preparations,OK
+JBIO,"Jade Biosciences, Inc.",0001798749,Nasdaq,2834,Pharmaceutical Preparations,OK
+JNJ,JOHNSON & JOHNSON,0000200406,NYSE,2834,Pharmaceutical Preparations,OK
+JSPR,"Jasper Therapeutics, Inc.",0001788028,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+JUNS,"JUPITER NEUROSCIENCES, INC.",0001679628,Nasdaq,2834,Pharmaceutical Preparations,OK
 KALA,"KALA BIO, Inc.",0001479419,Nasdaq,2834,Pharmaceutical Preparations,OK
-KMDA,KAMADA LTD,0001567529,Nasdaq,2834,Pharmaceutical Preparations,OK
-KZIA,KAZIA THERAPEUTICS LTD,0001075880,Nasdaq,2834,Pharmaceutical Preparations,OK
-KPRX,KIORA PHARMACEUTICALS INC,0001372514,Nasdaq,2834,Pharmaceutical Preparations,OK
-KYNB,"KYNTRA BIO, INC.",0000921299,Nasdaq,2834,Pharmaceutical Preparations,OK
-KLRA,"Kailera Therapeutics, Inc.",0002096997,Nasdaq,2834,Pharmaceutical Preparations,OK
 KAPA,"Kairos Pharma, LTD.",0001962011,NYSE,2834,Pharmaceutical Preparations,OK
-KLRS,"Kalaris Therapeutics, Inc.",0001754068,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 KARD,"Kardigan, Inc.",0002123613,Nasdaq,2834,Pharmaceutical Preparations,OK
-KPTI,Karyopharm Therapeutics Inc.,0001503802,Nasdaq,2834,Pharmaceutical Preparations,OK
-KROS,"Keros Therapeutics, Inc.",0001664710,Nasdaq,2834,Pharmaceutical Preparations,OK
+KLRA,"Kailera Therapeutics, Inc.",0002096997,Nasdaq,2834,Pharmaceutical Preparations,OK
+KLRS,"Kalaris Therapeutics, Inc.",0001754068,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+KMDA,KAMADA LTD,0001567529,Nasdaq,2834,Pharmaceutical Preparations,OK
 KNSA,"Kiniksa Pharmaceuticals International, plc",0001730430,Nasdaq,2834,Pharmaceutical Preparations,OK
 KOD,Kodiak Sciences Inc.,0001468748,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+KPRX,KIORA PHARMACEUTICALS INC,0001372514,Nasdaq,2834,Pharmaceutical Preparations,OK
+KPTI,Karyopharm Therapeutics Inc.,0001503802,Nasdaq,2834,Pharmaceutical Preparations,OK
+KROS,"Keros Therapeutics, Inc.",0001664710,Nasdaq,2834,Pharmaceutical Preparations,OK
 KRRO,"Korro Bio, Inc.",0001703647,Nasdaq,2834,Pharmaceutical Preparations,OK
 KRSA,"Korsana Biosciences, Inc.",0001755237,Nasdaq,2834,Pharmaceutical Preparations,OK
 KRYS,"Krystal Biotech, Inc.",0001711279,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+KTTA,Pasithea Therapeutics Corp.,0001841330,Nasdaq,2834,Pharmaceutical Preparations,OK
 KURA,"Kura Oncology, Inc.",0001422143,Nasdaq,2834,Pharmaceutical Preparations,OK
 KYMR,"Kymera Therapeutics, Inc.",0001815442,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+KYNB,"KYNTRA BIO, INC.",0000921299,Nasdaq,2834,Pharmaceutical Preparations,OK
 KYTX,"Kyverna Therapeutics, Inc.",0001994702,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-LBRX,LB PHARMACEUTICALS INC,0001691082,Nasdaq,2834,Pharmaceutical Preparations,OK
-LENZ,"LENZ Therapeutics, Inc.",0001815776,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-LXRX,"LEXICON PHARMACEUTICALS, INC.",0001062822,Nasdaq,2834,Pharmaceutical Preparations,OK
-LFCR,"LIFECORE BIOMEDICAL, INC. \DE\",0001005286,Nasdaq,2834,Pharmaceutical Preparations,OK
-LGND,LIGAND PHARMACEUTICALS INC,0000886163,Nasdaq,2834,Pharmaceutical Preparations,OK
-LSTA,"LISATA THERAPEUTICS, INC.",0000320017,Nasdaq,2834,Pharmaceutical Preparations,OK
-LKFT,Lakefront Biotherapeutics NV,0001421876,Nasdaq,2834,Pharmaceutical Preparations,OK
+KZIA,KAZIA THERAPEUTICS LTD,0001075880,Nasdaq,2834,Pharmaceutical Preparations,OK
+LAB,STANDARD BIOTOOLS INC.,0001162194,Nasdaq,2834,Pharmaceutical Preparations,OK
 LABT,Lakewood-Amedex Biotherapeutics Inc.,0002079272,Nasdaq,2834,Pharmaceutical Preparations,OK
-LTRN,Lantern Pharma Inc.,0001763950,Nasdaq,2834,Pharmaceutical Preparations,OK
-LNTH,"Lantheus Holdings, Inc.",0001521036,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-LRMR,"Larimar Therapeutics, Inc.",0001374690,Nasdaq,2834,Pharmaceutical Preparations,OK
-LTGO,"Latigo Biotherapeutics, Inc.",0002056611,Nasdaq,2834,Pharmaceutical Preparations,OK
-LEGN,Legend Biotech Corp,0001801198,Nasdaq,2834,Pharmaceutical Preparations,OK
-LONA,"LeonaBio, Inc.",0001620463,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-LEXX,Lexaria Bioscience Corp.,0001348362,Nasdaq,2834,Pharmaceutical Preparations,OK
-LXEO,"Lexeo Therapeutics, Inc.",0001907108,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-LFVN,Lifevantage Corp,0000849146,Nasdaq,2834,Pharmaceutical Preparations,OK
-LIMN,"Liminatus Pharma, Inc.",0001971387,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+LBRX,LB PHARMACEUTICALS INC,0001691082,Nasdaq,2834,Pharmaceutical Preparations,OK
 LCTX,"Lineage Cell Therapeutics, Inc.",0000876343,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
+LEGN,Legend Biotech Corp,0001801198,Nasdaq,2834,Pharmaceutical Preparations,OK
+LENZ,"LENZ Therapeutics, Inc.",0001815776,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+LEXX,Lexaria Bioscience Corp.,0001348362,Nasdaq,2834,Pharmaceutical Preparations,OK
+LFCR,"LIFECORE BIOMEDICAL, INC. \DE\",0001005286,Nasdaq,2834,Pharmaceutical Preparations,OK
+LFVN,Lifevantage Corp,0000849146,Nasdaq,2834,Pharmaceutical Preparations,OK
+LGND,LIGAND PHARMACEUTICALS INC,0000886163,Nasdaq,2834,Pharmaceutical Preparations,OK
+LGVN,Longeveron Inc.,0001721484,Nasdaq,2834,Pharmaceutical Preparations,OK
+LIMN,"Liminatus Pharma, Inc.",0001971387,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+LITS,"Lite Strategy, Inc.",0001262104,Nasdaq,2834,Pharmaceutical Preparations,OK
+LKFT,Lakefront Biotherapeutics NV,0001421876,Nasdaq,2834,Pharmaceutical Preparations,OK
+LLY,ELI LILLY & Co,0000059478,NYSE,2834,Pharmaceutical Preparations,OK
+LNAI,Lunai Bioworks Inc.,0001527728,Nasdaq,2834,Pharmaceutical Preparations,OK
+LNTH,"Lantheus Holdings, Inc.",0001521036,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+LONA,"LeonaBio, Inc.",0001620463,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 LPCN,Lipocine Inc.,0001535955,Nasdaq,2834,Pharmaceutical Preparations,OK
 LQDA,Liquidia Corp,0001819576,Nasdaq,2834,Pharmaceutical Preparations,OK
-LITS,"Lite Strategy, Inc.",0001262104,Nasdaq,2834,Pharmaceutical Preparations,OK
-LGVN,Longeveron Inc.,0001721484,Nasdaq,2834,Pharmaceutical Preparations,OK
-LNAI,Lunai Bioworks Inc.,0001527728,Nasdaq,2834,Pharmaceutical Preparations,OK
+LRMR,"Larimar Therapeutics, Inc.",0001374690,Nasdaq,2834,Pharmaceutical Preparations,OK
+LSTA,"LISATA THERAPEUTICS, INC.",0000320017,Nasdaq,2834,Pharmaceutical Preparations,OK
+LTGO,"Latigo Biotherapeutics, Inc.",0002056611,Nasdaq,2834,Pharmaceutical Preparations,OK
+LTRN,Lantern Pharma Inc.,0001763950,Nasdaq,2834,Pharmaceutical Preparations,OK
+LXEO,"Lexeo Therapeutics, Inc.",0001907108,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+LXRX,"LEXICON PHARMACEUTICALS, INC.",0001062822,Nasdaq,2834,Pharmaceutical Preparations,OK
 LYEL,"Lyell Immunopharma, Inc.",0001806952,Nasdaq,2834,Pharmaceutical Preparations,OK
-MGNX,MACROGENICS INC,0001125345,Nasdaq,2834,Pharmaceutical Preparations,OK
-MDGL,"MADRIGAL PHARMACEUTICALS, INC.",0001157601,Nasdaq,2834,Pharmaceutical Preparations,OK
 MAIA,"MAIA Biotechnology, Inc.",0001878313,NYSE,2834,Pharmaceutical Preparations,OK
-MTEX,MANNATECH INC,0001056358,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-MNKD,MANNKIND CORP,0000899460,Nasdaq,2834,Pharmaceutical Preparations,OK
-MRVI,"MARAVAI LIFESCIENCES HOLDINGS, INC.",0001823239,Nasdaq,2834,Pharmaceutical Preparations,OK
-MXCT,"MAXCYTE, INC.",0001287098,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-MBX,"MBX Biosciences, Inc.",0001776111,Nasdaq,2834,Pharmaceutical Preparations,OK
-MNOV,MEDICINOVA INC,0001226616,Nasdaq,2834,Pharmaceutical Preparations,OK
-MESO,MESOBLAST LTD,0001345099,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-MIRA,"MIRA PHARMACEUTICALS, INC.",0001904286,Nasdaq,2834,Pharmaceutical Preparations,OK
-MOLN,MOLECULAR PARTNERS AG,0001745114,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-MBIO,"MUSTANG BIO, INC.",0001680048,Nasdaq,2834,Pharmaceutical Preparations,OK
-MYGN,MYRIAD GENETICS INC,0000899923,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-MPLT,"MapLight Therapeutics, Inc.",0001770069,Nasdaq,2834,Pharmaceutical Preparations,OK
-MRKR,"Marker Therapeutics, Inc.",0001094038,Nasdaq,2834,Pharmaceutical Preparations,OK
-MTNB,"Matinas BioPharma Holdings, Inc.",0001582554,NYSE,2834,Pharmaceutical Preparations,OK
+MANE,"Veradermics, Inc",0001827635,NYSE,2834,Pharmaceutical Preparations,OK
 MAZE,"Maze Therapeutics, Inc.",0001842295,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-MDWD,MediWound Ltd.,0001593984,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-MDCX,Medicus Pharma Ltd.,0001997296,Nasdaq,2834,Pharmaceutical Preparations,OK
-MEDP,"Medpace Holdings, Inc.",0001668397,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-MGTX,MeiraGTx Holdings plc,0001735438,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-MRK,"Merck & Co., Inc.",0000310158,NYSE,2834,Pharmaceutical Preparations,OK
-MREO,Mereo BioPharma Group plc,0001719714,Nasdaq,2834,Pharmaceutical Preparations,OK
-MTVA,MetaVia Inc.,0001638287,Nasdaq,2834,Pharmaceutical Preparations,OK
-MGX,"Metagenomi Therapeutics, Inc.",0001785279,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-INKT,"MiNK Therapeutics, Inc.",0001840229,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-MIST,Milestone Pharmaceuticals Inc.,0001408443,Nasdaq,2834,Pharmaceutical Preparations,OK
-HYFT,MindWalk Holdings Corp.,0001715925,Nasdaq,2834,Pharmaceutical Preparations,OK
-MLYS,"Mineralys Therapeutics, Inc.",0001933414,Nasdaq,2834,Pharmaceutical Preparations,OK
-NERV,"Minerva Neurosciences, Inc.",0001598646,Nasdaq,2834,Pharmaceutical Preparations,OK
-MIRM,"Mirum Pharmaceuticals, Inc.",0001759425,Nasdaq,2834,Pharmaceutical Preparations,OK
-MRNA,"Moderna, Inc.",0001682852,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MBIO,"MUSTANG BIO, INC.",0001680048,Nasdaq,2834,Pharmaceutical Preparations,OK
 MBRX,"Moleculin Biotech, Inc.",0001659617,Nasdaq,2834,Pharmaceutical Preparations,OK
-MNPR,Monopar Therapeutics,0001645469,Nasdaq,2834,Pharmaceutical Preparations,OK
-GLUE,"Monte Rosa Therapeutics, Inc.",0001826457,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MBX,"MBX Biosciences, Inc.",0001776111,Nasdaq,2834,Pharmaceutical Preparations,OK
+MCRB,"Seres Therapeutics, Inc.",0001609809,Nasdaq,2834,Pharmaceutical Preparations,OK
+MDCX,Medicus Pharma Ltd.,0001997296,Nasdaq,2834,Pharmaceutical Preparations,OK
+MDGL,"MADRIGAL PHARMACEUTICALS, INC.",0001157601,Nasdaq,2834,Pharmaceutical Preparations,OK
+MDWD,MediWound Ltd.,0001593984,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+MEDP,"Medpace Holdings, Inc.",0001668397,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+MENS,Jyong Biotech Ltd.,0001954488,Nasdaq,2834,Pharmaceutical Preparations,OK
+MESO,MESOBLAST LTD,0001345099,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MGNX,MACROGENICS INC,0001125345,Nasdaq,2834,Pharmaceutical Preparations,OK
+MGTX,MeiraGTx Holdings plc,0001735438,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MGX,"Metagenomi Therapeutics, Inc.",0001785279,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MIRA,"MIRA PHARMACEUTICALS, INC.",0001904286,Nasdaq,2834,Pharmaceutical Preparations,OK
+MIRM,"Mirum Pharmaceuticals, Inc.",0001759425,Nasdaq,2834,Pharmaceutical Preparations,OK
+MIST,Milestone Pharmaceuticals Inc.,0001408443,Nasdaq,2834,Pharmaceutical Preparations,OK
 MLTX,MoonLake Immunotherapeutics,0001821586,Nasdaq,2834,Pharmaceutical Preparations,OK
-NNVC,"NANOVIRICIDES, INC.",0001379006,NYSE,2834,Pharmaceutical Preparations,OK
-NAII,NATURAL ALTERNATIVES INTERNATIONAL INC,0000787253,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-NATR,NATURES SUNSHINE PRODUCTS INC,0000275053,Nasdaq,2834,Pharmaceutical Preparations,OK
-NKTR,NEKTAR THERAPEUTICS,0000906709,Nasdaq,2834,Pharmaceutical Preparations,OK
-NEOG,NEOGEN CORP,0000711377,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-NEO,NEOGENOMICS INC,0001077183,Nasdaq,8734,Services-Testing Laboratories,OK
-NTHI,"NEONC TECHNOLOGIES HOLDINGS, INC.",0001979414,Nasdaq,2834,Pharmaceutical Preparations,OK
-NGEN,NERVGEN PHARMA CORP.,0001751912,Nasdaq,2834,Pharmaceutical Preparations,OK
-NBIX,NEUROCRINE BIOSCIENCES INC,0000914475,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-NMAD,"NOMAD POWER SOLUTIONS, INC.",0001335105,Nasdaq,2834,Pharmaceutical Preparations,OK
-NVS,NOVARTIS AG,0001114448,NYSE,2834,Pharmaceutical Preparations,OK
-NVAX,NOVAVAX INC,0001000694,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-NVO,NOVO NORDISK A S,0000353278,NYSE,2834,Pharmaceutical Preparations,OK
-NRC,NRC HEALTH,0000070487,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-NRXP,"NRX Pharmaceuticals, Inc.",0001719406,Nasdaq,2834,Pharmaceutical Preparations,OK
-NBTX,Nanobiotix S.A.,0001760854,Nasdaq,2834,Pharmaceutical Preparations,OK
-NSRX,Nasus Pharma Ltd,0002029039,NYSE,2834,Pharmaceutical Preparations,OK
-NMRA,"Neumora Therapeutics, Inc.",0001885522,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-NEUP,Neuphoria Therapeutics Inc.,0001191070,Nasdaq,2834,Pharmaceutical Preparations,OK
-NRSN,NeuroSense Therapeutics Ltd.,0001875091,Nasdaq,2834,Pharmaceutical Preparations,OK
-NGNE,Neurogene Inc.,0001404644,Nasdaq,2834,Pharmaceutical Preparations,OK
-NAMS,NewAmsterdam Pharma Co N.V.,0001936258,Nasdaq,2834,Pharmaceutical Preparations,OK
-NCEL,NewcelX Ltd.,0001783036,Nasdaq,2834,Pharmaceutical Preparations,OK
-NXTS,Nexentis Technologies Inc.,0001789192,Nasdaq,2834,Pharmaceutical Preparations,OK
-NXTC,"NextCure, Inc.",0001661059,Nasdaq,2834,Pharmaceutical Preparations,OK
+MLYS,"Mineralys Therapeutics, Inc.",0001933414,Nasdaq,2834,Pharmaceutical Preparations,OK
+MNKD,MANNKIND CORP,0000899460,Nasdaq,2834,Pharmaceutical Preparations,OK
+MNOV,MEDICINOVA INC,0001226616,Nasdaq,2834,Pharmaceutical Preparations,OK
+MNPR,Monopar Therapeutics,0001645469,Nasdaq,2834,Pharmaceutical Preparations,OK
+MOLN,MOLECULAR PARTNERS AG,0001745114,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MPLT,"MapLight Therapeutics, Inc.",0001770069,Nasdaq,2834,Pharmaceutical Preparations,OK
+MREO,Mereo BioPharma Group plc,0001719714,Nasdaq,2834,Pharmaceutical Preparations,OK
+MRK,"Merck & Co., Inc.",0000310158,NYSE,2834,Pharmaceutical Preparations,OK
+MRKR,"Marker Therapeutics, Inc.",0001094038,Nasdaq,2834,Pharmaceutical Preparations,OK
+MRNA,"Moderna, Inc.",0001682852,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+MRVI,"MARAVAI LIFESCIENCES HOLDINGS, INC.",0001823239,Nasdaq,2834,Pharmaceutical Preparations,OK
+MSLE,Satellos Bioscience Inc.,0001421642,Nasdaq,2834,Pharmaceutical Preparations,OK
+MTEX,MANNATECH INC,0001056358,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+MTNB,"Matinas BioPharma Holdings, Inc.",0001582554,NYSE,2834,Pharmaceutical Preparations,OK
+MTVA,MetaVia Inc.,0001638287,Nasdaq,2834,Pharmaceutical Preparations,OK
+MXCT,"MAXCYTE, INC.",0001287098,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+MYGN,MYRIAD GENETICS INC,0000899923,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
 NAGE,"Niagen Bioscience, Inc.",0001386570,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-NKTX,"Nkarta, Inc.",0001787400,Nasdaq,2834,Pharmaceutical Preparations,OK
+NAII,NATURAL ALTERNATIVES INTERNATIONAL INC,0000787253,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+NAMS,NewAmsterdam Pharma Co N.V.,0001936258,Nasdaq,2834,Pharmaceutical Preparations,OK
+NATR,NATURES SUNSHINE PRODUCTS INC,0000275053,Nasdaq,2834,Pharmaceutical Preparations,OK
+NBIX,NEUROCRINE BIOSCIENCES INC,0000914475,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 NBP,NovaBridge Biosciences,0001778016,Nasdaq,2834,Pharmaceutical Preparations,OK
+NBTX,Nanobiotix S.A.,0001760854,Nasdaq,2834,Pharmaceutical Preparations,OK
+NCEL,NewcelX Ltd.,0001783036,Nasdaq,2834,Pharmaceutical Preparations,OK
 NCNA,NuCana plc,0001709626,Nasdaq,2834,Pharmaceutical Preparations,OK
+NEO,NEOGENOMICS INC,0001077183,Nasdaq,8734,Services-Testing Laboratories,OK
+NEOG,NEOGEN CORP,0000711377,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+NERV,"Minerva Neurosciences, Inc.",0001598646,Nasdaq,2834,Pharmaceutical Preparations,OK
+NEUP,Neuphoria Therapeutics Inc.,0001191070,Nasdaq,2834,Pharmaceutical Preparations,OK
+NGEN,NERVGEN PHARMA CORP.,0001751912,Nasdaq,2834,Pharmaceutical Preparations,OK
+NGNE,Neurogene Inc.,0001404644,Nasdaq,2834,Pharmaceutical Preparations,OK
+NKTR,NEKTAR THERAPEUTICS,0000906709,Nasdaq,2834,Pharmaceutical Preparations,OK
+NKTX,"Nkarta, Inc.",0001787400,Nasdaq,2834,Pharmaceutical Preparations,OK
+NMAD,"NOMAD POWER SOLUTIONS, INC.",0001335105,Nasdaq,2834,Pharmaceutical Preparations,OK
+NMRA,"Neumora Therapeutics, Inc.",0001885522,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+NNNN,Anbio Biotechnology,0001982708,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+NNVC,"NANOVIRICIDES, INC.",0001379006,NYSE,2834,Pharmaceutical Preparations,OK
+NRC,NRC HEALTH,0000070487,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
 NRIX,"Nurix Therapeutics, Inc.",0001549595,Nasdaq,2834,Pharmaceutical Preparations,OK
+NRSN,NeuroSense Therapeutics Ltd.,0001875091,Nasdaq,2834,Pharmaceutical Preparations,OK
+NRXP,"NRX Pharmaceuticals, Inc.",0001719406,Nasdaq,2834,Pharmaceutical Preparations,OK
+NSRX,Nasus Pharma Ltd,0002029039,NYSE,2834,Pharmaceutical Preparations,OK
+NTHI,"NEONC TECHNOLOGIES HOLDINGS, INC.",0001979414,Nasdaq,2834,Pharmaceutical Preparations,OK
+NTLA,"Intellia Therapeutics, Inc.",0001652130,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
 NUVB,Nuvation Bio Inc.,0001811063,NYSE,2834,Pharmaceutical Preparations,OK
+NVAX,NOVAVAX INC,0001000694,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 NVCT,"Nuvectis Pharma, Inc.",0001875558,Nasdaq,2834,Pharmaceutical Preparations,OK
-OCUL,"OCULAR THERAPEUTIX, INC",0001393434,Nasdaq,2834,Pharmaceutical Preparations,OK
-OKYO,OKYO Pharma Ltd,0001849296,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-OMER,OMEROS CORP,0001285819,Nasdaq,2834,Pharmaceutical Preparations,OK
-ONCY,ONCOLYTICS BIOTECH INC,0001129928,Nasdaq,2834,Pharmaceutical Preparations,OK
-OPK,"OPKO HEALTH, INC.",0000944809,Nasdaq,2834,Pharmaceutical Preparations,OK
-OGEN,ORAGENICS INC,0001174940,NYSE,2834,Pharmaceutical Preparations,OK
-ORMP,ORAMED PHARMACEUTICALS INC.,0001176309,Nasdaq,2834,Pharmaceutical Preparations,OK
-OGI,ORGANIGRAM GLOBAL INC.,0001620737,Nasdaq,2834,Pharmaceutical Preparations,OK
-OSTX,OS Therapies Inc,0001795091,NYSE,2834,Pharmaceutical Preparations,OK
+NVO,NOVO NORDISK A S,0000353278,NYSE,2834,Pharmaceutical Preparations,OK
+NVS,NOVARTIS AG,0001114448,NYSE,2834,Pharmaceutical Preparations,OK
+NXTC,"NextCure, Inc.",0001661059,Nasdaq,2834,Pharmaceutical Preparations,OK
+NXTS,Nexentis Technologies Inc.,0001789192,Nasdaq,2834,Pharmaceutical Preparations,OK
+OABI,"OmniAb, Inc.",0001846253,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
 OBX,"Obsidian Therapeutics, Inc.",0002130606,Nasdaq,2834,Pharmaceutical Preparations,OK
 OCGN,"Ocugen, Inc.",0001372299,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 OCS,Oculis Holding AG,0001953530,Nasdaq,2834,Pharmaceutical Preparations,OK
+OCUL,"OCULAR THERAPEUTIX, INC",0001393434,Nasdaq,2834,Pharmaceutical Preparations,OK
 ODTX,"Odyssey Therapeutics, Inc.",0001882782,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-OLMA,"Olema Pharmaceuticals, Inc.",0001750284,Nasdaq,2834,Pharmaceutical Preparations,OK
-OABI,"OmniAb, Inc.",0001846253,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-OKUR,"OnKure Therapeutics, Inc.",0001637715,Nasdaq,2834,Pharmaceutical Preparations,OK
-ONCO,"Onconetix, Inc.",0001782107,Nasdaq,2834,Pharmaceutical Preparations,OK
-ONMD,OneMedNet Corp,0001849380,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-OPTH,Optimi Health Corp.,0002027329,Nasdaq,2834,Pharmaceutical Preparations,OK
-IRD,"Opus Genetics, Inc.",0001228627,Nasdaq,2834,Pharmaceutical Preparations,OK
-ORGO,Organogenesis Holdings Inc.,0001661181,Nasdaq,2834,Pharmaceutical Preparations,OK
+OGEN,ORAGENICS INC,0001174940,NYSE,2834,Pharmaceutical Preparations,OK
+OGI,ORGANIGRAM GLOBAL INC.,0001620737,Nasdaq,2834,Pharmaceutical Preparations,OK
 OGN,Organon & Co.,0001821825,NYSE,2834,Pharmaceutical Preparations,OK
+OKUR,"OnKure Therapeutics, Inc.",0001637715,Nasdaq,2834,Pharmaceutical Preparations,OK
+OKYO,OKYO Pharma Ltd,0001849296,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+OLMA,"Olema Pharmaceuticals, Inc.",0001750284,Nasdaq,2834,Pharmaceutical Preparations,OK
+OMER,OMEROS CORP,0001285819,Nasdaq,2834,Pharmaceutical Preparations,OK
+ONC,BeOne Medicines Ltd.,0001651308,Nasdaq,2834,Pharmaceutical Preparations,OK
+ONCO,"Onconetix, Inc.",0001782107,Nasdaq,2834,Pharmaceutical Preparations,OK
+ONCY,ONCOLYTICS BIOTECH INC,0001129928,Nasdaq,2834,Pharmaceutical Preparations,OK
+ONMD,OneMedNet Corp,0001849380,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
+OPK,"OPKO HEALTH, INC.",0000944809,Nasdaq,2834,Pharmaceutical Preparations,OK
+OPTH,Optimi Health Corp.,0002027329,Nasdaq,2834,Pharmaceutical Preparations,OK
+ORGO,Organogenesis Holdings Inc.,0001661181,Nasdaq,2834,Pharmaceutical Preparations,OK
 ORIC,"Oric Pharmaceuticals, Inc.",0001796280,Nasdaq,2834,Pharmaceutical Preparations,OK
 ORKA,"Oruka Therapeutics, Inc.",0000907654,Nasdaq,2834,Pharmaceutical Preparations,OK
+ORMP,ORAMED PHARMACEUTICALS INC.,0001176309,Nasdaq,2834,Pharmaceutical Preparations,OK
+OSTX,OS Therapies Inc,0001795091,NYSE,2834,Pharmaceutical Preparations,OK
 OTLK,"Outlook Therapeutics, Inc.",0001649989,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 OVID,Ovid Therapeutics Inc.,0001636651,Nasdaq,2834,Pharmaceutical Preparations,OK
-PTN,PALATIN TECHNOLOGIES INC,0000911216,Nasdaq,2834,Pharmaceutical Preparations,OK
-PALI,"PALISADE BIO, INC.",0001357459,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-PVLA,"PALVELLA THERAPEUTICS, INC.",0001583648,Nasdaq,2834,Pharmaceutical Preparations,OK
-PDSB,PDS Biotechnology Corp,0001472091,Nasdaq,2834,Pharmaceutical Preparations,OK
-PRGO,PERRIGO Co plc,0001585364,NYSE,2834,Pharmaceutical Preparations,OK
-PFE,PFIZER INC,0000078003,NYSE,2834,Pharmaceutical Preparations,OK
 PAHC,PHIBRO ANIMAL HEALTH CORP,0001069899,Nasdaq,2834,Pharmaceutical Preparations,OK
-PLRX,"PLIANT THERAPEUTICS, INC.",0001746473,Nasdaq,2834,Pharmaceutical Preparations,OK
-ELAB,PMGC Holdings Inc.,0001840563,Nasdaq,2834,Pharmaceutical Preparations,OK
-PMVP,"PMV Pharmaceuticals, Inc.",0001699382,Nasdaq,2834,Pharmaceutical Preparations,OK
-PGEN,"PRECIGEN, INC.",0001356090,Nasdaq,2834,Pharmaceutical Preparations,OK
-DTIL,PRECISION BIOSCIENCES INC,0001357874,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-PRFX,PRF Technologies Ltd.,0001801834,Nasdaq,2834,Pharmaceutical Preparations,OK
-PROK,PROKIDNEY CORP.,0001850270,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-PRTA,PROTHENA CORP PUBLIC LTD CO,0001559053,Nasdaq,2834,Pharmaceutical Preparations,OK
-PBM,PSYENCE BIOMEDICAL LTD.,0001985062,Nasdaq,2834,Pharmaceutical Preparations,OK
-PTCT,"PTC THERAPEUTICS, INC.",0001070081,Nasdaq,2834,Pharmaceutical Preparations,OK
-PBYI,"PUMA BIOTECHNOLOGY, INC.",0001401667,Nasdaq,2834,Pharmaceutical Preparations,OK
-PPBT,PURPLE BIOTECH LTD.,0001614744,Nasdaq,2834,Pharmaceutical Preparations,OK
-PCRX,"Pacira BioSciences, Inc.",0001396814,Nasdaq,2834,Pharmaceutical Preparations,OK
-PBLS,"Parabilis Medicines, Inc.",0001657677,Nasdaq,2834,Pharmaceutical Preparations,OK
-KTTA,Pasithea Therapeutics Corp.,0001841330,Nasdaq,2834,Pharmaceutical Preparations,OK
+PALI,"PALISADE BIO, INC.",0001357459,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 PASG,"Passage BIO, Inc.",0001787297,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-PTHS,Pelthos Therapeutics Inc.,0001919246,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
+PBH,Prestige Consumer Healthcare Inc.,0001295947,NYSE,2834,Pharmaceutical Preparations,OK
+PBLS,"Parabilis Medicines, Inc.",0001657677,Nasdaq,2834,Pharmaceutical Preparations,OK
+PBM,PSYENCE BIOMEDICAL LTD.,0001985062,Nasdaq,2834,Pharmaceutical Preparations,OK
+PBYI,"PUMA BIOTECHNOLOGY, INC.",0001401667,Nasdaq,2834,Pharmaceutical Preparations,OK
+PCRX,"Pacira BioSciences, Inc.",0001396814,Nasdaq,2834,Pharmaceutical Preparations,OK
+PCSA,"Processa Pharmaceuticals, Inc.",0001533743,Nasdaq,2834,Pharmaceutical Preparations,OK
+PCVX,"Vaxcyte, Inc.",0001649094,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+PDSB,PDS Biotechnology Corp,0001472091,Nasdaq,2834,Pharmaceutical Preparations,OK
 PEPG,PepGen Inc.,0001835597,Nasdaq,2834,Pharmaceutical Preparations,OK
-CATX,"Perspective Therapeutics, Inc.",0000728387,NYSE,2834,Pharmaceutical Preparations,OK
-PMCB,"PharmaCyte Biotech, Inc.",0001157075,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+PFE,PFIZER INC,0000078003,NYSE,2834,Pharmaceutical Preparations,OK
+PGEN,"PRECIGEN, INC.",0001356090,Nasdaq,2834,Pharmaceutical Preparations,OK
 PHAR,Pharming Group N.V.,0001828316,Nasdaq,2834,Pharmaceutical Preparations,OK
-PHVS,Pharvaris N.V.,0001830487,Nasdaq,2834,Pharmaceutical Preparations,OK
 PHAT,"Phathom Pharmaceuticals, Inc.",0001783183,Nasdaq,2834,Pharmaceutical Preparations,OK
 PHIO,Phio Pharmaceuticals Corp.,0001533040,Nasdaq,2834,Pharmaceutical Preparations,OK
+PHVS,Pharvaris N.V.,0001830487,Nasdaq,2834,Pharmaceutical Preparations,OK
+PLRX,"PLIANT THERAPEUTICS, INC.",0001746473,Nasdaq,2834,Pharmaceutical Preparations,OK
 PLUR,Pluri Inc.,0001158780,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-PLYX,"Polaryx Therapeutics, Inc.",0002075320,Nasdaq,2834,Pharmaceutical Preparations,OK
-PRAX,"Praxis Precision Medicines, Inc.",0001689548,Nasdaq,2834,Pharmaceutical Preparations,OK
-PRLD,Prelude Therapeutics Inc,0001678660,Nasdaq,2834,Pharmaceutical Preparations,OK
-PRE,Prenetics Global Ltd,0001876431,Nasdaq,2834,Pharmaceutical Preparations,OK
-PBH,Prestige Consumer Healthcare Inc.,0001295947,NYSE,2834,Pharmaceutical Preparations,OK
-PRME,"Prime Medicine, Inc.",0001894562,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-PMN,ProMIS Neurosciences Inc.,0001374339,Nasdaq,2834,Pharmaceutical Preparations,OK
-PRQR,ProQR Therapeutics N.V.,0001612940,Nasdaq,2834,Pharmaceutical Preparations,OK
-PCSA,"Processa Pharmaceuticals, Inc.",0001533743,Nasdaq,2834,Pharmaceutical Preparations,OK
-PPCB,"Propanc Biopharma, Inc.",0001517681,Nasdaq,2834,Pharmaceutical Preparations,OK
-PTGX,"Protagonist Therapeutics, Inc",0001377121,Nasdaq,2834,Pharmaceutical Preparations,OK
 PLX,"Protalix BioTherapeutics, Inc.",0001006281,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
-TARA,"Protara Therapeutics, Inc.",0001359931,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+PLYX,"Polaryx Therapeutics, Inc.",0002075320,Nasdaq,2834,Pharmaceutical Preparations,OK
+PMCB,"PharmaCyte Biotech, Inc.",0001157075,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+PMN,ProMIS Neurosciences Inc.,0001374339,Nasdaq,2834,Pharmaceutical Preparations,OK
+PMVP,"PMV Pharmaceuticals, Inc.",0001699382,Nasdaq,2834,Pharmaceutical Preparations,OK
+PPBT,PURPLE BIOTECH LTD.,0001614744,Nasdaq,2834,Pharmaceutical Preparations,OK
+PPCB,"Propanc Biopharma, Inc.",0001517681,Nasdaq,2834,Pharmaceutical Preparations,OK
+PRAX,"Praxis Precision Medicines, Inc.",0001689548,Nasdaq,2834,Pharmaceutical Preparations,OK
+PRE,Prenetics Global Ltd,0001876431,Nasdaq,2834,Pharmaceutical Preparations,OK
+PRFX,PRF Technologies Ltd.,0001801834,Nasdaq,2834,Pharmaceutical Preparations,OK
+PRGO,PERRIGO Co plc,0001585364,NYSE,2834,Pharmaceutical Preparations,OK
+PRLD,Prelude Therapeutics Inc,0001678660,Nasdaq,2834,Pharmaceutical Preparations,OK
+PRME,"Prime Medicine, Inc.",0001894562,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+PROK,PROKIDNEY CORP.,0001850270,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+PRQR,ProQR Therapeutics N.V.,0001612940,Nasdaq,2834,Pharmaceutical Preparations,OK
+PRTA,PROTHENA CORP PUBLIC LTD CO,0001559053,Nasdaq,2834,Pharmaceutical Preparations,OK
+PTCT,"PTC THERAPEUTICS, INC.",0001070081,Nasdaq,2834,Pharmaceutical Preparations,OK
+PTGX,"Protagonist Therapeutics, Inc",0001377121,Nasdaq,2834,Pharmaceutical Preparations,OK
+PTHS,Pelthos Therapeutics Inc.,0001919246,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
+PTN,PALATIN TECHNOLOGIES INC,0000911216,Nasdaq,2834,Pharmaceutical Preparations,OK
 PULM,"Pulmatrix, Inc.",0001574235,Nasdaq,2834,Pharmaceutical Preparations,OK
+PVLA,"PALVELLA THERAPEUTICS, INC.",0001583648,Nasdaq,2834,Pharmaceutical Preparations,OK
 PYXS,"Pyxis Oncology, Inc.",0001782223,Nasdaq,2834,Pharmaceutical Preparations,OK
 QCLS,"Q/C TECHNOLOGIES, INC.",0001321834,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-QTTB,Q32 Bio Inc.,0001661998,Nasdaq,2834,Pharmaceutical Preparations,OK
-QGEN,QIAGEN N.V.,0001015820,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
-QNTM,Quantum Biopharma Ltd.,0001771885,Nasdaq,2834,Pharmaceutical Preparations,OK
-QUCY,Quantum Cyber N.V.,0001874252,Nasdaq,2834,Pharmaceutical Preparations,OK
 QDEL,QuidelOrtho Corp,0001906324,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+QGEN,QIAGEN N.V.,0001015820,NYSE,2836,"Biological Products, (No Diagnostic Substances)",OK
 QNCX,"Quince Therapeutics, Inc.",0001662774,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 QNRX,Quoin Pharmaceuticals Ltd.,0001671502,Nasdaq,2834,Pharmaceutical Preparations,OK
-RXRX,"RECURSION PHARMACEUTICALS, INC.",0001601830,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-REGN,"REGENERON PHARMACEUTICALS, INC.",0000872589,Nasdaq,2834,Pharmaceutical Preparations,OK
-RGNX,REGENXBIO Inc.,0001590877,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-RLMD,"RELMADA THERAPEUTICS, INC.",0001553643,Nasdaq,2834,Pharmaceutical Preparations,OK
-RGEN,REPLIGEN CORP,0000730272,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-REVB,"REVELATION BIOSCIENCES, INC.",0001810560,Nasdaq,2834,Pharmaceutical Preparations,OK
-RYTM,"RHYTHM PHARMACEUTICALS, INC.",0001649904,Nasdaq,2834,Pharmaceutical Preparations,OK
-RIGL,RIGEL PHARMACEUTICALS INC,0001034842,Nasdaq,2834,Pharmaceutical Preparations,OK
-RCKT,"ROCKET PHARMACEUTICALS, INC.",0001281895,Nasdaq,2834,Pharmaceutical Preparations,OK
-RMTI,"ROCKWELL MEDICAL, INC.",0001041024,Nasdaq,2834,Pharmaceutical Preparations,OK
+QNTM,Quantum Biopharma Ltd.,0001771885,Nasdaq,2834,Pharmaceutical Preparations,OK
+QTTB,Q32 Bio Inc.,0001661998,Nasdaq,2834,Pharmaceutical Preparations,OK
+QUCY,Quantum Cyber N.V.,0001874252,Nasdaq,2834,Pharmaceutical Preparations,OK
+QURE,uniQure N.V.,0001590560,Nasdaq,2834,Pharmaceutical Preparations,OK
+RACC,Research Alliance Corp III,0002118032,Nasdaq,2834,Pharmaceutical Preparations,OK
 RADX,Radiopharm Theranostics Ltd,0001949257,Nasdaq,2834,Pharmaceutical Preparations,OK
-RFL,"Rafael Holdings, Inc.",0001713863,NYSE,2834,Pharmaceutical Preparations,OK
-RLYB,Rallybio Corp,0001739410,Nasdaq,2834,Pharmaceutical Preparations,OK
 RANI,"Rani Therapeutics Holdings, Inc.",0001856725,Nasdaq,2834,Pharmaceutical Preparations,OK
 RAPP,"Rapport Therapeutics, Inc.",0002012593,Nasdaq,2834,Pharmaceutical Preparations,OK
+RARE,Ultragenyx Pharmaceutical Inc.,0001515673,Nasdaq,2834,Pharmaceutical Preparations,OK
+RCKT,"ROCKET PHARMACEUTICALS, INC.",0001281895,Nasdaq,2834,Pharmaceutical Preparations,OK
+RCUS,"Arcus Biosciences, Inc.",0001724521,NYSE,2834,Pharmaceutical Preparations,OK
 RDHL,RedHill Biopharma Ltd.,0001553846,Nasdaq,2834,Pharmaceutical Preparations,OK
-RGC,Regencell Bioscience Holdings Ltd,0001829667,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-RNTX,"Rein Therapeutics, Inc.",0001420565,Nasdaq,2834,Pharmaceutical Preparations,OK
-RLAY,"Relay Therapeutics, Inc.",0001812364,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+RDY,DR REDDYS LABORATORIES LTD,0001135951,NYSE,2834,Pharmaceutical Preparations,OK
+REGN,"REGENERON PHARMACEUTICALS, INC.",0000872589,Nasdaq,2834,Pharmaceutical Preparations,OK
 REPL,"Replimune Group, Inc.",0001737953,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-RACC,Research Alliance Corp III,0002118032,Nasdaq,2834,Pharmaceutical Preparations,OK
-RVMD,"Revolution Medicines, Inc.",0001628171,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-RZLT,"Rezolute, Inc.",0001509261,Nasdaq,2834,Pharmaceutical Preparations,OK
+REVB,"REVELATION BIOSCIENCES, INC.",0001810560,Nasdaq,2834,Pharmaceutical Preparations,OK
+RFL,"Rafael Holdings, Inc.",0001713863,NYSE,2834,Pharmaceutical Preparations,OK
+RGC,Regencell Bioscience Holdings Ltd,0001829667,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+RGEN,REPLIGEN CORP,0000730272,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+RGNX,REGENXBIO Inc.,0001590877,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+RIGL,RIGEL PHARMACEUTICALS INC,0001034842,Nasdaq,2834,Pharmaceutical Preparations,OK
 RKTO,Rocket One Inc.,0001711786,Nasdaq,2834,Pharmaceutical Preparations,OK
+RLAY,"Relay Therapeutics, Inc.",0001812364,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+RLMD,"RELMADA THERAPEUTICS, INC.",0001553643,Nasdaq,2834,Pharmaceutical Preparations,OK
+RLYB,Rallybio Corp,0001739410,Nasdaq,2834,Pharmaceutical Preparations,OK
+RMTI,"ROCKWELL MEDICAL, INC.",0001041024,Nasdaq,2834,Pharmaceutical Preparations,OK
+RNA,"Atrium Therapeutics, Inc.",0002093101,Nasdaq,2834,Pharmaceutical Preparations,OK
+RNAC,"Cartesian Therapeutics, Inc.",0001453687,Nasdaq,2834,Pharmaceutical Preparations,OK
+RNAZ,"Transcode Therapeutics, Inc.",0001829635,Nasdaq,2834,Pharmaceutical Preparations,OK
+RNTX,"Rein Therapeutics, Inc.",0001420565,Nasdaq,2834,Pharmaceutical Preparations,OK
 ROIV,Roivant Sciences Ltd.,0001635088,Nasdaq,2834,Pharmaceutical Preparations,OK
 RPRX,Royalty Pharma plc,0001802768,Nasdaq,2834,Pharmaceutical Preparations,OK
+RVMD,"Revolution Medicines, Inc.",0001628171,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+RXRX,"RECURSION PHARMACEUTICALS, INC.",0001601830,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+RYTM,"RHYTHM PHARMACEUTICALS, INC.",0001649904,Nasdaq,2834,Pharmaceutical Preparations,OK
+RZLT,"Rezolute, Inc.",0001509261,Nasdaq,2834,Pharmaceutical Preparations,OK
 SABS,"SAB Biotherapeutics, Inc.",0001833214,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SCYX,SCYNEXIS INC,0001178253,Nasdaq,2834,Pharmaceutical Preparations,OK
-SLS,"SELLAS Life Sciences Group, Inc.",0001390478,Nasdaq,2834,Pharmaceutical Preparations,OK
-SIGA,SIGA TECHNOLOGIES INC,0001010086,Nasdaq,2834,Pharmaceutical Preparations,OK
-SVA,SINOVAC BIOTECH LTD,0001084201,Nasdaq,2834,Pharmaceutical Preparations,OK
-SLBT,SL Science Holding Ltd,0002070534,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SNDL,SNDL Inc.,0001766600,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-SNGX,"SOLIGENIX, INC.",0000812796,Nasdaq,2834,Pharmaceutical Preparations,OK
-SPRB,"SPRUCE BIOSCIENCES, INC.",0001683553,Nasdaq,2834,Pharmaceutical Preparations,OK
-LAB,STANDARD BIOTOOLS INC.,0001162194,Nasdaq,2834,Pharmaceutical Preparations,OK
-SUPN,"SUPERNUS PHARMACEUTICALS, INC.",0001356576,Nasdaq,2834,Pharmaceutical Preparations,OK
-STRO,"SUTRO BIOPHARMA, INC.",0001382101,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SGMT,Sagimet Biosciences Inc.,0001400118,Nasdaq,2834,Pharmaceutical Preparations,OK
 SANA,"Sana Biotechnology, Inc.",0001770121,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SNY,Sanofi,0001121404,Nasdaq,2834,Pharmaceutical Preparations,OK
-SRPT,"Sarepta Therapeutics, Inc.",0000873303,Nasdaq,2834,Pharmaceutical Preparations,OK
-MSLE,Satellos Bioscience Inc.,0001421642,Nasdaq,2834,Pharmaceutical Preparations,OK
-SVRA,Savara Inc,0001160308,Nasdaq,2834,Pharmaceutical Preparations,OK
-SRRK,Scholar Rock Holding Corp,0001727196,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SDGR,"Schrodinger, Inc.",0001490978,Nasdaq,2834,Pharmaceutical Preparations,OK
-SPRC,SciSparc Ltd.,0001611746,Nasdaq,2834,Pharmaceutical Preparations,OK
-SCNX,"Scienture Holdings, Inc.",0001382574,Nasdaq,2834,Pharmaceutical Preparations,OK
+SBFM,Sunshine Biopharma Inc.,0001402328,Nasdaq,2834,Pharmaceutical Preparations,OK
 SCLX,Scilex Holding Co,0001820190,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 SCNI,Scinai Immunotherapeutics Ltd.,0001611747,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+SCNX,"Scienture Holdings, Inc.",0001382574,Nasdaq,2834,Pharmaceutical Preparations,OK
 SCTX,"Scribe Therapeutics, Inc.",0001853921,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SPTX,"Seaport Therapeutics, Inc.",0002042347,Nasdaq,2834,Pharmaceutical Preparations,OK
-SNTI,"Senti Biosciences Holdings, Inc.",0001854270,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+SCYX,SCYNEXIS INC,0001178253,Nasdaq,2834,Pharmaceutical Preparations,OK
+SDGR,"Schrodinger, Inc.",0001490978,Nasdaq,2834,Pharmaceutical Preparations,OK
 SEPN,"Septerna, Inc.",0001984086,Nasdaq,2834,Pharmaceutical Preparations,OK
-MCRB,"Seres Therapeutics, Inc.",0001609809,Nasdaq,2834,Pharmaceutical Preparations,OK
 SER,"Serina Therapeutics, Inc.",0001708599,NYSE,2834,Pharmaceutical Preparations,OK
-STTK,"Shattuck Labs, Inc.",0001680367,Nasdaq,2834,Pharmaceutical Preparations,OK
+SGMT,Sagimet Biosciences Inc.,0001400118,Nasdaq,2834,Pharmaceutical Preparations,OK
 SHPH,"Shuttle Pharmaceuticals Holdings, Inc.",0001757499,Nasdaq,2834,Pharmaceutical Preparations,OK
-SLN,Silence Therapeutics plc,0001479615,Nasdaq,2834,Pharmaceutical Preparations,OK
-SLXN,Silexion Therapeutics Corp,0002022416,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+SIGA,SIGA TECHNOLOGIES INC,0001010086,Nasdaq,2834,Pharmaceutical Preparations,OK
 SILO,"Silo Pharma, Inc.",0001514183,Nasdaq,2834,Pharmaceutical Preparations,OK
 SION,"Sionna Therapeutics, Inc.",0002036042,Nasdaq,2834,Pharmaceutical Preparations,OK
 SKYE,"Skye Bioscience, Inc.",0001516551,Nasdaq,2834,Pharmaceutical Preparations,OK
-SLGL,Sol-Gel Technologies Ltd.,0001684693,Nasdaq,2834,Pharmaceutical Preparations,OK
+SLBT,SL Science Holding Ltd,0002070534,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 SLDB,Solid Biosciences Inc.,0001707502,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-SPRO,"Spero Therapeutics, Inc.",0001701108,Nasdaq,2834,Pharmaceutical Preparations,OK
-SYRE,"Spyre Therapeutics, Inc.",0001636282,Nasdaq,2834,Pharmaceutical Preparations,OK
-STOK,"Stoke Therapeutics, Inc.",0001623526,Nasdaq,2834,Pharmaceutical Preparations,OK
-GPCR,Structure Therapeutics Inc.,0001888886,Nasdaq,2834,Pharmaceutical Preparations,OK
+SLGL,Sol-Gel Technologies Ltd.,0001684693,Nasdaq,2834,Pharmaceutical Preparations,OK
+SLN,Silence Therapeutics plc,0001479615,Nasdaq,2834,Pharmaceutical Preparations,OK
+SLS,"SELLAS Life Sciences Group, Inc.",0001390478,Nasdaq,2834,Pharmaceutical Preparations,OK
+SLXN,Silexion Therapeutics Corp,0002022416,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 SMMT,Summit Therapeutics Inc.,0001599298,Nasdaq,2834,Pharmaceutical Preparations,OK
-SBFM,Sunshine Biopharma Inc.,0001402328,Nasdaq,2834,Pharmaceutical Preparations,OK
-SRZN,"Surrozen, Inc./DE",0001824893,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+SNDL,SNDL Inc.,0001766600,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
 SNDX,Syndax Pharmaceuticals Inc,0001395937,Nasdaq,2834,Pharmaceutical Preparations,OK
+SNGX,"SOLIGENIX, INC.",0000812796,Nasdaq,2834,Pharmaceutical Preparations,OK
+SNTI,"Senti Biosciences Holdings, Inc.",0001854270,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+SNY,Sanofi,0001121404,Nasdaq,2834,Pharmaceutical Preparations,OK
 SNYR,Synergy CHC Corp.,0001562733,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
+SPRB,"SPRUCE BIOSCIENCES, INC.",0001683553,Nasdaq,2834,Pharmaceutical Preparations,OK
+SPRC,SciSparc Ltd.,0001611746,Nasdaq,2834,Pharmaceutical Preparations,OK
+SPRO,"Spero Therapeutics, Inc.",0001701108,Nasdaq,2834,Pharmaceutical Preparations,OK
+SPRY,"ARS Pharmaceuticals, Inc.",0001671858,Nasdaq,2834,Pharmaceutical Preparations,OK
+SPTX,"Seaport Therapeutics, Inc.",0002042347,Nasdaq,2834,Pharmaceutical Preparations,OK
+SRPT,"Sarepta Therapeutics, Inc.",0000873303,Nasdaq,2834,Pharmaceutical Preparations,OK
+SRRK,Scholar Rock Holding Corp,0001727196,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+SRZN,"Surrozen, Inc./DE",0001824893,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+STOK,"Stoke Therapeutics, Inc.",0001623526,Nasdaq,2834,Pharmaceutical Preparations,OK
+STRO,"SUTRO BIOPHARMA, INC.",0001382101,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+STTK,"Shattuck Labs, Inc.",0001680367,Nasdaq,2834,Pharmaceutical Preparations,OK
+SUPN,"SUPERNUS PHARMACEUTICALS, INC.",0001356576,Nasdaq,2834,Pharmaceutical Preparations,OK
+SVA,SINOVAC BIOTECH LTD,0001084201,Nasdaq,2834,Pharmaceutical Preparations,OK
+SVRA,Savara Inc,0001160308,Nasdaq,2834,Pharmaceutical Preparations,OK
+SXTC,"China SXT Pharmaceuticals, Inc.",0001723980,Nasdaq,2834,Pharmaceutical Preparations,OK
+SXTP,"60 DEGREES PHARMACEUTICALS, INC.",0001946563,Nasdaq,2834,Pharmaceutical Preparations,OK
+SYRE,"Spyre Therapeutics, Inc.",0001636282,Nasdaq,2834,Pharmaceutical Preparations,OK
 TAK,TAKEDA PHARMACEUTICAL CO LTD,0001395064,NYSE,2834,Pharmaceutical Preparations,OK
-TLPH,"TALPHERA, INC.",0001427925,Nasdaq,2834,Pharmaceutical Preparations,OK
+TARA,"Protara Therapeutics, Inc.",0001359931,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TARS,"Tarsus Pharmaceuticals, Inc.",0001819790,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TBPH,"Theravance Biopharma, Inc.",0001583107,Nasdaq,2834,Pharmaceutical Preparations,OK
+TCRT,"Alaunos Therapeutics, Inc.",0001107421,Nasdaq,2834,Pharmaceutical Preparations,OK
+TCRX,"TScan Therapeutics, Inc.",0001783328,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TECH,BIO-TECHNE Corp,0000842023,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TECX,"Tectonic Therapeutic, Inc.",0001681087,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TELO,"Telomir Pharmaceuticals, Inc.",0001971532,Nasdaq,2834,Pharmaceutical Preparations,OK
 TENX,"TENAX THERAPEUTICS, INC.",0000034956,Nasdaq,2834,Pharmaceutical Preparations,OK
 TEVA,TEVA PHARMACEUTICAL INDUSTRIES LTD,0000818686,NYSE,2834,Pharmaceutical Preparations,OK
 TGTX,"TG THERAPEUTICS, INC.",0001001316,Nasdaq,2834,Pharmaceutical Preparations,OK
-TRIB,TRINITY BIOTECH PLC,0000888721,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-TCRX,"TScan Therapeutics, Inc.",0001783328,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TNGX,"Tango Therapeutics, Inc.",0001819133,Nasdaq,2834,Pharmaceutical Preparations,OK
-TARS,"Tarsus Pharmaceuticals, Inc.",0001819790,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TSHA,"Taysha Gene Therapies, Inc.",0001806310,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TECX,"Tectonic Therapeutic, Inc.",0001681087,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TLX,Telix Pharmaceuticals Ltd,0002007191,Nasdaq,2834,Pharmaceutical Preparations,OK
-TELO,"Telomir Pharmaceuticals, Inc.",0001971532,Nasdaq,2834,Pharmaceutical Preparations,OK
-TPST,"Tempest Therapeutics, Inc.",0001544227,Nasdaq,2834,Pharmaceutical Preparations,OK
-TNYA,"Tenaya Therapeutics, Inc.",0001858848,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TVGN,Tevogen Inc.,0001860871,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-TXMD,"TherapeuticsMD, Inc.",0000025743,Nasdaq,2834,Pharmaceutical Preparations,OK
-TBPH,"Theravance Biopharma, Inc.",0001583107,Nasdaq,2834,Pharmaceutical Preparations,OK
-TOVX,"Theriva Biologics, Inc.",0000894158,NYSE,2834,Pharmaceutical Preparations,OK
+TIL,"Instil Bio, Inc.",0001789769,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TKNO,"Alpha Teknova, Inc.",0001850902,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+TLPH,"TALPHERA, INC.",0001427925,Nasdaq,2834,Pharmaceutical Preparations,OK
 TLRY,"Tilray Brands, Inc.",0001731348,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
 TLSA,Tiziana Life Sciences Ltd,0001723069,Nasdaq,2834,Pharmaceutical Preparations,OK
+TLX,Telix Pharmaceuticals Ltd,0002007191,Nasdaq,2834,Pharmaceutical Preparations,OK
+TNGX,"Tango Therapeutics, Inc.",0001819133,Nasdaq,2834,Pharmaceutical Preparations,OK
 TNXP,Tonix Pharmaceuticals Holding Corp.,0001430306,Nasdaq,2834,Pharmaceutical Preparations,OK
-RNAZ,"Transcode Therapeutics, Inc.",0001829635,Nasdaq,2834,Pharmaceutical Preparations,OK
-TVTX,"Travere Therapeutics, Inc.",0001438533,Nasdaq,2834,Pharmaceutical Preparations,OK
+TNYA,"Tenaya Therapeutics, Inc.",0001858848,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TOVX,"Theriva Biologics, Inc.",0000894158,NYSE,2834,Pharmaceutical Preparations,OK
+TPST,"Tempest Therapeutics, Inc.",0001544227,Nasdaq,2834,Pharmaceutical Preparations,OK
 TRAW,"Traws Pharma, Inc.",0001130598,Nasdaq,2834,Pharmaceutical Preparations,OK
-TRVI,"Trevi Therapeutics, Inc.",0001563880,Nasdaq,2834,Pharmaceutical Preparations,OK
+TRAX,"First Tracks Biotherapeutics, Inc.",0002091349,Nasdaq,2834,Pharmaceutical Preparations,OK
+TRDA,"Entrada Therapeutics, Inc.",0001689375,Nasdaq,2834,Pharmaceutical Preparations,OK
+TRIB,TRINITY BIOTECH PLC,0000888721,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
 TRLV,Trulieve Cannabis Corp.,0001754195,NYSE,2833,Medicinal Chemicals & Botanical Products,OK
-HURA,"TuHURA Biosciences, Inc./NV",0001498382,Nasdaq,2834,Pharmaceutical Preparations,OK
+TRVI,"Trevi Therapeutics, Inc.",0001563880,Nasdaq,2834,Pharmaceutical Preparations,OK
+TSHA,"Taysha Gene Therapies, Inc.",0001806310,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 TTRX,Turn Therapeutics Inc.,0002023016,Nasdaq,2834,Pharmaceutical Preparations,OK
+TVGN,Tevogen Inc.,0001860871,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 TVRD,"Tvardi Therapeutics, Inc.",0001346830,Nasdaq,2834,Pharmaceutical Preparations,OK
+TVTX,"Travere Therapeutics, Inc.",0001438533,Nasdaq,2834,Pharmaceutical Preparations,OK
 TWST,Twist Bioscience Corp,0001581280,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+TXMD,"TherapeuticsMD, Inc.",0000025743,Nasdaq,2834,Pharmaceutical Preparations,OK
 TYRA,"Tyra Biosciences, Inc.",0001863127,Nasdaq,2834,Pharmaceutical Preparations,OK
 ULS,UL Solutions Inc.,0001901440,NYSE,8734,Services-Testing Laboratories,OK
-UTHR,UNITED THERAPEUTICS Corp,0001082554,Nasdaq,2834,Pharmaceutical Preparations,OK
-USNA,USANA HEALTH SCIENCES INC,0000896264,NYSE,2833,Medicinal Chemicals & Botanical Products,OK
-RARE,Ultragenyx Pharmaceutical Inc.,0001515673,Nasdaq,2834,Pharmaceutical Preparations,OK
 UNCY,"Unicycive Therapeutics, Inc.",0001766140,Nasdaq,2834,Pharmaceutical Preparations,OK
-UPC,Universe Pharmaceuticals INC,0001809616,Nasdaq,2834,Pharmaceutical Preparations,OK
 UPB,"Upstream Bio, Inc.",0002022626,Nasdaq,2834,Pharmaceutical Preparations,OK
+UPC,Universe Pharmaceuticals INC,0001809616,Nasdaq,2834,Pharmaceutical Preparations,OK
 URGN,UroGen Pharma Ltd.,0001668243,Nasdaq,2834,Pharmaceutical Preparations,OK
-VRTX,VERTEX PHARMACEUTICALS INC / MA,0000875320,Nasdaq,2834,Pharmaceutical Preparations,OK
-VERU,VERU INC.,0000863894,Nasdaq,2834,Pharmaceutical Preparations,OK
-VNRX,VOLITIONRX LTD,0000093314,NYSE,2835,In Vitro & In Vivo Diagnostic Substances,OK
-VBIO,"Valion Bio, Inc.",0001787740,Nasdaq,2834,Pharmaceutical Preparations,OK
+USNA,USANA HEALTH SCIENCES INC,0000896264,NYSE,2833,Medicinal Chemicals & Botanical Products,OK
+UTHR,UNITED THERAPEUTICS Corp,0001082554,Nasdaq,2834,Pharmaceutical Preparations,OK
 VALN,Valneva SE,0001836564,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-VNDA,Vanda Pharmaceuticals Inc.,0001347178,Nasdaq,2834,Pharmaceutical Preparations,OK
-PCVX,"Vaxcyte, Inc.",0001649094,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-VERA,"Vera Therapeutics, Inc.",0001831828,Nasdaq,2834,Pharmaceutical Preparations,OK
-MANE,"Veradermics, Inc",0001827635,NYSE,2834,Pharmaceutical Preparations,OK
-VSTM,"Verastem, Inc.",0001526119,Nasdaq,2834,Pharmaceutical Preparations,OK
-VRXA,Veraxa Biotech AG - Post de-SPAC,0002079109,Nasdaq,2834,Pharmaceutical Preparations,OK
+VBIO,"Valion Bio, Inc.",0001787740,Nasdaq,2834,Pharmaceutical Preparations,OK
 VCEL,Vericel Corp,0000887359,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-VRCA,Verrica Pharmaceuticals Inc.,0001660334,Nasdaq,2834,Pharmaceutical Preparations,OK
-VTRS,Viatris Inc,0001792044,Nasdaq,2834,Pharmaceutical Preparations,OK
 VCRE,Vicore Pharma Holding AB,0002124403,Nasdaq,2834,Pharmaceutical Preparations,OK
-VKTX,"Viking Therapeutics, Inc.",0001607678,Nasdaq,2834,Pharmaceutical Preparations,OK
+VERA,"Vera Therapeutics, Inc.",0001831828,Nasdaq,2834,Pharmaceutical Preparations,OK
+VERU,VERU INC.,0000863894,Nasdaq,2834,Pharmaceutical Preparations,OK
 VIR,"Vir Biotechnology, Inc.",0001706431,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-VRAX,Virax Biolabs Group Ltd,0001885827,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
-VRDN,"Viridian Therapeutics, Inc.\DE",0001590750,Nasdaq,2834,Pharmaceutical Preparations,OK
-VTGN,"Vistagen Therapeutics, Inc.",0001411685,Nasdaq,2834,Pharmaceutical Preparations,OK
 VIVS,"VivoSim Labs, INC.",0001497253,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+VKTX,"Viking Therapeutics, Inc.",0001607678,Nasdaq,2834,Pharmaceutical Preparations,OK
+VNDA,Vanda Pharmaceuticals Inc.,0001347178,Nasdaq,2834,Pharmaceutical Preparations,OK
+VNRX,VOLITIONRX LTD,0000093314,NYSE,2835,In Vitro & In Vivo Diagnostic Substances,OK
 VOGX,"Vogenx, Inc.",0001903784,Nasdaq,2834,Pharmaceutical Preparations,OK
 VOR,Vor Biopharma Inc.,0001817229,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+VRAX,Virax Biolabs Group Ltd,0001885827,Nasdaq,2835,In Vitro & In Vivo Diagnostic Substances,OK
+VRCA,Verrica Pharmaceuticals Inc.,0001660334,Nasdaq,2834,Pharmaceutical Preparations,OK
+VRDN,"Viridian Therapeutics, Inc.\DE",0001590750,Nasdaq,2834,Pharmaceutical Preparations,OK
+VRTX,VERTEX PHARMACEUTICALS INC / MA,0000875320,Nasdaq,2834,Pharmaceutical Preparations,OK
+VRXA,Veraxa Biotech AG - Post de-SPAC,0002079109,Nasdaq,2834,Pharmaceutical Preparations,OK
+VSTM,"Verastem, Inc.",0001526119,Nasdaq,2834,Pharmaceutical Preparations,OK
+VTGN,"Vistagen Therapeutics, Inc.",0001411685,Nasdaq,2834,Pharmaceutical Preparations,OK
+VTRS,Viatris Inc,0001792044,Nasdaq,2834,Pharmaceutical Preparations,OK
+VTVT,vTv Therapeutics Inc.,0001641489,Nasdaq,2834,Pharmaceutical Preparations,OK
 VYGR,"Voyager Therapeutics, Inc.",0001640266,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-HIND,"Vyome Holdings, Inc",0001427570,Nasdaq,2834,Pharmaceutical Preparations,OK
-WVE,"Wave Life Sciences, Inc.",0001631574,Nasdaq,2834,Pharmaceutical Preparations,OK
-HOWL,"Werewolf Therapeutics, Inc.",0001785530,Nasdaq,2834,Pharmaceutical Preparations,OK
 WHWK,"Whitehawk Therapeutics, Inc.",0001422142,Nasdaq,2834,Pharmaceutical Preparations,OK
-XFOR,"X4 Pharmaceuticals, Inc",0001501697,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-XBIT,XBiotech Inc.,0001626878,Nasdaq,2834,Pharmaceutical Preparations,OK
-XRTX,XORTX Therapeutics Inc.,0001729214,Nasdaq,2834,Pharmaceutical Preparations,OK
-XTLB,XTL BIOPHARMACEUTICALS LTD,0001023549,Nasdaq,2834,Pharmaceutical Preparations,OK
-XNCR,Xencor Inc,0001326732,Nasdaq,2834,Pharmaceutical Preparations,OK
+WVE,"Wave Life Sciences, Inc.",0001631574,Nasdaq,2834,Pharmaceutical Preparations,OK
 XBIO,"Xenetic Biosciences, Inc.",0001534525,Nasdaq,2834,Pharmaceutical Preparations,OK
+XBIT,XBiotech Inc.,0001626878,Nasdaq,2834,Pharmaceutical Preparations,OK
+XCUR,"EXICURE, INC.",0001698530,Nasdaq,2834,Pharmaceutical Preparations,OK
 XENE,Xenon Pharmaceuticals Inc.,0001582313,Nasdaq,2834,Pharmaceutical Preparations,OK
 XERS,"Xeris Biopharma Holdings, Inc.",0001867096,Nasdaq,2834,Pharmaceutical Preparations,OK
+XFOR,"X4 Pharmaceuticals, Inc",0001501697,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
 XLO,"Xilio Therapeutics, Inc.",0001840233,Nasdaq,2834,Pharmaceutical Preparations,OK
+XNCR,Xencor Inc,0001326732,Nasdaq,2834,Pharmaceutical Preparations,OK
+XRTX,XORTX Therapeutics Inc.,0001729214,Nasdaq,2834,Pharmaceutical Preparations,OK
+XTLB,XTL BIOPHARMACEUTICALS LTD,0001023549,Nasdaq,2834,Pharmaceutical Preparations,OK
 YARW,"Yarrow Bioscience, Inc.",0001566044,Nasdaq,2834,Pharmaceutical Preparations,OK
-ZVRA,"ZEVRA THERAPEUTICS, INC.",0001434647,Nasdaq,2834,Pharmaceutical Preparations,OK
-ZLAB,Zai Lab Ltd,0001704292,Nasdaq,2834,Pharmaceutical Preparations,OK
 ZBIO,"Zenas BioPharma, Inc.",0001953926,Nasdaq,2834,Pharmaceutical Preparations,OK
+ZLAB,Zai Lab Ltd,0001704292,Nasdaq,2834,Pharmaceutical Preparations,OK
 ZNTL,"Zentalis Pharmaceuticals, Inc.",0001725160,Nasdaq,2834,Pharmaceutical Preparations,OK
-ZYBT,Zhengye Biotechnology Holding Ltd,0001975641,Nasdaq,2834,Pharmaceutical Preparations,OK
 ZTS,Zoetis Inc.,0001555280,NYSE,2834,Pharmaceutical Preparations,OK
 ZURA,Zura Bio Ltd,0001855644,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
+ZVRA,"ZEVRA THERAPEUTICS, INC.",0001434647,Nasdaq,2834,Pharmaceutical Preparations,OK
+ZYBT,Zhengye Biotechnology Holding Ltd,0001975641,Nasdaq,2834,Pharmaceutical Preparations,OK
 ZYME,Zymeworks Inc.,0001937653,Nasdaq,2834,Pharmaceutical Preparations,OK
-ATYR,aTYR PHARMA INC,0001339970,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-BIAF,"bioAffinity Technologies, Inc.",0001712762,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-BTMD,biote Corp.,0001819253,Nasdaq,2833,Medicinal Chemicals & Botanical Products,OK
-ENGN,enGene Therapeutics Inc.,0001980845,Nasdaq,2836,"Biological Products, (No Diagnostic Substances)",OK
-IBIO,"iBio, Inc.",0001420720,Nasdaq,2834,Pharmaceutical Preparations,OK
-ISPC,iSpecimen Inc.,0001558569,Nasdaq,8731,Services-Commercial Physical & Biological Research,OK
-QURE,uniQure N.V.,0001590560,Nasdaq,2834,Pharmaceutical Preparations,OK
-VTVT,vTv Therapeutics Inc.,0001641489,Nasdaq,2834,Pharmaceutical Preparations,OK
