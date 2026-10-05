@@ -75,7 +75,7 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th.angle-head > span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
 .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
 .merged-pdufa-table th.ticker-head{z-index:6}
-.merged-pdufa-table td.provision-yes{font-weight:700}
+.merged-pdufa-table td.provision-yes{font-weight:800;font-size:18px}
 .merged-pdufa-table td.provision-no{color:#555555}
 .merged-pdufa-table td.provision-unknown{color:#7a7a7a;font-style:italic}
 .merged-pdufa-table a,.merged-pdufa-table a:link,.merged-pdufa-table a:visited{color:#0b57d0 !important;text-decoration:underline !important}
@@ -920,16 +920,16 @@ def _provision_status(value):
     if value is None or (not isinstance(value, (list, tuple, dict, set)) and pd.isna(value)):
         return ""
     if isinstance(value, bool):
-        return "Yes" if value else "No"
+        return "✓" if value else ""
     text = str(value).strip()
     if not text:
         return ""
     low = text.lower()
     if low in {"true", "yes", "y", "1", "granted", "designated", "eligible", "applicable", "active"}:
-        return "Yes"
+        return "✓"
     if low in {"false", "no", "n", "0", "not granted", "not designated", "not applicable", "none"}:
-        return "No"
-    return text
+        return ""
+    return "✓"
 
 
 def add_special_provision_columns(frame):
@@ -945,7 +945,7 @@ def special_provision_column_config():
     return {
         label: st.column_config.TextColumn(
             label,
-            help=f"{label}: Verified status when available; blank when not verified.",
+            help=f"{label}: ✓ means verified for this exact drug/indication/application; blank means not verified/applicable in the loaded evidence.",
             width="small",
         )
         for label in SPECIAL_PROVISION_LABELS
@@ -975,7 +975,7 @@ def render_merged_table(frame, heading, height_px=690):
             val = "" if pd.isna(raw) else str(raw)
             cls = ""
             if col in SPECIAL_PROVISION_LABELS:
-                cls = " provision-yes" if val == "Yes" else (" provision-no" if val == "No" else " provision-unknown")
+                cls = " provision-yes" if val == "✓" else " provision-unknown"
             if col == "Ticker" and val.startswith("http"):
                 parsed = urllib.parse.urlparse(val)
                 ticker_label = urllib.parse.parse_qs(parsed.query).get("ticker", ["Open"])[0]
