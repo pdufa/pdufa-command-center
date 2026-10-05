@@ -1,0 +1,63 @@
+name: Build 2024 PDUFA Cohort
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build_2024_cohort.py"
+      - ".github/workflows/build-2024.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install cohort-builder dependencies
+        run: pip install pandas numpy requests beautifulsoup4 yfinance
+
+      - name: Build frozen 2024 cohort
+        run: python scripts/build_2024_cohort.py
+
+      - name: Validate generated history
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          h = pd.read_csv("data/prediction_engine_history.csv")
+          y = pd.to_datetime(h["pdufa_date"], errors="coerce").dt.year
+          c = h[y.eq(2024)].copy()
+          if c.empty:
+              raise SystemExit("2024 build produced zero included cases")
+          cap = pd.to_numeric(c["historical_market_cap_billions"], errors="coerce")
+          if not cap.between(0.3, 10.0, inclusive="both").all():
+              raise SystemExit("2024 history contains market-cap rows outside $300M-$10B")
+          if c["event_key"].duplicated().any():
+              raise SystemExit("2024 history contains duplicate event keys")
+          if not c["actual_outcome"].isin(["APPROVED","CRL"]).all():
+              raise SystemExit("2024 history contains unresolved outcomes")
+          print("2024 included rows:", len(c))
+          print(c[["ticker","pdufa_date","p_approval","model_class","actual_outcome","historical_market_cap_billions"]].to_string(index=False))
+          PY
+
+      - name: Commit generated 2024 cohort
+        run: |
+          git config user.name "pdufa-automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/prediction_engine_history.csv data/prediction_engine_audit.csv data/prediction_engine_2024_staging.csv
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+          else
+            git commit -m "Add frozen 2024 $300M-$10B PDUFA cohort"
+            git push
+          fi
