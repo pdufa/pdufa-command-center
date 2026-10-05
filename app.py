@@ -71,8 +71,8 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111111;background:#ffffff;white-space:nowrap}
 .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
 .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
-.merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:76px;width:76px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
-.merged-pdufa-table th.angle-head > span{position:absolute;left:40px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
+.merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
+.merged-pdufa-table th.angle-head > span{position:absolute;left:20px;bottom:7px;display:inline-block;transform:rotate(45deg);transform-origin:bottom left;white-space:nowrap;font-weight:700;color:#111111}
 .merged-pdufa-table th.ticker-head,.merged-pdufa-table td.ticker-cell{position:sticky;left:0;z-index:5;background:#fafafa;font-weight:700}
 .merged-pdufa-table th.ticker-head{z-index:6}
 .merged-pdufa-table td.provision-yes{font-weight:700}
