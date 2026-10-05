@@ -71,6 +71,8 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-table-wrap{overflow:auto;background:#ffffff;border:2px solid #000000;border-radius:12px;padding:0;margin:8px 0 18px;color:#111111}
 .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#ffffff;color:#111111;width:max-content;min-width:100%;font-size:13px}
 .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111111;background:#ffffff;white-space:nowrap}
+.merged-pdufa-table th a.sort-head{color:#111111 !important;text-decoration:none !important;font-weight:800;display:block;width:100%;height:100%}
+.merged-pdufa-table th a.sort-head:hover{text-decoration:underline !important}
 .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
 .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
 .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
@@ -942,8 +944,9 @@ df["event_key"] = df.apply(make_event_key, axis=1)
 def go_page(page_name):
     st.session_state._pending_nav = page_name
     st.session_state.detail_open = False
-    if len(st.query_params):
-        st.query_params.clear()
+    for _qp in ["event", "ticker", "page", "source", "return"]:
+        if _qp in st.query_params:
+            del st.query_params[_qp]
 
 def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if ticker is not None:
@@ -1288,6 +1291,21 @@ def _merged_table_sort_series(frame, col):
     return text_values.str.lower()
 
 
+def _sort_header_link(sort_key, col, current_col, current_dir):
+    """Create a same-page header link that toggles ascending/descending."""
+    next_dir = "desc" if current_col == col and current_dir == "asc" else "asc"
+    arrow = ""
+    if current_col == col:
+        arrow = " ▲" if current_dir == "asc" else " ▼"
+    href = (
+        "?sort_table=" + urllib.parse.quote(str(sort_key), safe="")
+        + "&sort_col=" + urllib.parse.quote(str(col), safe="")
+        + "&sort_dir=" + urllib.parse.quote(next_dir, safe="")
+    )
+    label = html.escape(str(col)) + arrow
+    return f'<a class="sort-head" href="{href}" target="_self">{label}</a>'
+
+
 def render_merged_table(frame, heading, height_px=690):
     """Render one merged table with sortable columns and 45-degree provision headers."""
     if frame is None or frame.empty:
@@ -1296,29 +1314,22 @@ def render_merged_table(frame, heading, height_px=690):
     st.markdown(f"### {heading}")
 
     sort_key = re.sub(r"[^a-z0-9]+", "_", heading.lower()).strip("_")
-    sort_col_key = f"{sort_key}_sort_column"
-    sort_dir_key = f"{sort_key}_sort_direction"
 
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        sort_col = st.selectbox(
-            "Sort column",
-            ["Current order"] + list(frame.columns),
-            key=sort_col_key,
-        )
-    with c2:
-        sort_direction = st.selectbox(
-            "Order",
-            ["Ascending", "Descending"],
-            key=sort_dir_key,
-        )
+    query_sort_table = str(st.query_params.get("sort_table", "") or "")
+    query_sort_col = urllib.parse.unquote(str(st.query_params.get("sort_col", "") or ""))
+    query_sort_dir = str(st.query_params.get("sort_dir", "asc") or "asc").lower()
+
+    current_sort_col = query_sort_col if (
+        query_sort_table == sort_key and query_sort_col in frame.columns
+    ) else ""
+    current_sort_dir = query_sort_dir if query_sort_dir in {"asc", "desc"} else "asc"
 
     rendered_frame = frame.copy()
-    if sort_col != "Current order":
-        rendered_frame["_sort_key"] = _merged_table_sort_series(rendered_frame, sort_col)
+    if current_sort_col:
+        rendered_frame["_sort_key"] = _merged_table_sort_series(rendered_frame, current_sort_col)
         rendered_frame = rendered_frame.sort_values(
             "_sort_key",
-            ascending=(sort_direction == "Ascending"),
+            ascending=(current_sort_dir == "asc"),
             na_position="last",
             kind="mergesort",
         ).drop(columns=["_sort_key"])
@@ -1335,38 +1346,38 @@ def render_merged_table(frame, heading, height_px=690):
         financing_started = False
         application_started = False
         for col in cols:
-            safe_col = html.escape(str(col))
+            sort_link = _sort_header_link(sort_key, col, current_sort_col, current_sort_dir)
             if col in SECOND_FINANCING_COLUMNS:
                 if not financing_started:
                     header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
                     financing_started = True
-                header_bottom.append(f'<th class="group-subhead">{safe_col}</th>')
+                header_bottom.append(f'<th class="group-subhead">{sort_link}</th>')
                 continue
 
             if col in APPLICATION_COLUMNS:
                 if not application_started:
                     header_top.append('<th class="group-head" colspan="2">Application</th>')
                     application_started = True
-                header_bottom.append(f'<th class="application-subhead">{safe_col}</th>')
+                header_bottom.append(f'<th class="application-subhead">{sort_link}</th>')
                 continue
 
             if col in SPECIAL_PROVISION_LABELS:
-                header_top.append(f'<th class="angle-head" rowspan="2"><span>{safe_col}</span></th>')
+                header_top.append(f'<th class="angle-head" rowspan="2"><span>{sort_link}</span></th>')
             else:
                 extra = ' ticker-head' if col == "Ticker" else ''
                 if col in {"P%", "P"}:
                     extra += ' compact-p'
-                header_top.append(f'<th class="normal-head{extra}" rowspan="2">{safe_col}</th>')
+                header_top.append(f'<th class="normal-head{extra}" rowspan="2">{sort_link}</th>')
     else:
         for col in cols:
-            safe_col = html.escape(str(col))
+            sort_link = _sort_header_link(sort_key, col, current_sort_col, current_sort_dir)
             if col in SPECIAL_PROVISION_LABELS:
-                header_cells.append(f'<th class="angle-head"><span>{safe_col}</span></th>')
+                header_cells.append(f'<th class="angle-head"><span>{sort_link}</span></th>')
             else:
                 extra = ' ticker-head' if col == "Ticker" else ''
                 if col in {"P%", "P"}:
                     extra += ' compact-p'
-                header_cells.append(f'<th class="normal-head{extra}">{safe_col}</th>')
+                header_cells.append(f'<th class="normal-head{extra}">{sort_link}</th>')
 
     rows = []
     for _, row in rendered_frame.iterrows():
@@ -1412,8 +1423,8 @@ def render_merged_table(frame, heading, height_px=690):
         + '</tbody></table></div>'
     )
     st.caption(
-        "Choose any visible column above, then Ascending or Descending. "
-        "Numeric percentages, Phase 3 P values, dates, market caps and checkmarks use value-aware sorting."
+        "Click any column heading to sort. Click the same heading again to switch ▲ ascending / ▼ descending. "
+        "Percentages, Phase 3 P values, dates, market caps and checkmarks use value-aware sorting."
     )
     st.markdown(table_html, unsafe_allow_html=True)
 
