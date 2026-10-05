@@ -296,7 +296,7 @@ required_ui_contracts = [
     '"Cash runway"',
     '"Market data"',
     '"Options / ownership / insiders"',
-    '"no current PDUFA event in the saved event feed"',
+    'no current PDUFA event in the saved event feed',
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
 ]
