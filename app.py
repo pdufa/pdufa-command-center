@@ -1416,7 +1416,8 @@ if page == "1. ALL PDUFA":
         front = ["Ticker","P%","F","Match %","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
-        display.insert(7 if len(display.columns) >= 7 else len(display.columns), "Time", view["time_status"].fillna("Unknown").astype(str).values)
+        time_pos = min(len(front) + len(special_front), len(display.columns))
+        display.insert(time_pos, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         st.markdown("### MASTER PDUFA TABLE")
         st.caption("LEADING BOXED CELLS: Ticker | P% | F | Match % | C · NEXT 17 COLUMNS: SPECIAL PROVISIONS")
