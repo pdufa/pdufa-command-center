@@ -987,7 +987,8 @@ def _designation_from_evidence(row, label):
         "Serious Condition": [r"serious condition"],
         "Life-Threatening": [r"life-threatening condition", r"life threatening condition"],
         "Fast Track": [
-            r"fast track designation", r"granted fast track", r"grants fast track"
+            r"fast track designation", r"granted fast track", r"grants fast track",
+            r"\bfast track\b"
         ],
         "Breakthrough": [
             r"breakthrough therapy designation", r"breakthrough designation",
@@ -995,7 +996,8 @@ def _designation_from_evidence(row, label):
         ],
         "Priority Review": [
             r"priority review goal", r"grants priority review", r"granted priority review",
-            r"confirms .*priority review", r"supports .*priority review"
+            r"confirms .*priority review", r"supports .*priority review",
+            r"\bpriority review\b"
         ],
         "Accelerated Approval": [
             r"granted accelerated approval", r"under accelerated approval",
