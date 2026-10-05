@@ -29,6 +29,11 @@ REQUIRED = {
         "event_key", "ticker", "company", "drug", "indication", "pdufa_date",
         "approval_probability", "public_approval_probability", "biopharmawatch_probability",
     },
+    "data/recheck_status.csv": {
+        "event_key","ticker","run_status","last_successful_recheck_utc","change_count","error_count",
+        "pdufa_date_status","phase3_status","financing_status","cash_runway_status",
+        "market_data_status","ownership_insiders_status",
+    },
     "data/prediction_engine_history.csv": {
         "event_key", "ticker", "pdufa_date", "p_approval", "actual_outcome",
         "public_approval_probability", "biopharmawatch_probability",
@@ -114,6 +119,15 @@ for r in candidates:
     d = r["pdufa_date"].strip()
     if d:
         datetime.strptime(d, "%Y-%m-%d")
+
+recheck = read_csv(ROOT / "data/recheck_status.csv")
+recheck_keys = [(r.get("event_key") or "").strip() for r in recheck]
+if len(recheck_keys) != len(set(recheck_keys)):
+    raise SystemExit("recheck_status.csv: duplicate event_key")
+if set(recheck_keys) != set(keys):
+    raise SystemExit("recheck_status.csv: event_key set does not exactly match live candidates")
+if not (ROOT / "scripts/recheck_events.py").exists():
+    raise SystemExit("missing scripts/recheck_events.py")
 
 second_financing = read_csv(ROOT / "data/second_financing_status.csv")
 sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
@@ -273,6 +287,18 @@ required_ui_contracts = [
     '"data/second_financing_status.csv"',
     '"Company Registry"',
     '"Needs Backfill"',
+    '"7. RECHECK"',
+    '"RUN RECHECK — SELECTED EVENT"',
+    '"RUN RECHECK — ALL EVENTS"',
+    '"PDUFA date / FDA decision"',
+    '"Phase 3 results / p-value"',
+    '"Financing closure"',
+    '"Cash runway"',
+    '"Market data"',
+    '"Options / ownership / insiders"',
+    '"no current PDUFA event in the saved event feed"',
+    'def run_recheck_worker',
+    '"data/recheck_status.csv"',
 ]
 for label in required_ui_contracts:
     if label not in app:
