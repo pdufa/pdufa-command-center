@@ -140,8 +140,20 @@ for r in second_financing:
             raise SystemExit(f"second_financing_status.csv: verified row missing source: {r['event_key']}")
         if not (r.get("second_financing_evidence_note") or "").strip():
             raise SystemExit(f"second_financing_status.csv: verified row missing evidence note: {r['event_key']}")
-if verified_second_financing < 1:
-    raise SystemExit("second_financing_status.csv: no verified second financing rows")
+if verified_second_financing < 16:
+    raise SystemExit(
+        f"second_financing_status.csv: expected at least 16 verified second-financing rows, found {verified_second_financing}"
+    )
+unresearched_financing = [
+    r["event_key"] for r in second_financing
+    if not (r.get("second_financing_audit_status") or "").strip()
+    or (r.get("second_financing_audit_status") or "").strip() == "NOT_VERIFIED"
+]
+if unresearched_financing:
+    raise SystemExit(
+        "second_financing_status.csv: live events remain unresearched: "
+        + ", ".join(unresearched_financing[:5])
+    )
 
 history = read_csv(ROOT / "data/prediction_engine_history.csv")
 hkeys = [r["event_key"].strip() for r in history]
@@ -247,6 +259,7 @@ required_ui_contracts = [
     'def load_second_financing_backfill',
     'second-fin-verified',
     'Verified second-financing closes:',
+    'Financing research coverage:',
     'FINANCING CACHE FIX',
     '"2F Announced"',
     '"2F Running"',
