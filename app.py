@@ -1696,13 +1696,13 @@ elif page == "3. CALENDAR":
                     )
 
 elif page == "4. PREDICTION ENGINE":
-    st.markdown("## 4. PREDICTION ENGINE — 2023 TO SEP 2026")
-    st.caption("Canonical $300M–$10B historical cohort. 2023 is retrospective tuning, 2024 is the first locked validation year, 2025 is the stronger later holdout, and 2026 is model-development/current history. Missing historical vendor/public probabilities are never fabricated.")
+    st.markdown("## 4. PREDICTION ENGINE — 2020 TO SEP 2026")
+    st.caption("Canonical $300M–$10B historical cohort. 2020–2022 are retrospective development history, 2023 is the tuning year, 2024 is the first locked validation year, 2025 is the later holdout, and 2026 is current/model-development history. Missing historical vendor/public probabilities are never fabricated.")
 
     hist = prediction_history.copy()
     hist = hist[
         hist["pdufa_date"].notna() &
-        (hist["pdufa_date"] >= pd.Timestamp("2023-01-01")) &
+        (hist["pdufa_date"] >= pd.Timestamp("2020-01-01")) &
         (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
     ].copy()
     if "public_approval_probability" not in hist:
