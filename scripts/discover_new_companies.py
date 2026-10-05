@@ -18,9 +18,10 @@ STATE = DATA / "discovery_run_state.json"
 SEC_HEADERS = {
     "User-Agent": os.getenv(
         "SEC_USER_AGENT",
-        "PDUFA Command Center pdufa-command-center@users.noreply.github.com"
+        "PDUFACommandCenter/1.0 pdufa-command-center@users.noreply.github.com"
     ),
     "Accept-Encoding": "gzip, deflate",
+    "Accept": "application/json,text/html;q=0.9,*/*;q=0.8",
 }
 LOOKBACK_DAYS = max(1, int(os.getenv("DISCOVERY_LOOKBACK_DAYS", "10")))
 CT_LIMIT = max(25, min(500, int(os.getenv("DISCOVERY_CT_LIMIT", "200"))))
@@ -82,17 +83,14 @@ def write_csv(path, df):
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(path, index=False)
 
-def sec_ticker_map():
-    data = req("https://www.sec.gov/files/company_tickers_exchange.json", headers=SEC_HEADERS).json()
-    fields = data.get("fields", [])
-    rows = data.get("data", [])
-    frame = pd.DataFrame(rows, columns=fields)
+def _normalize_ticker_frame(frame):
+    frame = frame.copy()
     ren = {}
     for c in frame.columns:
-        lc = c.lower()
-        if lc == "cik":
+        lc = str(c).lower()
+        if lc in {"cik", "cik_str"}:
             ren[c] = "cik10"
-        elif lc == "name":
+        elif lc in {"name", "title"}:
             ren[c] = "company"
         elif lc == "ticker":
             ren[c] = "ticker"
@@ -106,6 +104,46 @@ def sec_ticker_map():
     frame["cik10"] = frame["cik10"].astype(str).str.replace(r"\D","",regex=True).str.zfill(10)
     frame["name_norm"] = frame["company"].map(norm_name)
     return frame[["ticker","company","cik10","exchange","name_norm"]].drop_duplicates("ticker")
+
+
+def sec_ticker_map(fallback_registry):
+    """Use SEC identity data when reachable; never let an SEC block kill discovery."""
+    errors = []
+
+    try:
+        data = req(
+            "https://www.sec.gov/files/company_tickers_exchange.json",
+            headers=SEC_HEADERS,
+            timeout=15,
+        ).json()
+        frame = pd.DataFrame(data.get("data", []), columns=data.get("fields", []))
+        if not frame.empty:
+            return _normalize_ticker_frame(frame), "SEC_EXCHANGE_MAP", ""
+    except Exception as exc:
+        errors.append(f"exchange map: {type(exc).__name__}: {exc}")
+
+    try:
+        data = req(
+            "https://www.sec.gov/files/company_tickers.json",
+            headers=SEC_HEADERS,
+            timeout=15,
+        ).json()
+        rows = list(data.values()) if isinstance(data, dict) else []
+        frame = pd.DataFrame(rows)
+        if not frame.empty:
+            return _normalize_ticker_frame(frame), "SEC_TICKER_MAP", " | ".join(errors)
+    except Exception as exc:
+        errors.append(f"ticker map: {type(exc).__name__}: {exc}")
+
+    # Critical fail-safe: the 716-company registry remains usable as an identity map.
+    # Unknown sponsors are NOT discarded; they continue into the review/backfill queue.
+    fallback = fallback_registry.copy()
+    fallback["name_norm"] = fallback["company"].map(norm_name)
+    return (
+        _normalize_ticker_frame(fallback),
+        "REGISTRY_FALLBACK",
+        " | ".join(errors) or "SEC identity endpoints unavailable",
+    )
 
 def get_submission(cik10):
     cik10 = re.sub(r"\D","", clean(cik10)).zfill(10)
@@ -232,7 +270,8 @@ tracked_tickers = set(candidate_df.get("ticker", pd.Series(dtype=str)).astype(st
 
 old_events = load_csv(EVENTS, EVENT_COLUMNS)
 old_queue = load_csv(QUEUE, QUEUE_COLUMNS)
-secmap = sec_ticker_map()
+secmap, sec_identity_mode, sec_identity_error = sec_ticker_map(registry)
+sec_scan_enabled = sec_identity_mode.startswith("SEC_")
 submission_cache = {}
 new_events = []
 added_companies = []
@@ -332,56 +371,64 @@ else:
     ct_error = ""
 
 # 2) COMPANY EVENT SCAN: scan recent SEC filings for Phase 3 / NDA / BLA / PDUFA.
+# Hosted runners are sometimes blocked by SEC. When that happens, skip this leg
+# for the run instead of failing or issuing thousands of doomed requests.
 cutoff = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)).date()
-for idx, r in registry.drop_duplicates("ticker").iterrows():
-    ticker = clean(r.get("ticker")).upper()
-    cik = clean(r.get("cik10")).zfill(10)
-    if not ticker or not cik.strip("0"):
-        continue
-    try:
-        sub = submission_cache.get(cik) or get_submission(cik)
-        submission_cache[cik] = sub
-        recent = pd.DataFrame((sub.get("filings", {}) or {}).get("recent", {}))
-        if recent.empty:
-            time.sleep(PAUSE)
+sec_scan_error = ""
+if sec_scan_enabled:
+    for idx, r in registry.drop_duplicates("ticker").iterrows():
+        ticker = clean(r.get("ticker")).upper()
+        cik = clean(r.get("cik10")).zfill(10)
+        if not ticker or not cik.strip("0"):
             continue
-        recent["filingDate_dt"] = pd.to_datetime(recent.get("filingDate"), errors="coerce")
-        recent = recent[
-            recent["form"].astype(str).isin(SEC_FORMS) &
-            (recent["filingDate_dt"].dt.date >= cutoff)
-        ].sort_values("filingDate_dt", ascending=False).head(SEC_DOCS_PER_COMPANY)
-        for _, fr in recent.iterrows():
-            acc = clean(fr.get("accessionNumber"))
-            doc = clean(fr.get("primaryDocument"))
-            if not acc or not doc:
+        try:
+            sub = submission_cache.get(cik) or get_submission(cik)
+            submission_cache[cik] = sub
+            recent = pd.DataFrame((sub.get("filings", {}) or {}).get("recent", {}))
+            if recent.empty:
+                time.sleep(PAUSE)
                 continue
-            url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc.replace('-','')}/{doc}"
-            try:
-                raw = req(url, headers=SEC_HEADERS).text
-                text = strip_html(raw)
-            except Exception:
-                continue
-            et = event_type(text)
-            if not et:
-                continue
-            pdate = extract_pdufa_date(text)
-            add_event({
-                "source_type":"SEC_COMPANY_SCAN",
-                "event_type":et,
-                "ticker":ticker,
-                "company":clean(r.get("company")),
-                "cik10":cik,
-                "application_type":application_type(text),
-                "pdufa_date":pdate,
-                "source_date":clean(fr.get("filingDate")),
-                "source_url":url,
-                "evidence":evidence_snippet(text),
-                "company_status":"IN_DB",
-                "match_confidence":"1.000",
-            })
-        time.sleep(PAUSE)
-    except Exception:
-        continue
+            recent["filingDate_dt"] = pd.to_datetime(recent.get("filingDate"), errors="coerce")
+            recent = recent[
+                recent["form"].astype(str).isin(SEC_FORMS) &
+                (recent["filingDate_dt"].dt.date >= cutoff)
+            ].sort_values("filingDate_dt", ascending=False).head(SEC_DOCS_PER_COMPANY)
+            for _, fr in recent.iterrows():
+                acc = clean(fr.get("accessionNumber"))
+                doc = clean(fr.get("primaryDocument"))
+                if not acc or not doc:
+                    continue
+                url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc.replace('-','')}/{doc}"
+                try:
+                    raw = req(url, headers=SEC_HEADERS).text
+                    text = strip_html(raw)
+                except Exception:
+                    continue
+                et = event_type(text)
+                if not et:
+                    continue
+                pdate = extract_pdufa_date(text)
+                add_event({
+                    "source_type":"SEC_COMPANY_SCAN",
+                    "event_type":et,
+                    "ticker":ticker,
+                    "company":clean(r.get("company")),
+                    "cik10":cik,
+                    "application_type":application_type(text),
+                    "pdufa_date":pdate,
+                    "source_date":clean(fr.get("filingDate")),
+                    "source_url":url,
+                    "evidence":evidence_snippet(text),
+                    "company_status":"IN_DB",
+                    "match_confidence":"1.000",
+                })
+            time.sleep(PAUSE)
+        except Exception as exc:
+            # One company failure does not stop the remaining universe.
+            sec_scan_error = f"{type(exc).__name__}: {exc}"
+            continue
+else:
+    sec_scan_error = "SEC company scan skipped because SEC identity endpoints were unavailable on this runner."
 
 # Persist registry additions.
 registry = registry.drop(columns=["name_norm"], errors="ignore")
@@ -433,6 +480,10 @@ state = {
     "events_total":int(len(events)),
     "backfill_queue_total":int(len(queue)),
     "ctgov_error":ct_error,
+    "sec_identity_mode":sec_identity_mode,
+    "sec_identity_error":sec_identity_error,
+    "sec_scan_enabled":bool(sec_scan_enabled),
+    "sec_scan_error":sec_scan_error,
 }
 STATE.write_text(json.dumps(state, indent=2), encoding="utf-8")
 print(json.dumps(state, indent=2))
