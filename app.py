@@ -1221,7 +1221,7 @@ if page == "1. ALL PDUFA":
         master = live_master
 
     master["time_status"] = master["pdufa_date"].apply(
-        lambda d: "" if pd.isna(d) else (
+        lambda d: "Unknown" if pd.isna(d) else (
             "Past" if pd.Timestamp(d).date() < date.today()
             else ("Today" if pd.Timestamp(d).date() == date.today() else "Future")
         )
@@ -1240,7 +1240,7 @@ if page == "1. ALL PDUFA":
     with top1:
         time_view = st.selectbox(
             "Past / Present / Future",
-            ["All","Past","Present / Active","Today","Future",""],
+            ["All","Past","Present / Active","Today","Future","Unknown"],
             index=0,
             help="Present / Active includes today and all upcoming PDUFA dates."
         )
@@ -1357,8 +1357,8 @@ if page == "1. ALL PDUFA":
         view = view[view["time_status"] == "Today"]
     elif time_view == "Future":
         view = view[view["time_status"] == "Future"]
-    elif time_view == "":
-        view = view[view["time_status"] == ""]
+    elif time_view == "Unknown":
+        view = view[view["time_status"] == "Unknown"]
     if year_mode == "Specific year" and year_filter is not None:
         view = view[view["year"] == year_filter]
     elif year_mode == "Year range" and year_start is not None and year_end is not None:
@@ -1479,7 +1479,7 @@ if page == "1. ALL PDUFA":
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
-        display.insert(time_pos, "Time", view["time_status"].fillna("").astype(str).values)
+        display.insert(time_pos, "Time", view["time_status"].fillna("Unknown").astype(str).values)
 
         render_merged_table(display, "MASTER PDUFA TABLE", height_px=650)
         open1,open2 = st.columns([3,1])
