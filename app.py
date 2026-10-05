@@ -71,7 +71,7 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-table-wrap{overflow:auto;background:#ffffff;border:2px solid #000000;border-radius:12px;padding:0;margin:8px 0 18px;color:#111111}
 .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#ffffff;color:#111111;width:max-content;min-width:100%;font-size:13px}
 .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111111;background:#ffffff;white-space:nowrap}
-.merged-pdufa-table th a.sort-head{color:#111111 !important;text-decoration:none !important;font-weight:800;display:block;width:100%;height:100%}
+.merged-pdufa-table th a.sort-head{color:#111111 !important;text-decoration:none !important;font-weight:800;display:block;width:100%;height:100%;cursor:pointer}
 .merged-pdufa-table th a.sort-head:hover{text-decoration:underline !important}
 .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
 .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
@@ -1294,7 +1294,7 @@ def _merged_table_sort_series(frame, col):
 def _sort_header_link(sort_key, col, current_col, current_dir):
     """Create a same-page header link that toggles ascending/descending."""
     next_dir = "desc" if current_col == col and current_dir == "asc" else "asc"
-    arrow = ""
+    arrow = " ↕"
     if current_col == col:
         arrow = " ▲" if current_dir == "asc" else " ▼"
     href = (
@@ -1303,7 +1303,7 @@ def _sort_header_link(sort_key, col, current_col, current_dir):
         + "&sort_dir=" + urllib.parse.quote(next_dir, safe="")
     )
     label = html.escape(str(col)) + arrow
-    return f'<a class="sort-head" href="{href}" target="_self">{label}</a>'
+    return f'<a class="sort-head" href="{href}" target="_self" title="Click to sort {html.escape(str(col), quote=True)}">{label}</a>'
 
 
 def render_merged_table(frame, heading, height_px=690):
