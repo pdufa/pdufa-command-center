@@ -1850,14 +1850,14 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-04B · FINANCING CACHE FIX · P COLUMN ACTIVE · 2020–2026 DESIGNATION BACKFILL")
-st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCAN → MATCH OPTIMIZER → RECHECK. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCAN","6. MATCH OPTIMIZER","7. RECHECK"]
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCANS","6. MATCH OPTIMIZER","7. RECHECK"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -3094,8 +3094,72 @@ elif page == "6. MATCH OPTIMIZER":
             )
 
 
-elif page == "5. SCAN":
-    st.markdown("## 5. SCAN — MANUAL ACTION CENTER")
+elif page == "5. SCANS":
+    st.markdown("## 5. SCANS — MASTER SCAN GANTT + ACTION CENTER")
+    st.caption("Variable PDUFA-relative Gantt chart for the scan families currently used by the command center. Change the horizon and each scan window below; Day 0 is the PDUFA decision date.")
+
+    gantt_defs = [
+        ("Company / Event Discovery", -180, 0, "Universe"),
+        ("Phase 3 / P-value", -180, -30, "Clinical"),
+        ("2nd Financing Confirmation", -180, -14, "Financing"),
+        ("Cash Runway", -120, -14, "Financial"),
+        ("Market Data / Momentum / Volume", -90, -1, "Trading"),
+        ("Ownership / Insiders", -90, -7, "Ownership"),
+        ("PDUFA Date / FDA Confirmation", -90, 0, "Regulatory"),
+        ("Probability of Approval — Public", -90, -1, "Prediction"),
+        ("Probability of Approval — All Sources", -90, -1, "Prediction"),
+        ("FDA Result / Outcome", 0, 7, "Regulatory"),
+    ]
+    g1, g2 = st.columns(2)
+    with g1:
+        horizon_start = int(st.number_input("Gantt start (days before PDUFA)", min_value=1, max_value=730, value=180, step=1, key="scan_gantt_before"))
+    with g2:
+        horizon_end = int(st.number_input("Gantt end (days after PDUFA)", min_value=0, max_value=90, value=7, step=1, key="scan_gantt_after"))
+
+    gantt_rows = []
+    with st.expander("Adjust individual scan windows"):
+        for idx, (scan_name, default_start, default_end, group) in enumerate(gantt_defs):
+            c1, c2, c3 = st.columns([2.5,1,1])
+            c1.markdown(f"**{scan_name}**")
+            start_val = int(c2.number_input("Start day", min_value=-730, max_value=90, value=default_start, step=1, key=f"gantt_start_{idx}", label_visibility="collapsed"))
+            end_val = int(c3.number_input("End day", min_value=-730, max_value=90, value=default_end, step=1, key=f"gantt_end_{idx}", label_visibility="collapsed"))
+            if start_val > end_val:
+                start_val, end_val = end_val, start_val
+            gantt_rows.append({"Scan":scan_name, "Start":start_val, "End":end_val, "Group":group})
+    if not gantt_rows:
+        gantt_rows = [{"Scan":n,"Start":a,"End":b,"Group":g} for n,a,b,g in gantt_defs]
+    else:
+        # rows are populated only when the expander body executes; keep defaults as a defensive fallback
+        known = {r["Scan"] for r in gantt_rows}
+        gantt_rows += [{"Scan":n,"Start":a,"End":b,"Group":g} for n,a,b,g in gantt_defs if n not in known]
+
+    gantt_df = pd.DataFrame(gantt_rows)
+    gantt_df["Start"] = gantt_df["Start"].clip(lower=-horizon_start, upper=horizon_end)
+    gantt_df["End"] = gantt_df["End"].clip(lower=-horizon_start, upper=horizon_end)
+    gantt_df = gantt_df[gantt_df["End"] >= gantt_df["Start"]].copy()
+    st.vega_lite_chart(
+        gantt_df,
+        {
+            "height": 420,
+            "mark": {"type":"bar","cornerRadius":4},
+            "encoding": {
+                "y": {"field":"Scan","type":"nominal","sort":None,"title":None},
+                "x": {"field":"Start","type":"quantitative","title":"Days relative to PDUFA (Day 0 = decision)","scale":{"domain":[-horizon_start,horizon_end]}},
+                "x2": {"field":"End"},
+                "tooltip": [
+                    {"field":"Scan","type":"nominal"},
+                    {"field":"Group","type":"nominal"},
+                    {"field":"Start","type":"quantitative","title":"Start day"},
+                    {"field":"End","type":"quantitative","title":"End day"}
+                ]
+            }
+        },
+        use_container_width=True,
+    )
+    st.caption("The Gantt is a planning/control view: it shows when each scan should be active relative to PDUFA. Changing a window changes this view only; it does not silently alter scheduled cloud jobs.")
+
+    st.divider()
+    st.markdown("### MANUAL ACTION CENTER")
     st.caption("One-click controls: pressing a button selects that scope and immediately triggers its matching action. No second Run/Submit step.")
     st.info("Today = PDUFA events due today. Week = today through the next 7 days. All = all active/future PDUFA events currently loaded.")
 
