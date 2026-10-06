@@ -36,8 +36,14 @@ REQUIRED = {
     },
     "data/fda_review_engine.csv": {
         "event_key","ticker","drug","pdufa_date","fda_application_identity",
-        "fda_clinical_score","fda_statistics_score","fda_safety_score","fda_cmc_score",
-        "fda_inspection_status","fda_regulatory_score","fda_benefit_risk_score",
+        "fda_clinical_score","fda_statistics_score","fda_primary_endpoint_status",
+        "fda_multiplicity_status","fda_missing_data_status","fda_effect_size_status",
+        "fda_replication_status","fda_statistics_gate","fda_safety_score","fda_cmc_score",
+        "fda_process_validation_status","fda_stability_status","fda_analytical_methods_status",
+        "fda_comparability_status","fda_supplier_status","fda_cmc_gate",
+        "fda_inspection_status","fda_warning_letter_status","fda_import_alert_status",
+        "fda_form483_status","fda_facility_classification","fda_preapproval_inspection_status",
+        "fda_facility_gate","fda_regulatory_score","fda_benefit_risk_score",
         "fda_hard_gate","fda_probability","fda_prediction","fda_confidence",
         "fda_model_version","decision_date","actual_fda_decision","fda_match_result",
     },
@@ -362,6 +368,13 @@ required_ui_contracts = [
     'INSTALL DECISION ON IPHONE',
     'Open as Web App',
     '@media (max-width: 768px)',
+    'FDA DECISION ENGINE V3.1',
+    'Stats Gate',
+    'CMC Gate',
+    'Facility Gate',
+    'Primary endpoint',
+    'Process validation',
+    'Preapproval inspection',
 ]
 for label in required_ui_contracts:
     if label not in app:
