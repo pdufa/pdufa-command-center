@@ -1,4 +1,4 @@
-name: Daily PDUFA Recheck
+name: Legacy PDUFA Recheck (Manual Only)
 
 on:
   workflow_dispatch:
@@ -11,15 +11,12 @@ on:
         description: Comma-separated categories
         required: false
         default: "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"
-  schedule:
-    - cron: "0 5 * * *"
-    - cron: "0 6 * * *"
 
 permissions:
   contents: write
 
 jobs:
-  recheck:
+  manual-recheck:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
@@ -29,40 +26,30 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: pip install pandas
-      - name: Check Pacific run window
-        id: pacific
-        run: |
-          if [ "${{ github.event_name }}" != "schedule" ]; then
-            echo "run=yes" >> "$GITHUB_OUTPUT"
-          elif [ "$(TZ=America/Los_Angeles date +%H)" = "22" ]; then
-            echo "run=yes" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=no" >> "$GITHUB_OUTPUT"
-          fi
       - name: Recheck exact event
-        if: github.event_name == 'workflow_dispatch' && inputs.event_key != ''
+        if: inputs.event_key != ''
         run: python scripts/recheck_events.py --event-key "${{ inputs.event_key }}" --categories "${{ inputs.categories }}"
       - name: Recheck all current events
-        if: (github.event_name == 'schedule' && steps.pacific.outputs.run == 'yes') || (github.event_name == 'workflow_dispatch' && inputs.event_key == '')
-        run: python scripts/recheck_events.py --all --categories "${{ inputs.categories || 'pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders' }}"
-      - name: Refresh FDA decision engine and freeze eligible pre-decision calls
-        run: python scripts/fda_decision_engine.py --freeze
-      - name: Refresh FDA regulatory interaction monitor
-        run: python scripts/fda_regulatory_signal_monitor.py
-      - name: Refresh 100 percent directional layer
-        run: python scripts/fda_directional_100pct.py
-      - name: Refresh PDUFA extension ledger
-        run: python scripts/fda_pdufa_extension_tracker.py
+        if: inputs.event_key == ''
+        run: python scripts/recheck_events.py --all --categories "${{ inputs.categories }}"
+      - name: Refresh FDA layers
+        run: |
+          python scripts/fda_decision_engine.py --freeze
+          python scripts/fda_regulatory_signal_monitor.py
+          python scripts/fda_directional_100pct.py
+          python scripts/fda_pdufa_extension_tracker.py
+          python scripts/fda_100_on_100_gate.py
       - name: Run repository checks
         run: python smoke_test.py
-      - name: Commit persisted recheck results
+      - name: Commit manual recheck results
         run: |
           git config user.name "pdufa-recheck-bot"
           git config user.email "pdufa-recheck-bot@users.noreply.github.com"
-          git add data/pdufa_candidates.csv data/recheck_status.csv data/fda_review_engine.csv data/fda_prediction_freezes.csv data/fda_review_backfill_queue.csv data/fda_regulatory_signal_monitor.csv data/fda_directional_100pct_live.csv data/fda_directional_100pct_historical.csv data/fda_directional_100pct_summary.json data/fda_directional_100pct_freezes.csv data/fda_pdufa_extension_ledger.csv
+          git add -A data
           if git diff --cached --quiet; then
             echo "No persisted recheck changes."
           else
-            git commit -m "Update PDUFA recheck results"
+            git commit -m "Manual PDUFA recheck update"
+            git pull --rebase origin main
             git push
           fi
