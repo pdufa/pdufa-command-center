@@ -41,8 +41,14 @@ REVIEW_COLUMNS = [
     "fda_regulatory_case_id","fda_count_in_match",
     "fda_application_identity",
     "fda_clinical_score","fda_statistics_score","fda_meaningfulness_score",
+    "fda_primary_endpoint_status","fda_multiplicity_status","fda_missing_data_status",
+    "fda_effect_size_status","fda_replication_status","fda_statistics_gate",
     "fda_safety_score","fda_clinical_pharmacology_score","fda_nonclinical_score",
-    "fda_cmc_score","fda_inspection_status","fda_regulatory_score",
+    "fda_cmc_score","fda_process_validation_status","fda_stability_status",
+    "fda_analytical_methods_status","fda_comparability_status","fda_supplier_status",
+    "fda_cmc_gate","fda_inspection_status","fda_warning_letter_status",
+    "fda_import_alert_status","fda_form483_status","fda_facility_classification",
+    "fda_preapproval_inspection_status","fda_facility_gate","fda_regulatory_score",
     "fda_labeling_score","fda_benefit_risk_score",
     "fda_evidence_freshness","fda_hard_gate","fda_probability",
     "fda_prediction","fda_confidence","fda_gate_reason",
@@ -114,6 +120,110 @@ def normalize_outcome(value):
     if "CRL" in value or "COMPLETE RESPONSE" in value or "REJECT" in value or "DECLIN" in value:
         return "CRL"
     return ""
+
+
+def status(value):
+    text = clean(value).upper()
+    aliases = {
+        "YES": "PASS", "CLEAR": "PASS", "CLOSED": "PASS", "RESOLVED": "PASS",
+        "NO": "FAIL", "FAILED": "FAIL", "ACTIVE": "FAIL",
+        "UNKNOWN": "REVIEW", "PENDING": "REVIEW", "UNRESOLVED": "REVIEW", "": "REVIEW",
+    }
+    return aliases.get(text, text if text in {"PASS","FAIL","REVIEW"} else "REVIEW")
+
+
+def _derive_component_gate(row, explicit_field, subfields, aggregate_score, pass_min, fail_max):
+    explicit = clean(row.get(explicit_field)).upper()
+    if explicit in {"PASS","FAIL","REVIEW"}:
+        return explicit
+
+    populated = [clean(row.get(f)) for f in subfields if clean(row.get(f)) != ""]
+    if populated:
+        vals = [status(row.get(f)) for f in subfields]
+        if "FAIL" in vals:
+            return "FAIL"
+        if "REVIEW" in vals:
+            return "REVIEW"
+        return "PASS"
+
+    agg = score(row.get(aggregate_score))
+    if agg is None:
+        return "REVIEW"
+    if agg <= fail_max:
+        return "FAIL"
+    if agg >= pass_min:
+        return "PASS"
+    return "REVIEW"
+
+
+def derive_statistics_gate(row, pass_min, fail_max):
+    # Primary endpoint and multiplicity are decisive when explicitly failed.
+    primary = status(row.get("fda_primary_endpoint_status"))
+    multiplicity = status(row.get("fda_multiplicity_status"))
+    if clean(row.get("fda_primary_endpoint_status")) and primary == "FAIL":
+        return "FAIL"
+    if clean(row.get("fda_multiplicity_status")) and multiplicity == "FAIL":
+        return "FAIL"
+    return _derive_component_gate(
+        row,
+        "fda_statistics_gate",
+        [
+            "fda_primary_endpoint_status","fda_multiplicity_status",
+            "fda_missing_data_status","fda_effect_size_status","fda_replication_status",
+        ],
+        "fda_statistics_score",
+        pass_min,
+        fail_max,
+    )
+
+
+def derive_cmc_gate(row, pass_min, fail_max):
+    return _derive_component_gate(
+        row,
+        "fda_cmc_gate",
+        [
+            "fda_process_validation_status","fda_stability_status",
+            "fda_analytical_methods_status","fda_comparability_status","fda_supplier_status",
+        ],
+        "fda_cmc_score",
+        pass_min,
+        fail_max,
+    )
+
+
+def derive_facility_gate(row):
+    explicit = clean(row.get("fda_facility_gate")).upper()
+    if explicit in {"PASS","FAIL","REVIEW"}:
+        return explicit
+
+    import_alert = clean(row.get("fda_import_alert_status")).upper()
+    classification = clean(row.get("fda_facility_classification")).upper()
+    pai = clean(row.get("fda_preapproval_inspection_status")).upper()
+    form483 = clean(row.get("fda_form483_status")).upper()
+    warning = clean(row.get("fda_warning_letter_status")).upper()
+
+    if import_alert in {"ACTIVE","FAIL"}:
+        return "FAIL"
+    if classification in {"OAI","FAIL"}:
+        return "FAIL"
+    if pai in {"FAIL","FAILED"}:
+        return "FAIL"
+
+    # A warning letter or 483 is a risk flag, but not by itself a final CRL signal.
+    if warning in {"ACTIVE","OPEN","REVIEW"} or form483 in {"OPEN","ACTIVE","REVIEW"}:
+        return "REVIEW"
+
+    if (
+        pai in {"PASS","COMPLETE","COMPLETED"}
+        and import_alert not in {"ACTIVE","FAIL"}
+        and classification not in {"OAI","FAIL"}
+    ):
+        return "PASS"
+
+    legacy = clean(row.get("fda_inspection_status")).upper()
+    if legacy in {"PASS","FAIL"}:
+        return legacy
+    return "REVIEW"
 
 
 def load_config():
@@ -191,15 +301,31 @@ def evaluate(row, cfg):
     elif identity != "PASS":
         unknown_reasons.append("application/review-cycle identity not verified")
 
-    inspection = clean(row.get("fda_inspection_status")).upper()
-    if inspection == "FAIL":
-        fail_reasons.append("manufacturing/facility inspection gate failed")
-    elif inspection != "PASS":
-        unknown_reasons.append("inspection status unknown")
-
     values = {name: score(row.get(col)) for name, col in SCORE_FIELDS.items()}
 
-    for critical in ["safety","cmc","regulatory"]:
+    statistics_gate = derive_statistics_gate(row, pass_min, fail_max)
+    cmc_gate = derive_cmc_gate(row, pass_min, fail_max)
+    facility_gate = derive_facility_gate(row)
+    row["fda_statistics_gate"] = statistics_gate
+    row["fda_cmc_gate"] = cmc_gate
+    row["fda_facility_gate"] = facility_gate
+
+    if statistics_gate == "FAIL":
+        fail_reasons.append("statistics/effectiveness gate failed")
+    elif statistics_gate != "PASS":
+        unknown_reasons.append("statistics/effectiveness gate unresolved")
+
+    if cmc_gate == "FAIL":
+        fail_reasons.append("CMC/product-quality gate failed")
+    elif cmc_gate != "PASS":
+        unknown_reasons.append("CMC/product-quality gate unresolved")
+
+    if facility_gate == "FAIL":
+        fail_reasons.append("manufacturing/facility gate failed")
+    elif facility_gate != "PASS":
+        unknown_reasons.append("manufacturing/facility gate unresolved")
+
+    for critical in ["safety","regulatory"]:
         v = values[critical]
         if v is None:
             unknown_reasons.append(f"{critical} score missing")
@@ -208,7 +334,7 @@ def evaluate(row, cfg):
         elif v < pass_min:
             unknown_reasons.append(f"{critical} hard gate not strong enough ({v:.0f})")
 
-    for required in ["clinical","statistics","clinical_meaningfulness","benefit_risk"]:
+    for required in ["clinical","clinical_meaningfulness","benefit_risk"]:
         if values[required] is None:
             unknown_reasons.append(f"{required} score missing")
 
@@ -267,7 +393,7 @@ def evaluate(row, cfg):
     row["fda_prediction"] = prediction
     row["fda_confidence"] = confidence
     row["fda_gate_reason"] = " | ".join(dict.fromkeys(reasons))
-    row["fda_model_version"] = clean(cfg.get("model_version")) or "FDA-V3.0"
+    row["fda_model_version"] = clean(cfg.get("model_version")) or "FDA-V3.1"
     row["fda_last_evaluated_at"] = utc_now()
 
     actual = normalize_outcome(row.get("actual_fda_decision"))
@@ -344,13 +470,28 @@ def write_backfill_queue(review):
     checks = [
         ("application_identity","fda_application_identity",lambda v: clean(v).upper() != "PASS"),
         ("clinical","fda_clinical_score",lambda v: score(v) is None),
-        ("statistics","fda_statistics_score",lambda v: score(v) is None),
+        ("statistics_gate","fda_statistics_gate",lambda v: clean(v).upper() != "PASS"),
+        ("primary_endpoint","fda_primary_endpoint_status",lambda v: status(v) != "PASS"),
+        ("multiplicity","fda_multiplicity_status",lambda v: status(v) != "PASS"),
+        ("missing_data_robustness","fda_missing_data_status",lambda v: status(v) != "PASS"),
+        ("effect_size","fda_effect_size_status",lambda v: status(v) != "PASS"),
+        ("replication","fda_replication_status",lambda v: status(v) != "PASS"),
         ("clinical_meaningfulness","fda_meaningfulness_score",lambda v: score(v) is None),
         ("safety","fda_safety_score",lambda v: score(v) is None),
         ("clinical_pharmacology","fda_clinical_pharmacology_score",lambda v: score(v) is None),
         ("nonclinical_toxicology","fda_nonclinical_score",lambda v: score(v) is None),
-        ("cmc_product_quality","fda_cmc_score",lambda v: score(v) is None),
-        ("manufacturing_inspection","fda_inspection_status",lambda v: clean(v).upper() != "PASS"),
+        ("cmc_gate","fda_cmc_gate",lambda v: clean(v).upper() != "PASS"),
+        ("process_validation","fda_process_validation_status",lambda v: status(v) != "PASS"),
+        ("stability","fda_stability_status",lambda v: status(v) != "PASS"),
+        ("analytical_methods","fda_analytical_methods_status",lambda v: status(v) != "PASS"),
+        ("comparability","fda_comparability_status",lambda v: status(v) != "PASS"),
+        ("supplier_risk","fda_supplier_status",lambda v: status(v) != "PASS"),
+        ("facility_gate","fda_facility_gate",lambda v: clean(v).upper() != "PASS"),
+        ("warning_letter","fda_warning_letter_status",lambda v: clean(v) == ""),
+        ("import_alert","fda_import_alert_status",lambda v: clean(v) == ""),
+        ("form_483","fda_form483_status",lambda v: clean(v) == ""),
+        ("facility_classification","fda_facility_classification",lambda v: clean(v) == ""),
+        ("preapproval_inspection","fda_preapproval_inspection_status",lambda v: clean(v) == ""),
         ("regulatory_history","fda_regulatory_score",lambda v: score(v) is None),
         ("labeling","fda_labeling_score",lambda v: score(v) is None),
         ("benefit_risk","fda_benefit_risk_score",lambda v: score(v) is None),
@@ -384,7 +525,7 @@ def write_backfill_queue(review):
             "days_to_pdufa": "" if days is None else str(days),
             "missing_components": " | ".join(missing),
             "backfill_status": "CLOSED_DECIDED" if closed else ("NEEDS_BACKFILL" if missing else "READY_FOR_ENGINE"),
-            "source_targets": "FDA/Drugs@FDA review documents | FDA action/CRL source | ClinicalTrials.gov | issuer/SEC application evidence",
+            "source_targets": "FDA/Drugs@FDA review documents | FDA inspection classifications/warning letters/import alerts | FDA action/CRL source | ClinicalTrials.gov | trial SAP/publication | issuer/SEC application evidence",
             "decision_date": clean(r.get("decision_date")),
             "actual_fda_decision": normalize_outcome(r.get("actual_fda_decision")),
             "notes": (
