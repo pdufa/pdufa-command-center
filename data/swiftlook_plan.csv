@@ -1,0 +1,15 @@
+order,area,task,cadence,priority,status,next_action,notes
+1,Surveillance,Discover new eligible companies and PDUFA events,Daily 5:15 AM Pacific,HIGH,ACTIVE,Auto-add newly eligible $300M-$10B companies and events,Event-first discovery with ClinicalTrials.gov/SEC/company evidence
+2,Surveillance,Recheck all tracked PDUFA events,Daily 5:15 AM Pacific,HIGH,ACTIVE,Refresh date Phase 3 financing cash market and ownership,Feeds FDA and trading layers without overwriting frozen history
+3,Surveillance,Deep review every PDUFA due in next 7 days,Sunday 4:00 AM Pacific,HIGH,ACTIVE,Run full evidence freshness and unresolved-gate review,Strict and Broad both refresh
+4,Universe,Full biotech universe reconciliation,1st of month 4:30 AM Pacific,HIGH,ACTIVE,Catch new or missed eligible companies,Expanded discovery depth and full event recheck
+5,FDA Strict,Strict evidence-qualified FDA call,Event driven + scheduled,HIGH,ACTIVE,Return APPROVED CRL or REVIEW,REVIEW is allowed and does not count as a miss
+6,FDA Broad,Forced directional FDA opinion,Event driven + scheduled,HIGH,ACTIVE,Return APPROVED or CRL for every eligible event,Broad cannot upgrade Strict
+7,Prediction Integrity,Freeze pre-decision prediction,Before FDA decision,HIGH,ACTIVE,Preserve each version and evidence cutoff,Never rewrite a frozen call after the outcome
+8,Prediction Integrity,Score FDA outcome against frozen call,After FDA decision,HIGH,ACTIVE,Record MATCH or MISS,Use prospective results to measure real-world performance
+9,Evidence,Maintain source freshness and unresolved gates,Daily / event driven,HIGH,ACTIVE,Track source date last checked and stale/current status,Prioritize FDA SEC ClinicalTrials.gov and manufacturer sources
+10,Trading,Keep FDA prediction separate from trade setup,Continuous,HIGH,ACTIVE,Combine FDA confidence with financing entry and market conditions,Approval outlook must not be confused with trade attractiveness
+11,Trading,Green-Light Minimum Entry Gate,Planned,HIGH,NEXT,Implement mandatory entry-ready benchmarks,Phase 3 benefit safety price base volume normalization and financing closure
+12,Trading,Financing-stage traffic light,Planned,MEDIUM,PLANNED,Implement requested financing-stage display,Keep distinct from Green-Light Entry Gate
+13,Platform,Surface FDA Direction Confidence Tier and Trade Entry Status,Planned,HIGH,NEXT,Add prominent dashboard fields,Make decision output immediately usable
+14,Platform,Maintain editable SwiftLook PLAN tab,As needed,MEDIUM,ACTIVE,Review and update milestones directly in SwiftLook,Plan changes are editable from the platform
