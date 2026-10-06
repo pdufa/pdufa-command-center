@@ -293,6 +293,29 @@ def load_prediction_rescore_queue():
     return q
 
 
+@st.cache_data(ttl=120)
+def load_fda_review_engine():
+    try:
+        x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
+    except Exception:
+        x = pd.DataFrame()
+    required = [
+        "event_key","ticker","drug","pdufa_date",
+        "fda_application_identity","fda_clinical_score","fda_statistics_score",
+        "fda_meaningfulness_score","fda_safety_score","fda_clinical_pharmacology_score",
+        "fda_nonclinical_score","fda_cmc_score","fda_inspection_status",
+        "fda_regulatory_score","fda_labeling_score","fda_benefit_risk_score",
+        "fda_evidence_freshness","fda_hard_gate","fda_probability","fda_prediction",
+        "fda_confidence","fda_gate_reason","fda_model_version",
+        "fda_prediction_frozen_at","fda_last_evaluated_at","decision_date",
+        "actual_fda_decision","fda_match_result","fda_source_note"
+    ]
+    for col in required:
+        if col not in x:
+            x[col] = ""
+    return x[required]
+
+
 @st.cache_data(ttl=60)
 def load_recheck_status():
     try:
@@ -329,8 +352,23 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
     )
     if result.returncode != 0:
         raise RuntimeError((result.stderr or result.stdout or "Recheck failed").strip())
+    # Refresh the FDA-only decision layer after evidence recheck.
+    fda_cmd = [sys.executable, "scripts/fda_decision_engine.py"]
+    if event_key:
+        fda_cmd += ["--event-key", str(event_key)]
+    fda_result = subprocess.run(
+        fda_cmd,
+        cwd=str(Path(__file__).resolve().parent),
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    if fda_result.returncode != 0:
+        raise RuntimeError((fda_result.stderr or fda_result.stdout or "FDA decision engine failed").strip())
+
     load_data.clear()
     load_recheck_status.clear()
+    load_fda_review_engine.clear()
     payload = (result.stdout or "").strip().splitlines()
     return payload[-1] if payload else "Recheck completed"
 
@@ -495,6 +533,17 @@ def _story_timestamp(value):
 df = load_data()
 prediction_history = load_prediction_history()
 prediction_rescore_queue = load_prediction_rescore_queue()
+fda_reviews = load_fda_review_engine()
+if not fda_reviews.empty and "event_key" in df:
+    fda_merge_cols = ["event_key"] + [c for c in fda_reviews.columns if c.startswith("fda_")]
+    df["event_key"] = df["event_key"].astype(str)
+    fda_reviews["event_key"] = fda_reviews["event_key"].astype(str)
+    df = df.merge(
+        fda_reviews[fda_merge_cols].drop_duplicates("event_key", keep="last"),
+        on="event_key",
+        how="left",
+        validate="many_to_one"
+    )
 
 # Startup data validation: fail loudly on structural problems instead of silently
 # rendering a misleading one-row/partial dashboard.
@@ -718,7 +767,16 @@ def prediction_v2_history_status(row):
 
 
 def prospective_gate_state(row):
-    """Conservative V2 decision layer for live/future PDUFA rows."""
+    """Conservative FDA decision layer for live/future PDUFA rows."""
+    persistent_call = safe_text(row.get("fda_prediction"), "").upper()
+    persistent_model = safe_text(row.get("fda_model_version"), "")
+    if persistent_model and persistent_call in ["APPROVED","CRL","REVIEW"]:
+        return (
+            persistent_call,
+            safe_text(row.get("fda_confidence"), "INSUFFICIENT FDA EVIDENCE"),
+            safe_text(row.get("fda_gate_reason"), "Persistent FDA review record")
+        )
+
     reasons = []
 
     pdufa_status = safe_text(row.get("pdufa_confirmation"), "").lower()
@@ -1468,6 +1526,9 @@ COLUMN_HELP = {
     "PDUFA": "FDA target action date for this application/review cycle.",
     "SUGGESTION %": "ChatGPT/model pre-decision probability of FDA approval for this event.",
     "SUGGESTION": "Suggestion in words from SUGGESTION %: PASS at 50% or higher; CRL below 50%.",
+    "FDA MODEL %": "FDA-only regulatory approval probability. Trading variables are excluded.",
+    "FDA CALL": "FDA-only directional call: APPROVED, CRL, or REVIEW.",
+    "FDA GATE": "FDA-like hard-gate status: PASS, FAIL, or REVIEW/unknown.",
     "FDA Decision": "Final FDA outcome when resolved. Future or unresolved events show PENDING.",
     "MATCH %": "100% when the model direction matched the resolved FDA decision, 0% when it missed; blank while pending.",
     "P%": "All-sources model probability of FDA approval for this event.",
@@ -1981,7 +2042,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06C · DECISION DATE · EARLY FDA DECISIONS CLOSE IMMEDIATELY · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06D · FDA DECISION ENGINE V3 · DECISION DATE · EARLY FDA DECISIONS CLOSE IMMEDIATELY")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -1989,7 +2050,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCANS","6. MATCH OPTIMIZER","7. RECHECK"]
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCANS","6. MATCH OPTIMIZER","7. RECHECK","8. FDA ENGINE"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -2354,6 +2415,15 @@ if page == "1. ALL PDUFA":
         display["FDA Decision"] = view.apply(fda_decision_display, axis=1).values
         display["MATCH %"] = view.apply(match_percent_display, axis=1).values
         display["P"] = view["reported_p_values"].apply(lambda v: safe_text(v, "")).values
+        display["FDA MODEL %"] = view.get("fda_probability", pd.Series(index=view.index, dtype="object")).apply(
+            lambda v: "" if safe_text(v, "") == "" else fmt_app_pct(v, 1)
+        ).values
+        display["FDA CALL"] = view.get("fda_prediction", pd.Series(index=view.index, dtype="object")).apply(
+            lambda v: safe_text(v, "REVIEW")
+        ).values
+        display["FDA GATE"] = view.get("fda_hard_gate", pd.Series(index=view.index, dtype="object")).apply(
+            lambda v: safe_text(v, "REVIEW")
+        ).values
         second_fin = add_second_financing_columns(view)
         for col in SECOND_FINANCING_COLUMNS:
             display[col] = second_fin[col].values
@@ -2371,7 +2441,7 @@ if page == "1. ALL PDUFA":
             "Outcome"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","PDUFA Date","DECISION DATE","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
+        front = ["Ticker","PDUFA Date","DECISION DATE","FDA MODEL %","FDA CALL","FDA GATE","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2962,10 +3032,10 @@ elif page == "4. PREDICTION ENGINE":
             )
 
     st.divider()
-    st.markdown("### Prediction Engine V2 — Prospective Decision Layer")
+    st.markdown("### FDA Decision Engine V3 — Prospective Regulatory Layer")
     st.caption(
-        "V2 is conservative by design: it refuses weak-data calls. It does not rewrite frozen Q4 predictions "
-        "or retroactively tune historical probabilities."
+        "FDA V3 is regulatory-only and conservative by design. It separates clinical/statistical/safety/CMC/inspection/regulatory review "
+        "from the Trading Engine. Market cap, price, momentum, short interest, IV, financing and ownership do not enter the FDA probability."
     )
 
     live_v2 = future.copy()
@@ -2976,6 +3046,12 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["V2 Call"] = [x[0] for x in gate_results]
         live_v2["V2 Confidence"] = [x[1] for x in gate_results]
         live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
+        live_v2["FDA Model %"] = live_v2.get("fda_probability", pd.Series(index=live_v2.index, dtype="object")).apply(
+            lambda v: "" if safe_text(v, "") == "" else fmt_app_pct(v, 1)
+        )
+        live_v2["FDA Gate"] = live_v2.get("fda_hard_gate", pd.Series(index=live_v2.index, dtype="object")).apply(
+            lambda v: safe_text(v, "REVIEW")
+        )
         live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
         live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
         live_v2["P%"] = live_v2.apply(lambda r: displayed_probability_text(r, 1), axis=1)
@@ -3002,8 +3078,8 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","PDUFA Date","P%","F","Match %","C","Probability of Approval % — Public","drug","indication",
-            "V2 Call","V2 Confidence","V2 Gate Reason",
+            "Ticker","PDUFA Date","FDA Model %","V2 Call","FDA Gate","V2 Confidence","V2 Gate Reason",
+            "P%","F","Match %","C","Probability of Approval % — Public","drug","indication",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
             "drug":"Drug",
@@ -3626,6 +3702,81 @@ elif page == "7. RECHECK":
     )
 
 
+elif page == "8. FDA ENGINE":
+    st.markdown("## 8. FDA ENGINE — REGULATORY DECISION LAYER")
+    st.caption(
+        "This page mirrors the FDA review structure as closely as public evidence allows. "
+        "It is deliberately separate from the Trading Engine. Missing critical disciplines force REVIEW rather than a guessed call."
+    )
+
+    fda_view = df.copy()
+    for col in [
+        "fda_application_identity","fda_clinical_score","fda_statistics_score",
+        "fda_meaningfulness_score","fda_safety_score","fda_clinical_pharmacology_score",
+        "fda_nonclinical_score","fda_cmc_score","fda_inspection_status",
+        "fda_regulatory_score","fda_labeling_score","fda_benefit_risk_score",
+        "fda_evidence_freshness","fda_hard_gate","fda_probability",
+        "fda_prediction","fda_confidence","fda_gate_reason","fda_model_version",
+        "fda_prediction_frozen_at"
+    ]:
+        if col not in fda_view:
+            fda_view[col] = ""
+
+    fda_view["PDUFA Date"] = pd.to_datetime(fda_view["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    fda_view["DECISION DATE"] = pd.to_datetime(fda_view["decision_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+    fda_view["FDA MODEL %"] = fda_view["fda_probability"].apply(
+        lambda v: "" if safe_text(v, "") == "" else fmt_app_pct(v, 1)
+    )
+    fda_view["FDA CALL"] = fda_view["fda_prediction"].apply(lambda v: safe_text(v, "REVIEW"))
+    fda_view["FDA GATE"] = fda_view["fda_hard_gate"].apply(lambda v: safe_text(v, "REVIEW"))
+
+    calls = fda_view["FDA CALL"].value_counts()
+    gates = fda_view["FDA GATE"].value_counts()
+    e1,e2,e3,e4,e5 = st.columns(5)
+    e1.metric("Events", len(fda_view))
+    e2.metric("APPROVED Calls", int(calls.get("APPROVED", 0)))
+    e3.metric("CRL Calls", int(calls.get("CRL", 0)))
+    e4.metric("REVIEW / No Call", int(calls.get("REVIEW", 0)))
+    e5.metric("Hard-Gate PASS", int(gates.get("PASS", 0)))
+
+    st.info(
+        "Critical UNKNOWN → REVIEW. Critical FAIL → CRL risk. Only a PASS gate can generate a calibrated FDA probability. "
+        "This protects match accuracy by refusing to force calls when FDA-relevant evidence is incomplete."
+    )
+
+    fda_table = fda_view[[
+        "ticker","PDUFA Date","DECISION DATE","FDA MODEL %","FDA CALL","FDA GATE",
+        "fda_application_identity","fda_clinical_score","fda_statistics_score",
+        "fda_meaningfulness_score","fda_safety_score","fda_cmc_score",
+        "fda_inspection_status","fda_regulatory_score","fda_labeling_score",
+        "fda_benefit_risk_score","fda_evidence_freshness","fda_confidence",
+        "fda_prediction_frozen_at","fda_model_version","fda_gate_reason"
+    ]].rename(columns={
+        "ticker":"Ticker",
+        "fda_application_identity":"Application Identity",
+        "fda_clinical_score":"Clinical",
+        "fda_statistics_score":"Statistics",
+        "fda_meaningfulness_score":"Meaningfulness",
+        "fda_safety_score":"Safety",
+        "fda_cmc_score":"CMC",
+        "fda_inspection_status":"Inspection",
+        "fda_regulatory_score":"Regulatory",
+        "fda_labeling_score":"Labeling",
+        "fda_benefit_risk_score":"Benefit-Risk",
+        "fda_evidence_freshness":"Evidence Cutoff",
+        "fda_confidence":"Confidence",
+        "fda_prediction_frozen_at":"Frozen At",
+        "fda_model_version":"Model",
+        "fda_gate_reason":"Gate Reason"
+    }).sort_values(["PDUFA Date","Ticker"], na_position="last")
+
+    st.dataframe(fda_table, use_container_width=True, hide_index=True, height=720)
+    st.caption(
+        "Regulatory model inputs only. Trading variables are intentionally excluded. "
+        "The freeze ledger is data/fda_prediction_freezes.csv; frozen calls are never overwritten after an FDA decision."
+    )
+
+
 else:
     if st.session_state.selected_detail_source == "history":
         hmatches = prediction_history[
@@ -3928,10 +4079,37 @@ else:
             st.write(safe_text(r.get("science_summary"), "No additional clinical summary stored."))
         with subtabs[4]:
             st.markdown("### FDA / Regulatory")
-            f1,f2,f3 = st.columns(3)
+            f1,f2,f3,f4,f5 = st.columns(5)
             f1.metric("PDUFA date", "Not available" if pd.isna(r.get("pdufa_date")) else pd.Timestamp(r.get("pdufa_date")).strftime("%b %d, %Y"))
-            f2.metric("Confirmation", safe_text(r.get("pdufa_confirmation")))
-            f3.metric("Check status", safe_text(r.get("check_status")))
+            f2.metric("Decision date", "Open" if pd.isna(r.get("decision_date")) else pd.Timestamp(r.get("decision_date")).strftime("%b %d, %Y"))
+            f3.metric("FDA Model %", "" if safe_text(r.get("fda_probability"), "") == "" else fmt_app_pct(r.get("fda_probability"), 1))
+            f4.metric("FDA Call", safe_text(r.get("fda_prediction"), "REVIEW"))
+            f5.metric("FDA Gate", safe_text(r.get("fda_hard_gate"), "REVIEW"))
+
+            review_rows = [
+                ("Application identity", r.get("fda_application_identity")),
+                ("Clinical efficacy", r.get("fda_clinical_score")),
+                ("Statistics", r.get("fda_statistics_score")),
+                ("Clinical meaningfulness", r.get("fda_meaningfulness_score")),
+                ("Safety", r.get("fda_safety_score")),
+                ("Clinical pharmacology / PK", r.get("fda_clinical_pharmacology_score")),
+                ("Nonclinical / toxicology", r.get("fda_nonclinical_score")),
+                ("CMC / product quality", r.get("fda_cmc_score")),
+                ("Manufacturing / inspection", r.get("fda_inspection_status")),
+                ("Regulatory history", r.get("fda_regulatory_score")),
+                ("Labeling", r.get("fda_labeling_score")),
+                ("Benefit-risk", r.get("fda_benefit_risk_score")),
+                ("Evidence freshness", r.get("fda_evidence_freshness")),
+            ]
+            st.dataframe(
+                pd.DataFrame([{"FDA Review Block": a, "Status / Score": safe_text(b, "UNKNOWN")} for a,b in review_rows]),
+                use_container_width=True,
+                hide_index=True
+            )
+            st.write(f"**FDA confidence:** {safe_text(r.get('fda_confidence'), 'INSUFFICIENT FDA EVIDENCE')}")
+            st.write(f"**Gate reason:** {safe_text(r.get('fda_gate_reason'), 'FDA review record not yet populated')}")
+            st.write(f"**Prediction frozen at:** {safe_text(r.get('fda_prediction_frozen_at'), 'Not frozen')}")
+            st.write(f"**Model version:** {safe_text(r.get('fda_model_version'), 'FDA-V3.0')}")
             if safe_text(r.get("pdufa_evidence_url"), ""):
                 st.link_button("OPEN REGULATORY SOURCE", r.get("pdufa_evidence_url"))
             st.write(safe_text(r.get("regulatory_summary"), "No additional regulatory notes stored."))
