@@ -2214,7 +2214,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06O · FDA V3.2 STRICT + DIRECTIONAL V1.7 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06P · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.7 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
