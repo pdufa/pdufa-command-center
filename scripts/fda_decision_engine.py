@@ -33,6 +33,7 @@ DATA = ROOT / "data"
 CANDIDATES = DATA / "pdufa_candidates.csv"
 REVIEWS = DATA / "fda_review_engine.csv"
 FREEZES = DATA / "fda_prediction_freezes.csv"
+BACKFILL = DATA / "fda_review_backfill_queue.csv"
 CONFIG = DATA / "fda_engine_config.json"
 
 REVIEW_COLUMNS = [
@@ -53,6 +54,12 @@ FREEZE_COLUMNS = [
     "fda_probability","fda_prediction","fda_confidence","fda_hard_gate",
     "fda_gate_reason","frozen_at","model_version","decision_date",
     "actual_fda_decision","match_result"
+]
+
+BACKFILL_COLUMNS = [
+    "event_key","ticker","drug","pdufa_date","priority","days_to_pdufa",
+    "missing_components","backfill_status","source_targets","decision_date",
+    "actual_fda_decision","notes"
 ]
 
 SCORE_FIELDS = {
@@ -326,6 +333,63 @@ def freeze_rows(review, candidates, cfg):
     return review, len(new_rows)
 
 
+def write_backfill_queue(review):
+    today = pd.Timestamp(datetime.now(timezone.utc).date())
+    checks = [
+        ("application_identity","fda_application_identity",lambda v: clean(v).upper() != "PASS"),
+        ("clinical","fda_clinical_score",lambda v: score(v) is None),
+        ("statistics","fda_statistics_score",lambda v: score(v) is None),
+        ("clinical_meaningfulness","fda_meaningfulness_score",lambda v: score(v) is None),
+        ("safety","fda_safety_score",lambda v: score(v) is None),
+        ("clinical_pharmacology","fda_clinical_pharmacology_score",lambda v: score(v) is None),
+        ("nonclinical_toxicology","fda_nonclinical_score",lambda v: score(v) is None),
+        ("cmc_product_quality","fda_cmc_score",lambda v: score(v) is None),
+        ("manufacturing_inspection","fda_inspection_status",lambda v: clean(v).upper() != "PASS"),
+        ("regulatory_history","fda_regulatory_score",lambda v: score(v) is None),
+        ("labeling","fda_labeling_score",lambda v: score(v) is None),
+        ("benefit_risk","fda_benefit_risk_score",lambda v: score(v) is None),
+        ("evidence_freshness","fda_evidence_freshness",lambda v: clean(v).upper() not in {"PASS","FROZEN"}),
+    ]
+    rows = []
+    for _, r in review.iterrows():
+        pdate = pd.to_datetime(r.get("pdufa_date"), errors="coerce")
+        days = None if pd.isna(pdate) else int((pd.Timestamp(pdate).normalize() - today).days)
+        if days is None:
+            priority = "P4 DATE UNKNOWN"
+        elif days < 0:
+            priority = "P0 PAST / CLOSURE"
+        elif days <= 30:
+            priority = "P1 0-30 DAYS"
+        elif days <= 60:
+            priority = "P2 31-60 DAYS"
+        elif days <= 90:
+            priority = "P3 61-90 DAYS"
+        else:
+            priority = "P4 >90 DAYS"
+
+        missing = [name for name, col, test in checks if test(r.get(col))]
+        closed = bool(clean(r.get("decision_date")) and normalize_outcome(r.get("actual_fda_decision")))
+        rows.append({
+            "event_key": clean(r.get("event_key")),
+            "ticker": clean(r.get("ticker")),
+            "drug": clean(r.get("drug")),
+            "pdufa_date": clean(r.get("pdufa_date")),
+            "priority": priority,
+            "days_to_pdufa": "" if days is None else str(days),
+            "missing_components": " | ".join(missing),
+            "backfill_status": "CLOSED_DECIDED" if closed else ("NEEDS_BACKFILL" if missing else "READY_FOR_ENGINE"),
+            "source_targets": "FDA/Drugs@FDA review documents | FDA action/CRL source | ClinicalTrials.gov | issuer/SEC application evidence",
+            "decision_date": clean(r.get("decision_date")),
+            "actual_fda_decision": normalize_outcome(r.get("actual_fda_decision")),
+            "notes": (
+                "No further prospective pursuit; retained for calibration/audit."
+                if closed else
+                "Backfill only decision-safe evidence that predates the actual FDA action."
+            ),
+        })
+    pd.DataFrame(rows, columns=BACKFILL_COLUMNS).to_csv(BACKFILL, index=False)
+
+
 def reconcile_freezes(review):
     if not FREEZES.exists():
         return
@@ -386,6 +450,7 @@ def main():
 
     review.to_csv(REVIEWS, index=False)
     reconcile_freezes(review)
+    write_backfill_queue(review)
 
     calls = review["fda_prediction"].value_counts().to_dict() if not review.empty else {}
     print(json.dumps({
