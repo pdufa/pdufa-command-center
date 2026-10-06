@@ -19,6 +19,7 @@ DATA = ROOT / "data"
 
 HIST_IN = DATA / "fda_v3_historical_backtest.csv"
 LIVE_IN = DATA / "fda_directional_100pct_live.csv"
+PROMOTIONS_IN = DATA / "fda_100_on_100_verified_promotions.csv"
 HIST_OUT = DATA / "fda_100_on_100_historical.csv"
 LIVE_OUT = DATA / "fda_100_on_100_live.csv"
 SUMMARY_OUT = DATA / "fda_100_on_100_summary.json"
@@ -26,7 +27,7 @@ SUMMARY_OUT = DATA / "fda_100_on_100_summary.json"
 MODEL_VERSION = "FDA-100-ON-100-GATE-V1"
 VALID_DIRS = {"APPROVED", "CRL"}
 
-def build_historical(df: pd.DataFrame) -> pd.DataFrame:
+def build_historical(df: pd.DataFrame, promotions: pd.DataFrame | None = None) -> pd.DataFrame:
     rows = []
     for _, r in df.iterrows():
         public_call = str(r.get("public_model_class", "")).strip().upper()
@@ -48,7 +49,31 @@ def build_historical(df: pd.DataFrame) -> pd.DataFrame:
             "source_layer": source,
             "status": "RETROSPECTIVE_NOT_BLIND",
         })
-    return pd.DataFrame(rows)
+    out = pd.DataFrame(rows)
+    if promotions is not None and not promotions.empty:
+        lookup = df.set_index("event_key", drop=False)
+        extra = []
+        existing = set(out["event_key"]) if not out.empty else set()
+        for _, p in promotions.iterrows():
+            event_key = str(p.get("event_key", "")).strip()
+            call = str(p.get("qualified_direction", "")).strip().upper()
+            if not event_key or call not in VALID_DIRS or event_key in existing or event_key not in lookup.index:
+                continue
+            r = lookup.loc[event_key]
+            actual = str(r.get("actual_outcome", "")).strip().upper()
+            extra.append({
+                "event_key": event_key,
+                "ticker": r.get("ticker", ""),
+                "pdufa_date": r.get("pdufa_date", ""),
+                "qualified_direction": call,
+                "actual_outcome": actual,
+                "match_result": "MATCH" if call == actual else "MISS",
+                "source_layer": "VERIFIED_PREDECISION_PROMOTION",
+                "status": "RETROSPECTIVE_NOT_BLIND",
+            })
+        if extra:
+            out = pd.concat([out, pd.DataFrame(extra)], ignore_index=True)
+    return out
 
 def build_live(df: pd.DataFrame) -> pd.DataFrame:
     out = df[
@@ -75,8 +100,9 @@ def build_live(df: pd.DataFrame) -> pd.DataFrame:
 def main():
     hist = pd.read_csv(HIST_IN)
     live = pd.read_csv(LIVE_IN)
+    promotions = pd.read_csv(PROMOTIONS_IN) if PROMOTIONS_IN.exists() else pd.DataFrame()
 
-    h = build_historical(hist)
+    h = build_historical(hist, promotions)
     l = build_live(live)
 
     h.to_csv(HIST_OUT, index=False)
