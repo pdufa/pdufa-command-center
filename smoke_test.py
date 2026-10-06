@@ -351,6 +351,14 @@ required_ui_contracts = [
     'Directional Coverage',
     'Backfill Remaining',
     'FDA-V3 historical backfill queue',
+    '"9. DECISION ARCHIVE"',
+    'Year scroller',
+    'Month scroller',
+    'Month-by-month result',
+    'OPEN FULL PDUFA DATA',
+    'def load_fda_v3_historical_backtest',
+    '### FDA-V3 Review',
+    'V3 Evidence Summary',
 ]
 for label in required_ui_contracts:
     if label not in app:
