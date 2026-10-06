@@ -369,8 +369,14 @@ def load_fda_review_engine():
         "event_key","ticker","drug","pdufa_date",
         "fda_regulatory_case_id","fda_count_in_match",
         "fda_application_identity","fda_clinical_score","fda_statistics_score",
+        "fda_primary_endpoint_status","fda_multiplicity_status","fda_missing_data_status",
+        "fda_effect_size_status","fda_replication_status","fda_statistics_gate",
         "fda_meaningfulness_score","fda_safety_score","fda_clinical_pharmacology_score",
-        "fda_nonclinical_score","fda_cmc_score","fda_inspection_status",
+        "fda_nonclinical_score","fda_cmc_score","fda_process_validation_status",
+        "fda_stability_status","fda_analytical_methods_status","fda_comparability_status",
+        "fda_supplier_status","fda_cmc_gate","fda_inspection_status",
+        "fda_warning_letter_status","fda_import_alert_status","fda_form483_status",
+        "fda_facility_classification","fda_preapproval_inspection_status","fda_facility_gate",
         "fda_regulatory_score","fda_labeling_score","fda_benefit_risk_score",
         "fda_evidence_freshness","fda_hard_gate","fda_probability","fda_prediction",
         "fda_confidence","fda_gate_reason","fda_model_version",
@@ -2151,7 +2157,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06D · FDA DECISION ENGINE V3 · DECISION DATE · EARLY FDA DECISIONS CLOSE IMMEDIATELY · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06E · FDA DECISION ENGINE V3.1 · STATISTICS + CMC + FACILITY HARD GATES · DECISION DATE")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -2171,7 +2177,7 @@ else:
         st.query_params.clear()
 
 if page == "2. ALL PDUFA":
-    st.markdown("## 1. ALL PDUFA — SAVED EVENT FEED")
+    st.markdown("## 2. ALL PDUFA — SAVED EVENT FEED")
     st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
     live_master = df.copy()
@@ -2620,7 +2626,7 @@ if page == "2. ALL PDUFA":
         st.info("FDA outcome filtering is ready. Historical rows will become much more useful once APPROVED / CRL / other final outcomes are added to the master feed.")
 
 elif page == "3. MARKET CAP GROUPS":
-    st.markdown("## 2. MARKET CAP GROUPS — Select a Range")
+    st.markdown("## 3. MARKET CAP GROUPS — Select a Range")
     st.caption("Exact bands require an exact saved market cap. Validated bucket views also include events whose exact market cap has not yet been captured.")
 
     group_mode = st.radio(
@@ -2869,7 +2875,7 @@ elif page == "4. CALENDAR":
                     )
 
 elif page == "5. PREDICTION ENGINE":
-    st.markdown("## 4. PREDICTION ENGINE — 2020 TO SEP 2026")
+    st.markdown("## 5. PREDICTION ENGINE — 2020 TO SEP 2026")
     st.caption("Canonical $300M–$10B historical cohort. 2020–2022 are retrospective development history, 2023 is the tuning year, 2024 is the first locked validation year, 2025 is the later holdout, and 2026 is current/model-development history. Missing historical vendor/public probabilities are never fabricated.")
 
     hist = prediction_history.copy()
@@ -3220,7 +3226,7 @@ elif page == "5. PREDICTION ENGINE":
 
 
 elif page == "7. MATCH OPTIMIZER":
-    st.markdown("## 6. MATCH OPTIMIZER — ALL STEPS TOGETHER")
+    st.markdown("## 7. MATCH OPTIMIZER — ALL STEPS TOGETHER")
     st.caption(
         "Goal: maximize called-case direction accuracy without pretending uncertain cases are certain. "
         "REVIEW is an abstention and is excluded from Match %, while Coverage % shows how often the gate actually makes a call."
@@ -3460,7 +3466,7 @@ elif page == "7. MATCH OPTIMIZER":
 
 
 elif page == "6. SCANS":
-    st.markdown("## 5. SCANS — MASTER SCAN GANTT + ACTION CENTER")
+    st.markdown("## 6. SCANS — MASTER SCAN GANTT + ACTION CENTER")
 
     # Historical financing scan counter. Prefer the persistent pursuit log when
     # available; otherwise combine the frozen historical universe with the
@@ -3715,7 +3721,7 @@ elif page == "6. SCANS":
 
 
 elif page == "8. RECHECK":
-    st.markdown("## 7. RECHECK — EXACT EVENT / PUBLIC SOURCE AUDIT")
+    st.markdown("## 8. RECHECK — EXACT EVENT / PUBLIC SOURCE AUDIT")
     st.caption(
         "Recheck is locked to the exact event_key. It never substitutes another company's event. "
         "The six categories are PDUFA/FDA, Phase 3/p-value, financing closure, cash runway, market data, and ownership/insiders."
@@ -3847,7 +3853,7 @@ elif page == "8. RECHECK":
 
 
 elif page == "9. FDA ENGINE":
-    st.markdown("## 8. FDA ENGINE — REGULATORY DECISION LAYER")
+    st.markdown("## 9. FDA ENGINE — REGULATORY DECISION LAYER")
     st.caption(
         "This page mirrors the FDA review structure as closely as public evidence allows. "
         "It is deliberately separate from the Trading Engine. Missing critical disciplines force REVIEW rather than a guessed call."
@@ -3856,8 +3862,14 @@ elif page == "9. FDA ENGINE":
     fda_view = df.copy()
     for col in [
         "fda_application_identity","fda_clinical_score","fda_statistics_score",
+        "fda_primary_endpoint_status","fda_multiplicity_status","fda_missing_data_status",
+        "fda_effect_size_status","fda_replication_status","fda_statistics_gate",
         "fda_meaningfulness_score","fda_safety_score","fda_clinical_pharmacology_score",
-        "fda_nonclinical_score","fda_cmc_score","fda_inspection_status",
+        "fda_nonclinical_score","fda_cmc_score","fda_process_validation_status",
+        "fda_stability_status","fda_analytical_methods_status","fda_comparability_status",
+        "fda_supplier_status","fda_cmc_gate","fda_inspection_status",
+        "fda_warning_letter_status","fda_import_alert_status","fda_form483_status",
+        "fda_facility_classification","fda_preapproval_inspection_status","fda_facility_gate",
         "fda_regulatory_score","fda_labeling_score","fda_benefit_risk_score",
         "fda_evidence_freshness","fda_hard_gate","fda_probability",
         "fda_prediction","fda_confidence","fda_gate_reason","fda_model_version",
@@ -3893,9 +3905,9 @@ elif page == "9. FDA ENGINE":
 
     fda_table = fda_view[[
         "ticker","PDUFA Date","DECISION DATE","fda_regulatory_case_id","fda_count_in_match","FDA MODEL %","FDA CALL","FDA GATE",
-        "fda_application_identity","fda_clinical_score","fda_statistics_score",
-        "fda_meaningfulness_score","fda_safety_score","fda_cmc_score",
-        "fda_inspection_status","fda_regulatory_score","fda_labeling_score",
+        "fda_application_identity","fda_clinical_score","fda_statistics_score","fda_statistics_gate",
+        "fda_meaningfulness_score","fda_safety_score","fda_cmc_score","fda_cmc_gate",
+        "fda_inspection_status","fda_facility_gate","fda_regulatory_score","fda_labeling_score",
         "fda_benefit_risk_score","fda_evidence_freshness","fda_confidence",
         "fda_prediction_frozen_at","fda_model_version","fda_gate_reason"
     ]].rename(columns={
@@ -3905,10 +3917,13 @@ elif page == "9. FDA ENGINE":
         "fda_application_identity":"Application Identity",
         "fda_clinical_score":"Clinical",
         "fda_statistics_score":"Statistics",
+        "fda_statistics_gate":"Stats Gate",
         "fda_meaningfulness_score":"Meaningfulness",
         "fda_safety_score":"Safety",
         "fda_cmc_score":"CMC",
+        "fda_cmc_gate":"CMC Gate",
         "fda_inspection_status":"Inspection",
+        "fda_facility_gate":"Facility Gate",
         "fda_regulatory_score":"Regulatory",
         "fda_labeling_score":"Labeling",
         "fda_benefit_risk_score":"Benefit-Risk",
@@ -4567,12 +4582,30 @@ else:
                 ("Application identity", r.get("fda_application_identity")),
                 ("Clinical efficacy", r.get("fda_clinical_score")),
                 ("Statistics", r.get("fda_statistics_score")),
+                ("Stats gate", r.get("fda_statistics_gate")),
+                ("Primary endpoint", r.get("fda_primary_endpoint_status")),
+                ("Multiplicity control", r.get("fda_multiplicity_status")),
+                ("Missing-data robustness", r.get("fda_missing_data_status")),
+                ("Effect size / relevance", r.get("fda_effect_size_status")),
+                ("Replication", r.get("fda_replication_status")),
                 ("Clinical meaningfulness", r.get("fda_meaningfulness_score")),
                 ("Safety", r.get("fda_safety_score")),
                 ("Clinical pharmacology / PK", r.get("fda_clinical_pharmacology_score")),
                 ("Nonclinical / toxicology", r.get("fda_nonclinical_score")),
                 ("CMC / product quality", r.get("fda_cmc_score")),
+                ("CMC gate", r.get("fda_cmc_gate")),
+                ("Process validation", r.get("fda_process_validation_status")),
+                ("Stability", r.get("fda_stability_status")),
+                ("Analytical methods", r.get("fda_analytical_methods_status")),
+                ("Comparability", r.get("fda_comparability_status")),
+                ("Supplier / DMF risk", r.get("fda_supplier_status")),
                 ("Manufacturing / inspection", r.get("fda_inspection_status")),
+                ("Facility gate", r.get("fda_facility_gate")),
+                ("Warning letter", r.get("fda_warning_letter_status")),
+                ("Import alert", r.get("fda_import_alert_status")),
+                ("Form 483", r.get("fda_form483_status")),
+                ("Facility classification", r.get("fda_facility_classification")),
+                ("Preapproval inspection", r.get("fda_preapproval_inspection_status")),
                 ("Regulatory history", r.get("fda_regulatory_score")),
                 ("Labeling", r.get("fda_labeling_score")),
                 ("Benefit-risk", r.get("fda_benefit_risk_score")),
@@ -4586,7 +4619,7 @@ else:
             st.write(f"**FDA confidence:** {safe_text(r.get('fda_confidence'), 'INSUFFICIENT FDA EVIDENCE')}")
             st.write(f"**Gate reason:** {safe_text(r.get('fda_gate_reason'), 'FDA review record not yet populated')}")
             st.write(f"**Prediction frozen at:** {safe_text(r.get('fda_prediction_frozen_at'), 'Not frozen')}")
-            st.write(f"**Model version:** {safe_text(r.get('fda_model_version'), 'FDA-V3.0')}")
+            st.write(f"**Model version:** {safe_text(r.get('fda_model_version'), 'FDA-V3.1')}")
             if safe_text(r.get("pdufa_evidence_url"), ""):
                 st.link_button("OPEN REGULATORY SOURCE", r.get("pdufa_evidence_url"))
             st.write(safe_text(r.get("regulatory_summary"), "No additional regulatory notes stored."))
