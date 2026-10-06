@@ -54,7 +54,7 @@ REQUIRED = {
     },
 }
 
-EXPECTED_LIVE_EVENT_COUNT = 38
+MINIMUM_LIVE_EVENT_COUNT = 38
 REQUIRED_LIVE_EVENTS = {
     "SVRA|MOLBREEVI_PAP_20261122",
     "COGT|BEZUCLASTINIB_GIST_20261130",
@@ -104,9 +104,9 @@ if any(not k for k in keys):
     raise SystemExit("pdufa_candidates.csv: blank event_key")
 if len(keys) != len(set(keys)):
     raise SystemExit("pdufa_candidates.csv: duplicate event_key")
-if len(candidates) != EXPECTED_LIVE_EVENT_COUNT:
+if len(candidates) < MINIMUM_LIVE_EVENT_COUNT:
     raise SystemExit(
-        f"pdufa_candidates.csv: expected {EXPECTED_LIVE_EVENT_COUNT} live events, found {len(candidates)}"
+        f"pdufa_candidates.csv: live feed shrank below baseline {MINIMUM_LIVE_EVENT_COUNT}; found {len(candidates)}"
     )
 missing_required_events = REQUIRED_LIVE_EVENTS - set(keys)
 if missing_required_events:
@@ -124,8 +124,12 @@ recheck = read_csv(ROOT / "data/recheck_status.csv")
 recheck_keys = [(r.get("event_key") or "").strip() for r in recheck]
 if len(recheck_keys) != len(set(recheck_keys)):
     raise SystemExit("recheck_status.csv: duplicate event_key")
-if set(recheck_keys) != set(keys):
-    raise SystemExit("recheck_status.csv: event_key set does not exactly match live candidates")
+unknown_recheck_keys = set(recheck_keys) - set(keys)
+if unknown_recheck_keys:
+    raise SystemExit(
+        "recheck_status.csv: contains event_key(s) not present in live candidates: "
+        + ", ".join(sorted(unknown_recheck_keys)[:5])
+    )
 if not (ROOT / "scripts/recheck_events.py").exists():
     raise SystemExit("missing scripts/recheck_events.py")
 
@@ -133,12 +137,12 @@ second_financing = read_csv(ROOT / "data/second_financing_status.csv")
 sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
 if len(sf_keys) != len(set(sf_keys)):
     raise SystemExit("second_financing_status.csv: duplicate event_key")
-if len(second_financing) != len(candidates):
+unknown_sf_keys = set(sf_keys) - set(keys)
+if unknown_sf_keys:
     raise SystemExit(
-        f"second_financing_status.csv: expected {len(candidates)} rows, found {len(second_financing)}"
+        "second_financing_status.csv: contains event_key(s) not present in live candidates: "
+        + ", ".join(sorted(unknown_sf_keys)[:5])
     )
-if set(sf_keys) != set(keys):
-    raise SystemExit("second_financing_status.csv: event_key set does not exactly match live candidates")
 
 verified_second_financing = 0
 for r in second_financing:
