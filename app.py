@@ -2267,14 +2267,14 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-06K · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
-st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE → PLAN. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE"]
+nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -4244,6 +4244,97 @@ elif page == "9. FDA ENGINE":
         "Regulatory model inputs only. Trading variables are intentionally excluded. "
         "The freeze ledger is data/fda_prediction_freezes.csv; frozen calls are never overwritten after an FDA decision."
     )
+
+
+elif page == "10. PLAN":
+    st.markdown("## 10. PLAN — SWIFTLOOK PLATFORM")
+    st.caption(
+        "Editable operating and development plan for SwiftLook. Add, delete, reprioritize, or change rows as the platform evolves. "
+        "This plan is kept separate from prediction history so editing the roadmap cannot alter frozen FDA calls."
+    )
+
+    plan_path = Path("data/swiftlook_plan.csv")
+    plan_columns = ["order","area","task","cadence","priority","status","next_action","notes"]
+    try:
+        plan_df = pd.read_csv(plan_path, keep_default_na=False)
+    except Exception:
+        plan_df = pd.DataFrame(columns=plan_columns)
+
+    for col in plan_columns:
+        if col not in plan_df:
+            plan_df[col] = ""
+    plan_df = plan_df[plan_columns].copy()
+    plan_df["order"] = pd.to_numeric(plan_df["order"], errors="coerce")
+
+    p1,p2,p3,p4 = st.columns(4)
+    p1.metric("Plan Items", len(plan_df))
+    p2.metric("Active", int(plan_df["status"].astype(str).str.upper().eq("ACTIVE").sum()))
+    p3.metric("Next", int(plan_df["status"].astype(str).str.upper().eq("NEXT").sum()))
+    p4.metric("Done", int(plan_df["status"].astype(str).str.upper().eq("DONE").sum()))
+
+    st.markdown("### Edit plan")
+    edited_plan = st.data_editor(
+        plan_df,
+        use_container_width=True,
+        hide_index=True,
+        num_rows="dynamic",
+        key="swiftlook_plan_editor",
+        column_config={
+            "order": st.column_config.NumberColumn("Order", min_value=1, step=1),
+            "area": st.column_config.TextColumn("Area"),
+            "task": st.column_config.TextColumn("Task", width="large"),
+            "cadence": st.column_config.TextColumn("Cadence"),
+            "priority": st.column_config.SelectboxColumn(
+                "Priority", options=["HIGH","MEDIUM","LOW"], required=False
+            ),
+            "status": st.column_config.SelectboxColumn(
+                "Status", options=["ACTIVE","NEXT","PLANNED","HOLD","DONE"], required=False
+            ),
+            "next_action": st.column_config.TextColumn("Next Action", width="large"),
+            "notes": st.column_config.TextColumn("Notes", width="large"),
+        },
+    )
+
+    save_col, download_col = st.columns([1,1])
+    with save_col:
+        if st.button("SAVE PLAN CHANGES", use_container_width=True, key="save_swiftlook_plan"):
+            try:
+                saved = edited_plan.copy()
+                for col in plan_columns:
+                    if col not in saved:
+                        saved[col] = ""
+                saved = saved[plan_columns]
+                saved["order"] = pd.to_numeric(saved["order"], errors="coerce")
+                saved = saved.sort_values("order", na_position="last").reset_index(drop=True)
+                saved.to_csv(plan_path, index=False)
+                st.success("SwiftLook plan saved in the running app.")
+            except Exception as exc:
+                st.error(f"Plan save failed: {exc}")
+
+    with download_col:
+        st.download_button(
+            "DOWNLOAD PLAN BACKUP (.CSV)",
+            data=edited_plan.to_csv(index=False).encode("utf-8"),
+            file_name="swiftlook_plan.csv",
+            mime="text/csv",
+            use_container_width=True,
+            key="download_swiftlook_plan",
+        )
+
+    st.info(
+        "The repository copy is the durable baseline. In-app saves update the running Streamlit filesystem; "
+        "a Streamlit restart/redeploy can restore the repository version, so use the CSV backup for any important manual edits."
+    )
+
+    st.markdown("### Operating rhythm")
+    rhythm = pd.DataFrame([
+        {"When":"Daily · 5:15 AM Pacific","Purpose":"New-company/PDUFA discovery + tracked-event recheck + Strict/Broad refresh"},
+        {"When":"Sunday · 4:00 AM Pacific","Purpose":"Deep review of every PDUFA due in the next 7 days"},
+        {"When":"1st of month · 4:30 AM Pacific","Purpose":"Full universe reconciliation + catch-up scan + full recheck"},
+        {"When":"Material event","Purpose":"Reassess FDA evidence and create a new prediction version when warranted"},
+        {"When":"FDA decision","Purpose":"Score frozen prediction as MATCH or MISS without rewriting history"},
+    ])
+    st.dataframe(rhythm, use_container_width=True, hide_index=True)
 
 
 elif page == "1. DECISION":
