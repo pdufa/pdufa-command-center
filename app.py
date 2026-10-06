@@ -96,6 +96,47 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table td.provision-no{color:#555555}
 .merged-pdufa-table td.provision-unknown{color:#7a7a7a;font-style:italic}
 .merged-pdufa-table a,.merged-pdufa-table a:link,.merged-pdufa-table a:visited{color:#0b57d0 !important;text-decoration:underline !important}
+
+/* iPhone / mobile web-app layout */
+@media (max-width: 768px){
+  :root{--font-main:15px;--font-small:12px;--font-title:24px;--font-h2:20px;--font-h3:17px}
+  html,body{overscroll-behavior-y:none;-webkit-text-size-adjust:100%}
+  .stApp{min-height:100dvh}
+  .block-container{padding:.55rem .55rem 5rem !important;max-width:100% !important}
+  h1{margin:.2rem 0 .45rem !important}
+  h2{margin:.45rem 0 .4rem !important}
+  [data-testid="stCaptionContainer"],.stCaption{font-size:12px !important}
+  [data-testid="stMetric"]{min-height:76px;padding:8px 9px;border-radius:12px}
+  [data-testid="stMetricValue"]{font-size:20px !important}
+  [data-testid="stMetricLabel"]{font-size:11px !important}
+  .stButton button,.stDownloadButton button,[data-testid="stLinkButton"] a{
+    min-height:46px !important;
+    font-size:15px !important;
+    border-radius:12px !important;
+    touch-action:manipulation;
+  }
+  [data-testid="stRadio"] [role="radiogroup"]{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    gap:6px !important;
+    padding:2px 0 8px !important;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  [data-testid="stRadio"] [role="radiogroup"]::-webkit-scrollbar{display:none}
+  [data-testid="stRadio"] label{
+    flex:0 0 auto !important;
+    white-space:nowrap !important;
+    min-height:42px !important;
+  }
+  [data-testid="stDataFrame"]{max-width:100vw !important;overflow-x:auto !important}
+  .card,.hero{padding:12px;border-radius:13px}
+  .merged-table-wrap{margin-left:-2px;margin-right:-2px;-webkit-overflow-scrolling:touch}
+  .merged-pdufa-table{font-size:12px}
+  .merged-pdufa-table th,.merged-pdufa-table td{padding:5px 6px}
+}
 </style>""",
     unsafe_allow_html=True,
 )
@@ -3912,6 +3953,12 @@ elif page == "1. DECISION":
         "Scroll year by year, then month by month. The archive uses the verified FDA decision date when it is stored; "
         "otherwise it uses the canonical PDUFA date. Click any PDUFA below to open the full research/audit record."
     )
+
+    with st.expander("📱 INSTALL DECISION ON IPHONE", expanded=False):
+        st.markdown(
+            "**Safari → Page Menu / Share → Add to Home Screen → turn on Open as Web App → Add.**  "
+            "It will launch from an iPhone Home Screen icon like an app."
+        )
 
     # Historical decisions already researched by the Prediction Engine / FDA-V3.
     archive_hist = prediction_history.copy()
