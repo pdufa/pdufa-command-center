@@ -49,7 +49,8 @@ REVIEW_COLUMNS = [
     "fda_analytical_methods_status","fda_comparability_status","fda_supplier_status",
     "fda_cmc_gate","fda_inspection_status","fda_warning_letter_status",
     "fda_import_alert_status","fda_form483_status","fda_facility_classification",
-    "fda_preapproval_inspection_status","fda_facility_gate","fda_regulatory_score",
+    "fda_preapproval_inspection_status","fda_facility_gate",
+    "fda_bimo_status","fda_data_integrity_gate","fda_regulatory_score",
     "fda_labeling_score","fda_benefit_risk_score",
     "fda_evidence_freshness","fda_hard_gate","fda_probability",
     "fda_prediction","fda_confidence","fda_gate_reason",
@@ -193,6 +194,21 @@ def derive_cmc_gate(row, pass_min, fail_max):
         pass_min,
         fail_max,
     )
+
+
+def derive_data_integrity_gate(row):
+    explicit = clean(row.get("fda_data_integrity_gate")).upper()
+    if explicit in {"PASS","FAIL","REVIEW","NEUTRAL"}:
+        return explicit
+
+    bimo = clean(row.get("fda_bimo_status")).upper()
+    if bimo in {"FAIL","FAILED","DATA_INTEGRITY_FAIL","UNRELIABLE"}:
+        return "FAIL"
+    if bimo in {"FORM483_OPEN","OPEN","REVIEW","UNRESOLVED","GCP_OBSERVATION"}:
+        return "REVIEW"
+    if bimo in {"PASS","CLEAR","RESOLVED"}:
+        return "PASS"
+    return "NEUTRAL"
 
 
 def derive_facility_gate(row):
@@ -360,9 +376,11 @@ def evaluate(row, cfg):
     statistics_gate = derive_statistics_gate(row, pass_min, fail_max)
     cmc_gate = derive_cmc_gate(row, pass_min, fail_max)
     facility_gate = derive_facility_gate(row)
+    data_integrity_gate = derive_data_integrity_gate(row)
     row["fda_statistics_gate"] = statistics_gate
     row["fda_cmc_gate"] = cmc_gate
     row["fda_facility_gate"] = facility_gate
+    row["fda_data_integrity_gate"] = data_integrity_gate
 
     if statistics_gate == "FAIL":
         fail_reasons.append("statistics/effectiveness gate failed")
@@ -378,6 +396,11 @@ def evaluate(row, cfg):
         fail_reasons.append("manufacturing/facility gate failed")
     elif facility_gate != "PASS":
         unknown_reasons.append("manufacturing/facility gate unresolved")
+
+    if data_integrity_gate == "FAIL":
+        fail_reasons.append("BIMO/data-integrity gate failed")
+    elif data_integrity_gate == "REVIEW":
+        unknown_reasons.append("BIMO/data-integrity gate unresolved")
 
     for critical in ["safety","regulatory"]:
         v = values[critical]
@@ -447,7 +470,7 @@ def evaluate(row, cfg):
     row["fda_prediction"] = prediction
     row["fda_confidence"] = confidence
     row["fda_gate_reason"] = " | ".join(dict.fromkeys(reasons))
-    row["fda_model_version"] = clean(cfg.get("model_version")) or "FDA-V3.1"
+    row["fda_model_version"] = clean(cfg.get("model_version")) or "FDA-V3.2"
     row["fda_last_evaluated_at"] = utc_now()
 
     actual = normalize_outcome(row.get("actual_fda_decision"))
@@ -546,6 +569,7 @@ def write_backfill_queue(review):
         ("form_483","fda_form483_status",lambda v: clean(v) == ""),
         ("facility_classification","fda_facility_classification",lambda v: clean(v) == ""),
         ("preapproval_inspection","fda_preapproval_inspection_status",lambda v: clean(v) == ""),
+        ("bimo_data_integrity","fda_data_integrity_gate",lambda v: clean(v).upper() in {"REVIEW","FAIL"}),
         ("regulatory_history","fda_regulatory_score",lambda v: score(v) is None),
         ("labeling","fda_labeling_score",lambda v: score(v) is None),
         ("benefit_risk","fda_benefit_risk_score",lambda v: score(v) is None),
