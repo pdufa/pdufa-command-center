@@ -8,7 +8,7 @@
   "phase_a_public_directional_match_pct": 100,
   "phase_a_public_directional_coverage_pct": 8.9,
   "phase_a_review_no_call": 1,
-  "historical_v3_backfill_remaining": 132,
+  "historical_v3_backfill_remaining": 127,
   "external_holdout_rows": 6,
   "external_holdout_directional_calls": 5,
   "external_holdout_directional_correct": 5,
@@ -21,8 +21,17 @@
     "OTHER_UNCLEAR": 14,
     "SAFETY_BENEFIT_RISK": 1
   },
-  "warning": "Phase A directional accuracy remains 13/13 on preserved decision-safe public calls. One additional external-holdout case (CORT) has now been completed as REVIEW/no-call under strict FDA-V3. Full V3 directional accuracy remains pending the remaining historical evidence backfill.",
+  "warning": "Combined V3 directional result currently includes 13 preserved decision-safe public calls plus 2 retrospective V3 reconstructions from pre-decision public evidence. The reconstructed calls are not independent blind predictions. Full FDA-V3 performance remains pending 127 historical reviews.",
   "historical_v3_review_complete_no_call": 1,
   "external_holdout_full_v3_reviewed": 6,
-  "external_holdout_full_v3_review_coverage_pct": 100
+  "external_holdout_full_v3_review_coverage_pct": 100,
+  "historical_v3_completed_reviews": 19,
+  "historical_v3_full_review_coverage_pct": 13.01,
+  "v3_reconstructed_directional_calls": 2,
+  "v3_reconstructed_directional_correct": 2,
+  "v3_reconstructed_directional_match_pct": 100,
+  "combined_v3_directional_calls": 15,
+  "combined_v3_directional_correct": 15,
+  "combined_v3_directional_match_pct": 100,
+  "combined_v3_directional_coverage_pct": 10.27
 }
