@@ -1161,7 +1161,7 @@ def make_event_key(row):
 
 APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"
 
-def event_detail_url(row, source="live", return_page="1. ALL PDUFA"):
+def event_detail_url(row, source="live", return_page="2. ALL PDUFA"):
     event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
     return APP_BASE_URL + "?" + urllib.parse.urlencode({
         "page": "detail",
@@ -1186,7 +1186,7 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
     st.session_state.selected_detail_source = source
-    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "1. ALL PDUFA")
+    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "2. ALL PDUFA")
     st.session_state.detail_open = True
     if len(st.query_params):
         st.query_params.clear()
@@ -1954,7 +1954,7 @@ def render_merged_table(frame, heading, height_px=690):
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
 
 
-def table_view(frame, return_page="1. ALL PDUFA"):
+def table_view(frame, return_page="2. ALL PDUFA"):
     out = frame.copy()
 
     # Guarantee every master-table column exists even if the source feed is incomplete.
@@ -2031,7 +2031,7 @@ query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
 query_source = st.query_params.get("source") or "live"
-query_return = st.query_params.get("return") or "1. ALL PDUFA"
+query_return = st.query_params.get("return") or "2. ALL PDUFA"
 
 if query_page == "detail" and query_event:
     st.session_state.selected_event_key = str(query_event)
@@ -2093,13 +2093,13 @@ def scan_approval_all():
     return _record_streamlit_scan("PROBABILITY OF APPROVAL", "ALL")
 
 if "nav" not in st.session_state:
-    st.session_state.nav = "1. ALL PDUFA"
+    st.session_state.nav = "2. ALL PDUFA"
 if "detail_open" not in st.session_state:
     st.session_state.detail_open = False
 if "selected_detail_source" not in st.session_state:
     st.session_state.selected_detail_source = "live"
 if "detail_return_page" not in st.session_state:
-    st.session_state.detail_return_page = "1. ALL PDUFA"
+    st.session_state.detail_return_page = "2. ALL PDUFA"
 if "selected_ticker" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
@@ -2111,25 +2111,25 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-06D · FDA DECISION ENGINE V3 · DECISION DATE · EARLY FDA DECISIONS CLOSE IMMEDIATELY · FINANCING CACHE FIX")
-st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE → DECISION ARCHIVE. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCANS","6. MATCH OPTIMIZER","7. RECHECK","8. FDA ENGINE","9. DECISION ARCHIVE"]
+nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
     if st.session_state.nav not in nav_options:
-        st.session_state.nav = "1. ALL PDUFA"
+        st.session_state.nav = "1. DECISION"
     st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
     page = st.session_state.nav
     if len(st.query_params):
         st.query_params.clear()
 
-if page == "1. ALL PDUFA":
+if page == "2. ALL PDUFA":
     st.markdown("## 1. ALL PDUFA — SAVED EVENT FEED")
     st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
@@ -2477,7 +2477,7 @@ if page == "1. ALL PDUFA":
     if view.empty:
         st.info("No PDUFA records match the current filters.")
     else:
-        display = table_view(view, return_page="1. ALL PDUFA")
+        display = table_view(view, return_page="2. ALL PDUFA")
         display["SUGGESTION %"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
         display["SUGGESTION"] = view.apply(suggestion_word_display, axis=1).values
         display["FDA Decision"] = view.apply(fda_decision_display, axis=1).values
@@ -2578,7 +2578,7 @@ if page == "1. ALL PDUFA":
     if master["outcome"].isna().all():
         st.info("FDA outcome filtering is ready. Historical rows will become much more useful once APPROVED / CRL / other final outcomes are added to the master feed.")
 
-elif page == "2. MARKET CAP GROUPS":
+elif page == "3. MARKET CAP GROUPS":
     st.markdown("## 2. MARKET CAP GROUPS — Select a Range")
     st.caption("Exact bands require an exact saved market cap. Validated bucket views also include events whose exact market cap has not yet been captured.")
 
@@ -2648,7 +2648,7 @@ elif page == "2. MARKET CAP GROUPS":
         else:
             st.info("No future PDUFA events currently fall in this validated market-cap bucket.")
     else:
-        display = table_view(cap_data, return_page="2. MARKET CAP GROUPS")
+        display = table_view(cap_data, return_page="3. MARKET CAP GROUPS")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -2694,7 +2694,7 @@ elif page == "2. MARKET CAP GROUPS":
                 go_individual(quick_row.get("ticker"), quick, source="live", return_page=page)
                 st.rerun()
 
-elif page == "3. CALENDAR":
+elif page == "4. CALENDAR":
     st.markdown("## 3. PDUFA CALENDAR")
     st.caption("Four weeks at a time. Move backward or forward in 4-week blocks without losing the event drill-down.")
 
@@ -2756,7 +2756,7 @@ elif page == "3. CALENDAR":
     if whits.empty:
         st.info("No saved PDUFA events in this week.")
     else:
-        display = table_view(whits, return_page="3. CALENDAR")
+        display = table_view(whits, return_page="4. CALENDAR")
         event = st.dataframe(
             display,
             use_container_width=True,
@@ -2782,7 +2782,7 @@ elif page == "3. CALENDAR":
         if event.selection.rows:
             ridx = event.selection.rows[0]
             selected_row = whits.iloc[ridx]
-            go_individual(selected_row.get("ticker"), make_event_key(selected_row), source="live", return_page="3. CALENDAR")
+            go_individual(selected_row.get("ticker"), make_event_key(selected_row), source="live", return_page="4. CALENDAR")
             st.rerun()
 
     st.divider()
@@ -2819,7 +2819,7 @@ elif page == "3. CALENDAR":
                         f"{pd.Timestamp(r.get('pdufa_date')).strftime('%b %d')}"
                     )
                     calendar_url = html.escape(
-                        event_detail_url(r, source="live", return_page="3. CALENDAR"),
+                        event_detail_url(r, source="live", return_page="4. CALENDAR"),
                         quote=True
                     )
                     st.markdown(
@@ -2827,7 +2827,7 @@ elif page == "3. CALENDAR":
                         unsafe_allow_html=True
                     )
 
-elif page == "4. PREDICTION ENGINE":
+elif page == "5. PREDICTION ENGINE":
     st.markdown("## 4. PREDICTION ENGINE — 2020 TO SEP 2026")
     st.caption("Canonical $300M–$10B historical cohort. 2020–2022 are retrospective development history, 2023 is the tuning year, 2024 is the first locked validation year, 2025 is the later holdout, and 2026 is current/model-development history. Missing historical vendor/public probabilities are never fabricated.")
 
@@ -2992,7 +2992,7 @@ elif page == "4. PREDICTION ENGINE":
 
     hview = hview.sort_values(["pdufa_date","ticker"]).copy()
     hview["Ticker"] = hview.apply(
-        lambda r: event_detail_url(r, source="history", return_page="4. PREDICTION ENGINE"), axis=1
+        lambda r: event_detail_url(r, source="history", return_page="5. PREDICTION ENGINE"), axis=1
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
@@ -3130,7 +3130,7 @@ elif page == "4. PREDICTION ENGINE":
         live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
-            lambda r: event_detail_url(r, source="live", return_page="4. PREDICTION ENGINE"), axis=1
+            lambda r: event_detail_url(r, source="live", return_page="5. PREDICTION ENGINE"), axis=1
         )
 
         actionable = live_v2[live_v2["V2 Call"].isin(["APPROVED","CRL"])]
@@ -3178,7 +3178,7 @@ elif page == "4. PREDICTION ENGINE":
 
 
 
-elif page == "6. MATCH OPTIMIZER":
+elif page == "7. MATCH OPTIMIZER":
     st.markdown("## 6. MATCH OPTIMIZER — ALL STEPS TOGETHER")
     st.caption(
         "Goal: maximize called-case direction accuracy without pretending uncertain cases are certain. "
@@ -3418,7 +3418,7 @@ elif page == "6. MATCH OPTIMIZER":
             )
 
 
-elif page == "5. SCANS":
+elif page == "6. SCANS":
     st.markdown("## 5. SCANS — MASTER SCAN GANTT + ACTION CENTER")
 
     # Historical financing scan counter. Prefer the persistent pursuit log when
@@ -3673,7 +3673,7 @@ elif page == "5. SCANS":
         st.info("No scan results yet. Run one of the six SCAN buttons above.")
 
 
-elif page == "7. RECHECK":
+elif page == "8. RECHECK":
     st.markdown("## 7. RECHECK — EXACT EVENT / PUBLIC SOURCE AUDIT")
     st.caption(
         "Recheck is locked to the exact event_key. It never substitutes another company's event. "
@@ -3805,7 +3805,7 @@ elif page == "7. RECHECK":
     )
 
 
-elif page == "8. FDA ENGINE":
+elif page == "9. FDA ENGINE":
     st.markdown("## 8. FDA ENGINE — REGULATORY DECISION LAYER")
     st.caption(
         "This page mirrors the FDA review structure as closely as public evidence allows. "
@@ -3906,8 +3906,8 @@ elif page == "8. FDA ENGINE":
     )
 
 
-elif page == "9. DECISION ARCHIVE":
-    st.markdown("## 9. DECISION ARCHIVE — YEAR → MONTH → PDUFA")
+if page == "1. DECISION":
+    st.markdown("## 1. DECISION — YEAR → MONTH → PDUFA")
     st.caption(
         "Scroll year by year, then month by month. The archive uses the verified FDA decision date when it is stored; "
         "otherwise it uses the canonical PDUFA date. Click any PDUFA below to open the full research/audit record."
@@ -4155,7 +4155,7 @@ elif page == "9. DECISION ARCHIVE":
                             ticker=safe_text(ar.get("ticker")),
                             event_key=safe_text(ar.get("event_key")),
                             source=safe_text(ar.get("_source"), "history"),
-                            return_page="9. DECISION ARCHIVE",
+                            return_page="1. DECISION",
                         )
                         st.rerun()
 
@@ -4168,7 +4168,7 @@ else:
         if hmatches.empty:
             st.error("Historical PDUFA event not found in the loaded prediction cohort.")
             if st.button("← PREDICTION ENGINE", use_container_width=True):
-                go_page("4. PREDICTION ENGINE")
+                go_page("5. PREDICTION ENGINE")
                 st.rerun()
             st.stop()
 
@@ -4181,7 +4181,7 @@ else:
         b1,b2 = st.columns([1,5])
         with b1:
             if st.button("← PREDICTION ENGINE", use_container_width=True):
-                go_page(st.session_state.detail_return_page or "4. PREDICTION ENGINE")
+                go_page(st.session_state.detail_return_page or "5. PREDICTION ENGINE")
                 st.rerun()
         with b2:
             st.caption("Historical Prediction Engine event detail")
@@ -4309,19 +4309,19 @@ else:
         st.write("")
         st.write("")
         if st.button("← ALL PDUFA", use_container_width=True):
-            go_page("1. ALL PDUFA")
+            go_page("2. ALL PDUFA")
             st.rerun()
     with b2:
         st.write("")
         st.write("")
         if st.button("← CALENDAR", use_container_width=True):
-            go_page("3. CALENDAR")
+            go_page("4. CALENDAR")
             st.rerun()
     with b3:
         st.write("")
         st.write("")
         if st.button("← MARKET CAP", use_container_width=True):
-            go_page("2. MARKET CAP GROUPS")
+            go_page("3. MARKET CAP GROUPS")
             st.rerun()
 
     if ordered.empty:
