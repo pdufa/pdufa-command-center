@@ -377,6 +377,14 @@ def load_fda_directional_100pct_live():
 
 
 @st.cache_data(ttl=120)
+def load_fda_directional_residual_miss_audit():
+    try:
+        return pd.read_csv("data/fda_directional_residual_miss_audit.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_engine():
     try:
         x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
@@ -684,6 +692,7 @@ fda_v3_hist_queue = load_fda_v3_historical_backfill_queue()
 fda_v3_hist_backtest = load_fda_v3_historical_backtest()
 fda_directional_summary = load_fda_directional_100pct_summary()
 fda_directional_live = load_fda_directional_100pct_live()
+fda_directional_residual = load_fda_directional_residual_miss_audit()
 fda_reviews = load_fda_review_engine()
 fda_facilities = load_fda_facility_registry()
 fda_backfill_queue = load_fda_review_backfill_queue()
@@ -3356,6 +3365,36 @@ elif page == "7. MATCH OPTIMIZER":
             "Locked V1.2 Validation remains the last historical holdout result. V1.6 prospective accuracy is scored "
             "only from calls frozen before the FDA outcome is known."
         )
+        with st.expander("Residual public-information surprise audit", expanded=False):
+            if fda_directional_residual.empty:
+                st.info("No residual miss audit is loaded.")
+            else:
+                ra = fda_directional_residual.copy()
+                show_cols = [c for c in [
+                    "ticker","pdufa_date","forced_direction","actual_outcome","residual_category",
+                    "recoverability","predecision_public_signal","why_not_promoted",
+                    "predecision_source","postdecision_audit_source"
+                ] if c in ra.columns]
+                st.dataframe(
+                    ra[show_cols].rename(columns={
+                        "ticker":"Ticker","pdufa_date":"PDUFA Date","forced_direction":"Forced Direction",
+                        "actual_outcome":"Actual FDA","residual_category":"Residual Category",
+                        "recoverability":"Public Recoverability","predecision_public_signal":"Predecision Public Signal",
+                        "why_not_promoted":"Why Rule Was Not Promoted",
+                        "predecision_source":"Predecision Source","postdecision_audit_source":"Postdecision Audit Source"
+                    }),
+                    use_container_width=True,
+                    hide_index=True,
+                    height=360,
+                    column_config={
+                        "Predecision Source": st.column_config.LinkColumn("Predecision Source", display_text="Open"),
+                        "Postdecision Audit Source": st.column_config.LinkColumn("Postdecision Audit Source", display_text="Open"),
+                    },
+                )
+                st.caption(
+                    "These are the historical misses still left after V1.6. LOW/VERY_LOW means the decisive blocker "
+                    "was not sufficiently explicit in public pre-PDUFA evidence to justify another rule without hindsight."
+                )
     else:
         st.info("100% directional benchmark has not been generated yet.")
 
