@@ -51,6 +51,16 @@ REQUIRED = {
         "missing_components","backfill_status","source_targets","decision_date",
         "actual_fda_decision","notes",
     },
+    "data/fda_v3_historical_backtest.csv": {
+        "event_key","ticker","pdufa_date","actual_outcome","model_class","p_approval",
+        "correct","validation_period","independence_status","public_model_class",
+        "v3_phase_a_status","v3_phase_a_match","historical_v3_backfill_needed",
+        "v3_backfill_priority","diagnostic_miss_class",
+    },
+    "data/fda_v3_historical_backfill_queue.csv": {
+        "event_key","ticker","pdufa_date","actual_outcome","validation_period",
+        "independence_status","v3_backfill_priority","diagnostic_miss_class",
+    },
     "data/prediction_engine_history.csv": {
         "event_key", "ticker", "pdufa_date", "p_approval", "actual_outcome",
         "public_approval_probability", "biopharmawatch_probability",
@@ -153,6 +163,10 @@ if not (ROOT / "scripts/fda_decision_engine.py").exists():
     raise SystemExit("missing scripts/fda_decision_engine.py")
 if not (ROOT / "data/fda_engine_config.json").exists():
     raise SystemExit("missing data/fda_engine_config.json")
+if not (ROOT / "scripts/fda_v3_historical_backtest.py").exists():
+    raise SystemExit("missing scripts/fda_v3_historical_backtest.py")
+if not (ROOT / "data/fda_v3_historical_summary.json").exists():
+    raise SystemExit("missing data/fda_v3_historical_summary.json")
 
 second_financing = read_csv(ROOT / "data/second_financing_status.csv")
 sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
@@ -329,6 +343,9 @@ required_ui_contracts = [
     '"data/fda_review_backfill_queue.csv"',
     'def load_fda_review_backfill_queue',
     'FDA Discipline Backfill Queue',
+    'FDA-V3 decision-safe benchmark',
+    'V3 Backfill Remaining',
+    'FDA-V3 historical backfill queue',
 ]
 for label in required_ui_contracts:
     if label not in app:
