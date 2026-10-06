@@ -294,6 +294,23 @@ def load_prediction_rescore_queue():
 
 
 @st.cache_data(ttl=120)
+def load_fda_v3_historical_summary():
+    try:
+        with open("data/fda_v3_historical_summary.json", "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+@st.cache_data(ttl=120)
+def load_fda_v3_historical_backfill_queue():
+    try:
+        return pd.read_csv("data/fda_v3_historical_backfill_queue.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_engine():
     try:
         x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
@@ -571,6 +588,8 @@ def _story_timestamp(value):
 df = load_data()
 prediction_history = load_prediction_history()
 prediction_rescore_queue = load_prediction_rescore_queue()
+fda_v3_hist_summary = load_fda_v3_historical_summary()
+fda_v3_hist_queue = load_fda_v3_historical_backfill_queue()
 fda_reviews = load_fda_review_engine()
 fda_backfill_queue = load_fda_review_backfill_queue()
 fda_freezes = load_fda_prediction_freezes()
@@ -3184,6 +3203,39 @@ elif page == "6. MATCH OPTIMIZER":
     )
 
     years = sorted([int(y) for y in opt.loc[opt["Eligible"], "Year"].dropna().unique().tolist()])
+
+    st.markdown("### FDA-V3 decision-safe benchmark")
+    if fda_v3_hist_summary:
+        v31,v32,v33,v34,v35 = st.columns(5)
+        v31.metric("Legacy Match", f"{float(fda_v3_hist_summary.get('legacy_accuracy_pct', 0)):.1f}%")
+        v32.metric("Phase-A Match", f"{float(fda_v3_hist_summary.get('phase_a_public_directional_match_pct', 0)):.1f}%")
+        v33.metric("Phase-A Coverage", f"{float(fda_v3_hist_summary.get('phase_a_public_directional_coverage_pct', 0)):.1f}%")
+        v34.metric("Directional Calls", int(fda_v3_hist_summary.get("phase_a_public_directional_calls", 0)))
+        v35.metric("V3 Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
+        st.caption(
+            "Phase A uses only preserved decision-safe public calls. Its 100% match result is a small-subset benchmark, "
+            "not the completed FDA-V3 historical accuracy. Full V3 remains pending evidence backfill."
+        )
+        with st.expander("FDA-V3 historical backfill queue", expanded=False):
+            if fda_v3_hist_queue.empty:
+                st.info("No historical V3 backfill queue is loaded.")
+            else:
+                qcols = [c for c in [
+                    "ticker","pdufa_date","actual_outcome","validation_period",
+                    "independence_status","v3_backfill_priority","diagnostic_miss_class"
+                ] if c in fda_v3_hist_queue.columns]
+                st.dataframe(
+                    fda_v3_hist_queue[qcols].rename(columns={
+                        "ticker":"Ticker","pdufa_date":"PDUFA Date","actual_outcome":"Actual FDA",
+                        "validation_period":"Validation Period","independence_status":"Validation Role",
+                        "v3_backfill_priority":"Priority","diagnostic_miss_class":"Diagnostic Miss Class"
+                    }),
+                    use_container_width=True,
+                    hide_index=True,
+                    height=420,
+                )
+    else:
+        st.info("FDA-V3 historical benchmark has not been generated yet.")
 
     st.markdown("### STEP 1 — Historical cohorts")
     if years:
