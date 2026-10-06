@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.8"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.9"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -248,12 +248,37 @@ def event_risk_override(base_direction, text):
             single_pivotal and dose_inconsistency and no_second_controlled_pivotal
         )
 
+        # V1.9: a prior CRL spanning multiple disciplines remains a material
+        # risk when one discipline is affirmatively cleared but another prior
+        # deficiency has no equivalent public closure signal before an extended
+        # resubmission review deadline.
+        prior_multidiscipline_crl = any(x in lower for x in [
+            "prior-crl", "prior crl", "2019 crl"
+        ])
+        one_prior_discipline_cleared = any(x in lower for x in [
+            "clean fda reinspection", "affirmatively cleared"
+        ])
+        unresolved_nonclinical_prior_deficiency = (
+            any(x in lower for x in ["non-clinical deficiency", "nonclinical deficiency"]) and
+            any(x in lower for x in [
+                "did not publicly document closure",
+                "lacked an equivalent public closure signal",
+            ])
+        )
+        unresolved_prior_crl_discipline = (
+            prior_multidiscipline_crl and
+            one_prior_discipline_cleared and
+            unresolved_nonclinical_prior_deficiency and
+            extension
+        )
+
         if (
             cmc_extension or active_hold or phase2_external_full or
             unresolved_prior_crl or explicit_deficiency_notice or
             unresolved_late_cycle_cmc or multi_discipline_fda_warning or
             inspection_readiness_risk or cross_regulatory_evidence_risk or
-            immunogenicity_major_amendment or single_pivotal_dose_consistency_risk
+            immunogenicity_major_amendment or single_pivotal_dose_consistency_risk or
+            unresolved_prior_crl_discipline
         ):
             return "CRL", "EVENT_RISK_OVERRIDE"
 
