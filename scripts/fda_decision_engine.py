@@ -146,13 +146,9 @@ def _derive_component_gate(row, explicit_field, subfields, aggregate_score, pass
             return "REVIEW"
         return "PASS"
 
-    agg = score(row.get(aggregate_score))
-    if agg is None:
-        return "REVIEW"
-    if agg <= fail_max:
-        return "FAIL"
-    if agg >= pass_min:
-        return "PASS"
+    # V3.1 does not let an old aggregate score substitute for missing
+    # decision-critical subchecks. Aggregate scores remain useful for the
+    # weighted probability only after the hard gate is independently resolved.
     return "REVIEW"
 
 
