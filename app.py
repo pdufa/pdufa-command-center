@@ -301,6 +301,7 @@ def load_fda_review_engine():
         x = pd.DataFrame()
     required = [
         "event_key","ticker","drug","pdufa_date",
+        "fda_regulatory_case_id","fda_count_in_match",
         "fda_application_identity","fda_clinical_score","fda_statistics_score",
         "fda_meaningfulness_score","fda_safety_score","fda_clinical_pharmacology_score",
         "fda_nonclinical_score","fda_cmc_score","fda_inspection_status",
@@ -340,7 +341,7 @@ def load_fda_prediction_freezes():
     except Exception:
         x = pd.DataFrame()
     required = [
-        "freeze_id","event_key","ticker","drug","pdufa_date","evidence_cutoff",
+        "freeze_id","event_key","ticker","drug","pdufa_date","fda_regulatory_case_id","evidence_cutoff",
         "fda_probability","fda_prediction","fda_confidence","fda_hard_gate",
         "fda_gate_reason","frozen_at","model_version","decision_date",
         "actual_fda_decision","match_result"
@@ -3771,8 +3772,10 @@ elif page == "8. FDA ENGINE":
 
     calls = fda_view["FDA CALL"].value_counts()
     gates = fda_view["FDA GATE"].value_counts()
+    unique_reg_cases = fda_view["fda_regulatory_case_id"].fillna("").astype(str)
+    unique_reg_cases = unique_reg_cases.where(unique_reg_cases.ne(""), fda_view["event_key"].astype(str))
     e1,e2,e3,e4,e5,e6 = st.columns(6)
-    e1.metric("Events", len(fda_view))
+    e1.metric("Regulatory Cases", int(unique_reg_cases.nunique()))
     e2.metric("APPROVED Calls", int(calls.get("APPROVED", 0)))
     e3.metric("CRL Calls", int(calls.get("CRL", 0)))
     e4.metric("REVIEW / No Call", int(calls.get("REVIEW", 0)))
@@ -3785,7 +3788,7 @@ elif page == "8. FDA ENGINE":
     )
 
     fda_table = fda_view[[
-        "ticker","PDUFA Date","DECISION DATE","FDA MODEL %","FDA CALL","FDA GATE",
+        "ticker","PDUFA Date","DECISION DATE","fda_regulatory_case_id","fda_count_in_match","FDA MODEL %","FDA CALL","FDA GATE",
         "fda_application_identity","fda_clinical_score","fda_statistics_score",
         "fda_meaningfulness_score","fda_safety_score","fda_cmc_score",
         "fda_inspection_status","fda_regulatory_score","fda_labeling_score",
@@ -3793,6 +3796,8 @@ elif page == "8. FDA ENGINE":
         "fda_prediction_frozen_at","fda_model_version","fda_gate_reason"
     ]].rename(columns={
         "ticker":"Ticker",
+        "fda_regulatory_case_id":"Regulatory Case",
+        "fda_count_in_match":"Count in Match",
         "fda_application_identity":"Application Identity",
         "fda_clinical_score":"Clinical",
         "fda_statistics_score":"Statistics",
