@@ -1,0 +1,12 @@
+{
+  "input_pending_rows": 48,
+  "remove_only_rows": 30,
+  "unique_canonical_events_reconstructed": 16,
+  "knsa_excluded_for_unverified_exact_action_date": 1,
+  "final_history_rows": 146,
+  "final_audited_eligible_rows": 146,
+  "final_audited_correct_rows": 102,
+  "final_audited_accuracy_pct": 69.86,
+  "remaining_needs_rescore": 0,
+  "note": "Repaired rows are retrospective frozen-model audit reconstructions and are not blind predictions."
+}
