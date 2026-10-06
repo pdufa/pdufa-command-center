@@ -34,6 +34,18 @@ REQUIRED = {
         "pdufa_date_status","phase3_status","financing_status","cash_runway_status",
         "market_data_status","ownership_insiders_status",
     },
+    "data/fda_review_engine.csv": {
+        "event_key","ticker","drug","pdufa_date","fda_application_identity",
+        "fda_clinical_score","fda_statistics_score","fda_safety_score","fda_cmc_score",
+        "fda_inspection_status","fda_regulatory_score","fda_benefit_risk_score",
+        "fda_hard_gate","fda_probability","fda_prediction","fda_confidence",
+        "fda_model_version","decision_date","actual_fda_decision","fda_match_result",
+    },
+    "data/fda_prediction_freezes.csv": {
+        "freeze_id","event_key","ticker","drug","pdufa_date","fda_probability",
+        "fda_prediction","frozen_at","model_version","decision_date",
+        "actual_fda_decision","match_result",
+    },
     "data/prediction_engine_history.csv": {
         "event_key", "ticker", "pdufa_date", "p_approval", "actual_outcome",
         "public_approval_probability", "biopharmawatch_probability",
@@ -132,6 +144,10 @@ if unknown_recheck_keys:
     )
 if not (ROOT / "scripts/recheck_events.py").exists():
     raise SystemExit("missing scripts/recheck_events.py")
+if not (ROOT / "scripts/fda_decision_engine.py").exists():
+    raise SystemExit("missing scripts/fda_decision_engine.py")
+if not (ROOT / "data/fda_engine_config.json").exists():
+    raise SystemExit("missing data/fda_engine_config.json")
 
 second_financing = read_csv(ROOT / "data/second_financing_status.csv")
 sf_keys = [(r.get("event_key") or "").strip() for r in second_financing]
@@ -298,6 +314,13 @@ required_ui_contracts = [
     'no current PDUFA event in the saved event feed',
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
+    '"8. FDA ENGINE"',
+    '"FDA MODEL %"',
+    '"FDA CALL"',
+    '"FDA GATE"',
+    'def load_fda_review_engine',
+    '"data/fda_review_engine.csv"',
+    '"data/fda_prediction_freezes.csv"',
 ]
 for label in required_ui_contracts:
     if label not in app:
