@@ -75,6 +75,12 @@ REQUIRED = {
         "fallback_probability","confidence","source_layer","model_version",
         "actual_outcome","match_result",
     },
+    "data/historical_assessed_decisions.csv": {
+        "event_key","ticker","pdufa_date","assessed_direction","assessment_basis",
+        "strict_status","strict_direction","decision_reason","strict_reason",
+        "baseline_model_probability_pct","source_layer","model_version",
+        "actual_outcome","match_result","review_status","validation_status",
+    },
     "data/fda_directional_100pct_freezes.csv": {
         "event_key","fda_regulatory_case_id","ticker","pdufa_date",
         "count_in_coverage","prospective_eligible","forced_direction","directional_score",
@@ -578,3 +584,43 @@ for r in gate_live:
 decided_gate = [r for r in gate_live if (r.get("actual_fda_decision") or "").upper() in {"APPROVED","CRL"}]
 if not decided_gate and gate_summary.get("prospective_accuracy_pct") is not None:
     raise SystemExit("100-on-100: prospective accuracy claimed before a qualified case was decided")
+
+# Every strict abstention retains its recorded broad direction and identity.
+assessed = read_csv(ROOT / "data/historical_assessed_decisions.csv")
+assessed_summary = json.loads((ROOT / "data/historical_assessed_decisions_summary.json").read_text())
+assessed_by_key = {r["event_key"]: r for r in assessed}
+hist_by_key = {r["event_key"]: r for r in hist_current}
+strict_by_key = {r["event_key"]: r for r in gate_hist}
+if len(assessed_by_key) != len(assessed) or set(assessed_by_key) != set(hist_by_key):
+    raise SystemExit("Historical assessments: missing or duplicate historical identity")
+for key, row in assessed_by_key.items():
+    source = strict_by_key[key] if key in strict_by_key else hist_by_key[key]
+    expected = source["qualified_direction"] if key in strict_by_key else source["forced_direction"]
+    basis = "STRICT" if key in strict_by_key else "BROAD"
+    if row["assessed_direction"] != expected or row["assessment_basis"] != basis:
+        raise SystemExit(f"Historical assessments: recorded direction or qualification changed for {key}")
+    actual = hist_by_key[key]["actual_outcome"]
+    match = ("MATCH" if expected == actual else "MISS") if actual in {"APPROVED", "CRL"} else "PENDING"
+    if row["actual_outcome"] != actual or row["match_result"] != match:
+        raise SystemExit(f"Historical assessments: outcome comparison mismatch for {key}")
+    if not row["decision_reason"] or not row["strict_reason"]:
+        raise SystemExit(f"Historical assessments: missing decision reasoning for {key}")
+    if row["validation_status"] != "RETROSPECTIVE_DEVELOPMENT_NOT_BLIND":
+        raise SystemExit("Historical assessments: retrospective status missing")
+for basis in ["BROAD", "STRICT"]:
+    rows = [r for r in assessed if r["assessment_basis"] == basis]
+    scored = [r for r in rows if r["actual_outcome"] in {"APPROVED", "CRL"}]
+    reported = assessed_summary[basis.lower()]
+    counts = {
+        "assessed": len(rows), "scored": len(scored),
+        "approval_calls": sum(r["assessed_direction"] == "APPROVED" for r in rows),
+        "crl_calls": sum(r["assessed_direction"] == "CRL" for r in rows),
+        "matches": sum(r["match_result"] == "MATCH" for r in scored),
+        "misses": sum(r["match_result"] == "MISS" for r in scored),
+    }
+    if any(reported[k] != value for k, value in counts.items()):
+        raise SystemExit(f"Historical assessments: {basis} summary mismatch")
+if assessed_summary["total_assessed"] != len(assessed) or assessed_summary["unresolved_assessments"] != 0:
+    raise SystemExit("Historical assessments: total or unresolved count mismatch")
+if gate_summary.get("historical_review_no_call_analyzed") != len(assessed) - len(gate_hist):
+    raise SystemExit("Historical assessments: strict withheld count mismatch")

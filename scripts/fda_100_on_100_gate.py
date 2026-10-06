@@ -108,18 +108,27 @@ def main():
     h.to_csv(HIST_OUT, index=False)
     l.to_csv(LIVE_OUT, index=False)
 
+    # Keep recorded broad directions visible even when the strict gate abstains.
+    from historical_decisions import write_decisions
+    assessed = write_decisions(hist, h, promotions)
+
     h_matches = int((h["match_result"] == "MATCH").sum()) if len(h) else 0
     decided_mask = l["actual_fda_decision"].astype(str).str.upper().isin(VALID_DIRS) if len(l) else pd.Series(dtype=bool)
     decided = l[decided_mask].copy() if len(l) else l
     p_matches = int((decided["qualified_direction"] == decided["actual_fda_decision"].astype(str).str.upper()).sum()) if len(decided) else 0
 
+    previous_summary = json.loads(SUMMARY_OUT.read_text(encoding="utf-8")) if SUMMARY_OUT.exists() else {}
     summary = {
+        **previous_summary,
         "model_version": MODEL_VERSION,
-        "principle": "Precision-first abstaining gate; strict FDA-V3 directional calls only.",
+        "principle": previous_summary.get("principle", "Precision-first abstaining gate; strict FDA-V3 directional calls only."),
         "historical_qualified": int(len(h)),
         "historical_matches": h_matches,
         "historical_accuracy_pct": round(100*h_matches/len(h), 2) if len(h) else None,
         "historical_total_reviewed": int(len(hist)),
+        "historical_review_no_call_analyzed": int(len(hist) - len(h)),
+        "historical_assessed_directions": assessed["total_assessed"],
+        "historical_broad_assessed": assessed["broad"]["assessed"],
         "historical_coverage_pct": round(100*len(h)/len(hist), 2) if len(hist) else None,
         "historical_validation_status": "RETROSPECTIVE_NOT_BLIND",
         "live_counted_cases": int((live["count_in_coverage"].astype(str).str.upper() == "YES").sum()),
@@ -129,7 +138,7 @@ def main():
         "live_decided_matches": p_matches,
         "prospective_accuracy_pct": round(100*p_matches/len(decided), 2) if len(decided) else None,
         "future_guarantee": False,
-        "note": "A historical 100% subset does not guarantee future FDA outcomes. Prospective accuracy is reported only after frozen qualified cases are decided."
+        "note": previous_summary.get("note", "A historical 100% subset does not guarantee future FDA outcomes. Prospective accuracy is reported only after frozen qualified cases are decided.")
     }
     SUMMARY_OUT.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))

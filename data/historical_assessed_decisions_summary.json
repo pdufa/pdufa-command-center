@@ -1,0 +1,24 @@
+{
+  "total_assessed": 146,
+  "unresolved_assessments": 0,
+  "broad": {
+    "assessed": 126,
+    "approval_calls": 96,
+    "crl_calls": 30,
+    "scored": 126,
+    "matches": 121,
+    "misses": 5,
+    "match_pct": 96.03
+  },
+  "strict": {
+    "assessed": 20,
+    "approval_calls": 15,
+    "crl_calls": 5,
+    "scored": 20,
+    "matches": 20,
+    "misses": 0,
+    "match_pct": 100.0
+  },
+  "validation_status": "RETROSPECTIVE_DEVELOPMENT_NOT_BLIND",
+  "note": "Recorded suggestions and strict qualification are separate. Historical matches are descriptive development results."
+}

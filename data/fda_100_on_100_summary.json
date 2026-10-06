@@ -3,7 +3,7 @@
   "principle": "Precision-first abstaining gate. A case qualifies only when strict FDA-V3 makes APPROVED or CRL; REVIEW/NO_CALL never enters the 100-on-100 bucket.",
   "historical_qualified": 20,
   "historical_matches": 20,
-  "historical_accuracy_pct": 100,
+  "historical_accuracy_pct": 100.0,
   "historical_total_reviewed": 146,
   "historical_coverage_pct": 13.7,
   "historical_validation_status": "RETROSPECTIVE_NOT_BLIND",
@@ -15,5 +15,9 @@
   "q4_2026_live_qualified": 0,
   "future_guarantee": false,
   "note": "Historical 100% is descriptive of the strict qualified subset, including documented predecision-evidence promotions under general rules; it is not proof of future 100% accuracy. Prospective performance remains unscored until qualified frozen cases receive FDA decisions.",
-  "generated_at": "2026-10-06"
+  "generated_at": "2026-10-06",
+  "historical_review_no_call_analyzed": 126,
+  "historical_assessed_directions": 146,
+  "historical_broad_assessed": 126,
+  "live_decided_matches": 0
 }

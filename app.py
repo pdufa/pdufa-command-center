@@ -165,6 +165,14 @@ def load_100_on_100_live():
         return pd.DataFrame()
 
 
+@st.cache_data(ttl=60)
+def load_historical_assessed_decisions():
+    try:
+        return pd.read_csv("data/historical_assessed_decisions.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
 @st.cache_data(ttl=120)
 def load_data():
     # Defensive repair: older exports accidentally used literal "\\n" between CSV rows.
@@ -562,6 +570,7 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
         "scripts/fda_regulatory_signal_monitor.py",
         "scripts/fda_directional_100pct.py",
         "scripts/fda_pdufa_extension_tracker.py",
+        "scripts/fda_100_on_100_gate.py",
     ]:
         step = subprocess.run(
             [sys.executable, script],
@@ -581,6 +590,9 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
     load_fda_regulatory_signal_monitor.clear()
     load_fda_directional_100pct_live.clear()
     load_fda_directional_100pct_summary.clear()
+    load_100_on_100_summary.clear()
+    load_100_on_100_live.clear()
+    load_historical_assessed_decisions.clear()
     load_fda_pdufa_extension_ledger.clear()
     payload = (result.stdout or "").strip().splitlines()
     return payload[-1] if payload else "Recheck completed"
@@ -751,6 +763,10 @@ fda_v3_hist_queue = load_fda_v3_historical_backfill_queue()
 fda_v3_hist_backtest = load_fda_v3_historical_backtest()
 fda_directional_summary = load_fda_directional_100pct_summary()
 fda_directional_live = load_fda_directional_100pct_live()
+historical_assessed_decisions = load_historical_assessed_decisions()
+historical_assessed_by_key = {
+    str(r["event_key"]): r for r in historical_assessed_decisions.to_dict("records")
+}
 fda_directional_residual = load_fda_directional_residual_miss_audit()
 fda_regulatory_signals = load_fda_regulatory_signal_monitor()
 fda_extension_ledger = load_fda_pdufa_extension_ledger()
@@ -975,6 +991,62 @@ def safe_text(v, default="Not available"):
         return default
     s = str(v).strip()
     return default if not s or s.lower() in ["nan", "none", "<na>"] else s
+
+def render_historical_assessed_decisions(event_keys):
+    st.markdown("### ASSESSED HISTORICAL DECISIONS")
+    ledger = historical_assessed_decisions
+    if ledger.empty:
+        st.info("Recorded historical assessments are not available yet.")
+        return
+    selected = ledger[ledger["event_key"].isin(set(event_keys))].copy()
+    subset = st.selectbox(
+        "Decision set",
+        ["Broad decisions — strict gate withheld", "All assessed decisions", "Strict qualified decisions"],
+        key="historical_decision_set",
+    )
+    if subset == "Broad decisions — strict gate withheld":
+        selected = selected[selected["assessment_basis"].eq("BROAD")]
+    elif subset == "Strict qualified decisions":
+        selected = selected[selected["assessment_basis"].eq("STRICT")]
+    approved = int(selected["assessed_direction"].eq("APPROVED").sum())
+    crl = int(selected["assessed_direction"].eq("CRL").sum())
+    scored = selected[selected["actual_outcome"].isin(["APPROVED", "CRL"])]
+    matches = int(scored["match_result"].eq("MATCH").sum())
+    c1,c2,c3,c4,c5 = st.columns(5)
+    c1.metric("Recorded decisions", len(selected))
+    c2.metric("PASS / Approval", approved)
+    c3.metric("CRL", crl)
+    c4.metric("Historical matches", f"{matches}/{len(scored)}")
+    c5.metric("Historical match %", f"{100 * matches / len(scored):.2f}%" if len(scored) else "—")
+    st.caption(
+        "Each event has a recorded PASS or CRL suggestion. Strict REVIEW means the evidence gate withheld qualification; "
+        "the broad suggestion remains visible. These are retrospective development results. "
+        "The year, market-cap and search filters above also apply here."
+    )
+    display = pd.DataFrame(index=selected.index)
+    display["Ticker"] = selected.apply(
+        lambda r: event_detail_url(r, source="history", return_page="5. PREDICTION ENGINE"), axis=1
+    ) if not selected.empty else pd.Series(dtype="object")
+    display["PDUFA Date"] = selected["pdufa_date"]
+    display["SUGGESTION"] = selected["assessed_direction"].replace({"APPROVED": "PASS"})
+    display["FDA Decision"] = selected["actual_outcome"]
+    display["MATCH"] = selected["match_result"]
+    display["Decision basis"] = selected["assessment_basis"]
+    display["Strict status"] = selected["strict_status"].replace({"REVIEW_NO_CALL_ANALYZED": "REVIEW — ANALYZED"})
+    display["Decision reason"] = selected["decision_reason"]
+    display["Strict evidence gap"] = selected["strict_reason"]
+    st.dataframe(
+        display, use_container_width=True, hide_index=True,
+        height=min(650, 120 + 34 * len(display)),
+        column_config={"Ticker": st.column_config.LinkColumn("Ticker", display_text=r"ticker=([^&]+)")},
+    )
+    st.download_button(
+        "DOWNLOAD ASSESSED DECISIONS (.CSV)",
+        data=selected.to_csv(index=False).encode("utf-8"),
+        file_name="historical_assessed_decisions.csv", mime="text/csv",
+        key="download_historical_assessed_decisions",
+    )
+
 
 def prediction_v2_history_status(row):
     """Audit-safe status for historical validation rows."""
@@ -3064,6 +3136,10 @@ elif page == "5. PREDICTION ENGINE":
             hview["event_key"].astype(str).str.lower().str.contains(q, na=False)
         ]
 
+    render_historical_assessed_decisions(hview["event_key"])
+    st.markdown("### ORIGINAL MODEL AND AUDIT RECORDS")
+    st.caption("The original probability-derived suggestions below are preserved for comparison with the assessed decisions above.")
+
     # Recalculate every summary box from the CURRENT filtered selection.
     filtered_correct = hview["Correct / Wrong"].eq("Correct")
     filtered_avg_i = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
@@ -3371,16 +3447,18 @@ elif page == "7. MATCH OPTIMIZER":
 
     st.markdown("### FDA-V3 decision-safe benchmark")
     if fda_v3_hist_summary:
-        v31,v32,v33,v34,v35,v36 = st.columns(6)
+        strict_summary = load_100_on_100_summary()
+        v31,v32,v33,v34,v35,v36,v37 = st.columns(7)
         v31.metric("Review Complete", f"{float(fda_v3_hist_summary.get('review_completion_pct', 0)):.1f}%")
-        v32.metric("FDA-V3 Match", f"{float(fda_v3_hist_summary.get('combined_v3_directional_match_pct', 0)):.1f}%")
-        v33.metric("Directional Coverage", f"{float(fda_v3_hist_summary.get('combined_v3_directional_coverage_pct', 0)):.1f}%")
-        v34.metric("Correct Calls", f"{int(fda_v3_hist_summary.get('combined_v3_directional_correct', 0))}/{int(fda_v3_hist_summary.get('combined_v3_directional_calls', 0))}")
-        v35.metric("REVIEW / No Call", int(fda_v3_hist_summary.get("historical_v3_review_complete_no_call", 0)))
-        v36.metric("Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
+        v32.metric("Strict Match", f"{float(strict_summary.get('historical_accuracy_pct', 0)):.1f}%")
+        v33.metric("Strict Coverage", f"{float(strict_summary.get('historical_coverage_pct', 0)):.1f}%")
+        v34.metric("Strict Correct Calls", f"{int(strict_summary.get('historical_matches', 0))}/{int(strict_summary.get('historical_qualified', 0))}")
+        v35.metric("Strict REVIEW — Analyzed", int(strict_summary.get("historical_review_no_call_analyzed", 0)))
+        v36.metric("Broad Decisions Recorded", int(strict_summary.get("historical_broad_assessed", 0)))
+        v37.metric("Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
         st.caption(
-            "FDA-V3 historical review is complete across the cohort. Match % applies only to directional APPROVED/CRL calls; "
-            "Coverage % shows how often the strict public-evidence gates were willing to make a directional call. "
+            "Strict qualification includes documented evidence promotions. Every strict REVIEW case has a separate broad PASS/CRL "
+            "assessment in Prediction Engine. Strict Match % applies only to the qualified subset. "
             "Retrospective reconstructions are not independent blind predictions."
         )
         with st.expander("FDA-V3 historical backfill queue", expanded=False):
@@ -4479,6 +4557,15 @@ elif page == "1. DECISION":
         ].copy()
 
     archive = pd.concat([archive_hist, archive_live], ignore_index=True)
+    archive["Assessed Call"] = archive.apply(
+        lambda r: historical_assessed_by_key.get(str(r.get("event_key")), {}).get("assessed_direction", r.get("FDA-V3 Call")), axis=1
+    )
+    archive["Assessed Match"] = archive.apply(
+        lambda r: historical_assessed_by_key.get(str(r.get("event_key")), {}).get("match_result", r.get("FDA-V3 Match")), axis=1
+    )
+    archive["Strict Status"] = archive.apply(
+        lambda r: historical_assessed_by_key.get(str(r.get("event_key")), {}).get("strict_status", r.get("Review Status")), axis=1
+    ).replace({"REVIEW_NO_CALL_ANALYZED": "REVIEW — ANALYZED"})
     archive["Archive Date"] = pd.to_datetime(archive["Archive Date"], errors="coerce")
     archive["PDUFA Date"] = pd.to_datetime(archive["PDUFA Date"], errors="coerce")
     archive["Decision Date"] = pd.to_datetime(archive["Decision Date"], errors="coerce")
@@ -4507,19 +4594,19 @@ elif page == "1. DECISION":
         monthly_rows = []
         for month_num in range(1, 13):
             m = year_rows[year_rows["Month"].eq(month_num)]
-            directional = m[m["FDA-V3 Call"].isin(["APPROVED","CRL"])]
-            matched = directional["FDA-V3 Match"].astype(str).str.upper().eq("MATCH").sum()
+            directional = m[m["Assessed Call"].isin(["APPROVED","CRL"])]
+            matched = directional["Assessed Match"].astype(str).str.upper().eq("MATCH").sum()
             monthly_rows.append({
                 "Month": calendar.month_abbr[month_num],
                 "PDUFAs": int(len(m)),
                 "FDA Approved": int(m["Actual FDA"].eq("APPROVED").sum()),
                 "FDA CRL": int(m["Actual FDA"].eq("CRL").sum()),
-                "V3 Calls": int(len(directional)),
-                "V3 Correct": int(matched),
-                "V3 Match %": (
+                "Assessed Calls": int(len(directional)),
+                "Assessed Correct": int(matched),
+                "Assessed Match %": (
                     "" if len(directional) == 0 else f"{100.0 * matched / len(directional):.1f}%"
                 ),
-                "V3 Review / No Call": int((~m["FDA-V3 Call"].isin(["APPROVED","CRL"])).sum()),
+                "Strict REVIEW (Analyzed)": int(m["Strict Status"].eq("REVIEW — ANALYZED").sum()),
             })
 
         y1,y2,y3,y4,y5 = st.columns(5)
@@ -4527,14 +4614,15 @@ elif page == "1. DECISION":
         y2.metric("PDUFA Decisions", len(year_rows))
         y3.metric("FDA Approved", int(year_rows["Actual FDA"].eq("APPROVED").sum()))
         y4.metric("FDA CRL", int(year_rows["Actual FDA"].eq("CRL").sum()))
-        yr_directional = year_rows[year_rows["FDA-V3 Call"].isin(["APPROVED","CRL"])]
-        yr_correct = int(yr_directional["FDA-V3 Match"].astype(str).str.upper().eq("MATCH").sum())
+        yr_directional = year_rows[year_rows["Assessed Call"].isin(["APPROVED","CRL"])]
+        yr_correct = int(yr_directional["Assessed Match"].astype(str).str.upper().eq("MATCH").sum())
         y5.metric(
-            "FDA-V3 Match",
+            "Assessed Match",
             "—" if len(yr_directional) == 0 else f"{100.0 * yr_correct / len(yr_directional):.1f}%"
         )
 
         st.markdown("### Month-by-month result")
+        st.caption("Recorded model assessments are shown alongside the FDA outcomes. Historical matches are retrospective development results; strict qualification is shown separately.")
         st.dataframe(
             pd.DataFrame(monthly_rows),
             use_container_width=True,
@@ -4572,17 +4660,18 @@ elif page == "1. DECISION":
                     "Not separately stored" if pd.isna(ar.get("Decision Date"))
                     else pd.Timestamp(ar.get("Decision Date")).strftime("%b %d, %Y")
                 )
-                call = safe_text(ar.get("FDA-V3 Call"), "REVIEW")
-                match = safe_text(ar.get("FDA-V3 Match"), "NO_CALL")
+                call = safe_text(ar.get("Assessed Call"), "REVIEW")
+                match = safe_text(ar.get("Assessed Match"), "NO_CALL")
                 drug = safe_text(ar.get("Drug / Program"), "")
                 with st.container(border=True):
                     c1,c2,c3,c4,c5 = st.columns([1.2,2.0,1.1,1.1,1.2])
                     c1.markdown(f"**{safe_text(ar.get('ticker'))}**")
                     c2.markdown(f"**{drug or 'PDUFA event'}**")
                     c3.markdown(f"FDA: **{safe_text(ar.get('Actual FDA'))}**")
-                    c4.markdown(f"V3: **{call}**")
+                    c4.markdown(f"Suggestion: **{'PASS' if call == 'APPROVED' else call}**")
                     c5.markdown(f"Match: **{match}**")
                     st.caption(f"PDUFA: {pdate} · Decision date: {ddate} · Event: {safe_text(ar.get('event_key'))}")
+                    st.caption(f"Strict status: {safe_text(ar.get('Strict Status'))}")
                     if st.button(
                         f"OPEN FULL PDUFA DATA — {safe_text(ar.get('ticker'))}",
                         key="archive_open_" + re.sub(r"[^A-Za-z0-9_]+", "_", safe_text(ar.get("event_key"))),
@@ -4626,6 +4715,23 @@ else:
         st.markdown(f"## {safe_text(hr.get('ticker'))} — Historical PDUFA")
         st.caption(f"Event key: {safe_text(hr.get('event_key'))}")
 
+        assessment = historical_assessed_by_key.get(str(hr.get("event_key")), {})
+        if assessment:
+            st.markdown("### Recorded assessment")
+            ad1,ad2,ad3,ad4 = st.columns(4)
+            assessed_call = assessment["assessed_direction"]
+            ad1.metric("SUGGESTION", "PASS" if assessed_call == "APPROVED" else "CRL")
+            ad2.metric("Decision basis", assessment["assessment_basis"])
+            ad3.metric("Historical match", assessment["match_result"])
+            ad4.metric("Strict qualification", "QUALIFIED" if assessment["assessment_basis"] == "STRICT" else "REVIEW — ANALYZED")
+            st.write(f"**Decision reason:** {assessment['decision_reason']}")
+            st.write(f"**Strict evidence status:** {assessment['strict_reason']}")
+            st.caption("This recorded assessment is retrospective. The original probability and prediction below remain available for comparison.")
+            if assessment.get("source_urls"):
+                for i, url in enumerate(assessment["source_urls"].split("|")):
+                    if url.strip():
+                        st.link_button(f"OPEN ASSESSMENT SOURCE {i+1}", url.strip())
+
         public_hist = hr.get("public_approval_probability", pd.NA)
         public_hist_text = fmt_app_pct(public_hist, 1)
         all_hist_text = fmt_app_pct(all_source_probability_value(hr), 1)
@@ -4658,6 +4764,11 @@ else:
                 v3_call = "REVIEW"
                 v3_match = "NO_CALL"
                 v3_origin = "Strict V3 review / no directional call"
+
+            if assessment and assessment["assessment_basis"] == "STRICT":
+                v3_call = assessment["strict_direction"]
+                v3_match = assessment["match_result"]
+                v3_origin = "Recorded strict qualification, including verified evidence promotions"
 
             st.markdown("### FDA-V3 Review")
             fv1,fv2,fv3,fv4 = st.columns(4)
@@ -5142,12 +5253,15 @@ st.markdown("### 100-on-100 Precision Gate")
 _gate100 = load_100_on_100_summary()
 _gate100_live = load_100_on_100_live()
 if _gate100:
-    g1,g2,g3,g4 = st.columns(4)
-    g1.metric("Historical qualified", f"{int(_gate100.get('historical_matches',0))}/{int(_gate100.get('historical_qualified',0))}")
-    g2.metric("Historical accuracy", f"{float(_gate100.get('historical_accuracy_pct',0)):.0f}%")
+    g1,g2,g3,g4,g5 = st.columns(5)
+    g1.metric("Strict qualified matches", f"{int(_gate100.get('historical_matches',0))}/{int(_gate100.get('historical_qualified',0))}")
+    g2.metric("Strict historical match", f"{float(_gate100.get('historical_accuracy_pct',0)):.0f}%")
     g3.metric("Historical coverage", f"{float(_gate100.get('historical_coverage_pct',0)):.2f}%")
     g4.metric("Live qualified", int(_gate100.get("live_qualified",0)))
-    st.caption("Precision-first gate: only strict FDA-V3 APPROVED/CRL calls qualify. REVIEW/NO CALL cases abstain and are never counted as wins. Historical results are retrospective, not a future guarantee.")
+    broad_assessed = int(_gate100.get("historical_broad_assessed", 0))
+    withheld = int(_gate100.get("historical_review_no_call_analyzed", 0))
+    g5.metric("Broad decisions recorded", f"{broad_assessed}/{withheld}")
+    st.caption("Strict REVIEW / NO CALL means qualification was withheld after analysis. Broad PASS/CRL suggestions for these cases are recorded in Prediction Engine → Assessed Historical Decisions. Strict historical match applies only to the qualified subset; all historical results are retrospective.")
     if not _gate100_live.empty:
         _show = _gate100_live.copy()
         st.dataframe(_show, use_container_width=True, hide_index=True)

@@ -47,3 +47,13 @@ The repository contains a separate precision-first FDA gate:
 - `data/fda_100_on_100_summary.json` — accuracy/coverage summary.
 
 This layer does **not** force every case into APPROVED/CRL. Strict FDA-V3 REVIEW/NO_CALL cases abstain and are excluded from the qualified bucket. Historical 100% accuracy describes the qualified retrospective subset only; prospective accuracy is reported only after frozen qualified cases receive FDA decisions.
+
+## Recorded historical decisions
+
+Prediction Engine starts with an assessed-decision table. Every historical event has a recorded PASS (APPROVED) or CRL suggestion. Strict qualification is a separate status; `REVIEW — ANALYZED` means the gate withheld qualification while the broad suggestion remains available.
+
+- `data/historical_assessed_decisions.csv` joins the existing broad directions and strict qualified calls by exact event key, with reasoning, evidence gaps and historical MATCH/MISS.
+- `data/historical_assessed_decisions_summary.json` summarizes the same rows.
+- `scripts/historical_decisions.py` builds this view without rescoring, changing model versions, or reading outcomes to choose directions. Runtime: under 3 seconds.
+
+The strict-gate refresh regenerates this table during surveillance and manual rechecks. The current 126 broad cases have 96 approval calls, 30 CRL calls and 121 historical matches. These are retrospective development results. Baseline model probabilities remain in the original model table; a risk-rule override is a direction change, not a newly calibrated probability.
