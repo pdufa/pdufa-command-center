@@ -18,6 +18,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Compile Streamlit app and FDA engines
-        run: python -m py_compile app.py scripts/fda_decision_engine.py scripts/fda_v3_historical_backtest.py scripts/complete_fda_v3_historical_review.py scripts/recheck_events.py
+        run: python -m py_compile app.py scripts/fda_decision_engine.py scripts/fda_directional_100pct.py scripts/fda_v3_historical_backtest.py scripts/complete_fda_v3_historical_review.py scripts/recheck_events.py
       - name: Validate data and display schema
         run: python smoke_test.py
