@@ -1,5 +1,5 @@
 {
-  "model_version": "FDA-V3.1",
+  "model_version": "FDA-V3.2",
   "directional_thresholds": {
     "approved_min_probability": 85,
     "crl_max_probability": 25
@@ -32,7 +32,7 @@
     "benefit_risk": 0.05
   },
   "notes": [
-    "FDA-V3.1 adds explicit statistics, CMC/product-quality, and facility/inspection hard-gate subchecks.",
+    "FDA-V3.2 adds an escalation-only BIMO/clinical-data-integrity gate on top of V3.1 statistics, CMC/product-quality, and facility/inspection subchecks.",
     "This is a decision-architecture baseline, not a validated accuracy claim.",
     "Trading variables such as price, market cap, momentum, short interest, IV, financing and ownership are prohibited from the FDA probability calculation.",
     "Thresholds and weights must be calibrated only on decision-safe historical evidence and then frozen prospectively.",
@@ -74,6 +74,17 @@
         "inspection outcome unavailable"
       ],
       "note": "A Form 483 alone is not an automatic CRL; unresolved critical inspection evidence blocks an approval call."
+    },
+    "data_integrity": {
+      "fail_if": [
+        "explicit FDA BIMO/data-integrity FAIL",
+        "finding that undermines pivotal-data reliability"
+      ],
+      "review_if": [
+        "open BIMO Form 483",
+        "unresolved GCP/data-integrity observation"
+      ],
+      "note": "This is an escalation-only hard gate. Absence of a public BIMO signal is neutral; a known unresolved observation blocks an approval call."
     }
   }
 }
