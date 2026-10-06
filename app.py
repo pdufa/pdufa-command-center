@@ -2716,7 +2716,7 @@ elif page == "4. PREDICTION ENGINE":
     hview = add_application_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"PDUFA","F","Match %","C",
+        "Ticker","PDUFA","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction",
         "model_class","actual_outcome",
@@ -2857,7 +2857,7 @@ elif page == "4. PREDICTION ENGINE":
         )
 
         v2display = live_v2[[
-            "Ticker","P%","F","Match %","C","Probability of Approval % — Public","PDUFA Date","drug","indication",
+            "Ticker","PDUFA Date","P%","F","Match %","C","Probability of Approval % — Public","drug","indication",
             "V2 Call","V2 Confidence","V2 Gate Reason",
             "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
         ]].rename(columns={
