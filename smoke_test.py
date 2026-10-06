@@ -1,4 +1,5 @@
 import csv
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -58,8 +59,10 @@ REQUIRED = {
         "actual_outcome","match_result",
     },
     "data/fda_directional_100pct_freezes.csv": {
-        "event_key","ticker","pdufa_date","forced_direction","directional_score",
-        "confidence","source_layer","model_version","frozen_at","match_result",
+        "event_key","fda_regulatory_case_id","ticker","pdufa_date",
+        "count_in_coverage","prospective_eligible","forced_direction","directional_score",
+        "confidence","source_layer","model_version","frozen_at","decision_date",
+        "actual_fda_decision","match_result",
     },
     "data/fda_prediction_freezes.csv": {
         "freeze_id","event_key","ticker","drug","pdufa_date","fda_probability",
@@ -402,6 +405,8 @@ required_ui_contracts = [
     'FDA DECISION ENGINE V3.2',
     'BIMO / data integrity',
     'Data-integrity gate',
+    '100% Directional Coverage',
+    '100% Direction',
 ]
 for label in required_ui_contracts:
     if label not in app:
@@ -432,3 +437,25 @@ for label, rows in [("live", directional_live), ("historical", directional_hist)
         raise SystemExit(f"100pct directional {label}: missing direction for {missing_direction[:5]}")
     if counted and len(counted) != sum(1 for r in counted if (r.get("forced_direction") or "").strip().upper() in {"APPROVED","CRL"}):
         raise SystemExit(f"100pct directional {label}: coverage below 100%")
+
+directional_freezes = read_csv(ROOT / "data/fda_directional_100pct_freezes.csv")
+summary = json.loads((ROOT / "data/fda_directional_100pct_summary.json").read_text(encoding="utf-8"))
+if float(summary.get("historical_coverage_pct", 0)) != 100.0:
+    raise SystemExit("100pct directional summary: historical coverage is not 100%")
+if float(summary.get("live_coverage_pct", 0)) != 100.0:
+    raise SystemExit("100pct directional summary: live coverage is not 100%")
+if int(summary.get("historical_directional_calls", 0)) != int(summary.get("historical_candidates", -1)):
+    raise SystemExit("100pct directional summary: historical calls do not cover every candidate")
+eligible_v11 = [
+    r for r in directional_freezes
+    if (r.get("model_version") or "") == "FDA-DIRECTIONAL-100-V1.1"
+    and (r.get("prospective_eligible") or "").upper() == "YES"
+    and (r.get("count_in_coverage") or "").upper() == "YES"
+]
+if len(eligible_v11) != int(summary.get("prospective_freezes", -1)):
+    raise SystemExit("100pct directional summary: prospective freeze count mismatch")
+if any((r.get("actual_fda_decision") or "").strip() for r in eligible_v11 if not (r.get("decision_date") or "").strip()):
+    raise SystemExit("100pct directional freezes: known outcome entered prospective pool")
+case_ids = [(r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip() for r in eligible_v11]
+if len(case_ids) != len(set(case_ids)):
+    raise SystemExit("100pct directional freezes: duplicate FDA review cycle in V1.1 prospective pool")
