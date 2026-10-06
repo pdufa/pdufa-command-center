@@ -328,7 +328,7 @@ required_ui_contracts = [
     '"data/fda_prediction_freezes.csv"',
     '"data/fda_review_backfill_queue.csv"',
     'def load_fda_review_backfill_queue',
-    '"FDA Discipline Backfill Queue"',
+    'FDA Discipline Backfill Queue',
 ]
 for label in required_ui_contracts:
     if label not in app:
