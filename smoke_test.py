@@ -549,3 +549,32 @@ for r in extension_ledger:
         (r.get("decision_date") or "").strip() and (r.get("actual_fda_decision") or "").strip()
     ):
         raise SystemExit(f"PDUFA extension ledger: resolved cycle missing decision {r.get('ledger_id')}")
+
+
+# 100-on-100 precision gate contract.
+gate_hist = read_csv(ROOT / "data/fda_100_on_100_historical.csv")
+gate_live = read_csv(ROOT / "data/fda_100_on_100_live.csv")
+gate_summary = json.loads((ROOT / "data/fda_100_on_100_summary.json").read_text(encoding="utf-8"))
+
+if not gate_hist:
+    raise SystemExit("100-on-100: historical qualified set is empty")
+if any((r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"} for r in gate_hist):
+    raise SystemExit("100-on-100: non-directional historical row entered qualified bucket")
+if any((r.get("match_result") or "").upper() != "MATCH" for r in gate_hist):
+    raise SystemExit("100-on-100: historical qualified bucket contains a miss")
+if int(gate_summary.get("historical_qualified",-1)) != len(gate_hist):
+    raise SystemExit("100-on-100: historical summary count mismatch")
+if int(gate_summary.get("historical_matches",-1)) != len(gate_hist):
+    raise SystemExit("100-on-100: historical match count mismatch")
+if float(gate_summary.get("historical_accuracy_pct",0)) != 100.0:
+    raise SystemExit("100-on-100: historical qualified accuracy below 100%")
+if (gate_summary.get("historical_validation_status") or "") != "RETROSPECTIVE_NOT_BLIND":
+    raise SystemExit("100-on-100: retrospective status must remain explicit")
+if bool(gate_summary.get("future_guarantee", True)):
+    raise SystemExit("100-on-100: future guarantee must remain false")
+for r in gate_live:
+    if (r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"}:
+        raise SystemExit("100-on-100: REVIEW/NO_CALL leaked into live qualified bucket")
+decided_gate = [r for r in gate_live if (r.get("actual_fda_decision") or "").upper() in {"APPROVED","CRL"}]
+if not decided_gate and gate_summary.get("prospective_accuracy_pct") is not None:
+    raise SystemExit("100-on-100: prospective accuracy claimed before a qualified case was decided")
