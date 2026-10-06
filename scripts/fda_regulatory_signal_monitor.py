@@ -45,23 +45,26 @@ def contains(text, *parts):
 def classify(row):
     source = clean(row.get("fda_source_note"))
     gate_reason = clean(row.get("fda_gate_reason"))
+    source_text = source.lower()
     text = f"{source} {gate_reason}".lower()
     flags = []
 
-    extension = contains(text, "pdufa extended", "extended to", "review extension", "extension after", "pdufa date extension")
+    # Regulatory-interaction events must be derived from the actual evidence
+    # note, not from generic unresolved-gate boilerplate.
+    extension = contains(source_text, "pdufa extended", "extended to", "review extension", "extension after", "pdufa date extension")
     extension_status = "YES" if extension else "NO"
     extension_reason = "NONE"
     if extension:
-        if contains(text, "manufacturing", "cmc", "product quality", "facility"):
+        if contains(source_text, "manufacturing", "cmc", "product quality", "facility"):
             extension_reason = "CMC_MANUFACTURING"
             flags.append("REVIEW_EXTENSION_CMC_MANUFACTURING")
-        elif contains(text, "sensitivity analyses", "additional analyses", "additional data", "longer-term data", "clinical data"):
+        elif contains(source_text, "sensitivity analyses", "additional analyses", "additional data", "longer-term data", "clinical data"):
             extension_reason = "CLINICAL_DATA_ANALYSIS"
             flags.append("REVIEW_EXTENSION_CLINICAL_DATA")
-        elif contains(text, "labeling", "post-marketing", "postmarketing"):
+        elif contains(source_text, "labeling", "post-marketing", "postmarketing"):
             extension_reason = "LABELING_POSTMARKETING"
             flags.append("REVIEW_EXTENSION_LABELING")
-        elif contains(text, "information request", "information requests", "major amendment"):
+        elif contains(source_text, "information request", "information requests", "major amendment"):
             extension_reason = "GENERAL_INFO_REQUEST"
             flags.append("REVIEW_EXTENSION_INFORMATION_REQUEST")
         else:
@@ -69,15 +72,15 @@ def classify(row):
             flags.append("REVIEW_EXTENSION_REASON_UNKNOWN")
 
     explicit_deficiency = (
-        contains(text, "deficiency", "deficiencies") and
-        contains(text, "preclud", "unresolved", "remains a major regulatory risk", "additional evidence")
+        contains(source_text, "deficiency", "deficiencies") and
+        contains(source_text, "preclud", "unresolved", "remains a major regulatory risk", "additional evidence")
     )
     deficiency_status = "OPEN" if explicit_deficiency else "NONE"
     if explicit_deficiency:
         flags.append("FDA_DEFICIENCY_NOTICE_OPEN")
 
-    late_cycle = contains(text, "late-cycle", "late cycle", "mid-cycle", "mid cycle")
-    late_open = late_cycle and contains(text, "remaining questions", "unresolved", "review issues", "major safety or efficacy concerns")
+    late_cycle = contains(source_text, "late-cycle", "late cycle", "mid-cycle", "mid cycle")
+    late_open = late_cycle and contains(source_text, "remaining questions", "unresolved", "review issues", "major safety or efficacy concerns")
     late_cycle_status = "YES" if late_open else ("NO" if late_cycle else "UNKNOWN")
     if late_open:
         flags.append("LATE_CYCLE_OPEN_QUESTIONS")
@@ -98,11 +101,11 @@ def classify(row):
     else:
         inspection = "UNKNOWN"
 
-    prior_crl = contains(text, "prior crl", "after prior crl", "resubmission", "complete response")
-    if prior_crl and contains(text, "unresolved", "remains a major regulatory risk", "additional evidence of effectiveness was required", "until fda accepts"):
+    prior_crl = contains(source_text, "prior crl", "after prior crl", "resubmission", "complete response")
+    if prior_crl and contains(source_text, "unresolved", "remains a major regulatory risk", "additional evidence of effectiveness was required", "until fda accepts"):
         remediation = "UNRESOLVED"
         flags.append("PRIOR_CRL_REMEDIATION_UNRESOLVED")
-    elif prior_crl and contains(text, "addressed", "remediation", "reinspection", "complete response"):
+    elif prior_crl and contains(source_text, "addressed", "remediation", "reinspection", "complete response"):
         remediation = "VERIFIED_OR_CLAIMED"
         flags.append("PRIOR_CRL_REMEDIATION_SIGNAL")
     elif prior_crl:
@@ -113,11 +116,11 @@ def classify(row):
 
     primary = clean(row.get("fda_primary_endpoint_status")).upper()
     stats_gate = clean(row.get("fda_statistics_gate")).upper()
-    single_pivotal = contains(text, "one pivotal", "single pivotal", "based on one pivotal") and "phase 3" in text
-    dose_split = contains(text, "did not achieve statistical significance", "not statistically significant") and contains(
-        text, "once-weekly", "twice-weekly", "dosing regimen", "tested regimen", "tested dose"
+    single_pivotal = contains(source_text, "one pivotal", "single pivotal", "based on one pivotal") and "phase 3" in source_text
+    dose_split = contains(source_text, "did not achieve statistical significance", "not statistically significant") and contains(
+        source_text, "once-weekly", "twice-weekly", "dosing regimen", "tested regimen", "tested dose"
     )
-    phase2_external = "full approval" in text and "phase 2" in text and contains(text, "external comparator", "natural-history", "natural history")
+    phase2_external = "full approval" in source_text and "phase 2" in source_text and contains(source_text, "external comparator", "natural-history", "natural history")
     if primary == "FAIL" or phase2_external or (single_pivotal and dose_split):
         evidence_risk = "HIGH"
         flags.append("EVIDENCE_SUFFICIENCY_HIGH")
@@ -134,26 +137,26 @@ def classify(row):
     else:
         dose_risk = "UNKNOWN"
 
-    lab_relocation = "YES" if ("laborator" in text and contains(text, "moved", "relocation", "new location")) else "NO"
+    lab_relocation = "YES" if ("laborator" in source_text and contains(source_text, "moved", "relocation", "new location")) else "NO"
     if lab_relocation == "YES":
         flags.append("CRITICAL_LAB_RELOCATION")
 
-    remote_review = "YES" if contains(text, "remote review of records", "remote records review", "remote manufacturing records") else "NO"
+    remote_review = "YES" if contains(source_text, "remote review of records", "remote records review", "remote manufacturing records") else "NO"
     if remote_review == "YES":
         flags.append("REMOTE_RECORDS_REVIEW")
 
-    if contains(text, "immunogenicity", "anti-drug antibod", "antidrug antibod") and contains(text, "high", "77%", "77.1%", "persistent"):
+    if contains(source_text, "immunogenicity", "anti-drug antibod", "antidrug antibod") and contains(source_text, "high", "77%", "77.1%", "persistent"):
         immunogenicity = "HIGH"
         flags.append("IMMUNOGENICITY_SIGNAL")
-    elif contains(text, "immunogenicity", "anti-drug antibod", "antidrug antibod"):
+    elif contains(source_text, "immunogenicity", "anti-drug antibod", "antidrug antibod"):
         immunogenicity = "REVIEW"
     else:
         immunogenicity = "UNKNOWN"
 
-    if contains(text, "adcom", "advisory committee", "advisory-committee"):
-        if contains(text, "favorable", "positive vote", "recommended approval", "strong endorsement"):
+    if contains(source_text, "adcom", "advisory committee", "advisory-committee"):
+        if contains(source_text, "favorable", "positive vote", "recommended approval", "strong endorsement"):
             adcom = "POSITIVE"
-        elif contains(text, "negative", "voted against", "did not recommend"):
+        elif contains(source_text, "negative", "voted against", "did not recommend"):
             adcom = "NEGATIVE"
             flags.append("NEGATIVE_ADCOM")
         else:
