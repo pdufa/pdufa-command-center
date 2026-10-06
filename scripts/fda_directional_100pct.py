@@ -334,8 +334,11 @@ def write_summary(live, hist, freezes):
 
     live_counted = live[live["count_in_coverage"].eq("YES")]
     live_open = live_counted[live_counted["decision_date"].eq("")]
-    live_decided = live_counted[live_counted["match_result"].isin(["MATCH","MISS"])]
-    live_matches = int((live_decided["match_result"] == "MATCH").sum())
+
+    # Prospective accuracy is scored only from calls frozen before a decision.
+    # A direction generated after an already-known outcome is never counted.
+    frozen_scored = freezes[freezes["match_result"].isin(["MATCH","MISS"])].copy()
+    live_matches = int((frozen_scored["match_result"] == "MATCH").sum())
 
     summary = {
         "model_version": MODEL_VERSION,
@@ -352,9 +355,9 @@ def write_summary(live, hist, freezes):
         "live_coverage_pct": 100.0 if len(live_counted) else 0.0,
         "open_prospective_counted_calls": len(live_open),
         "prospective_freezes": int((freezes["decision_date"] == "").sum()) if not freezes.empty else 0,
-        "live_decided_scored": len(live_decided),
-        "live_decided_matches": live_matches,
-        "live_accuracy_pct": round(100.0 * live_matches / len(live_decided), 2) if len(live_decided) else None,
+        "prospective_decided_scored": len(frozen_scored),
+        "prospective_decided_matches": live_matches,
+        "prospective_accuracy_pct": round(100.0 * live_matches / len(frozen_scored), 2) if len(frozen_scored) else None,
         "warning": "100% coverage does not mean 100% accuracy. No model can guarantee every future FDA outcome.",
         "generated_at": now_utc(),
     }
