@@ -1674,7 +1674,7 @@ def render_merged_table(frame, heading, height_px=690):
     .merged-pdufa-table .provision-yes{font-weight:900}
     .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;width:100%%;height:100%%}
     .sort-head:hover .sort-icon,.sort-head:focus .sort-icon{background:#111;color:#fff}
-    .help-icon{display:inline-flex;align-items:center;justify-content:center;margin-left:5px;width:17px;height:17px;border:1.5px solid #555;border-radius:50%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
+    .help-icon{display:inline-flex;align-items:center;justify-content:center;margin-left:5px;width:17px;height:17px;border:1.5px solid #555;border-radius:50%%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
     .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111}
     .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
     a{color:#111}
