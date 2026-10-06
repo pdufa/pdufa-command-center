@@ -53,6 +53,14 @@ REQUIRED = {
         "forced_direction","directional_score","confidence","source_layer",
         "evidence_completeness_pct","model_version","match_result",
     },
+    "data/fda_regulatory_signal_monitor.csv": {
+        "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
+        "review_extension_status","extension_reason","deficiency_notice_status",
+        "late_cycle_open_questions","inspection_readiness","prior_crl_remediation",
+        "evidence_sufficiency_risk","dose_consistency_risk",
+        "analytical_lab_relocation","remote_records_review","immunogenicity_signal",
+        "adcom_signal","blindspot_risk_level","blindspot_flags","source_note","generated_at",
+    },
     "data/fda_directional_100pct_historical.csv": {
         "event_key","ticker","pdufa_date","count_in_coverage","forced_direction",
         "fallback_probability","confidence","source_layer","model_version",
@@ -410,6 +418,8 @@ required_ui_contracts = [
     'FDA DECISION ENGINE V3.2',
     'BIMO / data integrity',
     'Data-integrity gate',
+    'Regulatory Interaction / Blind-Spot Monitor',
+    'Blind-Spot Risk',
     '100% Directional Coverage',
     '100% Direction',
 ]
@@ -475,3 +485,20 @@ if residual_keys != hist_misses:
     )
 if any((r.get("recoverability") or "").upper() not in {"LOW","VERY_LOW"} for r in residual):
     raise SystemExit("residual miss audit: invalid recoverability classification")
+
+signals = read_csv(ROOT / "data/fda_regulatory_signal_monitor.csv")
+fda_reviews_for_signals = read_csv(ROOT / "data/fda_review_engine.csv")
+signal_keys = {r.get("event_key","") for r in signals}
+review_keys = {r.get("event_key","") for r in fda_reviews_for_signals}
+if signal_keys != review_keys:
+    raise SystemExit(
+        f"regulatory signal monitor mismatch: signals={len(signal_keys)} reviews={len(review_keys)}"
+    )
+if any((r.get("blindspot_risk_level") or "").upper() not in {"HIGH","MEDIUM","LOW"} for r in signals):
+    raise SystemExit("regulatory signal monitor: invalid blindspot risk level")
+valid_extension_reasons = {
+    "NONE","CMC_MANUFACTURING","CLINICAL_DATA_ANALYSIS",
+    "LABELING_POSTMARKETING","GENERAL_INFO_REQUEST","UNKNOWN",
+}
+if any((r.get("extension_reason") or "") not in valid_extension_reasons for r in signals):
+    raise SystemExit("regulatory signal monitor: invalid extension reason")
