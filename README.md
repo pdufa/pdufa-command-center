@@ -50,10 +50,24 @@ This layer does **not** force every case into APPROVED/CRL. Strict FDA-V3 REVIEW
 
 ## Recorded historical decisions
 
-Prediction Engine starts with an assessed-decision table. Every historical event has a recorded PASS (APPROVED) or CRL suggestion. Strict qualification is a separate status; `REVIEW — ANALYZED` means the gate withheld qualification while the broad suggestion remains available.
+Prediction Engine starts with the fixed 126-case Strict rerun, followed by an assessed-decision table. Every historical event has a recorded PASS (APPROVED) or CRL suggestion. Strict qualification is a separate status; `REVIEW — ANALYZED` means the gate withheld qualification while the broad suggestion remains available.
 
 - `data/historical_assessed_decisions.csv` joins the existing broad directions and strict qualified calls by exact event key, with reasoning, evidence gaps and historical MATCH/MISS.
 - `data/historical_assessed_decisions_summary.json` summarizes the same rows.
-- `scripts/historical_decisions.py` builds this view without rescoring, changing model versions, or reading outcomes to choose directions. Runtime: under 3 seconds.
+- `scripts/historical_decisions.py` joins the recorded directions and qualifications without reading outcomes to choose directions. Runtime: under 3 seconds.
 
-The strict-gate refresh regenerates this table during surveillance and manual rechecks. The current 126 broad cases have 96 approval calls, 30 CRL calls and 121 historical matches. These are retrospective development results. Baseline model probabilities remain in the original model table; a risk-rule override is a direction change, not a newly calibrated probability.
+The strict-gate refresh regenerates this table during surveillance and manual rechecks. The remaining 124 broad cases have 96 approval calls, 28 CRL calls and 119 historical matches. These are retrospective development results. Baseline model probabilities remain in the original model table; a risk-rule override is a direction change, not a newly calibrated probability.
+
+## Strict rerun of all 126 original abstentions
+
+Run `python scripts/fda_100_on_100_gate.py` to reproduce the fixed manifest through the unchanged FDA-V3.2 engine and rebuild the joined app views. The October 6, 2026 run evaluated all 126: **0 APPROVED, 2 CRL, 124 REVIEW**. With the original 20 qualifications, the historical Strict bucket now contains 22 calls.
+
+- `data/strict_historical_126_inputs.json` freezes all 126 identities and outcome-free inputs.
+- `data/strict_historical_126_review.csv` records every engine result, evidence cutoff, admitted sources, reasons and missing subchecks.
+- `data/strict_historical_126_source_candidates.csv` records retrieved primary-source candidates for all 126; these are explicitly unverified and never populate engine gates.
+- `data/strict_historical_126_summary.json` reports run coverage separately from qualification.
+- `scripts/strict_historical_review.py` admits only dated, verified, cycle-matched evidence before the actual FDA action. Post-decision documents establish action dates only.
+
+The new calls are model inferences: PRVB's original 2021 teplizumab cycle failed the prespecified commercial-versus-trial PK AUC comparability range ([April 27 sponsor SEC exhibit](https://www.sec.gov/Archives/edgar/data/1695357/000149315221009858/ex99-1.htm)); AKBA's original 2022 vadadustat application included non-dialysis patients, whose PRO2TECT primary safety MACE endpoint failed ([September 3, 2020 sponsor results](https://ir.akebia.com/news-releases/news-release-details/akebia-therapeutics-announces-top-line-results-its-pro2tect), [original application population](https://www.sec.gov/Archives/edgar/data/1517022/000119312521177692/d190142dex991.htm)). The failure is not transferred to the later dialysis-only cycle.
+
+This is a full-cohort source screen and engine run, not 126 exhaustively verified regulatory dossiers. The 124 REVIEW results still need verified evidence; retrieved URLs, positive clinical headlines, unspecified deficiency letters, and inspection completion cannot establish affirmative CMC/facility clearance. No scores or passes were invented. Historical matches are retrospective development results. Tests verify exact coverage, outcome independence, date/identity rejection and separation of review cycles; CI measures misses rather than forbidding them.

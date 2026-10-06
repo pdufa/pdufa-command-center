@@ -173,6 +173,14 @@ def load_historical_assessed_decisions():
         return pd.DataFrame()
 
 
+@st.cache_data(ttl=60)
+def load_strict_historical_126_review():
+    try:
+        return pd.read_csv("data/strict_historical_126_review.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
 @st.cache_data(ttl=120)
 def load_data():
     # Defensive repair: older exports accidentally used literal "\\n" between CSV rows.
@@ -593,6 +601,7 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
     load_100_on_100_summary.clear()
     load_100_on_100_live.clear()
     load_historical_assessed_decisions.clear()
+    load_strict_historical_126_review.clear()
     load_fda_pdufa_extension_ledger.clear()
     payload = (result.stdout or "").strip().splitlines()
     return payload[-1] if payload else "Recheck completed"
@@ -993,6 +1002,24 @@ def safe_text(v, default="Not available"):
     return default if not s or s.lower() in ["nan", "none", "<na>"] else s
 
 def render_historical_assessed_decisions(event_keys):
+    review = load_strict_historical_126_review()
+    if not review.empty:
+        st.markdown("### STRICT REVIEW — ALL 126 ORIGINAL ABSTENTIONS")
+        s1,s2,s3,s4 = st.columns(4)
+        s1.metric("Strict evaluated", f"{len(review)}/126")
+        s2.metric("New Strict approval", int(review["fda_prediction"].eq("APPROVED").sum()))
+        s3.metric("New Strict CRL", int(review["fda_prediction"].eq("CRL").sum()))
+        s4.metric("Still REVIEW", int(review["fda_prediction"].eq("REVIEW").sum()))
+        st.caption("All 126 were source-screened and evaluated with FDA-V3.2. Source screening is not exhaustive dossier verification. Candidate source links and imported dates cannot pass gates. Missing evidence remains REVIEW; CRL calls are model inferences from verified failures. The original 20 qualifications are outside this run.")
+        with st.expander("STRICT RESULTS AND MISSING EVIDENCE", expanded=True):
+            selected_review = review[review["event_key"].isin(set(event_keys))]
+            columns = ["ticker", "drug", "pdufa_date", "fda_prediction", "fda_hard_gate",
+                       "fda_statistics_gate", "fda_cmc_gate", "fda_facility_gate", "cutoff_status",
+                       "evidence_cutoff", "review_note", "fda_gate_reason", "missing_statistics_subchecks",
+                       "missing_cmc_subchecks", "missing_facility_subchecks", "source_urls"]
+            st.dataframe(selected_review[columns], use_container_width=True, hide_index=True, height=420)
+            st.download_button("DOWNLOAD ALL 126 STRICT RESULTS (.CSV)", review.to_csv(index=False).encode("utf-8"),
+                               file_name="strict_historical_126_review.csv", mime="text/csv", key="download_strict_126")
     st.markdown("### ASSESSED HISTORICAL DECISIONS")
     ledger = historical_assessed_decisions
     if ledger.empty:

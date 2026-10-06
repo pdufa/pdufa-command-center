@@ -48,11 +48,12 @@ def broad_reason(row):
     return f"{reasons.get(source, 'Recorded directional model assessment.')} Final assessed direction: {call}."
 
 
-def build_decisions(history, broad, qualified, promotions=None):
+def build_decisions(history, broad, qualified, promotions=None, strict_reviews=None):
     hist = indexed(history, "history")
     directions = indexed(broad, "broad directions")
     strict = indexed(qualified, "strict qualified")
     promoted = indexed(promotions, "promotions") if promotions is not None and not promotions.empty else {}
+    reviewed = indexed(strict_reviews, "strict reviews") if strict_reviews is not None and not strict_reviews.empty else {}
     if set(hist) != set(directions):
         raise ValueError("Historical and broad event identities do not match")
     if not set(strict).issubset(hist):
@@ -85,6 +86,14 @@ def build_decisions(history, broad, qualified, promotions=None):
             reason, source = broad_reason(direction), clean(direction.get("source_layer"))
             evidence = evidence or notes
 
+        if key in reviewed:
+            review = reviewed[key]
+            strict_reason = clean(review.get("fda_gate_reason"))
+            evidence = clean(review.get("evidence_summary")) or clean(review.get("review_note"))
+            sources = clean(review.get("source_urls"))
+            if key in strict:
+                reason = evidence
+
         # Outcome is joined only after the assessment has been selected.
         actual = clean(row.get("actual_outcome")).upper()
         match = ("MATCH" if call == actual else "MISS") if actual in VALID_DIRECTIONS else "PENDING"
@@ -100,13 +109,14 @@ def build_decisions(history, broad, qualified, promotions=None):
             "strict_reason": strict_reason,
             "baseline_model_probability_pct": clean(direction.get("fallback_probability")),
             "source_layer": source,
-            "model_version": clean(direction.get("model_version")),
+            "model_version": clean(reviewed.get(key, {}).get("fda_model_version")) if key in strict and key in reviewed else clean(direction.get("model_version")),
             "evidence_summary": evidence,
             "source_urls": sources,
             "actual_outcome": actual,
             "match_result": match,
-            "review_status": "ANALYZED_DIRECTION_RECORDED",
+            "review_status": clean(reviewed.get(key, {}).get("review_status")) or "ANALYZED_DIRECTION_RECORDED",
             "validation_status": "RETROSPECTIVE_DEVELOPMENT_NOT_BLIND",
+            "strict_run_id": clean(reviewed.get(key, {}).get("run_id")),
         })
     return pd.DataFrame(rows).sort_values(["pdufa_date", "ticker", "event_key"]).reset_index(drop=True)
 
@@ -139,7 +149,9 @@ def write_decisions(history=None, qualified=None, promotions=None):
     if promotions is None:
         promotions = pd.read_csv(DATA / "fda_100_on_100_verified_promotions.csv", keep_default_na=False)
     broad = pd.read_csv(DATA / "fda_directional_100pct_historical.csv", keep_default_na=False)
-    decisions = build_decisions(history, broad, qualified, promotions)
+    reviews_path = DATA / "strict_historical_126_review.csv"
+    reviews = pd.read_csv(reviews_path, keep_default_na=False) if reviews_path.exists() else None
+    decisions = build_decisions(history, broad, qualified, promotions, reviews)
     decisions.to_csv(DATA / "historical_assessed_decisions.csv", index=False)
     summary = summary_for(decisions)
     (DATA / "historical_assessed_decisions_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

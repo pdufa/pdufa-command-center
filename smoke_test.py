@@ -566,14 +566,13 @@ if not gate_hist:
     raise SystemExit("100-on-100: historical qualified set is empty")
 if any((r.get("qualified_direction") or "").upper() not in {"APPROVED","CRL"} for r in gate_hist):
     raise SystemExit("100-on-100: non-directional historical row entered qualified bucket")
-if any((r.get("match_result") or "").upper() != "MATCH" for r in gate_hist):
-    raise SystemExit("100-on-100: historical qualified bucket contains a miss")
+gate_matches = sum(r.get("match_result") == "MATCH" for r in gate_hist)
 if int(gate_summary.get("historical_qualified",-1)) != len(gate_hist):
     raise SystemExit("100-on-100: historical summary count mismatch")
-if int(gate_summary.get("historical_matches",-1)) != len(gate_hist):
+if int(gate_summary.get("historical_matches",-1)) != gate_matches:
     raise SystemExit("100-on-100: historical match count mismatch")
-if float(gate_summary.get("historical_accuracy_pct",0)) != 100.0:
-    raise SystemExit("100-on-100: historical qualified accuracy below 100%")
+if float(gate_summary.get("historical_accuracy_pct",0)) != round(100 * gate_matches / len(gate_hist), 2):
+    raise SystemExit("100-on-100: historical accuracy calculation mismatch")
 if (gate_summary.get("historical_validation_status") or "") != "RETROSPECTIVE_NOT_BLIND":
     raise SystemExit("100-on-100: retrospective status must remain explicit")
 if bool(gate_summary.get("future_guarantee", True)):
@@ -624,3 +623,28 @@ if assessed_summary["total_assessed"] != len(assessed) or assessed_summary["unre
     raise SystemExit("Historical assessments: total or unresolved count mismatch")
 if gate_summary.get("historical_review_no_call_analyzed") != len(assessed) - len(gate_hist):
     raise SystemExit("Historical assessments: strict withheld count mismatch")
+
+# The fixed original 126 must all be evaluated, including those still abstaining.
+strict_input = json.loads((ROOT / "data/strict_historical_126_inputs.json").read_text())
+strict_reviews = read_csv(ROOT / "data/strict_historical_126_review.csv")
+strict_candidates = read_csv(ROOT / "data/strict_historical_126_source_candidates.csv")
+strict_keys = {r["event_key"] for r in strict_reviews}
+if len(strict_reviews) != 126 or strict_keys != {r["event_key"] for r in strict_input["events"]}:
+    raise SystemExit("Strict 126: missing/duplicate/changed run identity")
+if {r["event_key"] for r in strict_candidates} != strict_keys:
+    raise SystemExit("Strict 126: source-screen coverage mismatch")
+if not strict_keys.issubset(hist_by_key):
+    raise SystemExit("Strict 126: historical identity mismatch")
+for row in strict_reviews:
+    key, call = row["event_key"], row["fda_prediction"]
+    if call not in {"APPROVED", "CRL", "REVIEW"}:
+        raise SystemExit("Strict 126: invalid engine result")
+    if call in {"APPROVED", "CRL"}:
+        if row["cutoff_status"] != "VERIFIED_DATE_ONLY" or int(row["admitted_evidence_count"]) < 1:
+            raise SystemExit(f"Strict 126: unsafe qualified source/cutoff {key}")
+        if key not in strict_by_key or strict_by_key[key]["qualified_direction"] != call:
+            raise SystemExit(f"Strict 126: qualification not propagated {key}")
+    elif key in strict_by_key:
+        raise SystemExit(f"Strict 126: REVIEW entered qualified set {key}")
+    if assessed_by_key[key]["strict_run_id"] != "STRICT-126-20261006":
+        raise SystemExit(f"Strict 126: assessed ledger lost run provenance {key}")

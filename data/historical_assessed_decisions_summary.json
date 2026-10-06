@@ -2,20 +2,20 @@
   "total_assessed": 146,
   "unresolved_assessments": 0,
   "broad": {
-    "assessed": 126,
+    "assessed": 124,
     "approval_calls": 96,
-    "crl_calls": 30,
-    "scored": 126,
-    "matches": 121,
+    "crl_calls": 28,
+    "scored": 124,
+    "matches": 119,
     "misses": 5,
-    "match_pct": 96.03
+    "match_pct": 95.97
   },
   "strict": {
-    "assessed": 20,
+    "assessed": 22,
     "approval_calls": 15,
-    "crl_calls": 5,
-    "scored": 20,
-    "matches": 20,
+    "crl_calls": 7,
+    "scored": 22,
+    "matches": 22,
     "misses": 0,
     "match_pct": 100.0
   },

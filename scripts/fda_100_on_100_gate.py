@@ -27,7 +27,7 @@ SUMMARY_OUT = DATA / "fda_100_on_100_summary.json"
 MODEL_VERSION = "FDA-100-ON-100-GATE-V1"
 VALID_DIRS = {"APPROVED", "CRL"}
 
-def build_historical(df: pd.DataFrame, promotions: pd.DataFrame | None = None) -> pd.DataFrame:
+def build_historical(df: pd.DataFrame, promotions: pd.DataFrame | None = None, strict_reviews: pd.DataFrame | None = None) -> pd.DataFrame:
     rows = []
     for _, r in df.iterrows():
         public_call = str(r.get("public_model_class", "")).strip().upper()
@@ -73,6 +73,26 @@ def build_historical(df: pd.DataFrame, promotions: pd.DataFrame | None = None) -
             })
         if extra:
             out = pd.concat([out, pd.DataFrame(extra)], ignore_index=True)
+    if strict_reviews is not None and not strict_reviews.empty:
+        lookup = df.set_index("event_key", drop=False)
+        existing = set(out["event_key"]) if not out.empty else set()
+        extra = []
+        for _, review in strict_reviews.iterrows():
+            key, call = review["event_key"], review["fda_prediction"]
+            if key not in lookup.index:
+                raise ValueError(f"Strict review contains unknown event: {key}")
+            if call not in VALID_DIRS or key in existing:
+                continue
+            if review["cutoff_status"] != "VERIFIED_DATE_ONLY" or int(review["admitted_evidence_count"]) < 1:
+                raise ValueError(f"Unsafe strict qualification: {key}")
+            r = lookup.loc[key]
+            actual = str(r.get("actual_outcome", "")).strip().upper()
+            extra.append({"event_key": key, "ticker": r["ticker"], "pdufa_date": r["pdufa_date"],
+                          "qualified_direction": call, "actual_outcome": actual,
+                          "match_result": "MATCH" if call == actual else "MISS",
+                          "source_layer": "STRICT_126_FDA_V3_2", "status": "RETROSPECTIVE_NOT_BLIND"})
+        if extra:
+            out = pd.concat([out, pd.DataFrame(extra)], ignore_index=True)
     return out
 
 def build_live(df: pd.DataFrame) -> pd.DataFrame:
@@ -102,7 +122,9 @@ def main():
     live = pd.read_csv(LIVE_IN)
     promotions = pd.read_csv(PROMOTIONS_IN) if PROMOTIONS_IN.exists() else pd.DataFrame()
 
-    h = build_historical(hist, promotions)
+    from strict_historical_review import main as run_strict_review
+    reviews = run_strict_review()
+    h = build_historical(hist, promotions, reviews)
     l = build_live(live)
 
     h.to_csv(HIST_OUT, index=False)
@@ -130,6 +152,10 @@ def main():
         "historical_assessed_directions": assessed["total_assessed"],
         "historical_broad_assessed": assessed["broad"]["assessed"],
         "historical_coverage_pct": round(100*len(h)/len(hist), 2) if len(hist) else None,
+        "strict_126_requested": len(reviews),
+        "strict_126_evaluated": len(reviews),
+        "strict_126_new_qualified": int(reviews["fda_prediction"].isin(VALID_DIRS).sum()),
+        "strict_126_remaining_review": int(reviews["fda_prediction"].eq("REVIEW").sum()),
         "historical_validation_status": "RETROSPECTIVE_NOT_BLIND",
         "live_counted_cases": int((live["count_in_coverage"].astype(str).str.upper() == "YES").sum()),
         "live_qualified": int(len(l)),

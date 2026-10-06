@@ -1,0 +1,12 @@
+{
+  "run_id": "STRICT-126-20261006",
+  "model_version": "FDA-V3.2",
+  "requested": 126,
+  "evaluated": 126,
+  "approved": 0,
+  "crl": 2,
+  "review": 124,
+  "source_screened": 126,
+  "complete_affirmative_clearance_dossiers": 0,
+  "note": "All 126 evaluated; source screening is not exhaustive dossier verification. Candidate URLs do not pass gates. Unverified fields remain REVIEW. Original 20 qualifications are outside this run."
+}
