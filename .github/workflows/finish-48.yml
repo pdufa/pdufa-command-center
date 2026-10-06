@@ -1,0 +1,82 @@
+name: Finish 48-Row PDUFA Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/finish_48_audit.py"
+      - ".github/workflows/finish-48.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finish-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install audit dependencies
+        run: pip install pandas numpy requests beautifulsoup4 yfinance
+
+      - name: Run 48-row audit repair
+        run: python scripts/finish_48_audit.py
+
+      - name: Validate repaired audit
+        run: |
+          python - <<'PY'
+          import json
+          import pandas as pd
+
+          h = pd.read_csv("data/prediction_engine_history.csv")
+          a = pd.read_csv("data/prediction_engine_audit.csv", keep_default_na=False)
+          q = pd.read_csv("data/prediction_engine_rescore_queue.csv", keep_default_na=False)
+          r = pd.read_csv("data/prediction_engine_audit_48_resolution.csv")
+          with open("data/prediction_engine_audit_48_summary.json", "r", encoding="utf-8") as f:
+              s = json.load(f)
+
+          if h["event_key"].astype(str).duplicated().any():
+              raise SystemExit("History contains duplicate event keys after repair")
+          if a["event_key"].astype(str).duplicated().any():
+              raise SystemExit("Audit contains duplicate event keys after repair")
+          if a["needs_rescore"].astype(str).str.upper().eq("YES").any():
+              raise SystemExit("Audit still contains needs_rescore=YES")
+          if q["needs_rescore"].astype(str).str.upper().eq("YES").any():
+              raise SystemExit("Queue still contains needs_rescore=YES")
+          if len(r) != 48:
+              raise SystemExit(f"Resolution ledger expected 48 rows, found {len(r)}")
+          if int(s.get("remaining_needs_rescore", -1)) != 0:
+              raise SystemExit("Summary does not report zero remaining rescores")
+
+          print("History rows:", len(h))
+          print("Resolution rows:", len(r))
+          print("Remaining needs rescore:", s["remaining_needs_rescore"])
+          print("Adjusted audited accuracy:", s.get("final_audited_accuracy_pct"))
+          PY
+
+      - name: Commit repaired audit data
+        run: |
+          git config user.name "pdufa-automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            data/prediction_engine_history.csv \
+            data/prediction_engine_audit.csv \
+            data/prediction_engine_rescore_queue.csv \
+            data/prediction_engine_audit_48_resolution.csv \
+            data/prediction_engine_audit_48_summary.json
+          if git diff --cached --quiet; then
+            echo "No repaired data changes"
+          else
+            git commit -m "Finish 48-row PDUFA audit repair"
+            git pull --rebase origin main
+            git push
+          fi
