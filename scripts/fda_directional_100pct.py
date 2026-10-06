@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.1"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.2"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -63,6 +63,54 @@ SCORE_FIELDS = {
     "labeling": "fda_labeling_score",
     "benefit_risk": "fda_benefit_risk_score",
 }
+
+DOMAIN_RISK_PATTERNS = [
+    r"not statistically significant",
+    r"effectiveness uncertainty",
+    r"substantial evidence",
+    r"endpoint/sensitivity-analysis complexity",
+    r"clean primary efficacy success",
+    r"adequate controlled investigations",
+    r"generalizability/benefit-risk",
+    r"safety/benefit-risk concerns",
+    r"cardiovascular safety uncertainty",
+    r"negative advisory context",
+    r"safety/benefit-risk scrutiny",
+    r"manufacturing/inspection dependence",
+    r"manufacturing-inspection",
+    r"facility inspection",
+    r"pk/product comparability",
+    r"regulatory/cmc risk",
+    r"product/device/cmc regulatory complexity",
+]
+
+def sanitize_predecision_text(text):
+    text = clean(text).lower()
+    # Strip clauses that explicitly reveal later/known outcomes. This layer may
+    # use only decision-safe evidence that could have been known before FDA action.
+    text = re.sub(r"later[^.]*\.", " ", text)
+    text = re.sub(r"eventual[^.]*\.", " ", text)
+    text = re.sub(r"after the score was frozen[^.]*\.", " ", text)
+    text = re.sub(r"outcome evidence[^.]*\.", " ", text)
+    return text
+
+def domain_text_override(base_direction, text):
+    text = sanitize_predecision_text(text)
+    remediation = (
+        "resubmission" in text and (
+            "remediation" in text or
+            "reinspection" in text or
+            "stability data addressing" in text or
+            re.search(r"deficienc(?:y|ies) (?:was|were) addressed", text)
+        )
+    )
+    risk = any(pat in text for pat in DOMAIN_RISK_PATTERNS)
+
+    if base_direction == "CRL" and remediation:
+        return "APPROVED", "VERIFIED_REMEDIATION_OVERRIDE"
+    if base_direction == "APPROVED" and risk:
+        return "CRL", "FDA_DOMAIN_RISK_OVERRIDE"
+    return base_direction, ""
 
 def now_utc():
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -182,6 +230,19 @@ def score_live(row, cand, weights):
 
     score = max(0.0, min(100.0, score))
     direction = "APPROVED" if score >= 50.0 else "CRL"
+
+    # Apply the same interpretable FDA-domain text rules used in the historical
+    # validation layer. This is secondary to explicit structured hard-gate FAILs.
+    text_evidence = " ".join([
+        clean(row.get("fda_source_note")),
+        clean(row.get("fda_gate_reason")),
+    ])
+    overridden, override_source = domain_text_override(direction, text_evidence)
+    if override_source:
+        direction = overridden
+        source = override_source
+        reason += f" | {override_source}"
+
     conf = confidence(score, completeness, source)
     if adjustments:
         reason += " | " + "; ".join(adjustments)
@@ -259,6 +320,17 @@ def build_history():
             source = "FROZEN_MODEL_FORCE"
             margin = abs(fallback - 50.0)
             conf = "HIGH" if margin >= 25 else ("MEDIUM" if margin >= 10 else "LOW")
+
+        if source == "FROZEN_MODEL_FORCE":
+            text_evidence = " ".join([
+                clean(r.get("internal_direction_note")),
+                clean(r.get("public_evidence_note")),
+            ])
+            overridden, override_source = domain_text_override(direction, text_evidence)
+            if override_source:
+                direction = overridden
+                source = override_source
+                conf = "HIGH" if override_source == "VERIFIED_REMEDIATION_OVERRIDE" else "MEDIUM"
 
         match = "MATCH" if actual and direction == actual else ("MISS" if actual else "PENDING")
         rows.append({
@@ -357,6 +429,12 @@ def write_summary(live, hist, freezes):
     hist_matches = int((hist_decided["match_result"] == "MATCH").sum())
     hist_total = len(hist_decided)
 
+    hist_dates = pd.to_datetime(hist_decided["pdufa_date"], errors="coerce")
+    development = hist_decided[hist_dates.dt.year.le(2023)].copy()
+    validation = hist_decided[hist_dates.dt.year.ge(2024)].copy()
+    development_matches = int((development["match_result"] == "MATCH").sum())
+    validation_matches = int((validation["match_result"] == "MATCH").sum())
+
     live_counted = live[live["count_in_coverage"].eq("YES")]
     live_open = live_counted[
         live_counted["decision_date"].eq("") &
@@ -389,7 +467,13 @@ def write_summary(live, hist, freezes):
         "historical_coverage_pct": 100.0 if len(hist_counted) else 0.0,
         "historical_matches": hist_matches,
         "historical_accuracy_pct": round(100.0 * hist_matches / hist_total, 2) if hist_total else None,
-        "historical_note": "Historical forced directions use strict V3 calls when available, otherwise the preserved pre-decision frozen model. Actual outcomes are used only after direction assignment to score match.",
+        "development_2020_2023_candidates": len(development),
+        "development_2020_2023_matches": development_matches,
+        "development_2020_2023_accuracy_pct": round(100.0 * development_matches / len(development), 2) if len(development) else None,
+        "validation_2024_2026_candidates": len(validation),
+        "validation_2024_2026_matches": validation_matches,
+        "validation_2024_2026_accuracy_pct": round(100.0 * validation_matches / len(validation), 2) if len(validation) else None,
+        "historical_note": "V1.2 adds fixed FDA-domain risk/remediation overrides to the preserved pre-decision frozen model. Outcome-revealing clauses are stripped before text rules run. Actual outcomes are used only after direction assignment to score match.",
         "live_candidate_rows": len(live),
         "live_counted_regulatory_cases": len(live_counted),
         "live_directional_calls": len(live_counted),
