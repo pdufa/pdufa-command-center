@@ -1424,13 +1424,84 @@ def _merged_table_sort_series(frame, col):
     return text_values.str.lower()
 
 
+COLUMN_HELP = {
+    "Ticker": "Public-company ticker. Click the ticker to open the event detail page.",
+    "PDUFA Date": "FDA target action date for this application/review cycle.",
+    "PDUFA": "FDA target action date for this application/review cycle.",
+    "P%": "All-sources model probability of FDA approval for this event.",
+    "P": "Reported pivotal/Phase 3 p-value evidence saved for the event.",
+    "F": "Model-predicted FDA direction: APPROVED, CRL, or REVIEW.",
+    "Match %": "Historical direction match: 100% when the model direction matched the final FDA outcome, 0% when it missed; blank before a final outcome.",
+    "C": "Combined display of the approval probability and model FDA direction.",
+    "Probability of Approval % — Public": "Approval probability using public-source evidence only.",
+    "Probability of Approval % — All Sources": "Approval probability using all permitted saved evidence sources.",
+    "Public P%": "Approval probability using public-source evidence only.",
+    "I Direction": "Internal-evidence direction call.",
+    "P Direction": "Public-evidence direction call.",
+    "All-Source Direction": "Direction call using all permitted evidence sources.",
+    "Direction / FDA Match": "Predicted FDA direction before decision; after decision, shows whether the direction matched the FDA result.",
+    "Company": "Issuer/company associated with the PDUFA event.",
+    "Drug": "Drug, biologic, or product under FDA review.",
+    "Indication": "Disease/condition or use being reviewed by FDA.",
+    "Days Left": "Calendar days from today to the PDUFA target date.",
+    "Market Cap": "Saved market capitalization for the company/event.",
+    "Historical Market Cap": "Historical market capitalization used for this validation event.",
+    "Market Cap Bucket": "Market-cap range assigned to this event.",
+    "Cap Bucket": "Market-cap range assigned to this event.",
+    "Trade Score": "Saved trading-setup score; separate from FDA approval probability.",
+    "Outcome": "Current/final FDA outcome when known.",
+    "Actual FDA Outcome": "Final FDA decision used to score the historical prediction.",
+    "Model Prediction": "Frozen model direction predicted before the FDA decision.",
+    "Correct / Wrong": "Whether Model Prediction matches Actual FDA Outcome.",
+    "Time": "Current PDUFA timing/window status.",
+    "Signal": "Saved trading/setup signal.",
+    "Confidence": "Saved model confidence label.",
+    "Application": "FDA application type when known.",
+    "N": "NDA/sNDA indicator. A check means the exact application is verified as an NDA-family filing.",
+    "B": "BLA/sBLA indicator. A check means the exact application is verified as a BLA-family filing.",
+    "Announced": "Second post-Phase-3 financing has been verified as announced.",
+    "Running": "Second post-Phase-3 financing has been verified as in progress.",
+    "Closed": "Second post-Phase-3 financing has been verified as closed.",
+    "Financing": "Saved financing status for the company/event.",
+    "Phase": "Current trading/PDUFA workflow phase.",
+    "Short %": "Saved short interest as a percentage of float.",
+    "IV (30d)": "Saved 30-day implied-volatility measure.",
+    "Record Source": "Whether this row comes from the live saved feed or historical model set.",
+    "V2 Status": "Prediction Engine V2 validation/gating status.",
+    "Audit Status": "Historical audit status for this event.",
+    "Failure Reason": "Reason an audited row failed, was blocked, or required repair.",
+    "Canonical PDUFA": "Verified canonical PDUFA date used after audit/reconciliation.",
+    "Audit Action": "Audit repair or disposition applied to the row.",
+    "Needs Rescore": "Whether the event still requires a decision-safe model rescore.",
+    "Count in Adjusted Accuracy": "Whether this row is eligible for the adjusted historical accuracy calculation.",
+    "Audit Source": "Source used to verify the historical audit result.",
+    "Validation Period": "Validation cohort/period assigned to the event.",
+    "Validation Role": "Whether the row is tuning, retrospective, holdout, or other validation role.",
+    "V2 Call": "Prospective V2 direction call after the V2 evidence gates.",
+    "V2 Confidence": "Confidence assigned to the V2 call.",
+    "V2 Gate Reason": "Reason the V2 gate allowed, blocked, or abstained on the call.",
+    "PDUFA Verification": "Status of the saved evidence confirming the exact PDUFA event/date.",
+    "Phase 3": "Status of the pivotal/Phase 3 evidence for this event.",
+    "Eligibility": "Whether the event passes the saved monitoring eligibility rules.",
+    "Conflict": "Saved evidence-conflict flag for the event."
+}
+
+def _column_help_text(col):
+    if col in COLUMN_HELP:
+        return COLUMN_HELP[col]
+    if col in SPECIAL_PROVISION_LABELS:
+        return f"{col}: FDA special regulatory provision/designation. A check means verified for this exact drug/indication/application."
+    return f"{col}: field shown for this PDUFA event."
+
 def _sort_header_button(col, col_index):
-    """Render a real client-side table sort button."""
+    """Render a real client-side table sort button plus a visible column-help hint."""
     label = html.escape(str(col))
+    help_text = html.escape(_column_help_text(col), quote=True)
     return (
         f'<button type="button" class="sort-head" data-col-index="{int(col_index)}" '
         f'title="Click to sort {html.escape(str(col), quote=True)}">'
         f'<span class="sort-label">{label}</span>'
+        f'<span class="help-icon" title="{help_text}" aria-label="{help_text}">?</span>'
         f'<span class="sort-icon">⇅</span></button>'
     )
 
@@ -1603,6 +1674,8 @@ def render_merged_table(frame, heading, height_px=690):
     .merged-pdufa-table .provision-yes{font-weight:900}
     .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;width:100%%;height:100%%}
     .sort-head:hover .sort-icon,.sort-head:focus .sort-icon{background:#111;color:#fff}
+    .help-icon{display:inline-flex;align-items:center;justify-content:center;margin-left:5px;width:17px;height:17px;border:1.5px solid #555;border-radius:50%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
+    .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111}
     .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
     a{color:#111}
     </style>
@@ -2214,9 +2287,6 @@ if page == "1. ALL PDUFA":
         application_flags = add_application_columns(view)
         for col in APPLICATION_COLUMNS:
             display[col] = application_flags[col].values
-        display["PDUFA"] = view["pdufa_date"].apply(
-            lambda d: "" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
-        ).values
         display["F"] = view.apply(predicted_fda_direction, axis=1).values
         display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
@@ -2228,8 +2298,7 @@ if page == "1. ALL PDUFA":
             "All-Source Direction"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        display = display.drop(columns=["PDUFA Date"], errors="ignore")
-        front = ["Ticker","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"PDUFA","F","Match %","C"]
+        front = ["Ticker","PDUFA Date","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2710,13 +2779,13 @@ elif page == "4. PREDICTION ENGINE":
     hview["Ticker"] = hview.apply(
         lambda r: event_detail_url(r, source="history", return_page="4. PREDICTION ENGINE"), axis=1
     )
-    hview["PDUFA"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
+    hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
     hview = add_second_financing_columns(hview)
     hview = add_application_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","PDUFA","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C",
+        "Ticker","PDUFA Date","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction",
         "model_class","actual_outcome",
