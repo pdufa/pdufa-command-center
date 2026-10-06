@@ -33,5 +33,17 @@
   "combined_v3_directional_calls": 15,
   "combined_v3_directional_correct": 15,
   "combined_v3_directional_match_pct": 100,
-  "combined_v3_directional_coverage_pct": 10.27
+  "combined_v3_directional_coverage_pct": 10.27,
+  "probability_only_benchmark": {
+    "tune_year": 2023,
+    "approve_threshold_pct": 84,
+    "crl_threshold_pct": 17,
+    "tune_match_pct": 83.33,
+    "tune_coverage_pct": 75,
+    "validation_2024_match_pct": 91.3,
+    "validation_2024_coverage_pct": 88.46,
+    "validation_2025_match_pct": 62.5,
+    "validation_2025_coverage_pct": 80,
+    "conclusion": "Probability thresholds alone are not stable enough across years; FDA-specific evidence gates are required."
+  }
 }
