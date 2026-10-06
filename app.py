@@ -3906,7 +3906,7 @@ elif page == "9. FDA ENGINE":
     )
 
 
-if page == "1. DECISION":
+elif page == "1. DECISION":
     st.markdown("## 1. DECISION — YEAR → MONTH → PDUFA")
     st.caption(
         "Scroll year by year, then month by month. The archive uses the verified FDA decision date when it is stored; "
