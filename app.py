@@ -360,6 +360,23 @@ def load_fda_v3_historical_backtest():
 
 
 @st.cache_data(ttl=120)
+def load_fda_directional_100pct_summary():
+    try:
+        with open("data/fda_directional_100pct_summary.json", "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+@st.cache_data(ttl=120)
+def load_fda_directional_100pct_live():
+    try:
+        return pd.read_csv("data/fda_directional_100pct_live.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_engine():
     try:
         x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
@@ -665,6 +682,8 @@ prediction_rescore_queue = load_prediction_rescore_queue()
 fda_v3_hist_summary = load_fda_v3_historical_summary()
 fda_v3_hist_queue = load_fda_v3_historical_backfill_queue()
 fda_v3_hist_backtest = load_fda_v3_historical_backtest()
+fda_directional_summary = load_fda_directional_100pct_summary()
+fda_directional_live = load_fda_directional_100pct_live()
 fda_reviews = load_fda_review_engine()
 fda_facilities = load_fda_facility_registry()
 fda_backfill_queue = load_fda_review_backfill_queue()
@@ -2177,7 +2196,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06F · FDA DECISION ENGINE V3.2 · STATS + CMC + FACILITY + BIMO GATES · DECISION DATE · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06G · FDA V3.2 STRICT + 100% DIRECTIONAL COVERAGE · STATS + CMC + FACILITY + BIMO GATES")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -3878,6 +3897,22 @@ elif page == "9. FDA ENGINE":
         "This page mirrors the FDA review structure as closely as public evidence allows. "
         "It is deliberately separate from the Trading Engine. Missing critical disciplines force REVIEW rather than a guessed call."
     )
+
+    st.markdown("### 100% Directional Coverage")
+    if not fda_directional_live.empty:
+        counted = fda_directional_live[fda_directional_live["count_in_coverage"].astype(str).str.upper().eq("YES")].copy()
+        d1,d2,d3 = st.columns(3)
+        d1.metric("Coverage", "100.0%" if len(counted) else "0.0%")
+        d2.metric("APPROVE", int((counted["forced_direction"] == "APPROVED").sum()))
+        d3.metric("CRL", int((counted["forced_direction"] == "CRL").sum()))
+        show = counted[["ticker","drug","pdufa_date","forced_direction","directional_score","confidence","strict_v3_prediction","source_layer"]].rename(columns={
+            "ticker":"Ticker","drug":"Drug","pdufa_date":"PDUFA Date","forced_direction":"100% Direction",
+            "directional_score":"Score","confidence":"Confidence","strict_v3_prediction":"Strict V3","source_layer":"Source"
+        })
+        st.dataframe(show, use_container_width=True, hide_index=True, height=420)
+        st.caption("Coverage is 100% by design; accuracy is measured separately from outcomes. Strict V3 remains unchanged.")
+    else:
+        st.info("100% directional layer has not been generated yet.")
 
     fda_view = df.copy()
     for col in [
