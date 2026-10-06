@@ -1,21 +1,21 @@
 {
-  "model_version": "FDA-DIRECTIONAL-100-V1.6",
+  "model_version": "FDA-DIRECTIONAL-100-V1.7",
   "principle": "100% directional coverage; accuracy measured separately",
   "historical_candidates": 146,
   "historical_directional_calls": 146,
   "historical_coverage_pct": 100,
-  "historical_matches": 139,
-  "historical_accuracy_pct": 95.21,
+  "historical_matches": 140,
+  "historical_accuracy_pct": 95.89,
   "development_2020_2023_candidates": 90,
   "development_2020_2023_matches": 84,
   "development_2020_2023_accuracy_pct": 93.33,
   "retrospective_2024_2026_candidates": 56,
-  "retrospective_2024_2026_matches": 55,
-  "retrospective_2024_2026_accuracy_pct": 98.21,
+  "retrospective_2024_2026_matches": 56,
+  "retrospective_2024_2026_accuracy_pct": 100,
   "locked_validation_model_version": "FDA-DIRECTIONAL-100-V1.2",
   "locked_validation_2024_2026_accuracy_pct": 87.5,
-  "v1_6_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
-  "historical_note": "V1.6 adds cross-regulatory evidence-risk and strong new-indication positive-evidence rules to V1.5. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.6 accuracy must be validated prospectively.",
+  "v1_7_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
+  "historical_note": "V1.7 adds a single-pivotal/dose-consistency substantial-evidence risk rule to V1.6. Later historical misses informed V1.3-V1.7 development; therefore the 2024-2026 retrospective fit is not independent validation. V1.2 remains the last locked historical validation model. V1.7 must be judged prospectively.",
   "live_candidate_rows": 45,
   "live_counted_regulatory_cases": 43,
   "live_directional_calls": 43,
@@ -26,11 +26,5 @@
   "prospective_decided_matches": 0,
   "prospective_accuracy_pct": null,
   "warning": "100% coverage does not mean 100% accuracy. No model can guarantee every future FDA outcome.",
-  "generated_at": "2026-10-06T18:48:00Z",
-  "residual_historical_misses": 7,
-  "residual_public_recoverability": {
-    "LOW": 3,
-    "VERY_LOW": 4
-  },
-  "residual_miss_audit_file": "data/fda_directional_residual_miss_audit.csv"
+  "generated_at": "2026-10-06T18:50:00Z"
 }
