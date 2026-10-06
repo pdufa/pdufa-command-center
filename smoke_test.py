@@ -57,6 +57,12 @@ REQUIRED = {
         "missing_components","backfill_status","source_targets","decision_date",
         "actual_fda_decision","notes",
     },
+    "data/fda_facility_registry.csv": {
+        "event_key","fda_regulatory_case_id","ticker","drug","site_name","site_country",
+        "site_role","fei","warning_letter_status","import_alert_status","form483_status",
+        "facility_classification","preapproval_inspection_status","remediation_status",
+        "evidence_as_of","source_url","source_note",
+    },
     "data/fda_v3_historical_backtest.csv": {
         "event_key","ticker","pdufa_date","actual_outcome","model_class","p_approval",
         "correct","validation_period","independence_status","public_model_class",
@@ -375,6 +381,10 @@ required_ui_contracts = [
     'Primary endpoint',
     'Process validation',
     'Preapproval inspection',
+    'def load_fda_facility_registry',
+    'Manufacturing / Facility Registry',
+    'Manufacturing / Facility Evidence',
+    '"data/fda_facility_registry.csv"',
 ]
 for label in required_ui_contracts:
     if label not in app:
