@@ -1,0 +1,3 @@
+event_key,fda_regulatory_case_id,ticker,drug,pdufa_date,qualified_direction,strict_v3_hard_gate,evidence_completeness_pct,decision_date,actual_fda_decision,match_result,status
+SRPT|CASIMERSEN_DMD45_20270228,CASIMERSEN_DMD45_US_20270228,SRPT,AMONDYS 45 (casimersen),2027-02-28,CRL,FAIL,100.0,,,PENDING,PROSPECTIVE_PENDING
+SRPT|GOLODIRSEN_DMD53_20270228,GOLODIRSEN_DMD53_US_20270228,SRPT,VYONDYS 53 (golodirsen),2027-02-28,CRL,FAIL,100.0,,,PENDING,PROSPECTIVE_PENDING
