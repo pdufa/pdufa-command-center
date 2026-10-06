@@ -63,6 +63,13 @@ REQUIRED = {
         "analytical_lab_relocation","remote_records_review","immunogenicity_signal",
         "adcom_signal","blindspot_risk_level","blindspot_flags","source_note","generated_at",
     },
+    "data/fda_pdufa_extension_ledger.csv": {
+        "ledger_id","event_key","fda_regulatory_case_id","count_in_coverage",
+        "ticker","drug","extension_sequence","prior_pdufa_date","current_pdufa_date",
+        "extension_status","extension_reason","extension_detected_at",
+        "strict_v3_prediction","forced_direction","directional_model_version",
+        "decision_date","actual_fda_decision","source_note","last_updated_at",
+    },
     "data/fda_directional_100pct_historical.csv": {
         "event_key","ticker","pdufa_date","count_in_coverage","forced_direction",
         "fallback_probability","confidence","source_layer","model_version",
@@ -422,6 +429,9 @@ required_ui_contracts = [
     'Data-integrity gate',
     'Regulatory Interaction / Blind-Spot Monitor',
     'Blind-Spot Risk',
+    'PDUFA Extension Ledger',
+    'Prior PDUFA',
+    'Current PDUFA',
     '100% Directional Coverage',
     '100% Direction',
 ]
@@ -463,19 +473,34 @@ if float(summary.get("live_coverage_pct", 0)) != 100.0:
     raise SystemExit("100pct directional summary: live coverage is not 100%")
 if int(summary.get("historical_directional_calls", 0)) != int(summary.get("historical_candidates", -1)):
     raise SystemExit("100pct directional summary: historical calls do not cover every candidate")
-eligible_v11 = [
+eligible_current = [
     r for r in directional_freezes
     if (r.get("model_version") or "") == "FDA-DIRECTIONAL-100-V1.9"
     and (r.get("prospective_eligible") or "").upper() == "YES"
     and (r.get("count_in_coverage") or "").upper() == "YES"
 ]
-if len(eligible_v11) != int(summary.get("prospective_freezes", -1)):
-    raise SystemExit("100pct directional summary: prospective freeze count mismatch")
-if any((r.get("actual_fda_decision") or "").strip() for r in eligible_v11 if not (r.get("decision_date") or "").strip()):
+if any((r.get("actual_fda_decision") or "").strip() for r in eligible_current if not (r.get("decision_date") or "").strip()):
     raise SystemExit("100pct directional freezes: known outcome entered prospective pool")
-case_ids = [(r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip() for r in eligible_v11]
-if len(case_ids) != len(set(case_ids)):
-    raise SystemExit("100pct directional freezes: duplicate FDA review cycle in current prospective pool")
+freeze_sigs = [
+    "|".join([
+        (r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip(),
+        (r.get("pdufa_date") or "").strip(),
+        (r.get("model_version") or "").strip(),
+    ])
+    for r in eligible_current
+]
+if len(freeze_sigs) != len(set(freeze_sigs)):
+    raise SystemExit("100pct directional freezes: duplicate case/date/model snapshot")
+open_case_ids = {
+    (r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip()
+    for r in eligible_current
+    if not (r.get("decision_date") or "").strip()
+}
+if len(open_case_ids) != int(summary.get("prospective_freezes", -1)):
+    raise SystemExit(
+        f"100pct directional summary: open regulatory-cycle count mismatch "
+        f"{len(open_case_ids)} != {summary.get('prospective_freezes')}"
+    )
 
 residual = read_csv(ROOT / "data/fda_directional_residual_miss_audit.csv")
 hist_current = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
@@ -504,3 +529,23 @@ valid_extension_reasons = {
 }
 if any((r.get("extension_reason") or "") not in valid_extension_reasons for r in signals):
     raise SystemExit("regulatory signal monitor: invalid extension reason")
+
+extension_ledger = read_csv(ROOT / "data/fda_pdufa_extension_ledger.csv")
+ledger_ids = [(r.get("ledger_id") or "").strip() for r in extension_ledger]
+if any(not x for x in ledger_ids) or len(ledger_ids) != len(set(ledger_ids)):
+    raise SystemExit("PDUFA extension ledger: blank or duplicate ledger_id")
+valid_extension_status = {
+    "OPEN_PENDING","EXTENDED_PENDING","RESOLVED","OUTCOME_KNOWN_DATE_UNVERIFIED",
+}
+if any((r.get("extension_status") or "") not in valid_extension_status for r in extension_ledger):
+    raise SystemExit("PDUFA extension ledger: invalid extension_status")
+for r in extension_ledger:
+    status = (r.get("extension_status") or "").strip()
+    prior = (r.get("prior_pdufa_date") or "").strip()
+    current = (r.get("current_pdufa_date") or "").strip()
+    if prior and current and prior == current:
+        raise SystemExit(f"PDUFA extension ledger: unchanged date marked as transition {r.get('ledger_id')}")
+    if status == "RESOLVED" and not (
+        (r.get("decision_date") or "").strip() and (r.get("actual_fda_decision") or "").strip()
+    ):
+        raise SystemExit(f"PDUFA extension ledger: resolved cycle missing decision {r.get('ledger_id')}")
