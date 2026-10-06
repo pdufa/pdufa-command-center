@@ -359,6 +359,9 @@ required_ui_contracts = [
     'def load_fda_v3_historical_backtest',
     '### FDA-V3 Review',
     'V3 Evidence Summary',
+    'INSTALL DECISION ON IPHONE',
+    'Open as Web App',
+    '@media (max-width: 768px)',
 ]
 for label in required_ui_contracts:
     if label not in app:
