@@ -1,0 +1,39 @@
+{
+  "model_version": "FDA-V3.0",
+  "directional_thresholds": {
+    "approved_min_probability": 85,
+    "crl_max_probability": 25
+  },
+  "hard_gates": {
+    "critical_score_pass_min": 60,
+    "critical_score_fail_max": 40,
+    "required_components": [
+      "application_identity",
+      "clinical",
+      "statistics",
+      "clinical_meaningfulness",
+      "safety",
+      "cmc",
+      "inspection",
+      "regulatory",
+      "benefit_risk"
+    ]
+  },
+  "weights": {
+    "clinical": 0.20,
+    "statistics": 0.15,
+    "clinical_meaningfulness": 0.10,
+    "safety": 0.15,
+    "clinical_pharmacology": 0.05,
+    "nonclinical": 0.05,
+    "cmc": 0.10,
+    "regulatory": 0.10,
+    "labeling": 0.05,
+    "benefit_risk": 0.05
+  },
+  "notes": [
+    "This is a decision-architecture baseline, not a validated accuracy claim.",
+    "Trading variables such as price, market cap, momentum, short interest, IV, financing and ownership are prohibited from the FDA probability calculation.",
+    "Thresholds and weights must be calibrated only on decision-safe historical evidence and then frozen prospectively."
+  ]
+}
