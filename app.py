@@ -947,6 +947,16 @@ def fda_decision_display(row):
     return actual if actual is not None else "PENDING"
 
 
+def suggestion_word_display(row):
+    """Human-readable model suggestion: PASS for approval, CRL for rejection."""
+    direction = predicted_fda_direction(row)
+    if direction == "APPROVED":
+        return "PASS"
+    if direction == "CRL":
+        return "CRL"
+    return "REVIEW"
+
+
 def predicted_fda_direction(row):
     """Best decision-safe direction available before FDA acts.
 
@@ -1455,6 +1465,7 @@ COLUMN_HELP = {
     "PDUFA Date": "FDA target action date for this application/review cycle.",
     "PDUFA": "FDA target action date for this application/review cycle.",
     "SUGGESTION %": "ChatGPT/model pre-decision probability of FDA approval for this event.",
+    "SUGGESTION": "Model direction in words: PASS = approval expected, CRL = Complete Response Letter expected, REVIEW = no forced call.",
     "FDA Decision": "Final FDA outcome when resolved. Future or unresolved events show PENDING.",
     "MATCH %": "100% when the model direction matched the resolved FDA decision, 0% when it missed; blank while pending.",
     "P%": "All-sources model probability of FDA approval for this event.",
@@ -2322,6 +2333,7 @@ if page == "1. ALL PDUFA":
     else:
         display = table_view(view, return_page="1. ALL PDUFA")
         display["SUGGESTION %"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
+        display["SUGGESTION"] = view.apply(suggestion_word_display, axis=1).values
         display["FDA Decision"] = view.apply(fda_decision_display, axis=1).values
         display["MATCH %"] = view.apply(match_percent_display, axis=1).values
         display["P"] = view["reported_p_values"].apply(lambda v: safe_text(v, "")).values
@@ -2342,7 +2354,7 @@ if page == "1. ALL PDUFA":
             "Outcome"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","PDUFA Date","SUGGESTION %","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
+        front = ["Ticker","PDUFA Date","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2676,6 +2688,7 @@ elif page == "4. PREDICTION ENGINE":
     hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
     hist["P%"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
     hist["SUGGESTION %"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+    hist["SUGGESTION"] = hist.apply(suggestion_word_display, axis=1)
     hist["FDA Decision"] = hist.apply(fda_decision_display, axis=1)
     hist["MATCH %"] = hist.apply(match_percent_display, axis=1)
     hist["F"] = hist.apply(predicted_fda_direction, axis=1)
@@ -2832,7 +2845,7 @@ elif page == "4. PREDICTION ENGINE":
     hview = add_application_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","PDUFA Date","SUGGESTION %","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C",
+        "Ticker","PDUFA Date","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction",
         "model_class",
