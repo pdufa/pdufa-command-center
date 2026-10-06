@@ -1,0 +1,25 @@
+{
+  "cohort_rows": 146,
+  "legacy_scored_rows": 146,
+  "legacy_correct": 102,
+  "legacy_accuracy_pct": 69.86,
+  "phase_a_public_directional_calls": 13,
+  "phase_a_public_directional_correct": 13,
+  "phase_a_public_directional_match_pct": 100,
+  "phase_a_public_directional_coverage_pct": 8.9,
+  "phase_a_review_no_call": 1,
+  "historical_v3_backfill_remaining": 133,
+  "external_holdout_rows": 6,
+  "external_holdout_directional_calls": 5,
+  "external_holdout_directional_correct": 5,
+  "external_holdout_directional_match_pct": 100,
+  "external_holdout_directional_coverage_pct": 83.33,
+  "legacy_miss_diagnostic_counts": {
+    "CMC_INSPECTION": 14,
+    "EFFICACY_STATISTICS": 13,
+    "RESUBMISSION_REMEDIATION": 2,
+    "OTHER_UNCLEAR": 14,
+    "SAFETY_BENEFIT_RISK": 1
+  },
+  "warning": "Phase A is a preserved decision-safe public-call benchmark, not the full FDA-V3 backtest. Full V3 accuracy remains pending historical FDA-discipline backfill."
+}
