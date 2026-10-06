@@ -209,16 +209,17 @@ def derive_facility_gate(row):
     if warning in {"ACTIVE","OPEN","REVIEW"} or form483 in {"OPEN","ACTIVE","REVIEW"}:
         return "REVIEW"
 
-    if (
-        pai in {"PASS","COMPLETE","COMPLETED"}
-        and import_alert not in {"ACTIVE","FAIL"}
-        and classification not in {"OAI","FAIL"}
-    ):
+    # "Inspection completed" is not equivalent to "inspection passed".
+    # V3.1 requires affirmative clean public signals before clearing this gate.
+    clean_warning = warning in {"PASS","CLEAR","NONE","RESOLVED"}
+    clean_import = import_alert in {"PASS","CLEAR","NONE","RESOLVED"}
+    clean_483 = form483 in {"PASS","CLEAR","NONE","RESOLVED"}
+    clean_classification = classification in {"NAI","PASS"}
+    clean_pai = pai in {"PASS","CLEAN"}
+
+    if clean_warning and clean_import and clean_483 and clean_classification and clean_pai:
         return "PASS"
 
-    legacy = clean(row.get("fda_inspection_status")).upper()
-    if legacy in {"PASS","FAIL"}:
-        return legacy
     return "REVIEW"
 
 
