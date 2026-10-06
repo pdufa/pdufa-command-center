@@ -123,17 +123,33 @@ def event_risk_override(base_direction, text):
 
     if base_direction == "APPROVED":
         extension = ("extend" in lower or "extension" in lower)
-        cmc_extension = extension and any(
-            x in lower for x in ["cmc", "manufacturing", "product quality", "facility"]
+        manufacturing_negated = any(
+            x in lower for x in [
+                "no new safety/manufacturing request",
+                "not related to manufacturing",
+                "not related to cmc",
+                "no manufacturing request",
+                "no cmc request",
+            ]
+        )
+        cmc_extension = (
+            extension and
+            not manufacturing_negated and
+            any(x in lower for x in ["cmc", "manufacturing", "product quality", "facility"])
         )
         active_hold = "clinical hold" in lower and not any(
             x in lower for x in ["hold lifted", "clinical hold was lifted", "resolved clinical hold"]
+        )
+        phase3_not_supporting_initial = (
+            "phase 3" not in lower or
+            "did not rely on a completed phase 3" in lower or
+            "without a completed phase 3" in lower
         )
         phase2_external_full = (
             "full approval" in lower and
             "phase 2" in lower and
             ("external comparator" in lower or "natural-history" in lower or "natural history" in lower) and
-            "phase 3" not in lower
+            phase3_not_supporting_initial
         )
         unresolved_prior_crl = (
             ("prior" in lower and "crl" in lower or "resubmission" in lower) and
