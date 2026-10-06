@@ -47,6 +47,8 @@ jobs:
         run: python scripts/recheck_events.py --all --categories "${{ inputs.categories || 'pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders' }}"
       - name: Refresh FDA decision engine and freeze eligible pre-decision calls
         run: python scripts/fda_decision_engine.py --freeze
+      - name: Refresh FDA regulatory interaction monitor
+        run: python scripts/fda_regulatory_signal_monitor.py
       - name: Refresh 100 percent directional layer
         run: python scripts/fda_directional_100pct.py
       - name: Run repository checks
@@ -55,7 +57,7 @@ jobs:
         run: |
           git config user.name "pdufa-recheck-bot"
           git config user.email "pdufa-recheck-bot@users.noreply.github.com"
-          git add data/pdufa_candidates.csv data/recheck_status.csv data/fda_review_engine.csv data/fda_prediction_freezes.csv data/fda_review_backfill_queue.csv data/fda_directional_100pct_live.csv data/fda_directional_100pct_historical.csv data/fda_directional_100pct_freezes.csv data/fda_directional_100pct_summary.json data/fda_directional_100pct_live.csv data/fda_directional_100pct_historical.csv data/fda_directional_100pct_summary.json data/fda_directional_100pct_freezes.csv
+          git add data/pdufa_candidates.csv data/recheck_status.csv data/fda_review_engine.csv data/fda_prediction_freezes.csv data/fda_review_backfill_queue.csv data/fda_regulatory_signal_monitor.csv data/fda_directional_100pct_live.csv data/fda_directional_100pct_historical.csv data/fda_directional_100pct_summary.json data/fda_directional_100pct_freezes.csv
           if git diff --cached --quiet; then
             echo "No persisted recheck changes."
           else
