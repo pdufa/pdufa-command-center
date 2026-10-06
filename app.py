@@ -377,6 +377,7 @@ def load_fda_review_engine():
         "fda_supplier_status","fda_cmc_gate","fda_inspection_status",
         "fda_warning_letter_status","fda_import_alert_status","fda_form483_status",
         "fda_facility_classification","fda_preapproval_inspection_status","fda_facility_gate",
+        "fda_bimo_status","fda_data_integrity_gate",
         "fda_regulatory_score","fda_labeling_score","fda_benefit_risk_score",
         "fda_evidence_freshness","fda_hard_gate","fda_probability","fda_prediction",
         "fda_confidence","fda_gate_reason","fda_model_version",
@@ -2176,7 +2177,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06E · FDA DECISION ENGINE V3.1 · STATISTICS + CMC + FACILITY HARD GATES · DECISION DATE · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06F · FDA DECISION ENGINE V3.2 · STATS + CMC + FACILITY + BIMO GATES · DECISION DATE · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -3926,7 +3927,8 @@ elif page == "9. FDA ENGINE":
         "ticker","PDUFA Date","DECISION DATE","fda_regulatory_case_id","fda_count_in_match","FDA MODEL %","FDA CALL","FDA GATE",
         "fda_application_identity","fda_clinical_score","fda_statistics_score","fda_statistics_gate",
         "fda_meaningfulness_score","fda_safety_score","fda_cmc_score","fda_cmc_gate",
-        "fda_inspection_status","fda_facility_gate","fda_regulatory_score","fda_labeling_score",
+        "fda_inspection_status","fda_facility_gate","fda_bimo_status","fda_data_integrity_gate",
+        "fda_regulatory_score","fda_labeling_score",
         "fda_benefit_risk_score","fda_evidence_freshness","fda_confidence",
         "fda_prediction_frozen_at","fda_model_version","fda_gate_reason"
     ]].rename(columns={
@@ -3943,6 +3945,8 @@ elif page == "9. FDA ENGINE":
         "fda_cmc_gate":"CMC Gate",
         "fda_inspection_status":"Inspection",
         "fda_facility_gate":"Facility Gate",
+        "fda_bimo_status":"BIMO",
+        "fda_data_integrity_gate":"Data Integrity",
         "fda_regulatory_score":"Regulatory",
         "fda_labeling_score":"Labeling",
         "fda_benefit_risk_score":"Benefit-Risk",
@@ -4647,6 +4651,8 @@ else:
                 ("Form 483", r.get("fda_form483_status")),
                 ("Facility classification", r.get("fda_facility_classification")),
                 ("Preapproval inspection", r.get("fda_preapproval_inspection_status")),
+                ("BIMO / data integrity", r.get("fda_bimo_status")),
+                ("Data-integrity gate", r.get("fda_data_integrity_gate")),
                 ("Regulatory history", r.get("fda_regulatory_score")),
                 ("Labeling", r.get("fda_labeling_score")),
                 ("Benefit-risk", r.get("fda_benefit_risk_score")),
@@ -4684,7 +4690,7 @@ else:
             st.write(f"**FDA confidence:** {safe_text(r.get('fda_confidence'), 'INSUFFICIENT FDA EVIDENCE')}")
             st.write(f"**Gate reason:** {safe_text(r.get('fda_gate_reason'), 'FDA review record not yet populated')}")
             st.write(f"**Prediction frozen at:** {safe_text(r.get('fda_prediction_frozen_at'), 'Not frozen')}")
-            st.write(f"**Model version:** {safe_text(r.get('fda_model_version'), 'FDA-V3.1')}")
+            st.write(f"**Model version:** {safe_text(r.get('fda_model_version'), 'FDA-V3.2')}")
             if safe_text(r.get("pdufa_evidence_url"), ""):
                 st.link_button("OPEN REGULATORY SOURCE", r.get("pdufa_evidence_url"))
             st.write(safe_text(r.get("regulatory_summary"), "No additional regulatory notes stored."))
