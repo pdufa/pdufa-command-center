@@ -390,6 +390,24 @@ def load_fda_review_engine():
 
 
 @st.cache_data(ttl=120)
+def load_fda_facility_registry():
+    try:
+        x = pd.read_csv("data/fda_facility_registry.csv", keep_default_na=False)
+    except Exception:
+        x = pd.DataFrame()
+    required = [
+        "event_key","fda_regulatory_case_id","ticker","drug","site_name","site_country",
+        "site_role","fei","warning_letter_status","import_alert_status","form483_status",
+        "facility_classification","preapproval_inspection_status","remediation_status",
+        "evidence_as_of","source_url","source_note"
+    ]
+    for col in required:
+        if col not in x:
+            x[col] = ""
+    return x[required]
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_backfill_queue():
     try:
         x = pd.read_csv("data/fda_review_backfill_queue.csv", keep_default_na=False)
@@ -647,6 +665,7 @@ fda_v3_hist_summary = load_fda_v3_historical_summary()
 fda_v3_hist_queue = load_fda_v3_historical_backfill_queue()
 fda_v3_hist_backtest = load_fda_v3_historical_backtest()
 fda_reviews = load_fda_review_engine()
+fda_facilities = load_fda_facility_registry()
 fda_backfill_queue = load_fda_review_backfill_queue()
 fda_freezes = load_fda_prediction_freezes()
 if not fda_reviews.empty and "event_key" in df:
@@ -3936,6 +3955,28 @@ elif page == "9. FDA ENGINE":
 
     st.dataframe(fda_table, use_container_width=True, hide_index=True, height=720)
 
+    st.markdown("### Manufacturing / Facility Registry")
+    if fda_facilities.empty:
+        st.info("No site-level facility evidence has been loaded yet.")
+    else:
+        st.dataframe(
+            fda_facilities[[
+                "ticker","drug","site_name","site_role","warning_letter_status",
+                "import_alert_status","form483_status","facility_classification",
+                "preapproval_inspection_status","remediation_status","evidence_as_of","source_url"
+            ]].rename(columns={
+                "ticker":"Ticker","drug":"Drug","site_name":"Site","site_role":"Role",
+                "warning_letter_status":"Warning Letter","import_alert_status":"Import Alert",
+                "form483_status":"Form 483","facility_classification":"Classification",
+                "preapproval_inspection_status":"PAI Status","remediation_status":"Remediation",
+                "evidence_as_of":"As Of","source_url":"Source"
+            }),
+            use_container_width=True,
+            hide_index=True,
+            column_config={"Source": st.column_config.LinkColumn("Source", display_text="Open source")},
+            height=260,
+        )
+
     st.markdown("### FDA Discipline Backfill Queue")
     if fda_backfill_queue.empty:
         st.info("No FDA backfill queue is loaded.")
@@ -4616,6 +4657,30 @@ else:
                 use_container_width=True,
                 hide_index=True
             )
+            event_facilities = fda_facilities[
+                fda_facilities["event_key"].astype(str).eq(str(r.get("event_key")))
+            ] if not fda_facilities.empty else pd.DataFrame()
+            if not event_facilities.empty:
+                st.markdown("#### Manufacturing / Facility Evidence")
+                facility_show = event_facilities[[
+                    "site_name","site_country","site_role","fei",
+                    "warning_letter_status","import_alert_status","form483_status",
+                    "facility_classification","preapproval_inspection_status",
+                    "remediation_status","evidence_as_of","source_url","source_note"
+                ]].rename(columns={
+                    "site_name":"Site","site_country":"Country","site_role":"Role","fei":"FEI",
+                    "warning_letter_status":"Warning Letter","import_alert_status":"Import Alert",
+                    "form483_status":"Form 483","facility_classification":"Classification",
+                    "preapproval_inspection_status":"PAI Status","remediation_status":"Remediation",
+                    "evidence_as_of":"As Of","source_url":"Source","source_note":"Evidence Note"
+                })
+                st.dataframe(
+                    facility_show,
+                    use_container_width=True,
+                    hide_index=True,
+                    column_config={"Source": st.column_config.LinkColumn("Source", display_text="Open source")}
+                )
+
             st.write(f"**FDA confidence:** {safe_text(r.get('fda_confidence'), 'INSUFFICIENT FDA EVIDENCE')}")
             st.write(f"**Gate reason:** {safe_text(r.get('fda_gate_reason'), 'FDA review record not yet populated')}")
             st.write(f"**Prediction frozen at:** {safe_text(r.get('fda_prediction_frozen_at'), 'Not frozen')}")
