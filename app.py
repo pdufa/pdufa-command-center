@@ -948,13 +948,11 @@ def fda_decision_display(row):
 
 
 def suggestion_word_display(row):
-    """Human-readable model suggestion: PASS for approval, CRL for rejection."""
-    direction = predicted_fda_direction(row)
-    if direction == "APPROVED":
-        return "PASS"
-    if direction == "CRL":
-        return "CRL"
-    return "REVIEW"
+    """Human-readable suggestion derived directly from SUGGESTION %."""
+    score = displayed_probability_value(row)
+    if score is None or pd.isna(score):
+        return ""
+    return "PASS" if float(score) >= 50 else "CRL"
 
 
 def predicted_fda_direction(row):
@@ -1465,7 +1463,7 @@ COLUMN_HELP = {
     "PDUFA Date": "FDA target action date for this application/review cycle.",
     "PDUFA": "FDA target action date for this application/review cycle.",
     "SUGGESTION %": "ChatGPT/model pre-decision probability of FDA approval for this event.",
-    "SUGGESTION": "Model direction in words: PASS = approval expected, CRL = Complete Response Letter expected, REVIEW = no forced call.",
+    "SUGGESTION": "Suggestion in words from SUGGESTION %: PASS at 50% or higher; CRL below 50%.",
     "FDA Decision": "Final FDA outcome when resolved. Future or unresolved events show PENDING.",
     "MATCH %": "100% when the model direction matched the resolved FDA decision, 0% when it missed; blank while pending.",
     "P%": "All-sources model probability of FDA approval for this event.",
