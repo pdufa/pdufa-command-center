@@ -921,6 +921,32 @@ def normalize_fda_direction(value):
     return None
 
 
+def resolved_fda_direction(row):
+    """Return a final FDA direction only when the decision is actually resolved."""
+    historical = normalize_fda_direction(row.get("actual_outcome"))
+    if historical is not None:
+        return historical
+
+    live = normalize_fda_direction(row.get("outcome"))
+    if live is None:
+        return None
+
+    decision_date = pd.to_datetime(row.get("decision_date"), errors="coerce")
+    if pd.notna(decision_date):
+        return live if pd.Timestamp(decision_date).normalize() <= today else None
+
+    pdufa_date = pd.to_datetime(row.get("pdufa_date"), errors="coerce")
+    if pd.notna(pdufa_date) and pd.Timestamp(pdufa_date).normalize() <= today:
+        return live
+    return None
+
+
+def fda_decision_display(row):
+    """Display the resolved FDA outcome; future/unresolved events remain PENDING."""
+    actual = resolved_fda_direction(row)
+    return actual if actual is not None else "PENDING"
+
+
 def predicted_fda_direction(row):
     """Best decision-safe direction available before FDA acts.
 
@@ -958,7 +984,7 @@ def predicted_fda_direction(row):
 def direction_fda_display(row):
     """Lifecycle display: prediction before FDA action; 100%/0% match after FDA action."""
     predicted = predicted_fda_direction(row)
-    actual = normalize_fda_direction(row.get("actual_outcome", row.get("outcome")))
+    actual = resolved_fda_direction(row)
 
     if actual is None:
         return predicted
@@ -973,9 +999,9 @@ def direction_fda_display(row):
 
 
 def match_percent_display(row):
-    """Populate only when both approval probability and final FDA decision exist."""
+    """Populate only when both approval probability and a resolved FDA decision exist."""
     approval = displayed_probability_value(row)
-    actual = normalize_fda_direction(row.get("actual_outcome", row.get("outcome")))
+    actual = resolved_fda_direction(row)
     if approval is None or pd.isna(approval) or actual is None:
         return ""
     predicted = predicted_fda_direction(row)
@@ -1428,6 +1454,9 @@ COLUMN_HELP = {
     "Ticker": "Public-company ticker. Click the ticker to open the event detail page.",
     "PDUFA Date": "FDA target action date for this application/review cycle.",
     "PDUFA": "FDA target action date for this application/review cycle.",
+    "SUGGESTION %": "ChatGPT/model pre-decision probability of FDA approval for this event.",
+    "FDA Decision": "Final FDA outcome when resolved. Future or unresolved events show PENDING.",
+    "MATCH %": "100% when the model direction matched the resolved FDA decision, 0% when it missed; blank while pending.",
     "P%": "All-sources model probability of FDA approval for this event.",
     "P": "Reported pivotal/Phase 3 p-value evidence saved for the event.",
     "F": "Model-predicted FDA direction: APPROVED, CRL, or REVIEW.",
@@ -2292,7 +2321,9 @@ if page == "1. ALL PDUFA":
         st.info("No PDUFA records match the current filters.")
     else:
         display = table_view(view, return_page="1. ALL PDUFA")
-        display["P%"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
+        display["SUGGESTION %"] = view.apply(lambda r: displayed_probability_text(r, 1), axis=1).values
+        display["FDA Decision"] = view.apply(fda_decision_display, axis=1).values
+        display["MATCH %"] = view.apply(match_percent_display, axis=1).values
         display["P"] = view["reported_p_values"].apply(lambda v: safe_text(v, "")).values
         second_fin = add_second_financing_columns(view)
         for col in SECOND_FINANCING_COLUMNS:
@@ -2301,17 +2332,17 @@ if page == "1. ALL PDUFA":
         for col in APPLICATION_COLUMNS:
             display[col] = application_flags[col].values
         display["F"] = view.apply(predicted_fda_direction, axis=1).values
-        display["Match %"] = view.apply(match_percent_display, axis=1).values
         display["C"] = view.apply(combined_probability_direction, axis=1).values
         display["Public P%"] = view["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1)).values
         drop_front = [
             "Probability of Approval % — Public",
             "Probability of Approval % — All Sources",
             "Direction / FDA Match",
-            "All-Source Direction"
+            "All-Source Direction",
+            "Outcome"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","PDUFA Date","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C"]
+        front = ["Ticker","PDUFA Date","SUGGESTION %","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
@@ -2644,6 +2675,9 @@ elif page == "4. PREDICTION ENGINE":
     hist["Probability of Approval % — Public"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
     hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
     hist["P%"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+    hist["SUGGESTION %"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+    hist["FDA Decision"] = hist.apply(fda_decision_display, axis=1)
+    hist["MATCH %"] = hist.apply(match_percent_display, axis=1)
     hist["F"] = hist.apply(predicted_fda_direction, axis=1)
     hist["Match %"] = hist.apply(match_percent_display, axis=1)
     hist["C"] = hist.apply(combined_probability_direction, axis=1)
@@ -2798,16 +2832,15 @@ elif page == "4. PREDICTION ENGINE":
     hview = add_application_columns(hview)
     hview = add_special_provision_columns(hview)
     hdisplay = hview[[
-        "Ticker","PDUFA Date","P%","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","Match %","C",
+        "Ticker","PDUFA Date","SUGGESTION %","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C",
         *SPECIAL_PROVISION_LABELS,
         "Probability of Approval % — Public","I Direction","P Direction",
-        "model_class","actual_outcome",
+        "model_class",
         "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
         "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
         "count_in_audited_accuracy","source_url","validation_period","independence_status"
     ]].rename(columns={
         "model_class":"Model Prediction",
-        "actual_outcome":"Actual FDA Outcome",
         "market_cap_bucket":"Market Cap Bucket",
         "audit_status":"Audit Status",
         "failure_reason":"Failure Reason",
