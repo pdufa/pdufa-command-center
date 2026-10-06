@@ -47,6 +47,20 @@ REQUIRED = {
         "fda_hard_gate","fda_probability","fda_prediction","fda_confidence",
         "fda_model_version","decision_date","actual_fda_decision","fda_match_result",
     },
+    "data/fda_directional_100pct_live.csv": {
+        "event_key","ticker","pdufa_date","count_in_coverage","strict_v3_prediction",
+        "forced_direction","directional_score","confidence","source_layer",
+        "evidence_completeness_pct","model_version","match_result",
+    },
+    "data/fda_directional_100pct_historical.csv": {
+        "event_key","ticker","pdufa_date","count_in_coverage","forced_direction",
+        "fallback_probability","confidence","source_layer","model_version",
+        "actual_outcome","match_result",
+    },
+    "data/fda_directional_100pct_freezes.csv": {
+        "event_key","ticker","pdufa_date","forced_direction","directional_score",
+        "confidence","source_layer","model_version","frozen_at","match_result",
+    },
     "data/fda_prediction_freezes.csv": {
         "freeze_id","event_key","ticker","drug","pdufa_date","fda_probability",
         "fda_prediction","frozen_at","model_version","decision_date",
@@ -407,3 +421,14 @@ print(
     f"{verified_second_financing} verified second-financing rows, "
     f"{len(history)} historical rows, {verified_checks} verified designation checks, {verified_pvalues} verified P values, authoritative event reconciliation locked"
 )
+
+# 100% directional layer contract: every counted live/historical row must have a direction.
+directional_live = read_csv(ROOT / "data/fda_directional_100pct_live.csv")
+directional_hist = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
+for label, rows in [("live", directional_live), ("historical", directional_hist)]:
+    counted = [r for r in rows if (r.get("count_in_coverage") or "YES").strip().upper() == "YES"]
+    missing_direction = [r.get("event_key","") for r in counted if (r.get("forced_direction") or "").strip().upper() not in {"APPROVED","CRL"}]
+    if missing_direction:
+        raise SystemExit(f"100pct directional {label}: missing direction for {missing_direction[:5]}")
+    if counted and len(counted) != sum(1 for r in counted if (r.get("forced_direction") or "").strip().upper() in {"APPROVED","CRL"}):
+        raise SystemExit(f"100pct directional {label}: coverage below 100%")
