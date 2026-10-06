@@ -317,6 +317,23 @@ def load_fda_review_engine():
 
 
 @st.cache_data(ttl=120)
+def load_fda_review_backfill_queue():
+    try:
+        x = pd.read_csv("data/fda_review_backfill_queue.csv", keep_default_na=False)
+    except Exception:
+        x = pd.DataFrame()
+    required = [
+        "event_key","ticker","drug","pdufa_date","priority","days_to_pdufa",
+        "missing_components","backfill_status","source_targets","decision_date",
+        "actual_fda_decision","notes"
+    ]
+    for col in required:
+        if col not in x:
+            x[col] = ""
+    return x[required]
+
+
+@st.cache_data(ttl=120)
 def load_fda_prediction_freezes():
     try:
         x = pd.read_csv("data/fda_prediction_freezes.csv", keep_default_na=False)
@@ -387,6 +404,7 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
     load_data.clear()
     load_recheck_status.clear()
     load_fda_review_engine.clear()
+    load_fda_review_backfill_queue.clear()
     load_fda_prediction_freezes.clear()
     payload = (result.stdout or "").strip().splitlines()
     return payload[-1] if payload else "Recheck completed"
@@ -553,6 +571,7 @@ df = load_data()
 prediction_history = load_prediction_history()
 prediction_rescore_queue = load_prediction_rescore_queue()
 fda_reviews = load_fda_review_engine()
+fda_backfill_queue = load_fda_review_backfill_queue()
 fda_freezes = load_fda_prediction_freezes()
 if not fda_reviews.empty and "event_key" in df:
     fda_merge_cols = ["event_key"] + [c for c in fda_reviews.columns if c.startswith("fda_")]
@@ -3792,6 +3811,27 @@ elif page == "8. FDA ENGINE":
     }).sort_values(["PDUFA Date","Ticker"], na_position="last")
 
     st.dataframe(fda_table, use_container_width=True, hide_index=True, height=720)
+
+    st.markdown("### FDA Discipline Backfill Queue")
+    if fda_backfill_queue.empty:
+        st.info("No FDA backfill queue is loaded.")
+    else:
+        priority_counts = fda_backfill_queue["priority"].value_counts()
+        q1,q2,q3,q4,q5 = st.columns(5)
+        q1.metric("Past / Closure", int(priority_counts.get("P0 PAST / CLOSURE", 0)))
+        q2.metric("0–30 Days", int(priority_counts.get("P1 0-30 DAYS", 0)))
+        q3.metric("31–60 Days", int(priority_counts.get("P2 31-60 DAYS", 0)))
+        q4.metric("61–90 Days", int(priority_counts.get("P3 61-90 DAYS", 0)))
+        q5.metric(">90 Days", int(priority_counts.get("P4 >90 DAYS", 0)))
+        queue_show = fda_backfill_queue[[
+            "ticker","pdufa_date","priority","missing_components","backfill_status","source_targets"
+        ]].rename(columns={
+            "ticker":"Ticker","pdufa_date":"PDUFA Date","priority":"Priority",
+            "missing_components":"Missing FDA Blocks","backfill_status":"Status",
+            "source_targets":"Primary Source Targets"
+        })
+        st.dataframe(queue_show, use_container_width=True, hide_index=True, height=420)
+
     st.caption(
         "Regulatory model inputs only. Trading variables are intentionally excluded. "
         "The freeze ledger is data/fda_prediction_freezes.csv; frozen calls are never overwritten after an FDA decision."
