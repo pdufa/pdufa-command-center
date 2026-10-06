@@ -13,9 +13,9 @@
   "live_coverage_pct": 100,
   "open_prospective_counted_calls": 42,
   "prospective_freezes": 44,
-  "live_decided_scored": 1,
-  "live_decided_matches": 0,
-  "live_accuracy_pct": 0,
   "warning": "100% coverage does not mean 100% accuracy. No model can guarantee every future FDA outcome.",
-  "generated_at": "2026-10-06T16:30:00Z"
+  "generated_at": "2026-10-06T16:35:00Z",
+  "prospective_decided_scored": 0,
+  "prospective_decided_matches": 0,
+  "prospective_accuracy_pct": null
 }
