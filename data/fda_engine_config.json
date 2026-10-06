@@ -1,5 +1,5 @@
 {
-  "model_version": "FDA-V3.0",
+  "model_version": "FDA-V3.1",
   "directional_thresholds": {
     "approved_min_probability": 85,
     "crl_max_probability": 25
@@ -10,30 +10,70 @@
     "required_components": [
       "application_identity",
       "clinical",
-      "statistics",
+      "statistics_gate",
       "clinical_meaningfulness",
       "safety",
-      "cmc",
-      "inspection",
+      "cmc_gate",
+      "facility_gate",
       "regulatory",
       "benefit_risk"
     ]
   },
   "weights": {
-    "clinical": 0.20,
+    "clinical": 0.2,
     "statistics": 0.15,
-    "clinical_meaningfulness": 0.10,
+    "clinical_meaningfulness": 0.1,
     "safety": 0.15,
     "clinical_pharmacology": 0.05,
     "nonclinical": 0.05,
-    "cmc": 0.10,
-    "regulatory": 0.10,
+    "cmc": 0.1,
+    "regulatory": 0.1,
     "labeling": 0.05,
     "benefit_risk": 0.05
   },
   "notes": [
+    "FDA-V3.1 adds explicit statistics, CMC/product-quality, and facility/inspection hard-gate subchecks.",
     "This is a decision-architecture baseline, not a validated accuracy claim.",
     "Trading variables such as price, market cap, momentum, short interest, IV, financing and ownership are prohibited from the FDA probability calculation.",
-    "Thresholds and weights must be calibrated only on decision-safe historical evidence and then frozen prospectively."
-  ]
+    "Thresholds and weights must be calibrated only on decision-safe historical evidence and then frozen prospectively.",
+    "Unknown critical public evidence remains REVIEW rather than being assumed to pass."
+  ],
+  "gate_policy": {
+    "statistics": {
+      "fail_if": [
+        "primary endpoint FAIL",
+        "critical multiplicity FAIL"
+      ],
+      "review_if": [
+        "missing-data robustness unresolved",
+        "effect-size/clinical relevance unresolved",
+        "replication requirement unresolved"
+      ],
+      "note": "A failed pivotal primary endpoint or invalid multiplicity control can block an approval call; uncertainty remains REVIEW."
+    },
+    "cmc": {
+      "fail_if": [
+        "critical process validation FAIL",
+        "critical stability FAIL",
+        "critical analytical-method FAIL",
+        "critical comparability FAIL"
+      ],
+      "review_if": [
+        "critical product-quality subcheck UNKNOWN/REVIEW"
+      ],
+      "note": "CMC is not allowed to be averaged away by strong efficacy."
+    },
+    "facility": {
+      "fail_if": [
+        "active relevant import alert",
+        "relevant OAI/critical inspection failure",
+        "failed preapproval inspection"
+      ],
+      "review_if": [
+        "open relevant Form 483 without verified remediation",
+        "inspection outcome unavailable"
+      ],
+      "note": "A Form 483 alone is not an automatic CRL; unresolved critical inspection evidence blocks an approval call."
+    }
+  }
 }
