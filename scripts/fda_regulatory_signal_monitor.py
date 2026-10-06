@@ -18,13 +18,16 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 REVIEWS = DATA / "fda_review_engine.csv"
+FACILITIES = DATA / "fda_facility_registry.csv"
 OUT = DATA / "fda_regulatory_signal_monitor.csv"
 
 COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
     "review_extension_status","extension_reason","deficiency_notice_status",
     "late_cycle_open_questions","inspection_readiness","prior_crl_remediation",
-    "evidence_sufficiency_risk","dose_consistency_risk",
+    "prior_crl_unresolved_discipline","facility_site_visibility",
+    "third_party_cmo_dependency","postmarketing_study_alignment",
+    "late_fda_reversal_exposure","evidence_sufficiency_risk","dose_consistency_risk",
     "analytical_lab_relocation","remote_records_review","immunogenicity_signal",
     "adcom_signal","blindspot_risk_level","blindspot_flags",
     "source_note","generated_at",
@@ -42,12 +45,13 @@ def now_utc():
 def contains(text, *parts):
     return any(p in text for p in parts)
 
-def classify(row):
+def classify(row, facility_rows=None):
     source = clean(row.get("fda_source_note"))
     gate_reason = clean(row.get("fda_gate_reason"))
     source_text = source.lower()
     text = f"{source} {gate_reason}".lower()
     flags = []
+    facility_rows = facility_rows or []
 
     # Regulatory-interaction events must be derived from the actual evidence
     # note, not from generic unresolved-gate boilerplate.
@@ -114,6 +118,68 @@ def classify(row):
     else:
         remediation = "NOT_APPLICABLE"
 
+    # Residual-miss blind spots: keep these advisory. A missing public site or
+    # unresolved prior discipline is not itself a CRL, but it should reduce
+    # confidence and trigger focused evidence collection.
+    if prior_crl and contains(
+        source_text,
+        "remains a major regulatory risk",
+        "additional evidence of effectiveness was required",
+        "did not publicly document closure",
+        "lacked an equivalent public closure signal",
+    ):
+        prior_unresolved = "YES"
+        flags.append("PRIOR_CRL_DISCIPLINE_UNRESOLVED")
+    elif prior_crl:
+        prior_unresolved = "UNKNOWN"
+    else:
+        prior_unresolved = "NOT_APPLICABLE"
+
+    identified_sites = []
+    for site in facility_rows:
+        name = clean(site.get("site_name"))
+        if name and not contains(name.lower(), "not publicly identified", "unknown", "not identified"):
+            identified_sites.append(name)
+    if facility_rows and len(identified_sites) == len(facility_rows):
+        facility_visibility = "IDENTIFIED"
+    elif facility_rows and identified_sites:
+        facility_visibility = "PARTIAL"
+    elif facility_rows:
+        facility_visibility = "NOT_PUBLIC"
+    else:
+        facility_visibility = "UNKNOWN"
+
+    facility_dependency = contains(
+        source_text,
+        "pre-license inspection", "prelicensure inspection", "pre-licensure inspection",
+        "facility inspection", "manufacturing site", "manufacturing facility",
+        "scheduled pre-licensure inspections", "required inspections",
+    )
+    if facility_visibility in {"PARTIAL","NOT_PUBLIC"} and (
+        facility_dependency or clean(row.get("fda_facility_gate")).upper() == "REVIEW"
+    ):
+        flags.append("FACILITY_SITE_VISIBILITY_GAP")
+
+    third_party = contains(
+        source_text,
+        "third-party cmo", "third party cmo", "third-party manufacturer",
+        "third party manufacturer", "contract manufacturer", "contract manufacturing",
+    )
+    third_party_cmo = "YES" if third_party else "UNKNOWN"
+    if third_party and facility_visibility != "IDENTIFIED":
+        flags.append("THIRD_PARTY_CMO_VISIBILITY_GAP")
+
+    postmarketing_study = (
+        contains(source_text, "post-marketing", "postmarketing") and
+        contains(source_text, "study", "trial", "requirement", "commitment")
+    )
+    postmarketing_alignment = "YES" if postmarketing_study else "NO"
+    if postmarketing_study and contains(source_text, "aligned", "agreed", "agreement", "planned"):
+        reversal_exposure = "WATCH"
+        flags.append("POSTMARKETING_ALIGNMENT_REVERSAL_WATCH")
+    else:
+        reversal_exposure = "NONE"
+
     primary = clean(row.get("fda_primary_endpoint_status")).upper()
     stats_gate = clean(row.get("fda_statistics_gate")).upper()
     single_pivotal = contains(source_text, "one pivotal", "single pivotal", "based on one pivotal") and "phase 3" in source_text
@@ -174,6 +240,8 @@ def classify(row):
         "LATE_CYCLE_OPEN_QUESTIONS","INSPECTION_READINESS_UNRESOLVED",
         "PRIOR_CRL_REMEDIATION_UNKNOWN","REVIEW_EXTENSION_CLINICAL_DATA",
         "REVIEW_EXTENSION_INFORMATION_REQUEST","REVIEW_EXTENSION_REASON_UNKNOWN",
+        "FACILITY_SITE_VISIBILITY_GAP","THIRD_PARTY_CMO_VISIBILITY_GAP",
+        "PRIOR_CRL_DISCIPLINE_UNRESOLVED","POSTMARKETING_ALIGNMENT_REVERSAL_WATCH",
     }
     level = "HIGH" if any(f in high_flags for f in flags) else ("MEDIUM" if any(f in medium_flags for f in flags) else "LOW")
 
@@ -189,6 +257,11 @@ def classify(row):
         "late_cycle_open_questions": late_cycle_status,
         "inspection_readiness": inspection,
         "prior_crl_remediation": remediation,
+        "prior_crl_unresolved_discipline": prior_unresolved,
+        "facility_site_visibility": facility_visibility,
+        "third_party_cmo_dependency": third_party_cmo,
+        "postmarketing_study_alignment": postmarketing_alignment,
+        "late_fda_reversal_exposure": reversal_exposure,
         "evidence_sufficiency_risk": evidence_risk,
         "dose_consistency_risk": dose_risk,
         "analytical_lab_relocation": lab_relocation,
@@ -203,7 +276,15 @@ def classify(row):
 
 def main():
     review = pd.read_csv(REVIEWS, dtype=str, keep_default_na=False)
-    rows = [classify(r) for _, r in review.iterrows()]
+    facilities = pd.read_csv(FACILITIES, dtype=str, keep_default_na=False) if FACILITIES.exists() else pd.DataFrame()
+    facility_by_event = {}
+    if not facilities.empty:
+        for _, site in facilities.iterrows():
+            facility_by_event.setdefault(clean(site.get("event_key")), []).append(site)
+    rows = [
+        classify(r, facility_by_event.get(clean(r.get("event_key")), []))
+        for _, r in review.iterrows()
+    ]
     out = pd.DataFrame(rows, columns=COLUMNS)
     out.to_csv(OUT, index=False)
     print({
