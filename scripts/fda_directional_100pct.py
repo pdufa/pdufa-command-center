@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.5"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.6"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -208,11 +208,19 @@ def event_risk_override(base_direction, text):
             )
         )
 
+        cross_regulatory_evidence_risk = (
+            "major amendment" in lower and
+            "new information request" in lower and
+            "major objections" in lower and
+            ("key secondary endpoints did not achieve statistical significance" in lower or
+             "failed key secondaries" in lower)
+        )
+
         if (
             cmc_extension or active_hold or phase2_external_full or
             unresolved_prior_crl or explicit_deficiency_notice or
             unresolved_late_cycle_cmc or multi_discipline_fda_warning or
-            inspection_readiness_risk
+            inspection_readiness_risk or cross_regulatory_evidence_risk
         ):
             return "CRL", "EVENT_RISK_OVERRIDE"
 
@@ -223,8 +231,17 @@ def event_risk_override(base_direction, text):
             ("address" in lower or "remediation" in lower or "reinspection" in lower) and
             "unresolved" not in lower
         )
+        strong_new_indication_evidence = (
+            ("separate indication" in lower or "different indication" in lower) and
+            ("two positive" in lower and "phase 3" in lower) and
+            ("mid-cycle" in lower or "mid cycle" in lower) and
+            ("late-cycle" in lower or "late cycle" in lower) and
+            "on track" in lower
+        )
         if remediated_resubmission:
             return "APPROVED", "VERIFIED_REMEDIATION_OVERRIDE"
+        if strong_new_indication_evidence:
+            return "APPROVED", "STRONG_NEW_INDICATION_EVIDENCE"
 
     # Multi-domain FDA concern: several independent review disciplines flagged
     # before action is materially different from a single routine information request.
@@ -632,8 +649,8 @@ def write_summary(live, hist, freezes):
         "retrospective_2024_2026_accuracy_pct": round(100.0 * validation_matches / len(validation), 2) if len(validation) else None,
         "locked_validation_model_version": "FDA-DIRECTIONAL-100-V1.2",
         "locked_validation_2024_2026_accuracy_pct": 87.5,
-        "v1_5_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
-        "historical_note": "V1.5 adds multi-discipline FDA filing-warning/failed-efficacy and inspection-readiness rules to V1.4. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.5 accuracy must be validated prospectively.",
+        "v1_6_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
+        "historical_note": "V1.6 adds cross-regulatory evidence-risk and strong new-indication positive-evidence rules to V1.5. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.6 accuracy must be validated prospectively.",
         "live_candidate_rows": len(live),
         "live_counted_regulatory_cases": len(live_counted),
         "live_directional_calls": len(live_counted),
