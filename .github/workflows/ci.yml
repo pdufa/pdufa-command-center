@@ -17,7 +17,7 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Compile Streamlit app
-        run: python -m py_compile app.py
+      - name: Compile Streamlit app and FDA engine
+        run: python -m py_compile app.py scripts/fda_decision_engine.py scripts/recheck_events.py
       - name: Validate data and display schema
         run: python smoke_test.py
