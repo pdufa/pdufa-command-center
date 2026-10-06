@@ -1,0 +1,21 @@
+{
+  "model_version": "FDA-DIRECTIONAL-100-V1",
+  "principle": "100% directional coverage; accuracy measured separately",
+  "historical_candidates": 146,
+  "historical_directional_calls": 146,
+  "historical_coverage_pct": 100,
+  "historical_matches": 108,
+  "historical_accuracy_pct": 73.97,
+  "historical_note": "Historical forced directions use strict V3 calls when available, otherwise the preserved pre-decision frozen model. Actual outcomes are used only after direction assignment to score match.",
+  "live_candidate_rows": 45,
+  "live_counted_regulatory_cases": 43,
+  "live_directional_calls": 43,
+  "live_coverage_pct": 100,
+  "open_prospective_counted_calls": 42,
+  "prospective_freezes": 44,
+  "live_decided_scored": 1,
+  "live_decided_matches": 0,
+  "live_accuracy_pct": 0,
+  "warning": "100% coverage does not mean 100% accuracy. No model can guarantee every future FDA outcome.",
+  "generated_at": "2026-10-06T16:30:00Z"
+}
