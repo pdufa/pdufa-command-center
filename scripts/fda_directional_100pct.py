@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.2"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.3"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -110,6 +110,52 @@ def domain_text_override(base_direction, text):
         return "APPROVED", "VERIFIED_REMEDIATION_OVERRIDE"
     if base_direction == "APPROVED" and risk:
         return "CRL", "FDA_DOMAIN_RISK_OVERRIDE"
+    return base_direction, ""
+
+def event_risk_override(base_direction, text):
+    """Late-cycle regulatory events visible before FDA action.
+
+    These rules are intentionally general: extension reason, active hold,
+    evidence-sufficiency architecture, and prior-CRL remediation status.
+    """
+    text = sanitize_predecision_text(text)
+    lower = text.lower()
+
+    if base_direction == "APPROVED":
+        extension = ("extend" in lower or "extension" in lower)
+        cmc_extension = extension and any(
+            x in lower for x in ["cmc", "manufacturing", "product quality", "facility"]
+        )
+        active_hold = "clinical hold" in lower and not any(
+            x in lower for x in ["hold lifted", "clinical hold was lifted", "resolved clinical hold"]
+        )
+        phase2_external_full = (
+            "full approval" in lower and
+            "phase 2" in lower and
+            ("external comparator" in lower or "natural-history" in lower or "natural history" in lower) and
+            "phase 3" not in lower
+        )
+        unresolved_prior_crl = (
+            ("prior" in lower and "crl" in lower or "resubmission" in lower) and
+            any(x in lower for x in [
+                "unresolved",
+                "did not document verified closure",
+                "remains a major regulatory risk",
+            ])
+        )
+        if cmc_extension or active_hold or phase2_external_full or unresolved_prior_crl:
+            return "CRL", "EVENT_RISK_OVERRIDE"
+
+    if base_direction == "CRL":
+        remediated_resubmission = (
+            "resubmission" in lower and
+            ("complete response" in lower or "complete-response" in lower) and
+            ("address" in lower or "remediation" in lower or "reinspection" in lower) and
+            "unresolved" not in lower
+        )
+        if remediated_resubmission:
+            return "APPROVED", "VERIFIED_REMEDIATION_OVERRIDE"
+
     return base_direction, ""
 
 def now_utc():
@@ -243,6 +289,12 @@ def score_live(row, cand, weights):
         source = override_source
         reason += f" | {override_source}"
 
+    event_direction, event_source = event_risk_override(direction, text_evidence)
+    if event_source:
+        direction = event_direction
+        source = event_source
+        reason += f" | {event_source}"
+
     conf = confidence(score, completeness, source)
     if adjustments:
         reason += " | " + "; ".join(adjustments)
@@ -331,6 +383,12 @@ def build_history():
                 direction = overridden
                 source = override_source
                 conf = "HIGH" if override_source == "VERIFIED_REMEDIATION_OVERRIDE" else "MEDIUM"
+
+            event_direction, event_source = event_risk_override(direction, text_evidence)
+            if event_source:
+                direction = event_direction
+                source = event_source
+                conf = "HIGH" if event_source == "VERIFIED_REMEDIATION_OVERRIDE" else "MEDIUM"
 
         match = "MATCH" if actual and direction == actual else ("MISS" if actual else "PENDING")
         rows.append({
@@ -473,7 +531,10 @@ def write_summary(live, hist, freezes):
         "validation_2024_2026_candidates": len(validation),
         "validation_2024_2026_matches": validation_matches,
         "validation_2024_2026_accuracy_pct": round(100.0 * validation_matches / len(validation), 2) if len(validation) else None,
-        "historical_note": "V1.2 adds fixed FDA-domain risk/remediation overrides to the preserved pre-decision frozen model. Outcome-revealing clauses are stripped before text rules run. Actual outcomes are used only after direction assignment to score match.",
+        "locked_validation_model_version": "FDA-DIRECTIONAL-100-V1.2",
+        "locked_validation_2024_2026_accuracy_pct": 87.5,
+        "v1_3_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
+        "historical_note": "V1.3 adds general late-cycle event-risk rules (CMC/manufacturing extensions, active clinical holds, evidence-sufficiency architecture, and prior-CRL remediation status). Because 2024-2026 misses informed V1.3 development, V1.2 remains the last locked historical validation model; V1.3 accuracy must be validated prospectively.",
         "live_candidate_rows": len(live),
         "live_counted_regulatory_cases": len(live_counted),
         "live_directional_calls": len(live_counted),
