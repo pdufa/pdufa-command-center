@@ -393,6 +393,14 @@ def load_fda_regulatory_signal_monitor():
 
 
 @st.cache_data(ttl=120)
+def load_fda_pdufa_extension_ledger():
+    try:
+        return pd.read_csv("data/fda_pdufa_extension_ledger.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_engine():
     try:
         x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
@@ -702,6 +710,7 @@ fda_directional_summary = load_fda_directional_100pct_summary()
 fda_directional_live = load_fda_directional_100pct_live()
 fda_directional_residual = load_fda_directional_residual_miss_audit()
 fda_regulatory_signals = load_fda_regulatory_signal_monitor()
+fda_extension_ledger = load_fda_pdufa_extension_ledger()
 fda_reviews = load_fda_review_engine()
 fda_facilities = load_fda_facility_registry()
 fda_backfill_queue = load_fda_review_backfill_queue()
@@ -4034,6 +4043,37 @@ elif page == "9. FDA ENGINE":
         )
     else:
         st.info("Regulatory interaction monitor has not been generated yet.")
+
+    st.markdown("### PDUFA Extension Ledger")
+    if not fda_extension_ledger.empty:
+        ext = fda_extension_ledger.copy()
+        latest_ext = ext.sort_values(
+            ["fda_regulatory_case_id","extension_sequence","last_updated_at"]
+        ).drop_duplicates("fda_regulatory_case_id", keep="last")
+        x1,x2,x3,x4 = st.columns(4)
+        x1.metric("Extended / Pending", int((latest_ext["extension_status"] == "EXTENDED_PENDING").sum()))
+        x2.metric("Open / No Extension", int((latest_ext["extension_status"] == "OPEN_PENDING").sum()))
+        x3.metric("Resolved", int((latest_ext["extension_status"] == "RESOLVED").sum()))
+        x4.metric("Review Cycles", int(latest_ext["fda_regulatory_case_id"].nunique()))
+        ext_show = ext[[
+            "ticker","drug","extension_sequence","prior_pdufa_date","current_pdufa_date",
+            "extension_status","extension_reason","strict_v3_prediction","forced_direction",
+            "directional_model_version","decision_date","actual_fda_decision"
+        ]].rename(columns={
+            "ticker":"Ticker","drug":"Drug","extension_sequence":"Cycle",
+            "prior_pdufa_date":"Prior PDUFA","current_pdufa_date":"Current PDUFA",
+            "extension_status":"Status","extension_reason":"Extension Reason",
+            "strict_v3_prediction":"Strict V3","forced_direction":"100% Direction",
+            "directional_model_version":"Directional Model",
+            "decision_date":"FDA Decision Date","actual_fda_decision":"Actual FDA"
+        })
+        st.dataframe(ext_show, use_container_width=True, hide_index=True, height=300)
+        st.caption(
+            "An FDA extension is not scored as APPROVED or CRL. The previous target date and prediction remain frozen; "
+            "the revised target creates a new monitored prediction snapshot. Final prospective accuracy scores the latest valid pre-decision snapshot once."
+        )
+    else:
+        st.info("PDUFA extension ledger has not been generated yet.")
 
     fda_view = df.copy()
     for col in [
