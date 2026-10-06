@@ -351,7 +351,7 @@ required_ui_contracts = [
     'Directional Coverage',
     'Backfill Remaining',
     'FDA-V3 historical backfill queue',
-    '"9. DECISION ARCHIVE"',
+    '"1. DECISION"',
     'Year scroller',
     'Month scroller',
     'Month-by-month result',
