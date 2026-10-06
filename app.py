@@ -143,6 +143,30 @@ a:active,a:focus{color:#ff8a00 !important}
 
 
 @st.cache_data(ttl=120)
+
+# 100-on-100 precision gate summary. This is intentionally separate from the
+# 100% directional-coverage layer: REVIEW/NO_CALL cases do not qualify.
+@st.cache_data(ttl=60)
+def load_100_on_100_summary():
+    path = Path("data/fda_100_on_100_summary.json")
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+@st.cache_data(ttl=60)
+def load_100_on_100_live():
+    path = Path("data/fda_100_on_100_live.csv")
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+
+
 def load_data():
     # Defensive repair: older exports accidentally used literal "\\n" between CSV rows.
     # Read as text first and normalize before parsing so the master list never collapses to one record.
@@ -5022,6 +5046,23 @@ else:
                     st.success(f"Showing the closest historical cases from the same market-cap bucket: {current_bucket}.")
                 else:
                     st.info("No same-bucket historical cases were available, so the closest loaded cases by approval probability are shown.")
+
+st.divider()
+st.markdown("### 100-on-100 Precision Gate")
+_gate100 = load_100_on_100_summary()
+_gate100_live = load_100_on_100_live()
+if _gate100:
+    g1,g2,g3,g4 = st.columns(4)
+    g1.metric("Historical qualified", f"{int(_gate100.get('historical_matches',0))}/{int(_gate100.get('historical_qualified',0))}")
+    g2.metric("Historical accuracy", f"{float(_gate100.get('historical_accuracy_pct',0)):.0f}%")
+    g3.metric("Historical coverage", f"{float(_gate100.get('historical_coverage_pct',0)):.2f}%")
+    g4.metric("Live qualified", int(_gate100.get("live_qualified",0)))
+    st.caption("Precision-first gate: only strict FDA-V3 APPROVED/CRL calls qualify. REVIEW/NO CALL cases abstain and are never counted as wins. Historical results are retrospective, not a future guarantee.")
+    if not _gate100_live.empty:
+        _show = _gate100_live.copy()
+        st.dataframe(_show, use_container_width=True, hide_index=True)
+else:
+    st.info("100-on-100 precision-gate data has not been generated yet.")
 
 st.divider()
 st.caption("FDA probabilities are model estimates, not FDA determinations. Direction / FDA Match is a result score, not an approval probability: before a final FDA outcome it shows the predicted direction; after the outcome it shows 100% for a matching direction or 0% for a miss. Missing fields are labeled Not available or Not scored rather than being invented.")
