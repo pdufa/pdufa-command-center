@@ -64,6 +64,11 @@ REQUIRED = {
         "confidence","source_layer","model_version","frozen_at","decision_date",
         "actual_fda_decision","match_result",
     },
+    "data/fda_directional_residual_miss_audit.csv": {
+        "event_key","ticker","pdufa_date","forced_direction","actual_outcome",
+        "residual_category","predecision_public_signal","recoverability",
+        "why_not_promoted","predecision_source","postdecision_audit_source",
+    },
     "data/fda_prediction_freezes.csv": {
         "freeze_id","event_key","ticker","drug","pdufa_date","fda_probability",
         "fda_prediction","frozen_at","model_version","decision_date",
@@ -458,4 +463,15 @@ if any((r.get("actual_fda_decision") or "").strip() for r in eligible_v11 if not
     raise SystemExit("100pct directional freezes: known outcome entered prospective pool")
 case_ids = [(r.get("fda_regulatory_case_id") or r.get("event_key") or "").strip() for r in eligible_v11]
 if len(case_ids) != len(set(case_ids)):
-    raise SystemExit("100pct directional freezes: duplicate FDA review cycle in V1.1 prospective pool")
+    raise SystemExit("100pct directional freezes: duplicate FDA review cycle in current prospective pool")
+
+residual = read_csv(ROOT / "data/fda_directional_residual_miss_audit.csv")
+hist_current = read_csv(ROOT / "data/fda_directional_100pct_historical.csv")
+hist_misses = {r.get("event_key","") for r in hist_current if (r.get("match_result") or "").upper() == "MISS"}
+residual_keys = {r.get("event_key","") for r in residual}
+if residual_keys != hist_misses:
+    raise SystemExit(
+        f"residual miss audit mismatch: audit={len(residual_keys)} historical_misses={len(hist_misses)}"
+    )
+if any((r.get("recoverability") or "").upper() not in {"LOW","VERY_LOW"} for r in residual):
+    raise SystemExit("residual miss audit: invalid recoverability classification")
