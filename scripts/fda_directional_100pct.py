@@ -605,7 +605,13 @@ def update_freezes(live):
         if clean(old.get("prospective_eligible")) == "":
             fr.at[i, "prospective_eligible"] = "YES"
 
-    existing = set(fr["event_key"].astype(str) + "|" + fr["model_version"].astype(str))
+    # A PDUFA extension creates a new prediction snapshot even when the model
+    # version is unchanged. The old snapshot remains immutable for audit.
+    existing = set(
+        fr["event_key"].astype(str) + "|" +
+        fr["model_version"].astype(str) + "|" +
+        fr["pdufa_date"].astype(str)
+    )
     new_rows = []
     for _, r in live.iterrows():
         # A known outcome is never a prospective prediction, even if a source
@@ -614,7 +620,7 @@ def update_freezes(live):
             continue
         if clean(r.get("count_in_coverage")).upper() != "YES":
             continue
-        sig = clean(r.get("event_key")) + "|" + MODEL_VERSION
+        sig = clean(r.get("event_key")) + "|" + MODEL_VERSION + "|" + clean(r.get("pdufa_date"))
         if sig in existing:
             continue
         new_rows.append({
@@ -682,13 +688,20 @@ def write_summary(live, hist, freezes):
         freezes["model_version"].astype(str).eq(MODEL_VERSION)
     ].copy()
     if not frozen_scored.empty:
-        # Score each FDA regulatory review cycle once, even when multiple
-        # public tickers point to the same U.S. application.
+        # Score each FDA regulatory review cycle once, even when a PDUFA
+        # extension created multiple valid frozen snapshots. The latest
+        # pre-decision snapshot is the scored forecast; earlier snapshots stay
+        # in the ledger for audit and extension analysis.
         frozen_scored["_case"] = frozen_scored["fda_regulatory_case_id"].where(
             frozen_scored["fda_regulatory_case_id"].astype(str).str.strip().ne(""),
             frozen_scored["event_key"]
         )
-        frozen_scored = frozen_scored.drop_duplicates("_case", keep="first")
+        frozen_scored["_frozen_at"] = pd.to_datetime(
+            frozen_scored["frozen_at"], errors="coerce", utc=True
+        )
+        frozen_scored = frozen_scored.sort_values(
+            ["_case","_frozen_at","pdufa_date"], na_position="first"
+        ).drop_duplicates("_case", keep="last")
     live_matches = int((frozen_scored["match_result"] == "MATCH").sum())
 
     summary = {
@@ -715,12 +728,10 @@ def write_summary(live, hist, freezes):
         "live_directional_calls": len(live_counted),
         "live_coverage_pct": 100.0 if len(live_counted) else 0.0,
         "open_prospective_counted_calls": len(live_open),
-        "prospective_freezes": int((
-            freezes["model_version"].astype(str).eq(MODEL_VERSION) &
-            freezes["prospective_eligible"].astype(str).str.upper().eq("YES") &
-            freezes["count_in_coverage"].astype(str).str.upper().eq("YES") &
-            freezes["decision_date"].astype(str).eq("")
-        ).sum()) if not freezes.empty else 0,
+        "prospective_freezes": int(live_open["fda_regulatory_case_id"].where(
+            live_open["fda_regulatory_case_id"].astype(str).str.strip().ne(""),
+            live_open["event_key"]
+        ).nunique()) if not live_open.empty else 0,
         "prospective_decided_scored": len(frozen_scored),
         "prospective_decided_matches": live_matches,
         "prospective_accuracy_pct": round(100.0 * live_matches / len(frozen_scored), 2) if len(frozen_scored) else None,
