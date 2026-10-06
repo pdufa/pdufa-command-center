@@ -142,8 +142,6 @@ a:active,a:focus{color:#ff8a00 !important}
 )
 
 
-@st.cache_data(ttl=120)
-
 # 100-on-100 precision gate summary. This is intentionally separate from the
 # 100% directional-coverage layer: REVIEW/NO_CALL cases do not qualify.
 @st.cache_data(ttl=60)
@@ -167,6 +165,7 @@ def load_100_on_100_live():
         return pd.DataFrame()
 
 
+@st.cache_data(ttl=120)
 def load_data():
     # Defensive repair: older exports accidentally used literal "\\n" between CSV rows.
     # Read as text first and normalize before parsing so the master list never collapses to one record.
