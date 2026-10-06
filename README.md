@@ -35,3 +35,15 @@ Streamlit Community Cloud should deploy branch `main` with `app.py` as the main 
 
 ## Important integration note
 The Google Drive/Sheets research collectors and this GitHub/Streamlit repository are separate systems. A production sync/handoff is required to keep event identities, evidence, and probability inputs aligned automatically.
+
+
+## 100-on-100 precision gate
+
+The repository contains a separate precision-first FDA gate:
+
+- `scripts/fda_100_on_100_gate.py` — rebuilds the strict qualified bucket (typical runtime: under 5 seconds).
+- `data/fda_100_on_100_historical.csv` — retrospective qualified historical calls.
+- `data/fda_100_on_100_live.csv` — currently qualified prospective calls.
+- `data/fda_100_on_100_summary.json` — accuracy/coverage summary.
+
+This layer does **not** force every case into APPROVED/CRL. Strict FDA-V3 REVIEW/NO_CALL cases abstain and are excluded from the qualified bucket. Historical 100% accuracy describes the qualified retrospective subset only; prospective accuracy is reported only after frozen qualified cases receive FDA decisions.
