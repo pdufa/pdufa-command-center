@@ -936,12 +936,11 @@ def resolved_fda_direction(row):
         return None
 
     decision_date = pd.to_datetime(row.get("decision_date"), errors="coerce")
-    if pd.notna(decision_date):
-        return live if pd.Timestamp(decision_date).normalize() <= today else None
-
-    pdufa_date = pd.to_datetime(row.get("pdufa_date"), errors="coerce")
-    if pd.notna(pdufa_date) and pd.Timestamp(pdufa_date).normalize() <= today:
+    if pd.notna(decision_date) and pd.Timestamp(decision_date).normalize() <= today:
         return live
+
+    # A passed PDUFA target is not itself proof of an FDA decision.
+    # Live cases remain open until a verified actual decision date is stored.
     return None
 
 
