@@ -1,0 +1,1 @@
+freeze_id,event_key,ticker,drug,pdufa_date,evidence_cutoff,fda_probability,fda_prediction,fda_confidence,fda_hard_gate,fda_gate_reason,frozen_at,model_version,decision_date,actual_fda_decision,match_result
