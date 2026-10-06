@@ -316,6 +316,24 @@ def load_fda_review_engine():
     return x[required]
 
 
+@st.cache_data(ttl=120)
+def load_fda_prediction_freezes():
+    try:
+        x = pd.read_csv("data/fda_prediction_freezes.csv", keep_default_na=False)
+    except Exception:
+        x = pd.DataFrame()
+    required = [
+        "freeze_id","event_key","ticker","drug","pdufa_date","evidence_cutoff",
+        "fda_probability","fda_prediction","fda_confidence","fda_hard_gate",
+        "fda_gate_reason","frozen_at","model_version","decision_date",
+        "actual_fda_decision","match_result"
+    ]
+    for col in required:
+        if col not in x:
+            x[col] = ""
+    return x[required]
+
+
 @st.cache_data(ttl=60)
 def load_recheck_status():
     try:
@@ -369,6 +387,7 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
     load_data.clear()
     load_recheck_status.clear()
     load_fda_review_engine.clear()
+    load_fda_prediction_freezes.clear()
     payload = (result.stdout or "").strip().splitlines()
     return payload[-1] if payload else "Recheck completed"
 
@@ -534,6 +553,7 @@ df = load_data()
 prediction_history = load_prediction_history()
 prediction_rescore_queue = load_prediction_rescore_queue()
 fda_reviews = load_fda_review_engine()
+fda_freezes = load_fda_prediction_freezes()
 if not fda_reviews.empty and "event_key" in df:
     fda_merge_cols = ["event_key"] + [c for c in fda_reviews.columns if c.startswith("fda_")]
     df["event_key"] = df["event_key"].astype(str)
@@ -3732,12 +3752,13 @@ elif page == "8. FDA ENGINE":
 
     calls = fda_view["FDA CALL"].value_counts()
     gates = fda_view["FDA GATE"].value_counts()
-    e1,e2,e3,e4,e5 = st.columns(5)
+    e1,e2,e3,e4,e5,e6 = st.columns(6)
     e1.metric("Events", len(fda_view))
     e2.metric("APPROVED Calls", int(calls.get("APPROVED", 0)))
     e3.metric("CRL Calls", int(calls.get("CRL", 0)))
     e4.metric("REVIEW / No Call", int(calls.get("REVIEW", 0)))
     e5.metric("Hard-Gate PASS", int(gates.get("PASS", 0)))
+    e6.metric("Frozen Calls", len(fda_freezes))
 
     st.info(
         "Critical UNKNOWN → REVIEW. Critical FAIL → CRL risk. Only a PASS gate can generate a calibrated FDA probability. "
