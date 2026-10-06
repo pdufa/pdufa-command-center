@@ -534,11 +534,31 @@ def run_recheck_worker(event_key=None, run_all=False, categories=None):
     if fda_result.returncode != 0:
         raise RuntimeError((fda_result.stderr or fda_result.stdout or "FDA decision engine failed").strip())
 
+    # Keep the same regulatory stack in sync for manual and nightly rechecks.
+    for script in [
+        "scripts/fda_regulatory_signal_monitor.py",
+        "scripts/fda_directional_100pct.py",
+        "scripts/fda_pdufa_extension_tracker.py",
+    ]:
+        step = subprocess.run(
+            [sys.executable, script],
+            cwd=str(Path(__file__).resolve().parent),
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if step.returncode != 0:
+            raise RuntimeError((step.stderr or step.stdout or f"{script} failed").strip())
+
     load_data.clear()
     load_recheck_status.clear()
     load_fda_review_engine.clear()
     load_fda_review_backfill_queue.clear()
     load_fda_prediction_freezes.clear()
+    load_fda_regulatory_signal_monitor.clear()
+    load_fda_directional_100pct_live.clear()
+    load_fda_directional_100pct_summary.clear()
+    load_fda_pdufa_extension_ledger.clear()
     payload = (result.stdout or "").strip().splitlines()
     return payload[-1] if payload else "Recheck completed"
 
