@@ -385,6 +385,14 @@ def load_fda_directional_residual_miss_audit():
 
 
 @st.cache_data(ttl=120)
+def load_fda_regulatory_signal_monitor():
+    try:
+        return pd.read_csv("data/fda_regulatory_signal_monitor.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_engine():
     try:
         x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
@@ -693,6 +701,7 @@ fda_v3_hist_backtest = load_fda_v3_historical_backtest()
 fda_directional_summary = load_fda_directional_100pct_summary()
 fda_directional_live = load_fda_directional_100pct_live()
 fda_directional_residual = load_fda_directional_residual_miss_audit()
+fda_regulatory_signals = load_fda_regulatory_signal_monitor()
 fda_reviews = load_fda_review_engine()
 fda_facilities = load_fda_facility_registry()
 fda_backfill_queue = load_fda_review_backfill_queue()
@@ -2205,7 +2214,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06N · FDA DECISION ENGINE V3.2 STRICT + 100% DIRECTIONAL COVERAGE V1.7 · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06O · FDA V3.2 STRICT + DIRECTIONAL V1.7 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -3982,6 +3991,40 @@ elif page == "9. FDA ENGINE":
         st.caption("Coverage is 100% by design; accuracy is measured separately from outcomes. Strict V3 remains unchanged.")
     else:
         st.info("100% directional layer has not been generated yet.")
+
+    st.markdown("### Regulatory Interaction / Blind-Spot Monitor")
+    if not fda_regulatory_signals.empty:
+        sig = fda_regulatory_signals.copy()
+        risk_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+        sig["_risk_order"] = sig["blindspot_risk_level"].astype(str).str.upper().map(risk_order).fillna(3)
+        sig = sig.sort_values(["_risk_order","pdufa_date","ticker"]).drop(columns=["_risk_order"])
+        b1,b2,b3,b4 = st.columns(4)
+        b1.metric("HIGH Risk", int((sig["blindspot_risk_level"].str.upper() == "HIGH").sum()))
+        b2.metric("MEDIUM Risk", int((sig["blindspot_risk_level"].str.upper() == "MEDIUM").sum()))
+        b3.metric("LOW Risk", int((sig["blindspot_risk_level"].str.upper() == "LOW").sum()))
+        b4.metric("Monitored Events", len(sig))
+        sig_show = sig[[
+            "ticker","pdufa_date","blindspot_risk_level","extension_reason",
+            "deficiency_notice_status","late_cycle_open_questions","inspection_readiness",
+            "prior_crl_remediation","evidence_sufficiency_risk","dose_consistency_risk",
+            "analytical_lab_relocation","remote_records_review","immunogenicity_signal",
+            "adcom_signal","blindspot_flags"
+        ]].rename(columns={
+            "ticker":"Ticker","pdufa_date":"PDUFA Date","blindspot_risk_level":"Blind-Spot Risk",
+            "extension_reason":"Extension Reason","deficiency_notice_status":"Deficiency Notice",
+            "late_cycle_open_questions":"Late-Cycle Questions","inspection_readiness":"Inspection Readiness",
+            "prior_crl_remediation":"Prior CRL Remediation","evidence_sufficiency_risk":"Evidence Sufficiency",
+            "dose_consistency_risk":"Dose Consistency","analytical_lab_relocation":"Lab Relocation",
+            "remote_records_review":"Remote Records Review","immunogenicity_signal":"Immunogenicity",
+            "adcom_signal":"AdCom","blindspot_flags":"Flags"
+        })
+        st.dataframe(sig_show, use_container_width=True, hide_index=True, height=390)
+        st.caption(
+            "This monitor structures public regulatory-interaction risks that can be missed by efficacy scoring alone. "
+            "It is advisory to V1.7 and does not silently rewrite frozen prospective directions."
+        )
+    else:
+        st.info("Regulatory interaction monitor has not been generated yet.")
 
     fda_view = df.copy()
     for col in [
