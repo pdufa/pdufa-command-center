@@ -36,6 +36,47 @@ def note(x,n=380):
     x=re.sub(r"\s+"," ",s(x))
     return x if len(x)<=n else x[:n-1].rstrip()+"…"
 
+def is_fda_url(url):
+    try:
+        host=(urllib.parse.urlparse(s(url)).hostname or "").lower()
+    except Exception:
+        return False
+    return host=="fda.gov" or host.endswith(".fda.gov")
+
+def published_date(raw,plain=""):
+    # Prefer publication metadata from the FDA page; this is the posting/action
+    # date shown in Streamlit, never the date our recheck happened to run.
+    for pat in [
+        r'(?i)"datePublished"\s*:\s*"(20\d{2}-\d{2}-\d{2})',
+        r'(?i)article:published_time[^>]{0,240}content=["\'](20\d{2}-\d{2}-\d{2})',
+        r'(?i)content=["\'](20\d{2}-\d{2}-\d{2})[^"\']*["\'][^>]{0,240}article:published_time',
+        r'(?i)"dateModified"\s*:\s*"(20\d{2}-\d{2}-\d{2})',
+    ]:
+        m=re.search(pat,raw or "")
+        if m:
+            return m.group(1)
+    head=(plain or "")[:1800]
+    m=re.search(r"(?i)\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(20\d{2})\b",head)
+    if m:
+        try:
+            return datetime.strptime(m.group(0),"%B %d, %Y").date().isoformat()
+        except Exception:
+            pass
+    return ""
+
+def final_fda_outcome(plain,drug):
+    low=(plain or "").lower()
+    token=s(drug).lower().split("/")[0].split("(")[0].strip()
+    for m in re.finditer(r"\bfda\s+(?:has\s+)?approv(?:es|ed)\b",low):
+        window=low[max(0,m.start()-250):m.end()+800]
+        if not token or token[:8] in window:
+            return "APPROVED"
+    for m in re.finditer(r"\bcomplete response letter\b",low):
+        window=low[max(0,m.start()-350):m.end()+650]
+        if "fda" in window and (not token or token[:8] in window):
+            return "CRL"
+    return ""
+
 def load(path):
     return pd.read_csv(path,dtype=str,keep_default_na=False)
 
@@ -77,11 +118,18 @@ def pdufa_check(r):
     u=s(r.get("pdufa_evidence_url")); d=s(r.get("pdufa_date")); drug=s(r.get("drug"))
     if not u:
         return {"status":"NO_VERIFIED_SOURCE","note":"No saved FDA/PDUFA source. Stored date "+(d or "not captured")+" retained; no cross-event fallback used.","source":""}
+    if not is_fda_url(u):
+        return {"status":"NON_FDA_SOURCE_RETAINED","note":"Saved source is not an FDA domain. It may support the target date, but it cannot automatically close the case or create a DECISION DATE.","source":u}
     try:
-        z=text(get(u)).lower()
-        token=drug.lower().split("/")[0].split("(")[0].strip()
-        approved=("approv" in z and (not token or token[:8] in z))
-        return {"status":"VERIFIED_SOURCE","note":"FDA/PDUFA source reachable; stored date "+(d or "not captured")+".","source":u,"outcome":"APPROVED" if approved else ""}
+        raw=get(u)
+        plain=text(raw)
+        out=final_fda_outcome(plain,drug)
+        if not out:
+            return {"status":"FDA_SOURCE_CHECKED_NO_FINAL_DECISION","note":"FDA source reachable; no event-specific final APPROVED/CRL decision safely identified. Stored target "+(d or "not captured")+" remains open.","source":u}
+        dd=published_date(raw,plain)
+        if not dd:
+            return {"status":"FINAL_DECISION_DATE_UNVERIFIED","note":"Final FDA outcome language found, but the FDA posting/action date could not be safely extracted. Case remains open until DECISION DATE is verified.","source":u}
+        return {"status":"FINAL_DECISION_VERIFIED","note":"Final FDA "+out+" decision verified with FDA posting/action date "+dd+".","source":u,"outcome":out,"decision_date":dd}
     except Exception as e:
         return {"status":"CHECK_ERROR","note":note("FDA/PDUFA source failed: "+str(e)),"source":u}
 
@@ -224,8 +272,9 @@ def main():
         res={}; ch=0; er=0
         if "pdufa_date" in cats:
             res["pdufa_date"]=pdufa_check(r); out=res["pdufa_date"].get("outcome")
-            if out and s(r.get("outcome")).upper()!=out:
-                ch+=setv(c,i,"outcome",out); ch+=setv(c,i,"decision_date",datetime.now(timezone.utc).date().isoformat()); ch+=setv(c,i,"check_status","RESOLVED_"+out)
+            dd=res["pdufa_date"].get("decision_date")
+            if out and dd and (s(r.get("outcome")).upper()!=out or s(r.get("decision_date"))!=dd):
+                ch+=setv(c,i,"outcome",out); ch+=setv(c,i,"decision_date",dd); ch+=setv(c,i,"check_status","RESOLVED_"+out)
         if "phase3" in cats:
             res["phase3"]=p3_check(r); pv=res["phase3"].get("pvalues")
             if pv and not s(r.get("reported_p_values")): ch+=setv(c,i,"reported_p_values",pv)
