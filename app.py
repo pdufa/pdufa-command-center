@@ -311,6 +311,14 @@ def load_fda_v3_historical_backfill_queue():
 
 
 @st.cache_data(ttl=120)
+def load_fda_v3_historical_backtest():
+    try:
+        return pd.read_csv("data/fda_v3_historical_backtest.csv", keep_default_na=False)
+    except Exception:
+        return pd.DataFrame()
+
+
+@st.cache_data(ttl=120)
 def load_fda_review_engine():
     try:
         x = pd.read_csv("data/fda_review_engine.csv", keep_default_na=False)
@@ -590,6 +598,7 @@ prediction_history = load_prediction_history()
 prediction_rescore_queue = load_prediction_rescore_queue()
 fda_v3_hist_summary = load_fda_v3_historical_summary()
 fda_v3_hist_queue = load_fda_v3_historical_backfill_queue()
+fda_v3_hist_backtest = load_fda_v3_historical_backtest()
 fda_reviews = load_fda_review_engine()
 fda_backfill_queue = load_fda_review_backfill_queue()
 fda_freezes = load_fda_prediction_freezes()
@@ -2102,14 +2111,14 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-06D · FDA DECISION ENGINE V3 · DECISION DATE · EARLY FDA DECISIONS CLOSE IMMEDIATELY · FINANCING CACHE FIX")
-st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK. Company/PDUFA detail opens only when an event is clicked.")
+st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE → DECISION ARCHIVE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCANS","6. MATCH OPTIMIZER","7. RECHECK","8. FDA ENGINE"]
+nav_options = ["1. ALL PDUFA","2. MARKET CAP GROUPS","3. CALENDAR","4. PREDICTION ENGINE","5. SCANS","6. MATCH OPTIMIZER","7. RECHECK","8. FDA ENGINE","9. DECISION ARCHIVE"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -3897,6 +3906,260 @@ elif page == "8. FDA ENGINE":
     )
 
 
+elif page == "9. DECISION ARCHIVE":
+    st.markdown("## 9. DECISION ARCHIVE — YEAR → MONTH → PDUFA")
+    st.caption(
+        "Scroll year by year, then month by month. The archive uses the verified FDA decision date when it is stored; "
+        "otherwise it uses the canonical PDUFA date. Click any PDUFA below to open the full research/audit record."
+    )
+
+    # Historical decisions already researched by the Prediction Engine / FDA-V3.
+    archive_hist = prediction_history.copy()
+    if not archive_hist.empty:
+        archive_hist["event_key"] = archive_hist["event_key"].astype(str)
+        archive_hist["_source"] = "history"
+        archive_hist["Actual FDA"] = archive_hist["actual_outcome"].apply(
+            lambda v: normalize_fda_direction(v) or safe_text(v, "")
+        )
+        archive_hist["_canonical_date"] = pd.to_datetime(
+            archive_hist.get("canonical_pdufa_date"), errors="coerce"
+        )
+        archive_hist["_pdufa_date"] = pd.to_datetime(archive_hist.get("pdufa_date"), errors="coerce")
+        archive_hist["Archive Date"] = archive_hist["_canonical_date"].fillna(archive_hist["_pdufa_date"])
+        archive_hist["PDUFA Date"] = archive_hist["_canonical_date"].fillna(archive_hist["_pdufa_date"])
+        archive_hist["Decision Date"] = pd.NaT
+        archive_hist["Drug / Program"] = archive_hist["event_key"].apply(
+            lambda k: (
+                str(k).split("|", 2)[2].replace("-", " ")
+                if len(str(k).split("|", 2)) >= 3
+                else ""
+            )
+        )
+        archive_hist["Indication"] = ""
+        archive_hist["Stored P%"] = pd.to_numeric(archive_hist.get("p_approval"), errors="coerce") * 100.0
+
+        if not fda_v3_hist_backtest.empty:
+            v3 = fda_v3_hist_backtest.copy()
+            v3["event_key"] = v3["event_key"].astype(str)
+            v3_keep = [
+                "event_key","v3_phase_a_status","v3_phase_a_match",
+                "v3_reconstructed_call","v3_reconstructed_match","v3_review_status",
+                "diagnostic_miss_class","v3_evidence_summary","v3_source_urls",
+                "v3_last_reviewed"
+            ]
+            for col in v3_keep:
+                if col not in v3:
+                    v3[col] = ""
+            archive_hist = archive_hist.merge(
+                v3[v3_keep].drop_duplicates("event_key", keep="last"),
+                on="event_key",
+                how="left",
+                validate="one_to_one"
+            )
+
+        def _archive_hist_call(r):
+            phase = safe_text(r.get("v3_phase_a_status"), "")
+            public_call = safe_text(r.get("public_model_class"), "").upper()
+            reconstructed = safe_text(r.get("v3_reconstructed_call"), "").upper()
+            if phase == "DIRECTIONAL_CALL" and public_call in ["APPROVED","CRL"]:
+                return public_call
+            if reconstructed in ["APPROVED","CRL","REVIEW"]:
+                return reconstructed
+            if public_call == "REVIEW":
+                return "REVIEW"
+            return "REVIEW"
+
+        def _archive_hist_match(r):
+            phase = safe_text(r.get("v3_phase_a_status"), "")
+            if phase == "DIRECTIONAL_CALL":
+                return safe_text(r.get("v3_phase_a_match"), "")
+            return safe_text(r.get("v3_reconstructed_match"), "NO_CALL")
+
+        archive_hist["FDA-V3 Call"] = archive_hist.apply(_archive_hist_call, axis=1)
+        archive_hist["FDA-V3 Match"] = archive_hist.apply(_archive_hist_match, axis=1)
+        archive_hist["Review Status"] = archive_hist.get(
+            "v3_review_status", pd.Series(index=archive_hist.index, dtype="object")
+        ).fillna("")
+
+        hist_cols = [
+            "event_key","ticker","Drug / Program","Indication","Archive Date","PDUFA Date",
+            "Decision Date","Actual FDA","FDA-V3 Call","FDA-V3 Match","Review Status",
+            "Stored P%","_source"
+        ]
+        for col in hist_cols:
+            if col not in archive_hist:
+                archive_hist[col] = ""
+        archive_hist = archive_hist[hist_cols]
+    else:
+        archive_hist = pd.DataFrame()
+
+    # Include verified decisions from the current live event feed that are not already
+    # represented in the historical cohort.
+    archive_live = df.copy()
+    if not archive_live.empty:
+        archive_live["Actual FDA"] = archive_live.apply(resolved_fda_direction, axis=1)
+        archive_live = archive_live[archive_live["Actual FDA"].isin(["APPROVED","CRL"])].copy()
+        archive_live["_source"] = "live"
+        archive_live["Decision Date"] = pd.to_datetime(
+            archive_live.get("decision_date"), errors="coerce"
+        )
+        archive_live["PDUFA Date"] = pd.to_datetime(
+            archive_live.get("pdufa_date"), errors="coerce"
+        )
+        archive_live["Archive Date"] = archive_live["Decision Date"].fillna(archive_live["PDUFA Date"])
+        archive_live["Drug / Program"] = archive_live.get(
+            "drug", pd.Series(index=archive_live.index, dtype="object")
+        ).fillna("")
+        archive_live["Indication"] = archive_live.get(
+            "indication", pd.Series(index=archive_live.index, dtype="object")
+        ).fillna("")
+        archive_live["FDA-V3 Call"] = archive_live.get(
+            "fda_prediction", pd.Series(index=archive_live.index, dtype="object")
+        ).apply(lambda v: safe_text(v, "REVIEW"))
+        archive_live["FDA-V3 Match"] = archive_live.get(
+            "fda_match_result", pd.Series(index=archive_live.index, dtype="object")
+        ).apply(lambda v: safe_text(v, "PENDING"))
+        archive_live["Review Status"] = archive_live.get(
+            "fda_hard_gate", pd.Series(index=archive_live.index, dtype="object")
+        ).apply(lambda v: safe_text(v, "REVIEW"))
+        archive_live["Stored P%"] = archive_live.apply(
+            lambda r: displayed_probability_value(r), axis=1
+        )
+        live_cols = [
+            "event_key","ticker","Drug / Program","Indication","Archive Date","PDUFA Date",
+            "Decision Date","Actual FDA","FDA-V3 Call","FDA-V3 Match","Review Status",
+            "Stored P%","_source"
+        ]
+        for col in live_cols:
+            if col not in archive_live:
+                archive_live[col] = ""
+        archive_live = archive_live[live_cols]
+
+    if not archive_hist.empty and not archive_live.empty:
+        hist_keys = set(archive_hist["event_key"].astype(str))
+        archive_live = archive_live[
+            ~archive_live["event_key"].astype(str).isin(hist_keys)
+        ].copy()
+
+    archive = pd.concat([archive_hist, archive_live], ignore_index=True)
+    archive["Archive Date"] = pd.to_datetime(archive["Archive Date"], errors="coerce")
+    archive["PDUFA Date"] = pd.to_datetime(archive["PDUFA Date"], errors="coerce")
+    archive["Decision Date"] = pd.to_datetime(archive["Decision Date"], errors="coerce")
+    archive = archive[
+        archive["Archive Date"].notna() &
+        archive["Actual FDA"].isin(["APPROVED","CRL"])
+    ].copy()
+
+    if archive.empty:
+        st.info("No resolved PDUFA decisions are loaded into the archive yet.")
+    else:
+        archive["Year"] = archive["Archive Date"].dt.year.astype(int)
+        archive["Month"] = archive["Archive Date"].dt.month.astype(int)
+        years = sorted(archive["Year"].unique().tolist())
+        default_year = max(years)
+
+        selected_year = st.select_slider(
+            "Year scroller",
+            options=years,
+            value=default_year,
+            key="decision_archive_year"
+        )
+        year_rows = archive[archive["Year"].eq(int(selected_year))].copy()
+
+        # Rolling month-by-month result table for the selected year.
+        monthly_rows = []
+        for month_num in range(1, 13):
+            m = year_rows[year_rows["Month"].eq(month_num)]
+            directional = m[m["FDA-V3 Call"].isin(["APPROVED","CRL"])]
+            matched = directional["FDA-V3 Match"].astype(str).str.upper().eq("MATCH").sum()
+            monthly_rows.append({
+                "Month": calendar.month_abbr[month_num],
+                "PDUFAs": int(len(m)),
+                "FDA Approved": int(m["Actual FDA"].eq("APPROVED").sum()),
+                "FDA CRL": int(m["Actual FDA"].eq("CRL").sum()),
+                "V3 Calls": int(len(directional)),
+                "V3 Correct": int(matched),
+                "V3 Match %": (
+                    "" if len(directional) == 0 else f"{100.0 * matched / len(directional):.1f}%"
+                ),
+                "V3 Review / No Call": int((~m["FDA-V3 Call"].isin(["APPROVED","CRL"])).sum()),
+            })
+
+        y1,y2,y3,y4,y5 = st.columns(5)
+        y1.metric("Year", int(selected_year))
+        y2.metric("PDUFA Decisions", len(year_rows))
+        y3.metric("FDA Approved", int(year_rows["Actual FDA"].eq("APPROVED").sum()))
+        y4.metric("FDA CRL", int(year_rows["Actual FDA"].eq("CRL").sum()))
+        yr_directional = year_rows[year_rows["FDA-V3 Call"].isin(["APPROVED","CRL"])]
+        yr_correct = int(yr_directional["FDA-V3 Match"].astype(str).str.upper().eq("MATCH").sum())
+        y5.metric(
+            "FDA-V3 Match",
+            "—" if len(yr_directional) == 0 else f"{100.0 * yr_correct / len(yr_directional):.1f}%"
+        )
+
+        st.markdown("### Month-by-month result")
+        st.dataframe(
+            pd.DataFrame(monthly_rows),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        month_counts = year_rows["Month"].value_counts().to_dict()
+        months = list(range(1, 13))
+        default_month = max(year_rows["Month"].tolist()) if not year_rows.empty else 1
+        selected_month = st.select_slider(
+            "Month scroller",
+            options=months,
+            value=int(default_month),
+            format_func=lambda m: f"{calendar.month_abbr[m]} ({int(month_counts.get(m, 0))})",
+            key="decision_archive_month"
+        )
+
+        month_rows = year_rows[year_rows["Month"].eq(int(selected_month))].copy()
+        month_rows = month_rows.sort_values(["Archive Date","ticker","event_key"])
+
+        st.markdown(
+            f"### {calendar.month_name[int(selected_month)]} {int(selected_year)} — "
+            f"{len(month_rows)} PDUFA decision{'s' if len(month_rows) != 1 else ''}"
+        )
+
+        if month_rows.empty:
+            st.info("No resolved PDUFA decisions in this month.")
+        else:
+            for _, ar in month_rows.iterrows():
+                pdate = (
+                    "NA" if pd.isna(ar.get("PDUFA Date"))
+                    else pd.Timestamp(ar.get("PDUFA Date")).strftime("%b %d, %Y")
+                )
+                ddate = (
+                    "Not separately stored" if pd.isna(ar.get("Decision Date"))
+                    else pd.Timestamp(ar.get("Decision Date")).strftime("%b %d, %Y")
+                )
+                call = safe_text(ar.get("FDA-V3 Call"), "REVIEW")
+                match = safe_text(ar.get("FDA-V3 Match"), "NO_CALL")
+                drug = safe_text(ar.get("Drug / Program"), "")
+                with st.container(border=True):
+                    c1,c2,c3,c4,c5 = st.columns([1.2,2.0,1.1,1.1,1.2])
+                    c1.markdown(f"**{safe_text(ar.get('ticker'))}**")
+                    c2.markdown(f"**{drug or 'PDUFA event'}**")
+                    c3.markdown(f"FDA: **{safe_text(ar.get('Actual FDA'))}**")
+                    c4.markdown(f"V3: **{call}**")
+                    c5.markdown(f"Match: **{match}**")
+                    st.caption(f"PDUFA: {pdate} · Decision date: {ddate} · Event: {safe_text(ar.get('event_key'))}")
+                    if st.button(
+                        f"OPEN FULL PDUFA DATA — {safe_text(ar.get('ticker'))}",
+                        key="archive_open_" + re.sub(r"[^A-Za-z0-9_]+", "_", safe_text(ar.get("event_key"))),
+                        use_container_width=True,
+                    ):
+                        go_individual(
+                            ticker=safe_text(ar.get("ticker")),
+                            event_key=safe_text(ar.get("event_key")),
+                            source=safe_text(ar.get("_source"), "history"),
+                            return_page="9. DECISION ARCHIVE",
+                        )
+                        st.rerun()
+
+
 else:
     if st.session_state.selected_detail_source == "history":
         hmatches = prediction_history[
@@ -3936,6 +4199,53 @@ else:
         a4.metric("PDUFA Date", hdate)
         a5.metric("Actual FDA", safe_text(hr.get("actual_outcome"), "NA"))
         a6.metric("Historical Cap", hcap)
+
+        v3match = fda_v3_hist_backtest[
+            fda_v3_hist_backtest["event_key"].astype(str).eq(str(hr.get("event_key")))
+        ] if not fda_v3_hist_backtest.empty and "event_key" in fda_v3_hist_backtest else pd.DataFrame()
+
+        if not v3match.empty:
+            vr = v3match.iloc[-1]
+            phase_status = safe_text(vr.get("v3_phase_a_status"), "")
+            public_call = safe_text(vr.get("public_model_class"), "").upper()
+            reconstructed_call = safe_text(vr.get("v3_reconstructed_call"), "").upper()
+            if phase_status == "DIRECTIONAL_CALL" and public_call in ["APPROVED","CRL"]:
+                v3_call = public_call
+                v3_match = safe_text(vr.get("v3_phase_a_match"), "")
+                v3_origin = "Preserved decision-safe public call"
+            elif reconstructed_call in ["APPROVED","CRL","REVIEW"]:
+                v3_call = reconstructed_call
+                v3_match = safe_text(vr.get("v3_reconstructed_match"), "NO_CALL")
+                v3_origin = "Retrospective V3 reconstruction from pre-decision public evidence"
+            else:
+                v3_call = "REVIEW"
+                v3_match = "NO_CALL"
+                v3_origin = "Strict V3 review / no directional call"
+
+            st.markdown("### FDA-V3 Review")
+            fv1,fv2,fv3,fv4 = st.columns(4)
+            fv1.metric("FDA-V3 Call", v3_call)
+            fv2.metric("FDA-V3 Match", v3_match)
+            fv3.metric("Review Status", safe_text(vr.get("v3_review_status"), phase_status or "REVIEW"))
+            fv4.metric("Miss Class", safe_text(vr.get("diagnostic_miss_class"), "—"))
+            st.write(f"**Call provenance:** {v3_origin}")
+            st.write(
+                f"**V3 Evidence Summary:** "
+                f"{safe_text(vr.get('v3_evidence_summary'), 'No additional V3 summary stored.')}"
+            )
+            st.caption(
+                f"V3 reviewed: {safe_text(vr.get('v3_last_reviewed'), 'NA')} · "
+                f"Historical priority: {safe_text(vr.get('v3_backfill_priority'), 'NA')}"
+            )
+            v3_sources = [
+                x.strip() for x in safe_text(vr.get("v3_source_urls"), "").split("|")
+                if x.strip()
+            ]
+            if v3_sources:
+                src_cols = st.columns(min(3, len(v3_sources)))
+                for i, url in enumerate(v3_sources[:3]):
+                    with src_cols[i]:
+                        st.link_button(f"OPEN V3 SOURCE {i+1}", url, use_container_width=True)
 
         st.markdown("### V2 Audit / Validation Status")
         vs1,vs2,vs3,vs4 = st.columns(4)
