@@ -538,8 +538,12 @@ for c in ["phase1_date","phase2_date","phase3_date","nda_submission_date",
 for c in ["market_cap","trade_score","short_interest","iv_30d"]:
     df[c] = pd.to_numeric(df[c], errors="coerce")
 
-# Refresh normalized values into future.
+# Refresh normalized values into future. A verified FDA decision closes the
+# matter immediately, even when FDA acts before the scheduled PDUFA target.
 future = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
+future = future[
+    ~(future["decision_date"].notna() & (future["decision_date"].dt.normalize() <= today))
+].copy()
 future["days"] = (future["pdufa_date"] - today).dt.days
 future = future.sort_values("pdufa_date")
 
@@ -1461,6 +1465,7 @@ def _merged_table_sort_series(frame, col):
 COLUMN_HELP = {
     "Ticker": "Public-company ticker. Click the ticker to open the event detail page.",
     "PDUFA Date": "FDA target action date for this application/review cycle.",
+    "DECISION DATE": "Actual FDA decision/action posting date. Once populated from a verified FDA decision, the PDUFA matter is closed/decided.",
     "PDUFA": "FDA target action date for this application/review cycle.",
     "SUGGESTION %": "ChatGPT/model pre-decision probability of FDA approval for this event.",
     "SUGGESTION": "Suggestion in words from SUGGESTION %: PASS at 50% or higher; CRL below 50%.",
@@ -1827,7 +1832,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     # Guarantee every master-table column exists even if the source feed is incomplete.
     defaults = {
         "ticker":"", "company":"Not available", "drug":"Not available", "indication":"Not available",
-        "pdufa_date":pd.NaT, "market_cap":pd.NA, "market_cap_bucket":"Not available",
+        "pdufa_date":pd.NaT, "decision_date":pd.NaT, "market_cap":pd.NA, "market_cap_bucket":"Not available",
         "approval_probability":pd.NA, "public_approval_probability":pd.NA, "trade_score":pd.NA, "financing_status":"Not available",
         "setup_phase":"Not available", "short_interest":pd.NA, "iv_30d":pd.NA, "signal":"Not available",
         "confidence":"Not scored", "outcome":"Pending", "application_type":"FDA"
@@ -1839,6 +1844,10 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     out["pdufa_date"] = pd.to_datetime(out["pdufa_date"], errors="coerce")
     out["PDUFA Date"] = out["pdufa_date"].apply(
         lambda d: "Not available" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
+    )
+    out["decision_date"] = pd.to_datetime(out["decision_date"], errors="coerce")
+    out["DECISION DATE"] = out["decision_date"].apply(
+        lambda d: "" if pd.isna(d) else pd.Timestamp(d).strftime("%Y-%m-%d")
     )
     out["Days Left"] = (out["pdufa_date"] - today).dt.days.astype("Int64")
     out["Days Left"] = out["Days Left"].astype("string").replace("<NA>", "Not available")
@@ -1884,7 +1893,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
-        "Ticker","PDUFA Date","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication",
+        "Ticker","PDUFA Date","DECISION DATE","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication",
         *SPECIAL_PROVISION_LABELS,
         "Days Left","Market Cap","Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
@@ -1973,7 +1982,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-04B · FINANCING CACHE FIX · P COLUMN ACTIVE · 2020–2026 DESIGNATION BACKFILL")
+st.caption("BUILD 2026-10-06C · DECISION DATE · EARLY FDA DECISIONS CLOSE IMMEDIATELY · FINANCING CACHE FIX")
 st.caption("ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -2039,11 +2048,14 @@ if page == "1. ALL PDUFA":
     else:
         master = live_master
 
-    master["time_status"] = master["pdufa_date"].apply(
-        lambda d: "Unknown" if pd.isna(d) else (
-            "Past" if pd.Timestamp(d).date() < date.today()
-            else ("Today" if pd.Timestamp(d).date() == date.today() else "Future")
-        )
+    master["time_status"] = master.apply(
+        lambda r: "Closed / Decided" if resolved_fda_direction(r) is not None else (
+            "Unknown" if pd.isna(r.get("pdufa_date")) else (
+                "Past" if pd.Timestamp(r.get("pdufa_date")).date() < date.today()
+                else ("Today" if pd.Timestamp(r.get("pdufa_date")).date() == date.today() else "Future")
+            )
+        ),
+        axis=1
     )
     master["active_status"] = master["time_status"].apply(
         lambda s: "Present / Active" if s in ["Today","Future"] else s
@@ -2058,10 +2070,10 @@ if page == "1. ALL PDUFA":
 
     with top1:
         time_view = st.selectbox(
-            "Past / Present / Future",
-            ["All","Past","Present / Active","Today","Future","Unknown"],
+            "PDUFA status",
+            ["All","Closed / Decided","Past","Present / Active","Today","Future","Unknown"],
             index=0,
-            help="Present / Active includes today and all upcoming PDUFA dates."
+            help="Closed / Decided means a final FDA decision has been verified. Present / Active excludes closed cases even when FDA acted before the scheduled PDUFA date."
         )
 
     with top2:
@@ -2168,7 +2180,9 @@ if page == "1. ALL PDUFA":
         cmin,cmax = cap_map.get(cap_presets,(None,None))
 
     view = master.copy()
-    if time_view == "Past":
+    if time_view == "Closed / Decided":
+        view = view[view["time_status"] == "Closed / Decided"]
+    elif time_view == "Past":
         view = view[view["time_status"] == "Past"]
     elif time_view == "Present / Active":
         view = view[view["time_status"].isin(["Today","Future"])]
@@ -2219,11 +2233,16 @@ if page == "1. ALL PDUFA":
     else:
         view = view.sort_values("ticker")
 
+    closed_n = int((master["time_status"] == "Closed / Decided").sum())
     past_n = int((master["time_status"] == "Past").sum())
     today_n = int((master["time_status"] == "Today").sum())
     future_n = int((master["time_status"] == "Future").sum())
     active_n = int(master["time_status"].isin(["Today","Future"]).sum())
-    next_4w_n = int(((master["days_from_today"] >= 0) & (master["days_from_today"] <= 27)).sum())
+    next_4w_n = int((
+        master["time_status"].isin(["Today","Future"]) &
+        (master["days_from_today"] >= 0) &
+        (master["days_from_today"] <= 27)
+    ).sum())
 
     avg_i_app = pd.to_numeric(view.get("approval_probability"), errors="coerce").mean()
     avg_p_app = pd.to_numeric(view.get("public_approval_probability"), errors="coerce").mean()
@@ -2252,11 +2271,12 @@ if page == "1. ALL PDUFA":
     m5.metric("Saved PDUFA Events", len(master))
     m6.metric("Present / Active", active_n)
 
-    m5,m6,m7,m8 = st.columns(4)
-    m5.metric("Past", past_n)
-    m6.metric("Today", today_n)
-    m7.metric("Future", future_n)
-    m8.metric("Next 4 Weeks", next_4w_n)
+    m5,m6,m7,m8,m9 = st.columns(5)
+    m5.metric("Closed / Decided", closed_n)
+    m6.metric("Past / Unresolved", past_n)
+    m7.metric("Today", today_n)
+    m8.metric("Future", future_n)
+    m9.metric("Next 4 Weeks", next_4w_n)
 
     st.caption("I App % = internal/private model. P App % = public-only model. BPW % = actual BiopharmaWatch probability when available. Probability of Approval % = equal-weight all-source composite of I + P + BPW and is shown only when all three inputs exist. I+P Consensus remains a separate two-model comparison.")
 
@@ -2352,7 +2372,7 @@ if page == "1. ALL PDUFA":
             "Outcome"
         ]
         display = display.drop(columns=[x for x in drop_front if x in display.columns])
-        front = ["Ticker","PDUFA Date","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
+        front = ["Ticker","PDUFA Date","DECISION DATE","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C"]
         special_front = [x for x in SPECIAL_PROVISION_LABELS if x in display.columns]
         display = display[front + special_front + [x for x in display.columns if x not in front + special_front]]
         time_pos = min(len(front) + len(special_front), len(display.columns))
