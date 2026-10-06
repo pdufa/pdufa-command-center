@@ -4006,14 +4006,23 @@ elif page == "9. FDA ENGINE":
         sig_show = sig[[
             "ticker","pdufa_date","blindspot_risk_level","extension_reason",
             "deficiency_notice_status","late_cycle_open_questions","inspection_readiness",
-            "prior_crl_remediation","evidence_sufficiency_risk","dose_consistency_risk",
+            "prior_crl_remediation","prior_crl_unresolved_discipline",
+            "facility_site_visibility","third_party_cmo_dependency",
+            "postmarketing_study_alignment","late_fda_reversal_exposure",
+            "evidence_sufficiency_risk","dose_consistency_risk",
             "analytical_lab_relocation","remote_records_review","immunogenicity_signal",
             "adcom_signal","blindspot_flags"
         ]].rename(columns={
             "ticker":"Ticker","pdufa_date":"PDUFA Date","blindspot_risk_level":"Blind-Spot Risk",
             "extension_reason":"Extension Reason","deficiency_notice_status":"Deficiency Notice",
             "late_cycle_open_questions":"Late-Cycle Questions","inspection_readiness":"Inspection Readiness",
-            "prior_crl_remediation":"Prior CRL Remediation","evidence_sufficiency_risk":"Evidence Sufficiency",
+            "prior_crl_remediation":"Prior CRL Remediation",
+            "prior_crl_unresolved_discipline":"Unresolved Prior CRL Discipline",
+            "facility_site_visibility":"Facility Site Visibility",
+            "third_party_cmo_dependency":"Third-Party CMO",
+            "postmarketing_study_alignment":"Postmarketing Study",
+            "late_fda_reversal_exposure":"Late-Reversal Watch",
+            "evidence_sufficiency_risk":"Evidence Sufficiency",
             "dose_consistency_risk":"Dose Consistency","analytical_lab_relocation":"Lab Relocation",
             "remote_records_review":"Remote Records Review","immunogenicity_signal":"Immunogenicity",
             "adcom_signal":"AdCom","blindspot_flags":"Flags"
