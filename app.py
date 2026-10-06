@@ -1760,7 +1760,7 @@ def table_view(frame, return_page="1. ALL PDUFA"):
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
-        "Ticker","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication","PDUFA Date",
+        "Ticker","PDUFA Date","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication",
         *SPECIAL_PROVISION_LABELS,
         "Days Left","Market Cap","Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
@@ -2790,7 +2790,7 @@ elif page == "4. PREDICTION ENGINE":
                 qview = work
 
             qdisplay = qview[[
-                "ticker","original_event_key","canonical_pdufa_date","queue_class",
+                "ticker","canonical_pdufa_date","original_event_key","queue_class",
                 "cutoff_rule","artifact_status","audit_status","audit_action",
                 "failure_reason","source_url"
             ]].rename(columns={
@@ -3287,7 +3287,7 @@ elif page == "5. SCANS":
                 lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1
             )
             show_cols = [
-                "ticker","company","drug","PDUFA Date",
+                "ticker","PDUFA Date","company","drug",
                 "Probability of Approval % — Public",
                 "Probability of Approval % — All Sources"
             ]
@@ -3323,9 +3323,9 @@ elif page == "5. SCANS":
             p_all = fmt_app_pct(all_source_probability_value(rr), 1)
             result_rows.append({
                 "Ticker": safe_text(rr.get("ticker"), ""),
+                "PDUFA Date": "Not available" if pd.isna(rr.get("pdufa_date")) else pd.Timestamp(rr.get("pdufa_date")).strftime("%Y-%m-%d"),
                 "Company": safe_text(rr.get("company"), ""),
                 "Drug": safe_text(rr.get("drug"), ""),
-                "PDUFA Date": "Not available" if pd.isna(rr.get("pdufa_date")) else pd.Timestamp(rr.get("pdufa_date")).strftime("%Y-%m-%d"),
                 "Action": req.get("action", ""),
                 "Scope": req.get("scope", ""),
                 "Public App %": p_public,
