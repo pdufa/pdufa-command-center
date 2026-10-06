@@ -46,6 +46,11 @@ REQUIRED = {
         "fda_prediction","frozen_at","model_version","decision_date",
         "actual_fda_decision","match_result",
     },
+    "data/fda_review_backfill_queue.csv": {
+        "event_key","ticker","drug","pdufa_date","priority","days_to_pdufa",
+        "missing_components","backfill_status","source_targets","decision_date",
+        "actual_fda_decision","notes",
+    },
     "data/prediction_engine_history.csv": {
         "event_key", "ticker", "pdufa_date", "p_approval", "actual_outcome",
         "public_approval_probability", "biopharmawatch_probability",
@@ -321,6 +326,9 @@ required_ui_contracts = [
     'def load_fda_review_engine',
     '"data/fda_review_engine.csv"',
     '"data/fda_prediction_freezes.csv"',
+    '"data/fda_review_backfill_queue.csv"',
+    'def load_fda_review_backfill_queue',
+    '"FDA Discipline Backfill Queue"',
 ]
 for label in required_ui_contracts:
     if label not in app:
