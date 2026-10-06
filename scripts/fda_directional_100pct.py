@@ -204,6 +204,11 @@ def build_live():
         match = "PENDING"
         if actual and clean(r.get("decision_date")):
             match = "MATCH" if direction == actual else "MISS"
+        elif actual:
+            # Outcome is already known but exact decision-date provenance is
+            # incomplete; do not present an after-the-fact direction as a
+            # prospective scored forecast.
+            match = "KNOWN_OUTCOME_NOT_PROSPECTIVE"
         rows.append({
             "event_key": key,
             "fda_regulatory_case_id": clean(r.get("fda_regulatory_case_id")) or key,
@@ -353,7 +358,10 @@ def write_summary(live, hist, freezes):
     hist_total = len(hist_decided)
 
     live_counted = live[live["count_in_coverage"].eq("YES")]
-    live_open = live_counted[live_counted["decision_date"].eq("")]
+    live_open = live_counted[
+        live_counted["decision_date"].eq("") &
+        live_counted["actual_fda_decision"].eq("")
+    ]
 
     # Prospective accuracy is scored only from calls frozen before a decision.
     # A direction generated after an already-known outcome is never counted.
