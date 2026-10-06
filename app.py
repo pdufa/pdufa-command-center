@@ -2214,7 +2214,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06K · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.7 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06K · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -3357,7 +3357,7 @@ elif page == "7. MATCH OPTIMIZER":
         dc1,dc2,dc3,dc4,dc5,dc6,dc7 = st.columns(7)
         dc1.metric("Historical Coverage", f"{float(fda_directional_summary.get('historical_coverage_pct', 0)):.1f}%")
         hist_acc = fda_directional_summary.get("historical_accuracy_pct")
-        dc2.metric("V1.7 Retro Fit", "Pending" if hist_acc is None else f"{float(hist_acc):.2f}%")
+        dc2.metric("V1.9 Retro Fit", "Pending" if hist_acc is None else f"{float(hist_acc):.2f}%")
         locked_val = fda_directional_summary.get("locked_validation_2024_2026_accuracy_pct")
         dc3.metric("Locked V1.2 Validation", "Pending" if locked_val is None else f"{float(locked_val):.2f}%")
         dc4.metric(
@@ -3367,11 +3367,11 @@ elif page == "7. MATCH OPTIMIZER":
         dc5.metric("Live Coverage", f"{float(fda_directional_summary.get('live_coverage_pct', 0)):.1f}%")
         dc6.metric("Open Prospective Calls", int(fda_directional_summary.get("open_prospective_counted_calls", 0)))
         pros_acc = fda_directional_summary.get("prospective_accuracy_pct")
-        dc7.metric("V1.7 Prospective", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
+        dc7.metric("V1.9 Prospective", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
         st.caption(
             "This layer always issues APPROVED or CRL for every eligible FDA review cycle. "
-            "V1.7 Retro Fit is development-only because later historical misses informed the new event-risk rules. "
-            "Locked V1.2 Validation remains the last historical holdout result. V1.7 prospective accuracy is scored "
+            "V1.9 Retro Fit is development-only because later historical misses informed the new event-risk rules. "
+            "Locked V1.2 Validation remains the last historical holdout result. V1.9 prospective accuracy is scored "
             "only from calls frozen before the FDA outcome is known."
         )
         with st.expander("Residual public-information surprise audit", expanded=False):
@@ -3401,7 +3401,7 @@ elif page == "7. MATCH OPTIMIZER":
                     },
                 )
                 st.caption(
-                    "These are the historical misses still left after V1.7. LOW/VERY_LOW means the decisive blocker "
+                    "These are the historical misses still left after V1.9. LOW/VERY_LOW means the decisive blocker "
                     "was not sufficiently explicit in public pre-PDUFA evidence to justify another rule without hindsight."
                 )
     else:
@@ -4021,7 +4021,7 @@ elif page == "9. FDA ENGINE":
         st.dataframe(sig_show, use_container_width=True, hide_index=True, height=390)
         st.caption(
             "This monitor structures public regulatory-interaction risks that can be missed by efficacy scoring alone. "
-            "It is advisory to V1.7 and does not silently rewrite frozen prospective directions."
+            "It is advisory to V1.9 and does not silently rewrite frozen prospective directions."
         )
     else:
         st.info("Regulatory interaction monitor has not been generated yet.")
