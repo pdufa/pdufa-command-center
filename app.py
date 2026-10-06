@@ -1494,15 +1494,20 @@ def _column_help_text(col):
     return f"{col}: field shown for this PDUFA event."
 
 def _sort_header_button(col, col_index):
-    """Render a real client-side table sort button plus a visible column-help hint."""
+    """Render separate sort and help controls for a merged-table header."""
     label = html.escape(str(col))
     help_text = html.escape(_column_help_text(col), quote=True)
+    sort_title = html.escape(f"Sort {col}", quote=True)
     return (
+        f'<span class="header-controls">'
         f'<button type="button" class="sort-head" data-col-index="{int(col_index)}" '
-        f'title="Click to sort {html.escape(str(col), quote=True)}">'
+        f'title="{sort_title}">'
         f'<span class="sort-label">{label}</span>'
-        f'<span class="help-icon" title="{help_text}" aria-label="{help_text}">?</span>'
-        f'<span class="sort-icon">⇅</span></button>'
+        f'<span class="sort-icon" aria-hidden="true">⇅</span>'
+        f'</button>'
+        f'<span class="help-icon" role="img" tabindex="0" '
+        f'title="{help_text}" aria-label="{help_text}">?</span>'
+        f'</span>'
     )
 
 
@@ -1672,10 +1677,11 @@ def render_merged_table(frame, heading, height_px=690):
     .merged-pdufa-table th.application-subhead{height:124px;vertical-align:bottom;font-weight:800;min-width:42px;width:42px;max-width:42px;top:34px}
     .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
     .merged-pdufa-table .provision-yes{font-weight:900}
-    .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;width:100%%;height:100%%}
+    .header-controls{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%%}
+    .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
     .sort-head:hover .sort-icon,.sort-head:focus .sort-icon{background:#111;color:#fff}
-    .help-icon{display:inline-flex;align-items:center;justify-content:center;margin-left:5px;width:17px;height:17px;border:1.5px solid #555;border-radius:50%%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
-    .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111}
+    .help-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:18px;height:18px;border:1.5px solid #555;border-radius:50%%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
+    .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111;outline:none}
     .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
     a{color:#111}
     </style>
@@ -1728,6 +1734,13 @@ def render_merged_table(frame, heading, height_px=690):
           icon.textContent = idx === activeIndex ? (ascending ? '▲' : '▼') : '⇅';
         });
       };
+
+      table.querySelectorAll('.help-icon').forEach(help => {
+        help.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        });
+      });
 
       buttons.forEach(btn => {
         btn.addEventListener('click', (event) => {
