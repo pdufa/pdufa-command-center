@@ -453,7 +453,7 @@ if int(summary.get("historical_directional_calls", 0)) != int(summary.get("histo
     raise SystemExit("100pct directional summary: historical calls do not cover every candidate")
 eligible_v11 = [
     r for r in directional_freezes
-    if (r.get("model_version") or "") == "FDA-DIRECTIONAL-100-V1.6"
+    if (r.get("model_version") or "") == "FDA-DIRECTIONAL-100-V1.7"
     and (r.get("prospective_eligible") or "").upper() == "YES"
     and (r.get("count_in_coverage") or "").upper() == "YES"
 ]
