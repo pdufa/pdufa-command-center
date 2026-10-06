@@ -1,0 +1,161 @@
+name: PDUFA Surveillance Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Surveillance mode
+        required: true
+        default: daily
+        type: choice
+        options:
+          - daily
+          - weekly
+          - monthly
+          - full
+  schedule:
+    # 5:15 AM Pacific daily, covering PST/PDT. Local-time guard below runs one.
+    - cron: "15 12 * * *"
+    - cron: "15 13 * * *"
+    # 4:00 AM Pacific Sunday deep review, covering PST/PDT.
+    - cron: "0 11 * * 0"
+    - cron: "0 12 * * 0"
+    # 4:30 AM Pacific on the first of each month, covering PST/PDT.
+    - cron: "30 11 1 * *"
+    - cron: "30 12 1 * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-surveillance
+  cancel-in-progress: false
+
+jobs:
+  surveillance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pandas requests
+
+      - name: Select surveillance mode in Pacific time
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run=yes" >> "$GITHUB_OUTPUT"
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          local_hm="$(TZ=America/Los_Angeles date +%H:%M)"
+          local_dow="$(TZ=America/Los_Angeles date +%w)"
+          local_dom="$(TZ=America/Los_Angeles date +%d)"
+
+          if [ "$local_dom" = "01" ] && [ "$local_hm" = "04:30" ]; then
+            echo "run=yes" >> "$GITHUB_OUTPUT"
+            echo "mode=monthly" >> "$GITHUB_OUTPUT"
+          elif [ "$local_dow" = "0" ] && [ "$local_hm" = "04:00" ]; then
+            echo "run=yes" >> "$GITHUB_OUTPUT"
+            echo "mode=weekly" >> "$GITHUB_OUTPUT"
+          elif [ "$local_hm" = "05:15" ]; then
+            echo "run=yes" >> "$GITHUB_OUTPUT"
+            echo "mode=daily" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=no" >> "$GITHUB_OUTPUT"
+            echo "mode=skip" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Daily discovery
+        if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'daily' || steps.mode.outputs.mode == 'weekly' || steps.mode.outputs.mode == 'full')
+        env:
+          DISCOVERY_LOOKBACK_DAYS: "10"
+          DISCOVERY_CT_LIMIT: "200"
+          DISCOVERY_SEC_DOCS_PER_COMPANY: "3"
+          DISCOVERY_SEC_PAUSE_SECONDS: "0.12"
+        run: python scripts/discover_new_companies.py
+
+      - name: Monthly full universe reconciliation
+        if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'monthly' || steps.mode.outputs.mode == 'full')
+        env:
+          DISCOVERY_LOOKBACK_DAYS: "45"
+          DISCOVERY_CT_LIMIT: "500"
+          DISCOVERY_SEC_DOCS_PER_COMPANY: "10"
+          DISCOVERY_SEC_PAUSE_SECONDS: "0.12"
+        run: python scripts/discover_new_companies.py
+
+      - name: Daily recheck of all tracked PDUFA events
+        if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'daily' || steps.mode.outputs.mode == 'full')
+        run: python scripts/recheck_events.py --all --categories "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"
+
+      - name: Sunday deep review of next 7 days
+        if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'weekly' || steps.mode.outputs.mode == 'full')
+        run: |
+          python - <<'PY'
+          import subprocess, sys
+          from datetime import datetime, timedelta
+          from zoneinfo import ZoneInfo
+          import pandas as pd
+
+          path = "data/pdufa_candidates.csv"
+          df = pd.read_csv(path, dtype=str, keep_default_na=False)
+          if "event_key" not in df or "pdufa_date" not in df:
+              raise SystemExit("Missing event_key or pdufa_date in pdufa_candidates.csv")
+
+          today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+          end = today + timedelta(days=7)
+          dates = pd.to_datetime(df["pdufa_date"], errors="coerce").dt.date
+          keys = df.loc[dates.map(lambda d: d is not None and today <= d <= end), "event_key"].dropna().astype(str).unique().tolist()
+
+          if not keys:
+              print("No PDUFA events in the next 7 days.")
+              raise SystemExit(0)
+
+          cmd = [sys.executable, "scripts/recheck_events.py"]
+          for key in keys:
+              cmd += ["--event-key", key]
+          cmd += ["--categories", "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"]
+          print("Deep-review events:", len(keys))
+          subprocess.run(cmd, check=True)
+          PY
+
+      - name: Monthly recheck of all tracked events
+        if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'monthly' || steps.mode.outputs.mode == 'full')
+        run: python scripts/recheck_events.py --all --categories "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"
+
+      - name: Refresh Strict, Broad, regulatory and extension layers
+        if: steps.mode.outputs.run == 'yes'
+        run: |
+          python scripts/fda_decision_engine.py --freeze
+          python scripts/fda_regulatory_signal_monitor.py
+          python scripts/fda_directional_100pct.py
+          python scripts/fda_pdufa_extension_tracker.py
+          python scripts/fda_100_on_100_gate.py
+
+      - name: Validate surveillance outputs
+        if: steps.mode.outputs.run == 'yes'
+        run: python smoke_test.py
+
+      - name: Commit surveillance updates
+        if: steps.mode.outputs.run == 'yes'
+        run: |
+          git config user.name "pdufa-surveillance-bot"
+          git config user.email "pdufa-surveillance-bot@users.noreply.github.com"
+          git add -A data
+          if git diff --cached --quiet; then
+            echo "No surveillance changes."
+          else
+            git commit -m "PDUFA surveillance: ${{ steps.mode.outputs.mode }}"
+            git pull --rebase origin main
+            git push
+          fi
