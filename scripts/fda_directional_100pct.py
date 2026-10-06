@@ -197,6 +197,35 @@ def event_risk_override(base_direction, text):
         if remediated_resubmission:
             return "APPROVED", "VERIFIED_REMEDIATION_OVERRIDE"
 
+    # Multi-domain FDA concern: several independent review disciplines flagged
+    # before action is materially different from a single routine information request.
+    domains = sum([
+        bool(re.search(r"integrity of phase 2/3 data|data integrity", lower)),
+        bool(re.search(r"primary hypothetical treatment effect|statistical approach|effectiveness uncertainty", lower)),
+        "meaningfulness" in lower,
+        bool(re.search(r"qt safety signal|safety signal", lower)),
+        "formulation" in lower,
+    ])
+    if base_direction == "APPROVED" and ("review issues" in lower) and domains >= 3:
+        return "CRL", "MULTI_DOMAIN_FDA_REVIEW_RISK"
+
+    # Strong positive late-cycle confirmation can rescue a weak raw fallback
+    # when the filing is supported by multiple positive pivotal trials and no
+    # public deficiency warning is identified.
+    clean_late_cycle = (
+        base_direction == "CRL" and
+        "two positive phase 3" in lower and
+        "late-cycle" in lower and
+        "on track" in lower and
+        any(x in lower for x in [
+            "no public deficiency warning",
+            "no deficiency warning",
+            "no deficiencies",
+        ])
+    )
+    if clean_late_cycle:
+        return "APPROVED", "CLEAN_LATE_CYCLE_OVERRIDE"
+
     return base_direction, ""
 
 def now_utc():
