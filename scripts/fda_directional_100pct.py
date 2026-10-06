@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.7"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.8"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -216,6 +216,14 @@ def event_risk_override(base_direction, text):
              "failed key secondaries" in lower)
         )
 
+        # V1.8: FDA-communicated immunogenicity concern that triggers a major
+        # amendment / review extension is a material clinical-immunology risk.
+        immunogenicity_major_amendment = (
+            "immunogenicity" in lower and
+            ("concern" in lower or "high immunogenicity" in lower) and
+            ("major amendment" in lower or "extend" in lower or "extension" in lower)
+        )
+
         # V1.7: substantial-evidence fragility when an NDA is based on one
         # pivotal placebo-controlled Phase 3 and efficacy is inconsistent
         # across randomized dosing regimens, with no second controlled pivotal
@@ -245,7 +253,7 @@ def event_risk_override(base_direction, text):
             unresolved_prior_crl or explicit_deficiency_notice or
             unresolved_late_cycle_cmc or multi_discipline_fda_warning or
             inspection_readiness_risk or cross_regulatory_evidence_risk or
-            single_pivotal_dose_consistency_risk
+            immunogenicity_major_amendment or single_pivotal_dose_consistency_risk
         ):
             return "CRL", "EVENT_RISK_OVERRIDE"
 
@@ -674,8 +682,9 @@ def write_summary(live, hist, freezes):
         "retrospective_2024_2026_accuracy_pct": round(100.0 * validation_matches / len(validation), 2) if len(validation) else None,
         "locked_validation_model_version": "FDA-DIRECTIONAL-100-V1.2",
         "locked_validation_2024_2026_accuracy_pct": 87.5,
-        "v1_7_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
-        "historical_note": "V1.7 adds a single-pivotal/dose-consistency substantial-evidence risk rule to V1.6. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.7 accuracy must be validated prospectively.",
+        "v1_7_status": "RETROSPECTIVE DEVELOPMENT; SUPERSEDED BY V1.8",
+        "v1_8_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
+        "historical_note": "V1.8 adds an FDA-communicated immunogenicity/major-amendment risk rule to V1.7. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.7 accuracy must be validated prospectively.",
         "live_candidate_rows": len(live),
         "live_counted_regulatory_cases": len(live_counted),
         "live_directional_calls": len(live_counted),
