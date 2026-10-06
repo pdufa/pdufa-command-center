@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.1"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -45,6 +45,7 @@ HIST_COLUMNS = [
 
 FREEZE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
+    "count_in_coverage","prospective_eligible",
     "forced_direction","directional_score","confidence","source_layer",
     "evidence_completeness_pct","direction_reason","model_version","frozen_at",
     "decision_date","actual_fda_decision","match_result",
@@ -282,10 +283,27 @@ def update_freezes(live):
     else:
         fr = pd.DataFrame(columns=FREEZE_COLUMNS)
 
+    # Older rows may predate the audit columns. Mark them conservatively:
+    # only rows that were unresolved at freeze time and represent a counted
+    # regulatory case are eligible for prospective accuracy.
+    if "count_in_coverage" not in fr:
+        fr["count_in_coverage"] = ""
+    if "prospective_eligible" not in fr:
+        fr["prospective_eligible"] = ""
+    for i, old in fr.iterrows():
+        if clean(old.get("count_in_coverage")) == "":
+            fr.at[i, "count_in_coverage"] = "YES"
+        if clean(old.get("prospective_eligible")) == "":
+            fr.at[i, "prospective_eligible"] = "YES"
+
     existing = set(fr["event_key"].astype(str) + "|" + fr["model_version"].astype(str))
     new_rows = []
     for _, r in live.iterrows():
-        if clean(r.get("decision_date")):
+        # A known outcome is never a prospective prediction, even if a source
+        # file is missing the exact legal decision_date.
+        if clean(r.get("decision_date")) or norm_outcome(r.get("actual_fda_decision")):
+            continue
+        if clean(r.get("count_in_coverage")).upper() != "YES":
             continue
         sig = clean(r.get("event_key")) + "|" + MODEL_VERSION
         if sig in existing:
@@ -296,6 +314,8 @@ def update_freezes(live):
             "ticker": clean(r.get("ticker")),
             "drug": clean(r.get("drug")),
             "pdufa_date": clean(r.get("pdufa_date")),
+            "count_in_coverage": clean(r.get("count_in_coverage")) or "YES",
+            "prospective_eligible": "YES",
             "forced_direction": clean(r.get("forced_direction")),
             "directional_score": clean(r.get("directional_score")),
             "confidence": clean(r.get("confidence")),
@@ -337,7 +357,20 @@ def write_summary(live, hist, freezes):
 
     # Prospective accuracy is scored only from calls frozen before a decision.
     # A direction generated after an already-known outcome is never counted.
-    frozen_scored = freezes[freezes["match_result"].isin(["MATCH","MISS"])].copy()
+    frozen_scored = freezes[
+        freezes["match_result"].isin(["MATCH","MISS"]) &
+        freezes["prospective_eligible"].astype(str).str.upper().eq("YES") &
+        freezes["count_in_coverage"].astype(str).str.upper().eq("YES") &
+        freezes["model_version"].astype(str).eq(MODEL_VERSION)
+    ].copy()
+    if not frozen_scored.empty:
+        # Score each FDA regulatory review cycle once, even when multiple
+        # public tickers point to the same U.S. application.
+        frozen_scored["_case"] = frozen_scored["fda_regulatory_case_id"].where(
+            frozen_scored["fda_regulatory_case_id"].astype(str).str.strip().ne(""),
+            frozen_scored["event_key"]
+        )
+        frozen_scored = frozen_scored.drop_duplicates("_case", keep="first")
     live_matches = int((frozen_scored["match_result"] == "MATCH").sum())
 
     summary = {
@@ -354,7 +387,12 @@ def write_summary(live, hist, freezes):
         "live_directional_calls": len(live_counted),
         "live_coverage_pct": 100.0 if len(live_counted) else 0.0,
         "open_prospective_counted_calls": len(live_open),
-        "prospective_freezes": int((freezes["decision_date"] == "").sum()) if not freezes.empty else 0,
+        "prospective_freezes": int((
+            freezes["model_version"].astype(str).eq(MODEL_VERSION) &
+            freezes["prospective_eligible"].astype(str).str.upper().eq("YES") &
+            freezes["count_in_coverage"].astype(str).str.upper().eq("YES") &
+            freezes["decision_date"].astype(str).eq("")
+        ).sum()) if not freezes.empty else 0,
         "prospective_decided_scored": len(frozen_scored),
         "prospective_decided_matches": live_matches,
         "prospective_accuracy_pct": round(100.0 * live_matches / len(frozen_scored), 2) if len(frozen_scored) else None,
