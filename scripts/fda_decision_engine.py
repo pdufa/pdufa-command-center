@@ -34,6 +34,7 @@ CANDIDATES = DATA / "pdufa_candidates.csv"
 REVIEWS = DATA / "fda_review_engine.csv"
 FREEZES = DATA / "fda_prediction_freezes.csv"
 BACKFILL = DATA / "fda_review_backfill_queue.csv"
+FACILITIES = DATA / "fda_facility_registry.csv"
 CONFIG = DATA / "fda_engine_config.json"
 
 REVIEW_COLUMNS = [
@@ -67,6 +68,13 @@ BACKFILL_COLUMNS = [
     "event_key","ticker","drug","pdufa_date","priority","days_to_pdufa",
     "missing_components","backfill_status","source_targets","decision_date",
     "actual_fda_decision","notes"
+]
+
+FACILITY_COLUMNS = [
+    "event_key","fda_regulatory_case_id","ticker","drug","site_name","site_country",
+    "site_role","fei","warning_letter_status","import_alert_status","form483_status",
+    "facility_classification","preapproval_inspection_status","remediation_status",
+    "evidence_as_of","source_url","source_note"
 ]
 
 SCORE_FIELDS = {
@@ -239,6 +247,55 @@ def load_csv(path, columns=None):
                 frame[col] = ""
         frame = frame[columns]
     return frame
+
+
+def aggregate_facility_registry(facilities):
+    by_event = {}
+    if facilities.empty:
+        return by_event
+
+    for event_key, group in facilities.groupby("event_key", dropna=False):
+        event_key = clean(event_key)
+        if not event_key:
+            continue
+
+        site_states = []
+        for _, site in group.iterrows():
+            warning = clean(site.get("warning_letter_status")).upper()
+            import_alert = clean(site.get("import_alert_status")).upper()
+            form483 = clean(site.get("form483_status")).upper()
+            classification = clean(site.get("facility_classification")).upper()
+            pai = clean(site.get("preapproval_inspection_status")).upper()
+            remediation = clean(site.get("remediation_status")).upper()
+
+            if import_alert in {"ACTIVE","FAIL"} or classification in {"OAI","FAIL"} or pai in {"FAIL","FAILED"}:
+                site_states.append("FAIL")
+                continue
+
+            if warning in {"ACTIVE","OPEN","REVIEW"} or form483 in {"OPEN","ACTIVE","REVIEW"}:
+                site_states.append("REVIEW")
+                continue
+
+            clean_warning = warning in {"PASS","CLEAR","NONE","RESOLVED"}
+            clean_import = import_alert in {"PASS","CLEAR","NONE","RESOLVED"}
+            clean_483 = form483 in {"PASS","CLEAR","NONE","RESOLVED"}
+            clean_classification = classification in {"NAI","PASS"}
+            clean_pai = pai in {"PASS","CLEAN"}
+            clean_remediation = remediation in {"PASS","CLEAR","NONE","RESOLVED","NOT_APPLICABLE"}
+
+            if clean_warning and clean_import and clean_483 and clean_classification and clean_pai and clean_remediation:
+                site_states.append("PASS")
+            else:
+                site_states.append("REVIEW")
+
+        if "FAIL" in site_states:
+            by_event[event_key] = "FAIL"
+        elif site_states and all(x == "PASS" for x in site_states):
+            by_event[event_key] = "PASS"
+        else:
+            by_event[event_key] = "REVIEW"
+
+    return by_event
 
 
 def seed_review(candidate, prior):
@@ -572,6 +629,8 @@ def main():
     cfg = load_config()
     candidates = load_csv(CANDIDATES)
     prior = load_csv(REVIEWS, REVIEW_COLUMNS)
+    facilities = load_csv(FACILITIES, FACILITY_COLUMNS)
+    facility_by_event = aggregate_facility_registry(facilities)
     prior_by_key = {clean(r["event_key"]): r for _, r in prior.iterrows()}
 
     rows = []
@@ -584,6 +643,8 @@ def main():
                 rows.append({c: clean(prior_by_key[key].get(c)) for c in REVIEW_COLUMNS})
             continue
         seeded = seed_review(candidate, prior_by_key.get(key, {}))
+        if key in facility_by_event:
+            seeded["fda_facility_gate"] = facility_by_event[key]
         rows.append(evaluate(seeded, cfg))
 
     review = pd.DataFrame(rows, columns=REVIEW_COLUMNS)
