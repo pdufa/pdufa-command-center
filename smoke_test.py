@@ -385,6 +385,9 @@ required_ui_contracts = [
     'Manufacturing / Facility Registry',
     'Manufacturing / Facility Evidence',
     '"data/fda_facility_registry.csv"',
+    'FDA DECISION ENGINE V3.2',
+    'BIMO / data integrity',
+    'Data-integrity gate',
 ]
 for label in required_ui_contracts:
     if label not in app:
