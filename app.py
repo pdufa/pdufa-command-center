@@ -2196,7 +2196,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06H · FDA DECISION ENGINE V3.2 STRICT + 100% DIRECTIONAL COVERAGE V1.1 · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06I · FDA DECISION ENGINE V3.2 STRICT + 100% DIRECTIONAL COVERAGE V1.2 · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -3336,18 +3336,20 @@ elif page == "7. MATCH OPTIMIZER":
 
     st.markdown("### 100% Directional Layer — full-coverage benchmark")
     if fda_directional_summary:
-        dc1,dc2,dc3,dc4,dc5,dc6 = st.columns(6)
+        dc1,dc2,dc3,dc4,dc5,dc6,dc7 = st.columns(7)
         dc1.metric("Historical Coverage", f"{float(fda_directional_summary.get('historical_coverage_pct', 0)):.1f}%")
         hist_acc = fda_directional_summary.get("historical_accuracy_pct")
         dc2.metric("Historical Accuracy", "Pending" if hist_acc is None else f"{float(hist_acc):.2f}%")
-        dc3.metric(
+        val_acc = fda_directional_summary.get("validation_2024_2026_accuracy_pct")
+        dc3.metric("2024–26 Validation", "Pending" if val_acc is None else f"{float(val_acc):.2f}%")
+        dc4.metric(
             "Historical Matches",
             f"{int(fda_directional_summary.get('historical_matches', 0))}/{int(fda_directional_summary.get('historical_directional_calls', 0))}"
         )
-        dc4.metric("Live Coverage", f"{float(fda_directional_summary.get('live_coverage_pct', 0)):.1f}%")
-        dc5.metric("Open Prospective Calls", int(fda_directional_summary.get("open_prospective_counted_calls", 0)))
+        dc5.metric("Live Coverage", f"{float(fda_directional_summary.get('live_coverage_pct', 0)):.1f}%")
+        dc6.metric("Open Prospective Calls", int(fda_directional_summary.get("open_prospective_counted_calls", 0)))
         pros_acc = fda_directional_summary.get("prospective_accuracy_pct")
-        dc6.metric("Prospective Accuracy", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
+        dc7.metric("Prospective Accuracy", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
         st.caption(
             "This layer always issues APPROVED or CRL for every eligible FDA review cycle. "
             "Coverage is therefore 100% by design; accuracy is measured separately and prospective accuracy "
