@@ -26,5 +26,11 @@
   "prospective_decided_matches": 0,
   "prospective_accuracy_pct": null,
   "warning": "100% coverage does not mean 100% accuracy. No model can guarantee every future FDA outcome.",
-  "generated_at": "2026-10-06T18:36:00Z"
+  "generated_at": "2026-10-06T18:48:00Z",
+  "residual_historical_misses": 7,
+  "residual_public_recoverability": {
+    "LOW": 3,
+    "VERY_LOW": 4
+  },
+  "residual_miss_audit_file": "data/fda_directional_residual_miss_audit.csv"
 }
