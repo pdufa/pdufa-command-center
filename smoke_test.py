@@ -165,6 +165,8 @@ if not (ROOT / "data/fda_engine_config.json").exists():
     raise SystemExit("missing data/fda_engine_config.json")
 if not (ROOT / "scripts/fda_v3_historical_backtest.py").exists():
     raise SystemExit("missing scripts/fda_v3_historical_backtest.py")
+if not (ROOT / "scripts/complete_fda_v3_historical_review.py").exists():
+    raise SystemExit("missing scripts/complete_fda_v3_historical_review.py")
 if not (ROOT / "data/fda_v3_historical_summary.json").exists():
     raise SystemExit("missing data/fda_v3_historical_summary.json")
 
@@ -344,7 +346,10 @@ required_ui_contracts = [
     'def load_fda_review_backfill_queue',
     'FDA Discipline Backfill Queue',
     'FDA-V3 decision-safe benchmark',
-    'V3 Backfill Remaining',
+    'Review Complete',
+    'FDA-V3 Match',
+    'Directional Coverage',
+    'Backfill Remaining',
     'FDA-V3 historical backfill queue',
 ]
 for label in required_ui_contracts:
