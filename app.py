@@ -2196,7 +2196,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-06G · FDA DECISION ENGINE V3.2 STRICT + 100% DIRECTIONAL COVERAGE · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-06H · FDA DECISION ENGINE V3.2 STRICT + 100% DIRECTIONAL COVERAGE V1.1 · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE. Company/PDUFA detail opens only when an event is clicked.")
 st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
 
@@ -3334,6 +3334,28 @@ elif page == "7. MATCH OPTIMIZER":
     else:
         st.info("FDA-V3 historical benchmark has not been generated yet.")
 
+    st.markdown("### 100% Directional Layer — full-coverage benchmark")
+    if fda_directional_summary:
+        dc1,dc2,dc3,dc4,dc5,dc6 = st.columns(6)
+        dc1.metric("Historical Coverage", f"{float(fda_directional_summary.get('historical_coverage_pct', 0)):.1f}%")
+        hist_acc = fda_directional_summary.get("historical_accuracy_pct")
+        dc2.metric("Historical Accuracy", "Pending" if hist_acc is None else f"{float(hist_acc):.2f}%")
+        dc3.metric(
+            "Historical Matches",
+            f"{int(fda_directional_summary.get('historical_matches', 0))}/{int(fda_directional_summary.get('historical_directional_calls', 0))}"
+        )
+        dc4.metric("Live Coverage", f"{float(fda_directional_summary.get('live_coverage_pct', 0)):.1f}%")
+        dc5.metric("Open Prospective Calls", int(fda_directional_summary.get("open_prospective_counted_calls", 0)))
+        pros_acc = fda_directional_summary.get("prospective_accuracy_pct")
+        dc6.metric("Prospective Accuracy", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
+        st.caption(
+            "This layer always issues APPROVED or CRL for every eligible FDA review cycle. "
+            "Coverage is therefore 100% by design; accuracy is measured separately and prospective accuracy "
+            "is scored only from frozen calls made before the FDA outcome is known."
+        )
+    else:
+        st.info("100% directional benchmark has not been generated yet.")
+
     st.markdown("### STEP 1 — Historical cohorts")
     if years:
         cohort_rows = []
@@ -3901,10 +3923,15 @@ elif page == "9. FDA ENGINE":
     st.markdown("### 100% Directional Coverage")
     if not fda_directional_live.empty:
         counted = fda_directional_live[fda_directional_live["count_in_coverage"].astype(str).str.upper().eq("YES")].copy()
-        d1,d2,d3 = st.columns(3)
-        d1.metric("Coverage", "100.0%" if len(counted) else "0.0%")
+        d1,d2,d3,d4,d5 = st.columns(5)
+        directional_calls = int(counted["forced_direction"].isin(["APPROVED","CRL"]).sum())
+        coverage_pct = (100.0 * directional_calls / len(counted)) if len(counted) else 0.0
+        d1.metric("Coverage", f"{coverage_pct:.1f}%")
         d2.metric("APPROVE", int((counted["forced_direction"] == "APPROVED").sum()))
         d3.metric("CRL", int((counted["forced_direction"] == "CRL").sum()))
+        d4.metric("Open Prospective", int(fda_directional_summary.get("open_prospective_counted_calls", 0)) if fda_directional_summary else 0)
+        pacc = fda_directional_summary.get("prospective_accuracy_pct") if fda_directional_summary else None
+        d5.metric("Prospective Accuracy", "Pending" if pacc is None else f"{float(pacc):.2f}%")
         show = counted[["ticker","drug","pdufa_date","forced_direction","directional_score","confidence","strict_v3_prediction","source_layer"]].rename(columns={
             "ticker":"Ticker","drug":"Drug","pdufa_date":"PDUFA Date","forced_direction":"100% Direction",
             "directional_score":"Score","confidence":"Confidence","strict_v3_prediction":"Strict V3","source_layer":"Source"
