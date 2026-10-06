@@ -38,6 +38,7 @@ CONFIG = DATA / "fda_engine_config.json"
 
 REVIEW_COLUMNS = [
     "event_key","ticker","drug","pdufa_date",
+    "fda_regulatory_case_id","fda_count_in_match",
     "fda_application_identity",
     "fda_clinical_score","fda_statistics_score","fda_meaningfulness_score",
     "fda_safety_score","fda_clinical_pharmacology_score","fda_nonclinical_score",
@@ -50,7 +51,7 @@ REVIEW_COLUMNS = [
 ]
 
 FREEZE_COLUMNS = [
-    "freeze_id","event_key","ticker","drug","pdufa_date","evidence_cutoff",
+    "freeze_id","event_key","ticker","drug","pdufa_date","fda_regulatory_case_id","evidence_cutoff",
     "fda_probability","fda_prediction","fda_confidence","fda_hard_gate",
     "fda_gate_reason","frozen_at","model_version","decision_date",
     "actual_fda_decision","match_result"
@@ -139,6 +140,10 @@ def seed_review(candidate, prior):
     row["ticker"] = clean(candidate.get("ticker"))
     row["drug"] = clean(candidate.get("drug"))
     row["pdufa_date"] = clean(candidate.get("pdufa_date"))
+    if clean(row.get("fda_regulatory_case_id")) == "":
+        row["fda_regulatory_case_id"] = clean(candidate.get("event_key"))
+    if clean(row.get("fda_count_in_match")) == "":
+        row["fda_count_in_match"] = "YES"
     row["decision_date"] = clean(candidate.get("decision_date"))
     row["actual_fda_decision"] = normalize_outcome(candidate.get("outcome"))
 
@@ -306,6 +311,7 @@ def freeze_rows(review, candidates, cfg):
             "ticker": clean(r.get("ticker")),
             "drug": clean(r.get("drug")),
             "pdufa_date": clean(r.get("pdufa_date")),
+            "fda_regulatory_case_id": clean(r.get("fda_regulatory_case_id")),
             "evidence_cutoff": clean(c.get("evidence_cutoff")),
             "fda_probability": clean(r.get("fda_probability")),
             "fda_prediction": clean(r.get("fda_prediction")),
