@@ -374,7 +374,7 @@ required_ui_contracts = [
     'INSTALL DECISION ON IPHONE',
     'Open as Web App',
     '@media (max-width: 768px)',
-    'FDA DECISION ENGINE V3.1',
+    'FDA DECISION ENGINE V3.2',
     'Stats Gate',
     'CMC Gate',
     'Facility Gate',
