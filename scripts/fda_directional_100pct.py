@@ -27,7 +27,7 @@ HIST_OUT = DATA / "fda_directional_100pct_historical.csv"
 SUMMARY_OUT = DATA / "fda_directional_100pct_summary.json"
 FREEZES = DATA / "fda_directional_100pct_freezes.csv"
 
-MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.4"
+MODEL_VERSION = "FDA-DIRECTIONAL-100-V1.5"
 
 LIVE_COLUMNS = [
     "event_key","fda_regulatory_case_id","ticker","drug","pdufa_date",
@@ -82,6 +82,8 @@ DOMAIN_RISK_PATTERNS = [
     r"pk/product comparability",
     r"regulatory/cmc risk",
     r"product/device/cmc regulatory complexity",
+    r"missed conventional statistical significance",
+    r"co-primary showed essentially no treatment separation",
 ]
 
 def sanitize_predecision_text(text):
@@ -180,10 +182,37 @@ def event_risk_override(base_direction, text):
             ])
         )
 
+        multi_discipline_fda_warning = (
+            "filing communication" in lower and
+            ("six potential review issues" in lower or "multiple potential review issues" in lower) and
+            any(x in lower for x in [
+                "data integrity",
+                "clinical meaningfulness",
+                "qt safety",
+                "formulation differences",
+                "treatment-effect assumptions",
+            ])
+        )
+
+        inspection_readiness_risk = (
+            (
+                "roughly one month before" in lower or
+                "within 45 days" in lower or
+                "this close to pdufa" in lower
+            ) and
+            ("inspection" in lower or "inspections" in lower) and
+            (
+                "still being scheduled" in lower or
+                "still working" in lower or
+                "scheduling required inspections" in lower
+            )
+        )
+
         if (
             cmc_extension or active_hold or phase2_external_full or
             unresolved_prior_crl or explicit_deficiency_notice or
-            unresolved_late_cycle_cmc
+            unresolved_late_cycle_cmc or multi_discipline_fda_warning or
+            inspection_readiness_risk
         ):
             return "CRL", "EVENT_RISK_OVERRIDE"
 
@@ -603,8 +632,8 @@ def write_summary(live, hist, freezes):
         "retrospective_2024_2026_accuracy_pct": round(100.0 * validation_matches / len(validation), 2) if len(validation) else None,
         "locked_validation_model_version": "FDA-DIRECTIONAL-100-V1.2",
         "locked_validation_2024_2026_accuracy_pct": 87.5,
-        "v1_4_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
-        "historical_note": "V1.4 extends the event-risk layer with explicit FDA deficiency notices that preclude labeling/post-marketing discussions and unresolved late-cycle CMC/facility/product-quality questions. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.4 accuracy must be validated prospectively.",
+        "v1_5_status": "RETROSPECTIVE DEVELOPMENT; PROSPECTIVE VALIDATION STARTS 2026-10-06",
+        "historical_note": "V1.5 adds multi-discipline FDA filing-warning/failed-efficacy and inspection-readiness rules to V1.4. These rules were developed from historical misses, so V1.2 remains the last locked historical validation model; V1.5 accuracy must be validated prospectively.",
         "live_candidate_rows": len(live),
         "live_counted_regulatory_cases": len(live_counted),
         "live_directional_calls": len(live_counted),
