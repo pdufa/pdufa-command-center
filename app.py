@@ -3206,15 +3206,17 @@ elif page == "6. MATCH OPTIMIZER":
 
     st.markdown("### FDA-V3 decision-safe benchmark")
     if fda_v3_hist_summary:
-        v31,v32,v33,v34,v35 = st.columns(5)
-        v31.metric("Legacy Match", f"{float(fda_v3_hist_summary.get('legacy_accuracy_pct', 0)):.1f}%")
-        v32.metric("Phase-A Match", f"{float(fda_v3_hist_summary.get('phase_a_public_directional_match_pct', 0)):.1f}%")
-        v33.metric("Phase-A Coverage", f"{float(fda_v3_hist_summary.get('phase_a_public_directional_coverage_pct', 0)):.1f}%")
-        v34.metric("Directional Calls", int(fda_v3_hist_summary.get("phase_a_public_directional_calls", 0)))
-        v35.metric("V3 Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
+        v31,v32,v33,v34,v35,v36 = st.columns(6)
+        v31.metric("Review Complete", f"{float(fda_v3_hist_summary.get('review_completion_pct', 0)):.1f}%")
+        v32.metric("FDA-V3 Match", f"{float(fda_v3_hist_summary.get('combined_v3_directional_match_pct', 0)):.1f}%")
+        v33.metric("Directional Coverage", f"{float(fda_v3_hist_summary.get('combined_v3_directional_coverage_pct', 0)):.1f}%")
+        v34.metric("Correct Calls", f"{int(fda_v3_hist_summary.get('combined_v3_directional_correct', 0))}/{int(fda_v3_hist_summary.get('combined_v3_directional_calls', 0))}")
+        v35.metric("REVIEW / No Call", int(fda_v3_hist_summary.get("historical_v3_review_complete_no_call", 0)))
+        v36.metric("Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
         st.caption(
-            "Phase A uses only preserved decision-safe public calls. Its 100% match result is a small-subset benchmark, "
-            "not the completed FDA-V3 historical accuracy. Full V3 remains pending evidence backfill."
+            "FDA-V3 historical review is complete across the cohort. Match % applies only to directional APPROVED/CRL calls; "
+            "Coverage % shows how often the strict public-evidence gates were willing to make a directional call. "
+            "Retrospective reconstructions are not independent blind predictions."
         )
         with st.expander("FDA-V3 historical backfill queue", expanded=False):
             if fda_v3_hist_queue.empty:
