@@ -2380,7 +2380,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN"]
+nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN","11. POST-P3 HORIZON"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -4356,6 +4356,127 @@ elif page == "9. FDA ENGINE":
         "Regulatory model inputs only. Trading variables are intentionally excluded. "
         "The freeze ledger is data/fda_prediction_freezes.csv; frozen calls are never overwritten after an FDA decision."
     )
+
+
+
+elif page == "11. POST-P3 HORIZON":
+    st.markdown("## 11. POST-P3 HORIZON")
+    st.caption(
+        "Post-Phase-3 trading horizon. Phase 3 evidence, our existing PDUFA score, financing progress, "
+        "cash runway, application progress and PDUFA timing are kept separate so a strong FDA case cannot hide an unresolved trade gate."
+    )
+
+    horizon = df.copy()
+    if "phase3_date" not in horizon:
+        horizon["phase3_date"] = pd.NaT
+    horizon["phase3_date"] = pd.to_datetime(horizon["phase3_date"], errors="coerce")
+    horizon = horizon[horizon["phase3_date"].notna()].copy()
+
+    def _flag_yes(v):
+        return str(v).strip().upper() in {"YES","Y","TRUE","1","VERIFIED","CLOSED","SECOND_CLOSE_VERIFIED"}
+
+    def _fin_stage(r):
+        status = " ".join([
+            safe_text(r.get("second_financing_status"), ""),
+            safe_text(r.get("second_financing_close_verified"), ""),
+            safe_text(r.get("second_financing_running"), ""),
+            safe_text(r.get("second_financing_announced"), ""),
+        ]).upper()
+        if _flag_yes(r.get("second_financing_closed")) or "SECOND_CLOSE_VERIFIED" in status or "RED_CLOSED" in status:
+            return "RED_CLOSED"
+        if _flag_yes(r.get("second_financing_running")) or "YELLOW_IN_PROGRESS" in status or "IN_PROGRESS" in status:
+            return "YELLOW_IN_PROGRESS"
+        if _flag_yes(r.get("second_financing_announced")) or "GREEN_STARTED" in status or "ANNOUNCED" in status:
+            return "GREEN_STARTED"
+        return "GRAY_UNKNOWN"
+
+    def _horizon_label(r):
+        d = pd.to_datetime(r.get("pdufa_date"), errors="coerce")
+        if pd.isna(d):
+            if pd.notna(pd.to_datetime(r.get("fda_acceptance_date"), errors="coerce")):
+                return "FDA ACCEPTED — PDUFA DATE PENDING"
+            if pd.notna(pd.to_datetime(r.get("nda_submission_date"), errors="coerce")):
+                return "NDA/BLA SUBMITTED"
+            return "POST-P3"
+        days = (d.normalize() - pd.Timestamp.today().normalize()).days
+        if days < 0:
+            return "FDA DECISION / POST-DECISION"
+        if days <= 13:
+            return "13–1"
+        if days <= 30:
+            return "30–14"
+        if days <= 60:
+            return "60–31"
+        if days <= 90:
+            return "90–61"
+        return ">90"
+
+    if horizon.empty:
+        st.info("No dated Phase 3 / pivotal records are currently loaded into the live Streamlit feed.")
+    else:
+        horizon["_fin_stage"] = horizon.apply(_fin_stage, axis=1)
+        horizon["_horizon"] = horizon.apply(_horizon_label, axis=1)
+        horizon["_days"] = (
+            pd.to_datetime(horizon["pdufa_date"], errors="coerce").dt.normalize()
+            - pd.Timestamp.today().normalize()
+        ).dt.days
+
+        score = pd.to_numeric(horizon.get("approval_probability"), errors="coerce")
+        horizon_view = pd.DataFrame({
+            "Ticker": horizon["ticker"].fillna(""),
+            "Drug": horizon["drug"].fillna(""),
+            "Phase 3 Date": horizon["phase3_date"].dt.strftime("%Y-%m-%d").fillna(""),
+            "Phase 3 P": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
+            "Our PDUFA Score": score.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}/100"),
+            "Entry Gate": horizon.get("entry_gate", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
+            "🟢 Financing Started": horizon["_fin_stage"].map(lambda x: "🟢 STARTED" if x == "GREEN_STARTED" else ""),
+            "🟡 Financing In Progress": horizon["_fin_stage"].map(lambda x: "🟡 IN PROGRESS" if x == "YELLOW_IN_PROGRESS" else ""),
+            "🔴 Financing Closed": horizon["_fin_stage"].map(lambda x: "🔴 CLOSED" if x == "RED_CLOSED" else ""),
+            "RUNWAY": pd.to_numeric(horizon.get("cash_runway_months"), errors="coerce").apply(
+                lambda v: "REVIEW / UNKNOWN" if pd.isna(v) else f"{float(v):.1f} months"
+            ),
+            "NDA/BLA Status": horizon.apply(
+                lambda r: "FDA ACCEPTED" if pd.notna(pd.to_datetime(r.get("fda_acceptance_date"), errors="coerce"))
+                else "SUBMITTED" if pd.notna(pd.to_datetime(r.get("nda_submission_date"), errors="coerce"))
+                else "NOT YET VERIFIED", axis=1
+            ),
+            "PDUFA Date": pd.to_datetime(horizon["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna(""),
+            "Days to PDUFA": horizon["_days"].apply(lambda v: "" if pd.isna(v) else int(v)),
+            "Horizon": horizon["_horizon"],
+            "Evidence Status": horizon.get("check_status", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
+        })
+        st.dataframe(horizon_view, use_container_width=True, hide_index=True, height=480)
+
+        st.markdown("### 🔴 Second Financing Completed")
+        st.caption("Only rows whose saved evidence marks the second post-readout financing as verified closed appear here. Expected close dates do not qualify.")
+        closed = horizon[horizon["_fin_stage"].eq("RED_CLOSED")].copy()
+        if closed.empty:
+            st.info("No verified second post-Phase-3 financing closures are loaded in the live feed.")
+        else:
+            closed_score = pd.to_numeric(closed.get("approval_probability"), errors="coerce")
+            closed_view = pd.DataFrame({
+                "Ticker": closed["ticker"].fillna(""),
+                "Drug": closed["drug"].fillna(""),
+                "Phase 3 Date": closed["phase3_date"].dt.strftime("%Y-%m-%d").fillna(""),
+                "Our PDUFA Score": closed_score.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}/100"),
+                "Financing #2 Status": closed.get("second_financing_status", pd.Series("SECOND_CLOSE_VERIFIED", index=closed.index)).fillna("SECOND_CLOSE_VERIFIED"),
+                "Verified Close Date": closed.get("second_financing_date", pd.Series("", index=closed.index)).fillna(""),
+                "Financing Type": closed.get("second_financing_type", pd.Series("UNKNOWN", index=closed.index)).fillna("UNKNOWN"),
+                "Proceeds": closed.get("financing_proceeds", pd.Series("", index=closed.index)).fillna(""),
+                "RUNWAY": pd.to_numeric(closed.get("cash_runway_months"), errors="coerce").apply(
+                    lambda v: "REVIEW / UNKNOWN" if pd.isna(v) else f"{float(v):.1f} months"
+                ),
+                "Current Horizon": closed["_horizon"],
+                "Evidence": closed.get("second_financing_source", pd.Series("", index=closed.index)).fillna(""),
+            })
+            st.dataframe(closed_view, use_container_width=True, hide_index=True, height=320)
+
+    st.markdown("### Phase 3 Running / Maturing — Discovery Layer")
+    st.caption(
+        "Next input layer: ClinicalTrials.gov Interventional Phase 3 studies with Recruiting or Active, not recruiting status, "
+        "mapped to public tickers and filtered to the $300M–$10B market-cap universe. This section does not treat Primary Completion Date as a company readout date."
+    )
+    st.info("Discovery feed wiring is the next build step; existing Post-P3 scoring and evidence are not modified by this layer.")
 
 
 elif page == "10. PLAN":
