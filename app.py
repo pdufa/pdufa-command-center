@@ -1414,7 +1414,7 @@ def make_event_key(row):
         pdate,
     ])
 
-APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"
+APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"\n\ndef stock_chart_url(ticker):\n    """Open the dedicated Streamlit stock chart page for any ticker."""\n    symbol = safe_text(ticker, "").upper().strip()\n    return APP_BASE_URL + "Stock_Chart?" + urllib.parse.urlencode({"ticker": symbol})
 
 def event_detail_url(row, source="live", return_page="2. ALL PDUFA"):
     event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
@@ -2054,7 +2054,7 @@ def render_merged_table(frame, heading, height_px=690):
                 parsed = urllib.parse.urlparse(val)
                 ticker_label = urllib.parse.parse_qs(parsed.query).get("ticker", ["Open"])[0]
                 shown = html.escape(ticker_label)
-                rendered = f'<a href="{html.escape(val, quote=True)}" target="_parent">{shown}</a>'
+                chart_url = stock_chart_url(ticker_label)\n                rendered = f'<a href="{html.escape(chart_url, quote=True)}" target="_blank" rel="noopener">{shown}</a>'
                 cells.append(f'<td class="ticker-cell{cls}"{sort_attrs}>{rendered}</td>')
             elif col == "Audit Source" and val.startswith("http"):
                 rendered = f'<a href="{html.escape(val, quote=True)}" target="_blank">Source</a>'
