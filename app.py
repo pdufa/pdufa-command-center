@@ -2380,7 +2380,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN","11. POST-P3 HORIZON"]
+nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN","11. PHASE 3 UNIVERSE"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -4359,8 +4359,8 @@ elif page == "9. FDA ENGINE":
 
 
 
-elif page == "11. POST-P3 HORIZON":
-    st.markdown("## 11. POST-P3 HORIZON")
+elif page == "11. PHASE 3 UNIVERSE":
+    st.markdown("## 11. PHASE 3 UNIVERSE — COMPLETION DATE PRIORITY")
     st.caption(
         "Post-Phase-3 trading horizon. Phase 3 evidence, our existing PDUFA score, financing progress, "
         "cash runway, application progress and PDUFA timing are kept separate so a strong FDA case cannot hide an unresolved trade gate."
