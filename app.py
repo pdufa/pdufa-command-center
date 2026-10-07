@@ -183,13 +183,16 @@ def load_strict_historical_126_review():
 
 @st.cache_data(ttl=120)
 def load_data():
-    # Defensive repair: older exports accidentally used literal "\\n" between CSV rows.
+    # Defensive repair: older exports accidentally used literal "
+" between CSV rows.
     # Read as text first and normalize before parsing so the master list never collapses to one record.
     from io import StringIO
     with open("data/pdufa_candidates.csv", "r", encoding="utf-8") as f:
         raw = f.read()
-    if "\\n" in raw:
-        raw = raw.replace("\\n", "\n")
+    if "
+" in raw:
+        raw = raw.replace("
+", "\n")
     x = pd.read_csv(StringIO(raw))
 
     # Persistent second-financing milestone backfill. Kept separate from the
