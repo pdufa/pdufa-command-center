@@ -2373,7 +2373,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. TRADING FLOW","2. PDUFA CALENDAR","3. ALL PDUFA","4. DECISION","5. SCANS","6. RECHECK","7. FDA ENGINE","8. MARKET CAP","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["1. TRADING FLOW","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","3. ALL PDUFA","4. DECISION","5. SCANS","6. RECHECK","7. FDA ENGINE","8. MARKET CAP","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -2944,6 +2944,18 @@ elif page == "8. MARKET CAP":
                 quick_row = cap_open[cap_open["event_key_ui"] == quick].iloc[0]
                 go_individual(quick_row.get("ticker"), quick, source="live", return_page=page)
                 st.rerun()
+
+elif page == "DISEASE & MARKET HORIZON":
+    st.markdown("## DISEASE & MARKET HORIZON")
+    st.caption("Disease burden, competing therapies, and commercial opportunity for each Phase 3 drug and indication. Unverified values must remain blank—not estimated as facts.")
+    st.link_button("Open disease and market research sheet", "https://docs.google.com/spreadsheets/d/1lBfjuXloQnoUTOJZYnu6v6PAHrZSqJoWn_-6L6wt-fY/edit#gid=204610070")
+    st.markdown("### Disease burden and addressable patients")
+    st.info("Research fields: U.S./global prevalence, incidence, diagnosed patients, eligible patients, treatable population, severity, and unmet need. Record geography, year, definition, and source.")
+    st.markdown("### Competing therapies")
+    st.info("Compare approved therapies and Phase 2/3 competitors by mechanism, efficacy, safety, dosing, price/access, and development status. Mark direct head-to-head evidence separately from cross-trial comparisons.")
+    st.markdown("### Commercial valuation and our scores")
+    st.info("Estimate penetration, potential peak sales, sales relative to market cap, Competitive Advantage Score, and Commercial Opportunity Score. Keep OUR FDA PoA separate from OUR TRADE SCORE and Entry Gate.")
+    st.warning("This page is a research framework linked to the Google Sheet. Live company-by-company epidemiology, competitor research, score calculation, and Sheet synchronization are not yet connected.")
 
 elif page == "2. PDUFA CALENDAR":
     st.markdown("## 2. PDUFA CALENDAR — UPCOMING CATALYSTS")
