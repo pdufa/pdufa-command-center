@@ -1417,7 +1417,12 @@ def make_event_key(row):
         pdate,
     ])
 
-APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"\n\ndef stock_chart_url(ticker):\n    """Open the dedicated Streamlit stock chart page for any ticker."""\n    symbol = safe_text(ticker, "").upper().strip()\n    return APP_BASE_URL + "Stock_Chart?" + urllib.parse.urlencode({"ticker": symbol})
+APP_BASE_URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"
+
+def stock_chart_url(ticker):
+    """Open the dedicated Streamlit stock chart page for any ticker."""
+    symbol = safe_text(ticker, "").upper().strip()
+    return APP_BASE_URL + "Stock_Chart?" + urllib.parse.urlencode({"ticker": symbol})
 
 def event_detail_url(row, source="live", return_page="2. ALL PDUFA"):
     event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
