@@ -4403,7 +4403,6 @@ elif page == "11. TRADING FLOW":
     if "phase3_date" not in horizon:
         horizon["phase3_date"] = pd.NaT
     horizon["phase3_date"] = pd.to_datetime(horizon["phase3_date"], errors="coerce")
-    horizon = horizon[horizon["phase3_date"].notna()].copy()
 
     def _flag_yes(v):
         return str(v).strip().upper() in {"YES","Y","TRUE","1","VERIFIED","CLOSED","SECOND_CLOSE_VERIFIED"}
@@ -4491,6 +4490,21 @@ elif page == "11. TRADING FLOW":
             "Horizon": horizon["_horizon"],
             "Evidence Status": horizon.get("check_status", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
         })
+        _total = len(horizon)
+        _running = int(horizon["_registry_status"].astype(str).str.upper().isin(["RECRUITING","ACTIVE_NOT_RECRUITING","NOT_YET_RECRUITING"]).sum())
+        _readout = int(horizon["phase3_date"].notna().sum())
+        _fin_active = int(horizon["_fin_stage"].isin(["GREEN_STARTED","YELLOW_IN_PROGRESS"]).sum())
+        _fin_closed = int(horizon["_fin_stage"].eq("RED_CLOSED").sum())
+        _pdufa = int(pd.to_datetime(horizon["pdufa_date"], errors="coerce").notna().sum())
+        m1,m2,m3,m4,m5,m6 = st.columns(6)
+        m1.metric("Universe", _total)
+        m2.metric("P3 Running/Maturing", _running)
+        m3.metric("Readout Verified", _readout)
+        m4.metric("Financing Active", _fin_active)
+        m5.metric("Financing Closed", _fin_closed)
+        m6.metric("PDUFA Dated", _pdufa)
+        st.caption("PRODUCTIVITY = candidates progressing forward through verified milestones, not merely the number of records collected.")
+
         st.dataframe(horizon_view, use_container_width=True, hide_index=True, height=480)
 
         st.markdown("### 🔴 Second Financing Completed")
@@ -4516,39 +4530,6 @@ elif page == "11. TRADING FLOW":
                 "Evidence": closed.get("second_financing_source", pd.Series("", index=closed.index)).fillna(""),
             })
             st.dataframe(closed_view, use_container_width=True, hide_index=True, height=320)
-
-    st.markdown("### Watchlist")
-    st.caption("Select a Phase 3 candidate and add it to the existing Streamlit watchlist.")
-    _phase3_tickers = [x for x in horizon["ticker"].fillna("").astype(str).unique().tolist() if x] if not horizon.empty else []
-    if _phase3_tickers:
-        _watch_pick = st.selectbox("Phase 3 candidate", _phase3_tickers, key="phase3_watch_pick")
-        if st.button("＋ ADD TO WATCHLIST", key="phase3_watch_add", use_container_width=True):
-            if _watch_pick not in st.session_state.watchlist:
-                st.session_state.watchlist.append(_watch_pick)
-                st.success(f"{_watch_pick} added to Watchlist.")
-            else:
-                st.info(f"{_watch_pick} is already on Watchlist.")
-        _watched = [x for x in st.session_state.watchlist if x in _phase3_tickers]
-        if _watched:
-            st.write("**Current Phase 3 watchlist:** " + ", ".join(_watched))
-
-            _position_pick = st.selectbox("Watchlist candidate for entry review", _watched, key="position_candidate_pick")
-            if st.button("PROMOTE TO POSITION CANDIDATE", key="position_candidate_add", use_container_width=True):
-                if _position_pick not in st.session_state.position_candidates:
-                    st.session_state.position_candidates.append(_position_pick)
-                st.success(f"{_position_pick} promoted to Position Candidate — ENTRY GATE REVIEW.")
-            _positions = [x for x in st.session_state.position_candidates if x in _watched]
-            if _positions:
-                st.markdown("#### Position Candidates")
-                st.dataframe(
-                    pd.DataFrame({
-                        "Ticker": _positions,
-                        "Status": ["ENTRY GATE REVIEW"] * len(_positions),
-                        "Broker Order": ["NO — RESEARCH STATE ONLY"] * len(_positions),
-                    }),
-                    use_container_width=True,
-                    hide_index=True,
-                )
 
     st.divider()
     st.markdown("### 2️⃣ WATCHLIST")
@@ -4577,7 +4558,7 @@ elif page == "11. TRADING FLOW":
     st.caption("Position tracking stage. Research/tracking state only; no brokerage orders are placed here.")
     st.info("Candidates advance here only after the Entry Gate is verified.")
 
-    st.markdown("### Phase 3 Running / Maturing — Discovery Layer")
+    st.markdown("### 5️⃣ DISCOVERY / NEXT CANDIDATES")
     st.caption(
         "Next input layer: ClinicalTrials.gov Interventional Phase 3 studies with Recruiting or Active, not recruiting status, "
         "mapped to public tickers and filtered to the $300M–$10B market-cap universe. This section does not treat Primary Completion Date as a company readout date."
