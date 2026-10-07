@@ -4366,7 +4366,37 @@ elif page == "11. PHASE 3 UNIVERSE":
         "cash runway, application progress and PDUFA timing are kept separate so a strong FDA case cannot hide an unresolved trade gate."
     )
 
+    @st.cache_data(ttl=21600, show_spinner=False)
+    def _ctgov_trial_dates(nct_id):
+        nct_id = str(nct_id or "").strip()
+        if not re.fullmatch(r"NCT\d{8}", nct_id):
+            return {}
+        try:
+            url = "https://clinicaltrials.gov/api/v2/studies/" + urllib.parse.quote(nct_id)
+            req = urllib.request.Request(url, headers={"User-Agent":"SwiftLook-PDUFA/1.0"})
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                study = json.loads(resp.read().decode("utf-8"))
+            p = study.get("protocolSection", {})
+            status = p.get("statusModule", {})
+            def _d(name):
+                v = status.get(name, {}) or {}
+                return v.get("date", "") if isinstance(v, dict) else ""
+            return {
+                "trial_status": status.get("overallStatus", ""),
+                "primary_completion": _d("primaryCompletionDateStruct"),
+                "study_completion": _d("completionDateStruct"),
+                "results_first_posted": _d("resultsFirstPostDate"),
+            }
+        except Exception:
+            return {}
+
     horizon = df.copy()
+    horizon["_registry_nct"] = horizon.get("nct_id", pd.Series("", index=horizon.index)).fillna("").astype(str).str.extract(r"(NCT\d{8})", expand=False).fillna("")
+    _trial_cache = {n:_ctgov_trial_dates(n) for n in horizon["_registry_nct"].unique() if n}
+    horizon["_primary_completion"] = pd.to_datetime(horizon["_registry_nct"].map(lambda n:_trial_cache.get(n,{}).get("primary_completion","")), errors="coerce")
+    horizon["_study_completion"] = pd.to_datetime(horizon["_registry_nct"].map(lambda n:_trial_cache.get(n,{}).get("study_completion","")), errors="coerce")
+    horizon["_registry_status"] = horizon["_registry_nct"].map(lambda n:_trial_cache.get(n,{}).get("trial_status",""))
+    horizon["_results_posted"] = horizon["_registry_nct"].map(lambda n:_trial_cache.get(n,{}).get("results_first_posted",""))
     if "phase3_date" not in horizon:
         horizon["phase3_date"] = pd.NaT
     horizon["phase3_date"] = pd.to_datetime(horizon["phase3_date"], errors="coerce")
@@ -4416,6 +4446,8 @@ elif page == "11. PHASE 3 UNIVERSE":
     else:
         horizon["_fin_stage"] = horizon.apply(_fin_stage, axis=1)
         horizon["_horizon"] = horizon.apply(_horizon_label, axis=1)
+        horizon["_completion_priority"] = horizon["_primary_completion"].fillna(horizon["phase3_date"]).fillna(pd.Timestamp.max)
+        horizon = horizon.sort_values(["_completion_priority","ticker"], na_position="last")
         horizon["_days"] = (
             pd.to_datetime(horizon["pdufa_date"], errors="coerce").dt.normalize()
             - pd.Timestamp.today().normalize()
@@ -4425,7 +4457,12 @@ elif page == "11. PHASE 3 UNIVERSE":
         horizon_view = pd.DataFrame({
             "Ticker": horizon["ticker"].fillna(""),
             "Drug": horizon["drug"].fillna(""),
-            "Phase 3 Date": horizon["phase3_date"].dt.strftime("%Y-%m-%d").fillna(""),
+            "NCT": horizon["_registry_nct"],
+            "Trial Status": horizon["_registry_status"].replace("", "REVIEW"),
+            "Primary Completion": horizon["_primary_completion"].dt.strftime("%Y-%m-%d").fillna("REVIEW"),
+            "Study Completion": horizon["_study_completion"].dt.strftime("%Y-%m-%d").fillna("REVIEW"),
+            "Results First Posted": horizon["_results_posted"].replace("", "REVIEW"),
+            "Company Readout Date": horizon["phase3_date"].dt.strftime("%Y-%m-%d").fillna("NOT VERIFIED"),
             "Phase 3 P": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
             "Our PDUFA Score": score.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}/100"),
             "Entry Gate": horizon.get("entry_gate", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
