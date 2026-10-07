@@ -27,7 +27,7 @@ if not ticker:
     st.stop()
 
 st.title(f"{ticker} — Stock Chart")
-st.caption("Interactive candlestick chart. Default technical studies: volume, VWAP, 20-day SMA, exponential moving average and Bollinger Bands.")
+st.caption("Interactive candlestick chart. Default technical studies: volume, VWAP, 20-day SMA, 20-day EMA and Bollinger Bands.")
 
 symbol = f"NASDAQ:{ticker}"
 widget = {
