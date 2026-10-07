@@ -2059,7 +2059,8 @@ def render_merged_table(frame, heading, height_px=690):
                 parsed = urllib.parse.urlparse(val)
                 ticker_label = urllib.parse.parse_qs(parsed.query).get("ticker", ["Open"])[0]
                 shown = html.escape(ticker_label)
-                chart_url = stock_chart_url(ticker_label)\n                rendered = f'<a href="{html.escape(chart_url, quote=True)}" target="_blank" rel="noopener">{shown}</a>'
+                chart_url = stock_chart_url(ticker_label)
+                rendered = f'<a href="{html.escape(chart_url, quote=True)}" target="_blank" rel="noopener">{shown}</a>'
                 cells.append(f'<td class="ticker-cell{cls}"{sort_attrs}>{rendered}</td>')
             elif col == "Audit Source" and val.startswith("http"):
                 rendered = f'<a href="{html.escape(val, quote=True)}" target="_blank">Source</a>'
