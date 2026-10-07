@@ -4469,6 +4469,12 @@ elif page == "11. PHASE 3 UNIVERSE":
             "🟢 Financing Started": horizon["_fin_stage"].map(lambda x: "🟢 STARTED" if x == "GREEN_STARTED" else ""),
             "🟡 Financing In Progress": horizon["_fin_stage"].map(lambda x: "🟡 IN PROGRESS" if x == "YELLOW_IN_PROGRESS" else ""),
             "🔴 Financing Closed": horizon["_fin_stage"].map(lambda x: "🔴 CLOSED" if x == "RED_CLOSED" else ""),
+            "Financing #1 Date": horizon.get("first_financing_date", pd.Series("", index=horizon.index)).fillna(""),
+            "Financing #2 Date": horizon.get("second_financing_date", pd.Series("", index=horizon.index)).fillna(""),
+            "Financing Type": horizon.get("second_financing_type", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
+            "Proceeds": horizon.get("financing_proceeds", pd.Series("", index=horizon.index)).fillna(""),
+            "Dilution / ATM": horizon.get("new_dilution_flag", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
+            "Cash": pd.to_numeric(horizon.get("cash"), errors="coerce").apply(lambda v: "REVIEW" if pd.isna(v) else "$" + f"{float(v):,.0f}"),
             "RUNWAY": pd.to_numeric(horizon.get("cash_runway_months"), errors="coerce").apply(
                 lambda v: "REVIEW / UNKNOWN" if pd.isna(v) else f"{float(v):.1f} months"
             ),
@@ -4507,6 +4513,21 @@ elif page == "11. PHASE 3 UNIVERSE":
                 "Evidence": closed.get("second_financing_source", pd.Series("", index=closed.index)).fillna(""),
             })
             st.dataframe(closed_view, use_container_width=True, hide_index=True, height=320)
+
+    st.markdown("### Watchlist")
+    st.caption("Select a Phase 3 candidate and add it to the existing Streamlit watchlist.")
+    _phase3_tickers = [x for x in horizon["ticker"].fillna("").astype(str).unique().tolist() if x] if not horizon.empty else []
+    if _phase3_tickers:
+        _watch_pick = st.selectbox("Phase 3 candidate", _phase3_tickers, key="phase3_watch_pick")
+        if st.button("＋ ADD TO WATCHLIST", key="phase3_watch_add", use_container_width=True):
+            if _watch_pick not in st.session_state.watchlist:
+                st.session_state.watchlist.append(_watch_pick)
+                st.success(f"{_watch_pick} added to Watchlist.")
+            else:
+                st.info(f"{_watch_pick} is already on Watchlist.")
+        _watched = [x for x in st.session_state.watchlist if x in _phase3_tickers]
+        if _watched:
+            st.write("**Current Phase 3 watchlist:** " + ", ".join(_watched))
 
     st.markdown("### Phase 3 Running / Maturing — Discovery Layer")
     st.caption(
