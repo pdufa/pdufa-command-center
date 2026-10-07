@@ -27,7 +27,7 @@ if not ticker:
     st.stop()
 
 st.title(f"{ticker} — Stock Chart")
-st.caption("Interactive candlestick chart. Default technical studies: volume, moving averages and Bollinger Bands.")
+st.caption("Interactive candlestick chart. Default technical studies: volume, VWAP, 20-day SMA, exponential moving average and Bollinger Bands.")
 
 symbol = f"NASDAQ:{ticker}"
 widget = {
@@ -49,6 +49,7 @@ widget = {
     "support_host": "https://www.tradingview.com",
     "studies": [
         "Volume@tv-basicstudies",
+        "VWAP@tv-basicstudies",
         "MASimple@tv-basicstudies",
         "MAExp@tv-basicstudies",
         "BB@tv-basicstudies"
