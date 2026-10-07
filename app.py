@@ -4350,10 +4350,9 @@ elif page == "7. FDA ENGINE":
 
 elif page == "1. TRADING FLOW":
     st.markdown("## 1. TRADING FLOW — DAILY OPERATING FUNNEL")
-    st.markdown("### 1️⃣ PHASE 3 UNIVERSE — COMPLETION DATE PRIORITY")
+    st.markdown("### 1️⃣ DISCOVERY → PHASE 3 UNIVERSE")
     st.caption(
-        "Post-Phase-3 trading horizon. Phase 3 evidence, our existing PDUFA score, financing progress, "
-        "cash runway, application progress and PDUFA timing are kept separate so a strong FDA case cannot hide an unresolved trade gate."
+        "Start with the Phase 3/pivotal universe, verify the company readout, then follow only decision-relevant milestones: financing, runway, regulatory progress, FDA PoA and entry readiness."
     )
 
     @st.cache_data(ttl=21600, show_spinner=False)
@@ -4496,7 +4495,7 @@ elif page == "1. TRADING FLOW":
 
         st.dataframe(horizon_view, use_container_width=True, hide_index=True, height=480)
 
-        st.markdown("### 🔴 Second Financing Completed")
+        st.markdown("### Financing milestone — verified second close")
         st.caption("Only rows whose saved evidence marks the second post-readout financing as verified closed appear here. Expected close dates do not qualify.")
         closed = horizon[horizon["_fin_stage"].eq("RED_CLOSED")].copy()
         if closed.empty:
@@ -4521,7 +4520,7 @@ elif page == "1. TRADING FLOW":
             st.dataframe(closed_view, use_container_width=True, hide_index=True, height=320)
 
     st.divider()
-    st.markdown("### 2️⃣ WATCHLIST")
+    st.markdown("### 2️⃣ WATCHLIST — QUALIFIED FOR ACTIVE MONITORING")
     watched = list(dict.fromkeys(st.session_state.watchlist))
     if not watched:
         st.info("No candidates on Watchlist yet.")
@@ -4534,7 +4533,7 @@ elif page == "1. TRADING FLOW":
             st.rerun()
 
     st.divider()
-    st.markdown("### 3️⃣ ENTRY REVIEW")
+    st.markdown("### 3️⃣ ENTRY REVIEW — REQUIRED GATES")
     review = list(dict.fromkeys(st.session_state.position_candidates))
     if not review:
         st.info("No candidates in Entry Review.")
@@ -4543,16 +4542,14 @@ elif page == "1. TRADING FLOW":
         st.caption("Verify the required clinical, financing, price-stabilization and volume gates before advancing.")
 
     st.divider()
-    st.markdown("### 4️⃣ POSITIONS")
+    st.markdown("### 4️⃣ POSITIONS — QUALIFIED CANDIDATES")
     st.caption("Position tracking stage. Research/tracking state only; no brokerage orders are placed here.")
     st.info("Candidates advance here only after the Entry Gate is verified.")
 
-    st.markdown("### 5️⃣ DISCOVERY / NEXT CANDIDATES")
     st.caption(
-        "Next input layer: ClinicalTrials.gov Interventional Phase 3 studies with Recruiting or Active, not recruiting status, "
-        "mapped to public tickers and filtered to the $300M–$10B market-cap universe. This section does not treat Primary Completion Date as a company readout date."
+        "Discovery source: ClinicalTrials.gov Phase 3/pivotal records mapped to public tickers in the configured market-cap universe. "
+        "Primary Completion Date is a trial milestone, not a substitute for a verified company readout date."
     )
-    st.info("Discovery feed wiring is the next build step; existing Post-P3 scoring and evidence are not modified by this layer.")
 
 
 elif page == "11. PLAN":
