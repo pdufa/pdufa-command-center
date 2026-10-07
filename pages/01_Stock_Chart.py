@@ -31,7 +31,9 @@ st.caption("Interactive candlestick chart. Default technical studies: volume, mo
 
 symbol = f"NASDAQ:{ticker}"
 widget = {
-    "autosize": True,
+    "autosize": False,
+    "width": "100%",
+    "height": 3180,
     "symbol": symbol,
     "interval": "D",
     "timezone": "America/Los_Angeles",
@@ -55,13 +57,13 @@ widget = {
     ]
 }
 html = f"""
-<div class="tradingview-widget-container" style="height:1580px;width:100%">
+<div class="tradingview-widget-container" style="height:3180px;width:100%">
   <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
   {json.dumps(widget)}
   </script>
 </div>
 """
-components.html(html, height=1600, scrolling=False)
+components.html(html, height=3200, scrolling=False)
 
 st.info("PDUFA-specific event markers (Phase 3, financing, NDA/BLA, PDUFA and FDA decision) are the next overlay layer; they will use the Command Center's verified event data.")
