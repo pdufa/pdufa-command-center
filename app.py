@@ -2367,6 +2367,8 @@ if "selected_ticker" not in st.session_state:
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
 if "watchlist" not in st.session_state:
     st.session_state.watchlist = []
+if "position_candidates" not in st.session_state:
+    st.session_state.position_candidates = []
 if "selected_event_key" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
@@ -4528,6 +4530,24 @@ elif page == "11. PHASE 3 UNIVERSE":
         _watched = [x for x in st.session_state.watchlist if x in _phase3_tickers]
         if _watched:
             st.write("**Current Phase 3 watchlist:** " + ", ".join(_watched))
+
+            _position_pick = st.selectbox("Watchlist candidate for entry review", _watched, key="position_candidate_pick")
+            if st.button("PROMOTE TO POSITION CANDIDATE", key="position_candidate_add", use_container_width=True):
+                if _position_pick not in st.session_state.position_candidates:
+                    st.session_state.position_candidates.append(_position_pick)
+                st.success(f"{_position_pick} promoted to Position Candidate — ENTRY GATE REVIEW.")
+            _positions = [x for x in st.session_state.position_candidates if x in _watched]
+            if _positions:
+                st.markdown("#### Position Candidates")
+                st.dataframe(
+                    pd.DataFrame({
+                        "Ticker": _positions,
+                        "Status": ["ENTRY GATE REVIEW"] * len(_positions),
+                        "Broker Order": ["NO — RESEARCH STATE ONLY"] * len(_positions),
+                    }),
+                    use_container_width=True,
+                    hide_index=True,
+                )
 
     st.markdown("### Phase 3 Running / Maturing — Discovery Layer")
     st.caption(
