@@ -4456,8 +4456,14 @@ elif page == "11. TRADING FLOW":
         ).dt.days
 
         score = pd.to_numeric(horizon.get("approval_probability"), errors="coerce")
+        bpw_poa = pd.to_numeric(horizon.get("biopharmawatch_probability", pd.Series(float("nan"), index=horizon.index)), errors="coerce")
+        our_fda_poa = pd.to_numeric(horizon.get("public_approval_probability", horizon.get("approval_probability", pd.Series(float("nan"), index=horizon.index))), errors="coerce")
+        poa_delta = our_fda_poa - bpw_poa
         horizon_view = pd.DataFrame({
             "Ticker": horizon["ticker"].fillna(""),
+            "BPW PoA": bpw_poa.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}%"),
+            "Our FDA PoA": our_fda_poa.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}%"),
+            "Δ PoA": poa_delta.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):+.0f} pts"),
             "Drug": horizon["drug"].fillna(""),
             "NCT": horizon["_registry_nct"],
             "Trial Status": horizon["_registry_status"].replace("", "REVIEW"),
@@ -4466,7 +4472,7 @@ elif page == "11. TRADING FLOW":
             "Results First Posted": horizon["_results_posted"].replace("", "REVIEW"),
             "Company Readout Date": horizon["phase3_date"].dt.strftime("%Y-%m-%d").fillna("NOT VERIFIED"),
             "Phase 3 P": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
-            "Our PDUFA Score": score.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}/100"),
+            "Our Trade/PDUFA Score": score.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}/100"),
             "Entry Gate": horizon.get("entry_gate", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
             "🟢 Financing Started": horizon["_fin_stage"].map(lambda x: "🟢 STARTED" if x == "GREEN_STARTED" else ""),
             "🟡 Financing In Progress": horizon["_fin_stage"].map(lambda x: "🟡 IN PROGRESS" if x == "YELLOW_IN_PROGRESS" else ""),
