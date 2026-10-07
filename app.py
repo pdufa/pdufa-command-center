@@ -1052,7 +1052,7 @@ def render_historical_assessed_decisions(event_keys):
     )
     display = pd.DataFrame(index=selected.index)
     display["Ticker"] = selected.apply(
-        lambda r: event_detail_url(r, source="history", return_page="5. PREDICTION ENGINE"), axis=1
+        lambda r: stock_chart_url(r.get("ticker")), axis=1
     ) if not selected.empty else pd.Series(dtype="object")
     display["PDUFA Date"] = selected["pdufa_date"]
     display["SUGGESTION"] = selected["assessed_direction"].replace({"APPROVED": "PASS"})
@@ -3395,7 +3395,7 @@ elif page == "5. PREDICTION ENGINE":
         live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
         live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
         live_v2["Ticker"] = live_v2.apply(
-            lambda r: event_detail_url(r, source="live", return_page="5. PREDICTION ENGINE"), axis=1
+            lambda r: stock_chart_url(r.get("ticker")), axis=1
         )
 
         actionable = live_v2[live_v2["V2 Call"].isin(["APPROVED","CRL"])]
@@ -3432,7 +3432,7 @@ elif page == "5. PREDICTION ENGINE":
                 "Ticker": st.column_config.LinkColumn(
                     "Ticker",
                     display_text=r"ticker=([^&]+)",
-                    help="Open this future PDUFA detail page"
+                    help="Open this ticker stock chart"
                 )
             }
         )
