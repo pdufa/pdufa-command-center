@@ -3257,7 +3257,7 @@ elif page == "5. PREDICTION ENGINE":
 
     hview = hview.sort_values(["pdufa_date","ticker"]).copy()
     hview["Ticker"] = hview.apply(
-        lambda r: event_detail_url(r, source="history", return_page="5. PREDICTION ENGINE"), axis=1
+        lambda r: stock_chart_url(r.get("ticker")), axis=1
     )
     hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
     hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
