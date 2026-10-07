@@ -229,7 +229,7 @@ def load_data():
         "second_financing_in_progress","second_financing_close_verified"
     ]
     optional_numeric = [
-        "approval_probability","public_approval_probability","biopharmawatch_probability","science_score","regulatory_score","safety_score",
+        "approval_probability","public_approval_probability","science_score","regulatory_score","safety_score",
         "cmc_score","market_cap","trade_score","short_interest","iv_30d",
         "price_last","return_30d_pct","avg_volume_20d","short_ratio","shares_float",
         "institutional_ownership_pct","cash","cash_runway_months"
@@ -258,9 +258,6 @@ def load_data():
     x["public_approval_probability"] = x["public_approval_probability"].apply(
         lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
     )
-    x["biopharmawatch_probability"] = x["biopharmawatch_probability"].apply(
-        lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
-    )
     return x
 
 
@@ -275,14 +272,10 @@ def load_prediction_history():
     for col in required:
         if col not in x:
             x[col] = pd.NA
-    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","biopharmawatch_probability","public_model_class","public_evidence_note","internal_direction_class","internal_direction_note","reported_p_values"]:
+    for col in ["cap_recovery_confidence","cap_recovery_method","public_approval_probability","public_model_class","public_evidence_note","internal_direction_class","internal_direction_note","reported_p_values"]:
         if col not in x:
             x[col] = pd.NA
     x["public_approval_probability"] = pd.to_numeric(x["public_approval_probability"], errors="coerce")
-    x["biopharmawatch_probability"] = pd.to_numeric(x["biopharmawatch_probability"], errors="coerce")
-    x["biopharmawatch_probability"] = x["biopharmawatch_probability"].apply(
-        lambda v: v * 100 if pd.notna(v) and 0 <= float(v) <= 1 else v
-    )
     x["pdufa_date"] = pd.to_datetime(x["pdufa_date"], errors="coerce")
     x["p_approval"] = pd.to_numeric(x["p_approval"], errors="coerce")
     x["historical_market_cap_billions"] = pd.to_numeric(
@@ -1269,11 +1262,9 @@ def displayed_probability_text(row, decimals=1):
 
 
 def all_source_probability_value(row):
-    """All-source PoA: equal-weight I App, P App, and actual BiopharmaWatch PoA.
-    Requires all three inputs so the displayed score really is an all-source score.
-    """
+    """Our consensus PoA: equal-weight internal and public-evidence FDA PoA."""
     vals = []
-    for field in ["approval_probability", "public_approval_probability", "biopharmawatch_probability"]:
+    for field in ["approval_probability", "public_approval_probability"]:
         v = row.get(field, row.get("p_approval") if field == "approval_probability" else pd.NA)
         if v is None or pd.isna(v):
             return pd.NA
@@ -1281,7 +1272,7 @@ def all_source_probability_value(row):
         if 0 <= v <= 1:
             v *= 100
         vals.append(v)
-    return sum(vals) / 3.0
+    return sum(vals) / 2.0
 
 
 def all_source_direction_state(row):
@@ -2376,7 +2367,7 @@ if "selected_event_key" not in st.session_state:
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-06K · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
 st.caption("DECISION → ALL PDUFA → MARKET CAP GROUPS → CALENDAR → PREDICTION ENGINE → SCANS → MATCH OPTIMIZER → RECHECK → FDA ENGINE → PLAN. Company/PDUFA detail opens only when an event is clicked.")
-st.caption("Two visible approval scores: Public = public-only evidence. All Sources = combined internal + public + BiopharmaWatch inputs when available. Direction / FDA Match shows the predicted FDA direction before a decision, then 100% when the final FDA direction matches that prediction or 0% when it does not.")
+st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
@@ -2414,9 +2405,6 @@ elif page == "2. ALL PDUFA":
         hist["approval_probability"] = pd.to_numeric(hist.get("p_approval"), errors="coerce")
         hist["public_approval_probability"] = pd.to_numeric(
             hist.get("public_approval_probability"), errors="coerce"
-        )
-        hist["biopharmawatch_probability"] = pd.to_numeric(
-            hist.get("biopharmawatch_probability"), errors="coerce"
         )
         hist["market_cap"] = pd.to_numeric(hist.get("historical_market_cap_billions"), errors="coerce") * 1_000_000_000
         hist["trade_score"] = pd.NA
@@ -2638,7 +2626,6 @@ elif page == "2. ALL PDUFA":
 
     avg_i_app = pd.to_numeric(view.get("approval_probability"), errors="coerce").mean()
     avg_p_app = pd.to_numeric(view.get("public_approval_probability"), errors="coerce").mean()
-    avg_bpw = pd.to_numeric(view.get("biopharmawatch_probability"), errors="coerce").mean()
     all_source_series = view.apply(all_source_probability_value, axis=1)
     avg_all_source = pd.to_numeric(all_source_series, errors="coerce").mean()
 
@@ -2656,7 +2643,7 @@ elif page == "2. ALL PDUFA":
     match_summary = "" if decided_matches.empty else f"{(decided_matches == '100%').mean()*100:.1f}%"
     c_summary = f"{p_summary} · {f_summary}"
     m1,m2,m3,m4,m5,m6 = st.columns(6)
-    m1.metric("P%", p_summary, help="Average all-sources Probability of Approval for the current filtered selection")
+    m1.metric("P%", p_summary, help="Average Internal + Public consensus Probability of Approval for the current filtered selection")
     m2.metric("F", f_summary, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
     m3.metric("Match %", match_summary, help="Direction-pick accuracy on cases with final FDA outcomes in the current filtered selection")
     m4.metric("C", c_summary, help="Combined P% + FDA direction")
@@ -2670,7 +2657,7 @@ elif page == "2. ALL PDUFA":
     m8.metric("Future", future_n)
     m9.metric("Next 4 Weeks", next_4w_n)
 
-    st.caption("I App % = internal/private model. P App % = public-only model. BPW % = actual BiopharmaWatch probability when available. Probability of Approval % = equal-weight all-source composite of I + P + BPW and is shown only when all three inputs exist. I+P Consensus remains a separate two-model comparison.")
+    st.caption("I App % = internal model. P App % = public-evidence model. Probability of Approval % = our equal-weight I + P consensus when both inputs are available. No external proprietary PoA is required.")
 
     st.caption(f"Showing {len(view)} of {len(master)} records. Select a row to open its Individual Company page.")
 
@@ -4456,14 +4443,10 @@ elif page == "11. TRADING FLOW":
         ).dt.days
 
         score = pd.to_numeric(horizon.get("approval_probability"), errors="coerce")
-        bpw_poa = pd.to_numeric(horizon.get("biopharmawatch_probability", pd.Series(float("nan"), index=horizon.index)), errors="coerce")
         our_fda_poa = pd.to_numeric(horizon.get("public_approval_probability", horizon.get("approval_probability", pd.Series(float("nan"), index=horizon.index))), errors="coerce")
-        poa_delta = our_fda_poa - bpw_poa
         horizon_view = pd.DataFrame({
             "Ticker": horizon["ticker"].fillna(""),
-            "BPW PoA": bpw_poa.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}%"),
             "Our FDA PoA": our_fda_poa.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}%"),
-            "Δ PoA": poa_delta.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):+.0f} pts"),
             "Drug": horizon["drug"].fillna(""),
             "NCT": horizon["_registry_nct"],
             "Trial Status": horizon["_registry_status"].replace("", "REVIEW"),
