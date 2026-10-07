@@ -2382,7 +2382,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN","11. PHASE 3 UNIVERSE"]
+nav_options = ["1. DECISION","2. ALL PDUFA","3. MARKET CAP GROUPS","4. CALENDAR","5. PREDICTION ENGINE","6. SCANS","7. MATCH OPTIMIZER","8. RECHECK","9. FDA ENGINE","10. PLAN","11. PHASE 3 UNIVERSE","12. WATCHLIST","13. ENTRY REVIEW","14. POSITIONS"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -2393,7 +2393,37 @@ else:
     if len(st.query_params):
         st.query_params.clear()
 
-if page == "2. ALL PDUFA":
+if page == "12. WATCHLIST":
+    st.markdown("## 12. WATCHLIST")
+    st.caption("FLOW: PHASE 3 UNIVERSE  →  WATCHLIST  →  ENTRY REVIEW  →  POSITIONS")
+    watched = list(dict.fromkeys(st.session_state.watchlist))
+    if not watched:
+        st.info("Watchlist is empty. Open PHASE 3 UNIVERSE and add candidates.")
+    else:
+        st.dataframe(pd.DataFrame({"Ticker": watched, "Stage": ["WATCHLIST"] * len(watched)}), use_container_width=True, hide_index=True)
+        pick = st.selectbox("Candidate to review", watched, key="watchlist_flow_pick")
+        if st.button("MOVE FORWARD → ENTRY REVIEW", key="watchlist_to_review", use_container_width=True):
+            if pick not in st.session_state.position_candidates:
+                st.session_state.position_candidates.append(pick)
+            st.session_state.nav = "13. ENTRY REVIEW"
+            st.rerun()
+
+elif page == "13. ENTRY REVIEW":
+    st.markdown("## 13. ENTRY REVIEW")
+    st.caption("Candidates stay in research review until the required entry evidence is verified.")
+    review = list(dict.fromkeys(st.session_state.position_candidates))
+    if not review:
+        st.info("No candidates are in Entry Review yet.")
+    else:
+        st.dataframe(pd.DataFrame({"Ticker": review, "Gate": ["REVIEW"] * len(review), "Next": ["Verify entry gates"] * len(review)}), use_container_width=True, hide_index=True)
+        st.warning("A candidate is not marked entry-ready merely because it reached this page.")
+
+elif page == "14. POSITIONS":
+    st.markdown("## 14. POSITIONS")
+    st.caption("Position tracking dashboard. This page records research/tracking state only; it does not place brokerage orders.")
+    st.info("No tracked positions yet. Candidates should advance here only after the Entry Gate is verified.")
+
+elif page == "2. ALL PDUFA":
     st.markdown("## 2. ALL PDUFA — SAVED EVENT FEED")
     st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
