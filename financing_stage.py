@@ -75,7 +75,12 @@ def add_financing_column(frame, index=None, source=None):
                      get(values(r), "event_key")) for r in matched
                 }
                 if len(identities) == 1:
-                    own = matched[0]
+                    verified_states = {financing_stage(candidate, index.today)
+                                       for candidate in matched} - {"REVIEW / UNVERIFIED"}
+                    # Conflicting verified snapshots are not silently resolved.
+                    if len(verified_states) == 1:
+                        status.append(next(iter(verified_states)))
+                        continue
             status.append(financing_stage(own, index.today))
     pivot = "DAYS TO PDUFA" if "DAYS TO PDUFA" in result else ticker
     result.insert(result.columns.get_loc(pivot) + 1, "FINANCING", status)
