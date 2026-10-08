@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
 from stages import program_stage
+from today_page import render_today
 import pandas as pd
 import json
 from pathlib import Path
@@ -2686,7 +2687,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["MASTER TABLE","PIPELINE","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["TODAY","MASTER TABLE","PIPELINE","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 if st.session_state.nav not in nav_options:
     st.session_state.nav = "MASTER TABLE"
@@ -2699,6 +2700,17 @@ else:
     page = st.session_state.nav
     if len(st.query_params):
         st.query_params.clear()
+
+if page == "TODAY":
+    try:
+        _phase_today = pd.read_csv("data/phase_pipeline.csv", keep_default_na=False)
+    except (OSError, pd.errors.ParserError):
+        _phase_today = pd.DataFrame()
+    try:
+        _finance_today = pd.read_csv("data/second_financing_status.csv", keep_default_na=False)
+    except (OSError, pd.errors.ParserError):
+        _finance_today = pd.DataFrame()
+    render_today(df, _phase_today, _finance_today)
 
 if page == "MASTER TABLE":
     st.markdown("## MASTER TABLE — PROGRAM REVIEW THROUGH FDA DECISION")
