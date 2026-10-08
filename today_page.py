@@ -63,9 +63,19 @@ def render_today(live, pipeline, financing):
     if data.empty:
         st.warning("No source records loaded. Check the master and Phase 3 pipeline files.")
         return
-    # Normalize the entire column to a comparable Pacific-local calendar date.\n    posted = pd.to_datetime(data["Result Posted"].astype("string").str.slice(0, 10), errors="coerce").dt.date\n    top = data.loc[posted.eq(yesterday)].copy()\n    top = top.loc[top["Result Source"].fillna("").astype(str).str.startswith("http")]\n    bottom = data.loc[posted.notna() & posted.le(yesterday)].copy()
+    # Normalize the entire column to a comparable Pacific-local calendar date.
+    posted = pd.to_datetime(data["Result Posted"].astype("string").str.slice(0, 10), errors="coerce").dt.date
+    top = data.loc[posted.eq(yesterday)].copy()
+    top = top.loc[top["Result Source"].fillna("").astype(str).str.startswith("http")]
+    phase3 = pd.to_datetime(first(data, "phase3_date", "phase3_readout_date", "phase3_results_date").astype("string").str.slice(0, 10), errors="coerce").dt.date
+    status = first(data, "phase3_status", "current_stage").fillna("").astype(str).str.upper()
+    eligible = (phase3.notna() & phase3.le(yesterday)) | status.str.contains("COMPLETED|RESULT|POST.PHASE.?3|PDUFA|FDA REVIEW", regex=True)
+    bottom = data.loc[eligible].copy()
     st.metric("Yesterday's source-linked Phase 3 posts", len(top))
     st.metric("Recorded post–Phase 3 rows", len(bottom))
+    if bottom.empty:
+        st.warning("No post–Phase 3 records qualified from the saved evidence. Showing the master research universe below for investigation; unverified entries are not promoted to post–Phase 3.")
+        bottom = data.copy()
     st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
     fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Source List"]
     def show(frame):
