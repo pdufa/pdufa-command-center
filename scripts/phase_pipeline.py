@@ -307,6 +307,45 @@ def master_additions(records, existing):
     return additions
 
 
+def manual_master_additions(records, existing, transfers):
+    """Route selected Phase 2 programs for review without claiming graduation."""
+    existing_ncts = {(clean(r.get("ticker")).upper(), nct)
+                     for r in existing for nct in re.findall(r"NCT\d{8}", clean(r.get("nct_id")))}
+    existing_programs = {(clean(r.get("ticker")).upper(), normalize(r.get("drug")), normalize(r.get("indication"))) for r in existing}
+    selected = {}
+    for row in records:
+        key = row.get("program_key", "")
+        if key not in transfers or row.get("destination") != "PIPELINE" or row.get("universe_gate") != "PASS":
+            continue
+        if key not in selected or row.get("source_updated", "") > selected[key].get("source_updated", ""):
+            selected[key] = row
+    additions = []
+    for key, row in selected.items():
+        ticker = clean(row.get("ticker")).upper()
+        if (ticker, row.get("nct_id")) in existing_ncts or (ticker, normalize(row.get("drug")), normalize(row.get("indication"))) in existing_programs:
+            continue
+        stage = "PHASE 2/3" if "PHASE3" in row.get("phases", "").split("|") else "PHASE 2"
+        additions.append({
+            "event_key": "PIPELINE_REVIEW|" + ticker + "|" + hashlib.sha256(key.encode()).hexdigest()[:16],
+            "ticker": ticker, "company": row.get("company", ""), "drug": row.get("drug", ""),
+            "indication": row.get("indication", ""), "nct_id": row.get("nct_id", ""),
+            "pdufa_date": "", "phase3_date": "", "phase3_start_date": "", "approval_probability": "", "trade_score": "",
+            "entry_gate": "REVIEW", "monitor_eligibility": "REVIEW", "check_status": "REVIEW — MANUAL PIPELINE TRANSFER",
+            "current_stage": stage + " — MANUAL REVIEW", "next_milestone": "Verify standalone Phase 3 start",
+            "trial_status": row.get("trial_status", ""), "phase3_status": "REVIEW", "registered_phase": row.get("phases", ""),
+            "phase2_date": row.get("start_date", "") if row.get("start_date_type") == "ACTUAL" else "",
+            "primary_completion": row.get("primary_completion", ""), "study_completion": row.get("study_completion", ""),
+            "results_first_posted": row.get("results_first_posted", ""), "trial_evidence_url": row.get("source_url", ""),
+            "pipeline_program_key": key, "pipeline_transfer_mode": "MANUAL REVIEW", "pipeline_promoted_at": transfers[key],
+            "pipeline_evidence_status": "REVIEW", "pipeline_evidence_note": row.get("promotion_reason", ""),
+            "last_checked": row.get("checked_at", ""), "evidence_cutoff": row.get("source_updated", ""),
+            "setup_phase": "Phase 2 review", "record_source": "MANUAL PIPELINE TRANSFER",
+            "market_cap": row.get("market_cap", ""), "market_cap_source": row.get("market_cap_source", ""),
+            "market_cap_checked_at": row.get("market_cap_checked_at", ""), "universe_gate": row.get("universe_gate", "REVIEW"),
+        })
+    return additions
+
+
 def read_rows(path):
     if not path.exists():
         return []

@@ -9,7 +9,7 @@ import streamlit as st
 
 
 MAX_COLUMNS = 7
-CONTROL_COLUMNS = {"watchlist", "add to analysis", "add to invest"}
+CONTROL_COLUMNS = {"watchlist", "add to analysis", "add to invest", "move to master table", "in master table"}
 GROUP_ORDER = ("Overview", "Clinical", "FDA", "Financing", "Market", "Trading", "Evidence", "Tasks", "Schedule", "Actions")
 TOPIC_ORDER = {
     "Clinical": ("Trial registry & stage", "Milestone dates", "Clinical results"),

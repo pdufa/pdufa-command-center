@@ -37,6 +37,11 @@ class ColumnGroupsTests(unittest.TestCase):
     def test_small_tables_stay_one_compact_view(self):
         self.assertEqual(list(column_groups(["Field", "Value"])), ["Overview"])
 
+    def test_pipeline_transfer_checkbox_repeats_in_every_column_tab(self):
+        columns = ["Move to MASTER TABLE", "Ticker", "Drug", "Indication", "Company", "Graduation Status", "Market Cap", "Phase 2 Start", "Registered Phase", "Trial Evidence"]
+        groups = column_groups(columns)
+        self.assertTrue(all(fields[:3] == columns[:3] for panes in groups.values() for _, fields in panes))
+
 
 class EditorChangesTests(unittest.TestCase):
     def setUp(self):

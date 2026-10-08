@@ -2,7 +2,7 @@ import copy
 import unittest
 from datetime import date
 
-from scripts.phase_pipeline import master_additions, phase3_gate, reconcile_records, registry_index, study_record
+from scripts.phase_pipeline import master_additions, manual_master_additions, phase3_gate, reconcile_records, registry_index, study_record
 
 TODAY = date(2026, 10, 8)
 
@@ -23,6 +23,51 @@ def trial(nct="NCT00000001", phases="PHASE2", drug="StudyDrug", indication="Dise
 
 
 class PhasePipelineTests(unittest.TestCase):
+    def test_manual_phase2_transfer_keeps_review_gates_and_recorded_stage(self):
+        records = reconcile_records([], [trial()], TODAY)
+        key = records[0]["program_key"]
+        additions = manual_master_additions(records, [], {key: "2026-10-08T04:00:00+00:00"})
+        self.assertEqual(len(additions), 1)
+        row = additions[0]
+        self.assertEqual(row["current_stage"], "PHASE 2 — MANUAL REVIEW")
+        self.assertEqual(row["nct_id"], "NCT00000001")
+        self.assertEqual(row["entry_gate"], "REVIEW")
+        self.assertEqual(row["pipeline_evidence_status"], "REVIEW")
+        self.assertEqual(row["pipeline_transfer_mode"], "MANUAL REVIEW")
+        for field in ("pdufa_date", "phase3_date", "phase3_start_date", "approval_probability", "trade_score"):
+            self.assertEqual(row[field], "")
+
+    def test_manual_transfer_targets_one_drug_and_indication(self):
+        first = trial()
+        second = trial("NCT00000002", drug="OtherDrug")
+        third = trial("NCT00000003", indication="Other Disease")
+        records = reconcile_records([], [first, second, third], TODAY)
+        selected = {first["program_key"]: "2026-10-08"}
+        additions = manual_master_additions(records, [], selected)
+        self.assertEqual([r["nct_id"] for r in additions], [first["nct_id"]])
+        self.assertFalse(manual_master_additions(records, [], {}))
+
+    def test_manual_transfer_does_not_duplicate_existing_or_graduated_programs(self):
+        records = reconcile_records([], [trial()], TODAY)
+        selected = {records[0]["program_key"]: "2026-10-08"}
+        manual = manual_master_additions(records, [], selected)
+        self.assertFalse(manual_master_additions(records, manual, selected))
+        graduated = reconcile_records(records, [trial("NCT00000002", "PHASE3")], TODAY)
+        automatic = master_additions(graduated, [])
+        self.assertEqual(len(automatic), 1)
+        self.assertFalse(manual_master_additions(graduated, automatic, selected))
+
+    def test_manual_transfer_respects_market_cap_scope_and_mixed_phase_review(self):
+        mixed = trial(phases="PHASE2|PHASE3")
+        records = reconcile_records([], [mixed], TODAY)
+        selected = {mixed["program_key"]: "2026-10-08"}
+        row = manual_master_additions(records, [], selected)[0]
+        self.assertEqual(row["current_stage"], "PHASE 2/3 — MANUAL REVIEW")
+        self.assertEqual(row["phase3_start_date"], "")
+        for cap in ("", "100000000", "10000000001"):
+            records = reconcile_records([], [{**trial(), "market_cap": cap}], TODAY)
+            self.assertFalse(manual_master_additions(records, [], selected))
+
     def test_phase2_waits_then_matching_phase3_moves(self):
         before = reconcile_records([], [trial()], TODAY)
         self.assertEqual(before[0]["destination"], "PIPELINE")

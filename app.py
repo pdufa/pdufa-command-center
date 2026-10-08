@@ -16,7 +16,7 @@ import sys
 from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
-from scripts.phase_pipeline import read_rows as read_phase_rows, reconcile_records as reconcile_phase_records, master_additions as phase_master_additions
+from scripts.phase_pipeline import read_rows as read_phase_rows, reconcile_records as reconcile_phase_records, master_additions as phase_master_additions, manual_master_additions as manual_phase_master_additions
 
 begin_table_render()
 
@@ -785,6 +785,7 @@ def current_phase_pipeline():
 def master_with_phase3(live):
     records, state = current_phase_pipeline()
     additions = phase_master_additions(records, live.to_dict("records"))
+    additions += manual_phase_master_additions(records, live.to_dict("records") + additions, st.session_state.get("pipeline_master_transfers", {}))
     result = pd.concat([live.copy(), pd.DataFrame(additions)], ignore_index=True, sort=False) if additions else live.copy()
     for col in ("pdufa_date", "phase1_date", "phase2_date", "phase3_date", "phase3_start_date", "nda_submission_date", "fda_acceptance_date", "decision_date", "financing_close_date"):
         if col in result:
@@ -2445,11 +2446,12 @@ else:
         st.query_params.clear()
 
 if page == "MASTER TABLE":
-    st.markdown("## MASTER TABLE — PHASE 3 THROUGH FDA DECISION")
-    st.caption("Verified Phase 3 programs arrive here from PIPELINE. Watchlist, Analysis and Invest follow below; scores and entry eligibility remain subject to their own evidence checks.")
+    st.markdown("## MASTER TABLE — PROGRAM REVIEW THROUGH FDA DECISION")
+    st.caption("Verified Phase 3 programs and manually selected PIPELINE programs arrive here. Watchlist, Analysis and Invest follow below; recorded phases, scores and entry eligibility remain subject to their own evidence checks.")
     master, phase3_arrivals, phase_pipeline_state = master_with_phase3(df)
     master = master.reset_index(drop=True)
-    st.caption(f"{len(phase3_arrivals):,} additional Phase 3 programs · PDUFA dates remain blank until confirmed.")
+    manual_arrivals = sum(row.get("pipeline_transfer_mode") == "MANUAL REVIEW" for row in phase3_arrivals)
+    st.caption(f"{len(phase3_arrivals) - manual_arrivals:,} additional Phase 3 programs · {manual_arrivals:,} manual PIPELINE reviews · PDUFA dates remain blank until confirmed.")
     if master.empty:
         st.info("No PDUFA records are currently loaded.")
     else:
@@ -2775,7 +2777,11 @@ if page == "MASTER TABLE":
 
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — PHASE 2")
-    st.caption("Track Phase 2 programs in the $300M–$10B universe. The matching drug and indication move into MASTER TABLE when a standalone Phase 3 trial has a verified actual start.")
+    st.caption("Check MOVE TO MASTER TABLE to transfer a program for review. Manual transfers keep their recorded phase and REVIEW gates. Verified standalone Phase 3 starts also move automatically.")
+    transfers = st.session_state.setdefault("pipeline_master_transfers", {})
+    notice = st.session_state.pop("pipeline_transfer_notice", None)
+    if notice:
+        st.success(notice)
     records, pipeline_state = current_phase_pipeline()
     pipeline_frame = pd.DataFrame(records)
     if pipeline_state:
@@ -2800,13 +2806,15 @@ elif page == "PIPELINE":
     else:
         phase2 = pipeline_frame[pipeline_frame["destination"].eq("PIPELINE") & pipeline_frame["universe_gate"].eq("PASS")].copy()
         phase2 = phase2.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
+        manual_moved = phase2[phase2["program_key"].isin(transfers)].copy()
+        phase2 = phase2[~phase2["program_key"].isin(transfers)].copy()
         moved = pipeline_frame[pipeline_frame["destination"].eq("MASTER TABLE") & pipeline_frame["universe_gate"].eq("PASS") & pipeline_frame["nct_id"].eq(pipeline_frame["phase3_nct_id"])].copy()
         moved = moved.sort_values("promoted_at", ascending=False).drop_duplicates("program_key")
         review = pipeline_frame[(pipeline_frame["destination"].eq("REVIEW") | pipeline_frame["universe_gate"].eq("REVIEW")) & ~pipeline_frame["universe_gate"].eq("FAIL")].copy()
         review = review.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
         p1, p2, p3 = st.columns(3)
         p1.metric("Phase 2 programs", len(phase2))
-        p2.metric("Moved to Master", len(moved))
+        p2.metric("Moved to Master", len(moved) + len(manual_moved))
         p3.metric("Programs needing review", len(review))
         outside = pipeline_frame.loc[pipeline_frame["universe_gate"].eq("FAIL"), "program_key"].nunique()
         st.caption(f"{outside:,} programs outside the verified market-cap range are excluded from this view.")
@@ -2829,12 +2837,42 @@ elif page == "PIPELINE":
             phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
             phase2["_sort_date"] = pd.to_datetime(phase2["primary_completion"], errors="coerce", format="mixed")
             phase2 = phase2.sort_values("_sort_date", na_position="last")
-            grouped_dataframe(phase2[list(labels)].rename(columns=labels), use_container_width=True, hide_index=True, height=560,
-                         column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
+            transfer_view = phase2[list(labels)].rename(columns=labels)
+            transfer_view.insert(0, "Move to MASTER TABLE", False)
+            transferred = grouped_editor(transfer_view, use_container_width=True, hide_index=True, height=560,
+                         key="pipeline_master_transfer_editor", disabled=list(labels.values()),
+                         column_config={"Move to MASTER TABLE": st.column_config.CheckboxColumn("MOVE TO MASTER TABLE", help="Move this drug and indication into MASTER TABLE for review. Phase 3 still requires verified evidence.", default=False),
+                                        "Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
                                         "Phase 3 Target Start": st.column_config.TextColumn("Phase 3 Target Start", help="Registered target date; this is not proof that Phase 3 has started.")})
-        with st.expander(f"Moved to MASTER TABLE ({len(moved):,})", expanded=not moved.empty):
+            chosen = transferred["Move to MASTER TABLE"].fillna(False).astype(bool)
+            if chosen.any():
+                stamp = datetime.now(timezone.utc).isoformat()
+                for row_id in chosen.index[chosen]:
+                    transfers[str(phase2.loc[row_id, "program_key"])] = stamp
+                st.session_state["pipeline_master_transfers"] = dict(transfers)
+                st.session_state["pipeline_transfer_notice"] = f"{int(chosen.sum()):,} program(s) moved to MASTER TABLE for review."
+                st.rerun()
+        with st.expander(f"Moved to MASTER TABLE ({len(moved) + len(manual_moved):,})", expanded=not moved.empty or not manual_moved.empty):
+            if not manual_moved.empty:
+                st.markdown("#### Manually moved for review")
+                manual_fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phases": "Registered Phase", "trial_status": "Trial Status", "source_url": "Trial Evidence"}
+                manual_view = manual_moved[list(manual_fields)].rename(columns=manual_fields)
+                manual_view.insert(0, "In MASTER TABLE", True)
+                retained = grouped_editor(manual_view, use_container_width=True, hide_index=True,
+                              key="pipeline_master_return_editor", disabled=list(manual_fields.values()),
+                              column_config={"In MASTER TABLE": st.column_config.CheckboxColumn("IN MASTER TABLE", help="Uncheck to return this manually moved program to PIPELINE."),
+                                             "Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial")})
+                returned = ~retained["In MASTER TABLE"].fillna(False).astype(bool)
+                if returned.any():
+                    for row_id in returned.index[returned]:
+                        transfers.pop(str(manual_moved.loc[row_id, "program_key"]), None)
+                    st.session_state["pipeline_master_transfers"] = dict(transfers)
+                    st.session_state["pipeline_transfer_notice"] = f"{int(returned.sum()):,} program(s) returned to PIPELINE."
+                    st.rerun()
+            if not moved.empty:
+                st.markdown("#### Verified Phase 3 transitions")
             if moved.empty:
-                st.info("No Phase 3 transitions have qualified yet.")
+                st.info("No verified Phase 3 transitions have qualified yet.")
             else:
                 fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phase2_nct_ids": "Phase 2 Trials",
                           "phase3_nct_id": "Phase 3 Trial", "phase3_start_date": "Actual Phase 3 Start",
