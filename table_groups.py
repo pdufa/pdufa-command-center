@@ -150,6 +150,63 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
     return grouped
 
 
+def _stage_sort_rank(value):
+    """Approximate workflow order; the displayed label remains evidence-based."""
+    label = str(value).upper()
+    if label.startswith("FDA APPROVED") or label.startswith("FDA CRL"): return 110
+    if "FDA DECISION PENDING" in label: return 100
+    if "PDUFA / FDA REVIEW" in label: return 90
+    if "FDA APPLICATION ACCEPTED" in label: return 80
+    if "NDA/BLA SUBMITTED" in label: return 75
+    if "2ND FINANCING CLOSED" in label: return 70
+    if "FINANCING IN PROGRESS" in label: return 60
+    if "FINANCING ANNOUNCED" in label: return 55
+    if "PHASE 3 RESULTS" in label or "PHASE 3 COMPLETED" in label: return 50
+    if "PHASE 3 ONGOING" in label: return 40
+    if "PHASE 3" in label: return 35
+    if "PHASE 2 COMPLETED" in label: return 20
+    if "PHASE 2" in label: return 10
+    return 999
+
+
+def stage_filter_panel(data, key, source=None):
+    """Select any combination of stages and sort without losing underlying rows."""
+    staged = staged_table(data, source=source)
+    if staged.empty or "STAGE" not in staged:
+        return staged
+    stages = staged["STAGE"].fillna("STAGE UNKNOWN — REVIEW").astype(str)
+    options = sorted(stages.unique().tolist(), key=lambda value: (_stage_sort_rank(value), value))
+    with st.expander("STAGE — MULTI-SELECT & SORT", expanded=True):
+        selected = st.multiselect(
+            "Show one or more stages", options, key=key + "_selected_stages",
+            help="Select several stages together; leave blank to display every stage.",
+        )
+        order = st.selectbox(
+            "Sort stage rows",
+            ("Workflow: early to late", "Workflow: late to early", "Stage: A to Z", "Stage: Z to A",
+             "Days to PDUFA: soonest first", "Days to PDUFA: latest first"),
+            key=key + "_stage_order",
+        )
+        st.caption("Stages are evidence-based. Financing may overlap with clinical and FDA milestones. Select multiple stages to combine them.")
+    result = staged.loc[stages.isin(selected)].copy() if selected else staged.copy()
+    if result.empty:
+        st.info("No rows match the selected stages.")
+        return result
+    if order.startswith("Workflow"):
+        ranking = result["STAGE"].map(_stage_sort_rank)
+        result = result.assign(_stage_rank=ranking).sort_values(
+            ["_stage_rank", "STAGE"], ascending=[order.endswith("early to late"), True], kind="stable"
+        ).drop(columns="_stage_rank")
+    elif order.startswith("Stage"):
+        result = result.sort_values("STAGE", ascending=order.endswith("A to Z"), kind="stable")
+    elif "DAYS TO PDUFA" in result:
+        result = result.sort_values(
+            "DAYS TO PDUFA", ascending=order.endswith("soonest first"), na_position="last", kind="stable"
+        )
+    st.caption(f"Showing {len(result):,} of {len(staged):,} rows across {result['STAGE'].nunique():,} stage labels.")
+    return result
+
+
 def begin_table_render():
     st.session_state["_column_table_counts"] = {}
 
