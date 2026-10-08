@@ -4522,11 +4522,11 @@ elif page == "1. TRADING FLOW":
         our_fda_poa = pd.to_numeric(horizon.get("public_approval_probability", horizon.get("approval_probability", pd.Series(float("nan"), index=horizon.index))), errors="coerce")
         horizon_view = pd.DataFrame({
             "Ticker": horizon["ticker"].fillna(""),
+            "P (p-value)": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
             "Our FDA PoA": our_fda_poa.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}%"),
             "Drug": horizon["drug"].fillna(""),
             "NCT": horizon["_registry_nct"],
             "Trial Status": horizon["_registry_status"].replace("", "REVIEW"),
-            "P (p-value)": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
             "Primary Completion": horizon["_primary_completion"].dt.strftime("%Y-%m-%d").fillna("REVIEW"),
             "Study Completion": horizon["_study_completion"].dt.strftime("%Y-%m-%d").fillna("REVIEW"),
             "Results First Posted": horizon["_results_posted"].replace("", "REVIEW"),
@@ -4618,7 +4618,7 @@ elif page == "1. TRADING FLOW":
         if _updated_watchlist != st.session_state.watchlist:
             st.session_state.watchlist = _updated_watchlist
             st.toast("Watchlist #2 updated for this session")
-        st.caption("Toggle the first-column checkbox to add/remove a ticker from Watchlist #2. Hover over column headers for ⓘ descriptions. Watchlist changes are session-only until persistent storage is connected.")
+        st.caption("P (p-value) is the third column, immediately after Ticker and Our FDA PoA. It is blank if the source has no reported p-value. Toggle the first-column checkbox to add/remove a ticker from Watchlist #2. Hover over column headers for ⓘ descriptions. Watchlist changes are session-only until persistent storage is connected.")
 
         st.markdown("### Financing milestone — verified second close")
         st.caption("Only rows whose saved evidence marks the second post-readout financing as verified closed appear here. Expected close dates do not qualify.")
