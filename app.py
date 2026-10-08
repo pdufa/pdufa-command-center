@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs
 import pandas as pd
 import json
 from pathlib import Path
@@ -16,6 +17,8 @@ from email.utils import parsedate_to_datetime
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone
 from scripts.phase_pipeline import read_rows as read_phase_rows, reconcile_records as reconcile_phase_records, master_additions as phase_master_additions
+
+begin_table_render()
 
 st.set_page_config(
     page_title="PDUFA Command Center",
@@ -1054,7 +1057,7 @@ def render_historical_assessed_decisions(event_keys):
                        "fda_statistics_gate", "fda_cmc_gate", "fda_facility_gate", "cutoff_status",
                        "evidence_cutoff", "review_note", "fda_gate_reason", "missing_statistics_subchecks",
                        "missing_cmc_subchecks", "missing_facility_subchecks", "source_urls"]
-            st.dataframe(selected_review[columns], use_container_width=True, hide_index=True, height=420)
+            grouped_dataframe(selected_review[columns], use_container_width=True, hide_index=True, height=420)
             st.download_button("DOWNLOAD ALL 126 STRICT RESULTS (.CSV)", review.to_csv(index=False).encode("utf-8"),
                                file_name="strict_historical_126_review.csv", mime="text/csv", key="download_strict_126")
     st.markdown("### ASSESSED HISTORICAL DECISIONS")
@@ -1099,7 +1102,7 @@ def render_historical_assessed_decisions(event_keys):
     display["Strict status"] = selected["strict_status"].replace({"REVIEW_NO_CALL_ANALYZED": "REVIEW — ANALYZED"})
     display["Decision reason"] = selected["decision_reason"]
     display["Strict evidence gap"] = selected["strict_reason"]
-    st.dataframe(
+    grouped_dataframe(
         display, use_container_width=True, hide_index=True,
         height=min(650, 120 + 34 * len(display)),
         column_config={"Ticker": st.column_config.LinkColumn("Ticker", display_text=r"ticker=([^&]+)")},
@@ -2009,11 +2012,19 @@ def _merged_sort_payload(frame, col):
 
 
 def render_merged_table(frame, heading, height_px=690):
+    """Group prediction fields while preserving each pane's sortable headers."""
+    if frame is None or frame.empty:
+        return
+    st.markdown(f"### {heading}")
+    render_column_tabs(frame, "merged_" + heading,
+                       lambda fields, token: _render_merged_table_panel(frame[fields], heading, height_px))
+
+
+def _render_merged_table_panel(frame, heading, height_px=690):
     """Render one merged table with immediate client-side sortable headers."""
     if frame is None or frame.empty:
         return
 
-    st.markdown(f"### {heading}")
 
     rendered_frame = frame.copy()
     cols = list(rendered_frame.columns)
@@ -2086,7 +2097,7 @@ def render_merged_table(frame, heading, height_px=690):
             meta = sort_meta[col]
             sort_value = meta["values"][row_pos]
             sort_attrs = (
-                f' data-sort="{html.escape(str(sort_value), quote=True)}"'
+                f' title="{html.escape(val, quote=True)}" data-sort="{html.escape(str(sort_value), quote=True)}"'
                 f' data-sort-type="{meta["kind"]}"'
             )
 
@@ -2127,8 +2138,10 @@ def render_merged_table(frame, heading, height_px=690):
     <style>
     html,body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;color:#111}
     .merged-table-wrap{overflow:auto;background:#fff;border:2px solid #000;border-radius:12px;max-height:%dpx}
-    .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:max-content;min-width:100%%;font-size:13px}
-    .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;white-space:nowrap}
+    .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
+    .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
+    .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
     .merged-pdufa-table th.angle-head{position:sticky;top:0;min-width:38px;width:38px;height:158px;vertical-align:bottom;background:#f4f4f4;padding:0}
@@ -2663,32 +2676,19 @@ if page == "MASTER TABLE":
                     combined[label] = pd.Series(pd.NA, index=combined.index, dtype="object")
         # All source fields are visible in the master, including fields that
         # cannot safely be joined. No synthetic evidence is treated as a pass.
-        def _group_for(col):
-            name = str(col).lower()
-            if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
-                return "Financing"
-            if any(x in name for x in ("market_cap", "market cap", "float", "short_interest", "short interest", "revenue", "valuation", "shares")):
-                return "Market Cap"
-            if any(x in name for x in ("fda", "pdufa", "nda", "bla", "approval", "regulatory", "crl", "poa")):
-                return "FDA Engine"
-            if any(x in name for x in ("phase", "trial", "nct", "readout", "p-value", "p_value", "endpoint", "study", "results")):
-                return "Phase 3"
-            if any(x in name for x in ("gate", "score", "watchlist", "entry", "trade", "position", "horizon", "funnel", "momentum", "volume")):
-                return "Trading Flow"
-            return "Company & Event"
-        # Single editable Watchlist control in front of the Master table.
+        # Shared column tabs keep related fields compact and preserve every source column.
         if "watchlist" not in st.session_state:
             st.session_state["watchlist"] = []
         ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
         watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
         st.markdown("### MASTER TABLE — WATCHLIST")
-        st.caption("The first column is the Watchlist checkbox. Check a ticker to add it; uncheck to remove it.")
+        st.caption("Related fields are grouped into tabs. Watchlist, ticker and drug stay visible in every view; use the field selector for additional sections.")
         display_fields = list(combined.columns)
         display_view = combined[display_fields].copy()
         display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
         display_help["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Check to add this ticker to your Watchlist.", default=False)
-        edited_master = st.data_editor(display_view, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
+        edited_master = grouped_editor(display_view, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
         changed_watch = edited_master["Watchlist"].fillna(False).astype(bool).ne(display_view["Watchlist"].fillna(False).astype(bool))
         if changed_watch.any():
             selected_watch = set(watch_values)
@@ -2702,15 +2702,6 @@ if page == "MASTER TABLE":
             st.session_state["watchlist"] = sorted(selected_watch)
             st.rerun()
         st.caption(f"Watchlist: {len(watch_values)} tickers selected")
-        tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow"]
-        with st.expander("Column groups (read-only)", expanded=False):
-            sections = st.tabs(tabs)
-            identity = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date") if c in combined.columns]
-            for tab, group in zip(sections, tabs):
-                with tab:
-                    fields = list(dict.fromkeys(identity + [c for c in combined.columns if _group_for(c) == group and c != "Watchlist"]))
-                    st.dataframe(combined[fields], use_container_width=True, hide_index=True, height=420, column_config={c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: event field; verify source evidence.") for c in fields})
-
         # Watchlist rows can be promoted independently to Analysis and Invest.
         for state_key in ("master_analysis", "master_invest"):
             if state_key not in st.session_state:
@@ -2728,7 +2719,7 @@ if page == "MASTER TABLE":
             visible = ["Add to Analysis"] + watch_cols
             watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
             watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
-            watch_edited = st.data_editor(watch_rows[visible], use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
+            watch_edited = grouped_editor(watch_rows[visible], use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
             changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
             if changed_analysis.any():
                 for row_id in watch_rows.index:
@@ -2751,7 +2742,7 @@ if page == "MASTER TABLE":
             analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
             invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols}
             invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
-            edited_analysis = st.data_editor(analysis_rows[["Add to Invest"] + detail_cols], use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols, key="analysis_to_invest_editor")
+            edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols], use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols, key="analysis_to_invest_editor")
             invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
             if invest_changed.any():
                 for row_id in analysis_rows.index[invest_changed]:
@@ -2768,7 +2759,7 @@ if page == "MASTER TABLE":
         if invest_rows.empty:
             st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
         else:
-            st.dataframe(invest_rows[detail_cols], use_container_width=True, hide_index=True)
+            grouped_dataframe(invest_rows[detail_cols], use_container_width=True, hide_index=True)
 
         st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
 
@@ -2777,7 +2768,7 @@ if page == "MASTER TABLE":
                 st.markdown("#### " + source_name)
                 if isinstance(source_frame, pd.DataFrame) and not source_frame.empty:
                     st.caption(f"{len(source_frame):,} records · {len(source_frame.columns)} columns")
-                    st.dataframe(source_frame, use_container_width=True, hide_index=True)
+                    grouped_dataframe(source_frame, use_container_width=True, hide_index=True)
                 else:
                     st.info("No loaded records.")
     st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
@@ -2838,7 +2829,7 @@ elif page == "PIPELINE":
             phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
             phase2["_sort_date"] = pd.to_datetime(phase2["primary_completion"], errors="coerce", format="mixed")
             phase2 = phase2.sort_values("_sort_date", na_position="last")
-            st.dataframe(phase2[list(labels)].rename(columns=labels), use_container_width=True, hide_index=True, height=560,
+            grouped_dataframe(phase2[list(labels)].rename(columns=labels), use_container_width=True, hide_index=True, height=560,
                          column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
                                         "Phase 3 Target Start": st.column_config.TextColumn("Phase 3 Target Start", help="Registered target date; this is not proof that Phase 3 has started.")})
         with st.expander(f"Moved to MASTER TABLE ({len(moved):,})", expanded=not moved.empty):
@@ -2848,7 +2839,7 @@ elif page == "PIPELINE":
                 fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phase2_nct_ids": "Phase 2 Trials",
                           "phase3_nct_id": "Phase 3 Trial", "phase3_start_date": "Actual Phase 3 Start",
                           "promoted_at": "Moved to Master", "promotion_status": "Current Evidence", "phase3_source_url": "Transition Evidence"}
-                st.dataframe(moved[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
+                grouped_dataframe(moved[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
                              column_config={"Transition Evidence": st.column_config.LinkColumn("Transition Evidence", display_text="Open evidence")})
             st.button("OPEN MASTER TABLE", on_click=go_page, args=("MASTER TABLE",), key="pipeline_open_master")
         if not review.empty:
@@ -2856,7 +2847,7 @@ elif page == "PIPELINE":
                 fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phases": "Registered Phase",
                           "trial_status": "Trial Status", "start_date": "Start Date", "start_date_type": "Start Date Type",
                           "promotion_reason": "Review Reason", "universe_gate": "Market Cap Gate", "universe_reason": "Market Cap Review", "source_url": "Trial Evidence"}
-                st.dataframe(review[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
+                grouped_dataframe(review[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
                              column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial")})
     if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh"):
         load_phase_pipeline_data.clear()
@@ -2937,7 +2928,7 @@ elif page == "2. PDUFA CALENDAR":
         st.info("No saved PDUFA events in this week.")
     else:
         display = table_view(whits, return_page="2. PDUFA CALENDAR")
-        event = st.dataframe(
+        event = grouped_dataframe(
             display,
             use_container_width=True,
             hide_index=True,
@@ -3273,7 +3264,7 @@ elif page == "9. PREDICTION ENGINE":
                 "source_url":"Source"
             })
 
-            st.dataframe(
+            grouped_dataframe(
                 qdisplay,
                 use_container_width=True,
                 hide_index=True,
@@ -3342,7 +3333,7 @@ elif page == "9. PREDICTION ENGINE":
             "conflict_flag":"Conflict"
         })
 
-        st.dataframe(
+        grouped_dataframe(
             v2display,
             use_container_width=True,
             hide_index=True,
@@ -3421,7 +3412,7 @@ elif page == "10. MATCH OPTIMIZER":
                     "ticker","pdufa_date","actual_outcome","validation_period",
                     "independence_status","v3_backfill_priority","diagnostic_miss_class"
                 ] if c in fda_v3_hist_queue.columns]
-                st.dataframe(
+                grouped_dataframe(
                     fda_v3_hist_queue[qcols].rename(columns={
                         "ticker":"Ticker","pdufa_date":"PDUFA Date","actual_outcome":"Actual FDA",
                         "validation_period":"Validation Period","independence_status":"Validation Role",
@@ -3466,7 +3457,7 @@ elif page == "10. MATCH OPTIMIZER":
                     "recoverability","predecision_public_signal","why_not_promoted",
                     "predecision_source","postdecision_audit_source"
                 ] if c in ra.columns]
-                st.dataframe(
+                grouped_dataframe(
                     ra[show_cols].rename(columns={
                         "ticker":"Ticker","pdufa_date":"PDUFA Date","forced_direction":"Forced Direction",
                         "actual_outcome":"Actual FDA","residual_category":"Residual Category",
@@ -3502,7 +3493,7 @@ elif page == "10. MATCH OPTIMIZER":
                 "Approvals": int((yr_el["Actual FDA"] == "APPROVED").sum()),
                 "CRLs": int((yr_el["Actual FDA"] == "CRL").sum()),
             })
-        st.dataframe(pd.DataFrame(cohort_rows), use_container_width=True, hide_index=True)
+        grouped_dataframe(pd.DataFrame(cohort_rows), use_container_width=True, hide_index=True)
     else:
         st.error("No audited historical rows currently have both a probability score and final FDA outcome.")
 
@@ -3601,7 +3592,7 @@ elif page == "10. MATCH OPTIMIZER":
                 "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA",
                 "failure_reason","audit_status","source_url"
             ] if x in tune_misses.columns]
-            st.dataframe(
+            grouped_dataframe(
                 tune_misses[miss_cols].rename(columns={
                     "ticker":"Ticker","pdufa_date":"PDUFA Date",
                     "failure_reason":"Miss / Audit Reason","audit_status":"Audit Status",
@@ -3630,7 +3621,7 @@ elif page == "10. MATCH OPTIMIZER":
             show_cols = [x for x in [
                 "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA","Match %"
             ] if x in holdout_show.columns]
-            st.dataframe(
+            grouped_dataframe(
                 holdout_show[show_cols].rename(columns={"ticker":"Ticker","pdufa_date":"PDUFA Date"}),
                 use_container_width=True,
                 hide_index=True,
@@ -3856,7 +3847,7 @@ elif page == "5. SCANS":
                 "Probability of Approval % — Public",
                 "Probability of Approval % — All Sources"
             ]
-            st.dataframe(
+            grouped_dataframe(
                 view[show_cols].rename(columns={
                     "ticker":"Ticker","company":"Company","drug":"Drug"
                 }),
@@ -3873,7 +3864,7 @@ elif page == "5. SCANS":
 
     if st.session_state.get("scan_log"):
         st.markdown("### Session Scan Log")
-        st.dataframe(pd.DataFrame(st.session_state.scan_log), use_container_width=True, hide_index=True)
+        grouped_dataframe(pd.DataFrame(st.session_state.scan_log), use_container_width=True, hide_index=True)
 
     st.divider()
     st.markdown("### AMENDMENTS / DETAILS FOUND")
@@ -3906,10 +3897,10 @@ elif page == "5. SCANS":
     amendments = st.session_state.get("scan_amendments", [])
     if amendments:
         st.success(f"{len(amendments)} amendment/detail change(s) detected in this session.")
-        st.dataframe(pd.DataFrame(amendments), use_container_width=True, hide_index=True)
+        grouped_dataframe(pd.DataFrame(amendments), use_container_width=True, hide_index=True)
     elif result_rows:
         st.info("Latest scan results are shown below. No separate change-detection baseline is available yet, so these are current details rather than confirmed amendments.")
-        st.dataframe(pd.DataFrame(result_rows), use_container_width=True, hide_index=True)
+        grouped_dataframe(pd.DataFrame(result_rows), use_container_width=True, hide_index=True)
     else:
         st.info("No scan results yet. Run one of the six SCAN buttons above.")
 
@@ -4027,7 +4018,7 @@ elif page == "6. RECHECK":
                     "Details": safe_text(rr.get(cat+"_note"), "Not run"),
                     "Source": safe_text(rr.get(cat+"_source"), ""),
                 })
-            st.dataframe(
+            grouped_dataframe(
                 pd.DataFrame(rows),
                 use_container_width=True,
                 hide_index=True,
@@ -4073,7 +4064,7 @@ elif page == "11. PLAN":
     p4.metric("Done", int(plan_df["status"].astype(str).str.upper().eq("DONE").sum()))
 
     st.markdown("### Edit plan")
-    edited_plan = st.data_editor(
+    edited_plan = grouped_editor(
         plan_df,
         use_container_width=True,
         hide_index=True,
@@ -4134,7 +4125,7 @@ elif page == "11. PLAN":
         {"When":"Material event","Purpose":"Reassess FDA evidence and create a new prediction version when warranted"},
         {"When":"FDA decision","Purpose":"Score frozen prediction as MATCH or MISS without rewriting history"},
     ])
-    st.dataframe(rhythm, use_container_width=True, hide_index=True)
+    grouped_dataframe(rhythm, use_container_width=True, hide_index=True)
 
 
 elif page == "4. DECISION":
@@ -4345,7 +4336,7 @@ elif page == "4. DECISION":
 
         st.markdown("### Month-by-month result")
         st.caption("Recorded model assessments are shown alongside the FDA outcomes. Historical matches are retrospective development results; strict qualification is shown separately.")
-        st.dataframe(
+        grouped_dataframe(
             pd.DataFrame(monthly_rows),
             use_container_width=True,
             hide_index=True,
@@ -4744,7 +4735,7 @@ else:
                 }
                 for i,(name,dt,desc) in enumerate(stages)
             ])
-            st.dataframe(pipeline_table, use_container_width=True, hide_index=True)
+            grouped_dataframe(pipeline_table, use_container_width=True, hide_index=True)
 
         with subtabs[2]:
             st.markdown("### PDUFA Timeline")
@@ -4814,7 +4805,7 @@ else:
                 ("Benefit-risk", r.get("fda_benefit_risk_score")),
                 ("Evidence freshness", r.get("fda_evidence_freshness")),
             ]
-            st.dataframe(
+            grouped_dataframe(
                 pd.DataFrame([{"FDA Review Block": a, "Status / Score": safe_text(b, "UNKNOWN")} for a,b in review_rows]),
                 use_container_width=True,
                 hide_index=True
@@ -4836,7 +4827,7 @@ else:
                     "preapproval_inspection_status":"PAI Status","remediation_status":"Remediation",
                     "evidence_as_of":"As Of","source_url":"Source","source_note":"Evidence Note"
                 })
-                st.dataframe(
+                grouped_dataframe(
                     facility_show,
                     use_container_width=True,
                     hide_index=True,
@@ -4957,7 +4948,7 @@ else:
                     "market_cap_bucket":"Cap Bucket",
                     "audit_status":"Audit Status"
                 })
-                st.dataframe(analog_display, use_container_width=True, hide_index=True)
+                grouped_dataframe(analog_display, use_container_width=True, hide_index=True)
                 if not same_bucket.empty:
                     st.success(f"Showing the closest historical cases from the same market-cap bucket: {current_bucket}.")
                 else:
@@ -4979,7 +4970,7 @@ if _gate100:
     st.caption("Strict REVIEW / NO CALL means qualification was withheld after analysis. Broad PASS/CRL suggestions for these cases are recorded in Prediction Engine → Assessed Historical Decisions. Strict historical match applies only to the qualified subset; all historical results are retrospective.")
     if not _gate100_live.empty:
         _show = _gate100_live.copy()
-        st.dataframe(_show, use_container_width=True, hide_index=True)
+        grouped_dataframe(_show, use_container_width=True, hide_index=True)
 else:
     st.info("100-on-100 precision-gate data has not been generated yet.")
 
