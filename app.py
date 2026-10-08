@@ -2547,17 +2547,21 @@ if page == "MASTER TABLE":
                 after = set(edited.loc[edited[name], "Ticker"].astype(str).str.upper())
                 current = {str(v).upper() for v in st.session_state[key]}
                 st.session_state[key] = sorted((current - (before - after)) | (after - before))
-            st.markdown("### Candidate tables")
-            for tab, (name, key) in zip(st.tabs(list(keys)), keys.items()):
-                with tab:
-                    selected = {str(v).upper() for v in st.session_state[key]}
-                    subset = combined[combined["Ticker"].fillna("").astype(str).str.upper().isin(selected)]
-                    if subset.empty:
-                        st.info("No candidates in " + name)
-                    else:
-                        cols = [c for c in ("Ticker", "Drug", "PDUFA Date", "Entry Gate", "FDA PoA") if c in subset]
-                        st.dataframe(subset[cols], use_container_width=True, hide_index=True,
-                                     column_config={c: st.column_config.TextColumn(c, help="Source field: " + c) for c in cols})
+            st.markdown("### Attached candidate tables")
+            st.caption("All three tables are visible separately below the master table and update from the switches above.")
+            for name, key in keys.items():
+                st.markdown("#### " + name)
+                selected = {str(v).upper() for v in st.session_state[key]}
+                subset = combined[combined["Ticker"].fillna("").astype(str).str.upper().isin(selected)]
+                if subset.empty:
+                    st.info("No candidates in " + name)
+                else:
+                    cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date",
+                                        "Entry Gate", "FDA PoA", "Evidence Status",
+                                        "Financing #2 Date", "Market Cap") if c in subset]
+                    st.dataframe(subset[cols], use_container_width=True, hide_index=True,
+                                 column_config={c: st.column_config.TextColumn(c, help="ⓘ " + c + ": value from the loaded event; confirm evidence.") for c in cols},
+                                 key="master_attached_" + key)
             st.caption("Selections are session-only. Invest is a tracking list, not an order.")
     st.caption("This consolidates loaded source columns, not every derived calculation or interactive control from the original pages. Missing evidence is not treated as verified.")
 
