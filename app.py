@@ -48,7 +48,8 @@ def _table_header_help(column):
     return f"{label}: this column's recorded value. Check source, definition and freshness before using it."
 
 def _table_with_header_help(original, data, *args, **kwargs):
-    frame = data.data if isinstance(data, pd.io.formats.style.Styler) else data
+    # Avoid pandas optional Styler attribute: it may not be imported in Streamlit Cloud.
+    frame = data if isinstance(data, pd.DataFrame) else getattr(data, "data", None)
     if isinstance(frame, pd.DataFrame):
         current = kwargs.get("column_config")
         config = dict(current) if isinstance(current, dict) else {}
