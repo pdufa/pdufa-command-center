@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
-from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs
+from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table
+from stages import program_stage
 import pandas as pd
 import json
 from pathlib import Path
@@ -835,6 +836,16 @@ if not fda_reviews.empty and "event_key" in df:
         validate="many_to_one"
     )
 
+stage_pipeline_records, _stage_scan = current_phase_pipeline()
+stage_live_records = df.to_dict("records")
+stage_arrivals = phase_master_additions(stage_pipeline_records, stage_live_records)
+stage_arrivals += manual_phase_master_additions(stage_pipeline_records, stage_live_records + stage_arrivals, st.session_state.get("pipeline_master_transfers", {}))
+stage_phase2 = {}
+for _stage_record in sorted(stage_pipeline_records, key=lambda r: r.get("source_updated", ""), reverse=True):
+    if _stage_record.get("destination") == "PIPELINE":
+        stage_phase2.setdefault(_stage_record["program_key"], _stage_record)
+set_stage_sources(stage_live_records + stage_arrivals + list(stage_phase2.values()) + prediction_history.to_dict("records"))
+
 # Startup data validation: fail loudly on structural problems instead of silently
 # rendering a misleading one-row/partial dashboard.
 required_source_columns = ["ticker","company","drug","indication","pdufa_date"]
@@ -849,7 +860,7 @@ if df["ticker"].isna().all():
     st.error("DATA ERROR — ticker column is empty.")
     st.stop()
 
-today = pd.Timestamp(date.today())
+today = pd.Timestamp(datetime.now(ZoneInfo("America/Los_Angeles")).date())
 future = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
 future["days"] = (future["pdufa_date"] - today).dt.days
 future = future.sort_values("pdufa_date")
@@ -2016,6 +2027,7 @@ def render_merged_table(frame, heading, height_px=690):
     """Group prediction fields while preserving each pane's sortable headers."""
     if frame is None or frame.empty:
         return
+    frame = staged_table(frame)
     st.markdown(f"### {heading}")
     render_column_tabs(frame, "merged_" + heading,
                        lambda fields, token: _render_merged_table_panel(frame[fields], heading, height_px))
@@ -2325,6 +2337,7 @@ def table_view(frame, return_page="MASTER TABLE"):
         lambda v: "Historical Model" if str(v) == "history" else "Saved Feed"
     )
     out = add_special_provision_columns(out)
+    out["STAGE"] = frame.apply(program_stage, axis=1)
 
     for c in ["ticker","company","drug","indication"]:
         out[c] = out[c].fillna("Not available").astype(str)
@@ -2332,7 +2345,7 @@ def table_view(frame, return_page="MASTER TABLE"):
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
-        "Ticker","PDUFA Date","DECISION DATE","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication",
+        "Ticker","STAGE","PDUFA Date","DECISION DATE","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication",
         *SPECIAL_PROVISION_LABELS,
         "Days Left","Market Cap","Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
@@ -2516,7 +2529,7 @@ if page == "MASTER TABLE":
             )
         if "PDUFA Date" in combined:
             dates = pd.to_datetime(combined["PDUFA Date"], errors="coerce")
-            combined["Days to PDUFA"] = (dates - pd.Timestamp.today().normalize()).dt.days.astype("Int64")
+            combined["DAYS TO PDUFA"] = (dates - today).dt.days.astype("Int64")
             def _window(days):
                 if pd.isna(days):
                     return "DATE NOT VERIFIED"
@@ -2531,7 +2544,7 @@ if page == "MASTER TABLE":
                 if days <= 90:
                     return "90–61 DAYS"
                 return "90+ DAYS"
-            combined["PDUFA Horizon"] = combined["Days to PDUFA"].map(_window)
+            combined["PDUFA Horizon"] = combined["DAYS TO PDUFA"].map(_window)
         if "Market Cap" in combined:
             cap = pd.to_numeric(combined["Market Cap"], errors="coerce")
             combined["Market Cap Band"] = pd.cut(
@@ -2685,7 +2698,7 @@ if page == "MASTER TABLE":
         watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
         st.markdown("### MASTER TABLE — WATCHLIST")
-        st.caption("Related fields are grouped into tabs. Watchlist, ticker and drug stay visible in every view; use the field selector for additional sections.")
+        st.caption("Ticker → STAGE → DAYS TO PDUFA stays visible in every view. Related fields are grouped into tabs; use the field selector for additional sections.")
         display_fields = list(combined.columns)
         display_view = combined[display_fields].copy()
         display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
@@ -2712,7 +2725,7 @@ if page == "MASTER TABLE":
         current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
         watch_rows = combined[ticker_values.isin(current_watch)].copy()
         st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
-        watch_cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Days to PDUFA", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+        watch_cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
         if watch_rows.empty:
             st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
         else:
@@ -2840,7 +2853,7 @@ elif page == "PIPELINE":
             transfer_view = phase2[list(labels)].rename(columns=labels)
             transfer_view.insert(0, "Move to MASTER TABLE", False)
             transferred = grouped_editor(transfer_view, use_container_width=True, hide_index=True, height=560,
-                         key="pipeline_master_transfer_editor", disabled=list(labels.values()),
+                         key="pipeline_master_transfer_editor", disabled=list(labels.values()), stage_source=phase2,
                          column_config={"Move to MASTER TABLE": st.column_config.CheckboxColumn("MOVE TO MASTER TABLE", help="Move this drug and indication into MASTER TABLE for review. Phase 3 still requires verified evidence.", default=False),
                                         "Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
                                         "Phase 3 Target Start": st.column_config.TextColumn("Phase 3 Target Start", help="Registered target date; this is not proof that Phase 3 has started.")})
@@ -4730,7 +4743,7 @@ else:
             else:
                 current_stage = str(r.get("setup_phase")) if pd.notna(r.get("setup_phase")) else "Current stage not yet dated"
 
-            st.info(f"Current tracked stage: **{current_stage}**")
+            st.info(f"STAGE: **{program_stage(r)}**")
 
             cols = st.columns(7)
             current_index = next((i for i,(name,_,_) in enumerate(stages) if name == current_stage), None)
@@ -4761,7 +4774,7 @@ else:
             st.divider()
             pipeline_table = pd.DataFrame([
                 {
-                    "Stage": name,
+                    "Milestone": name,
                     "Date": "Not captured" if pd.isna(dt) else pd.Timestamp(dt).strftime("%Y-%m-%d"),
                     "Status": (
                         ("Completed — date verified" if pd.notna(dt) else "Completed / inferred — date not captured")
@@ -4773,7 +4786,7 @@ else:
                 }
                 for i,(name,dt,desc) in enumerate(stages)
             ])
-            grouped_dataframe(pipeline_table, use_container_width=True, hide_index=True)
+            grouped_dataframe(pipeline_table, use_container_width=True, hide_index=True, stage_source=r)
 
         with subtabs[2]:
             st.markdown("### PDUFA Timeline")
@@ -4846,7 +4859,8 @@ else:
             grouped_dataframe(
                 pd.DataFrame([{"FDA Review Block": a, "Status / Score": safe_text(b, "UNKNOWN")} for a,b in review_rows]),
                 use_container_width=True,
-                hide_index=True
+                hide_index=True,
+                stage_source=r,
             )
             event_facilities = fda_facilities[
                 fda_facilities["event_key"].astype(str).eq(str(r.get("event_key")))
@@ -4869,6 +4883,7 @@ else:
                     facility_show,
                     use_container_width=True,
                     hide_index=True,
+                    stage_source=r,
                     column_config={"Source": st.column_config.LinkColumn("Source", display_text="Open source")}
                 )
 

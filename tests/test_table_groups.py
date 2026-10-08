@@ -42,6 +42,14 @@ class ColumnGroupsTests(unittest.TestCase):
         groups = column_groups(columns)
         self.assertTrue(all(fields[:3] == columns[:3] for panes in groups.values() for _, fields in panes))
 
+    def test_stage_and_countdown_stay_immediately_next_to_ticker(self):
+        columns = ["Watchlist", "Ticker", "Drug", "Indication", "STAGE", "DAYS TO PDUFA", "PDUFA Date", "FDA PoA", "Market Cap", "Trial Status", "Trial Evidence", "Cash"]
+        for panes in column_groups(columns).values():
+            for _, fields in panes:
+                self.assertLessEqual(len(fields), MAX_COLUMNS)
+                position = fields.index("Ticker")
+                self.assertEqual(fields[position:position + 3], ["Ticker", "STAGE", "DAYS TO PDUFA"])
+
 
 class EditorChangesTests(unittest.TestCase):
     def setUp(self):

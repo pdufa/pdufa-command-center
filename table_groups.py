@@ -6,6 +6,7 @@ import re
 
 import pandas as pd
 import streamlit as st
+from stages import StageIndex, STAGE_HELP, DAYS_HELP, add_stage_column
 
 
 MAX_COLUMNS = 7
@@ -103,10 +104,18 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
     """Every field has one home; identifiers and action checkboxes repeat."""
     columns = list(columns)
     if len(columns) <= max_columns:
+        if "STAGE" in columns:
+            ticker = next((c for c in columns if _name(c) == "ticker"), None)
+            if ticker:
+                columns.remove("STAGE")
+                columns.insert(columns.index(ticker) + 1, "STAGE")
+                if "DAYS TO PDUFA" in columns:
+                    columns.remove("DAYS TO PDUFA")
+                    columns.insert(columns.index("STAGE") + 1, "DAYS TO PDUFA")
         return OrderedDict([("Overview", [("Overview", columns)])])
     named = {_name(c): c for c in columns}
     controls = [c for c in columns if _name(c) in CONTROL_COLUMNS]
-    identity = [named[n] for n in ("ticker", "drug") if n in named]
+    identity = [named[n] for n in ("ticker", "stage", "days to pdufa", "drug") if n in named]
     if not identity:
         identity = [named[n] for n in ("order", "task") if n in named]
     if not identity:
@@ -143,6 +152,14 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
 
 def begin_table_render():
     st.session_state["_column_table_counts"] = {}
+
+
+def set_stage_sources(records):
+    st.session_state["_program_stage_index"] = StageIndex(records)
+
+
+def staged_table(data, source=None):
+    return add_stage_column(data, st.session_state.get("_program_stage_index"), source)
 
 
 def _table_key(data, key):
@@ -183,13 +200,18 @@ def _compact_config(fields, config):
             continue
         entry = dict(original) if isinstance(original, dict) else {"label": original or str(column)}
         entry.setdefault("help", str(column))
-        entry["width"] = "small" if _name(column) in CONTROL_COLUMNS | {"ticker", "order", "n", "b", "p", "p%"} else "medium"
+        if column == "STAGE":
+            entry.update({"label": "STAGE", "help": STAGE_HELP})
+        if column == "DAYS TO PDUFA":
+            entry.update(st.column_config.NumberColumn("DAYS TO PDUFA", help=DAYS_HELP, format="%d", width="small"))
+        entry["width"] = "small" if _name(column) in CONTROL_COLUMNS | {"ticker", "days to pdufa", "order", "n", "b", "p", "p%"} else "medium"
         result[column] = entry
     return result
 
 
 def grouped_dataframe(data, **kwargs):
     data = data if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
+    data = staged_table(data, kwargs.pop("stage_source", None))
     key = _table_key(data, kwargs.pop("key", None))
     config = kwargs.pop("column_config", None)
     kwargs.pop("column_order", None)
@@ -239,7 +261,7 @@ def _commit_pane(state_key, widget_key, snapshot, editable, dynamic):
 
 def grouped_editor(data, **kwargs):
     """One shared draft makes edits survive switching tabs and adding rows."""
-    data = data.copy()
+    data = staged_table(data, kwargs.pop("stage_source", None))
     key = _table_key(data, kwargs.pop("key", None))
     config = kwargs.pop("column_config", None)
     disabled = kwargs.pop("disabled", False)
@@ -255,6 +277,7 @@ def grouped_editor(data, **kwargs):
     groups = column_groups(data.columns)
     shared = set.intersection(*(set(fields) for panes in groups.values() for _, fields in panes))
     blocked = set(data.columns) if disabled is True else set(disabled or [])
+    blocked.update(c for c in ("STAGE", "DAYS TO PDUFA") if c in data)
     controls = {c for c in data.columns if _name(c) in CONTROL_COLUMNS}
     first = True
 
