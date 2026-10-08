@@ -2643,15 +2643,37 @@ if page == "MASTER TABLE":
                         (analysis_set.add if bool(watch_edited.loc[row_id, "Add to Analysis"]) else analysis_set.discard)(ticker)
                 st.session_state["master_analysis"] = sorted(analysis_set)
                 st.rerun()
-        for label, state_key in (("ANALYSIS", "master_analysis"), ("INVEST", "master_invest")):
-            chosen = {str(v).upper().strip() for v in st.session_state[state_key]}
-            selected_rows = combined[ticker_values.isin(chosen)]
-            st.markdown("#### " + label + f" ({len(selected_rows):,})")
-            cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
-            if selected_rows.empty:
-                st.info("No candidates selected for " + label + ". Use the checkboxes in Watchlist above.")
-            else:
-                st.dataframe(selected_rows[cols], use_container_width=True, hide_index=True, column_config={c: st.column_config.TextColumn(c + " ⓘ", help="Source field: " + c) for c in cols})
+        # Analysis is the only path for promoting a ticker into Invest.
+        analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
+        invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
+        analysis_rows = combined[ticker_values.isin(analysis_tickers)].copy()
+        st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
+        detail_cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
+        if analysis_rows.empty:
+            st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
+        else:
+            analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
+            invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols}
+            invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
+            edited_analysis = st.data_editor(analysis_rows[["Add to Invest"] + detail_cols], use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols, key="analysis_to_invest_editor")
+            invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
+            if invest_changed.any():
+                for row_id in analysis_rows.index[invest_changed]:
+                    ticker = str(analysis_rows.loc[row_id, "Ticker"]).upper().strip()
+                    if ticker:
+                        if bool(edited_analysis.loc[row_id, "Add to Invest"]):
+                            invest_tickers.add(ticker)
+                        else:
+                            invest_tickers.discard(ticker)
+                st.session_state["master_invest"] = sorted(invest_tickers)
+                st.rerun()
+        invest_rows = combined[ticker_values.isin(invest_tickers)]
+        st.markdown("#### INVEST" + f" ({len(invest_rows):,})")
+        if invest_rows.empty:
+            st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
+        else:
+            st.dataframe(invest_rows[detail_cols], use_container_width=True, hide_index=True)
+
         st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
 
         st.markdown("### Original-source coverage checks")
