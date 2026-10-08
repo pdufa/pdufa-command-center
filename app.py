@@ -4636,10 +4636,10 @@ elif page == "1. TRADING FLOW":
         # individual editors against their original state, without stale tabs undoing edits.
         _selected = set(st.session_state.watchlist)
         for _group_edited in _edited_views:
-            _orig = horizon_view.set_index("Ticker")["Review → Watchlist #2"]
+            _orig = set(horizon_view.loc[horizon_view["Review → Watchlist #2"], "Ticker"].astype(str).str.upper())
             for _, _row in _group_edited.iterrows():
                 _ticker = str(_row["Ticker"]).upper()
-                _old = bool(_orig.get(_row["Ticker"], False))
+                _old = _ticker in _orig
                 _new = bool(_row["Review → Watchlist #2"])
                 if _old != _new:
                     if _new:
