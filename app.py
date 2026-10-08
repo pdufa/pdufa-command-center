@@ -4610,19 +4610,49 @@ elif page == "1. TRADING FLOW":
                    else st.column_config.TextColumn(name, help=_column_help.get(name, f"Data field: {name}. Check the original evidence before making trading decisions.")))
             for name in horizon_view.columns
         }
-        _edited = st.data_editor(
-            horizon_view, use_container_width=True, hide_index=True, height=480,
-            column_config=_cfg, disabled=[name for name in horizon_view.columns if name != "Review → Watchlist #2"],
-            key="trading_flow_watchlist_editor",
-        )
-        _selected = set(_edited.loc[_edited["Review → Watchlist #2"], "Ticker"].astype(str).str.upper())
+        _table_groups = {
+            "Overview": ["Review → Watchlist #2", "Ticker", "Drug", "Our FDA PoA", "Our Trade/PDUFA Score", "Entry Gate", "Evidence Status"],
+            "Phase 3": ["Review → Watchlist #2", "Ticker", "Drug", "NCT", "Trial Status", "P (p-value)", "Primary Completion", "Study Completion", "Results First Posted", "Company Readout Date"],
+            "Financing": ["Review → Watchlist #2", "Ticker", "🟢 Financing Started", "🟡 Financing In Progress", "🔴 Financing Closed", "Financing #1 Date", "Financing #2 Date", "Financing Type", "Proceeds", "Dilution / ATM", "Cash", "RUNWAY"],
+            "FDA / PDUFA": ["Review → Watchlist #2", "Ticker", "NDA/BLA Status", "PDUFA Date", "Days to PDUFA", "Horizon", "Our FDA PoA", "Evidence Status"],
+            "Trading": ["Review → Watchlist #2", "Ticker", "Our Trade/PDUFA Score", "Entry Gate", "Horizon", "Days to PDUFA", "Dilution / ATM", "RUNWAY"],
+            "All Columns": list(horizon_view.columns),
+        }
+        _group_tabs = st.tabs(list(_table_groups))
+        _edited_views = []
+        for _tab, (_group_name, _fields) in zip(_group_tabs, _table_groups.items()):
+            with _tab:
+                _visible_fields = [c for c in _fields if c in horizon_view.columns]
+                _group_view = horizon_view[_visible_fields].copy()
+                _group_cfg = {c: _cfg[c] for c in _visible_fields}
+                _edited_group = st.data_editor(
+                    _group_view, use_container_width=True, hide_index=True, height=480,
+                    column_config=_group_cfg,
+                    disabled=[c for c in _visible_fields if c != "Review → Watchlist #2"],
+                    key="trading_flow_group_" + _group_name.lower().replace(" ", "_").replace("/", "_"),
+                )
+                _edited_views.append(_edited_group)
+        # Each tab is a view of the same watchlist. Merge additions/removals from
+        # individual editors against their original state, without stale tabs undoing edits.
+        _selected = set(st.session_state.watchlist)
+        for _group_edited in _edited_views:
+            _orig = horizon_view.set_index("Ticker")["Review → Watchlist #2"]
+            for _, _row in _group_edited.iterrows():
+                _ticker = str(_row["Ticker"]).upper()
+                _old = bool(_orig.get(_row["Ticker"], False))
+                _new = bool(_row["Review → Watchlist #2"])
+                if _old != _new:
+                    if _new:
+                        _selected.add(_ticker)
+                    else:
+                        _selected.discard(_ticker)
         _visible = set(horizon_view["Ticker"].astype(str).str.upper())
         _existing = [x for x in st.session_state.watchlist if str(x).upper() not in _visible]
         _updated_watchlist = list(dict.fromkeys(_existing + sorted(_selected)))
         if _updated_watchlist != st.session_state.watchlist:
             st.session_state.watchlist = _updated_watchlist
             st.toast("Watchlist #2 updated for this session")
-        st.caption("P (p-value) is the third column, immediately after Ticker and Our FDA PoA. It is blank if the source has no reported p-value. Toggle the first-column checkbox to add/remove a ticker from Watchlist #2. Hover over column headers for ⓘ descriptions. Watchlist changes are session-only until persistent storage is connected.")
+        st.caption("P (p-value) is under the Phase 3 and All Columns tabs. It is blank if the source has no reported p-value. Toggle the first-column checkbox to add/remove a ticker from Watchlist #2. Hover over column headers for ⓘ descriptions. Watchlist changes are session-only until persistent storage is connected.")
 
         st.markdown("### Financing milestone — verified second close")
         st.caption("Only rows whose saved evidence marks the second post-readout financing as verified closed appear here. Expected close dates do not qualify.")
