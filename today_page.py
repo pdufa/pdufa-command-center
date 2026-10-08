@@ -63,7 +63,7 @@ def render_today(live, pipeline, financing):
     if data.empty:
         st.warning("No source records loaded. Check the master and Phase 3 pipeline files.")
         return
-    # Normalize the entire column to a comparable Pacific-local calendar date.\n    posted = pd.to_datetime(data["Result Posted"], errors="coerce", utc=True).dt.tz_convert(TZ).dt.date\n    top = data.loc[posted.eq(yesterday)].copy()\n    top = top.loc[top["Result Source"].fillna("").astype(str).str.startswith("http")]\n    bottom = data.loc[posted.notna() & posted.le(yesterday)].copy()
+    # Normalize the entire column to a comparable Pacific-local calendar date.\n    posted = pd.to_datetime(data["Result Posted"].astype("string").str.slice(0, 10), errors="coerce").dt.date\n    top = data.loc[posted.eq(yesterday)].copy()\n    top = top.loc[top["Result Source"].fillna("").astype(str).str.startswith("http")]\n    bottom = data.loc[posted.notna() & posted.le(yesterday)].copy()
     st.metric("Yesterday's source-linked Phase 3 posts", len(top))
     st.metric("Recorded post–Phase 3 rows", len(bottom))
     st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
