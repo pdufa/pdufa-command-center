@@ -2049,6 +2049,25 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         '<button type="button" class="stage-filter-head" '
         'title="Choose one or more STAGE values" aria-label="Filter STAGE">▾</button>'
     )
+    finance_filter_button = (
+        '<button type="button" class="finance-filter-head" '
+        'title="Choose financing states" aria-label="Filter FINANCING">▾</button>'
+    )
+    financing_labels = ("ANNOUNCED", "STARTED", "RUNNING", "FINISHED", "REVIEW / UNVERIFIED")
+    finance_menu_html = (
+        '<div class="finance-filter-menu" hidden><strong>FINANCING · select multiple</strong>'
+        '<div class="stage-menu-actions"><button type="button" data-fin-all>Select all</button>'
+        '<button type="button" data-fin-none>Clear all</button></div>'
+        '<div class="stage-checkbox-list">' +
+        "".join('<label><input type="checkbox" class="finance-choice" checked value="' +
+                html.escape(label, quote=True) + '"> ' + html.escape(label.title()) + '</label>'
+                for label in financing_labels) +
+        '</div><label class="stage-order-label">Sort financing rows: '
+        '<select class="finance-sort-order"><option value="keep">Keep current order</option>'
+        '<option value="forward">Announced → Finished</option>'
+        '<option value="reverse">Finished → Announced</option>'
+        '</select></label><div class="finance-count"></div></div>'
+    ) if "FINANCING" in cols else ""
     stage_menu_html = ('<div class="stage-filter-menu" hidden>'
         '<strong>STAGE · select multiple</strong><div class="stage-menu-actions">'
         '<button type="button" data-stage-all>Select all</button>'
@@ -2086,6 +2105,8 @@ def _render_merged_table_panel(frame, heading, height_px=690):
             sort_button = _sort_header_button(col, col_index)
             if col == "STAGE":
                 sort_button += stage_filter_button
+            if col == "FINANCING":
+                sort_button += finance_filter_button
             if col in SECOND_FINANCING_COLUMNS:
                 if not financing_started:
                     header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
@@ -2116,6 +2137,10 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     else:
         for col_index, col in enumerate(cols):
             sort_button = _sort_header_button(col, col_index)
+            if col == "STAGE":
+                sort_button += stage_filter_button
+            if col == "FINANCING":
+                sort_button += finance_filter_button
             if col in SPECIAL_PROVISION_LABELS:
                 header_cells.append(f'<th class="angle-head"><span>{sort_button}</span></th>')
             else:
@@ -2167,8 +2192,11 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         stage_value = row.get("STAGE", "STAGE UNKNOWN — REVIEW")
         stage_for_row = html.escape("STAGE UNKNOWN — REVIEW" if pd.isna(stage_value)
                                     else str(stage_value), quote=True)
-        rows.append(f'<tr data-original-index="{row_pos}" data-stage="{stage_for_row}">'
-                    + "".join(cells) + "</tr>")
+        fin_value = row.get("FINANCING", "REVIEW / UNVERIFIED")
+        fin_for_row = html.escape("REVIEW / UNVERIFIED" if pd.isna(fin_value)
+                                  else str(fin_value), quote=True)
+        rows.append(f'<tr data-original-index="{row_pos}" data-stage="{stage_for_row}" '
+                    f'data-financing="{fin_for_row}">' + "".join(cells) + "</tr>")
 
     if has_grouped_headers:
         thead_html = (
@@ -2207,10 +2235,19 @@ def _render_merged_table_panel(frame, heading, height_px=690):
       margin-left:5px;width:26px;height:25px;cursor:pointer;border:2px solid #111;
       border-radius:5px;background:#fff;color:#111;font-size:16px;font-weight:900}
     .stage-filter-head:hover{background:#f5d77a}
+    .finance-filter-head{display:inline-flex;align-items:center;justify-content:center;
+      margin-left:5px;width:26px;height:25px;cursor:pointer;border:2px solid #111;
+      border-radius:5px;background:#fff;color:#111;font-size:16px;font-weight:900}
+    .finance-filter-head:hover{background:#f5d77a}
     .stage-filter-menu{position:fixed;z-index:5000;min-width:270px;max-width:min(380px,85vw);
       max-height:390px;padding:12px;background:#fff;color:#111;border:2px solid #111;
       border-radius:8px;box-shadow:0 6px 16px #0003;overflow:auto;text-align:left;font-size:14px}
     .stage-filter-menu[hidden]{display:none}
+    .finance-filter-menu{position:fixed;z-index:5000;min-width:270px;max-width:min(380px,85vw);
+      max-height:390px;padding:12px;background:#fff;color:#111;border:2px solid #111;
+      border-radius:8px;box-shadow:0 6px 16px #0003;overflow:auto;text-align:left;font-size:14px}
+    .finance-filter-menu[hidden]{display:none}
+    .finance-count{font-size:12px;margin-top:9px;color:#555}
     .stage-menu-actions{display:flex;gap:7px;margin:10px 0}
     .stage-menu-actions button{border:1px solid #111;padding:5px 8px;border-radius:4px;
       background:#eee;cursor:pointer}
@@ -2239,12 +2276,18 @@ def _render_merged_table_panel(frame, heading, height_px=690):
       const tbody = table.querySelector('tbody');
       const stageTrigger = table.querySelector('.stage-filter-head');
       const stageMenu = document.querySelector('.stage-filter-menu');
+      const financeTrigger = table.querySelector('.finance-filter-head');
+      const financeMenu = document.querySelector('.finance-filter-menu');
+      const financeChoices = financeMenu ? Array.from(financeMenu.querySelectorAll('.finance-choice')) : [];
+      const chosenFinance = () => new Set(financeChoices.filter(c => c.checked).map(c => c.value));
       if (stageTrigger && stageMenu) {
         const choices = Array.from(stageMenu.querySelectorAll('.stage-choice'));
         const updateStages = () => {
           const selected = new Set(choices.filter(c => c.checked).map(c => c.value));
+          const selectedFin = chosenFinance();
           Array.from(tbody.querySelectorAll('tr')).forEach(row => {
-            row.hidden = !selected.has(row.dataset.stage || '');
+            row.hidden = !selected.has(row.dataset.stage || '') ||
+              (!!financeChoices.length && !selectedFin.has(row.dataset.financing || ''));
             row.style.display = row.hidden ? 'none' : '';
           });
           const shown = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.hidden).length;
@@ -2325,6 +2368,63 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         document.addEventListener('click', () => stageMenu.hidden = true);
         updateStages();
         sortStageRows();
+      }
+
+      if (financeTrigger && financeMenu) {
+        const financeSort = financeMenu.querySelector('.finance-sort-order');
+        const refreshFinancing = () => {
+          const selected = chosenFinance();
+          const selectedStage = stageMenu ?
+            new Set(Array.from(stageMenu.querySelectorAll('.stage-choice'))
+              .filter(c => c.checked).map(c => c.value)) : null;
+          Array.from(tbody.querySelectorAll('tr')).forEach(row => {
+            row.hidden = !selected.has(row.dataset.financing || '') ||
+              (!!selectedStage && !selectedStage.has(row.dataset.stage || ''));
+            row.style.display = row.hidden ? 'none' : '';
+          });
+          const shown = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.hidden).length;
+          financeMenu.querySelector('.finance-count').textContent =
+            shown + ' rows shown · ' + selected.size + ' statuses checked';
+        };
+        const sortFinance = () => {
+          const mode = financeSort.value;
+          if (mode === 'keep') return;
+          const flow = mode === 'reverse'
+            ? ['FINISHED','RUNNING','STARTED','ANNOUNCED','REVIEW / UNVERIFIED']
+            : ['ANNOUNCED','STARTED','RUNNING','FINISHED','REVIEW / UNVERIFIED'];
+          const ranks = new Map(flow.map((value,i) => [value,i]));
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((a,b) => (ranks.get(a.dataset.financing) ?? 999) -
+                             (ranks.get(b.dataset.financing) ?? 999) ||
+                             Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex));
+          rows.forEach(row => tbody.appendChild(row));
+        };
+        const positionFinanceMenu = () => {
+          const rect = financeTrigger.getBoundingClientRect();
+          financeMenu.style.left = Math.max(0, Math.min(rect.left, window.innerWidth - 295)) + 'px';
+          financeMenu.style.top = Math.max(0, Math.min(rect.bottom + 5, window.innerHeight - 170)) + 'px';
+        };
+        financeTrigger.addEventListener('click', event => {
+          event.preventDefault(); event.stopPropagation();
+          financeMenu.hidden = !financeMenu.hidden;
+          if (stageMenu) stageMenu.hidden = true;
+          if (!financeMenu.hidden) positionFinanceMenu();
+        });
+        financeMenu.addEventListener('click', event => event.stopPropagation());
+        financeChoices.forEach(choice => choice.addEventListener('change', () => {
+          refreshFinancing(); sortFinance();
+        }));
+        financeMenu.querySelector('[data-fin-all]').addEventListener('click', () => {
+          financeChoices.forEach(choice => choice.checked = true);
+          refreshFinancing();
+        });
+        financeMenu.querySelector('[data-fin-none]').addEventListener('click', () => {
+          financeChoices.forEach(choice => choice.checked = false);
+          refreshFinancing();
+        });
+        financeSort.addEventListener('change', sortFinance);
+        document.addEventListener('click', () => financeMenu.hidden = true);
+        refreshFinancing();
       }
 
       const buttons = Array.from(table.querySelectorAll('button.sort-head'));
@@ -2408,6 +2508,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         + "".join(rows)
         + '</tbody></table></div>'
         + stage_menu_html
+        + finance_menu_html
         + sort_js
     )
 
