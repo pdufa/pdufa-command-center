@@ -1,0 +1,37 @@
+name: Streamlit setup and dashboard tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install Streamlit app dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check Python syntax
+        run: python -m compileall -q app.py table_groups.py stage_header_overlay.py financing_stage.py stages.py scripts
+      - name: Run financing and header regression tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Verify Streamlit startup imports
+        run: |
+          python - <<'PY'
+          import streamlit
+          from table_groups import staged_table, stage_filter_panel
+          from financing_stage import FINANCING_OPTIONS
+          from stage_header_overlay import position_stage_filter
+          assert len(FINANCING_OPTIONS) == 5
+          print('Streamlit:', streamlit.__version__)
+          print('Shared STAGE and FINANCING controls: imports OK')
+          PY
