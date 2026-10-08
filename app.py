@@ -2586,37 +2586,34 @@ if page == "MASTER TABLE":
         ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
         watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
-        st.markdown("### WATCHLIST — IN MASTER TABLE")
-        st.caption("The checkbox is the FIRST column in the table immediately below. Check a ticker to add it to your Watchlist.")
-        st.metric("Watchlist tickers", len(watch_values))
-        st.markdown("**Watchlist selection — main Master table**")
-        st.dataframe(combined[["Watchlist", "Ticker", "Drug", "PDUFA Date"]].head(0), hide_index=True, use_container_width=True, column_config={"Watchlist": st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="The editable Watchlist checkboxes are in the Master table below.")})
-
-        st.caption("Tick the first column to add a ticker to Watchlist; untick to remove it. The ⓘ column-header help icon appears on hover.")
-        tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow", "All Columns"]
-        st.caption(f"Live events: {len(combined):,} · Historical validation records available separately: {historical_count:,}")
-        sections = st.tabs(tabs)
-        identity = [c for c in ("Watchlist", "Ticker", "Drug", "Indication", "PDUFA Date") if c in combined.columns]
-        for tab, group in zip(sections, tabs):
-            with tab:
-                fields = list(combined.columns) if group == "All Columns" else list(dict.fromkeys(identity + [c for c in combined.columns if _group_for(c) == group]))
-                view = combined[fields].copy()
-                st.caption(f"{len(view):,} event rows · {len(fields)} columns")
-                help_config = {c: st.column_config.TextColumn(str(c) + " ⓘ", help=f"{c}: source or calculated PDUFA event field; confirm its evidence and reporting date.") for c in fields if c != "Watchlist"}
-                help_config["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Tick to add this ticker to Watchlist; untick to remove it.", default=False)
-                edited = st.data_editor(view, use_container_width=True, hide_index=True, height=550, column_config=help_config, disabled=[c for c in fields if c != "Watchlist"], key="master_editor_" + group.replace(" ", "_"))
-                changes = edited["Watchlist"].fillna(False).astype(bool).ne(view["Watchlist"].fillna(False).astype(bool))
-                if changes.any():
-                    selected = set(watch_values)
-                    for row_id in view.index[changes]:
-                        ticker = ticker_values.loc[row_id]
-                        if ticker:
-                            if bool(edited.loc[row_id, "Watchlist"]):
-                                selected.add(ticker)
-                            else:
-                                selected.discard(ticker)
-                    st.session_state["watchlist"] = sorted(selected)
-                    st.rerun()
+        st.markdown("### MASTER TABLE — WATCHLIST")
+        st.caption("The first column is the Watchlist checkbox. Check a ticker to add it; uncheck to remove it.")
+        display_fields = list(combined.columns)
+        display_view = combined[display_fields].copy()
+        display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
+        display_help["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Check to add this ticker to your Watchlist.", default=False)
+        edited_master = st.data_editor(display_view, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
+        changed_watch = edited_master["Watchlist"].fillna(False).astype(bool).ne(display_view["Watchlist"].fillna(False).astype(bool))
+        if changed_watch.any():
+            selected_watch = set(watch_values)
+            for row_id in display_view.index[changed_watch]:
+                ticker = ticker_values.loc[row_id]
+                if ticker:
+                    if bool(edited_master.loc[row_id, "Watchlist"]):
+                        selected_watch.add(ticker)
+                    else:
+                        selected_watch.discard(ticker)
+            st.session_state["watchlist"] = sorted(selected_watch)
+            st.rerun()
+        st.caption(f"Watchlist: {len(watch_values)} tickers selected")
+        tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow"]
+        with st.expander("Column groups (read-only)", expanded=False):
+            sections = st.tabs(tabs)
+            identity = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date") if c in combined.columns]
+            for tab, group in zip(sections, tabs):
+                with tab:
+                    fields = list(dict.fromkeys(identity + [c for c in combined.columns if _group_for(c) == group and c != "Watchlist"]))
+                    st.dataframe(combined[fields], use_container_width=True, hide_index=True, height=420, column_config={c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: event field; verify source evidence.") for c in fields})
 
         st.markdown("### Original-source coverage checks")
         expected_fields = {
