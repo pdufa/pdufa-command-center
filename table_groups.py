@@ -203,7 +203,11 @@ def _filter_stage_rows(staged, selected, order, priority=None):
 
 def stage_filter_panel(data, key, source=None, expanded=False):
     """STAGE ▾ menu with actual checkboxes, shared by all ticker tables."""
-    staged = staged_table(data, source=source)
+    # Do not recompute the countdown when a parent table already supplied
+    # its program-matched STAGE and DAYS TO PDUFA columns.
+    staged = (data.copy() if source is None and
+              "STAGE" in data.columns and "DAYS TO PDUFA" in data.columns
+              else staged_table(data, source=source))
     if staged.empty or "STAGE" not in staged:
         return staged
     stages = staged["STAGE"].fillna("STAGE UNKNOWN — REVIEW").astype(str)
