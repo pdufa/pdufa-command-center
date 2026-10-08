@@ -2628,27 +2628,20 @@ if page == "MASTER TABLE":
             st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
         else:
             analysis_set = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
-            invest_set = {str(v).upper().strip() for v in st.session_state["master_invest"]}
             watch_rows.insert(0, "Add to Analysis", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(analysis_set))
-            watch_rows.insert(1, "Add to Invest", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_set))
-            visible = ["Add to Analysis", "Add to Invest"] + watch_cols
+            visible = ["Add to Analysis"] + watch_cols
             watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
             watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
-            watch_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to the Invest table; uncheck to remove it. No trade is placed.")
             watch_edited = st.data_editor(watch_rows[visible], use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
             changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
-            changed_invest = watch_edited["Add to Invest"].fillna(False).astype(bool).ne(watch_rows["Add to Invest"].fillna(False).astype(bool))
-            if changed_analysis.any() or changed_invest.any():
+            if changed_analysis.any():
                 for row_id in watch_rows.index:
                     ticker = str(watch_rows.loc[row_id, "Ticker"]).upper().strip()
                     if not ticker:
                         continue
                     if changed_analysis.loc[row_id]:
                         (analysis_set.add if bool(watch_edited.loc[row_id, "Add to Analysis"]) else analysis_set.discard)(ticker)
-                    if changed_invest.loc[row_id]:
-                        (invest_set.add if bool(watch_edited.loc[row_id, "Add to Invest"]) else invest_set.discard)(ticker)
                 st.session_state["master_analysis"] = sorted(analysis_set)
-                st.session_state["master_invest"] = sorted(invest_set)
                 st.rerun()
         for label, state_key in (("ANALYSIS", "master_analysis"), ("INVEST", "master_invest")):
             chosen = {str(v).upper().strip() for v in st.session_state[state_key]}
