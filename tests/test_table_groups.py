@@ -4,7 +4,7 @@ import unittest
 
 import pandas as pd
 
-from table_groups import MAX_COLUMNS, _filter_stage_rows, apply_editor_changes, column_groups, column_topic
+from table_groups import MAX_COLUMNS, _filter_stage_rows, _stage_header_layout, apply_editor_changes, column_groups, column_topic
 
 
 class ColumnGroupsTests(unittest.TestCase):
@@ -85,6 +85,20 @@ class StageMenuSortTests(unittest.TestCase):
         empty = _filter_stage_rows(self.frame, [], "Stage: A to Z")
         self.assertTrue(empty.empty)
         self.assertEqual(len(self.frame), 4)
+
+
+class StageButtonPlacementTests(unittest.TestCase):
+    def test_stage_button_anchors_after_ticker_and_optional_action(self):
+        plain = ["Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "PDUFA Date"]
+        watch = ["Watchlist", *plain, "Market Cap", "Trial Status", "Financing Status"]
+        early, width, tail = _stage_header_layout(plain)
+        shifted, shifted_width, shifted_tail = _stage_header_layout(watch)
+        self.assertGreater(early, 0)
+        self.assertGreater(width, 0)
+        self.assertEqual(shifted - early, 108)
+        self.assertEqual(width, shifted_width)
+        self.assertGreater(tail, 0)
+        self.assertGreater(shifted_tail, 0)
 
 
 class EditorChangesTests(unittest.TestCase):
