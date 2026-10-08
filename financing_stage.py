@@ -32,8 +32,8 @@ def financing_stage(record, today=None):
     if not raw and not audit:
         return "REVIEW / UNVERIFIED"
 
-    if raw in {"CLOSED", "COMPLETE", "COMPLETED", "FINISHED", "SECOND_CLOSE_VERIFIED"} or _yes(
-        get(row, "second_financing_closed", "second_financing_close_verified")
+    if raw in {"CLOSED", "COMPLETE", "COMPLETED", "FINISHED", "SECOND_CLOSE_VERIFIED"} or any(
+        _yes(get(row, key)) for key in ("second_financing_closed", "second_financing_close_verified")
     ):
         if (audit == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and evidence and
                 close_date and close_date <= today):
