@@ -4603,9 +4603,13 @@ elif page == "1. TRADING FLOW":
             "Horizon": "Trading window relative to the PDUFA date.",
             "Evidence Status": "Whether the source data have been verified or need review.",
         }
-        _cfg = {name: st.column_config.CheckboxColumn(name, help=desc) if name == "Review → Watchlist #2"
-                else st.column_config.TextColumn(name, help=desc)
-                for name, desc in _column_help.items() if name in horizon_view.columns}
+        # Streamlit renders the circled-question-mark help icon beside headers with help text.
+        _cfg = {
+            name: (st.column_config.CheckboxColumn(name, help=_column_help.get(name, "Toggle Watchlist #2 membership."))
+                   if name == "Review → Watchlist #2"
+                   else st.column_config.TextColumn(name, help=_column_help.get(name, f"Data field: {name}. Check the original evidence before making trading decisions.")))
+            for name in horizon_view.columns
+        }
         _edited = st.data_editor(
             horizon_view, use_container_width=True, hide_index=True, height=480,
             column_config=_cfg, disabled=[name for name in horizon_view.columns if name != "Review → Watchlist #2"],
