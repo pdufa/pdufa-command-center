@@ -2989,67 +2989,87 @@ if page == "MASTER TABLE":
         for state_key in ("master_analysis", "master_invest"):
             if state_key not in st.session_state:
                 st.session_state[state_key] = []
-        st.markdown("### WATCHLIST — SELECTED STOCKS")
-        current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
-        watch_rows = combined[ticker_values.isin(current_watch)].copy()
-        if not watch_rows.empty:
-            watch_rows = stage_filter_panel(watch_rows, key="watchlist_stage", source=master)
-        st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
-        # Eight paired technical indicators are displayed in both ENTRY and EXIT mode.
-        # Never synthesize trade calls when a verified scanner feed is unavailable.
-        indicator_names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
-                           "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
-                           "OBV", "ATR (14)"]
-        signal_mode = st.radio("WATCHLIST INDICATORS", ["ENTRY", "EXIT"],
-                               horizontal=True, key="watchlist_indicator_mode")
-        st.caption("Eight matching indicators per stock. NOT SCANNED means no validated technical signal has been loaded; it is not a buy or sell recommendation.")
-        indicator_file = Path("data/watchlist_indicator_signals.csv")
-        signal_rows = pd.DataFrame()
-        if indicator_file.exists():
-            try:
-                signal_rows = pd.read_csv(indicator_file, dtype=str, keep_default_na=False)
-                if not {"ticker", "mode"}.issubset(signal_rows.columns):
+        @st.fragment(run_every="60s")
+        def render_watchlist_indicators():
+            st.markdown("### WATCHLIST — SELECTED STOCKS")
+            current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
+            watch_rows = combined[ticker_values.isin(current_watch)].copy()
+            if not watch_rows.empty:
+                watch_rows = stage_filter_panel(watch_rows, key="watchlist_stage", source=master)
+            st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
+            # Eight paired technical indicators are displayed in both ENTRY and EXIT mode.
+            # Never synthesize trade calls when a verified scanner feed is unavailable.
+            indicator_names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
+                               "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
+                               "OBV", "ATR (14)"]
+            signal_mode = st.radio("WATCHLIST INDICATORS", ["ENTRY", "EXIT", "BOTH"],
+                                   horizontal=True, key="watchlist_indicator_mode")
+            st.caption("Eight matching indicators per stock. NOT SCANNED means no validated technical signal has been loaded; it is not a buy or sell recommendation.")
+            indicator_file = Path("data/watchlist_indicator_signals.csv")
+            signal_rows = pd.DataFrame()
+            if indicator_file.exists():
+                try:
+                    signal_rows = pd.read_csv(indicator_file, dtype=str, keep_default_na=False)
+                    if not {"ticker", "mode"}.issubset(signal_rows.columns):
+                        signal_rows = pd.DataFrame()
+                    else:
+                        signal_rows["ticker"] = signal_rows["ticker"].str.upper().str.strip()
+                        signal_rows["mode"] = signal_rows["mode"].str.upper().str.strip()
+                except (OSError, ValueError, pd.errors.ParserError):
                     signal_rows = pd.DataFrame()
-                else:
-                    signal_rows["ticker"] = signal_rows["ticker"].str.upper().str.strip()
-                    signal_rows["mode"] = signal_rows["mode"].str.upper().str.strip()
-                    signal_rows = signal_rows.loc[signal_rows["mode"].eq(signal_mode)].drop_duplicates("ticker", keep="last").set_index("ticker")
-            except (OSError, ValueError, pd.errors.ParserError):
-                signal_rows = pd.DataFrame()
-                st.warning("Indicator data could not be loaded; signals are marked NOT SCANNED.")
-        if not watch_rows.empty:
-            tickers_for_signals = watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip()
-            for indicator in indicator_names:
-                if not signal_rows.empty and indicator in signal_rows.columns:
-                    values = tickers_for_signals.map(signal_rows[indicator])
-                    watch_rows[indicator] = values.fillna("").replace("", "NOT SCANNED").to_numpy()
-                else:
-                    watch_rows[indicator] = "NOT SCANNED"
-            if not signal_rows.empty and "updated_at" in signal_rows.columns:
-                watch_rows["Signal Updated"] = tickers_for_signals.map(signal_rows["updated_at"]).fillna("NOT SCANNED").to_numpy()
+                    st.warning("Indicator data could not be loaded; signals are marked NOT SCANNED.")
+            active_modes = ["ENTRY", "EXIT"] if signal_mode == "BOTH" else [signal_mode]
+            displayed_indicators = []
+            if not watch_rows.empty:
+                tickers_for_signals = watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip()
+                for active_mode in active_modes:
+                    mode_rows = signal_rows.loc[signal_rows["mode"].eq(active_mode)] if not signal_rows.empty else pd.DataFrame()
+                    if not mode_rows.empty:
+                        mode_rows = mode_rows.drop_duplicates("ticker", keep="last").set_index("ticker")
+                    for indicator in indicator_names:
+                        label = f"{active_mode} | {indicator}" if signal_mode == "BOTH" else indicator
+                        displayed_indicators.append(label)
+                        if not mode_rows.empty and indicator in mode_rows.columns:
+                            values = tickers_for_signals.map(mode_rows[indicator])
+                            watch_rows[label] = values.fillna("").replace("", "NOT SCANNED").to_numpy()
+                        else:
+                            watch_rows[label] = "NOT SCANNED"
+                    timestamp_label = f"{active_mode} | Updated" if signal_mode == "BOTH" else "Signal Updated"
+                    displayed_indicators.append(timestamp_label)
+                    if not mode_rows.empty and "updated_at" in mode_rows.columns:
+                        watch_rows[timestamp_label] = tickers_for_signals.map(mode_rows["updated_at"]).fillna("NOT SCANNED").to_numpy()
+                    else:
+                        watch_rows[timestamp_label] = "NOT SCANNED"
             else:
-                watch_rows["Signal Updated"] = "NOT SCANNED"
-        watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
-        watch_cols += indicator_names + ["Signal Updated"]
-        if watch_rows.empty:
-            st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
-        else:
-            analysis_set = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
-            watch_rows.insert(0, "Add to Analysis", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(analysis_set))
-            visible = ["Add to Analysis"] + watch_cols
-            watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
-            watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
-            watch_edited = grouped_editor(watch_rows[visible], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
-            changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
-            if changed_analysis.any():
-                for row_id in watch_rows.index:
-                    ticker = str(watch_rows.loc[row_id, "Ticker"]).upper().strip()
-                    if not ticker:
-                        continue
-                    if changed_analysis.loc[row_id]:
-                        (analysis_set.add if bool(watch_edited.loc[row_id, "Add to Analysis"]) else analysis_set.discard)(ticker)
-                st.session_state["master_analysis"] = sorted(analysis_set)
-                st.rerun()
+                displayed_indicators = [
+                    f"{mode} | {name}" if signal_mode == "BOTH" else name
+                    for mode in active_modes for name in indicator_names
+                ] + (["ENTRY | Updated", "EXIT | Updated"] if signal_mode == "BOTH" else ["Signal Updated"])
+            st.caption("This watchlist display refreshes every 60 seconds while the app is open. Live indicator calculations require a connected 1-minute data feed and scanner; missing signals stay NOT SCANNED.")
+            if st.button("↻ REFRESH WATCHLIST NOW", key="refresh_watchlist_signals"):
+                st.rerun(scope="fragment")
+            watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+            watch_cols += displayed_indicators
+            if watch_rows.empty:
+                st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
+            else:
+                analysis_set = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
+                watch_rows.insert(0, "Add to Analysis", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(analysis_set))
+                visible = ["Add to Analysis"] + watch_cols
+                watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
+                watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
+                watch_edited = grouped_editor(watch_rows[visible], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
+                changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
+                if changed_analysis.any():
+                    for row_id in watch_rows.index:
+                        ticker = str(watch_rows.loc[row_id, "Ticker"]).upper().strip()
+                        if not ticker:
+                            continue
+                        if changed_analysis.loc[row_id]:
+                            (analysis_set.add if bool(watch_edited.loc[row_id, "Add to Analysis"]) else analysis_set.discard)(ticker)
+                    st.session_state["master_analysis"] = sorted(analysis_set)
+                    st.rerun()
+        render_watchlist_indicators()
         # Analysis is the only path for promoting a ticker into Invest.
         analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
         invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
