@@ -2953,11 +2953,11 @@ if page == "MASTER TABLE":
                 countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
                 countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
                 countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable", na_position="last")
-                tab_labels = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
-                category_tabs = st.tabs([f"{label} ({int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
+                tab_labels = ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
+                category_tabs = st.tabs([f"{label} ({len(countdown) if label == 'ALL' else int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
                 for label, category_tab in zip(tab_labels, category_tabs):
                     with category_tab:
-                        section = countdown.loc[countdown["PDUFA Horizon"] == label].copy()
+                        section = countdown.copy() if label == "ALL" else countdown.loc[countdown["PDUFA Horizon"] == label].copy()
                         if section.empty:
                             st.info(f"No candidates in {label}.")
                         else:
