@@ -2503,6 +2503,36 @@ if page == "MASTER TABLE":
                                      ("confidence", "FDA Confidence"), ("strict_v3_prediction", "FDA Strict Prediction")):
                     if field in fda_subset:
                         combined[label] = source_keys.map(fda_subset[field])
+        # Step 1: preserve Trading Flow and Funnel derived fields.
+        def _finance_closed(row):
+            values = []
+            for field in ("second_financing_status", "second_financing_close_verified", "second_financing_closed"):
+                value = row.get(field, "")
+                values.append("" if pd.isna(value) else str(value).upper())
+            status = " ".join(values)
+            return "SECOND_CLOSE_VERIFIED" in status or "RED_CLOSED" in status or any(v in ("YES", "TRUE", "1", "VERIFIED") for v in values)
+        closed_flags = master.apply(_finance_closed, axis=1)
+        readout_flags = pd.to_datetime(master.get("phase3_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
+        gate_flags = master.get("entry_gate", pd.Series("REVIEW", index=master.index)).fillna("REVIEW").astype(str).str.upper().eq("PASS")
+        combined["Funnel Stage"] = "4 · WATCHLIST / ENTRY REVIEW"
+        combined.loc[~readout_flags, "Funnel Stage"] = "1 · DISCOVERY / READOUT REVIEW"
+        combined.loc[readout_flags & ~closed_flags, "Funnel Stage"] = "3 · FINANCING REVIEW"
+        combined.loc[readout_flags & closed_flags & gate_flags, "Funnel Stage"] = "5 · ENTRY REVIEW — GATE PASS"
+        combined["Second Financing Verified"] = closed_flags.map({True: "YES", False: "REVIEW"})
+        combined["🟢 Financing Started"] = ""
+        combined["🟡 Financing In Progress"] = ""
+        combined["🔴 Financing Closed"] = closed_flags.map({True: "🔴 CLOSED", False: ""})
+        status_values = master.get("second_financing_status", pd.Series("", index=master.index)).fillna("").astype(str).str.upper()
+        combined.loc[status_values.str.contains("STARTED|ANNOUNCED", regex=True), "🟢 Financing Started"] = "🟢 STARTED"
+        combined.loc[status_values.str.contains("IN_PROGRESS|PENDING|PRICED", regex=True), "🟡 Financing In Progress"] = "🟡 IN PROGRESS"
+        for source, label in (("second_financing_status", "Financing #2 Status"), ("second_financing_source", "Financing Close Evidence"), ("market_cap_bucket", "Validated Market Cap Bucket"), ("public_approval_probability", "Our FDA PoA"), ("trade_score", "Our Trade/PDUFA Score"), ("phase3_date", "Company Readout Date"), ("nct_id", "NCT"), ("trial_status", "Trial Status"), ("primary_completion", "Primary Completion"), ("study_completion", "Study Completion"), ("results_first_posted", "Results First Posted")):
+            if source in master:
+                combined[label] = master[source]
+        submitted = pd.to_datetime(master.get("nda_submission_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
+        accepted = pd.to_datetime(master.get("fda_acceptance_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
+        combined["NDA/BLA Status"] = "REVIEW"
+        combined.loc[submitted, "NDA/BLA Status"] = "SUBMITTED"
+        combined.loc[accepted, "NDA/BLA Status"] = "FDA ACCEPTED"
         def _group_for(col):
             name = str(col).lower()
             if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
