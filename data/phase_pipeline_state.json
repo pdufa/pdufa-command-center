@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-08T03:26:26.295469+00:00",
+  "started_at": "2026-10-08T03:59:50.719061+00:00",
   "status": "COMPLETE",
   "registry_companies": 717,
   "scope": "Industry Phase 2/3 records updated since 2024-10-08",
@@ -9,34 +9,8 @@
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "XENE",
-      "drug": "Azetukalner",
-      "nct_id": "NCT07172516"
-    },
-    {
-      "ticker": "XENE",
-      "drug": "Azetukalner",
-      "nct_id": "NCT07076407"
-    },
-    {
-      "ticker": "XENE",
-      "drug": "XEN1101",
-      "nct_id": "NCT05718817"
-    },
-    {
-      "ticker": "XENE",
-      "drug": "XEN1101",
-      "nct_id": "NCT05614063"
-    },
-    {
-      "ticker": "XENE",
-      "drug": "XEN1101",
-      "nct_id": "NCT05667142"
-    }
-  ],
-  "finished_at": "2026-10-08T03:27:05.234272+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-10-08T04:00:22.757517+00:00",
   "stored_trials": 3095,
   "phase2_programs": 437,
   "master_programs": 115,
