@@ -2721,20 +2721,6 @@ if page == "MASTER TABLE":
 
         st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
 
-        st.markdown("### Original-source coverage checks")
-        expected_fields = {
-            "Trading Flow": ["Ticker", "Drug", "P (p-value)", "Our FDA PoA", "Our Trade/PDUFA Score", "Entry Gate", "Financing #1 Date", "Financing #2 Date", "NDA/BLA Status", "Days to PDUFA", "Evidence Status"],
-            "Funnel": ["Funnel Stage", "Second Financing Verified", "Company Readout Date", "Entry Gate"],
-            "FDA Engine": ["FDA Direction", "FDA Direction Score", "FDA Confidence", "FDA Strict Prediction"],
-            "Market Cap": ["Market Cap", "Market Cap Band", "Detailed Market Cap Band"],
-            "All PDUFA": ["Ticker", "Drug", "Indication", "PDUFA Date", "Record Source"],
-        }
-        coverage_rows = []
-        for section, expected in expected_fields.items():
-            missing = [field for field in expected if field not in combined.columns]
-            coverage_rows.append({"Source": section, "Expected fields": len(expected), "Present fields": len(expected) - len(missing), "Missing": ", ".join(missing) if missing else "None", "Column coverage": "PASS" if not missing else "REVIEW"})
-        st.dataframe(pd.DataFrame(coverage_rows), use_container_width=True, hide_index=True)
-        st.caption("Coverage checks report column presence. Verify source evidence and dates before treating an event field as confirmed.")
         with st.expander("Additional original-source tables (preserved without unsafe joins)"):
             for source_name, source_frame in (("FDA regulatory signals", fda_regulatory_signals), ("FDA extensions", fda_extension_ledger), ("FDA facilities", fda_facilities), ("FDA backfill queue", fda_backfill_queue), ("FDA prediction freezes", fda_freezes), ("Historical predictions", prediction_history)):
                 st.markdown("#### " + source_name)
