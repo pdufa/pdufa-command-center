@@ -2373,7 +2373,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. TRADING FLOW","FUNNEL","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","3. ALL PDUFA","4. DECISION","5. SCANS","6. RECHECK","7. FDA ENGINE","8. MARKET CAP","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["MASTER TABLE","1. TRADING FLOW","FUNNEL","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","3. ALL PDUFA","4. DECISION","5. SCANS","6. RECHECK","7. FDA ENGINE","8. MARKET CAP","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -2384,7 +2384,83 @@ else:
     if len(st.query_params):
         st.query_params.clear()
 
-if page == "3. ALL PDUFA":
+if page == "MASTER TABLE":
+    st.markdown("## MASTER PDUFA TABLE — COMBINED COLUMNS")
+    st.caption("One event-level dataset, grouped into tabs. Identical fields are shown once; different events for the same ticker remain separate. Original pages remain available for their specialized actions.")
+    master = df.copy().reset_index(drop=True)
+    if master.empty:
+        st.info("No PDUFA records are currently loaded.")
+    else:
+        # Canonical columns collapse equivalent names without discarding conflicting evidence.
+        aliases = {
+            "Ticker": ["ticker", "symbol"],
+            "Drug": ["drug", "drug_name", "product_name"],
+            "Indication": ["indication", "disease"],
+            "NCT": ["nct_id", "nct"],
+            "Phase 3 Readout": ["phase3_date", "phase_3_date", "readout_date"],
+            "P (p-value)": ["reported_p_values", "p_value"],
+            "Trial Status": ["trial_status", "study_status"],
+            "Financing #1 Date": ["first_financing_date"],
+            "Financing #2 Date": ["second_financing_date"],
+            "Financing Type": ["second_financing_type", "financing_type"],
+            "Financing Proceeds": ["financing_proceeds"],
+            "Dilution / ATM": ["new_dilution_flag"],
+            "Cash": ["cash"],
+            "Cash Runway (months)": ["cash_runway_months"],
+            "NDA Submission": ["nda_submission_date"],
+            "FDA Acceptance": ["fda_acceptance_date"],
+            "PDUFA Date": ["pdufa_date"],
+            "FDA PoA": ["approval_probability"],
+            "Entry Gate": ["entry_gate"],
+            "Market Cap": ["market_cap", "market_cap_usd"],
+            "Evidence Status": ["check_status"],
+        }
+        combined = pd.DataFrame(index=master.index)
+        consumed = set()
+        for title, choices in aliases.items():
+            present = [c for c in choices if c in master.columns]
+            if present:
+                combined[title] = master[present[0]]
+                consumed.add(present[0])
+                for other in present[1:]:
+                    # Keep alternative values separate if both sources disagree.
+                    left = combined[title].astype("string").fillna("").str.strip()
+                    right = master[other].astype("string").fillna("").str.strip()
+                    conflict = left.ne("") & right.ne("") & left.ne(right)
+                    if conflict.any():
+                        combined[other + " (alternate)"] = master[other]
+                    else:
+                        combined[title] = combined[title].where(left.ne(""), master[other])
+                    consumed.add(other)
+        for col in master.columns:
+            if col not in consumed and col not in combined.columns:
+                combined[col] = master[col]
+        def _group_for(col):
+            name = str(col).lower()
+            if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
+                return "Financing"
+            if any(x in name for x in ("market_cap", "market cap", "float", "short_interest", "short interest", "revenue", "valuation", "shares")):
+                return "Market Cap"
+            if any(x in name for x in ("fda", "pdufa", "nda", "bla", "approval", "regulatory", "crl", "poa")):
+                return "FDA Engine"
+            if any(x in name for x in ("phase", "trial", "nct", "readout", "p-value", "p_value", "endpoint", "study", "results")):
+                return "Phase 3"
+            if any(x in name for x in ("gate", "score", "watchlist", "entry", "trade", "position", "horizon", "momentum", "volume")):
+                return "Trading Flow"
+            return "Company & Event"
+        tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow", "All Columns"]
+        sections = st.tabs(tabs)
+        identity = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date") if c in combined.columns]
+        for tab, group in zip(sections, tabs):
+            with tab:
+                fields = list(combined.columns) if group == "All Columns" else list(dict.fromkeys(identity + [c for c in combined.columns if _group_for(c) == group]))
+                view = combined[fields]
+                st.caption(f"{len(view):,} event rows · {len(fields)} columns")
+                help_config = {c: st.column_config.TextColumn(str(c), help=f"{c}: value from the loaded PDUFA event record; verify evidence and reporting date.") for c in fields if c not in identity}
+                st.dataframe(view, use_container_width=True, hide_index=True, height=550, column_config=help_config)
+    st.caption("This consolidates loaded source columns, not every derived calculation or interactive control from the original pages. Missing evidence is not treated as verified.")
+
+elif page == "3. ALL PDUFA":
     st.markdown("## 3. ALL PDUFA — VERIFIED EVENT UNIVERSE")
     st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
