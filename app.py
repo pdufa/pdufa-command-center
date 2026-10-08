@@ -2564,9 +2564,51 @@ if page == "MASTER TABLE":
             fine_edges = [0, 300e6, 500e6, 750e6, 1e9, 2e9, 3e9, 5e9, 7.5e9, 10e9, float("inf")]
             fine_labels = ["<$300M", "$300M–$500M", "$500M–$750M", "$750M–$1B", "$1B–$2B", "$2B–$3B", "$3B–$5B", "$5B–$7.5B", "$7.5B–$10B", ">$10B"]
             combined["Detailed Market Cap Band"] = pd.cut(cap_numeric, bins=fine_edges, labels=fine_labels, right=False).astype("string").fillna("UNKNOWN")
-        # Historical validation records are a separate cohort, not invented live events.
+        # Historical cohorts are not live events. Expose their columns in the
+        # master schema without fabricating event-level joins.
         historical_count = len(prediction_history) if isinstance(prediction_history, pd.DataFrame) else 0
         combined["Record Source"] = "LIVE PDUFA EVENT"
+        # Bring every loaded source schema into the master, preserving provenance.
+        # Unique event keys are required; duplicate or incomplete keys are
+        # intentionally left blank rather than assigned to the wrong drug.
+        extra_sources = (
+            ("FDA Facilities", fda_facilities),
+            ("FDA Backfill", fda_backfill_queue),
+            ("FDA Freezes", fda_freezes),
+            ("Historical Predictions", prediction_history),
+        )
+        for prefix, frame in extra_sources:
+            if not isinstance(frame, pd.DataFrame) or frame.empty:
+                continue
+            keys = ("ticker", "drug", "pdufa_date")
+            eligible = all(k in frame.columns for k in keys) and all(k in master.columns for k in keys)
+            source_keys = None
+            if eligible:
+                def _complete_keys(f):
+                    parts = [
+                        f[k].fillna("").astype(str).str.strip().str.upper()
+                        if k != "pdufa_date" else
+                        pd.to_datetime(f[k], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+                        for k in keys
+                    ]
+                    valid = parts[0].ne("") & parts[1].ne("") & parts[2].ne("")
+                    return parts[0] + "|" + parts[1] + "|" + parts[2], valid
+                source_keys, source_valid = _complete_keys(frame)
+                target_keys, target_valid = _complete_keys(master)
+                unique = source_valid & ~source_keys.duplicated(keep=False)
+            for field in frame.columns:
+                label = prefix + " · " + str(field)
+                if label in combined.columns:
+                    continue
+                if eligible and field not in keys:
+                    mapping = pd.Series(frame.loc[unique, field].to_numpy(), index=source_keys.loc[unique])
+                    combined[label] = target_keys.map(mapping).where(target_valid)
+                else:
+                    # Retain column discoverability while keeping unrelated
+                    # historical rows and incomplete keys out of live records.
+                    combined[label] = pd.Series(pd.NA, index=combined.index, dtype="object")
+        # All source fields are visible in the master, including fields that
+        # cannot safely be joined. No synthetic evidence is treated as a pass.
         def _group_for(col):
             name = str(col).lower()
             if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
