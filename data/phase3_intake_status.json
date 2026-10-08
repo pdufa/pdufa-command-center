@@ -1,0 +1,14 @@
+{
+  "mode": "backfill",
+  "started_at": "2026-10-08T15:25:20.357177+00:00",
+  "registry_companies": 717,
+  "pages": 50,
+  "studies_checked": 49992,
+  "matched_posted_results": 2470,
+  "new_records": 2470,
+  "complete": true,
+  "errors": [],
+  "finished_at": "2026-10-08T15:27:05.746779+00:00",
+  "stored_results": 2476,
+  "status": "COMPLETE"
+}
