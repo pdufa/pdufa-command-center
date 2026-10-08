@@ -2699,7 +2699,7 @@ if page == "MASTER TABLE":
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
         st.markdown("### MASTER TABLE — WATCHLIST")
         st.caption("Ticker → STAGE → DAYS TO PDUFA stays visible in every view. Related fields are grouped into tabs; use the field selector for additional sections.")
-        display_view = stage_filter_panel(combined, key="master_table", source=master)
+        display_view = stage_filter_panel(combined, key="master_table", source=master, expanded=True)
         display_fields = list(display_view.columns)
         display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
         display_help["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Check to add this ticker to your Watchlist.", default=False)
@@ -2724,8 +2724,10 @@ if page == "MASTER TABLE":
         st.markdown("### WATCHLIST — SELECTED STOCKS")
         current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
         watch_rows = combined[ticker_values.isin(current_watch)].copy()
+        if not watch_rows.empty:
+            watch_rows = stage_filter_panel(watch_rows, key="watchlist_stage", source=master)
         st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
-        watch_cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+        watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
         if watch_rows.empty:
             st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
         else:
@@ -2749,8 +2751,10 @@ if page == "MASTER TABLE":
         analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
         invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
         analysis_rows = combined[ticker_values.isin(analysis_tickers)].copy()
+        if not analysis_rows.empty:
+            analysis_rows = stage_filter_panel(analysis_rows, key="analysis_stage", source=master)
         st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
-        detail_cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
+        detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
         if analysis_rows.empty:
             st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
         else:
@@ -2770,6 +2774,8 @@ if page == "MASTER TABLE":
                 st.session_state["master_invest"] = sorted(invest_tickers)
                 st.rerun()
         invest_rows = combined[ticker_values.isin(invest_tickers)]
+        if not invest_rows.empty:
+            invest_rows = stage_filter_panel(invest_rows, key="invest_stage", source=master)
         st.markdown("#### INVEST" + f" ({len(invest_rows):,})")
         if invest_rows.empty:
             st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
@@ -2845,7 +2851,7 @@ elif page == "PIPELINE":
             "checked_at": "Last Checked", "source_url": "Trial Evidence",
         }
         if not phase2.empty:
-            filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2)
+            filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2, expanded=True)
             phase2 = phase2.loc[filtered_phase2.index]
         if phase2.empty:
             st.info("No Phase 2 programs match the selected stages or search.")
