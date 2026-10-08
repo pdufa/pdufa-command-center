@@ -43,12 +43,12 @@ class ColumnGroupsTests(unittest.TestCase):
         self.assertTrue(all(fields[:3] == columns[:3] for panes in groups.values() for _, fields in panes))
 
     def test_stage_and_countdown_stay_immediately_next_to_ticker(self):
-        columns = ["Watchlist", "Ticker", "Drug", "Indication", "STAGE", "DAYS TO PDUFA", "PDUFA Date", "FDA PoA", "Market Cap", "Trial Status", "Trial Evidence", "Cash"]
+        columns = ["Watchlist", "Ticker", "Drug", "Indication", "STAGE", "DAYS TO PDUFA", "FINANCING", "PDUFA Date", "FDA PoA", "Market Cap", "Trial Status", "Trial Evidence", "Cash"]
         for panes in column_groups(columns).values():
             for _, fields in panes:
                 self.assertLessEqual(len(fields), MAX_COLUMNS)
                 position = fields.index("Ticker")
-                self.assertEqual(fields[position:position + 3], ["Ticker", "STAGE", "DAYS TO PDUFA"])
+                self.assertEqual(fields[position:position + 4], ["Ticker", "STAGE", "DAYS TO PDUFA", "FINANCING"])
 
 
 class StageMenuSortTests(unittest.TestCase):
@@ -97,6 +97,13 @@ class StageButtonPlacementTests(unittest.TestCase):
         self.assertGreater(width, 0)
         self.assertEqual(shifted - early, 108)
         self.assertEqual(width, shifted_width)
+        from table_groups import _stage_header_layout
+        fin_offset, fin_width, _ = _stage_header_layout(
+            ["Ticker", "STAGE", "DAYS TO PDUFA", "FINANCING", "Drug"],
+            "FINANCING",
+        )
+        self.assertGreater(fin_offset, early)
+        self.assertGreater(fin_width, 0)
         self.assertGreater(tail, 0)
         self.assertGreater(shifted_tail, 0)
 
