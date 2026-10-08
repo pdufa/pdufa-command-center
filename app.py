@@ -2995,7 +2995,42 @@ if page == "MASTER TABLE":
         if not watch_rows.empty:
             watch_rows = stage_filter_panel(watch_rows, key="watchlist_stage", source=master)
         st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
+        # Eight paired technical indicators are displayed in both ENTRY and EXIT mode.
+        # Never synthesize trade calls when a verified scanner feed is unavailable.
+        indicator_names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
+                           "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
+                           "OBV", "ATR (14)"]
+        signal_mode = st.radio("WATCHLIST INDICATORS", ["ENTRY", "EXIT"],
+                               horizontal=True, key="watchlist_indicator_mode")
+        st.caption("Eight matching indicators per stock. NOT SCANNED means no validated technical signal has been loaded; it is not a buy or sell recommendation.")
+        indicator_file = Path("data/watchlist_indicator_signals.csv")
+        signal_rows = pd.DataFrame()
+        if indicator_file.exists():
+            try:
+                signal_rows = pd.read_csv(indicator_file, dtype=str, keep_default_na=False)
+                if not {"ticker", "mode"}.issubset(signal_rows.columns):
+                    signal_rows = pd.DataFrame()
+                else:
+                    signal_rows["ticker"] = signal_rows["ticker"].str.upper().str.strip()
+                    signal_rows["mode"] = signal_rows["mode"].str.upper().str.strip()
+                    signal_rows = signal_rows.loc[signal_rows["mode"].eq(signal_mode)].drop_duplicates("ticker", keep="last").set_index("ticker")
+            except (OSError, ValueError, pd.errors.ParserError):
+                signal_rows = pd.DataFrame()
+                st.warning("Indicator data could not be loaded; signals are marked NOT SCANNED.")
+        if not watch_rows.empty:
+            tickers_for_signals = watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip()
+            for indicator in indicator_names:
+                if not signal_rows.empty and indicator in signal_rows.columns:
+                    values = tickers_for_signals.map(signal_rows[indicator])
+                    watch_rows[indicator] = values.fillna("").replace("", "NOT SCANNED").to_numpy()
+                else:
+                    watch_rows[indicator] = "NOT SCANNED"
+            if not signal_rows.empty and "updated_at" in signal_rows.columns:
+                watch_rows["Signal Updated"] = tickers_for_signals.map(signal_rows["updated_at"]).fillna("NOT SCANNED").to_numpy()
+            else:
+                watch_rows["Signal Updated"] = "NOT SCANNED"
         watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+        watch_cols += indicator_names + ["Signal Updated"]
         if watch_rows.empty:
             st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
         else:
