@@ -183,7 +183,8 @@ def stage_filter_panel(data, key, source=None, expanded=False):
         )
         order = st.selectbox(
             "Sort stage rows",
-            ("Workflow: early to late", "Workflow: late to early", "Stage: A to Z", "Stage: Z to A",
+            ("Workflow: early to late", "Workflow: late to early", "Selected stages: chosen order",
+             "Stage: A to Z", "Stage: Z to A",
              "Days to PDUFA: soonest first", "Days to PDUFA: latest first"),
             key=key + "_stage_order",
         )
@@ -192,7 +193,12 @@ def stage_filter_panel(data, key, source=None, expanded=False):
     if result.empty:
         st.info("No rows match the selected stages.")
         return result
-    if order.startswith("Workflow"):
+    if order == "Selected stages: chosen order" and selected:
+        priority = {label: idx for idx, label in enumerate(selected)}
+        result = result.assign(_stage_priority=result["STAGE"].map(priority)).sort_values(
+            "_stage_priority", kind="stable"
+        ).drop(columns="_stage_priority")
+    elif order.startswith("Workflow"):
         ranking = result["STAGE"].map(_stage_sort_rank)
         result = result.assign(_stage_rank=ranking).sort_values(
             ["_stage_rank", "STAGE"], ascending=[order.endswith("early to late"), True], kind="stable"
