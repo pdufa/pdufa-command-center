@@ -10,7 +10,7 @@ import json
 import os
 import re
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -80,7 +80,7 @@ def scan(mode, max_pages, data_dir=DATA):
     if mode == "daily":
         # Incremental scan: recently updated studies, plus retained historical ledger.
         params["query.term"] += " AND AREA[LastUpdatePostDate]RANGE[" + (
-            datetime.now(timezone.utc).date().replace(day=1).isoformat()) + ",MAX]"
+            (datetime.now(timezone.utc).date() - timedelta(days=90)).isoformat()) + ",MAX]"
     try:
         for page in range(max_pages):
             payload = fetch(params)
