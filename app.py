@@ -2384,7 +2384,7 @@ else:
     if len(st.query_params):
         st.query_params.clear()
 
-elif page == "3. ALL PDUFA":
+if page == "3. ALL PDUFA":
     st.markdown("## 3. ALL PDUFA — VERIFIED EVENT UNIVERSE")
     st.caption("Sortable saved PDUFA events currently loaded into Streamlit. This live feed is event-level and preserves multi-event tickers. Historical validation cohorts are not silently counted unless they are actually loaded here.")
 
