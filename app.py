@@ -2435,6 +2435,74 @@ if page == "MASTER TABLE":
         for col in master.columns:
             if col not in consumed and col not in combined.columns:
                 combined[col] = master[col]
+        # Add computed views from Funnel, Trading Flow and Market Cap without
+        # duplicating their shared source columns.
+        if "Ticker" in combined:
+            tickers = combined["Ticker"].fillna("").astype(str).str.upper()
+            combined["Watchlist #2"] = tickers.isin(
+                {str(x).upper() for x in st.session_state.get("watchlist", [])}
+            )
+            combined["Entry Review"] = tickers.isin(
+                {str(x).upper() for x in st.session_state.get("position_candidates", [])}
+            )
+        if "PDUFA Date" in combined:
+            dates = pd.to_datetime(combined["PDUFA Date"], errors="coerce")
+            combined["Days to PDUFA"] = (dates - pd.Timestamp.today().normalize()).dt.days.astype("Int64")
+            def _window(days):
+                if pd.isna(days):
+                    return "DATE NOT VERIFIED"
+                if days < 0:
+                    return "PAST"
+                if days <= 13:
+                    return "13–0 DAYS"
+                if days <= 30:
+                    return "30–14 DAYS"
+                if days <= 60:
+                    return "60–31 DAYS"
+                if days <= 90:
+                    return "90–61 DAYS"
+                return "90+ DAYS"
+            combined["PDUFA Horizon"] = combined["Days to PDUFA"].map(_window)
+        if "Market Cap" in combined:
+            cap = pd.to_numeric(combined["Market Cap"], errors="coerce")
+            combined["Market Cap Band"] = pd.cut(
+                cap, bins=[0, 300_000_000, 1_000_000_000, 3_000_000_000, 10_000_000_000, float("inf")],
+                labels=["UNDER $300M", "$300M–$1B", "$1B–$3B", "$3B–$10B", "OVER $10B"],
+                include_lowest=True, right=False
+            ).astype("string").fillna("UNKNOWN")
+        if "Financing #2 Date" in combined:
+            combined["Second Financing Date Recorded"] = (
+                combined["Financing #2 Date"].notna()
+                & combined["Financing #2 Date"].astype(str).str.strip().ne("")
+            )
+            combined["Financing Close Verified"] = "REVIEW — verify SEC/company closing evidence"
+        if "Entry Gate" in combined:
+            combined["Funnel Stage (provisional)"] = combined["Entry Gate"].fillna("REVIEW").astype(str).map(
+                lambda v: "ENTRY REVIEW" if v.upper() == "PASS" else "REVIEW / DISCOVERY"
+            )
+        # FDA directional assessments are event-level only when ticker, drug,
+        # and PDUFA date uniquely match. Never join by ticker alone.
+        if isinstance(fda_directional_live, pd.DataFrame) and not fda_directional_live.empty:
+            fda_keys = ("ticker", "drug", "pdufa_date")
+            if all(k in fda_directional_live.columns for k in fda_keys) and all(k in master.columns for k in fda_keys):
+                fda_subset = fda_directional_live.copy()
+                def _event_key(frame):
+                    return (
+                        frame["ticker"].fillna("").astype(str).str.upper().str.strip()
+                        + "|" + frame["drug"].fillna("").astype(str).str.upper().str.strip()
+                        + "|" + pd.to_datetime(frame["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+                    )
+                fda_subset["_event_key"] = _event_key(fda_subset)
+                source_keys = _event_key(master)
+                valid = fda_subset["_event_key"].str.split("|", regex=False).map(
+                    lambda parts: len(parts) == 3 and all(parts)
+                )
+                fda_subset = fda_subset[valid & ~fda_subset["_event_key"].duplicated(keep=False)]
+                fda_subset = fda_subset.set_index("_event_key")
+                for field, label in (("forced_direction", "FDA Direction"), ("directional_score", "FDA Direction Score"),
+                                     ("confidence", "FDA Confidence"), ("strict_v3_prediction", "FDA Strict Prediction")):
+                    if field in fda_subset:
+                        combined[label] = source_keys.map(fda_subset[field])
         def _group_for(col):
             name = str(col).lower()
             if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
@@ -2445,7 +2513,7 @@ if page == "MASTER TABLE":
                 return "FDA Engine"
             if any(x in name for x in ("phase", "trial", "nct", "readout", "p-value", "p_value", "endpoint", "study", "results")):
                 return "Phase 3"
-            if any(x in name for x in ("gate", "score", "watchlist", "entry", "trade", "position", "horizon", "momentum", "volume")):
+            if any(x in name for x in ("gate", "score", "watchlist", "entry", "trade", "position", "horizon", "funnel", "momentum", "volume")):
                 return "Trading Flow"
             return "Company & Event"
         tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow", "All Columns"]
