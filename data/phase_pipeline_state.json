@@ -1,21 +1,592 @@
 {
-  "started_at": "2026-10-08T03:59:50.719061+00:00",
+  "started_at": "2026-10-08T19:01:27.862041+00:00",
   "status": "COMPLETE",
   "registry_companies": 717,
   "scope": "Industry Phase 2/3 records updated since 2024-10-08",
   "source_max_age_days": 180,
-  "studies_scanned": 15660,
-  "matched_trials": 3095,
+  "studies_scanned": 15669,
+  "matched_trials": 3096,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [],
-  "finished_at": "2026-10-08T04:00:22.757517+00:00",
-  "stored_trials": 3095,
-  "phase2_programs": 437,
-  "master_programs": 115,
-  "review_trials": 1201,
+  "new_master_programs": [
+    {
+      "ticker": "ABVX",
+      "drug": "ABX464",
+      "nct_id": "NCT05507216"
+    },
+    {
+      "ticker": "ACAD",
+      "drug": "ACP-204",
+      "nct_id": "NCT06194799"
+    },
+    {
+      "ticker": "ACAD",
+      "drug": "ACP-204",
+      "nct_id": "NCT07095465"
+    },
+    {
+      "ticker": "AGIO",
+      "drug": "Mitapivat",
+      "nct_id": "NCT04770753"
+    },
+    {
+      "ticker": "AGIO",
+      "drug": "Mitapivat",
+      "nct_id": "NCT05144256"
+    },
+    {
+      "ticker": "AGIO",
+      "drug": "Mitapivat",
+      "nct_id": "NCT07656415"
+    },
+    {
+      "ticker": "AGIO",
+      "drug": "Mitapivat",
+      "nct_id": "NCT04770779"
+    },
+    {
+      "ticker": "ALKS",
+      "drug": "OLZ/SAM",
+      "nct_id": "NCT04987229"
+    },
+    {
+      "ticker": "ALMS",
+      "drug": "Envudeucitinib",
+      "nct_id": "NCT06588738"
+    },
+    {
+      "ticker": "ALT",
+      "drug": "Pemvidutide",
+      "nct_id": "NCT07795164"
+    },
+    {
+      "ticker": "AMLX",
+      "drug": "Avexitide",
+      "nct_id": "NCT06747468"
+    },
+    {
+      "ticker": "ANNX",
+      "drug": "Tanruprubart",
+      "nct_id": "NCT07020819"
+    },
+    {
+      "ticker": "ANNX",
+      "drug": "Vonaprument",
+      "nct_id": "NCT06510816"
+    },
+    {
+      "ticker": "APMD",
+      "drug": "AD109",
+      "nct_id": "NCT05813275"
+    },
+    {
+      "ticker": "ARDX",
+      "drug": "Tenapanor",
+      "nct_id": "NCT05905926"
+    },
+    {
+      "ticker": "ARWR",
+      "drug": "Plozasiran Injection",
+      "nct_id": "NCT06822790"
+    },
+    {
+      "ticker": "ARWR",
+      "drug": "Plozasiran Injection",
+      "nct_id": "NCT06347003"
+    },
+    {
+      "ticker": "ARWR",
+      "drug": "Plozasiran",
+      "nct_id": "NCT05089084"
+    },
+    {
+      "ticker": "ARWR",
+      "drug": "Plozasiran",
+      "nct_id": "NCT06880770"
+    },
+    {
+      "ticker": "ARWR",
+      "drug": "zodasiran Injection",
+      "nct_id": "NCT07037771"
+    },
+    {
+      "ticker": "AURA",
+      "drug": "Bel-sar",
+      "nct_id": "NCT06007690"
+    },
+    {
+      "ticker": "AVBP",
+      "drug": "Firmonertinib",
+      "nct_id": "NCT07185997"
+    },
+    {
+      "ticker": "AVIR",
+      "drug": "Bemnifosbuvir-Ruzasvir",
+      "nct_id": "NCT07037277"
+    },
+    {
+      "ticker": "AXSM",
+      "drug": "AXS-05",
+      "nct_id": "NCT05557409"
+    },
+    {
+      "ticker": "AXSM",
+      "drug": "AXS-14 (Esreboxetine)",
+      "nct_id": "NCT07398417"
+    },
+    {
+      "ticker": "AXSM",
+      "drug": "Solriamfetol 150 MG",
+      "nct_id": "NCT07484217"
+    },
+    {
+      "ticker": "AXSM",
+      "drug": "Solriamfetol",
+      "nct_id": "NCT07773883"
+    },
+    {
+      "ticker": "AXSM",
+      "drug": "Solriamfetol",
+      "nct_id": "NCT06878976"
+    },
+    {
+      "ticker": "BLTE",
+      "drug": "Tinlarebant",
+      "nct_id": "NCT05244304"
+    },
+    {
+      "ticker": "BRVE",
+      "drug": "BHB-1893",
+      "nct_id": "NCT07755904"
+    },
+    {
+      "ticker": "CGON",
+      "drug": "Cretostimogene Grenadenorepvec",
+      "nct_id": "NCT06111235"
+    },
+    {
+      "ticker": "CGON",
+      "drug": "Cretostimogene Grenadenorepvec",
+      "nct_id": "NCT04452591"
+    },
+    {
+      "ticker": "CLDX",
+      "drug": "Barzolvolimab",
+      "nct_id": "NCT07266402"
+    },
+    {
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "nct_id": "NCT07256392"
+    },
+    {
+      "ticker": "CMPS",
+      "drug": "Psilocybin",
+      "nct_id": "NCT05711940"
+    },
+    {
+      "ticker": "CRVS",
+      "drug": "Soquelitinib",
+      "nct_id": "NCT06561048"
+    },
+    {
+      "ticker": "CYTK",
+      "drug": "Aficamten (CK-3773274) (5 mg, 10 mg, 15 mg and 20 mg)",
+      "nct_id": "NCT05767346"
+    },
+    {
+      "ticker": "CYTK",
+      "drug": "Aficamten",
+      "nct_id": "NCT06081894"
+    },
+    {
+      "ticker": "CYTK",
+      "drug": "Omecamtiv Mecarbil (OM)",
+      "nct_id": "NCT06736574"
+    },
+    {
+      "ticker": "DYN",
+      "drug": "zeleciment basivarsen (DYNE-101)",
+      "nct_id": "NCT07486934"
+    },
+    {
+      "ticker": "FDMT",
+      "drug": "4D-150 IVT (3E10 vg/eye)",
+      "nct_id": "NCT06864988"
+    },
+    {
+      "ticker": "FDMT",
+      "drug": "4D-150 IVT (3E10 vg/eye)",
+      "nct_id": "NCT07064759"
+    },
+    {
+      "ticker": "GENB",
+      "drug": "GB-0895",
+      "nct_id": "NCT07276724"
+    },
+    {
+      "ticker": "GERN",
+      "drug": "Imetelstat",
+      "nct_id": "NCT04576156"
+    },
+    {
+      "ticker": "HROW",
+      "drug": "TRIESENCE (triamcinolone acetonide injectable suspension)",
+      "nct_id": "NCT07832552"
+    },
+    {
+      "ticker": "IDYA",
+      "drug": "Darovasertib",
+      "nct_id": "NCT07015190"
+    },
+    {
+      "ticker": "IONS",
+      "drug": "Donidalorsen",
+      "nct_id": "NCT07298447"
+    },
+    {
+      "ticker": "IONS",
+      "drug": "Eplontersen",
+      "nct_id": "NCT04136171"
+    },
+    {
+      "ticker": "IONS",
+      "drug": "ION363",
+      "nct_id": "NCT04768972"
+    },
+    {
+      "ticker": "IONS",
+      "drug": "obudanersen",
+      "nct_id": "NCT06914609"
+    },
+    {
+      "ticker": "IONS",
+      "drug": "Olezarsen",
+      "nct_id": "NCT07727538"
+    },
+    {
+      "ticker": "IONS",
+      "drug": "zilganersen",
+      "nct_id": "NCT04849741"
+    },
+    {
+      "ticker": "IOVA",
+      "drug": "Lifileucel plus Pembrolizumab",
+      "nct_id": "NCT05727904"
+    },
+    {
+      "ticker": "IRON",
+      "drug": "DISC-1459",
+      "nct_id": "NCT06910358"
+    },
+    {
+      "ticker": "KARD",
+      "drug": "Danicamtiv",
+      "nct_id": "NCT07771465"
+    },
+    {
+      "ticker": "KOD",
+      "drug": "KSI-101",
+      "nct_id": "NCT06990399"
+    },
+    {
+      "ticker": "KOD",
+      "drug": "Tabirafusp tedromer",
+      "nct_id": "NCT07734844"
+    },
+    {
+      "ticker": "KOD",
+      "drug": "Tarcocimab",
+      "nct_id": "NCT06270836"
+    },
+    {
+      "ticker": "LBRX",
+      "drug": "LB-102",
+      "nct_id": "NCT07369154"
+    },
+    {
+      "ticker": "LXRX",
+      "drug": "Sotagliflozin",
+      "nct_id": "NCT06481891"
+    },
+    {
+      "ticker": "MBX",
+      "drug": "Canvuparatide",
+      "nct_id": "NCT07699471"
+    },
+    {
+      "ticker": "MESO",
+      "drug": "Rexlemestrocel-L + HA mixture",
+      "nct_id": "NCT06325566"
+    },
+    {
+      "ticker": "MIRM",
+      "drug": "Brelovitug 300 mg",
+      "nct_id": "NCT07200908"
+    },
+    {
+      "ticker": "MIRM",
+      "drug": "Maralixibat",
+      "nct_id": "NCT06553768"
+    },
+    {
+      "ticker": "MIRM",
+      "drug": "Maralixibat",
+      "nct_id": "NCT04185363"
+    },
+    {
+      "ticker": "MLTX",
+      "drug": "Sonelokimab",
+      "nct_id": "NCT06641089"
+    },
+    {
+      "ticker": "MLTX",
+      "drug": "Sonelokimab",
+      "nct_id": "NCT06411899"
+    },
+    {
+      "ticker": "MLYS",
+      "drug": "lorundrostat",
+      "nct_id": "NCT05968430"
+    },
+    {
+      "ticker": "NKTR",
+      "drug": "Rezpegaldesleukin",
+      "nct_id": "NCT07690371"
+    },
+    {
+      "ticker": "NTLA",
+      "drug": "nexiguran ziclumeran",
+      "nct_id": "NCT06672237"
+    },
+    {
+      "ticker": "NUVB",
+      "drug": "safusidenib",
+      "nct_id": "NCT05303519"
+    },
+    {
+      "ticker": "NUVB",
+      "drug": "Taletrectinib",
+      "nct_id": "NCT06564324"
+    },
+    {
+      "ticker": "NUVB",
+      "drug": "Taletrectinib",
+      "nct_id": "NCT07154706"
+    },
+    {
+      "ticker": "OCGN",
+      "drug": "OCU410",
+      "nct_id": "NCT07770828"
+    },
+    {
+      "ticker": "OCUL",
+      "drug": "OTX-TKI",
+      "nct_id": "NCT07516132"
+    },
+    {
+      "ticker": "OLMA",
+      "drug": "Palazestrant",
+      "nct_id": "NCT06016738"
+    },
+    {
+      "ticker": "OLMA",
+      "drug": "Palazestrant",
+      "nct_id": "NCT07085767"
+    },
+    {
+      "ticker": "PCVX",
+      "drug": "31-valent pneumococcal conjugate vaccine",
+      "nct_id": "NCT07425392"
+    },
+    {
+      "ticker": "PHAT",
+      "drug": "Vonoprazan",
+      "nct_id": "NCT07752407"
+    },
+    {
+      "ticker": "PRAX",
+      "drug": "60 mg ulixacaltamide",
+      "nct_id": "NCT06087276"
+    },
+    {
+      "ticker": "PRAX",
+      "drug": "vormatrogine",
+      "nct_id": "NCT07287163"
+    },
+    {
+      "ticker": "PROK",
+      "drug": "Renal Autologous Cell Therapy (REACT/ rilparencel)",
+      "nct_id": "NCT05099770"
+    },
+    {
+      "ticker": "PTCT",
+      "drug": "PTC923",
+      "nct_id": "NCT05166161"
+    },
+    {
+      "ticker": "PTCT",
+      "drug": "Sepiapterin",
+      "nct_id": "NCT06302348"
+    },
+    {
+      "ticker": "RAPP",
+      "drug": "RAP-219",
+      "nct_id": "NCT07563881"
+    },
+    {
+      "ticker": "RARE",
+      "drug": "Adjuvant Immunomodulatory (IM) Therapy",
+      "nct_id": "NCT04360265"
+    },
+    {
+      "ticker": "RARE",
+      "drug": "GTX-102",
+      "nct_id": "NCT06415344"
+    },
+    {
+      "ticker": "RARE",
+      "drug": "setrusumab",
+      "nct_id": "NCT06636071"
+    },
+    {
+      "ticker": "RARE",
+      "drug": "Triheptanoin",
+      "nct_id": "NCT05933200"
+    },
+    {
+      "ticker": "RLAY",
+      "drug": "Zovegalisib",
+      "nct_id": "NCT06982521"
+    },
+    {
+      "ticker": "RYTM",
+      "drug": "Setmelanotide",
+      "nct_id": "NCT05093634"
+    },
+    {
+      "ticker": "RYTM",
+      "drug": "Setmelanotide",
+      "nct_id": "NCT05774756"
+    },
+    {
+      "ticker": "RYTM",
+      "drug": "Setmelanotide",
+      "nct_id": "NCT06596135"
+    },
+    {
+      "ticker": "SLDB",
+      "drug": "SGT-003",
+      "nct_id": "NCT07160634"
+    },
+    {
+      "ticker": "STOK",
+      "drug": "zorevunersen",
+      "nct_id": "NCT06872125"
+    },
+    {
+      "ticker": "SUPN",
+      "drug": "SPN-812",
+      "nct_id": "NCT02736656"
+    },
+    {
+      "ticker": "TGTX",
+      "drug": "Ublituximab",
+      "nct_id": "NCT07211633"
+    },
+    {
+      "ticker": "TGTX",
+      "drug": "Ublituximab",
+      "nct_id": "NCT04130997"
+    },
+    {
+      "ticker": "TRVI",
+      "drug": "NAL ER",
+      "nct_id": "NCT07671911"
+    },
+    {
+      "ticker": "TVTX",
+      "drug": "Pegtibatinase",
+      "nct_id": "NCT06247085"
+    },
+    {
+      "ticker": "TVTX",
+      "drug": "sparsentan",
+      "nct_id": "NCT03493685"
+    },
+    {
+      "ticker": "URGN",
+      "drug": "UGN-102",
+      "nct_id": "NCT05243550"
+    },
+    {
+      "ticker": "URGN",
+      "drug": "UGN-103",
+      "nct_id": "NCT06331299"
+    },
+    {
+      "ticker": "URGN",
+      "drug": "UGN-104",
+      "nct_id": "NCT06774131"
+    },
+    {
+      "ticker": "VCEL",
+      "drug": "autologous cultured chondrocytes on porcine collagen membrane",
+      "nct_id": "NCT06915233"
+    },
+    {
+      "ticker": "VCEL",
+      "drug": "MACI",
+      "nct_id": "NCT03588975"
+    },
+    {
+      "ticker": "VERA",
+      "drug": "Atacicept",
+      "nct_id": "NCT04716231"
+    },
+    {
+      "ticker": "VOR",
+      "drug": "Telitacicept",
+      "nct_id": "NCT06456580"
+    },
+    {
+      "ticker": "VOR",
+      "drug": "Telitacicept",
+      "nct_id": "NCT07404865"
+    },
+    {
+      "ticker": "XENE",
+      "drug": "Azetukalner",
+      "nct_id": "NCT07172516"
+    },
+    {
+      "ticker": "XENE",
+      "drug": "Azetukalner",
+      "nct_id": "NCT07076407"
+    },
+    {
+      "ticker": "XENE",
+      "drug": "XEN1101",
+      "nct_id": "NCT05718817"
+    },
+    {
+      "ticker": "XENE",
+      "drug": "XEN1101",
+      "nct_id": "NCT05716100"
+    },
+    {
+      "ticker": "XENE",
+      "drug": "XEN1101",
+      "nct_id": "NCT05667142"
+    }
+  ],
+  "finished_at": "2026-10-08T19:02:31.848924+00:00",
+  "stored_trials": 3096,
+  "phase2_programs": 440,
+  "master_programs": 114,
+  "review_trials": 1205,
   "market_cap_verified_tickers": 383,
-  "market_cap_source_unavailable": 1,
-  "market_cap_recent_cache_retained": 0
+  "market_cap_source_unavailable": 2,
+  "market_cap_recent_cache_retained": 1
 }
