@@ -8,13 +8,12 @@ are retained as review candidates, not silently counted as verified drugs.
 import csv
 import json
 import re
-from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 DATA = Path(__file__).resolve().parents[1] / "data"
-CONTROL = re.compile(r"^(placebo|saline|vehicle|sham|observation|no intervention|standard of care|best supportive care|usual care)(?:\\b|$)", re.I)
-DOSE = re.compile(r"\\s+\\d+(?:\\.\\d+)?\\s*(?:mg|mcg|ug|µg|g|ml|iu)(?:\\s*/\\s*(?:kg|m2|m\\^2|day|week))?\\b.*$", re.I)
+CONTROL = re.compile(r"^(placebo|saline|vehicle|sham|observation|no intervention|standard of care|best supportive care|usual care)(?:\b|$)", re.I)
+DOSE = re.compile(r"\s+\d+(?:\.\d+)?\s*(?:mg|mcg|ug|µg|g|ml|iu)(?:\s*/\s*(?:kg|m2|m\^2|day|week))?\b.*$", re.I)
 COLS = ["ticker", "company", "candidate_drug_name", "identity_status",
         "phase3_trial_count", "indications", "nct_ids", "source_urls",
         "first_result_date", "last_result_date", "notes"]
@@ -24,7 +23,7 @@ def normalize(value):
 
 def candidate(value):
     value = normalize(value)
-    value = re.sub(r"^(?:open[- ]label|blinded|part \\d+ blinded|experimental)\\s*[-:]\\s*", "", value)
+    value = re.sub(r"^(?:open[- ]label|blinded|part \d+ blinded|experimental)\s*[-:]\s*", "", value)
     value = DOSE.sub("", value)
     return value.strip()
 
@@ -34,7 +33,7 @@ def main():
     groups = {}
     for row in source:
         ticker = normalize(row.get("ticker")).upper()
-        parts = re.split(r"\\s+\\|\\s+", row.get("drug", ""))
+        parts = re.split(r"\s+\|\s+", row.get("drug", ""))
         for raw in parts:
             name = candidate(raw)
             if not ticker or not name or CONTROL.match(name):
@@ -72,7 +71,7 @@ def main():
         "multi_arm_or_alias_review_candidates": sum(r["identity_status"] == "REVIEW_MULTI_ARM_OR_ALIAS" for r in records),
         "verified_unique_drug_count": None,
         "reason": "ClinicalTrials.gov intervention names do not establish unique active substances or resolve aliases, regimens, dose variants and controls."}
-    (DATA / "phase3_drug_identity_status.json").write_text(json.dumps(summary, indent=2) + "\\n", encoding="utf-8")
+    (DATA / "phase3_drug_identity_status.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
 
 if __name__ == "__main__":
