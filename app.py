@@ -14,6 +14,59 @@ import subprocess
 import sys
 from email.utils import parsedate_to_datetime
 
+# Consistent circled-question-mark header help on EVERY Streamlit table.
+# Preserve any page-specific column configuration and editable column types.
+_ORIGINAL_DATAFRAME = st.dataframe
+_ORIGINAL_DATA_EDITOR = st.data_editor
+
+def _table_header_help(column):
+    label = str(column)
+    key = label.lower().strip()
+    explanations = {
+        "ticker": "Publicly traded stock symbol.",
+        "drug": "Drug or biologic candidate under review.",
+        "nct": "ClinicalTrials.gov trial identifier.",
+        "trial status": "Latest available clinical trial status; verify its source date.",
+        "p (p-value)": "Reported statistical p-value for the Phase 3 endpoint, when available. Not FDA approval probability.",
+        "entry gate": "PASS / REVIEW / FAIL based on mandatory evidence checks; unknown evidence does not pass.",
+        "our fda poa": "Internal estimated FDA approval probability; not a guarantee.",
+        "our trade/pdufa score": "Trade attractiveness score, separate from FDA approval probability.",
+        "review → watchlist #2": "Check to add the ticker to Watchlist #2; uncheck to remove it.",
+    }
+    if key in explanations:
+        return explanations[key]
+    if "financ" in key or "offering" in key or "dilution" in key:
+        return f"{label}: financing or dilution-related data. Verify SEC/company filings and closing status."
+    if "pdufa" in key or "fda" in key:
+        return f"{label}: FDA regulatory event or metric. Check source and evidence date."
+    if "score" in key or "probab" in key:
+        return f"{label}: calculated assessment; review methodology and underlying evidence."
+    if "date" in key or "as of" in key:
+        return f"{label}: reported date or freshness of this observation."
+    if "cash" in key or "runway" in key or "revenue" in key:
+        return f"{label}: company financial metric; check reporting period and filing."
+    return f"{label}: this column's recorded value. Check source, definition and freshness before using it."
+
+def _table_with_header_help(original, data, *args, **kwargs):
+    frame = data.data if isinstance(data, pd.io.formats.style.Styler) else data
+    if isinstance(frame, pd.DataFrame):
+        current = kwargs.get("column_config")
+        config = dict(current) if isinstance(current, dict) else {}
+        for col in frame.columns:
+            if col not in config:
+                config[col] = st.column_config.TextColumn(str(col), help=_table_header_help(col))
+        kwargs["column_config"] = config
+    return original(data, *args, **kwargs)
+
+def _dataframe_with_help(data=None, *args, **kwargs):
+    return _table_with_header_help(_ORIGINAL_DATAFRAME, data, *args, **kwargs)
+
+def _editor_with_help(data=None, *args, **kwargs):
+    return _table_with_header_help(_ORIGINAL_DATA_EDITOR, data, *args, **kwargs)
+
+st.dataframe = _dataframe_with_help
+st.data_editor = _editor_with_help
+
 st.set_page_config(
     page_title="PDUFA Command Center",
     page_icon="🧬",
