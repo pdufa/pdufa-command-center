@@ -16,7 +16,7 @@ def first(frame, *names):
     return pd.Series([""] * len(frame), index=frame.index)
 
 def dates(frame, *names):
-    return pd.to_datetime(first(frame, *names), errors="coerce", utc=True).dt.tz_convert(TZ).dt.date
+    return pd.to_datetime(first(frame, *names).astype("string").str.slice(0, 10), errors="coerce").dt.date
 
 def assemble(live, pipeline, financing):
     frames = []
@@ -35,7 +35,7 @@ def assemble(live, pipeline, financing):
     combined["Our Score"] = first(combined, "trade_score", "our_score", "our_trade_pdufa_score")
     combined["Phase 3 Result"] = first(combined, "phase3_result", "phase_3_result", "primary_endpoint_result", "phase3_results")
     combined["Result Source"] = first(combined, "phase3_results_source", "phase3_source", "results_source")
-    combined["Result Posted"] = dates(combined, "phase3_results_posted_at", "phase3_result_published_at", "phase3_readout_date", "phase3_results_date", "readout_date")
+    combined["Result Posted"] = dates(combined, "phase3_results_posted_at", "phase3_result_published_at", "phase3_results_date")
     combined["Other Indications"] = first(combined, "other_indications", "pipeline_indications", "therapeutic_areas")
     combined["Runway Before (mo)"] = first(combined, "pre_financing_runway_months", "cash_runway_months")
     combined["Runway After (mo)"] = first(combined, "post_financing_runway_months", "runway_after_financing_months")
@@ -51,7 +51,7 @@ def assemble(live, pipeline, financing):
         combined["FINANCING"] = "REVIEW / UNVERIFIED"
     combined["Research Status"] = combined["Result Source"].fillna("").astype(str).str.strip().map(lambda x: "SOURCE LINKED" if x.startswith("http") else "REVIEW / SOURCE MISSING")
     # Program identity is deliberately kept distinct across drugs and indications.
-    combined = combined.drop_duplicates(subset=["Ticker","Drug","Indication","Source List"], keep="last")
+    combined = combined.drop_duplicates(subset=["Ticker","Drug","Indication"], keep="last")
     return combined
 
 def render_today(live, pipeline, financing):
@@ -69,17 +69,16 @@ def render_today(live, pipeline, financing):
     top = top.loc[top["Result Source"].fillna("").astype(str).str.startswith("http")]
     phase3 = pd.to_datetime(first(data, "phase3_date", "phase3_readout_date", "phase3_results_date").astype("string").str.slice(0, 10), errors="coerce").dt.date
     status = first(data, "phase3_status", "current_stage").fillna("").astype(str).str.upper()
-    eligible = (phase3.notna() & phase3.le(yesterday)) | status.str.contains("COMPLETED|RESULT|POST.PHASE.?3|PDUFA|FDA REVIEW", regex=True)
+    eligible = status.str.contains("RESULTS_VERIFIED|RESULTS_REVIEW", regex=True) | (data["Result Source"].fillna("").astype(str).str.startswith("http") & posted.notna())
     # TODAY bottom is the full tracked universe, not only rows with an explicit
     # Phase 3 readout date. Keep qualification transparent for every record.
     data["Post–Phase 3 Evidence"] = eligible.map({True: "RECORDED POST–PHASE 3", False: "REVIEW — PHASE 3 NOT VERIFIED"})
-    bottom = data.copy()
+    bottom = data.loc[eligible].copy()
     st.metric("Yesterday's source-linked Phase 3 posts", len(top))
-    st.metric("Tracked research programs", len(bottom))
+    st.metric("Announced Phase 3 programs in source files", len(bottom))
     st.metric("Recorded post–Phase 3", int(eligible.sum()))
     if bottom.empty:
-        st.warning("No post–Phase 3 records qualified from the saved evidence. Showing the master research universe below for investigation; unverified entries are not promoted to post–Phase 3.")
-        bottom = data.copy()
+        st.warning("No post–Phase 3 results qualified from the saved evidence.")
     st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
     fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Post–Phase 3 Evidence","Source List"]
     def show(frame):
@@ -92,7 +91,7 @@ def render_today(live, pipeline, financing):
     if top.empty:
         st.warning("No verified yesterday Phase 3 posts are currently ingested. The Phase 3 pipeline source file is empty or lacks dated, source-linked result announcements; this is an intake gap, not proof that no results were published.")
     show(top)
-    st.subheader("BOTTOM — Full tracked universe (post–Phase 3 qualification shown)")
+    st.subheader("BOTTOM — Announced Phase 3 results (verified and review)")
     show(bottom)
-    st.caption("FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
+    st.caption("This is a partial source-linked intake, not a completed audit of all 717 companies. FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
     st.download_button("Export TODAY", data.to_csv(index=False).encode("utf-8"), file_name=f"today_{now:%Y%m%d}.csv", mime="text/csv")
