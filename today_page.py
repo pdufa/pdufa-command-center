@@ -43,7 +43,11 @@ def assemble(live, pipeline, financing):
     combined["Financing Search"] = combined["Company"].where(combined["Company"].str.strip().ne(""), combined["Ticker"]).map(lambda s: "https://www.google.com/search?q=" + quote_plus(str(s) + " financing") if str(s).strip() else "")
     combined["Entry Gate"] = first(combined, "entry_gate", "green_light_entry_gate")
     combined["Score Change"] = first(combined, "score_change", "trade_score_change")
-    combined["Last Verified"] = first(combined, "verified_as_of", "last_verified")
+    combined["Last Verified"] = first(combined, "verified_as_of", "last_verified", "last_checked_at")
+    combined["Evidence Type"] = first(combined, "source_type", "record_source")
+    combined["Verification Mark"] = first(combined, "verification_status", "phase3_status")
+    combined["Evidence Notes"] = first(combined, "source_list_note")
+    combined["Trial ID"] = first(combined, "nct_id")
     # Preserve missing evidence instead of promoting unknown financing to finished.
     try:
         combined = add_financing_column(combined, index=StageIndex(financing.to_dict("records") if financing is not None and not financing.empty else []))
@@ -80,7 +84,7 @@ def render_today(live, pipeline, financing):
     if bottom.empty:
         st.warning("No post–Phase 3 results qualified from the saved evidence.")
     st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
-    fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Post–Phase 3 Evidence","Source List"]
+    fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Evidence Type","Verification Mark","Evidence Notes","Trial ID","Post–Phase 3 Evidence","Source List"]
     def show(frame):
         if frame.empty:
             st.info("No verified matching records in currently stored files.")
