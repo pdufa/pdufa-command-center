@@ -39,7 +39,12 @@ _SCRIPT = r"""
 
   function align() {
     const anchor = document.querySelector(selector);
-    if (!anchor) return;
+    if (!anchor) {
+      // Tear down observers when the user navigates to a different tab/page.
+      window.__pdufaStageHeaders?.[id]?.();
+      delete window.__pdufaStageHeaders?.[id];
+      return;
+    }
     const grid = findGrid(anchor);
     if (!grid) {
       // Preserve access to Select all if no rows remain to show.
@@ -49,10 +54,14 @@ _SCRIPT = r"""
       return;
     }
     const rect = grid.getBoundingClientRect();
+    // Account for native grid horizontal scrolling if an exposed scroller exists.
+    const scrollport = Array.from(grid.querySelectorAll('*')).find(node =>
+      node.clientWidth > 180 && node.scrollWidth > node.clientWidth + 10 &&
+      window.getComputedStyle(node).overflowX !== 'hidden');
+    const horizontalScroll = scrollport?.scrollLeft || 0;
     // Canvas heading: STAGE follows controls and Ticker.
     // Place the compact chevron just to the right of the word STAGE.
-    const left = Math.max(rect.left + 7,
-      Math.min(rect.right - 38, rect.left + stageOffset + 53));
+    const left = rect.left + stageOffset + 53 - horizontalScroll;
     const isIframe = grid.tagName === 'IFRAME';
     const top = rect.top + (isIframe ? 132 : 5);
     anchor.style.position = 'fixed';
@@ -83,8 +92,8 @@ _SCRIPT = r"""
       slot.style.overflow = 'visible';
     }
     // If a table is scrolled out of view, do not cover unrelated controls.
-    anchor.style.visibility = rect.bottom < 0 || rect.top > window.innerHeight
-      ? 'hidden' : 'visible';
+    anchor.style.visibility = (rect.bottom < 0 || rect.top > window.innerHeight ||
+      left < rect.left || left + 31 > rect.right) ? 'hidden' : 'visible';
   }
 
   const schedule = () => {
