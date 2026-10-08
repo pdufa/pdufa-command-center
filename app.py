@@ -1,6 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
-from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table
+from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
 from stages import program_stage
 import pandas as pd
 import json
@@ -2699,8 +2699,8 @@ if page == "MASTER TABLE":
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
         st.markdown("### MASTER TABLE — WATCHLIST")
         st.caption("Ticker → STAGE → DAYS TO PDUFA stays visible in every view. Related fields are grouped into tabs; use the field selector for additional sections.")
-        display_fields = list(combined.columns)
-        display_view = combined[display_fields].copy()
+        display_view = stage_filter_panel(combined, key="master_table", source=master)
+        display_fields = list(display_view.columns)
         display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
         display_help["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Check to add this ticker to your Watchlist.", default=False)
         edited_master = grouped_editor(display_view, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
@@ -2844,8 +2844,11 @@ elif page == "PIPELINE":
             "promotion_status": "Graduation Status", "source_updated": "Source Updated",
             "checked_at": "Last Checked", "source_url": "Trial Evidence",
         }
+        if not phase2.empty:
+            filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2)
+            phase2 = phase2.loc[filtered_phase2.index]
         if phase2.empty:
-            st.info("No Phase 2 programs match this view.")
+            st.info("No Phase 2 programs match the selected stages or search.")
         else:
             phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
             phase2["_sort_date"] = pd.to_datetime(phase2["primary_completion"], errors="coerce", format="mixed")
