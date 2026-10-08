@@ -169,49 +169,85 @@ def _stage_sort_rank(value):
     return 999
 
 
+def _filter_stage_rows(staged, selected, order, priority=None):
+    """Apply checked STAGE values and a stable workflow/countdown sort."""
+    if staged.empty or "STAGE" not in staged:
+        return staged.copy()
+    stages = staged["STAGE"].fillna("STAGE UNKNOWN — REVIEW").astype(str)
+    result = staged.loc[stages.isin(selected)].copy()
+    if result.empty:
+        return result
+    if order == "Selected stages: chosen order":
+        custom = [stage for stage in (priority or []) if stage in selected]
+        order_list = custom + [stage for stage in selected if stage not in custom]
+        ranks = {stage: i for i, stage in enumerate(order_list)}
+        result = result.assign(_stage_priority=result["STAGE"].map(ranks)).sort_values(
+            "_stage_priority", kind="stable"
+        ).drop(columns="_stage_priority")
+    elif order.startswith("Workflow"):
+        ranks = result["STAGE"].map(_stage_sort_rank)
+        result = result.assign(_stage_rank=ranks).sort_values(
+            ["_stage_rank", "STAGE"],
+            ascending=[order.endswith("early to late"), True],
+            kind="stable"
+        ).drop(columns="_stage_rank")
+    elif order.startswith("Stage:"):
+        result = result.sort_values("STAGE", ascending=order.endswith("A to Z"), kind="stable")
+    elif "DAYS TO PDUFA" in result:
+        result = result.sort_values(
+            "DAYS TO PDUFA", ascending=order.endswith("soonest first"),
+            na_position="last", kind="stable"
+        )
+    return result
+
+
 def stage_filter_panel(data, key, source=None, expanded=False):
-    """Select any combination of stages and sort without losing underlying rows."""
+    """STAGE ▾ menu with actual checkboxes, shared by all ticker tables."""
     staged = staged_table(data, source=source)
     if staged.empty or "STAGE" not in staged:
         return staged
     stages = staged["STAGE"].fillna("STAGE UNKNOWN — REVIEW").astype(str)
     options = sorted(stages.unique().tolist(), key=lambda value: (_stage_sort_rank(value), value))
-    with st.expander("STAGE — MULTI-SELECT & SORT", expanded=expanded):
-        selected = st.multiselect(
-            "Show one or more stages", options, key=key + "_selected_stages",
-            help="Select several stages together; leave blank to display every stage.",
-        )
+    def choice_key(label):
+        return key + "_stage_choice_" + sha1(label.encode("utf-8")).hexdigest()[:12]
+    with st.popover("STAGE ▾  FILTER / SORT"):
+        st.caption("Check any combination of stages. Changes update only this table.")
+        all_col, none_col = st.columns(2)
+        if all_col.button("✓ Select all", key=key + "_stage_all", use_container_width=True):
+            for stage in options:
+                st.session_state[choice_key(stage)] = True
+            st.rerun()
+        if none_col.button("Clear all", key=key + "_stage_none", use_container_width=True):
+            for stage in options:
+                st.session_state[choice_key(stage)] = False
+            st.rerun()
+        with st.container(height=270):
+            selected = [
+                stage for stage in options
+                if st.checkbox(stage, value=True, key=choice_key(stage))
+            ]
         order = st.selectbox(
-            "Sort stage rows",
-            ("Workflow: early to late", "Workflow: late to early", "Selected stages: chosen order",
-             "Stage: A to Z", "Stage: Z to A",
+            "Sort rows by",
+            ("Workflow: early to late", "Workflow: late to early",
+             "Selected stages: chosen order", "Stage: A to Z", "Stage: Z to A",
              "Days to PDUFA: soonest first", "Days to PDUFA: latest first"),
             key=key + "_stage_order",
         )
-        st.caption("Stages are evidence-based. Financing may overlap with clinical and FDA milestones. Select multiple stages to combine them.")
-    result = staged.loc[stages.isin(selected)].copy() if selected else staged.copy()
+        priority = []
+        if order == "Selected stages: chosen order" and selected:
+            priority = st.multiselect(
+                "Priority: choose checked stages in your preferred order",
+                selected, key=key + "_stage_priority",
+                help="First selected stage appears first; remaining checked stages follow.",
+            )
+    result = _filter_stage_rows(staged, selected, order, priority)
+    st.caption(
+        f"STAGE: {len(selected):,}/{len(options):,} checked · "
+        f"{len(result):,}/{len(staged):,} rows · {order}"
+    )
     if result.empty:
-        st.info("No rows match the selected stages.")
-        return result
-    if order == "Selected stages: chosen order" and selected:
-        priority = {label: idx for idx, label in enumerate(selected)}
-        result = result.assign(_stage_priority=result["STAGE"].map(priority)).sort_values(
-            "_stage_priority", kind="stable"
-        ).drop(columns="_stage_priority")
-    elif order.startswith("Workflow"):
-        ranking = result["STAGE"].map(_stage_sort_rank)
-        result = result.assign(_stage_rank=ranking).sort_values(
-            ["_stage_rank", "STAGE"], ascending=[order.endswith("early to late"), True], kind="stable"
-        ).drop(columns="_stage_rank")
-    elif order.startswith("Stage"):
-        result = result.sort_values("STAGE", ascending=order.endswith("A to Z"), kind="stable")
-    elif "DAYS TO PDUFA" in result:
-        result = result.sort_values(
-            "DAYS TO PDUFA", ascending=order.endswith("soonest first"), na_position="last", kind="stable"
-        )
-    st.caption(f"Showing {len(result):,} of {len(staged):,} rows across {result['STAGE'].nunique():,} stage labels.")
+        st.info("No rows match. Open STAGE ▾ to check stages or Select all.")
     return result
-
 
 def begin_table_render():
     st.session_state["_column_table_counts"] = {}
@@ -276,6 +312,8 @@ def grouped_dataframe(data, **kwargs):
     data = data if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
     data = staged_table(data, kwargs.pop("stage_source", None))
     key = _table_key(data, kwargs.pop("key", None))
+    if kwargs.pop("stage_controls", True):
+        data = stage_filter_panel(data, key=key + "_stages")
     config = kwargs.pop("column_config", None)
     kwargs.pop("column_order", None)
     first = True
@@ -326,6 +364,8 @@ def grouped_editor(data, **kwargs):
     """One shared draft makes edits survive switching tabs and adding rows."""
     data = staged_table(data, kwargs.pop("stage_source", None))
     key = _table_key(data, kwargs.pop("key", None))
+    if kwargs.pop("stage_controls", True):
+        data = stage_filter_panel(data, key=key + "_stages")
     config = kwargs.pop("column_config", None)
     disabled = kwargs.pop("disabled", False)
     dynamic = kwargs.pop("num_rows", "fixed") == "dynamic"
