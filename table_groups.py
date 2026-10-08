@@ -120,6 +120,10 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
                     columns.insert(columns.index(pivot) + 1, "FINANCING")
         return OrderedDict([("Overview", [("Overview", columns)])])
     named = {_name(c): c for c in columns}
+    # Keep the audited FINANCING stage as the pinned column even when a
+    # separate legacy "Financing" description exists in the same table.
+    if "FINANCING" in columns:
+        named["financing"] = "FINANCING"
     controls = [c for c in columns if _name(c) in CONTROL_COLUMNS]
     identity = [named[n] for n in ("ticker", "stage", "days to pdufa", "financing", "drug") if n in named]
     if not identity:
