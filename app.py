@@ -4526,11 +4526,11 @@ elif page == "1. TRADING FLOW":
             "Drug": horizon["drug"].fillna(""),
             "NCT": horizon["_registry_nct"],
             "Trial Status": horizon["_registry_status"].replace("", "REVIEW"),
+            "P (p-value)": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
             "Primary Completion": horizon["_primary_completion"].dt.strftime("%Y-%m-%d").fillna("REVIEW"),
             "Study Completion": horizon["_study_completion"].dt.strftime("%Y-%m-%d").fillna("REVIEW"),
             "Results First Posted": horizon["_results_posted"].replace("", "REVIEW"),
             "Company Readout Date": horizon["phase3_date"].dt.strftime("%Y-%m-%d").fillna("NOT VERIFIED"),
-            "Phase 3 P": horizon.get("reported_p_values", pd.Series("", index=horizon.index)).fillna(""),
             "Our Trade/PDUFA Score": score.apply(lambda v: "REVIEW" if pd.isna(v) else f"{float(v):.0f}/100"),
             "Entry Gate": horizon.get("entry_gate", pd.Series("REVIEW", index=horizon.index)).fillna("REVIEW"),
             "🟢 Financing Started": horizon["_fin_stage"].map(lambda x: "🟢 STARTED" if x == "GREEN_STARTED" else ""),
@@ -4570,7 +4570,55 @@ elif page == "1. TRADING FLOW":
         m6.metric("PDUFA Dated", _pdufa)
         st.caption("PRODUCTIVITY = candidates progressing forward through verified milestones, not merely the number of records collected.")
 
-        st.dataframe(horizon_view, use_container_width=True, hide_index=True, height=480)
+        # Editable per-candidate switch; selecting a row adds it to Watchlist #2.
+        # Streamlit session state is temporary and is not a durable database.
+        horizon_view.insert(0, "Review → Watchlist #2", horizon["ticker"].fillna("").astype(str).str.upper().isin(st.session_state.watchlist).to_numpy())
+        _column_help = {
+            "Review → Watchlist #2": "Switch on to move this ticker into Watchlist #2; switch off to remove it. Stored for this Streamlit session.",
+            "Ticker": "Public trading symbol for the company.",
+            "Our FDA PoA": "Estimated probability of FDA approval; REVIEW means evidence is insufficient.",
+            "Drug": "Drug or biologic candidate.",
+            "NCT": "ClinicalTrials.gov study identifier.",
+            "Trial Status": "Current study status reported by ClinicalTrials.gov.",
+            "P (p-value)": "Reported Phase 3 statistical p-value, if available; not a probability of approval.",
+            "Primary Completion": "Trial primary completion date, not necessarily the results announcement.",
+            "Study Completion": "Trial study completion date.",
+            "Results First Posted": "Date trial results were first posted to the registry.",
+            "Company Readout Date": "Date company reported Phase 3 results, where known.",
+            "Our Trade/PDUFA Score": "Current internal trade score; not equivalent to FDA approval probability.",
+            "Entry Gate": "PASS, REVIEW or FAIL against mandatory entry requirements.",
+            "🟢 Financing Started": "Offering announced; not necessarily priced or closed.",
+            "🟡 Financing In Progress": "Financing underway but closure not verified.",
+            "🔴 Financing Closed": "Financing closure indicated by saved evidence; verify SEC/company source.",
+            "Financing #1 Date": "First tracked financing event date.",
+            "Financing #2 Date": "Second tracked financing event date.",
+            "Financing Type": "Type of financing such as public offering, private placement or convertible debt.",
+            "Proceeds": "Reported financing proceeds.",
+            "Dilution / ATM": "Potential share dilution or at-the-market offering activity.",
+            "Cash": "Reported cash balance.",
+            "RUNWAY": "Estimated months of cash remaining.",
+            "NDA/BLA Status": "Regulatory application submission or FDA acceptance status.",
+            "PDUFA Date": "FDA target action date, if verified.",
+            "Days to PDUFA": "Calendar days remaining until the target action date.",
+            "Horizon": "Trading window relative to the PDUFA date.",
+            "Evidence Status": "Whether the source data have been verified or need review.",
+        }
+        _cfg = {name: st.column_config.CheckboxColumn(name, help=desc) if name == "Review → Watchlist #2"
+                else st.column_config.TextColumn(name, help=desc)
+                for name, desc in _column_help.items() if name in horizon_view.columns}
+        _edited = st.data_editor(
+            horizon_view, use_container_width=True, hide_index=True, height=480,
+            column_config=_cfg, disabled=[name for name in horizon_view.columns if name != "Review → Watchlist #2"],
+            key="trading_flow_watchlist_editor",
+        )
+        _selected = set(_edited.loc[_edited["Review → Watchlist #2"], "Ticker"].astype(str).str.upper())
+        _visible = set(horizon_view["Ticker"].astype(str).str.upper())
+        _existing = [x for x in st.session_state.watchlist if str(x).upper() not in _visible]
+        _updated_watchlist = list(dict.fromkeys(_existing + sorted(_selected)))
+        if _updated_watchlist != st.session_state.watchlist:
+            st.session_state.watchlist = _updated_watchlist
+            st.toast("Watchlist #2 updated for this session")
+        st.caption("Toggle the first-column checkbox to add/remove a ticker from Watchlist #2. Hover over column headers for ⓘ descriptions. Watchlist changes are session-only until persistent storage is connected.")
 
         st.markdown("### Financing milestone — verified second close")
         st.caption("Only rows whose saved evidence marks the second post-readout financing as verified closed appear here. Expected close dates do not qualify.")
