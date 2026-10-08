@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/phase3-results-intake.yml'
       - 'scripts/phase3_results_intake.py'
+      - 'scripts/phase3_drug_identity.py'
   schedule:
     # Before 5 AM Pacific in both daylight and standard time.
     - cron: '15 10 * * *'
@@ -48,13 +49,16 @@ jobs:
           fi
           echo "Mode: $MODE"
           python scripts/phase3_results_intake.py --mode "$MODE" --max-pages 200
+      - name: Reconcile candidate drug identities
+        if: always()
+        run: python scripts/phase3_drug_identity.py
       - name: Commit accumulated evidence and coverage report
         if: always()
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/phase3_announcements.csv data/phase3_intake_status.json
+          git add data/phase3_announcements.csv data/phase3_intake_status.json data/phase3_drug_identity_review.csv data/phase3_drug_identity_status.json
           if ! git diff --cached --quiet; then
             git commit -m "Update cumulative Phase 3 results evidence"
             git push
