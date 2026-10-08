@@ -2373,7 +2373,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["1. TRADING FLOW","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","3. ALL PDUFA","4. DECISION","5. SCANS","6. RECHECK","7. FDA ENGINE","8. MARKET CAP","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["1. TRADING FLOW","FUNNEL","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","3. ALL PDUFA","4. DECISION","5. SCANS","6. RECHECK","7. FDA ENGINE","8. MARKET CAP","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -4359,6 +4359,71 @@ elif page == "7. FDA ENGINE":
     )
 
 
+
+elif page == "FUNNEL":
+    st.markdown("## FUNNEL — PHASE 3 TO PDUFA TRADE LIFECYCLE")
+    st.caption("Evidence-driven candidate workflow. These are screening stages, not automatic buy/sell instructions. Unknown or conflicting evidence remains REVIEW.")
+    funnel_steps = [
+        ("1 · DISCOVERY", "Phase 3 universe", "Ticker, drug, indication, NCT; verify a pivotal Phase 3 program."),
+        ("2 · PHASE 3 RESULTS", "Clinical evidence", "Company readout, primary endpoint, p-value/effect size, safety and trial quality."),
+        ("3 · POST-READOUT FINANCING", "Dilution and runway", "SEC offering announcement, pricing, verified closing, ATM and cash runway."),
+        ("4 · WATCHLIST", "Commercial and market context", "Disease burden, eligible patients, competing drugs, unmet need, relative strength."),
+        ("5 · ENTRY REVIEW", "Hard gates and bounce", "Confirmed Phase 3 benefit/safety, financing closure, base, volume, VWAP/20 EMA and entry gate."),
+        ("6 · ENTER", "Position decision", "Only after mandatory gates PASS; entry price, position size, downside and catalyst window."),
+        ("7 · MANAGE", "Ongoing monitoring", "Price/volume, institutional filings, FDA/SEC news, PDUFA countdown and thesis changes."),
+        ("8 · EXIT", "Trade completion", "Scale-out, risk trigger, realized P&L and post-trade review."),
+    ]
+    st.markdown("### What phase are we scanning?")
+    for name, focus, checks in funnel_steps:
+        with st.expander(f"{name} — {focus}", expanded=False):
+            st.write(checks)
+    st.markdown("### Loaded candidates — evidence-based provisional stage")
+    if df.empty:
+        st.info("No candidates loaded. This page does not invent missing Phase 3 or financing evidence.")
+    else:
+        candidates = df.copy()
+        def _funnel_val(r, k):
+            v = r.get(k, "")
+            return "" if pd.isna(v) else str(v).strip()
+        def _funnel_stage(r):
+            readout = pd.notna(pd.to_datetime(r.get("phase3_date"), errors="coerce"))
+            fin_status = " ".join(_funnel_val(r, k).upper() for k in (
+                "second_financing_status", "second_financing_close_verified", "second_financing_closed"))
+            closed = ("SECOND_CLOSE_VERIFIED" in fin_status or "RED_CLOSED" in fin_status
+                      or _funnel_val(r, "second_financing_closed").upper() in ("YES", "TRUE", "1", "VERIFIED"))
+            gate = _funnel_val(r, "entry_gate").upper()
+            if not readout:
+                return "1 · DISCOVERY / READOUT REVIEW"
+            if not closed:
+                return "3 · FINANCING REVIEW"
+            if gate == "PASS":
+                return "5 · ENTRY REVIEW — GATE PASS"
+            return "4 · WATCHLIST / ENTRY REVIEW"
+        candidates["Funnel Stage"] = candidates.apply(_funnel_stage, axis=1)
+        candidates["Financing Verified"] = candidates.apply(
+            lambda r: "YES" if "SECOND_CLOSE_VERIFIED" in (
+                _funnel_val(r, "second_financing_status") + " " +
+                _funnel_val(r, "second_financing_close_verified")).upper()
+                or _funnel_val(r, "second_financing_closed").upper() in ("YES", "TRUE", "1", "VERIFIED")
+                else "NOT VERIFIED", axis=1)
+        stages = ["ALL"] + sorted(candidates["Funnel Stage"].unique().tolist())
+        selected_stage = st.selectbox("Filter funnel stage", stages, key="funnel_stage_filter")
+        if selected_stage != "ALL":
+            candidates = candidates[candidates["Funnel Stage"] == selected_stage]
+        st.metric("Loaded candidate records", len(candidates))
+        st.dataframe(pd.DataFrame({
+            "Ticker": candidates.get("ticker", pd.Series("", index=candidates.index)).fillna(""),
+            "Drug": candidates.get("drug", pd.Series("", index=candidates.index)).fillna(""),
+            "Indication": candidates.get("indication", pd.Series("", index=candidates.index)).fillna(""),
+            "Provisional Stage": candidates["Funnel Stage"],
+            "Readout Date": pd.to_datetime(candidates.get("phase3_date", pd.Series(pd.NaT, index=candidates.index)), errors="coerce").dt.strftime("%Y-%m-%d").fillna("NOT VERIFIED"),
+            "Second Financing": candidates["Financing Verified"],
+            "Entry Gate": candidates.get("entry_gate", pd.Series("REVIEW", index=candidates.index)).fillna("REVIEW"),
+            "PDUFA Date": pd.to_datetime(candidates.get("pdufa_date", pd.Series(pd.NaT, index=candidates.index)), errors="coerce").dt.strftime("%Y-%m-%d").fillna("NOT VERIFIED"),
+        }), use_container_width=True, hide_index=True, height=440)
+    st.markdown("### What the scan checks")
+    st.write("FDA/ClinicalTrials.gov: trial status, readout, clinical benefit, safety, NDA/BLA and PDUFA. SEC: financing announcement, pricing, closing, ATM and runway. Market: price base, VWAP, 20 EMA, volume, relative strength and institutional filings. Commercial: patient population and competition.")
+    st.warning("This FUNNEL tab is a read-only view of currently loaded records. It does not start a scan, verify filings in real time, track actual positions, or automatically move candidates into ENTER, MANAGE or EXIT. Missing evidence must not be treated as PASS.")
 
 elif page == "1. TRADING FLOW":
     st.markdown("## 1. TRADING FLOW — DAILY OPERATING FUNNEL")
