@@ -7,6 +7,7 @@ import re
 import pandas as pd
 import streamlit as st
 from stages import StageIndex, STAGE_HELP, DAYS_HELP, add_stage_column
+from stage_header_overlay import position_stage_filter
 
 
 MAX_COLUMNS = 7
@@ -232,13 +233,9 @@ def stage_filter_panel(data, key, source=None, expanded=False):
     def choice_key(label):
         return key + "_stage_choice_" + sha1(label.encode("utf-8")).hexdigest()[:12]
 
-    left_width, stage_width, right_width = _stage_header_layout(staged.columns)
-    _, header_stage, header_right = st.columns(
-        [left_width, stage_width, right_width],
-        gap="small", vertical_alignment="bottom",
-    )
-    with header_stage:
-        with st.popover("STAGE ▾", use_container_width=True):
+    marker = "stageheader_" + sha1(key.encode("utf-8")).hexdigest()[:16]
+    with st.container(key=marker):
+        with st.popover("▾", help="STAGE column: filter and sort", use_container_width=True):
             st.caption("Check any combination of stages to filter this table.")
             all_col, none_col = st.columns(2)
             if all_col.button("✓ Select all", key=key + "_stage_all", use_container_width=True):
@@ -268,12 +265,8 @@ def stage_filter_panel(data, key, source=None, expanded=False):
                     selected, key=key + "_stage_priority",
                     help="First selected stage appears first; remaining checked stages follow.",
                 )
+    position_stage_filter(marker, _stage_header_layout(staged.columns)[0])
     result = _filter_stage_rows(staged, selected, order, priority)
-    with header_right:
-        st.caption(
-            f"{len(selected):,}/{len(options):,} stages · "
-            f"{len(result):,}/{len(staged):,} rows · {order}"
-        )
     if result.empty:
         st.info("No rows match. Open STAGE ▾ to check stages or Select all.")
     return result
