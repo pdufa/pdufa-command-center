@@ -70,14 +70,18 @@ def render_today(live, pipeline, financing):
     phase3 = pd.to_datetime(first(data, "phase3_date", "phase3_readout_date", "phase3_results_date").astype("string").str.slice(0, 10), errors="coerce").dt.date
     status = first(data, "phase3_status", "current_stage").fillna("").astype(str).str.upper()
     eligible = (phase3.notna() & phase3.le(yesterday)) | status.str.contains("COMPLETED|RESULT|POST.PHASE.?3|PDUFA|FDA REVIEW", regex=True)
-    bottom = data.loc[eligible].copy()
+    # TODAY bottom is the full tracked universe, not only rows with an explicit
+    # Phase 3 readout date. Keep qualification transparent for every record.
+    data["Post–Phase 3 Evidence"] = eligible.map({True: "RECORDED POST–PHASE 3", False: "REVIEW — PHASE 3 NOT VERIFIED"})
+    bottom = data.copy()
     st.metric("Yesterday's source-linked Phase 3 posts", len(top))
-    st.metric("Recorded post–Phase 3 rows", len(bottom))
+    st.metric("Tracked research programs", len(bottom))
+    st.metric("Recorded post–Phase 3", int(eligible.sum()))
     if bottom.empty:
         st.warning("No post–Phase 3 records qualified from the saved evidence. Showing the master research universe below for investigation; unverified entries are not promoted to post–Phase 3.")
         bottom = data.copy()
     st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
-    fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Source List"]
+    fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Post–Phase 3 Evidence","Source List"]
     def show(frame):
         if frame.empty:
             st.info("No verified matching records in currently stored files.")
@@ -85,8 +89,10 @@ def render_today(live, pipeline, financing):
         shown = frame[[c for c in fields if c in frame]].copy()
         st.dataframe(shown.style.map(lambda v: "background-color: #c7f2cd; color: #102c13" if str(v) == "FINISHED" else ("background-color: #fff0a6; color: #342900" if str(v) in ("STARTED","RUNNING") else ("background-color: #ffc8c8; color: #481313" if str(v) == "ANNOUNCED" else "")), subset=["FINANCING"]), use_container_width=True, hide_index=True, column_config={"Financing Search": st.column_config.LinkColumn("Financing Search"), "Result Source": st.column_config.LinkColumn("Result Source"), "Financing Evidence": st.column_config.LinkColumn("Financing Evidence")})
     st.subheader("TOP — Phase 3 results posted yesterday")
+    if top.empty:
+        st.warning("No verified yesterday Phase 3 posts are currently ingested. The Phase 3 pipeline source file is empty or lacks dated, source-linked result announcements; this is an intake gap, not proof that no results were published.")
     show(top)
-    st.subheader("BOTTOM — All recorded post–Phase 3 programs")
+    st.subheader("BOTTOM — Full tracked universe (post–Phase 3 qualification shown)")
     show(bottom)
     st.caption("FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
     st.download_button("Export TODAY", data.to_csv(index=False).encode("utf-8"), file_name=f"today_{now:%Y%m%d}.csv", mime="text/csv")
