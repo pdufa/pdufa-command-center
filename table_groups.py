@@ -229,7 +229,7 @@ def stage_filter_panel(data, key, source=None, expanded=False):
     # Do not recompute the countdown when a parent table already supplied
     # its program-matched STAGE and DAYS TO PDUFA columns.
     staged = (data.copy() if source is None and
-              "STAGE" in data.columns and "DAYS TO PDUFA" in data.columns
+              all(c in data.columns for c in ("STAGE", "DAYS TO PDUFA", "FINANCING"))
               else staged_table(data, source=source))
     if staged.empty or "STAGE" not in staged:
         return staged
