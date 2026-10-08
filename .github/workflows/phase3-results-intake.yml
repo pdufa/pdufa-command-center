@@ -1,0 +1,56 @@
+name: Phase 3 results cumulative intake
+
+on:
+  schedule:
+    # Before 5 AM Pacific in both daylight and standard time.
+    - cron: '15 10 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'backfill or daily'
+        required: false
+        default: 'backfill'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase3-results-intake
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run cumulative Phase 3 result intake
+        id: intake
+        shell: bash
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          if [ -z "$MODE" ]; then
+            if [ -f data/phase3_intake_status.json ]; then
+              MODE=daily
+            else
+              MODE=backfill
+            fi
+          fi
+          echo "Mode: $MODE"
+          python scripts/phase3_results_intake.py --mode "$MODE" --max-pages 200
+      - name: Commit accumulated evidence and coverage report
+        if: always()
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/phase3_announcements.csv data/phase3_intake_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update cumulative Phase 3 results evidence"
+            git push
+          fi
