@@ -2852,13 +2852,14 @@ elif page == "PIPELINE":
         }
         if not phase2.empty:
             filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2, expanded=True)
+            # Preserve the user's multi-stage sort order, not just the filtered rows.
             phase2 = phase2.loc[filtered_phase2.index]
         if phase2.empty:
             st.info("No Phase 2 programs match the selected stages or search.")
         else:
             phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
-            phase2["_sort_date"] = pd.to_datetime(phase2["primary_completion"], errors="coerce", format="mixed")
-            phase2 = phase2.sort_values("_sort_date", na_position="last")
+            # stage_filter_panel already sorted the records in the selected workflow,
+            # stage priority, or PDUFA-countdown order; do not reorder by trial date.
             transfer_view = phase2[list(labels)].rename(columns=labels)
             transfer_view.insert(0, "Move to MASTER TABLE", False)
             transferred = grouped_editor(transfer_view, use_container_width=True, hide_index=True, height=560,
