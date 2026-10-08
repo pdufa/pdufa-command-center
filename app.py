@@ -2953,11 +2953,16 @@ if page == "MASTER TABLE":
                 countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
                 countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
                 countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable", na_position="last")
-                category = st.selectbox("PDUFA date category", ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"], key="pdufa_gradient_category")
-                if category != "ALL":
-                    countdown = countdown[countdown["PDUFA Horizon"] == category]
-                styled_countdown = countdown.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in countdown.columns], axis=1)
-                st.dataframe(styled_countdown, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(countdown)))
+                tab_labels = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
+                category_tabs = st.tabs([f"{label} ({int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
+                for label, category_tab in zip(tab_labels, category_tabs):
+                    with category_tab:
+                        section = countdown.loc[countdown["PDUFA Horizon"] == label].copy()
+                        if section.empty:
+                            st.info(f"No candidates in {label}.")
+                        else:
+                            styled_section = section.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
+                            st.dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
             else:
                 st.info("No PDUFA candidates available in the loaded events.")
         st.markdown("### MASTER TABLE — WATCHLIST")
