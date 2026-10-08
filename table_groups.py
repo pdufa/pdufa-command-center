@@ -7,6 +7,7 @@ import re
 import pandas as pd
 import streamlit as st
 from stages import StageIndex, STAGE_HELP, DAYS_HELP, add_stage_column
+from financing_stage import FINANCING_OPTIONS, FINANCING_HELP, add_financing_column
 from stage_header_overlay import position_stage_filter
 
 
@@ -113,10 +114,14 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
                 if "DAYS TO PDUFA" in columns:
                     columns.remove("DAYS TO PDUFA")
                     columns.insert(columns.index("STAGE") + 1, "DAYS TO PDUFA")
+                if "FINANCING" in columns:
+                    columns.remove("FINANCING")
+                    pivot = "DAYS TO PDUFA" if "DAYS TO PDUFA" in columns else "STAGE"
+                    columns.insert(columns.index(pivot) + 1, "FINANCING")
         return OrderedDict([("Overview", [("Overview", columns)])])
     named = {_name(c): c for c in columns}
     controls = [c for c in columns if _name(c) in CONTROL_COLUMNS]
-    identity = [named[n] for n in ("ticker", "stage", "days to pdufa", "drug") if n in named]
+    identity = [named[n] for n in ("ticker", "stage", "days to pdufa", "financing", "drug") if n in named]
     if not identity:
         identity = [named[n] for n in ("order", "task") if n in named]
     if not identity:
@@ -202,18 +207,18 @@ def _filter_stage_rows(staged, selected, order, priority=None):
     return result
 
 
-def _stage_header_layout(columns):
+def _stage_header_layout(columns, target="STAGE"):
     """Align the filter button with STAGE in the compact table's first pane."""
     groups = column_groups(columns)
     first_panes = next(iter(groups.values()), [])
     fields = first_panes[0][1] if first_panes else list(columns)
-    if "STAGE" not in fields:
+    if target not in fields:
         return (1, 2, 5)
-    narrow = CONTROL_COLUMNS | {"ticker", "days to pdufa", "order", "n", "b", "p", "p%"}
+    narrow = CONTROL_COLUMNS | {"ticker", "days to pdufa", "financing", "order", "n", "b", "p", "p%"}
     def estimated_width(column):
         return 108 if _name(column) in narrow else 208
-    before = sum(estimated_width(col) for col in fields[:fields.index("STAGE")])
-    stage = estimated_width("STAGE")
+    before = sum(estimated_width(col) for col in fields[:fields.index(target)])
+    stage = estimated_width(target)
     # Streamlit's native grid has no header-widget slot. Match its leading
     # column widths and anchor the real filter immediately above STAGE.
     return (max(1, before), stage, max(320, 1550 - before - stage))
@@ -267,8 +272,45 @@ def stage_filter_panel(data, key, source=None, expanded=False):
                 )
     position_stage_filter(marker, _stage_header_layout(staged.columns)[0])
     result = _filter_stage_rows(staged, selected, order, priority)
+
+    # Independent, multi-checkbox FINANCING header filter for the same rows.
+    if "FINANCING" in staged:
+        fin_key = key + "_financing"
+        fin_marker = "stageheader_" + sha1(fin_key.encode("utf-8")).hexdigest()[:16]
+        with st.container(key=fin_marker):
+            with st.popover("▾", help="FINANCING column: filter and sort", use_container_width=True):
+                st.caption("Second post–Phase-3 financing; unverified is not a completed financing.")
+                all_fin, none_fin = st.columns(2)
+                if all_fin.button("✓ Select all", key=fin_key + "_all", use_container_width=True):
+                    for value in FINANCING_OPTIONS:
+                        st.session_state[fin_key + "_choice_" + value] = True
+                    st.rerun()
+                if none_fin.button("Clear all", key=fin_key + "_none", use_container_width=True):
+                    for value in FINANCING_OPTIONS:
+                        st.session_state[fin_key + "_choice_" + value] = False
+                    st.rerun()
+                fin_selected = [
+                    value for value in FINANCING_OPTIONS
+                    if st.checkbox(value.title() if value != "REVIEW / UNVERIFIED" else "Review / Unverified",
+                                   value=True, key=fin_key + "_choice_" + value)
+                ]
+                fin_order = st.selectbox(
+                    "Sort financing stages",
+                    ("Keep STAGE order", "Announced → Finished", "Finished → Announced"),
+                    key=fin_key + "_order",
+                )
+        position_stage_filter(fin_marker, _stage_header_layout(staged.columns, "FINANCING")[0])
+        result = result[result["FINANCING"].isin(fin_selected)].copy()
+        if fin_order != "Keep STAGE order" and not result.empty:
+            fin_rank = {value: i for i, value in enumerate(FINANCING_OPTIONS)}
+            if fin_order == "Finished → Announced":
+                fin_rank = {value: i for i, value in enumerate(
+                    ("FINISHED", "RUNNING", "STARTED", "ANNOUNCED", "REVIEW / UNVERIFIED"))}
+            result = (result.assign(_finance_priority=result["FINANCING"].map(fin_rank))
+                      .sort_values("_finance_priority", kind="stable")
+                      .drop(columns="_finance_priority"))
     if result.empty:
-        st.info("No rows match. Open STAGE ▾ to check stages or Select all.")
+        st.info("No rows match. Use the STAGE or FINANCING header ▾ to check more values.")
     return result
 
 def begin_table_render():
@@ -280,7 +322,8 @@ def set_stage_sources(records):
 
 
 def staged_table(data, source=None):
-    return add_stage_column(data, st.session_state.get("_program_stage_index"), source)
+    index = st.session_state.get("_program_stage_index")
+    return add_financing_column(add_stage_column(data, index, source), index, source)
 
 
 def _table_key(data, key):
@@ -323,9 +366,11 @@ def _compact_config(fields, config):
         entry.setdefault("help", str(column))
         if column == "STAGE":
             entry.update({"label": "STAGE", "help": STAGE_HELP})
+        if column == "FINANCING":
+            entry.update(st.column_config.TextColumn("FINANCING", help=FINANCING_HELP, width="small"))
         if column == "DAYS TO PDUFA":
             entry.update(st.column_config.NumberColumn("DAYS TO PDUFA", help=DAYS_HELP, format="%d", width="small"))
-        entry["width"] = "small" if _name(column) in CONTROL_COLUMNS | {"ticker", "days to pdufa", "order", "n", "b", "p", "p%"} else "medium"
+        entry["width"] = "small" if _name(column) in CONTROL_COLUMNS | {"ticker", "days to pdufa", "financing", "order", "n", "b", "p", "p%"} else "medium"
         result[column] = entry
     return result
 
@@ -402,7 +447,7 @@ def grouped_editor(data, **kwargs):
     groups = column_groups(data.columns)
     shared = set.intersection(*(set(fields) for panes in groups.values() for _, fields in panes))
     blocked = set(data.columns) if disabled is True else set(disabled or [])
-    blocked.update(c for c in ("STAGE", "DAYS TO PDUFA") if c in data)
+    blocked.update(c for c in ("STAGE", "DAYS TO PDUFA", "FINANCING") if c in data)
     controls = {c for c in data.columns if _name(c) in CONTROL_COLUMNS}
     first = True
 
