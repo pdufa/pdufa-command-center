@@ -2597,8 +2597,8 @@ if page == "MASTER TABLE":
                 fields = list(combined.columns) if group == "All Columns" else list(dict.fromkeys(identity + [c for c in combined.columns if _group_for(c) == group]))
                 view = combined[fields].copy()
                 st.caption(f"{len(view):,} event rows · {len(fields)} columns")
-                help_config = {c: st.column_config.TextColumn(str(c), help=f"{c}: source or calculated PDUFA event field; confirm its evidence and reporting date.") for c in fields if c != "Watchlist"}
-                help_config["Watchlist"] = st.column_config.CheckboxColumn("Watchlist", help="Tick to add this ticker to Watchlist; untick to remove it.", default=False)
+                help_config = {c: st.column_config.TextColumn(str(c) + " ⓘ", help=f"{c}: source or calculated PDUFA event field; confirm its evidence and reporting date.") for c in fields if c != "Watchlist"}
+                help_config["Watchlist"] = st.column_config.CheckboxColumn("Watchlist ⓘ", help="Tick to add this ticker to Watchlist; untick to remove it.", default=False)
                 edited = st.data_editor(view, use_container_width=True, hide_index=True, height=550, column_config=help_config, disabled=[c for c in fields if c != "Watchlist"], key="master_editor_" + group.replace(" ", "_"))
                 changes = edited["Watchlist"].fillna(False).astype(bool).ne(view["Watchlist"].fillna(False).astype(bool))
                 if changes.any():
