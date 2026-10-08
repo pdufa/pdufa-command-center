@@ -2615,6 +2615,17 @@ if page == "MASTER TABLE":
                     fields = list(dict.fromkeys(identity + [c for c in combined.columns if _group_for(c) == group and c != "Watchlist"]))
                     st.dataframe(combined[fields], use_container_width=True, hide_index=True, height=420, column_config={c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: event field; verify source evidence.") for c in fields})
 
+        # Selected Watchlist table immediately beneath the main Master editor.
+        st.markdown("### WATCHLIST — SELECTED STOCKS")
+        current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
+        watch_rows = combined[ticker_values.isin(current_watch)].copy()
+        st.caption(f"{len(watch_rows):,} selected PDUFA event rows · {len(current_watch):,} selected tickers")
+        watch_cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Days to PDUFA", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+        if watch_rows.empty:
+            st.info("No Watchlist stocks selected. Check the WATCHLIST column in the main Master Table above.")
+        else:
+            st.dataframe(watch_rows[watch_cols], use_container_width=True, hide_index=True, height=360, column_config={c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols})
+
         st.markdown("### Original-source coverage checks")
         expected_fields = {
             "Trading Flow": ["Ticker", "Drug", "P (p-value)", "Our FDA PoA", "Our Trade/PDUFA Score", "Entry Gate", "Financing #1 Date", "Financing #2 Date", "NDA/BLA Status", "Days to PDUFA", "Evidence Status"],
