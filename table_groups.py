@@ -169,14 +169,14 @@ def _stage_sort_rank(value):
     return 999
 
 
-def stage_filter_panel(data, key, source=None):
+def stage_filter_panel(data, key, source=None, expanded=False):
     """Select any combination of stages and sort without losing underlying rows."""
     staged = staged_table(data, source=source)
     if staged.empty or "STAGE" not in staged:
         return staged
     stages = staged["STAGE"].fillna("STAGE UNKNOWN — REVIEW").astype(str)
     options = sorted(stages.unique().tolist(), key=lambda value: (_stage_sort_rank(value), value))
-    with st.expander("STAGE — MULTI-SELECT & SORT", expanded=True):
+    with st.expander("STAGE — MULTI-SELECT & SORT", expanded=expanded):
         selected = st.multiselect(
             "Show one or more stages", options, key=key + "_selected_stages",
             help="Select several stages together; leave blank to display every stage.",
