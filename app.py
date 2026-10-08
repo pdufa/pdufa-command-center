@@ -2591,6 +2591,20 @@ if page == "MASTER TABLE":
                 st.caption(f"{len(view):,} event rows · {len(fields)} columns")
                 help_config = {c: st.column_config.TextColumn(str(c), help=f"{c}: value from the loaded PDUFA event record; verify evidence and reporting date.") for c in fields if c not in identity}
                 st.dataframe(view, use_container_width=True, hide_index=True, height=550, column_config=help_config)
+        st.markdown("### Original-source coverage checks")
+        expected_fields = {
+            "Trading Flow": ["Ticker", "Drug", "P (p-value)", "Our FDA PoA", "Our Trade/PDUFA Score", "Entry Gate", "Financing #1 Date", "Financing #2 Date", "NDA/BLA Status", "Days to PDUFA", "Evidence Status"],
+            "Funnel": ["Funnel Stage", "Second Financing Verified", "Company Readout Date", "Entry Gate"],
+            "FDA Engine": ["FDA Direction", "FDA Direction Score", "FDA Confidence", "FDA Strict Prediction"],
+            "Market Cap": ["Market Cap", "Market Cap Band", "Detailed Market Cap Band"],
+            "All PDUFA": ["Ticker", "Drug", "Indication", "PDUFA Date", "Record Source"],
+        }
+        coverage_rows = []
+        for section, expected in expected_fields.items():
+            missing = [field for field in expected if field not in combined.columns]
+            coverage_rows.append({"Source": section, "Expected fields": len(expected), "Present fields": len(expected) - len(missing), "Missing": ", ".join(missing) if missing else "None", "Column coverage": "PASS" if not missing else "REVIEW"})
+        st.dataframe(pd.DataFrame(coverage_rows), use_container_width=True, hide_index=True)
+        st.warning("Column presence does not establish source-data parity or feature parity. Keep the original pages until runtime and event-level validation passes.")
         # Three independently visible tables; selections are controlled within each table.
         for key in ("master_analysis", "master_invest"):
             if key not in st.session_state:
