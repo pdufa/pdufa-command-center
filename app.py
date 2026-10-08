@@ -2635,25 +2635,23 @@ if page == "MASTER TABLE":
                     st.dataframe(source_frame, use_container_width=True, hide_index=True)
                 else:
                     st.info("No loaded records.")
-        # Watchlist sits immediately below the Master, followed by Analysis and Invest.
+        # Watchlist is part of the Master table, not a separate table.
+        # The editable first column above is the Watchlist control.
         for key in ("master_analysis", "master_invest"):
             if key not in st.session_state:
                 st.session_state[key] = []
         if "Ticker" in combined:
             ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
-            lists = (("WATCHLIST", "watchlist"), ("ANALYSIS", "master_analysis"), ("INVEST", "master_invest"))
-            st.markdown("### Watchlist, Analysis & Invest")
-            for label, state_key in lists:
+            for label, state_key in (("ANALYSIS", "master_analysis"), ("INVEST", "master_invest")):
                 chosen = {str(v).upper().strip() for v in st.session_state[state_key]}
                 selected_rows = combined[ticker_values.isin(chosen)]
                 st.markdown("#### " + label + f" ({len(selected_rows):,})")
                 cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
                 if selected_rows.empty:
-                    st.info("No candidates selected for " + label + ". Tick Watchlist in the main table to add candidates.")
+                    st.info("No candidates selected for " + label + ".")
                 else:
-                    st.dataframe(selected_rows[cols], use_container_width=True, hide_index=True,
-                                 column_config={c: st.column_config.TextColumn(c + " ⓘ", help="Source field: " + c) for c in cols})
-            st.caption("Selections are session-only. Invest is tracking only and does not place an order.")
+                    st.dataframe(selected_rows[cols], use_container_width=True, hide_index=True, column_config={c: st.column_config.TextColumn(c + " ⓘ", help="Source field: " + c) for c in cols})
+            st.caption("Watchlist is controlled in the first column of Master. Invest is tracking only; no orders are placed.")
 
     st.caption("This consolidates loaded source columns, not every derived calculation or interactive control from the original pages. Missing evidence is not treated as verified.")
 
