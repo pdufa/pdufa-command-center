@@ -50,7 +50,6 @@ jobs:
           echo "Mode: $MODE"
           python scripts/phase3_results_intake.py --mode "$MODE" --max-pages 200
       - name: Reconcile candidate drug identities
-        if: always()
         run: python scripts/phase3_drug_identity.py
       - name: Commit accumulated evidence and coverage report
         if: always()
