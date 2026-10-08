@@ -2029,7 +2029,8 @@ def render_merged_table(frame, heading, height_px=690):
         return
     frame = staged_table(frame)
     st.markdown(f"### {heading}")
-    frame = stage_filter_panel(frame, key="merged_stage_" + heading)
+    # The merged HTML table renders the STAGE checkbox filter inside its own
+    # column header; do not place a separate Streamlit filter above it.
     render_column_tabs(frame, "merged_" + heading,
                        lambda fields, token: _render_merged_table_panel(frame[fields], heading, height_px))
 
@@ -2042,6 +2043,21 @@ def _render_merged_table_panel(frame, heading, height_px=690):
 
     rendered_frame = frame.copy()
     cols = list(rendered_frame.columns)
+    stage_labels = (sorted(rendered_frame["STAGE"].fillna("STAGE UNKNOWN — REVIEW").astype(str).unique())
+                    if "STAGE" in rendered_frame else [])
+    stage_filter_button = (
+        '<button type="button" class="stage-filter-head" '
+        'title="Choose one or more STAGE values" aria-label="Filter STAGE">▾</button>'
+    )
+    stage_menu_html = ('<div class="stage-filter-menu" hidden>'
+        '<strong>STAGE · select multiple</strong><div class="stage-menu-actions">'
+        '<button type="button" data-stage-all>Select all</button>'
+        '<button type="button" data-stage-none>Clear all</button></div>'
+        '<div class="stage-checkbox-list">' +
+        "".join('<label><input type="checkbox" class="stage-choice" checked value="' +
+                html.escape(label, quote=True) + '"> ' + html.escape(label) + '</label>'
+                for label in stage_labels) +
+        '</div><div class="stage-count"></div></div>') if stage_labels else ""
 
     sort_meta = {}
     for col_index, col in enumerate(cols):
@@ -2060,6 +2076,8 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         application_started = False
         for col_index, col in enumerate(cols):
             sort_button = _sort_header_button(col, col_index)
+            if col == "STAGE":
+                sort_button += stage_filter_button
             if col in SECOND_FINANCING_COLUMNS:
                 if not financing_started:
                     header_top.append('<th class="group-head" colspan="3">2nd Financing</th>')
@@ -2138,7 +2156,10 @@ def _render_merged_table_panel(frame, heading, height_px=690):
                     f'<td class="{(cls + extra_cls).strip()}"{sort_attrs}>'
                     f'{html.escape(val)}</td>'
                 )
-        rows.append(f'<tr data-original-index="{row_pos}">' + "".join(cells) + "</tr>")
+        stage_for_row = html.escape(str(row.get("STAGE", "STAGE UNKNOWN — REVIEW")),
+                                    quote=True)
+        rows.append(f'<tr data-original-index="{row_pos}" data-stage="{stage_for_row}">'
+                    + "".join(cells) + "</tr>")
 
     if has_grouped_headers:
         thead_html = (
@@ -2173,6 +2194,22 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table td.application-cell{min-width:42px;width:42px;max-width:42px;font-weight:800}
     .merged-pdufa-table .provision-yes{font-weight:900}
     .header-controls{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%%}
+    .stage-filter-head{display:inline-flex;align-items:center;justify-content:center;
+      margin-left:5px;width:26px;height:25px;cursor:pointer;border:2px solid #111;
+      border-radius:5px;background:#fff;color:#111;font-size:16px;font-weight:900}
+    .stage-filter-head:hover{background:#f5d77a}
+    .stage-filter-menu{position:fixed;z-index:5000;min-width:270px;max-width:min(380px,85vw);
+      max-height:390px;padding:12px;background:#fff;color:#111;border:2px solid #111;
+      border-radius:8px;box-shadow:0 6px 16px #0003;overflow:auto;text-align:left;font-size:14px}
+    .stage-filter-menu[hidden]{display:none}
+    .stage-menu-actions{display:flex;gap:7px;margin:10px 0}
+    .stage-menu-actions button{border:1px solid #111;padding:5px 8px;border-radius:4px;
+      background:#eee;cursor:pointer}
+    .stage-checkbox-list{display:flex;flex-direction:column;gap:8px}
+    .stage-checkbox-list label{display:flex;gap:8px;align-items:flex-start;white-space:normal}
+    .stage-checkbox-list input{margin-top:3px}
+    .stage-count{font-size:12px;margin-top:9px;color:#555}
+
     .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
     .sort-head:hover .sort-icon,.sort-head:focus .sort-icon{background:#111;color:#fff}
     .help-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:18px;height:18px;border:1.5px solid #555;border-radius:50%%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
@@ -2188,6 +2225,45 @@ def _render_merged_table_panel(frame, heading, height_px=690):
       const table = document.querySelector('.merged-pdufa-table');
       if (!table) return;
       const tbody = table.querySelector('tbody');
+      const stageTrigger = table.querySelector('.stage-filter-head');
+      const stageMenu = document.querySelector('.stage-filter-menu');
+      if (stageTrigger && stageMenu) {
+        const choices = Array.from(stageMenu.querySelectorAll('.stage-choice'));
+        const updateStages = () => {
+          const selected = new Set(choices.filter(c => c.checked).map(c => c.value));
+          Array.from(tbody.querySelectorAll('tr')).forEach(row => {
+            row.hidden = !selected.has(row.dataset.stage || '');
+            row.style.display = row.hidden ? 'none' : '';
+          });
+          const shown = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.hidden).length;
+          stageMenu.querySelector('.stage-count').textContent =
+            shown + ' rows shown · ' + selected.size + ' stages checked';
+        };
+        const positionMenu = () => {
+          const rect = stageTrigger.getBoundingClientRect();
+          stageMenu.style.left = Math.min(rect.left, window.innerWidth - 295) + 'px';
+          stageMenu.style.top = Math.min(rect.bottom + 5, window.innerHeight - 170) + 'px';
+        };
+        stageTrigger.addEventListener('click', event => {
+          event.preventDefault();
+          event.stopPropagation();
+          stageMenu.hidden = !stageMenu.hidden;
+          if (!stageMenu.hidden) positionMenu();
+        });
+        stageMenu.addEventListener('click', event => event.stopPropagation());
+        choices.forEach(choice => choice.addEventListener('change', updateStages));
+        stageMenu.querySelector('[data-stage-all]').addEventListener('click', () => {
+          choices.forEach(choice => choice.checked = true);
+          updateStages();
+        });
+        stageMenu.querySelector('[data-stage-none]').addEventListener('click', () => {
+          choices.forEach(choice => choice.checked = false);
+          updateStages();
+        });
+        document.addEventListener('click', () => stageMenu.hidden = true);
+        updateStages();
+      }
+
       const buttons = Array.from(table.querySelectorAll('button.sort-head'));
       let activeIndex = null;
       let ascending = true;
@@ -2268,6 +2344,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         + '<tbody>'
         + "".join(rows)
         + '</tbody></table></div>'
+        + stage_menu_html
         + sort_js
     )
 
