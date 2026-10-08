@@ -97,7 +97,6 @@ class StageButtonPlacementTests(unittest.TestCase):
         self.assertGreater(width, 0)
         self.assertEqual(shifted - early, 108)
         self.assertEqual(width, shifted_width)
-        from table_groups import _stage_header_layout
         fin_offset, fin_width, _ = _stage_header_layout(
             ["Ticker", "STAGE", "DAYS TO PDUFA", "FINANCING", "Drug"],
             "FINANCING",
