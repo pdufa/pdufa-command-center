@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
 from stages import program_stage
 from today_page import render_today
+from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
 import json
 from pathlib import Path
@@ -2791,21 +2792,7 @@ if page == "MASTER TABLE":
         if "PDUFA Date" in combined:
             dates = pd.to_datetime(combined["PDUFA Date"], errors="coerce")
             combined["DAYS TO PDUFA"] = (dates - today).dt.days.astype("Int64")
-            def _window(days):
-                if pd.isna(days):
-                    return "DATE NOT VERIFIED"
-                if days < 0:
-                    return "PAST"
-                if days <= 13:
-                    return "13–0 DAYS"
-                if days <= 30:
-                    return "30–14 DAYS"
-                if days <= 60:
-                    return "60–31 DAYS"
-                if days <= 90:
-                    return "90–61 DAYS"
-                return "90+ DAYS"
-            combined["PDUFA Horizon"] = combined["DAYS TO PDUFA"].map(_window)
+            combined["PDUFA Horizon"] = combined["DAYS TO PDUFA"].map(pdufa_segment)
         if "Market Cap" in combined:
             cap = pd.to_numeric(combined["Market Cap"], errors="coerce")
             combined["Market Cap Band"] = pd.cut(
@@ -2958,6 +2945,16 @@ if page == "MASTER TABLE":
         ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
         watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
+        st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
+        st.caption("0–30 red · 31–60 orange · 61–90 yellow · 90+ green. Darker shading means a nearer FDA target date within its segment. Past-due and unknown dates are separate.")
+        if "DAYS TO PDUFA" in combined.columns:
+            countdown = combined.loc[combined["DAYS TO PDUFA"].notna() & (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") if c in combined.columns]].copy()
+            if not countdown.empty:
+                countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable")
+                styled_countdown = countdown.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in countdown.columns], axis=1)
+                st.dataframe(styled_countdown, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(countdown)))
+            else:
+                st.info("No upcoming PDUFA dates available in the loaded events.")
         st.markdown("### MASTER TABLE — WATCHLIST")
         st.caption("Ticker → STAGE → DAYS TO PDUFA stays visible in every view. Related fields are grouped into tabs; use the field selector for additional sections.")
         display_view = stage_filter_panel(combined, key="master_table", source=master, expanded=True)
