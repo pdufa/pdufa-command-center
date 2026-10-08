@@ -2586,7 +2586,12 @@ if page == "MASTER TABLE":
         ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
         watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
-        st.markdown("### Master table — select Watchlist")
+        st.markdown("### WATCHLIST — IN MASTER TABLE")
+        st.caption("The checkbox is the FIRST column in the table immediately below. Check a ticker to add it to your Watchlist.")
+        st.metric("Watchlist tickers", len(watch_values))
+        st.markdown("**Watchlist selection — main Master table**")
+        st.dataframe(combined[["Watchlist", "Ticker", "Drug", "PDUFA Date"]].head(0), hide_index=True, use_container_width=True, column_config={"Watchlist": st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="The editable Watchlist checkboxes are in the Master table below.")})
+
         st.caption("Tick the first column to add a ticker to Watchlist; untick to remove it. The ⓘ column-header help icon appears on hover.")
         tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow", "All Columns"]
         st.caption(f"Live events: {len(combined):,} · Historical validation records available separately: {historical_count:,}")
@@ -2598,7 +2603,7 @@ if page == "MASTER TABLE":
                 view = combined[fields].copy()
                 st.caption(f"{len(view):,} event rows · {len(fields)} columns")
                 help_config = {c: st.column_config.TextColumn(str(c) + " ⓘ", help=f"{c}: source or calculated PDUFA event field; confirm its evidence and reporting date.") for c in fields if c != "Watchlist"}
-                help_config["Watchlist"] = st.column_config.CheckboxColumn("Watchlist ⓘ", help="Tick to add this ticker to Watchlist; untick to remove it.", default=False)
+                help_config["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Tick to add this ticker to Watchlist; untick to remove it.", default=False)
                 edited = st.data_editor(view, use_container_width=True, hide_index=True, height=550, column_config=help_config, disabled=[c for c in fields if c != "Watchlist"], key="master_editor_" + group.replace(" ", "_"))
                 changes = edited["Watchlist"].fillna(False).astype(bool).ne(view["Watchlist"].fillna(False).astype(bool))
                 if changes.any():
