@@ -2558,6 +2558,15 @@ if page == "MASTER TABLE":
         for field in master.columns:
             if field.startswith("fda_") and field not in combined:
                 combined[field] = master[field]
+        # Step 3: market-cap bands and historical All PDUFA coverage.
+        if "Market Cap" in combined:
+            cap_numeric = pd.to_numeric(combined["Market Cap"], errors="coerce")
+            fine_edges = [0, 300e6, 500e6, 750e6, 1e9, 2e9, 3e9, 5e9, 7.5e9, 10e9, float("inf")]
+            fine_labels = ["<$300M", "$300M–$500M", "$500M–$750M", "$750M–$1B", "$1B–$2B", "$2B–$3B", "$3B–$5B", "$5B–$7.5B", "$7.5B–$10B", ">$10B"]
+            combined["Detailed Market Cap Band"] = pd.cut(cap_numeric, bins=fine_edges, labels=fine_labels, right=False).astype("string").fillna("UNKNOWN")
+        # Historical validation records are a separate cohort, not invented live events.
+        historical_count = len(prediction_history) if isinstance(prediction_history, pd.DataFrame) else 0
+        combined["Record Source"] = "LIVE PDUFA EVENT"
         def _group_for(col):
             name = str(col).lower()
             if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
@@ -2572,6 +2581,7 @@ if page == "MASTER TABLE":
                 return "Trading Flow"
             return "Company & Event"
         tabs = ["Company & Event", "Phase 3", "Financing", "FDA Engine", "Market Cap", "Trading Flow", "All Columns"]
+        st.caption(f"Live events: {len(combined):,} · Historical validation records available separately: {historical_count:,}")
         sections = st.tabs(tabs)
         identity = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date") if c in combined.columns]
         for tab, group in zip(sections, tabs):
