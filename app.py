@@ -2605,6 +2605,14 @@ if page == "MASTER TABLE":
             coverage_rows.append({"Source": section, "Expected fields": len(expected), "Present fields": len(expected) - len(missing), "Missing": ", ".join(missing) if missing else "None", "Column coverage": "PASS" if not missing else "REVIEW"})
         st.dataframe(pd.DataFrame(coverage_rows), use_container_width=True, hide_index=True)
         st.warning("Column presence does not establish source-data parity or feature parity. Keep the original pages until runtime and event-level validation passes.")
+        with st.expander("Additional original-source tables (preserved without unsafe joins)"):
+            for source_name, source_frame in (("FDA regulatory signals", fda_regulatory_signals), ("FDA extensions", fda_extension_ledger), ("FDA facilities", fda_facilities), ("FDA backfill queue", fda_backfill_queue), ("FDA prediction freezes", fda_freezes), ("Historical predictions", prediction_history)):
+                st.markdown("#### " + source_name)
+                if isinstance(source_frame, pd.DataFrame) and not source_frame.empty:
+                    st.caption(f"{len(source_frame):,} records · {len(source_frame.columns)} columns")
+                    st.dataframe(source_frame, use_container_width=True, hide_index=True)
+                else:
+                    st.info("No loaded records.")
         # Three independently visible tables; selections are controlled within each table.
         for key in ("master_analysis", "master_invest"):
             if key not in st.session_state:
