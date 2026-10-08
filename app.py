@@ -2057,7 +2057,15 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         "".join('<label><input type="checkbox" class="stage-choice" checked value="' +
                 html.escape(label, quote=True) + '"> ' + html.escape(label) + '</label>'
                 for label in stage_labels) +
-        '</div><div class="stage-count"></div></div>') if stage_labels else ""
+        '</div><label class="stage-order-label">Sort STAGE rows: '
+        '<select class="stage-sort-order">'
+        '<option value="workflow-up">Phase 2 → FDA</option>'
+        '<option value="workflow-down">FDA → Phase 2</option>'
+        '<option value="alpha-up">STAGE A → Z</option>'
+        '<option value="alpha-down">STAGE Z → A</option>'
+        '<option value="pdufa-up">PDUFA days: closest first</option>'
+        '<option value="pdufa-down">PDUFA days: latest first</option>'
+        '</select></label><div class="stage-count"></div></div>') if stage_labels else ""
 
     sort_meta = {}
     for col_index, col in enumerate(cols):
@@ -2156,8 +2164,9 @@ def _render_merged_table_panel(frame, heading, height_px=690):
                     f'<td class="{(cls + extra_cls).strip()}"{sort_attrs}>'
                     f'{html.escape(val)}</td>'
                 )
-        stage_for_row = html.escape(str(row.get("STAGE", "STAGE UNKNOWN — REVIEW")),
-                                    quote=True)
+        stage_value = row.get("STAGE", "STAGE UNKNOWN — REVIEW")
+        stage_for_row = html.escape("STAGE UNKNOWN — REVIEW" if pd.isna(stage_value)
+                                    else str(stage_value), quote=True)
         rows.append(f'<tr data-original-index="{row_pos}" data-stage="{stage_for_row}">'
                     + "".join(cells) + "</tr>")
 
@@ -2209,6 +2218,9 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .stage-checkbox-list label{display:flex;gap:8px;align-items:flex-start;white-space:normal}
     .stage-checkbox-list input{margin-top:3px}
     .stage-count{font-size:12px;margin-top:9px;color:#555}
+    .stage-order-label{display:block;margin-top:10px;font-weight:700}
+    .stage-sort-order{width:100%%;margin-top:5px;padding:5px;border:1px solid #222;
+      border-radius:4px;background:#fff;color:#111}
 
     .sort-head{appearance:none;-webkit-appearance:none;border:0;background:transparent;color:#111;font:inherit;font-weight:800;cursor:pointer;padding:2px 3px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center}
     .sort-head:hover .sort-icon,.sort-head:focus .sort-icon{background:#111;color:#fff}
@@ -2251,17 +2263,68 @@ def _render_merged_table_panel(frame, heading, height_px=690):
           if (!stageMenu.hidden) positionMenu();
         });
         stageMenu.addEventListener('click', event => event.stopPropagation());
-        choices.forEach(choice => choice.addEventListener('change', updateStages));
+        const stageSort = stageMenu.querySelector('.stage-sort-order');
+        const stageRank = value => {
+          const v = String(value || '').toUpperCase();
+          if (v.startsWith('FDA APPROVED') || v.startsWith('FDA CRL')) return 110;
+          if (v.includes('FDA DECISION PENDING')) return 100;
+          if (v.includes('PDUFA / FDA REVIEW')) return 90;
+          if (v.includes('FDA APPLICATION ACCEPTED')) return 80;
+          if (v.includes('NDA/BLA SUBMITTED')) return 75;
+          if (v.includes('2ND FINANCING CLOSED')) return 70;
+          if (v.includes('FINANCING IN PROGRESS')) return 60;
+          if (v.includes('FINANCING ANNOUNCED')) return 55;
+          if (v.includes('PHASE 3 RESULTS') || v.includes('PHASE 3 COMPLETED')) return 50;
+          if (v.includes('PHASE 3 ONGOING')) return 40;
+          if (v.includes('PHASE 3')) return 35;
+          if (v.includes('PHASE 2 COMPLETED')) return 20;
+          if (v.includes('PHASE 2')) return 10;
+          return 999;
+        };
+        const sortStageRows = () => {
+          const mode = stageSort.value;
+          const headers = Array.from(table.querySelectorAll('.sort-head'));
+          const daysHeader = headers.find(h => h.querySelector('.sort-label')?.textContent.trim() === 'DAYS TO PDUFA');
+          const daysIndex = daysHeader ? Number(daysHeader.dataset.colIndex) : -1;
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.sort((a,b) => {
+            const sa = a.dataset.stage || '';
+            const sb = b.dataset.stage || '';
+            let result = 0;
+            if (mode.startsWith('workflow')) result = stageRank(sa) - stageRank(sb);
+            else if (mode.startsWith('alpha')) result = sa.localeCompare(sb,undefined,{numeric:true,sensitivity:'base'});
+            else if (daysIndex >= 0) {
+              const da = Number(a.children[daysIndex]?.dataset.sort);
+              const db = Number(b.children[daysIndex]?.dataset.sort);
+              const ea = !a.children[daysIndex]?.dataset.sort?.trim();
+              const eb = !b.children[daysIndex]?.dataset.sort?.trim();
+              result = ea && eb ? 0 : ea ? 1 : eb ? -1 : da - db;
+            }
+            if (mode.endsWith('down') && !mode.startsWith('pdufa')) result *= -1;
+            if (mode === 'pdufa-down' && daysIndex >= 0) {
+              const aa = a.children[daysIndex]?.dataset.sort?.trim();
+              const bb = b.children[daysIndex]?.dataset.sort?.trim();
+              if (aa && bb) result *= -1;
+            }
+            return result || Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
+          });
+          rows.forEach(row => tbody.appendChild(row));
+        };
+        choices.forEach(choice => choice.addEventListener('change', () => {
+          updateStages(); sortStageRows();
+        }));
+        stageSort.addEventListener('change', sortStageRows);
         stageMenu.querySelector('[data-stage-all]').addEventListener('click', () => {
           choices.forEach(choice => choice.checked = true);
-          updateStages();
+          updateStages(); sortStageRows();
         });
         stageMenu.querySelector('[data-stage-none]').addEventListener('click', () => {
           choices.forEach(choice => choice.checked = false);
-          updateStages();
+          updateStages(); sortStageRows();
         });
         document.addEventListener('click', () => stageMenu.hidden = true);
         updateStages();
+        sortStageRows();
       }
 
       const buttons = Array.from(table.querySelectorAll('button.sort-head'));
