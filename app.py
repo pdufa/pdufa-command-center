@@ -2703,7 +2703,7 @@ else:
 
 if page == "TODAY":
     try:
-        _phase_today = pd.read_csv("data/phase_pipeline.csv", keep_default_na=False)
+        _phase_today = pd.read_csv("data/phase3_announcements.csv", keep_default_na=False)
     except (OSError, pd.errors.ParserError):
         _phase_today = pd.DataFrame()
     try:
