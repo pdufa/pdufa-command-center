@@ -1,0 +1,85 @@
+"""TODAY: conservative, source-traceable Phase 3 and post-readout daily view."""
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+from urllib.parse import quote_plus
+import pandas as pd
+import streamlit as st
+from financing_stage import add_financing_column
+from stages import StageIndex, add_stage_column
+
+TZ = ZoneInfo("America/Los_Angeles")
+def first(frame, *names):
+    lookup = {str(c).lower().replace(" ","_"): c for c in frame.columns}
+    for n in names:
+        if n.lower().replace(" ","_") in lookup:
+            return frame[lookup[n.lower().replace(" ","_")]]
+    return pd.Series([""] * len(frame), index=frame.index)
+
+def dates(frame, *names):
+    return pd.to_datetime(first(frame, *names), errors="coerce", utc=True).dt.tz_convert(TZ).dt.date
+
+def assemble(live, pipeline, financing):
+    frames = []
+    for frame, origin in ((live, "MASTER"), (pipeline, "PHASE 3 PIPELINE")):
+        if frame is None or frame.empty: continue
+        x = frame.copy().reset_index(drop=True)
+        x["Source List"] = origin
+        frames.append(x)
+    if not frames: return pd.DataFrame()
+    combined = pd.concat(frames, ignore_index=True, sort=False)
+    combined["Ticker"] = first(combined, "ticker", "symbol").fillna("").astype(str).str.upper()
+    combined["Drug"] = first(combined, "drug", "drug_name").fillna("").astype(str)
+    combined["Indication"] = first(combined, "indication", "disease").fillna("").astype(str)
+    combined["Company"] = first(combined, "company", "company_name").fillna("").astype(str)
+    combined["Event Key"] = first(combined, "event_key").fillna("").astype(str)
+    combined["Our Score"] = first(combined, "trade_score", "our_score", "our_trade_pdufa_score")
+    combined["Phase 3 Result"] = first(combined, "phase3_result", "phase_3_result", "primary_endpoint_result", "phase3_results")
+    combined["Result Source"] = first(combined, "phase3_results_source", "phase3_source", "results_source")
+    combined["Result Posted"] = dates(combined, "phase3_results_posted_at", "phase3_result_published_at", "phase3_readout_date", "phase3_results_date", "readout_date")
+    combined["Other Indications"] = first(combined, "other_indications", "pipeline_indications", "therapeutic_areas")
+    combined["Runway Before (mo)"] = first(combined, "pre_financing_runway_months", "cash_runway_months")
+    combined["Runway After (mo)"] = first(combined, "post_financing_runway_months", "runway_after_financing_months")
+    combined["Financing Evidence"] = first(combined, "second_financing_source", "financing_source")
+    combined["Financing Search"] = combined["Company"].where(combined["Company"].str.strip().ne(""), combined["Ticker"]).map(lambda s: "https://www.google.com/search?q=" + quote_plus(str(s) + " financing") if str(s).strip() else "")
+    combined["Entry Gate"] = first(combined, "entry_gate", "green_light_entry_gate")
+    combined["Score Change"] = first(combined, "score_change", "trade_score_change")
+    combined["Last Verified"] = first(combined, "verified_as_of", "last_verified")
+    # Preserve missing evidence instead of promoting unknown financing to finished.
+    try:
+        combined = add_financing_column(combined, index=StageIndex(financing.to_dict("records") if financing is not None and not financing.empty else []))
+    except (ValueError, TypeError, KeyError):
+        combined["FINANCING"] = "REVIEW / UNVERIFIED"
+    combined["Research Status"] = combined["Result Source"].fillna("").astype(str).str.strip().map(lambda x: "SOURCE LINKED" if x.startswith("http") else "REVIEW / SOURCE MISSING")
+    # Program identity is deliberately kept distinct across drugs and indications.
+    combined = combined.drop_duplicates(subset=["Ticker","Drug","Indication","Source List"], keep="last")
+    return combined
+
+def render_today(live, pipeline, financing):
+    now = datetime.now(TZ)
+    yesterday = now.date() - timedelta(days=1)
+    st.title("TODAY")
+    st.caption(f"Pacific reporting date: {now:%Y-%m-%d} · Yesterday: {yesterday} · Data is sourced from stored project files; opening this page does not run an overnight web scan.")
+    data = assemble(live, pipeline, financing)
+    if data.empty:
+        st.warning("No source records loaded. Check the master and Phase 3 pipeline files.")
+        return
+    top = data.loc[data["Result Posted"].eq(yesterday)].copy()
+    # A readout date is not proof of the public posting date. Only dated results with source links qualify.
+    top = top.loc[top["Result Source"].fillna("").astype(str).str.startswith("http")]
+    bottom = data.loc[data["Result Posted"].notna() & data["Result Posted"].le(yesterday)].copy()
+    st.metric("Yesterday's source-linked Phase 3 posts", len(top))
+    st.metric("Recorded post–Phase 3 rows", len(bottom))
+    st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
+    fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Source List"]
+    def show(frame):
+        if frame.empty:
+            st.info("No verified matching records in currently stored files.")
+            return
+        shown = frame[[c for c in fields if c in frame]].copy()
+        st.dataframe(shown.style.map(lambda v: "background-color: #c7f2cd; color: #102c13" if str(v) == "FINISHED" else ("background-color: #fff0a6; color: #342900" if str(v) in ("STARTED","RUNNING") else ("background-color: #ffc8c8; color: #481313" if str(v) == "ANNOUNCED" else "")), subset=["FINANCING"]), use_container_width=True, hide_index=True, column_config={"Financing Search": st.column_config.LinkColumn("Financing Search"), "Result Source": st.column_config.LinkColumn("Result Source"), "Financing Evidence": st.column_config.LinkColumn("Financing Evidence")})
+    st.subheader("TOP — Phase 3 results posted yesterday")
+    show(top)
+    st.subheader("BOTTOM — All recorded post–Phase 3 programs")
+    show(bottom)
+    st.caption("FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
+    st.download_button("Export TODAY", data.to_csv(index=False).encode("utf-8"), file_name=f"today_{now:%Y%m%d}.csv", mime="text/csv")
