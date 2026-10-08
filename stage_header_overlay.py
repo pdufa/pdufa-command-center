@@ -25,12 +25,10 @@ _SCRIPT = r"""
 
   function findGrid(anchor) {
     const candidates = Array.from(document.querySelectorAll(gridSelector));
-    const nextAnchor = Array.from(document.querySelectorAll('[class*="st-key-stageheader_"]'))
-      .find(other => other !== anchor &&
-        (anchor.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING));
+    // STAGE and FINANCING popovers share one grid: do not stop at the
+    // other header anchor before reaching the table.
     return candidates.find(candidate => {
       if (!(anchor.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
-      if (nextAnchor && !(candidate.compareDocumentPosition(nextAnchor) & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
       const rect = candidate.getBoundingClientRect();
       return rect.width > 180 && rect.height > 90 &&
         window.getComputedStyle(candidate).visibility !== 'hidden';
