@@ -2710,6 +2710,13 @@ if page == "TODAY":
         _finance_today = pd.read_csv("data/second_financing_status.csv", keep_default_na=False)
     except (OSError, pd.errors.ParserError):
         _finance_today = pd.DataFrame()
+    try:
+        _intake_state = json.loads(Path("data/phase3_intake_status.json").read_text(encoding="utf-8"))
+        st.caption("Phase 3 registry intake: " + str(_intake_state.get("status", "UNKNOWN")) + " · " + str(_intake_state.get("studies_checked", 0)) + " studies checked in latest run · " + str(_intake_state.get("stored_results", 0)) + " cumulative records · " + str(_intake_state.get("finished_at", "not completed")))
+        if _intake_state.get("status") != "COMPLETE":
+            st.warning("Phase 3 historical/daily registry scan is incomplete. Counts are partial. Corporate press-release discovery is a separate evidence source.")
+    except (OSError, ValueError):
+        st.warning("Phase 3 automated intake has not yet reported a completed scan. Historical coverage remains incomplete.")
     render_today(df, _phase_today, _finance_today)
 
 if page == "MASTER TABLE":
