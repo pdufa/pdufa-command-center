@@ -2029,6 +2029,7 @@ def render_merged_table(frame, heading, height_px=690):
         return
     frame = staged_table(frame)
     st.markdown(f"### {heading}")
+    frame = stage_filter_panel(frame, key="merged_stage_" + heading)
     render_column_tabs(frame, "merged_" + heading,
                        lambda fields, token: _render_merged_table_panel(frame[fields], heading, height_px))
 
@@ -2703,7 +2704,7 @@ if page == "MASTER TABLE":
         display_fields = list(display_view.columns)
         display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
         display_help["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Check to add this ticker to your Watchlist.", default=False)
-        edited_master = grouped_editor(display_view, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
+        edited_master = grouped_editor(display_view, stage_controls=False, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
         changed_watch = edited_master["Watchlist"].fillna(False).astype(bool).ne(display_view["Watchlist"].fillna(False).astype(bool))
         if changed_watch.any():
             selected_watch = set(watch_values)
@@ -2736,7 +2737,7 @@ if page == "MASTER TABLE":
             visible = ["Add to Analysis"] + watch_cols
             watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
             watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
-            watch_edited = grouped_editor(watch_rows[visible], use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
+            watch_edited = grouped_editor(watch_rows[visible], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
             changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
             if changed_analysis.any():
                 for row_id in watch_rows.index:
@@ -2761,7 +2762,7 @@ if page == "MASTER TABLE":
             analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
             invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols}
             invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
-            edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols], use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols, key="analysis_to_invest_editor")
+            edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols, key="analysis_to_invest_editor")
             invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
             if invest_changed.any():
                 for row_id in analysis_rows.index[invest_changed]:
@@ -2780,7 +2781,7 @@ if page == "MASTER TABLE":
         if invest_rows.empty:
             st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
         else:
-            grouped_dataframe(invest_rows[detail_cols], use_container_width=True, hide_index=True)
+            grouped_dataframe(invest_rows[detail_cols], stage_controls=False, use_container_width=True, hide_index=True)
 
         st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
 
@@ -2862,7 +2863,7 @@ elif page == "PIPELINE":
             # stage priority, or PDUFA-countdown order; do not reorder by trial date.
             transfer_view = phase2[list(labels)].rename(columns=labels)
             transfer_view.insert(0, "Move to MASTER TABLE", False)
-            transferred = grouped_editor(transfer_view, use_container_width=True, hide_index=True, height=560,
+            transferred = grouped_editor(transfer_view, stage_controls=False, use_container_width=True, hide_index=True, height=560,
                          key="pipeline_master_transfer_editor", disabled=list(labels.values()), stage_source=phase2,
                          column_config={"Move to MASTER TABLE": st.column_config.CheckboxColumn("MOVE TO MASTER TABLE", help="Move this drug and indication into MASTER TABLE for review. Phase 3 still requires verified evidence.", default=False),
                                         "Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
