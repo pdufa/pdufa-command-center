@@ -2373,7 +2373,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["MASTER TABLE","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["MASTER TABLE","PIPELINE","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 if st.session_state.nav not in nav_options:
     st.session_state.nav = "MASTER TABLE"
@@ -2730,6 +2730,9 @@ if page == "MASTER TABLE":
                 else:
                     st.info("No loaded records.")
     st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
+
+elif page == "PIPELINE":
+    st.markdown("## PIPELINE")
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
