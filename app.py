@@ -2946,15 +2946,20 @@ if page == "MASTER TABLE":
         watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
         combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
         st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
-        st.caption("0–30 red · 31–60 orange · 61–90 yellow · 90+ green. Darker shading means a nearer FDA target date within its segment. Past-due and unknown dates are separate.")
+        st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")
         if "DAYS TO PDUFA" in combined.columns:
-            countdown = combined.loc[combined["DAYS TO PDUFA"].notna() & (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") if c in combined.columns]].copy()
+            countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") if c in combined.columns]].copy()
             if not countdown.empty:
-                countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable")
+                countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
+                countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
+                countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable", na_position="last")
+                category = st.selectbox("PDUFA date category", ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"], key="pdufa_gradient_category")
+                if category != "ALL":
+                    countdown = countdown[countdown["PDUFA Horizon"] == category]
                 styled_countdown = countdown.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in countdown.columns], axis=1)
                 st.dataframe(styled_countdown, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(countdown)))
             else:
-                st.info("No upcoming PDUFA dates available in the loaded events.")
+                st.info("No PDUFA candidates available in the loaded events.")
         st.markdown("### MASTER TABLE — WATCHLIST")
         st.caption("Ticker → STAGE → DAYS TO PDUFA stays visible in every view. Related fields are grouped into tabs; use the field selector for additional sections.")
         display_view = stage_filter_panel(combined, key="master_table", source=master, expanded=True)
