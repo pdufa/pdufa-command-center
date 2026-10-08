@@ -4,7 +4,7 @@ import unittest
 
 import pandas as pd
 
-from table_groups import MAX_COLUMNS, apply_editor_changes, column_groups, column_topic
+from table_groups import MAX_COLUMNS, _filter_stage_rows, apply_editor_changes, column_groups, column_topic
 
 
 class ColumnGroupsTests(unittest.TestCase):
@@ -49,6 +49,42 @@ class ColumnGroupsTests(unittest.TestCase):
                 self.assertLessEqual(len(fields), MAX_COLUMNS)
                 position = fields.index("Ticker")
                 self.assertEqual(fields[position:position + 3], ["Ticker", "STAGE", "DAYS TO PDUFA"])
+
+
+class StageMenuSortTests(unittest.TestCase):
+    def setUp(self):
+        self.frame = pd.DataFrame([
+            {"Ticker": "P2", "STAGE": "PHASE 2 ONGOING", "DAYS TO PDUFA": pd.NA, "Watchlist": False},
+            {"Ticker": "FIN", "STAGE": "2ND FINANCING CLOSED · PHASE 3 COMPLETED — RESULTS REVIEW", "DAYS TO PDUFA": 30, "Watchlist": True},
+            {"Ticker": "FDA", "STAGE": "PDUFA / FDA REVIEW", "DAYS TO PDUFA": 8, "Watchlist": False},
+            {"Ticker": "P3", "STAGE": "PHASE 3 ONGOING", "DAYS TO PDUFA": 80, "Watchlist": True},
+        ], index=[18, 4, 93, 51])
+        self.options = list(self.frame["STAGE"])
+
+    def test_check_multiple_stage_values_without_changing_row_identity(self):
+        chosen = [self.options[1], self.options[3]]
+        result = _filter_stage_rows(self.frame, chosen, "Workflow: early to late")
+        self.assertEqual(set(result["Ticker"]), {"FIN", "P3"})
+        self.assertEqual(set(result.index), {4, 51})
+        self.assertEqual(result.loc[4, "Watchlist"], True)
+        self.assertEqual(len(self.frame), 4)
+
+    def test_user_selected_stage_priority(self):
+        chosen = [self.options[2], self.options[3], self.options[0]]
+        result = _filter_stage_rows(self.frame, chosen, "Selected stages: chosen order",
+                                    priority=[self.options[3], self.options[0]])
+        self.assertEqual(result["Ticker"].tolist(), ["P3", "P2", "FDA"])
+
+    def test_workflow_order_and_countdown(self):
+        workflow = _filter_stage_rows(self.frame, self.options, "Workflow: early to late")
+        self.assertEqual(workflow["Ticker"].tolist(), ["P2", "P3", "FIN", "FDA"])
+        countdown = _filter_stage_rows(self.frame, self.options, "Days to PDUFA: soonest first")
+        self.assertEqual(countdown["Ticker"].tolist(), ["FDA", "FIN", "P3", "P2"])
+
+    def test_clear_all_shows_no_rows_without_editing_data(self):
+        empty = _filter_stage_rows(self.frame, [], "Stage: A to Z")
+        self.assertTrue(empty.empty)
+        self.assertEqual(len(self.frame), 4)
 
 
 class EditorChangesTests(unittest.TestCase):
