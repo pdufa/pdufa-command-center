@@ -84,4 +84,7 @@ def add_financing_column(frame, index=None, source=None):
             status.append(financing_stage(own, index.today))
     pivot = "DAYS TO PDUFA" if "DAYS TO PDUFA" in result else ticker
     result.insert(result.columns.get_loc(pivot) + 1, "FINANCING", status)
+    # Keep the four trading-navigation columns adjacent, before Drug/Indication.
+    leading = [c for c in (ticker, "STAGE", "DAYS TO PDUFA", "FINANCING") if c in result.columns]
+    result = result.loc[:, leading + [c for c in result.columns if c not in leading]]
     return result
