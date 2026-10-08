@@ -2635,26 +2635,26 @@ if page == "MASTER TABLE":
                     st.dataframe(source_frame, use_container_width=True, hide_index=True)
                 else:
                     st.info("No loaded records.")
-        # Three independently visible tables; selections are controlled within each table.
+        # Watchlist sits immediately below the Master, followed by Analysis and Invest.
         for key in ("master_analysis", "master_invest"):
             if key not in st.session_state:
                 st.session_state[key] = []
         if "Ticker" in combined:
-            ticker_values = combined["Ticker"].fillna("").astype(str).str.upper()
-            lists = (("Watchlist", "watchlist"), ("Analysis", "master_analysis"), ("Invest", "master_invest"))
-            st.markdown("### Attached candidate tables")
+            ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
+            lists = (("WATCHLIST", "watchlist"), ("ANALYSIS", "master_analysis"), ("INVEST", "master_invest"))
+            st.markdown("### Watchlist, Analysis & Invest")
             for label, state_key in lists:
-                st.markdown("#### " + label)
-                chosen = {str(v).upper() for v in st.session_state[state_key]}
+                chosen = {str(v).upper().strip() for v in st.session_state[state_key]}
                 selected_rows = combined[ticker_values.isin(chosen)]
+                st.markdown("#### " + label + f" ({len(selected_rows):,})")
+                cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
                 if selected_rows.empty:
-                    st.info("No candidates in " + label + ".")
+                    st.info("No candidates selected for " + label + ". Tick Watchlist in the main table to add candidates.")
                 else:
-                    cols = [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "Entry Gate",
-                                        "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in selected_rows]
                     st.dataframe(selected_rows[cols], use_container_width=True, hide_index=True,
-                                 column_config={c: st.column_config.TextColumn(c, help="Source field: " + c) for c in cols})
-            st.caption("Lists are session-only. Invest does not place an order.")
+                                 column_config={c: st.column_config.TextColumn(c + " ⓘ", help="Source field: " + c) for c in cols})
+            st.caption("Selections are session-only. Invest is tracking only and does not place an order.")
+
     st.caption("This consolidates loaded source columns, not every derived calculation or interactive control from the original pages. Missing evidence is not treated as verified.")
 
 elif page == "3. ALL PDUFA":
