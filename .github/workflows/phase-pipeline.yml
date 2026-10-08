@@ -1,0 +1,47 @@
+name: Phase 2 to Phase 3 Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/phase_pipeline.py
+      - .github/workflows/phase-pipeline.yml
+  schedule:
+    - cron: "45 12 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-surveillance
+  cancel-in-progress: false
+
+jobs:
+  phase-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install scan dependencies
+        run: pip install requests
+      - name: Collect Phase 2 trials and verify Phase 3 transitions
+        run: python scripts/phase_pipeline.py
+      - name: Check transition rules
+        run: python -m unittest discover -s tests -p test_phase_pipeline.py
+      - name: Save pipeline records and scan status
+        if: always()
+        run: |
+          git config user.name "pdufa-pipeline-bot"
+          git config user.email "pdufa-pipeline-bot@users.noreply.github.com"
+          git add data/phase_pipeline.csv data/phase_pipeline_state.json data/phase_pipeline_market_caps.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh Phase 2 pipeline and verified Phase 3 transitions"
+            git pull --rebase origin main
+            git push
+          fi

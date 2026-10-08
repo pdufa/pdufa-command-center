@@ -13,6 +13,9 @@ import xml.etree.ElementTree as ET
 import subprocess
 import sys
 from email.utils import parsedate_to_datetime
+from zoneinfo import ZoneInfo
+from datetime import datetime, timezone
+from scripts.phase_pipeline import read_rows as read_phase_rows, reconcile_records as reconcile_phase_records, master_additions as phase_master_additions
 
 st.set_page_config(
     page_title="PDUFA Command Center",
@@ -755,6 +758,47 @@ def _story_timestamp(value):
         return ts.tz_convert("UTC")
     except Exception:
         return pd.Timestamp.min.tz_localize("UTC")
+
+
+@st.cache_data(ttl=60)
+def load_phase_pipeline_data(version):
+    records = read_phase_rows(Path("data/phase_pipeline.csv"))
+    try:
+        state = json.loads(Path("data/phase_pipeline_state.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        state = {}
+    return records, state
+
+
+def current_phase_pipeline():
+    path = Path("data/phase_pipeline.csv")
+    version = path.stat().st_mtime_ns if path.exists() else 0
+    records, state = load_phase_pipeline_data(version)
+    source_today = datetime.now(timezone.utc).date()
+    records = reconcile_phase_records(records, [], source_today, int(state.get("source_max_age_days", 180)))
+    return records, state
+
+
+def master_with_phase3(live):
+    records, state = current_phase_pipeline()
+    additions = phase_master_additions(records, live.to_dict("records"))
+    result = pd.concat([live.copy(), pd.DataFrame(additions)], ignore_index=True, sort=False) if additions else live.copy()
+    for col in ("pdufa_date", "phase1_date", "phase2_date", "phase3_date", "phase3_start_date", "nda_submission_date", "fda_acceptance_date", "decision_date", "financing_close_date"):
+        if col in result:
+            result[col] = pd.to_datetime(result[col], errors="coerce")
+    for col in ("approval_probability", "public_approval_probability", "trade_score", "market_cap", "cash", "cash_runway_months", "short_interest", "iv_30d"):
+        if col in result:
+            result[col] = pd.to_numeric(result[col], errors="coerce")
+    if "current_stage" not in result:
+        result["current_stage"] = pd.NA
+    fallback = pd.Series("PHASE 3 / REGULATORY REVIEW", index=result.index)
+    if "pdufa_date" in result:
+        fallback.loc[result["pdufa_date"].notna()] = "PDUFA SCHEDULED"
+    if "decision_date" in result:
+        local_today = pd.Timestamp(datetime.now(ZoneInfo("America/Los_Angeles")).date())
+        fallback.loc[result["decision_date"].notna() & result["decision_date"].le(local_today)] = "FDA DECISION RECORDED"
+    result["current_stage"] = result["current_stage"].fillna(fallback)
+    return result, additions, state
 
 
 df = load_data()
@@ -2388,9 +2432,11 @@ else:
         st.query_params.clear()
 
 if page == "MASTER TABLE":
-    st.markdown("## MASTER PDUFA TABLE — COMBINED COLUMNS")
-    st.caption("One event-level master table with Watchlist, Analysis and Invest below. Identical fields are shown once; different events for the same ticker remain separate.")
-    master = df.copy().reset_index(drop=True)
+    st.markdown("## MASTER TABLE — PHASE 3 THROUGH FDA DECISION")
+    st.caption("Verified Phase 3 programs arrive here from PIPELINE. Watchlist, Analysis and Invest follow below; scores and entry eligibility remain subject to their own evidence checks.")
+    master, phase3_arrivals, phase_pipeline_state = master_with_phase3(df)
+    master = master.reset_index(drop=True)
+    st.caption(f"{len(phase3_arrivals):,} additional Phase 3 programs · PDUFA dates remain blank until confirmed.")
     if master.empty:
         st.info("No PDUFA records are currently loaded.")
     else:
@@ -2399,6 +2445,11 @@ if page == "MASTER TABLE":
             "Ticker": ["ticker", "symbol"],
             "Drug": ["drug", "drug_name", "product_name"],
             "Indication": ["indication", "disease"],
+            "Current Stage": ["current_stage"],
+            "Next Milestone": ["next_milestone"],
+            "Phase 3 Started": ["phase3_start_date"],
+            "Moved to Master": ["pipeline_promoted_at"],
+            "Stage Evidence": ["pipeline_evidence_status"],
             "NCT": ["nct_id", "nct"],
             "Phase 3 Readout": ["phase3_date", "phase_3_date", "readout_date"],
             "P (p-value)": ["reported_p_values", "p_value"],
@@ -2570,7 +2621,7 @@ if page == "MASTER TABLE":
         # Historical cohorts are not live events. Expose their columns in the
         # master schema without fabricating event-level joins.
         historical_count = len(prediction_history) if isinstance(prediction_history, pd.DataFrame) else 0
-        combined["Record Source"] = "LIVE PDUFA EVENT"
+        combined["Record Source"] = master.get("record_source", pd.Series("LIVE PDUFA EVENT", index=master.index)).fillna("LIVE PDUFA EVENT")
         # Bring every loaded source schema into the master, preserving provenance.
         # Unique event keys are required; duplicate or incomplete keys are
         # intentionally left blank rather than assigned to the wrong drug.
@@ -2732,7 +2783,84 @@ if page == "MASTER TABLE":
     st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
 
 elif page == "PIPELINE":
-    st.markdown("## PIPELINE")
+    st.markdown("## PIPELINE — PHASE 2")
+    st.caption("Track Phase 2 programs in the $300M–$10B universe. The matching drug and indication move into MASTER TABLE when a standalone Phase 3 trial has a verified actual start.")
+    records, pipeline_state = current_phase_pipeline()
+    pipeline_frame = pd.DataFrame(records)
+    if pipeline_state:
+        stamp = safe_text(pipeline_state.get("finished_at"), "Not completed")
+        try:
+            stamp = datetime.fromisoformat(stamp).astimezone(ZoneInfo("America/Los_Angeles")).strftime("%b %d, %Y %I:%M %p %Z")
+        except ValueError:
+            pass
+        st.caption(f"Daily monitoring · Last scan: {stamp} · Status: {pipeline_state.get('status', 'UNKNOWN')}")
+        if not pipeline_state.get("complete"):
+            st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
+        with st.expander("Scan scope and graduation rule"):
+            st.write(pipeline_state.get("scope", "Scope not recorded"))
+            st.write(f"{pipeline_state.get('registry_companies', 0):,} registry companies · {pipeline_state.get('studies_scanned', 0):,} trial records checked · {pipeline_state.get('matched_trials', 0):,} exact sponsor matches")
+            st.write(f"Market cap verified for {pipeline_state.get('market_cap_verified_tickers', 0):,} tickers. Missing or stale market caps remain REVIEW; values outside $300M–$10B fail the universe gate.")
+            st.write("Graduation requires an exact company and investigational-drug/indication identity, standalone Phase 3, an actual start date, an eligible started-trial status, and current source evidence. Combined Phase 2/3 and estimated starts remain REVIEW.")
+            st.write(f"Trial source updated within {pipeline_state.get('source_max_age_days', 180)} days and checked within three days. Market-cap eligibility, clinical success and approval scoring are checked separately.")
+            for error in pipeline_state.get("errors", []):
+                st.error(error)
+    if pipeline_frame.empty:
+        st.info("The Phase 2 collection has not produced verified company matches yet.")
+    else:
+        phase2 = pipeline_frame[pipeline_frame["destination"].eq("PIPELINE") & pipeline_frame["universe_gate"].eq("PASS")].copy()
+        phase2 = phase2.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
+        moved = pipeline_frame[pipeline_frame["destination"].eq("MASTER TABLE") & pipeline_frame["universe_gate"].eq("PASS") & pipeline_frame["nct_id"].eq(pipeline_frame["phase3_nct_id"])].copy()
+        moved = moved.sort_values("promoted_at", ascending=False).drop_duplicates("program_key")
+        review = pipeline_frame[(pipeline_frame["destination"].eq("REVIEW") | pipeline_frame["universe_gate"].eq("REVIEW")) & ~pipeline_frame["universe_gate"].eq("FAIL")].copy()
+        review = review.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
+        p1, p2, p3 = st.columns(3)
+        p1.metric("Phase 2 programs", len(phase2))
+        p2.metric("Moved to Master", len(moved))
+        p3.metric("Programs needing review", len(review))
+        outside = pipeline_frame.loc[pipeline_frame["universe_gate"].eq("FAIL"), "program_key"].nunique()
+        st.caption(f"{outside:,} programs outside the verified market-cap range are excluded from this view.")
+        search = st.text_input("Find ticker, drug or indication", key="pipeline_search").strip()
+        if search:
+            matching = phase2[["ticker", "company", "drug", "indication"]].fillna("").astype(str).agg(" ".join, axis=1).str.contains(search, case=False, regex=False)
+            phase2 = phase2[matching]
+        labels = {
+            "ticker": "Ticker", "company": "Company", "drug": "Drug", "indication": "Indication",
+            "trial_status": "Phase 2 Status", "phases": "Registered Phase", "market_cap": "Market Cap", "start_date": "Phase 2 Start", "start_date_type": "Start Date Type",
+            "primary_completion": "Primary Completion", "primary_completion_type": "Completion Date Type",
+            "results_first_posted": "Results Posted", "phase2_nct_ids": "Phase 2 Trials",
+            "phase3_candidate_nct": "Phase 3 Trial Found", "phase3_target_start": "Phase 3 Target Start",
+            "promotion_status": "Graduation Status", "source_updated": "Source Updated",
+            "checked_at": "Last Checked", "source_url": "Trial Evidence",
+        }
+        if phase2.empty:
+            st.info("No Phase 2 programs match this view.")
+        else:
+            phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
+            phase2["_sort_date"] = pd.to_datetime(phase2["primary_completion"], errors="coerce", format="mixed")
+            phase2 = phase2.sort_values("_sort_date", na_position="last")
+            st.dataframe(phase2[list(labels)].rename(columns=labels), use_container_width=True, hide_index=True, height=560,
+                         column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
+                                        "Phase 3 Target Start": st.column_config.TextColumn("Phase 3 Target Start", help="Registered target date; this is not proof that Phase 3 has started.")})
+        with st.expander(f"Moved to MASTER TABLE ({len(moved):,})", expanded=not moved.empty):
+            if moved.empty:
+                st.info("No Phase 3 transitions have qualified yet.")
+            else:
+                fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phase2_nct_ids": "Phase 2 Trials",
+                          "phase3_nct_id": "Phase 3 Trial", "phase3_start_date": "Actual Phase 3 Start",
+                          "promoted_at": "Moved to Master", "promotion_status": "Current Evidence", "phase3_source_url": "Transition Evidence"}
+                st.dataframe(moved[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
+                             column_config={"Transition Evidence": st.column_config.LinkColumn("Transition Evidence", display_text="Open evidence")})
+            st.button("OPEN MASTER TABLE", on_click=go_page, args=("MASTER TABLE",), key="pipeline_open_master")
+        if not review.empty:
+            with st.expander("Programs requiring verification"):
+                fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phases": "Registered Phase",
+                          "trial_status": "Trial Status", "start_date": "Start Date", "start_date_type": "Start Date Type",
+                          "promotion_reason": "Review Reason", "universe_gate": "Market Cap Gate", "universe_reason": "Market Cap Review", "source_url": "Trial Evidence"}
+                st.dataframe(review[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
+                             column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial")})
+    if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh"):
+        load_phase_pipeline_data.clear()
+        st.rerun()
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
@@ -4857,3 +4985,4 @@ else:
 
 st.divider()
 st.caption("FDA probabilities are model estimates, not FDA determinations. Direction / FDA Match is a result score, not an approval probability: before a final FDA outcome it shows the predicted direction; after the outcome it shows 100% for a matching direction or 0% for a miss. Missing fields are labeled Not available or Not scored rather than being invented.")
+
