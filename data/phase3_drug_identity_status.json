@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-08T16:13:02.201508+00:00",
+  "generated_at": "2026-10-08T17:51:00.265499+00:00",
   "phase3_result_records": 2476,
-  "candidate_company_intervention_names": 1803,
-  "provisional_single_intervention_candidates": 1803,
-  "multi_arm_or_alias_review_candidates": 0,
+  "candidate_company_intervention_names": 2079,
+  "provisional_single_intervention_candidates": 183,
+  "multi_arm_or_alias_review_candidates": 1896,
   "verified_unique_drug_count": null,
   "reason": "ClinicalTrials.gov intervention names do not establish unique active substances or resolve aliases, regimens, dose variants and controls."
-}\n
+}
