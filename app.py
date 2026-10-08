@@ -2526,6 +2526,39 @@ if page == "MASTER TABLE":
                 st.caption(f"{len(view):,} event rows · {len(fields)} columns")
                 help_config = {c: st.column_config.TextColumn(str(c), help=f"{c}: value from the loaded PDUFA event record; verify evidence and reporting date.") for c in fields if c not in identity}
                 st.dataframe(view, use_container_width=True, hide_index=True, height=550, column_config=help_config)
+        st.markdown("### Candidate routing")
+        for key in ("master_analysis", "master_invest"):
+            if key not in st.session_state:
+                st.session_state[key] = []
+        if "Ticker" in combined:
+            route = combined[[c for c in ("Ticker", "Drug", "PDUFA Date") if c in combined]].copy()
+            ticker = route["Ticker"].fillna("").astype(str).str.upper()
+            keys = {"Watchlist": "watchlist", "Analysis": "master_analysis", "Invest": "master_invest"}
+            for name, key in keys.items():
+                route[name] = ticker.isin({str(v).upper() for v in st.session_state[key]})
+            cfg = {c: (st.column_config.CheckboxColumn(c, help="Select ticker for " + c + ". No trade is placed.")
+                        if c in keys else st.column_config.TextColumn(c, help="Source field: " + c))
+                   for c in route.columns}
+            edited = st.data_editor(route, use_container_width=True, hide_index=True,
+                                    column_config=cfg, disabled=[c for c in route if c not in keys],
+                                    key="master_candidate_routes")
+            for name, key in keys.items():
+                before = set(route.loc[route[name], "Ticker"].astype(str).str.upper())
+                after = set(edited.loc[edited[name], "Ticker"].astype(str).str.upper())
+                current = {str(v).upper() for v in st.session_state[key]}
+                st.session_state[key] = sorted((current - (before - after)) | (after - before))
+            st.markdown("### Candidate tables")
+            for tab, (name, key) in zip(st.tabs(list(keys)), keys.items()):
+                with tab:
+                    selected = {str(v).upper() for v in st.session_state[key]}
+                    subset = combined[combined["Ticker"].fillna("").astype(str).str.upper().isin(selected)]
+                    if subset.empty:
+                        st.info("No candidates in " + name)
+                    else:
+                        cols = [c for c in ("Ticker", "Drug", "PDUFA Date", "Entry Gate", "FDA PoA") if c in subset]
+                        st.dataframe(subset[cols], use_container_width=True, hide_index=True,
+                                     column_config={c: st.column_config.TextColumn(c, help="Source field: " + c) for c in cols})
+            st.caption("Selections are session-only. Invest is a tracking list, not an order.")
     st.caption("This consolidates loaded source columns, not every derived calculation or interactive control from the original pages. Missing evidence is not treated as verified.")
 
 elif page == "3. ALL PDUFA":
