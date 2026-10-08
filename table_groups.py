@@ -201,8 +201,25 @@ def _filter_stage_rows(staged, selected, order, priority=None):
     return result
 
 
+def _stage_header_layout(columns):
+    """Align the filter button with STAGE in the compact table's first pane."""
+    groups = column_groups(columns)
+    first_panes = next(iter(groups.values()), [])
+    fields = first_panes[0][1] if first_panes else list(columns)
+    if "STAGE" not in fields:
+        return (1, 2, 5)
+    narrow = CONTROL_COLUMNS | {"ticker", "days to pdufa", "order", "n", "b", "p", "p%"}
+    def estimated_width(column):
+        return 108 if _name(column) in narrow else 208
+    before = sum(estimated_width(col) for col in fields[:fields.index("STAGE")])
+    stage = estimated_width("STAGE")
+    # Streamlit's native grid has no header-widget slot. Match its leading
+    # column widths and anchor the real filter immediately above STAGE.
+    return (max(1, before), stage, max(320, 1550 - before - stage))
+
+
 def stage_filter_panel(data, key, source=None, expanded=False):
-    """STAGE ▾ menu with actual checkboxes, shared by all ticker tables."""
+    """Checkbox/filter popover aligned with the STAGE table column."""
     # Do not recompute the countdown when a parent table already supplied
     # its program-matched STAGE and DAYS TO PDUFA columns.
     staged = (data.copy() if source is None and
@@ -214,41 +231,49 @@ def stage_filter_panel(data, key, source=None, expanded=False):
     options = sorted(stages.unique().tolist(), key=lambda value: (_stage_sort_rank(value), value))
     def choice_key(label):
         return key + "_stage_choice_" + sha1(label.encode("utf-8")).hexdigest()[:12]
-    with st.popover("STAGE ▾  FILTER / SORT"):
-        st.caption("Check any combination of stages. Changes update only this table.")
-        all_col, none_col = st.columns(2)
-        if all_col.button("✓ Select all", key=key + "_stage_all", use_container_width=True):
-            for stage in options:
-                st.session_state[choice_key(stage)] = True
-            st.rerun()
-        if none_col.button("Clear all", key=key + "_stage_none", use_container_width=True):
-            for stage in options:
-                st.session_state[choice_key(stage)] = False
-            st.rerun()
-        with st.container(height=270):
-            selected = [
-                stage for stage in options
-                if st.checkbox(stage, value=True, key=choice_key(stage))
-            ]
-        order = st.selectbox(
-            "Sort rows by",
-            ("Workflow: early to late", "Workflow: late to early",
-             "Selected stages: chosen order", "Stage: A to Z", "Stage: Z to A",
-             "Days to PDUFA: soonest first", "Days to PDUFA: latest first"),
-            key=key + "_stage_order",
-        )
-        priority = []
-        if order == "Selected stages: chosen order" and selected:
-            priority = st.multiselect(
-                "Priority: choose checked stages in your preferred order",
-                selected, key=key + "_stage_priority",
-                help="First selected stage appears first; remaining checked stages follow.",
-            )
-    result = _filter_stage_rows(staged, selected, order, priority)
-    st.caption(
-        f"STAGE: {len(selected):,}/{len(options):,} checked · "
-        f"{len(result):,}/{len(staged):,} rows · {order}"
+
+    left_width, stage_width, right_width = _stage_header_layout(staged.columns)
+    _, header_stage, header_right = st.columns(
+        [left_width, stage_width, right_width],
+        gap="small", vertical_alignment="bottom",
     )
+    with header_stage:
+        with st.popover("STAGE ▾", use_container_width=True):
+            st.caption("Check any combination of stages to filter this table.")
+            all_col, none_col = st.columns(2)
+            if all_col.button("✓ Select all", key=key + "_stage_all", use_container_width=True):
+                for stage in options:
+                    st.session_state[choice_key(stage)] = True
+                st.rerun()
+            if none_col.button("Clear all", key=key + "_stage_none", use_container_width=True):
+                for stage in options:
+                    st.session_state[choice_key(stage)] = False
+                st.rerun()
+            with st.container(height=270):
+                selected = [
+                    stage for stage in options
+                    if st.checkbox(stage, value=True, key=choice_key(stage))
+                ]
+            order = st.selectbox(
+                "Sort rows by",
+                ("Workflow: early to late", "Workflow: late to early",
+                 "Selected stages: chosen order", "Stage: A to Z", "Stage: Z to A",
+                 "Days to PDUFA: soonest first", "Days to PDUFA: latest first"),
+                key=key + "_stage_order",
+            )
+            priority = []
+            if order == "Selected stages: chosen order" and selected:
+                priority = st.multiselect(
+                    "Priority: choose checked stages in your preferred order",
+                    selected, key=key + "_stage_priority",
+                    help="First selected stage appears first; remaining checked stages follow.",
+                )
+    result = _filter_stage_rows(staged, selected, order, priority)
+    with header_right:
+        st.caption(
+            f"{len(selected):,}/{len(options):,} stages · "
+            f"{len(result):,}/{len(staged):,} rows · {order}"
+        )
     if result.empty:
         st.info("No rows match. Open STAGE ▾ to check stages or Select all.")
     return result
