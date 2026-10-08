@@ -55,7 +55,7 @@ def assemble(live, pipeline, financing):
         combined["FINANCING"] = "REVIEW / UNVERIFIED"
     combined["Research Status"] = combined["Result Source"].fillna("").astype(str).str.strip().map(lambda x: "SOURCE LINKED" if x.startswith("http") else "REVIEW / SOURCE MISSING")
     # Program identity is deliberately kept distinct across drugs and indications.
-    combined = combined.drop_duplicates(subset=["Ticker","Drug","Indication"], keep="last")
+    combined = combined.drop_duplicates(subset=["Ticker","Drug","Indication","Trial ID","Result Posted"], keep="last")
     return combined
 
 def render_today(live, pipeline, financing):
@@ -79,7 +79,7 @@ def render_today(live, pipeline, financing):
     data["Post–Phase 3 Evidence"] = eligible.map({True: "RECORDED POST–PHASE 3", False: "REVIEW — PHASE 3 NOT VERIFIED"})
     bottom = data.loc[eligible].copy()
     st.metric("Yesterday's source-linked Phase 3 posts", len(top))
-    st.metric("Announced Phase 3 programs in source files", len(bottom))
+    st.metric("Phase 3 result records (not unique drugs)", len(bottom))
     st.metric("Recorded post–Phase 3", int(eligible.sum()))
     if bottom.empty:
         st.warning("No post–Phase 3 results qualified from the saved evidence.")
@@ -95,7 +95,7 @@ def render_today(live, pipeline, financing):
     if top.empty:
         st.warning("No verified yesterday Phase 3 posts are currently ingested. The Phase 3 pipeline source file is empty or lacks dated, source-linked result announcements; this is an intake gap, not proof that no results were published.")
     show(top)
-    st.subheader("BOTTOM — Announced Phase 3 results (verified and review)")
+    st.subheader("BOTTOM — Cumulative Phase 3 result records (verified and review)")
     show(bottom)
-    st.caption("This is a partial source-linked intake, not a completed audit of all 717 companies. FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
+    st.caption("The bottom table lists trial-result records, not deduplicated unique drugs or confirmed positive outcomes. FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
     st.download_button("Export TODAY", data.to_csv(index=False).encode("utf-8"), file_name=f"today_{now:%Y%m%d}.csv", mime="text/csv")
