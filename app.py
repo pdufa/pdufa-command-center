@@ -2533,6 +2533,31 @@ if page == "MASTER TABLE":
         combined["NDA/BLA Status"] = "REVIEW"
         combined.loc[submitted, "NDA/BLA Status"] = "SUBMITTED"
         combined.loc[accepted, "NDA/BLA Status"] = "FDA ACCEPTED"
+        # Step 2: attach FDA monitor data by exact, unique event identity.
+        def _attach_event_fields(source_frame, prefix):
+            if not isinstance(source_frame, pd.DataFrame) or source_frame.empty:
+                return
+            keys = ("ticker", "drug", "pdufa_date")
+            if not all(k in source_frame.columns for k in keys) or not all(k in master.columns for k in keys):
+                return
+            def make_key(frame):
+                return frame["ticker"].fillna("").astype(str).str.upper().str.strip() + "|" + frame["drug"].fillna("").astype(str).str.upper().str.strip() + "|" + pd.to_datetime(frame["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+            source = source_frame.copy()
+            source["_master_key"] = make_key(source)
+            source = source[source["_master_key"].map(lambda v: all(v.split("|")))]
+            source = source[~source["_master_key"].duplicated(keep=False)].set_index("_master_key")
+            target = make_key(master)
+            for field in source.columns:
+                if field not in keys:
+                    label = prefix + " · " + field.replace("_", " ").title()
+                    combined[label] = target.map(source[field])
+        _attach_event_fields(fda_regulatory_signals, "FDA Monitor")
+        _attach_event_fields(fda_extension_ledger, "FDA Extension")
+        _attach_event_fields(fda_directional_live, "FDA Directional")
+        # Preserve detailed FDA review fields merged into df at startup.
+        for field in master.columns:
+            if field.startswith("fda_") and field not in combined:
+                combined[field] = master[field]
         def _group_for(col):
             name = str(col).lower()
             if any(x in name for x in ("financ", "offering", "dilution", "atm", "proceeds", "cash", "runway")):
