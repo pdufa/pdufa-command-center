@@ -9,6 +9,11 @@ import re
 # keywords to avoid classifying, e.g., pulmonary arterial hypertension as
 # ordinary hypertension or diabetes insipidus as diabetes mellitus.
 PATTERNS = (
+    ("Epidermolysis bullosa", r"\bepidermolysis bullosa\b|\brdeb\b"),
+    ("Mucopolysaccharidosis type III", r"\bmucopolysaccharidosis\s*(?:type\s*)?(?:iii[\s-]?[ab]|3[\s-]?[ab])\b"),
+    ("Autism spectrum disorder", r"\bautism spectrum\b|\bautistic disorder\b"),
+    ("Menopausal vasomotor symptoms", r"\bvasomotor symptoms\b|\bmenopaus(?:al|e) hot flash"),
+    ("Onychomycosis", r"\bonychomycosis\b"),
     ("Prader-Willi syndrome", r"\bprader[\s-]*willi\b"),
     ("Duchenne muscular dystrophy", r"\bduchenne\b|\bdmd\b"),
     ("Amyotrophic lateral sclerosis (ALS)", r"\bamyotrophic lateral sclerosis\b|\bals\b|\blou gehrig"),
@@ -63,7 +68,7 @@ PATTERNS = (
     ("Urinary tract infection", r"\burinary tract infection\b|\bpyelonephritis\b|\bcuti\b"),
     ("Breast cancer", r"\bbreast cancer\b|\bbreast neoplasm"),
     ("Non-small cell lung cancer", r"\bnon[\s-]*small[\s-]*cell lung\b|\bnsclc\b|\bcarcinoma, non.small.cell lung\b"),
-    ("Small cell lung cancer", r"\bsmall cell lung cancer\b|\bsclc\b"),
+    ("Small cell lung cancer", r"(?<!non-)(?<!non )\bsmall[\s-]*cell lung cancer\b|\bsclc\b"),
     ("Prostate cancer", r"\bprostate cancer\b|\bprostate neoplasm"),
     ("Colorectal cancer", r"\bcolorectal\b|\bcolon cancer\b|\brectal cancer\b"),
     ("Pancreatic cancer", r"\bpancreatic cancer\b|\bpancreatic adenocarcinoma\b"),
@@ -71,7 +76,7 @@ PATTERNS = (
     ("Multiple myeloma", r"\bmultiple myeloma\b"),
     ("Acute myeloid leukemia", r"\bacute myeloid leuk"),
     ("Chronic lymphocytic leukemia", r"\bchronic lymphocytic leuk"),
-    ("Hepatocellular carcinoma", r"\bhepatocellular carcinoma\b"),
+    ("Hepatocellular carcinoma", r"\bhepatocellular carcinoma\b|\bcarcinoma,?\s*hepatocellular\b"),
     ("Ovarian cancer", r"\bovarian cancer\b|\bovarian neoplasm"),
     ("Cancer — other / multi-tumor", r"\bsolid tumors?\b|\bmalignant neoplasm\b|\badvanced cancer\b|\boncolog"),
     ("Pain / neuropathy", r"\bneuropathic pain\b|\bperipheral neuropath\b|\bchronic pain\b|\bacute pain\b"),
