@@ -13,7 +13,14 @@ def study(nct, status, sponsor="Renamed Subsidiary"):
         "identificationModule": {"nctId": nct},
         "sponsorCollaboratorsModule": {"leadSponsor": {"name": sponsor}},
         "designModule": {"phases": ["PHASE3"]},
-        "statusModule": {"overallStatus": status}}}
+        "statusModule": {"overallStatus": status},
+        "armsInterventionsModule": {
+            "interventions": [{
+                "type": "DRUG",
+                "name": "Test drug",
+                "description": "oral capsule",
+            }]
+        }}}
 
 class Response:
     def __init__(self, studies): self.studies = studies
@@ -39,6 +46,13 @@ class Session:
     def close(self): pass
 
 class DailyTrialRecheckTests(unittest.TestCase):
+    def test_registry_intervention_type_and_route_are_saved(self):
+        row = scan.record_from_study(
+            study("NCT00000001", "RECRUITING"), "Parent", "A"
+        )
+        self.assertEqual(row["intervention_type"], "DRUG")
+        self.assertEqual(row["route"], "Oral")
+
     def setUp(self):
         self.temp = TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
