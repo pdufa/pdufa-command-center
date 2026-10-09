@@ -114,5 +114,17 @@ class DailyTrialRecheckTests(unittest.TestCase):
         self.assertEqual(set(found), set(ids))
         session.get.assert_called_once()
 
+
+    def test_curated_issue_trial_ids_are_included_in_daily_refresh(self):
+        (self.root / "phase_pipeline.csv").unlink()
+        (self.root / "issue_trials.csv").write_text(
+            "issue,nct_id,ticker,company\nObesity,NCT00000002,A,Parent\n")
+        state = self.run_scan()
+        self.assertEqual(state["tracked_trials_checked"], 2)
+        self.assertEqual(state["tracked_trials_with_warnings"], 0)
+        records = {r["nct_id"]: r for r in scan.rows(self.root / "all_phase_trials.csv")}
+        self.assertEqual(records["NCT00000002"]["status"], "TERMINATED")
+        self.assertEqual(records["NCT00000002"]["ticker"], "A")
+
 if __name__ == "__main__":
     unittest.main()
