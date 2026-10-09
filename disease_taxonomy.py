@@ -32,7 +32,11 @@ PATTERNS = (
     ("Anxiety disorders", r"\banxiety\b|\bgeneralized anxiety\b"),
     ("Bipolar disorder", r"\bbipolar\b"),
     ("Migraine", r"\bmigraine"),
-    ("Obesity", r"\bobes\b|\bobesity\b|\boverweight\b|\bweight management\b"),
+    ("Obesity", r"\bobes\b|\bobesity\b"),
+    ("Overweight", r"\boverweight\b"),
+    ("Weight management (unspecified)", r"\bweight management\b"),
+    ("Type 1 diabetes", r"\btype[ -]?1[ -]?(?:diabetes|diabetic|dm)\b|\bdiabetes(?: mellitus)?[ ,]+type[ -]?1\b|\bt1dm\b"),
+    ("Type 2 diabetes", r"\btype[ -]?2[ -]?(?:diabetes|diabetic|dm)\b|\bdiabetes(?: mellitus)?[ ,]+type[ -]?2\b|\bt2dm\b"),
     ("Diabetes", r"\bdiabetes\b|\bdiabetic\b"),
     ("Hypertension", r"\bhypertension\b|\bhigh blood pressure\b"),
     ("Heart failure", r"\bheart failure\b|\bcardiac failure\b"),
@@ -149,6 +153,16 @@ BURDEN = {
         "definition": "All CKD stages; not any single renal indication",
         "source": "https://www.cdc.gov/cdi/indicator-definitions/chronic-kidney-disease.html",
     },
+    "Type 1 diabetes": {
+        "us_people": 2100000, "year": "US 2023",
+        "definition": "Diagnosed type 1 diabetes, all ages; not all trial-eligible",
+        "us_source": "https://usdss.cdc.gov/diabetes/report.html",
+    },
+    "Heart failure": {
+        "us_people": 6700000, "year": "CDC summary published 2024",
+        "definition": "U.S. adults age 20+ with heart failure",
+        "us_source": "https://www.cdc.gov/heart-disease/about/heart-failure.html",
+    },
     "Rheumatoid arthritis": {
         "world_people": 18000000, "year": "Worldwide 2019",
         "definition": "All rheumatoid arthritis",
@@ -187,6 +201,37 @@ def group_indication(indication, curated_issue=""):
     first = (raw or curated).split("|", 1)[0].strip()
     first = re.sub(r"\s+", " ", first).strip()
     return first[:105] if first else "Indication not recorded"
+
+
+def group_indications(indication, curated_issue=""):
+    """List all explicit disease groups on one registered trial, uniquely.
+
+    A trial can legitimately study multiple conditions: group associations
+    may exceed trial counts, but no source records are created or deleted.
+    Specific diabetes types supersede broad untyped diabetes; a healthy
+    control does not become a patient indication when disease is also listed.
+    """
+    raw = str(indication or "").strip()
+    if raw.lower() in {"nan", "none", "<na>"}:
+        raw = ""
+    # Capture explicit matches across the full free-text indication first.
+    # Use them instead of thousands of differing pipe-separated synonyms.
+    seen = []
+    for label, pattern in COMPILED:
+        if pattern.search(raw) and label not in seen:
+            seen.append(label)
+    specifics = {"Type 1 diabetes", "Type 2 diabetes"}
+    if seen and "Diabetes" in seen and specifics.intersection(seen):
+        seen.remove("Diabetes")
+    if "Healthy volunteers / no disease" in seen and len(seen) > 1:
+        seen.remove("Healthy volunteers / no disease")
+    if "Weight management (unspecified)" in seen and (
+        "Obesity" in seen or "Overweight" in seen
+    ):
+        seen.remove("Weight management (unspecified)")
+    if seen:
+        return tuple(seen)
+    return (group_indication(raw, curated_issue),)
 
 
 def burden_for(issue):
