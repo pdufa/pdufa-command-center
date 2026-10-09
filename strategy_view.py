@@ -9,6 +9,7 @@ import re
 
 import pandas as pd
 from pipeline_universe import STAGES, select_records, stage_counts
+from drug_mechanisms import classify_named_interventions
 from disease_taxonomy import (
     group_indication, group_indications, burden_for, population_label, RARE_CATEGORIES,
 )
@@ -42,6 +43,9 @@ def _approach(row):
         value = _text(row.get(key))
         if value:
             return value
+    named = _text(row.get("named_mechanism"))
+    if named:
+        return named
     modality = _text(row.get("drug_modality"))
     if modality and not modality.startswith("Drug (registry;"):
         return modality + " — mechanism not classified"
@@ -110,6 +114,9 @@ def prepare_strategy_rows(pipeline_pool, catalog=None):
         for indication, curated_issue in
         zip(rows["indication"], rows["curated_issue"])
     ]
+    named_mechanisms = [classify_named_interventions(drug) for drug in rows["drug"]]
+    rows["named_mechanism"] = [classification for classification, _ in named_mechanisms]
+    rows["named_mechanism_source"] = [url for _, url in named_mechanisms]
     rows["approach"] = rows.apply(_approach, axis=1)
     rows["trial_name"] = rows["curated_trial_name"]
     rows["target_population_note"] = rows["curated_population_note"]
@@ -248,6 +255,7 @@ def _trial_html(record):
         _link("Registry / regulatory source", record.get("source_url")),
         _link("Curated clinical evidence", record.get("curated_evidence_url")),
         _link("Mechanism evidence", record.get("classification_source_url")),
+        _link("Named ingredient class source", record.get("named_mechanism_source")),
     ]
     links = [link for link in links if link]
     details = [
@@ -344,6 +352,12 @@ def render_strategy_page(universe, issue_catalog):
     m2.metric("Unique registered NCT IDs", f"{total_nct:,}")
     m3.metric("Exact NCT issue matches", f"{curated_count:,}")
     m4.metric("Missing trial indication", f"{unclassified:,}")
+    st.caption(
+        f"Named/classified drug approach: "
+        f"{int(rows['approach'].ne('Mechanism / drug approach not yet classified').sum()):,} "
+        f"of {len(rows):,} displayed records. Classifying a named ingredient "
+        "does not establish which agent is the trial's lead investigational asset."
+    )
     if len(all_rows) != len(rows):
         st.caption(
             f"Showing {len(rows):,} of {len(all_rows):,} records matching "
@@ -480,6 +494,20 @@ def render_strategy_page(universe, issue_catalog):
                 issue_records = issue_records.sort_values(
                     ["company", "ticker", "drug", "nct_id"], kind="stable"
                 ).iloc[(record_page-1)*100:record_page*100]
+            avenue_summary = issue_records.groupby("approach", dropna=False).agg(
+                Pipeline_records=("record_id", "nunique"),
+                Unique_trials=("nct_id", lambda x: x.loc[x.ne("")].nunique()),
+                Companies=("ticker", lambda x: x.loc[x.ne("")].nunique()),
+                Drug_names=("drug", lambda x: x.loc[x.ne("")].nunique()),
+            ).reset_index().rename(columns={
+                "approach": "Drug approach / mechanism",
+                "Pipeline_records": "Pipeline records",
+                "Unique_trials": "Unique NCT IDs",
+                "Drug_names": "Different listed drugs",
+            }).sort_values(["Unique NCT IDs", "Pipeline records"], ascending=False)
+            st.markdown("**DRUG AVENUES BEING TESTED**")
+            st.dataframe(avenue_summary, use_container_width=True,
+                         hide_index=True, height=min(360, 36 + 35 * len(avenue_summary)))
             for approach, approach_rows in issue_records.groupby(
                 "approach", sort=True, dropna=False
             ):
