@@ -3281,7 +3281,11 @@ elif page == "DISEASE & MARKET HORIZON":
     st.info("Research fields: U.S./global prevalence, incidence, diagnosed patients, eligible patients, treatable population, severity, and unmet need. Record geography, year, definition, and source.")
 
     issue_trials_path = Path("data/issue_trials.csv")
-    issue_trials_signature = issue_trials_path.stat().st_mtime_ns if issue_trials_path.exists() else 0
+    issue_ledger_path = Path("data/all_phase_trials.csv")
+    issue_trials_signature = (
+        issue_trials_path.stat().st_mtime_ns if issue_trials_path.exists() else 0,
+        issue_ledger_path.stat().st_mtime_ns if issue_ledger_path.exists() else 0,
+    )
     issue_trials = load_issue_trial_catalog(issue_trials_signature)
     st.markdown("### Clinical trials by issue")
     if issue_trials.empty:
