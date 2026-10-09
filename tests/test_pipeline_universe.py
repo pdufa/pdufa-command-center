@@ -48,6 +48,32 @@ class PipelineUniverseTests(unittest.TestCase):
         self.assertEqual(len(select_records(frame, STAGES, "Drug B")), 1)
         self.assertEqual(stage_counts(frame)["Stage"].tolist(), list(STAGES))
 
+    def test_source_backed_drug_metadata_is_attached_without_changing_stage(self):
+        trial = {
+            "nct_id": "NCT00000002", "ticker": "MLYS", "drug": "Lorundrostat",
+            "phases": "PHASE2", "source_url": "https://clinicaltrials.gov/study/NCT00000002",
+        }
+        metadata = [{
+            "ticker": "MLYS", "drug_alias": "Lorundrostat",
+            "drug_modality": "Small molecule",
+            "drug_class": "Aldosterone synthase inhibitor",
+            "mechanism_target": "Inhibits CYP11B2",
+            "route": "Oral", "use_status": "Investigational",
+            "classification_source_url": "https://mineralystx.com/science/",
+            "classification_note": "Source-backed test metadata",
+        }]
+        frame = build_universe(
+            clinical=[trial], metadata=metadata, today=TODAY
+        )
+        row = frame.iloc[0]
+        self.assertEqual(row["drug_modality"], "Small molecule")
+        self.assertEqual(row["drug_class"], "Aldosterone synthase inhibitor")
+        self.assertEqual(row["mechanism_target"], "Inhibits CYP11B2")
+        self.assertEqual(row["route"], "Oral")
+        self.assertEqual(row["use_status"], "Investigational")
+        self.assertEqual(row["classification_status"], "SOURCE CLASSIFIED")
+        self.assertEqual(len(select_records(frame, ["Phase 2"])), 1)
+
     def test_future_results_do_not_enter_the_posted_results_stage(self):
         row = {"nct_id": "NCT00000001", "ticker": "A", "phase": "PHASE3",
                "results_posted": "2027-01-01", "source_url": "https://clinicaltrials.gov/study/NCT00000001"}
