@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
 from stages import program_stage
+from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe, select_records as select_pipeline_records, stage_counts as pipeline_stage_counts
 from today_page import render_today
 from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
@@ -764,6 +765,11 @@ def _story_timestamp(value):
         return ts.tz_convert("UTC")
     except Exception:
         return pd.Timestamp.min.tz_localize("UTC")
+
+
+@st.cache_data(ttl=60)
+def load_pipeline_universe_data(signature, pipeline_today):
+    return read_pipeline_universe(Path("data"), today=pipeline_today)
 
 
 @st.cache_data(ttl=60)
@@ -3169,111 +3175,65 @@ if page == "MASTER TABLE":
     st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
 
 elif page == "PIPELINE":
-    st.markdown("## PIPELINE — PHASE 1 THROUGH FDA DECISION")
-    all_phase_path = Path("data/all_phase_trials.csv")
-    all_phase_state_path = Path("data/all_phase_scan_state.json")
-    all_phase_state = {}
-    all_phase_df = pd.DataFrame()
-    if all_phase_state_path.exists():
-        try:
-            all_phase_state = json.loads(all_phase_state_path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            pass
-    if all_phase_path.exists():
-        try:
-            all_phase_df = pd.read_csv(all_phase_path, dtype=str).fillna("")
-        except (OSError, ValueError, pd.errors.ParserError) as exc:
-            st.warning(f"Unable to load all-phase inventory: {exc}")
-    inventory_is_saved_subset = False
-    if all_phase_df.empty:
-        saved_trials = pd.DataFrame(read_phase_rows(Path("data/phase_pipeline.csv")))
-        if not saved_trials.empty:
-            all_phase_df = saved_trials.rename(columns={
-                "phases": "phase", "trial_status": "status",
-                "results_first_posted": "results_posted",
-            }).copy()
-            # Retain real trial records; do not use the old program eligibility/count.
-            valid_trials = all_phase_df["nct_id"].fillna("").astype(str).str.fullmatch(r"NCT\d{8}")
-            all_phase_df = all_phase_df.loc[valid_trials].copy()
-            inventory_is_saved_subset = not all_phase_df.empty
-    all_phase_labels = {
-        "EARLY_PHASE1": "Early Phase 1", "PHASE1": "Phase 1",
-        "PHASE2": "Phase 2", "PHASE3": "Phase 3", "PHASE4": "Phase 4",
-        "NA": "Not Applicable"
-    }
-    def _all_phase_label(value):
-        tokens = str(value).upper().split("|")
-        if set(tokens) == {"PHASE1", "PHASE2"}:
-            return "Phase 1/2"
-        if set(tokens) == {"PHASE2", "PHASE3"}:
-            return "Phase 2/3"
-        recognized = [all_phase_labels[token] for token in tokens if token in all_phase_labels]
-        return "/".join(recognized) if recognized else "Unknown"
-    if not all_phase_df.empty:
-        all_phase_df["Development Stage"] = all_phase_df["phase"].map(_all_phase_label)
-    pipeline_stage_options = [
-        "Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3",
-        "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance",
-        "PDUFA Decision", "Post-Decision", "Phase 4", "Not Applicable", "Unknown"
-    ]
-    if not all_phase_df.empty:
-        pipeline_stage_options += [
-            stage for stage in all_phase_df["Development Stage"].unique()
-            if stage not in pipeline_stage_options
-        ]
+    st.markdown("## PIPELINE — ALL CLINICAL AND REGULATORY STAGES")
+    pipeline_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    pipeline_signature = tuple(
+        (name, (Path("data") / name).stat().st_mtime_ns)
+        for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
+    )
+    universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
     st.markdown("### PICK DEVELOPMENT STAGES")
-    enabled_all_phases = st.multiselect(
-        "Stages to display",
-        options=pipeline_stage_options,
-        default=[],
-        key="pipeline_all_phase_stages",
+    enabled_stages = st.multiselect(
+        "Stages to display", options=list(PIPELINE_STAGES),
+        default=list(PIPELINE_STAGES), key="pipeline_universe_stages",
         placeholder="Choose one or more stages",
     )
-    st.caption("The count reflects trials in the table below. Regulatory stages require corresponding verified source records.")
-    all_phase_search = st.text_input("Search all-phase trials", key="pipeline_all_phase_search").strip()
-    all_phase_visible = all_phase_df.copy()
-    if not all_phase_df.empty:
-        all_phase_visible = all_phase_df[all_phase_df["Development Stage"].isin(enabled_all_phases)].copy()
-        if all_phase_search:
-            searchable = all_phase_visible[["ticker", "company", "drug", "indication", "nct_id"]].astype(str).agg(" ".join, axis=1)
-            all_phase_visible = all_phase_visible[searchable.str.contains(all_phase_search, case=False, regex=False)]
-        all_phase_visible = all_phase_visible.drop_duplicates(subset=["nct_id"])
-    st.metric("Trials displayed", f"{len(all_phase_visible):,}")
-    st.markdown("### ALL-PHASE OVERNIGHT TRIAL INVENTORY")
-    if inventory_is_saved_subset:
-        st.info("Showing saved Phase 2/3 trial records. Full all-phase coverage is pending the expanded scan.")
-    if all_phase_state:
-        st.caption(
-            f"Registry companies checked: {all_phase_state.get('companies_checked', 0):,} / "
-            f"{all_phase_state.get('registry_companies', 0):,} · "
-            f"Clinical source status: {all_phase_state.get('status', 'UNKNOWN')} · "
-            f"Last scan: {all_phase_state.get('finished_at', 'Unknown')}"
-        )
-        st.caption("This is ClinicalTrials.gov coverage only, not an all-source FDA/SEC/market overnight completion status.")
-    if not enabled_all_phases:
-        st.info("Choose at least one development stage to display trials.")
-    if all_phase_df.empty:
-        st.info("All-phase inventory is not available yet. Run the overnight GitHub workflow to populate it.")
-    elif all_phase_visible.empty:
-        if enabled_all_phases:
-            st.info("No loaded trials match the selected stages or search.")
+    st.markdown("### COUNT FOR EACH STAGE")
+    st.dataframe(
+        pipeline_stage_counts(universe), use_container_width=True,
+        hide_index=True, height=530,
+    )
+    st.caption("Counts include registered trials and regulatory/program records. Filters match registered phases and recorded milestones, so a record can appear in multiple stage counts. The combined list counts each record once.")
+    search = st.text_input("Find ticker, drug, indication or NCT ID", key="pipeline_universe_search").strip()
+    visible = select_pipeline_records(universe, enabled_stages, search)
+    st.metric("Trials / programs displayed", f"{len(visible):,}")
+    trial_count = visible.loc[visible["nct_id"].ne(""), "nct_id"].nunique()
+    st.caption(f"Unique registered trial IDs in this list: {trial_count:,}")
+    state_path = Path("data/all_phase_scan_state.json")
+    if state_path.exists():
+        try:
+            state = json.loads(state_path.read_text(encoding="utf-8"))
+            st.caption(
+                f"Clinical scan: {state.get('companies_checked', 0):,} / "
+                f"{state.get('registry_companies', 0):,} registry companies checked · "
+                f"{state.get('status', 'UNKNOWN')} · "
+                f"Company warnings: {state.get('companies_with_warnings', 0):,}"
+            )
+        except (OSError, ValueError):
+            pass
+    st.caption("Source and evidence status are retained on each record. Posted results do not establish trial success, and a past PDUFA target does not establish an FDA decision. Historical outcomes are marked as recorded evidence.")
+    if not enabled_stages:
+        st.info("Choose at least one stage to display records.")
+    elif visible.empty:
+        st.info("No loaded records match these stages or search.")
     else:
-        display_cols = ["ticker", "company", "Development Stage", "nct_id", "drug",
-                        "indication", "status", "start_date", "primary_completion",
-                        "study_completion", "results_posted", "source_updated", "source_url"]
-        display_cols = [col for col in display_cols if col in all_phase_visible.columns]
+        labels = {
+            "ticker": "Ticker", "company": "Company", "current_stage": "Current Stage",
+            "record_type": "Record Type", "drug": "Drug", "indication": "Indication",
+            "nct_id": "NCT ID", "registered_phase": "Registered Phase", "status": "Trial Status",
+            "results_posted": "Results Posted", "nda_submission_date": "NDA/BLA Submission Date",
+            "fda_acceptance_date": "FDA Acceptance Date", "pdufa_date": "PDUFA Target",
+            "decision_date": "FDA Decision Date", "outcome": "Recorded Outcome",
+            "evidence_status": "Evidence Status", "checked_at": "Last Checked",
+            "source_url": "Source", "evidence_note": "Evidence Note",
+        }
         st.dataframe(
-            all_phase_visible[display_cols].rename(columns={
-                "ticker": "Ticker", "company": "Company", "nct_id": "NCT ID",
-                "drug": "Drug", "indication": "Indication", "status": "Trial Status",
-                "start_date": "Start", "primary_completion": "Primary Completion",
-                "study_completion": "Study Completion", "results_posted": "Results Posted",
-                "source_updated": "Source Updated", "source_url": "Trial Evidence"
-            }),
-            use_container_width=True, hide_index=True, height=520,
-            column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence")}
+            visible[list(labels)].rename(columns=labels),
+            use_container_width=True, hide_index=True, height=560,
+            column_config={"Source": st.column_config.LinkColumn("Source")},
         )
     if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh"):
+        load_pipeline_universe_data.clear()
         st.rerun()
 
 elif page == "DISEASE & MARKET HORIZON":
