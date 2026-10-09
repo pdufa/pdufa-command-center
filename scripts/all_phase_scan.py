@@ -56,7 +56,7 @@ def record_from_study(study, company, ticker):
 
 def tracked_trial_metadata(data_dir, existing):
     known={nct:dict(row) for nct,row in existing.items()}
-    for filename in ("phase_pipeline.csv","phase3_announcements.csv","pdufa_candidates.csv"):
+    for filename in ("phase_pipeline.csv","phase3_announcements.csv","pdufa_candidates.csv","issue_trials.csv"):
         for row in rows(data_dir/filename):
             for nct in re.findall(r"NCT\d{8}",row.get("nct_id","")):
                 if nct not in known:
