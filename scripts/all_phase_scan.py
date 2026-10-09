@@ -33,6 +33,64 @@ def save_csv(path, records):
     with temp.open("w",newline="",encoding="utf-8") as f:
         w=csv.DictWriter(f,fieldnames=FIELDS,extrasaction="ignore");w.writeheader();w.writerows(records)
     temp.replace(path)
+
+def record_from_study(study, company, ticker):
+    p=study.get("protocolSection",{})
+    ident=p.get("identificationModule",{}).get("nctId","")
+    if not re.fullmatch(r"NCT\d{8}",ident):
+        raise ValueError("Missing or invalid NCT ID")
+    design=p.get("designModule",{});status=p.get("statusModule",{})
+    arms=p.get("armsInterventionsModule",{})
+    drugs=sorted({x.get("name","") for x in arms.get("interventions",[])
+                  if x.get("type") in ("DRUG","BIOLOGICAL") and x.get("name")})
+    return {"ticker":ticker,"company":company,"nct_id":ident,
+        "phase":"|".join(design.get("phases",[]) or ["NA"]),
+        "status":status.get("overallStatus",""),"drug":" | ".join(drugs),
+        "indication":" | ".join(p.get("conditionsModule",{}).get("conditions",[])),
+        "start_date":status.get("startDateStruct",{}).get("date",""),
+        "primary_completion":status.get("primaryCompletionDateStruct",{}).get("date",""),
+        "study_completion":status.get("completionDateStruct",{}).get("date",""),
+        "results_posted":status.get("resultsFirstPostDateStruct",{}).get("date",""),
+        "source_updated":status.get("lastUpdatePostDateStruct",{}).get("date",""),
+        "source_url":"https://clinicaltrials.gov/study/"+ident,"checked_at":stamp()}
+
+def tracked_trial_metadata(data_dir, existing):
+    known={nct:dict(row) for nct,row in existing.items()}
+    for filename in ("phase_pipeline.csv","phase3_announcements.csv","pdufa_candidates.csv"):
+        for row in rows(data_dir/filename):
+            for nct in re.findall(r"NCT\d{8}",row.get("nct_id","")):
+                if nct not in known:
+                    known[nct]={"nct_id":nct,"ticker":row.get("ticker",""),
+                        "company":row.get("company","")}
+    return known
+
+def collect_ids(session, ids, metadata):
+    token=None;found={}
+    while True:
+        params={"filter.ids":",".join(ids),"pageSize":100,"format":"json"}
+        if token:params["pageToken"]=token
+        for attempt in range(4):
+            try:
+                resp=session.get(API,params=params,timeout=(10,45));resp.raise_for_status()
+                payload=resp.json()
+                if not isinstance(payload.get("studies"),list):
+                    raise ValueError("Missing studies list")
+                break
+            except (requests.RequestException,ValueError):
+                if attempt==3:raise
+                time.sleep(2**attempt)
+        for study in payload["studies"]:
+            nct=study.get("protocolSection",{}).get("identificationModule",{}).get("nctId","")
+            if nct not in ids:
+                raise ValueError("Registry returned an unrequested NCT ID")
+            old=metadata[nct]
+            found[nct]=record_from_study(study,old.get("company",""),old.get("ticker",""))
+        token=payload.get("nextPageToken")
+        if not token:break
+        if len(found)>=len(ids):
+            raise ValueError("Unexpected pagination for exact trial-ID batch")
+    return found
+
 def collect(session, company, ticker):
     token=None;found={}; pages=0
     while True:
@@ -52,18 +110,7 @@ def collect(session, company, ticker):
             if normalized(sponsor)!=normalized(company):continue
             ident=p.get("identificationModule",{}).get("nctId","")
             if not re.fullmatch(r"NCT\d{8}",ident):continue
-            design=p.get("designModule",{});status=p.get("statusModule",{})
-            arms=p.get("armsInterventionsModule",{})
-            drugs=sorted({x.get("name","") for x in arms.get("interventions",[]) if x.get("type") in ("DRUG","BIOLOGICAL") and x.get("name")})
-            found[ident]={"ticker":ticker,"company":company,"nct_id":ident,"phase":"|".join(design.get("phases",[]) or ["NA"]),
-                "status":status.get("overallStatus",""),"drug":" | ".join(drugs),
-                "indication":" | ".join(p.get("conditionsModule",{}).get("conditions",[])),
-                "start_date":status.get("startDateStruct",{}).get("date",""),
-                "primary_completion":status.get("primaryCompletionDateStruct",{}).get("date",""),
-                "study_completion":status.get("completionDateStruct",{}).get("date",""),
-                "results_posted":status.get("resultsFirstPostDateStruct",{}).get("date",""),
-                "source_updated":status.get("lastUpdatePostDateStruct",{}).get("date",""),
-                "source_url":"https://clinicaltrials.gov/study/"+ident,"checked_at":stamp()}
+            found[ident]=record_from_study(study,company,ticker)
         pages+=1;token=payload.get("nextPageToken")
         if not token:break
         if pages>=200:raise RuntimeError("Company pagination safety limit reached")
@@ -80,6 +127,7 @@ def scan(data_dir):
     same_day=previous.get("run_date")==today and previous.get("registry_companies")==len(companies)
     checks=previous.get("checks",{}) if same_day else {}
     existing={r["nct_id"]:r for r in rows(ledger_path)}
+    before_refresh={nct:dict(row) for nct,row in existing.items()}
     session=requests.Session()
     try:
         for ticker,company in sorted(companies):
@@ -96,16 +144,60 @@ def scan(data_dir):
                 "finished_at":stamp(),"registry_companies":len(companies),"companies_checked":len(checks),
                 "checks":checks,"status":"RUNNING"})
             time.sleep(0.15)
+        # Refresh every previously tracked trial by exact NCT ID, independently
+        # of current sponsor names or company-discovery query results.
+        tracked=tracked_trial_metadata(data_dir,existing)
+        trial_checks=previous.get("tracked_trial_checks",{}) if same_day else {}
+        due=[nct for nct in sorted(tracked)
+             if trial_checks.get(nct,{}).get("status")!="COMPLETE"]
+        changed=0
+        monitored=("phase","status","drug","indication","start_date",
+                   "primary_completion","study_completion","results_posted","source_updated")
+        for offset in range(0,len(due),100):
+            batch=due[offset:offset+100]
+            try:
+                found=collect_ids(session,batch,tracked)
+                for nct in batch:
+                    if nct not in found:
+                        trial_checks[nct]={"status":"WARNING","checked_at":stamp(),
+                                           "error":"Tracked trial not returned by registry"}
+                        continue
+                    old=before_refresh.get(nct)
+                    fields=[field for field in monitored
+                            if old is not None and old.get(field,"")!=found[nct].get(field,"")]
+                    if fields:changed+=1
+                    existing[nct]=found[nct]
+                    trial_checks[nct]={"status":"COMPLETE","checked_at":stamp(),
+                                      "changed_fields":fields,
+                                      "first_direct_refresh":old is None}
+            except Exception as exc:
+                for nct in batch:
+                    trial_checks[nct]={"status":"WARNING","checked_at":stamp(),
+                                       "error":str(exc)[:350]}
+            save_csv(ledger_path,list(existing.values()))
+            save(state_path,{"run_date":today,"finished_at":stamp(),
+                "registry_companies":len(companies),"companies_checked":len(checks),
+                "checks":checks,"tracked_trial_checks":trial_checks,
+                "tracked_trials_total":len(tracked),
+                "tracked_trials_checked":sum(n in trial_checks for n in tracked),
+                "status":"RUNNING"})
+            print(f"Tracked trial-ID checks: {min(offset+100,len(due))}/{len(due)} due",flush=True)
+            time.sleep(0.15)
     finally:session.close()
     attempted=len(checks);warn=sum(x["status"]!="COMPLETE" for x in checks.values())
-    status="PARTIAL" if attempted<len(companies) else "COMPLETE WITH WARNINGS" if warn else "COMPLETE"
+    trial_attempted=sum(nct in trial_checks for nct in tracked)
+    trial_warn=sum(trial_checks.get(nct,{}).get("status")!="COMPLETE" for nct in tracked)
+    status="PARTIAL" if attempted<len(companies) or trial_attempted<len(tracked) else "COMPLETE WITH WARNINGS" if warn or trial_warn else "COMPLETE"
     final={"run_date":today,"finished_at":stamp(),"registry_companies":len(companies),
            "companies_checked":attempted,"companies_with_warnings":warn,
            "trials_stored":len(existing),"status":status,"complete":status=="COMPLETE",
-           "scope":"All registered phases, all registry companies; exact lead-sponsor matching only",
-           "limitations":"Does not cover subsidiary/alternate sponsors or FDA/SEC/market sources",
-           "checks":checks}
-    save(state_path,final);print(json.dumps({k:v for k,v in final.items() if k!="checks"},indent=2))
+           "tracked_trials_total":len(tracked),"tracked_trials_checked":trial_attempted,
+           "tracked_trials_with_warnings":trial_warn,"changed_trials_this_execution":changed,
+           "changed_trials_today":sum(bool(trial_checks.get(nct,{}).get("changed_fields")) for nct in tracked),
+           "scope":"All registry companies plus direct daily rechecks of every saved NCT ID",
+           "limitations":"Discovery uses exact lead-sponsor matching; existing NCT IDs bypass sponsor matching. FDA/SEC/market sources are separate.",
+           "checks":checks,"tracked_trial_checks":trial_checks}
+    save(state_path,final);print(json.dumps({k:v for k,v in final.items() if k not in ("checks","tracked_trial_checks")},indent=2))
     return 0 if status!="PARTIAL" else 1
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--data-dir",type=Path,default=ROOT/"data")
