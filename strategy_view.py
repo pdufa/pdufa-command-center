@@ -291,6 +291,26 @@ def render_strategy_page(universe, issue_catalog):
                 "Patient population (U.S./worldwide): not verified · "
                 "Unmet medical need: pending evidence review"
             )
+            # Even a single unclassified disease group may include thousands
+            # of records. Page within it rather than freezing the browser.
+            if len(issue_records) > 100:
+                issue_pages = math.ceil(len(issue_records) / 100)
+                issue_key = "strategy_issue_records_" + re.sub(
+                    r"[^a-z0-9]+", "_", issue_name.lower()
+                )[:70]
+                record_page = int(st.number_input(
+                    "Record page for " + issue_name,
+                    min_value=1, max_value=issue_pages, value=1, step=1,
+                    key=issue_key,
+                ))
+                st.caption(
+                    f"Records {(record_page-1)*100+1:,}–"
+                    f"{min(record_page*100, len(issue_records)):,} "
+                    f"of {len(issue_records):,} for this disease group"
+                )
+                issue_records = issue_records.sort_values(
+                    ["company", "ticker", "drug", "nct_id"], kind="stable"
+                ).iloc[(record_page-1)*100:record_page*100]
             for approach, approach_rows in issue_records.groupby(
                 "approach", sort=True, dropna=False
             ):
