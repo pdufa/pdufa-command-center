@@ -5,7 +5,7 @@ from pathlib import Path
 from contextlib import redirect_stdout
 from tempfile import TemporaryDirectory
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from scripts import all_phase_scan as scan
 
 def study(nct, status, sponsor="Renamed Subsidiary"):
@@ -99,6 +99,20 @@ class DailyTrialRecheckTests(unittest.TestCase):
         self.assertEqual(state["tracked_trials_with_warnings"], 2)
         self.assertEqual(state["status"], "COMPLETE WITH WARNINGS")
         self.assertEqual(len(scan.rows(self.root / "all_phase_trials.csv")), 2)
+
+
+    def test_full_id_batch_with_cursor_is_complete_when_all_ids_arrive(self):
+        ids = [f"NCT{number:08d}" for number in range(1, 101)]
+        metadata = {nct: {"ticker": "A", "company": "Parent"} for nct in ids}
+        response = Mock()
+        response.json.return_value = {
+            "studies": [study(nct, "RECRUITING") for nct in ids],
+            "nextPageToken": "full-page-cursor"}
+        session = Mock()
+        session.get.return_value = response
+        found = scan.collect_ids(session, ids, metadata)
+        self.assertEqual(set(found), set(ids))
+        session.get.assert_called_once()
 
 if __name__ == "__main__":
     unittest.main()
