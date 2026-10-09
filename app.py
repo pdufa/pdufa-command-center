@@ -3234,55 +3234,69 @@ elif page == "PIPELINE":
         event.setdefault("Source", "ClinicalTrials.gov pipeline")
     horizon_frame = pd.DataFrame(horizon).drop_duplicates(subset=["Ticker", "Drug", "Indication", "Stage", "Milestone", "Date"]) if horizon else pd.DataFrame()
     st.markdown("#### Select a stage to see its trials and milestones")
-    selected_stage = st.selectbox("Development stage", horizon_stages, key="pipeline_selected_stage")
+    selected_stages = st.multiselect(
+        "Development stages — click to activate one or several",
+        horizon_stages,
+        default=["Phase 2"],
+        key="pipeline_selected_stages",
+        help="Choose multiple stages to display their trials together. Remove a stage to deactivate it.",
+    )
     horizon_period = st.radio("Time period", ["All 2026+", "Upcoming", "Historical / Today"], horizontal=True, key="pipeline_horizon_period")
-    stage_events = horizon_frame[horizon_frame["Stage"].eq(selected_stage)].copy() if not horizon_frame.empty else pd.DataFrame()
+    stage_events = horizon_frame[horizon_frame["Stage"].isin(selected_stages)].copy() if not horizon_frame.empty else pd.DataFrame()
     if not stage_events.empty:
         if horizon_period != "All 2026+":
             stage_events = stage_events[stage_events["Period"].eq(horizon_period)]
         stage_events = stage_events.sort_values(["Date", "Ticker"])
-    st.metric(f"{selected_stage} dated milestones", len(stage_events))
-    if selected_stage in ("Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results") and not pipeline_frame.empty:
+    st.metric("Selected stages — dated milestones", len(stage_events))
+    if not selected_stages:
+        st.info("Select one or more stages above to display their trials.")
+    elif not pipeline_frame.empty and any(x in selected_stages for x in ("Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results")):
         phase_label = pipeline_frame["phases"].fillna("").astype(str).str.upper()
-        if selected_stage == "Phase 2":
-            trial_rows = pipeline_frame[phase_label.eq("PHASE2")].copy()
-        elif selected_stage == "Phase 2/3":
-            trial_rows = pipeline_frame[phase_label.str.contains("PHASE2", regex=False) & phase_label.str.contains("PHASE3", regex=False)].copy()
-        else:
-            trial_rows = pipeline_frame[phase_label.eq("PHASE3")].copy()
-        if selected_stage == "Phase 3 Results":
-            trial_rows = trial_rows[trial_rows["results_first_posted"].fillna("").astype(str).str.strip().ne("")]
-        if not trial_rows.empty:
-            date_cols = ["start_date", "primary_completion", "results_first_posted", "phase3_target_start"]
-            dates = trial_rows[[c for c in date_cols if c in trial_rows]].apply(lambda col: pd.to_datetime(col, errors="coerce", utc=True))
-            relevant = dates.ge(pd.Timestamp("2026-01-01", tz="UTC")).any(axis=1)
-            trial_rows = trial_rows.loc[relevant].copy()
-        if not trial_rows.empty and horizon_period != "All 2026+":
-            reference_col = "results_first_posted" if selected_stage == "Phase 3 Results" else "primary_completion"
-            comparison = pd.to_datetime(trial_rows[reference_col], errors="coerce", utc=True)
-            if horizon_period == "Upcoming":
-                trial_rows = trial_rows.loc[comparison.dt.date.gt(date.today())]
+        trial_parts = []
+        for stage_name in selected_stages:
+            if stage_name == "Phase 2":
+                subset = pipeline_frame[phase_label.eq("PHASE2")].copy()
+            elif stage_name == "Phase 2/3":
+                subset = pipeline_frame[phase_label.str.contains("PHASE2", regex=False) & phase_label.str.contains("PHASE3", regex=False)].copy()
+            elif stage_name in ("Phase 3", "Phase 3 Results"):
+                subset = pipeline_frame[phase_label.eq("PHASE3")].copy()
+                if stage_name == "Phase 3 Results":
+                    subset = subset[subset["results_first_posted"].fillna("").astype(str).str.strip().ne("")]
             else:
-                trial_rows = trial_rows.loc[comparison.dt.date.le(date.today())]
-        if not trial_rows.empty:
-            trial_rows = trial_rows.drop_duplicates(subset=["nct_id"])
-            fields = {"ticker": "Ticker", "company": "Company", "drug": "Drug", "indication": "Indication",
-                      "nct_id": "NCT Trial", "trial_status": "Trial Status", "start_date": "Start Date",
-                      "start_date_type": "Start Date Type", "primary_completion": "Primary Completion",
-                      "primary_completion_type": "Completion Date Type", "results_first_posted": "Results Posted",
-                      "source_updated": "Source Updated", "source_url": "Trial Evidence"}
+                continue
+            if subset.empty:
+                continue
+            date_cols = ["start_date", "primary_completion", "results_first_posted", "phase3_target_start"]
+            dates = subset[[c for c in date_cols if c in subset]].apply(lambda col: pd.to_datetime(col, errors="coerce", utc=True))
+            subset = subset.loc[dates.ge(pd.Timestamp("2026-01-01", tz="UTC")).any(axis=1)].copy()
+            if subset.empty:
+                continue
+            if horizon_period != "All 2026+":
+                reference_col = "results_first_posted" if stage_name == "Phase 3 Results" else "primary_completion"
+                comparison = pd.to_datetime(subset[reference_col], errors="coerce", utc=True)
+                subset = subset.loc[comparison.dt.date.gt(date.today()) if horizon_period == "Upcoming" else comparison.dt.date.le(date.today())]
+            subset.insert(0, "Selected Stage", stage_name)
+            trial_parts.append(subset)
+        if trial_parts:
+            trial_rows = pd.concat(trial_parts, ignore_index=True).drop_duplicates(subset=["Selected Stage", "nct_id"])
+            fields = {"Selected Stage": "Selected Stage", "ticker": "Ticker", "company": "Company", "drug": "Drug",
+                      "indication": "Indication", "nct_id": "NCT Trial", "trial_status": "Trial Status",
+                      "start_date": "Start Date", "start_date_type": "Start Date Type",
+                      "primary_completion": "Primary Completion", "primary_completion_type": "Completion Date Type",
+                      "results_first_posted": "Results Posted", "source_updated": "Source Updated", "source_url": "Trial Evidence"}
             st.markdown(f"**Registered trials — {len(trial_rows):,}**")
             grouped_dataframe(trial_rows[list(fields)].rename(columns=fields), stage_controls=False,
                               use_container_width=True, hide_index=True, height=420,
                               column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial")})
         else:
-            st.info("No matching registered trials for this stage and time filter in the loaded data.")
-    if not stage_events.empty:
-        st.markdown("**Dated development and regulatory milestones**")
-        grouped_dataframe(stage_events, stage_controls=False, use_container_width=True, hide_index=True, height=420,
-                          column_config={"Evidence": st.column_config.LinkColumn("Evidence", display_text="Open source")})
-    else:
-        st.info("No dated milestones for this stage and time filter in the loaded sources.")
+            st.info("No matching registered trials for these stages and time filter in the loaded data.")
+    if selected_stages:
+        if not stage_events.empty:
+            st.markdown("**Dated development and regulatory milestones**")
+            grouped_dataframe(stage_events, stage_controls=False, use_container_width=True, hide_index=True, height=420,
+                              column_config={"Evidence": st.column_config.LinkColumn("Evidence", display_text="Open source")})
+        else:
+            st.info("No dated milestones for these stages and time filter in the loaded sources.")
     st.caption("This combines the existing trial pipeline and PDUFA master feed, not the complete public universe. Dates and outcomes retain their source verification statuses; unverified reported goals are not confirmed FDA decisions.")
     if pipeline_frame.empty:
         st.info("The Phase 2 collection has not produced verified company matches yet.")
