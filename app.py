@@ -3184,10 +3184,37 @@ elif page == "PIPELINE":
         st.caption(f"Daily monitoring · Last scan: {stamp} · Status: {pipeline_state.get('status', 'UNKNOWN')}")
         if not pipeline_state.get("complete"):
             st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
+    st.markdown("### PICK DEVELOPMENT STAGES")
+    st.caption("Select one or more stages to filter the available registered trials. Phase 1 coverage depends on the records collected by the scanner.")
+    pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3"]
+    stage_cols = st.columns(5)
+    selected_pipeline_stages = []
+    for stage_i, stage_label in enumerate(pipeline_stage_options):
+        if stage_cols[stage_i].checkbox(stage_label, value=True, key=f"pipeline_pick_{stage_label.replace('/', '_').replace(' ', '_')}"):
+            selected_pipeline_stages.append(stage_label)
+    if not selected_pipeline_stages:
+        st.info("Select at least one development stage to display trials.")
+
     if pipeline_frame.empty:
         st.info("The Phase 2 collection has not produced verified company matches yet.")
     else:
         phase2 = pipeline_frame[pipeline_frame["destination"].eq("PIPELINE") & pipeline_frame["universe_gate"].eq("PASS")].copy()
+        # Match exact registered phase tokens; do not mistake Phase 1/2 for Phase 2.
+        def _pipeline_stage_label(value):
+            phase = str(value).upper().replace(" ", "")
+            has1, has2, has3 = ("PHASE1" in phase or "EARLY_PHASE1" in phase), "PHASE2" in phase, "PHASE3" in phase
+            if has1 and has2:
+                return "Phase 1/2"
+            if has2 and has3:
+                return "Phase 2/3"
+            if has3:
+                return "Phase 3"
+            if has2:
+                return "Phase 2"
+            if has1:
+                return "Phase 1"
+            return None
+        phase2 = phase2[phase2["phases"].map(_pipeline_stage_label).isin(selected_pipeline_stages)].copy()
         phase2 = phase2.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
         manual_moved = phase2[phase2["program_key"].isin(transfers)].copy()
         phase2 = phase2[~phase2["program_key"].isin(transfers)].copy()
