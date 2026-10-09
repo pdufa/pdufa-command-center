@@ -3070,41 +3070,90 @@ if page == "MASTER TABLE":
                     st.session_state["master_analysis"] = sorted(analysis_set)
                     st.rerun()
         render_watchlist_indicators()
-        # Analysis is the only path for promoting a ticker into Invest.
-        analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
-        invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
-        analysis_rows = combined[ticker_values.isin(analysis_tickers)].copy()
-        if not analysis_rows.empty:
-            analysis_rows = stage_filter_panel(analysis_rows, key="analysis_stage", source=master)
-        st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
-        detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
-        if analysis_rows.empty:
-            st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
-        else:
-            analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
-            invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols}
-            invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
-            edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols, key="analysis_to_invest_editor")
-            invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
-            if invest_changed.any():
-                for row_id in analysis_rows.index[invest_changed]:
-                    ticker = str(analysis_rows.loc[row_id, "Ticker"]).upper().strip()
-                    if ticker:
-                        if bool(edited_analysis.loc[row_id, "Add to Invest"]):
-                            invest_tickers.add(ticker)
-                        else:
-                            invest_tickers.discard(ticker)
-                st.session_state["master_invest"] = sorted(invest_tickers)
-                st.rerun()
-        invest_rows = combined[ticker_values.isin(invest_tickers)]
-        if not invest_rows.empty:
-            invest_rows = stage_filter_panel(invest_rows, key="invest_stage", source=master)
-        st.markdown("#### INVEST" + f" ({len(invest_rows):,})")
-        if invest_rows.empty:
-            st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
-        else:
-            grouped_dataframe(invest_rows[detail_cols], stage_controls=False, use_container_width=True, hide_index=True)
+        def attach_technical_columns(rows, selected_mode):
+            """Read one shared signal snapshot; do not infer missing trading signals."""
+            names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
+                     "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
+                     "OBV", "ATR (14)"]
+            modes = ["ENTRY", "EXIT"] if selected_mode == "BOTH" else [selected_mode]
+            columns = []
+            out = rows.copy()
+            source = Path("data/watchlist_indicator_signals.csv")
+            feed = pd.DataFrame()
+            if source.exists():
+                try:
+                    feed = pd.read_csv(source, dtype=str, keep_default_na=False)
+                    if {"ticker", "mode"}.issubset(feed.columns):
+                        feed["ticker"] = feed["ticker"].str.upper().str.strip()
+                        feed["mode"] = feed["mode"].str.upper().str.strip()
+                    else:
+                        feed = pd.DataFrame()
+                except (OSError, ValueError, pd.errors.ParserError):
+                    feed = pd.DataFrame()
+            symbols = out["Ticker"].fillna("").astype(str).str.upper().str.strip() if "Ticker" in out else pd.Series(dtype=str)
+            for mode in modes:
+                subset = feed.loc[feed["mode"].eq(mode)].drop_duplicates("ticker", keep="last").set_index("ticker") if not feed.empty else pd.DataFrame()
+                for name in names:
+                    label = f"{mode} | {name}" if selected_mode == "BOTH" else name
+                    columns.append(label)
+                    if not subset.empty and name in subset.columns:
+                        out[label] = symbols.map(subset[name]).fillna("").replace("", "NOT SCANNED").to_numpy()
+                    else:
+                        out[label] = "NOT SCANNED"
+                label = f"{mode} | Updated" if selected_mode == "BOTH" else "Signal Updated"
+                columns.append(label)
+                if not subset.empty and "updated_at" in subset.columns:
+                    out[label] = symbols.map(subset["updated_at"]).fillna("").replace("", "NOT SCANNED").to_numpy()
+                else:
+                    out[label] = "NOT SCANNED"
+            return out, columns
 
+        @st.fragment(run_every="60s")
+        def render_analysis_invest_signals():
+            # Keep both tables on the same signal snapshot and display mode.
+            shared_mode = st.radio("ANALYSIS / INVEST INDICATORS",
+                                   ["ENTRY", "EXIT", "BOTH"], horizontal=True,
+                                   index=2, key="analysis_invest_indicator_mode")
+            st.caption("Refreshes every minute while open. Signals require the connected scanner; NOT SCANNED means no validated data.")
+            if st.button("↻ REFRESH ANALYSIS / INVEST", key="refresh_analysis_invest_signals"):
+                st.rerun(scope="fragment")
+            analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
+            invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
+            analysis_rows = combined[ticker_values.isin(analysis_tickers)].copy()
+            if not analysis_rows.empty:
+                analysis_rows = stage_filter_panel(analysis_rows, key="analysis_stage", source=master)
+            st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
+            detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
+            if analysis_rows.empty:
+                st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
+            else:
+                analysis_rows, tech_cols = attach_technical_columns(analysis_rows, shared_mode)
+                analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
+                invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols + tech_cols}
+                invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
+                edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols + tech_cols, key="analysis_to_invest_editor")
+                invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
+                if invest_changed.any():
+                    for row_id in analysis_rows.index[invest_changed]:
+                        ticker = str(analysis_rows.loc[row_id, "Ticker"]).upper().strip()
+                        if ticker:
+                            if bool(edited_analysis.loc[row_id, "Add to Invest"]):
+                                invest_tickers.add(ticker)
+                            else:
+                                invest_tickers.discard(ticker)
+                    st.session_state["master_invest"] = sorted(invest_tickers)
+                    st.rerun()
+            invest_rows = combined[ticker_values.isin(invest_tickers)].copy()
+            if not invest_rows.empty:
+                invest_rows = stage_filter_panel(invest_rows, key="invest_stage", source=master)
+            st.markdown("#### INVEST" + f" ({len(invest_rows):,})")
+            if invest_rows.empty:
+                st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
+            else:
+                invest_rows, tech_cols = attach_technical_columns(invest_rows, shared_mode)
+                grouped_dataframe(invest_rows[detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True)
+
+        render_analysis_invest_signals()
         st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
 
         with st.expander("Additional original-source tables (preserved without unsafe joins)"):
