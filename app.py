@@ -3167,7 +3167,7 @@ if page == "MASTER TABLE":
     st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
 
 elif page == "PIPELINE":
-    st.markdown("## PIPELINE — PHASE 2")
+    st.markdown("## PIPELINE — PHASE 2 THROUGH FDA DECISION")
     st.caption("Check MOVE TO MASTER TABLE to transfer a program for review. Manual transfers keep their recorded phase and REVIEW gates. Verified standalone Phase 3 starts also move automatically.")
     transfers = st.session_state.setdefault("pipeline_master_transfers", {})
     notice = st.session_state.pop("pipeline_transfer_notice", None)
@@ -3192,6 +3192,30 @@ elif page == "PIPELINE":
             st.write(f"Trial source updated within {pipeline_state.get('source_max_age_days', 180)} days and checked within three days. Market-cap eligibility, clinical success and approval scoring are checked separately.")
             for error in pipeline_state.get("errors", []):
                 st.error(error)
+    st.markdown("### 2026+ DEVELOPMENT & REGULATORY HORIZON")
+    st.caption("Events from January 1, 2026 onward. Historical and future milestones are separated; missing dates remain unknown. This combines currently loaded sources and is not a complete clinical-trial universe.")
+    horizon_stages = ["Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
+    horizon = []
+    for _, rec in pipeline_frame.iterrows():
+        phase_text = str(rec.get("phases", "")).upper()
+        stage = "Phase 2/3" if "2/3" in phase_text else ("Phase 3" if "3" in phase_text else "Phase 2")
+        for date_col, milestone in [("start_date", "Trial Start"), ("primary_completion", "Primary Completion"), ("results_first_posted", "Results Posted"), ("phase3_target_start", "Phase 3 Target Start"), ("phase3_start_date", "Phase 3 Actual Start")]:
+            when = pd.to_datetime(rec.get(date_col), errors="coerce", utc=True)
+            if pd.notna(when) and when.year >= 2026:
+                horizon.append({"Ticker": rec.get("ticker", ""), "Company": rec.get("company", ""), "Drug": rec.get("drug", ""), "Indication": rec.get("indication", ""), "Stage": "Phase 3" if date_col.startswith("phase3_") else ("Phase 3 Results" if date_col == "results_first_posted" and stage == "Phase 3" else stage), "Milestone": milestone, "Date": when.date().isoformat(), "Period": "Upcoming" if when.date() > date.today() else "Historical / Today", "Evidence": rec.get("source_url", ""), "Status": rec.get("trial_status", "")})
+    horizon_frame = pd.DataFrame(horizon)
+    horizon_stage = st.multiselect("Stages in horizon", horizon_stages, default=horizon_stages, key="pipeline_horizon_stages")
+    horizon_period = st.radio("Time period", ["All 2026+", "Upcoming", "Historical / Today"], horizontal=True, key="pipeline_horizon_period")
+    if not horizon_frame.empty:
+        horizon_frame = horizon_frame[horizon_frame["Stage"].isin(horizon_stage)]
+        if horizon_period != "All 2026+":
+            horizon_frame = horizon_frame[horizon_frame["Period"].eq(horizon_period)]
+        horizon_frame = horizon_frame.sort_values(["Date", "Ticker"], ascending=[True, True])
+        st.metric("Dated milestones in loaded pipeline", len(horizon_frame))
+        grouped_dataframe(horizon_frame, stage_controls=False, use_container_width=True, hide_index=True, height=420)
+    else:
+        st.info("No dated milestones from 2026 onward in the currently loaded Phase 2/3 source.")
+    st.caption("NDA/BLA submissions, FDA acceptances, PDUFA decisions and post-decision outcomes require additional source reconciliation; selecting those stages does not imply they are already populated.")
     if pipeline_frame.empty:
         st.info("The Phase 2 collection has not produced verified company matches yet.")
     else:
