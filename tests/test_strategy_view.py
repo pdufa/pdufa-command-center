@@ -89,13 +89,38 @@ class StrategyViewTests(unittest.TestCase):
 
     def test_disease_synonyms_are_combined_without_mixing_trial_ids(self):
         from disease_taxonomy import group_indication
-        self.assertEqual(group_indication("Diabetes | Diabetes Mellitus, Type 2"), "Diabetes")
-        self.assertEqual(group_indication("Type 2 Diabetes Mellitus"), "Diabetes")
+        self.assertEqual(group_indication("Diabetes | Diabetes Mellitus, Type 2"), "Type 2 diabetes")
+        self.assertEqual(group_indication("Type 2 Diabetes Mellitus"), "Type 2 diabetes")
         self.assertEqual(group_indication("Pulmonary Arterial Hypertension"), "Pulmonary arterial hypertension")
         self.assertEqual(group_indication("Non-small Cell Lung Cancer"), "Non-small cell lung cancer")
         self.assertEqual(group_indication("Prader-Willi Syndrome | Hyperphagia"), "Prader-Willi syndrome")
         self.assertEqual(group_indication("Healthy Volunteers"), "Healthy volunteers / no disease")
         self.assertEqual(group_indication("Diabetes Insipidus"), "Diabetes insipidus")
+
+    def test_multi_condition_trial_is_visible_under_each_disease_without_new_source_rows(self):
+        from strategy_view import expand_strategy_rows
+        from disease_taxonomy import group_indications
+        sample = sample_pool()
+        sample.loc[1, "indication"] = "Diabetes | Diabetes Mellitus, Type 2 | Obesity"
+        original = prepare_strategy_rows(sample, pd.DataFrame())
+        self.assertEqual(len(original), 3)
+        self.assertEqual(len(group_indications(sample.loc[1, "indication"])), 2)
+        associations = expand_strategy_rows(original)
+        self.assertEqual(associations["record_id"].nunique(), 3)
+        self.assertEqual(len(associations), 4)
+        self.assertEqual(set(associations.loc[
+            associations["record_id"].eq("TRIAL|NCT00000002"), "issue"
+        ]), {"Type 2 diabetes", "Obesity"})
+        groups = issue_summary(original)
+        self.assertIn("Type 2 diabetes", set(groups["Disease / issue"]))
+        self.assertIn("Obesity", set(groups["Disease / issue"]))
+
+    def test_neither_overweight_nor_diabetes_insipidus_inherits_wrong_patient_count(self):
+        from disease_taxonomy import group_indication, burden_for
+        self.assertEqual(group_indication("Overweight"), "Overweight")
+        self.assertEqual(group_indication("Diabetes Insipidus"), "Diabetes insipidus")
+        self.assertFalse(burden_for("Type 2 diabetes"))
+        self.assertFalse(burden_for("Overweight"))
 
     def test_population_sort_and_source_definitions(self):
         from disease_taxonomy import burden_for
