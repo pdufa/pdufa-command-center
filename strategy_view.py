@@ -116,9 +116,9 @@ def prepare_strategy_rows(pipeline_pool, catalog=None):
 def issue_summary(rows, sort_by="Patient population (global)"):
     """One row per disease; prevalence is context, never addressable market."""
     columns = [
-        "Disease / issue", "Pool records", "Unique NCT IDs", "Companies",
-        "Worldwide affected", "US affected", "Patient-data year",
-        "Population definition", "Burden source", "US data source", "Rare-disease group",
+        "Disease / issue", "Worldwide affected", "US affected",
+        "Pool records", "Unique NCT IDs", "Companies", "Patient-data year",
+        "Population definition", "Rare-disease group", "Burden source", "US data source",
     ]
     if rows.empty:
         return pd.DataFrame(columns=columns)
@@ -286,6 +286,11 @@ def render_strategy_page(universe, issue_catalog):
     m2.metric("Unique registered NCT IDs", f"{total_nct:,}")
     m3.metric("Exact NCT issue matches", f"{curated_count:,}")
     m4.metric("Missing trial indication", f"{unclassified:,}")
+    st.caption(
+        "Source completeness: classification is available only when "
+        "registry / company evidence supports it. Mechanisms not present "
+        "in the source are explicitly labeled unclassified."
+    )
 
     if not stages:
         st.info("Select at least one stage to populate STRATEGY.")
@@ -298,9 +303,13 @@ def render_strategy_page(universe, issue_catalog):
         "Search disease / issue names", key="strategy_disease_search"
     ).strip()
     if issue_search:
-        rows = rows[rows["issue"].str.contains(
+        # Include the precise registry indication in disease search.
+        matches = rows["issue"].str.contains(
             issue_search, case=False, regex=False, na=False
-        )].copy()
+        ) | rows["indication"].str.contains(
+            issue_search, case=False, regex=False, na=False
+        )
+        rows = rows.loc[matches].copy()
     st.markdown("### DISEASE BURDEN — LARGEST AFFECTED POPULATIONS")
     sort_by = st.selectbox(
         "Rank conditions by", [
