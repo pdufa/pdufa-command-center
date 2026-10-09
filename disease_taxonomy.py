@@ -125,10 +125,10 @@ BURDEN = {
         "source": "https://www.who.int/westernpacific/newsroom/fact-sheets/detail/depression",
     },
     "Asthma": {
-        "world_people": 262000000, "us_people": 27807000,
-        "year": "Worldwide 2019; US 2023",
-        "definition": "Current asthma, all severities and ages",
-        "source": "https://www.who.int/groups/global-alliance-against-chronic-respiratory-diseases-%28gard%29/terms-of-reference",
+        "world_people": 363000000, "us_people": 27807000,
+        "year": "Worldwide 2023 (WHO 2026); US 2023 (CDC)",
+        "definition": "Current asthma, all severities and ages; distinct international surveillance definitions",
+        "source": "https://www.who.int/news-room/fact-sheets/detail/asthma",
         "us_source": "https://www.cdc.gov/asthma/most_recent_data.htm",
     },
     "Hepatitis B": {
