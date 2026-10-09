@@ -4,6 +4,7 @@ from datetime import date
 from pathlib import Path
 
 from pipeline_universe import STAGES, load_universe, select_records, stage_counts
+from strategy_discovery import scoped_records, target_summary
 from strategy_view import (
     prepare_strategy_rows, expand_strategy_rows, issue_summary,
 )
@@ -41,6 +42,23 @@ class StrategyRealDataTests(unittest.TestCase):
         self.assertGreater(len(self.associations), len(self.selected))
         self.assertEqual(len(self.strategy), len(self.selected))
         self.assertTrue(self.associations["record_id"].notna().all())
+
+    def test_optional_discovery_processes_real_large_disease_groups(self):
+        """The opt-in feature must work on committed Pipeline rows, not just toy samples."""
+        for disease in ("Type 2 diabetes", "Obesity", "Asthma"):
+            with self.subTest(disease=disease):
+                chosen = scoped_records(self.associations, disease)
+                self.assertGreater(len(chosen), 20)
+                summary = target_summary(chosen)
+                self.assertFalse(summary.empty)
+                self.assertEqual(int(summary["Pipeline records"].sum()), len(chosen))
+                self.assertEqual(
+                    int(summary["Unique NCT IDs"].sum()),
+                    chosen["nct_id"].loc[chosen["nct_id"].ne("")].nunique(),
+                )
+                self.assertEqual(
+                    chosen["record_id"].nunique(), len(chosen)
+                )
 
     def test_real_data_keeps_unclassified_mechanisms_explicit(self):
         self.assertGreater(self.strategy["drug"].ne("").sum(), 1_000)
