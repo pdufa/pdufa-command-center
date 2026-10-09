@@ -2725,7 +2725,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["PIPELINE","TODAY","MASTER TABLE","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PIPELINE","TODAY","MASTER TABLE","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 if st.session_state.nav not in nav_options:
     st.session_state.nav = "MASTER TABLE"
@@ -3346,6 +3346,187 @@ elif page == "DISEASE & MARKET HORIZON":
     st.markdown("### Commercial valuation and our scores")
     st.info("Estimate penetration, potential peak sales, sales relative to market cap, Competitive Advantage Score, and Commercial Opportunity Score. Keep OUR FDA PoA separate from OUR TRADE SCORE and Entry Gate.")
     st.warning("This page is a research framework linked to the Google Sheet. Live company-by-company epidemiology, competitor research, score calculation, and Sheet synchronization are not yet connected.")
+
+
+elif page == "STRATEGY":
+    st.markdown("## STRATEGY — PIPELINE ISSUE MAP")
+    st.caption(
+        "Starts with the selected Pipeline pool, then groups exact NCT-ID matches into "
+        "issue → company/drug → trial. Phase, status, and registry timestamps come from the daily ledger."
+    )
+
+    strategy_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    strategy_signature = tuple(
+        (name, (Path("data") / name).stat().st_mtime_ns)
+        for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
+    )
+    strategy_universe = load_pipeline_universe_data(strategy_signature, strategy_today)
+
+    st.markdown("### PIPELINE POOL INPUT")
+    strategy_stages = st.multiselect(
+        "Pipeline stages feeding Strategy",
+        options=list(PIPELINE_STAGES),
+        default=list(PIPELINE_STAGES),
+        key="pipeline_universe_stages",
+        placeholder="Choose one or more stages",
+    )
+    strategy_query = st.text_input(
+        "Find ticker, drug, indication or NCT ID",
+        key="pipeline_universe_search",
+    ).strip()
+    pipeline_pool = select_pipeline_records(strategy_universe, strategy_stages, strategy_query)
+    pipeline_nct_ids = set(
+        pipeline_pool.loc[pipeline_pool["nct_id"].ne(""), "nct_id"]
+        .astype(str).str.upper().str.strip()
+    )
+
+    issue_trials_path = Path("data/issue_trials.csv")
+    issue_ledger_path = Path("data/all_phase_trials.csv")
+    issue_trials_signature = (
+        issue_trials_path.stat().st_mtime_ns if issue_trials_path.exists() else 0,
+        issue_ledger_path.stat().st_mtime_ns if issue_ledger_path.exists() else 0,
+    )
+    strategy_catalog = load_issue_trial_catalog(issue_trials_signature)
+    if not strategy_catalog.empty:
+        strategy_catalog = strategy_catalog.copy()
+        strategy_catalog["nct_id"] = strategy_catalog["nct_id"].astype(str).str.upper().str.strip()
+
+    if not strategy_stages:
+        st.info("Choose at least one Pipeline stage to build the Strategy pool.")
+    elif pipeline_pool.empty:
+        st.info("No Pipeline records match the selected stages or search.")
+    elif strategy_catalog.empty:
+        st.info("No issue trial catalog is loaded.")
+    else:
+        mapped_all = strategy_catalog[strategy_catalog["nct_id"].isin(pipeline_nct_ids)].copy()
+        pipeline_detail = pipeline_pool[
+            [
+                "nct_id", "record_id", "record_type", "current_stage",
+                "registered_phase", "status", "source_updated", "checked_at", "source_url",
+            ]
+        ].copy()
+        pipeline_detail["nct_id"] = pipeline_detail["nct_id"].astype(str).str.upper().str.strip()
+        pipeline_detail = pipeline_detail.drop_duplicates("nct_id").rename(
+            columns={
+                "record_id": "pipeline_record_id",
+                "record_type": "pipeline_record_type",
+                "current_stage": "pipeline_stage",
+                "registered_phase": "pipeline_phase",
+                "status": "pipeline_status",
+                "source_updated": "pipeline_updated",
+                "checked_at": "pipeline_checked",
+                "source_url": "pipeline_source_url",
+            }
+        )
+        mapped_all = mapped_all.merge(pipeline_detail, on="nct_id", how="left")
+        mapped_all["display_phase"] = mapped_all["pipeline_phase"].where(
+            mapped_all["pipeline_phase"].ne(""), mapped_all["phase"]
+        )
+        mapped_all["display_status"] = mapped_all["pipeline_status"].where(
+            mapped_all["pipeline_status"].ne(""), mapped_all["status"]
+        )
+        mapped_all["display_updated"] = mapped_all["pipeline_updated"].where(
+            mapped_all["pipeline_updated"].ne(""), mapped_all["source_updated"]
+        )
+        mapped_all["display_checked"] = mapped_all["pipeline_checked"].where(
+            mapped_all["pipeline_checked"].ne(""), mapped_all["checked_at"]
+        )
+
+        issue_options = sorted(
+            mapped_all["issue"].dropna().astype(str).loc[lambda s: s.ne("")].unique()
+        )
+        selected_strategy_issues = st.multiselect(
+            "Issues to display",
+            options=issue_options,
+            default=issue_options,
+            key="strategy_issue_filter",
+            placeholder="Choose one or more issues",
+        )
+        issue_visible = mapped_all[mapped_all["issue"].isin(selected_strategy_issues)].copy()
+
+        mapped_nct_ids = set(mapped_all["nct_id"])
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Pipeline pool records", f"{len(pipeline_pool):,}")
+        m2.metric("Pipeline pool NCT IDs", f"{len(pipeline_nct_ids):,}")
+        m3.metric("Mapped issue trials", f"{len(issue_visible):,}")
+        m4.metric("Unmapped pool NCT IDs", f"{len(pipeline_nct_ids - mapped_nct_ids):,}")
+        st.caption(
+            "The nested list is an exact NCT-ID join to the selected Pipeline pool. "
+            "Unmapped Pipeline records remain available in the Pipeline tab."
+        )
+
+        if issue_visible.empty:
+            st.info("No issue trials in the selected Pipeline pool match the chosen issues.")
+        else:
+            def strategy_value(value, default="Not available"):
+                return html.escape(safe_text(value, default), quote=True)
+
+            def strategy_link(label, url):
+                clean_url = safe_text(url, "")
+                if not clean_url.startswith(("https://", "http://")):
+                    return ""
+                return (
+                    f'<a href="{html.escape(clean_url, quote=True)}" '
+                    'style="color:#0b57d0 !important;text-decoration:underline !important">'
+                    f"{html.escape(label)}</a>"
+                )
+
+            for issue_name in sorted(issue_visible["issue"].unique()):
+                issue_rows = issue_visible[issue_visible["issue"].eq(issue_name)].copy()
+                with st.expander(
+                    f"{issue_name} · {len(issue_rows):,} mapped trial(s)",
+                    expanded=True,
+                ):
+                    groups = issue_rows.sort_values(
+                        ["company", "ticker", "drug", "trial_name"]
+                    ).groupby(
+                        ["company", "ticker", "drug"], dropna=False, sort=True
+                    )
+                    for (company, ticker, drug), company_rows in groups:
+                        company_label = (
+                            f"{safe_text(company)} ({safe_text(ticker)}) — {safe_text(drug)}"
+                        )
+                        trial_items = []
+                        for _, trial in company_rows.iterrows():
+                            nct_id = safe_text(trial.get("nct_id"), "No NCT ID")
+                            clinical_url = (
+                                f"https://clinicaltrials.gov/study/{nct_id}"
+                                if nct_id.startswith("NCT") else ""
+                            )
+                            links = [
+                                link for link in (
+                                    strategy_link("ClinicalTrials.gov", clinical_url),
+                                    strategy_link("Evidence", trial.get("evidence_url")),
+                                    strategy_link("Pipeline source", trial.get("pipeline_source_url")),
+                                ) if link
+                            ]
+                            link_text = " · ".join(links) or "No source link stored"
+                            trial_items.append(
+                                "<li>"
+                                f"<strong>{strategy_value(trial.get('trial_name'))}</strong> "
+                                f"<code>{strategy_value(nct_id)}</code>"
+                                "<ul>"
+                                f"<li>Pipeline stage: {strategy_value(trial.get('pipeline_stage'))}</li>"
+                                f"<li>Phase: {strategy_value(trial.get('display_phase'))} · "
+                                f"Status: {strategy_value(trial.get('display_status'))}</li>"
+                                f"<li>Target population: {strategy_value(trial.get('target_population_note'))}</li>"
+                                f"<li>Registry updated: {strategy_value(trial.get('display_updated'))} · "
+                                f"checked: {strategy_value(trial.get('display_checked'))}</li>"
+                                f"<li>{link_text}</li>"
+                                "</ul>"
+                                "</li>"
+                            )
+                        st.markdown(
+                            f"<p><strong>{html.escape(company_label)}</strong></p>"
+                            f"<ul>{''.join(trial_items)}</ul>",
+                            unsafe_allow_html=True,
+                        )
+            st.caption(
+                f"{len(issue_visible):,} mapped trial records across "
+                f"{issue_visible['issue'].nunique():,} issue groups. "
+                "The daily scan refreshes registry phase, status, and timestamps."
+            )
+
 
 elif page == "2. PDUFA CALENDAR":
     st.markdown("## 2. PDUFA CALENDAR — UPCOMING CATALYSTS")
