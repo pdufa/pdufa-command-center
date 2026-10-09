@@ -141,7 +141,7 @@ def scan(mode, max_pages, data_dir=DATA):
     write(path, merged)
     state.update({"finished_at": datetime.now(timezone.utc).isoformat(),
                   "stored_results": len(merged),
-                  "status": "COMPLETE" if state["complete"] else "INCOMPLETE"})
+                  "status": ("COMPLETE WITH WARNINGS" if state["complete"] and state["errors"] else "COMPLETE" if state["complete"] else "PARTIAL" if state.get("studies_checked", 0) else "FAILED")})
     (data_dir / "phase3_intake_status.json").write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(state, indent=2))
     if state["errors"]:
