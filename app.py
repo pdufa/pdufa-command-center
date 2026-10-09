@@ -2714,8 +2714,10 @@ if page == "TODAY":
     try:
         _intake_state = json.loads(Path("data/phase3_intake_status.json").read_text(encoding="utf-8"))
         st.caption("Phase 3 registry intake: " + str(_intake_state.get("status", "UNKNOWN")) + " · " + str(_intake_state.get("studies_checked", 0)) + " studies checked in latest run · " + str(_intake_state.get("stored_results", 0)) + " cumulative records · " + str(_intake_state.get("finished_at", "not completed")))
-        if _intake_state.get("status") != "COMPLETE":
+        if _intake_state.get("status") not in ("COMPLETE", "COMPLETE WITH WARNINGS"):
             st.warning("Phase 3 historical/daily registry scan is incomplete. Counts are partial. Corporate press-release discovery is a separate evidence source.")
+        elif _intake_state.get("status") == "COMPLETE WITH WARNINGS":
+            st.warning("Phase 3 registry collection finished with source warnings; the overall PDUFA universe may still be incomplete.")
     except (OSError, ValueError):
         st.warning("Phase 3 automated intake has not yet reported a completed scan. Historical coverage remains incomplete.")
     render_today(df, _phase_today, _finance_today)
@@ -3181,9 +3183,11 @@ elif page == "PIPELINE":
             stamp = datetime.fromisoformat(stamp).astimezone(ZoneInfo("America/Los_Angeles")).strftime("%b %d, %Y %I:%M %p %Z")
         except ValueError:
             pass
-        st.caption(f"Daily monitoring · Last scan: {stamp} · Status: {pipeline_state.get('status', 'UNKNOWN')}")
+        st.caption(f"Daily monitoring · Last scan: {stamp} · Clinical pipeline status: {pipeline_state.get('status', 'UNKNOWN')}")
         if not pipeline_state.get("complete"):
-            st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
+            st.warning("The latest clinical pipeline scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
+        elif pipeline_state.get("status") == "COMPLETE WITH WARNINGS":
+            st.warning("Clinical pipeline collection finished, but some market-cap/source evidence needs review. This does not certify the entire PDUFA overnight universe.")
     st.markdown("### PICK DEVELOPMENT STAGES")
     st.caption("Start with no stages selected. Choose stages to populate the table and update the trial count. Regulatory stages require corresponding records in the source.")
     pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
