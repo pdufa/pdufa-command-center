@@ -773,6 +773,37 @@ def load_pipeline_universe_data(signature, pipeline_today):
 
 
 @st.cache_data(ttl=60)
+def load_issue_trial_catalog(signature):
+    columns = [
+        "issue", "ticker", "company", "drug", "trial_name", "nct_id",
+        "evidence_url", "target_population_note", "phase", "status",
+        "source_updated", "checked_at",
+    ]
+    path = Path("data/issue_trials.csv")
+    if not path.exists():
+        return pd.DataFrame(columns=columns)
+    try:
+        catalog = pd.read_csv(path, dtype=str).fillna("")
+    except (OSError, ValueError, pd.errors.ParserError):
+        return pd.DataFrame(columns=columns)
+    ledger_path = Path("data/all_phase_trials.csv")
+    if ledger_path.exists():
+        try:
+            ledger = pd.read_csv(ledger_path, dtype=str).fillna("")
+            if "nct_id" in ledger:
+                ledger = ledger.drop_duplicates("nct_id").set_index("nct_id")
+                for column in ("phase", "status", "source_updated", "checked_at"):
+                    if column in ledger:
+                        catalog[column] = catalog["nct_id"].map(ledger[column]).fillna("")
+        except (OSError, ValueError, pd.errors.ParserError):
+            pass
+    for column in columns:
+        if column not in catalog:
+            catalog[column] = ""
+    return catalog[columns]
+
+
+@st.cache_data(ttl=60)
 def load_phase_pipeline_data(version):
     records = read_phase_rows(Path("data/phase_pipeline.csv"))
     try:
@@ -3248,6 +3279,64 @@ elif page == "DISEASE & MARKET HORIZON":
     st.link_button("Open disease and market research sheet", "https://docs.google.com/spreadsheets/d/1lBfjuXloQnoUTOJZYnu6v6PAHrZSqJoWn_-6L6wt-fY/edit#gid=204610070")
     st.markdown("### Disease burden and addressable patients")
     st.info("Research fields: U.S./global prevalence, incidence, diagnosed patients, eligible patients, treatable population, severity, and unmet need. Record geography, year, definition, and source.")
+
+    issue_trials_path = Path("data/issue_trials.csv")
+    issue_trials_signature = issue_trials_path.stat().st_mtime_ns if issue_trials_path.exists() else 0
+    issue_trials = load_issue_trial_catalog(issue_trials_signature)
+    st.markdown("### Clinical trials by issue")
+    if issue_trials.empty:
+        st.info("No curated issue trials are loaded.")
+    else:
+        issue_options = sorted(issue_trials["issue"].dropna().astype(str).loc[lambda s: s.ne("")].unique())
+        selected_issues = st.multiselect(
+            "Issues to display",
+            options=issue_options,
+            default=issue_options,
+            key="issue_trial_issue_filter",
+        )
+        issue_visible = issue_trials[issue_trials["issue"].isin(selected_issues)].copy()
+        if issue_visible.empty:
+            st.info("Choose at least one issue to display its trials.")
+        else:
+            issue_visible["ClinicalTrials.gov"] = issue_visible["nct_id"].map(
+                lambda nct: "https://clinicaltrials.gov/study/" + str(nct)
+            )
+            issue_labels = {
+                "issue": "Issue",
+                "ticker": "Ticker",
+                "company": "Company",
+                "drug": "Drug",
+                "trial_name": "Trial",
+                "nct_id": "NCT ID",
+                "phase": "Phase",
+                "status": "Trial Status",
+                "target_population_note": "Target Population",
+                "source_updated": "Registry Updated",
+                "checked_at": "Registry Checked",
+                "evidence_url": "Evidence",
+                "ClinicalTrials.gov": "ClinicalTrials.gov",
+            }
+            issue_columns = [
+                "issue", "ticker", "company", "drug", "trial_name", "nct_id",
+                "phase", "status", "target_population_note", "source_updated",
+                "checked_at", "ClinicalTrials.gov", "evidence_url",
+            ]
+            st.dataframe(
+                issue_visible[issue_columns].rename(columns=issue_labels),
+                use_container_width=True,
+                hide_index=True,
+                height=560,
+                column_config={
+                    "ClinicalTrials.gov": st.column_config.LinkColumn("ClinicalTrials.gov"),
+                    "Evidence": st.column_config.LinkColumn("Evidence"),
+                },
+            )
+            st.caption(
+                f"{len(issue_visible):,} curated trial records across "
+                f"{issue_visible['issue'].nunique():,} issue groups. "
+                "Trial status and registry dates are refreshed from ClinicalTrials.gov by the daily scan."
+            )
+
     st.markdown("### Competing therapies")
     st.info("Compare approved therapies and Phase 2/3 competitors by mechanism, efficacy, safety, dosing, price/access, and development status. Mark direct head-to-head evidence separately from cross-trial comparisons.")
     st.markdown("### Commercial valuation and our scores")
