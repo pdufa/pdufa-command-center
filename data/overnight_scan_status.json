@@ -1,23 +1,23 @@
 {
-  "started_at": "2026-10-09T13:58:06.530164+00:00",
-  "finished_at": "2026-10-09T13:59:09.311012+00:00",
+  "started_at": "2026-10-09T14:22:00.229126+00:00",
+  "finished_at": "2026-10-09T14:23:47.977096+00:00",
   "status": "PARTIAL",
   "complete": false,
   "source_checks": {
     "all_phase_inventory": {
-      "status": "COMPLETE",
-      "finished_at": "2026-10-09T13:58:07.408025+00:00",
+      "status": "COMPLETE WITH WARNINGS",
+      "finished_at": "2026-10-09T14:22:45.194038+00:00",
       "registry_companies": 717,
       "studies_checked": null,
       "companies_checked": 717,
       "companies_due": 717,
       "errors": [],
       "exit_code": 0,
-      "source_scope": "All registered phases, all registry companies; exact lead-sponsor matching only"
+      "source_scope": "All registry companies plus direct daily rechecks of every saved NCT ID"
     },
     "clinical_pipeline": {
       "status": "COMPLETE WITH WARNINGS",
-      "finished_at": "2026-10-09T13:58:59.849375+00:00",
+      "finished_at": "2026-10-09T14:23:38.215508+00:00",
       "registry_companies": 717,
       "studies_checked": 15662,
       "companies_checked": null,
@@ -28,7 +28,7 @@
     },
     "phase3_posted_results": {
       "status": "COMPLETE",
-      "finished_at": "2026-10-09T13:59:09.216091+00:00",
+      "finished_at": "2026-10-09T14:23:47.830589+00:00",
       "registry_companies": 717,
       "studies_checked": 3973,
       "companies_checked": null,
