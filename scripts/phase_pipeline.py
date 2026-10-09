@@ -453,6 +453,13 @@ def scan(data_dir, lookback_days=730, page_limit=60, max_source_age=180):
     write_rows(ledger_path, records)
     before_keys = {r.get("program_key") for r in previous if r.get("promoted_at")}
     newly_promoted = {r.get("program_key"): r for r in records if r.get("promoted_at") and r.get("program_key") not in before_keys and r.get("nct_id") == r.get("phase3_nct_id")}
+    # Four mutually exclusive statuses; market-cap evidence gaps are warnings, not full coverage.
+    if state["complete"] and (state["errors"] or unavailable):
+        state["status"] = "COMPLETE WITH WARNINGS"
+    elif state["complete"]:
+        state["status"] = "COMPLETE"
+    elif state["status"] != "FAILED":
+        state["status"] = "PARTIAL"
     state.update({
         "finished_at": datetime.now(timezone.utc).isoformat(), "matched_trials": len(incoming),
         "stored_trials": len(records),
