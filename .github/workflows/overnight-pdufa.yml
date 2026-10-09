@@ -1,0 +1,42 @@
+name: Overnight PDUFA Scan Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:30 UTC = 11:30 PM PDT / 10:30 PM PST. GitHub cron uses UTC.
+    - cron: "30 7 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-surveillance
+  cancel-in-progress: false
+
+jobs:
+  overnight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run collectors and audit coverage
+        run: python scripts/overnight_scan.py
+      - name: Save overnight audit and source records
+        if: always()
+        run: |
+          git config user.name "pdufa-overnight-bot"
+          git config user.email "pdufa-overnight-bot@users.noreply.github.com"
+          git add data/overnight_scan_status.json data/phase_pipeline_state.json data/phase3_intake_status.json
+          git add -u data/
+          if ! git diff --cached --quiet; then
+            git commit -m "Update overnight clinical source audit"
+            git pull --rebase origin main
+            git push
+          fi
