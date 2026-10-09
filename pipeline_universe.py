@@ -14,9 +14,12 @@ STAGES = (
 SOURCE_FILES = (
     "all_phase_trials.csv", "phase_pipeline.csv", "phase3_announcements.csv",
     "pdufa_candidates.csv", "prediction_engine_history.csv", "fda_review_engine.csv",
+    "drug_metadata.csv",
 )
 COLUMNS = (
     "record_id", "record_type", "ticker", "company", "drug", "indication", "nct_id",
+    "intervention_type", "route", "drug_modality", "drug_class", "mechanism_target",
+    "use_status", "classification_status", "classification_source_url", "classification_note",
     "registered_phase", "current_stage", "stage_tags", "status", "start_date",
     "primary_completion", "study_completion", "results_posted", "nda_submission_date",
     "fda_acceptance_date", "pdufa_date", "decision_date", "outcome", "source_updated",
@@ -61,6 +64,74 @@ def read_rows(path):
         return [{key: clean(value) for key, value in row.items()}
                 for row in csv.DictReader(handle)]
 
+REGISTRY_MODALITY = {
+    "DRUG": "Drug (registry; molecular modality not specified)",
+    "BIOLOGICAL": "Biologic / biological (registry)",
+    "DEVICE": "Device",
+    "DIETARY_SUPPLEMENT": "Dietary supplement",
+    "BEHAVIORAL": "Behavioral intervention",
+    "RADIATION": "Radiation",
+    "GENETIC": "Genetic intervention",
+    "OTHER": "Other intervention",
+}
+
+CLASSIFICATION_COLUMNS = (
+    "drug_modality", "drug_class", "mechanism_target", "route", "use_status",
+    "classification_source_url", "classification_note",
+)
+
+def normalized(value):
+    return re.sub(r"[^a-z0-9]+", " ", clean(value).lower()).strip()
+
+def metadata_aliases(value):
+    return [normalized(alias) for alias in clean(value).split("|") if normalized(alias)]
+
+def apply_drug_metadata(records, metadata=()):
+    prepared = []
+    for item in metadata or ():
+        aliases = metadata_aliases(item.get("drug_alias"))
+        if not aliases:
+            continue
+        prepared.append((item, aliases))
+    for row in records:
+        ticker = normalized(row.get("ticker"))
+        drug = normalized(row.get("drug"))
+        matches = [
+            (item, aliases)
+            for item, aliases in prepared
+            if normalized(item.get("ticker")) == ticker
+            and any(alias and alias in drug for alias in aliases)
+        ]
+        match = max(
+            matches,
+            key=lambda pair: max(len(alias) for alias in pair[1]),
+            default=None,
+        )
+        if match is not None:
+            item, _ = match
+            for column in CLASSIFICATION_COLUMNS:
+                value = clean(item.get(column))
+                if value and (column != "route" or not clean(row.get("route"))):
+                    row[column] = value
+            row["classification_status"] = clean(
+                item.get("classification_status")
+            ) or "SOURCE CLASSIFIED"
+        else:
+            intervention_types = [
+                clean(value).upper()
+                for value in clean(row.get("intervention_type")).split("|")
+                if clean(value)
+            ]
+            if not clean(row.get("drug_modality")) and intervention_types:
+                row["drug_modality"] = " / ".join(
+                    REGISTRY_MODALITY.get(value, value.title())
+                    for value in intervention_types
+                )
+            row["classification_status"] = (
+                "REGISTRY PARTIAL" if intervention_types else "NOT CLASSIFIED"
+            )
+    return records
+
 def base():
     return {column: "" for column in COLUMNS}
 
@@ -103,7 +174,8 @@ def regulatory_tags(row, today):
         tags.add("Unknown")
     return tags, source, outcome
 
-def build_universe(clinical=(), announcements=(), regulatory=(), historical=(), today=None):
+def build_universe(clinical=(), announcements=(), regulatory=(), historical=(),
+                   metadata=(), today=None):
     today = today or date.today()
     records = {}
     for source in clinical:
@@ -181,6 +253,7 @@ def build_universe(clinical=(), announcements=(), regulatory=(), historical=(), 
             "Post-Decision", "PDUFA Decision", "FDA Acceptance",
             "NDA/BLA Submission", "Phase 3 Results") if s in tags), "Unknown")
         records[key] = row
+    apply_drug_metadata(records.values(), metadata)
     frame = pd.DataFrame(records.values(), columns=COLUMNS).fillna("")
     return frame
 
@@ -190,7 +263,8 @@ def load_universe(data_root, today=None):
     return build_universe(
         clinical=clinical, announcements=read_rows(root / "phase3_announcements.csv"),
         regulatory=read_rows(root / "fda_review_engine.csv") + read_rows(root / "pdufa_candidates.csv"),
-        historical=read_rows(root / "prediction_engine_history.csv"), today=today)
+        historical=read_rows(root / "prediction_engine_history.csv"),
+        metadata=read_rows(root / "drug_metadata.csv"), today=today)
 
 def select_records(frame, stages, query=""):
     if frame.empty or not stages:
