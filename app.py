@@ -3184,14 +3184,6 @@ elif page == "PIPELINE":
         st.caption(f"Daily monitoring · Last scan: {stamp} · Status: {pipeline_state.get('status', 'UNKNOWN')}")
         if not pipeline_state.get("complete"):
             st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
-        with st.expander("Scan scope and graduation rule"):
-            st.write(pipeline_state.get("scope", "Scope not recorded"))
-            st.write(f"{pipeline_state.get('registry_companies', 0):,} registry companies · {pipeline_state.get('studies_scanned', 0):,} trial records checked · {pipeline_state.get('matched_trials', 0):,} exact sponsor matches")
-            st.write(f"Market cap verified for {pipeline_state.get('market_cap_verified_tickers', 0):,} tickers. Missing or stale market caps remain REVIEW; values outside $300M–$10B fail the universe gate.")
-            st.write("Graduation requires an exact company and investigational-drug/indication identity, standalone Phase 3, an actual start date, an eligible started-trial status, and current source evidence. Combined Phase 2/3 and estimated starts remain REVIEW.")
-            st.write(f"Trial source updated within {pipeline_state.get('source_max_age_days', 180)} days and checked within three days. Market-cap eligibility, clinical success and approval scoring are checked separately.")
-            for error in pipeline_state.get("errors", []):
-                st.error(error)
     if pipeline_frame.empty:
         st.info("The Phase 2 collection has not produced verified company matches yet.")
     else:
