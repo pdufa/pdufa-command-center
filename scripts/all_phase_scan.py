@@ -86,9 +86,9 @@ def collect_ids(session, ids, metadata):
             old=metadata[nct]
             found[nct]=record_from_study(study,old.get("company",""),old.get("ticker",""))
         token=payload.get("nextPageToken")
-        if not token:break
-        if len(found)>=len(ids):
-            raise ValueError("Unexpected pagination for exact trial-ID batch")
+        # A full page can carry a next-page cursor even when every requested
+        # trial has already arrived. Exact-ID coverage is complete at that point.
+        if not token or len(found)==len(ids):break
     return found
 
 def collect(session, company, ticker):
