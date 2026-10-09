@@ -5466,25 +5466,5 @@ else:
                     st.info("No same-bucket historical cases were available, so the closest loaded cases by approval probability are shown.")
 
 st.divider()
-st.markdown("### 100-on-100 Precision Gate")
-_gate100 = load_100_on_100_summary()
-_gate100_live = load_100_on_100_live()
-if _gate100:
-    g1,g2,g3,g4,g5 = st.columns(5)
-    g1.metric("Strict qualified matches", f"{int(_gate100.get('historical_matches',0))}/{int(_gate100.get('historical_qualified',0))}")
-    g2.metric("Strict historical match", f"{float(_gate100.get('historical_accuracy_pct',0)):.0f}%")
-    g3.metric("Historical coverage", f"{float(_gate100.get('historical_coverage_pct',0)):.2f}%")
-    g4.metric("Live qualified", int(_gate100.get("live_qualified",0)))
-    broad_assessed = int(_gate100.get("historical_broad_assessed", 0))
-    withheld = int(_gate100.get("historical_review_no_call_analyzed", 0))
-    g5.metric("Broad decisions recorded", f"{broad_assessed}/{withheld}")
-    st.caption("Strict REVIEW / NO CALL means qualification was withheld after analysis. Broad PASS/CRL suggestions for these cases are recorded in Prediction Engine → Assessed Historical Decisions. Strict historical match applies only to the qualified subset; all historical results are retrospective.")
-    if not _gate100_live.empty:
-        _show = _gate100_live.copy()
-        grouped_dataframe(_show, use_container_width=True, hide_index=True)
-else:
-    st.info("100-on-100 precision-gate data has not been generated yet.")
-
-st.divider()
 st.caption("FDA probabilities are model estimates, not FDA determinations. Direction / FDA Match is a result score, not an approval probability: before a final FDA outcome it shows the predicted direction; after the outcome it shows 100% for a matching direction or 0% for a miss. Missing fields are labeled Not available or Not scored rather than being invented.")
 
