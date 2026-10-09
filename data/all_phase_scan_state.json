@@ -1,14 +1,14 @@
 {
   "run_date": "2026-10-09",
-  "finished_at": "2026-10-09T14:39:06.671422+00:00",
+  "finished_at": "2026-10-09T14:51:05.517485+00:00",
   "registry_companies": 717,
   "companies_checked": 717,
   "companies_with_warnings": 0,
-  "trials_stored": 9734,
+  "trials_stored": 9742,
   "status": "COMPLETE",
   "complete": true,
-  "tracked_trials_total": 9734,
-  "tracked_trials_checked": 9734,
+  "tracked_trials_total": 9742,
+  "tracked_trials_checked": 9742,
   "tracked_trials_with_warnings": 0,
   "changed_trials_this_execution": 0,
   "changed_trials_today": 0,
@@ -62005,6 +62005,54 @@
       "checked_at": "2026-10-09T14:22:44.964945+00:00",
       "changed_fields": [],
       "first_direct_refresh": false
+    },
+    "NCT03987919": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264887+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT04184622": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264894+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT06628908": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264897+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT06741228": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264900+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT06917404": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264903+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT07231419": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264906+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT07654361": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264910+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT07654374": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T14:51:05.264913+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
     }
   }
 }

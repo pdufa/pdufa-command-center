@@ -1,12 +1,12 @@
 {
-  "started_at": "2026-10-09T14:38:16.710478+00:00",
-  "finished_at": "2026-10-09T14:40:05.291019+00:00",
+  "started_at": "2026-10-09T14:51:04.907249+00:00",
+  "finished_at": "2026-10-09T14:51:48.719266+00:00",
   "status": "PARTIAL",
   "complete": false,
   "source_checks": {
     "all_phase_inventory": {
       "status": "COMPLETE",
-      "finished_at": "2026-10-09T14:39:06.671422+00:00",
+      "finished_at": "2026-10-09T14:51:05.517485+00:00",
       "registry_companies": 717,
       "studies_checked": null,
       "companies_checked": 717,
@@ -17,7 +17,7 @@
     },
     "clinical_pipeline": {
       "status": "COMPLETE WITH WARNINGS",
-      "finished_at": "2026-10-09T14:39:53.616515+00:00",
+      "finished_at": "2026-10-09T14:51:42.837475+00:00",
       "registry_companies": 717,
       "studies_checked": 15662,
       "companies_checked": null,
@@ -28,7 +28,7 @@
     },
     "phase3_posted_results": {
       "status": "COMPLETE",
-      "finished_at": "2026-10-09T14:40:05.181452+00:00",
+      "finished_at": "2026-10-09T14:51:48.562719+00:00",
       "registry_companies": 717,
       "studies_checked": 3973,
       "companies_checked": null,
