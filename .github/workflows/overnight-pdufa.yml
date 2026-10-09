@@ -1,6 +1,11 @@
 name: Overnight PDUFA Scan Audit
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/all_phase_scan.py"
+      - ".github/workflows/overnight-pdufa.yml"
   workflow_dispatch:
   schedule:
     # 07:30 UTC = 12:30 AM PDT / 11:30 PM PST. GitHub cron uses UTC.
