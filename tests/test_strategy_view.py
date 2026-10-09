@@ -48,7 +48,7 @@ class StrategyViewTests(unittest.TestCase):
         self.assertEqual(rows["record_id"].nunique(), 3)
         self.assertEqual(rows.iloc[0]["issue"], "Epilepsy")
         self.assertEqual(rows.iloc[0]["approach"], "Kv7 modulator")
-        self.assertEqual(rows.iloc[1]["issue"], "chronic hepatitis B")
+        self.assertEqual(rows.iloc[1]["issue"], "Hepatitis B")
         self.assertEqual(rows.iloc[2]["issue"],
                          "Indication not recorded")
 
@@ -63,7 +63,7 @@ class StrategyViewTests(unittest.TestCase):
         rows = prepare_strategy_rows(sample_pool(), pd.DataFrame())
         summary = issue_summary(rows)
         blank = summary.loc[summary["Disease / issue"].eq(
-            "Indication / disease not yet classified"
+            "Indication not recorded"
         )].iloc[0]
         self.assertEqual(int(blank["Unique NCT IDs"]), 0)
         self.assertIn("No NCT ID", _trial_html(rows.iloc[2].to_dict()))
