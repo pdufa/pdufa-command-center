@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-09T15:04:39.757029+00:00",
+  "started_at": "2026-10-09T18:31:47.302769+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
   "scope": "Industry Phase 2/3 records updated since 2024-10-09",
@@ -10,7 +10,7 @@
   "complete": true,
   "errors": [],
   "new_master_programs": [],
-  "finished_at": "2026-10-09T15:05:21.631696+00:00",
+  "finished_at": "2026-10-09T18:32:39.773307+00:00",
   "stored_trials": 3105,
   "phase2_programs": 438,
   "master_programs": 117,
