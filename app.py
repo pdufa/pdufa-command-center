@@ -3185,13 +3185,13 @@ elif page == "PIPELINE":
         if not pipeline_state.get("complete"):
             st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
     st.markdown("### PICK DEVELOPMENT STAGES")
-    st.caption("Enable or disable any stage from Phase 1 through FDA decision. Regulatory milestones require corresponding records in the data source.")
+    st.caption("Start with no stages selected. Choose stages to populate the table and update the trial count. Regulatory stages require corresponding records in the source.")
     pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
     selected_pipeline_stages = st.multiselect(
         "Enabled stages",
         options=pipeline_stage_options,
-        default=pipeline_stage_options,
-        key="pipeline_enabled_stages",
+        default=[],
+        key="pipeline_enabled_stages_v2",
         placeholder="Choose development stages",
     )
     if not selected_pipeline_stages:
@@ -3241,13 +3241,10 @@ elif page == "PIPELINE":
             filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2, expanded=True)
             # Preserve the user's multi-stage sort order, not just the filtered rows.
             phase2 = phase2.loc[filtered_phase2.index]
-        # Show the stage-specific count directly from the final table rows.
-        # The former 440 was a total unrelated to the chosen stage.
+        # Count the rows that actually populate the table for the currently enabled stages.
         visible_trial_count = len(phase2) if selected_pipeline_stages else 0
-        st.metric(
-            "Trials displayed — " + (", ".join(selected_pipeline_stages) if selected_pipeline_stages else "none selected"),
-            f"{visible_trial_count:,}",
-        )
+        st.metric("Trials displayed", f"{visible_trial_count:,}")
+        st.caption("Selected: " + (", ".join(selected_pipeline_stages) if selected_pipeline_stages else "None") + " · Count reflects the table below.")
         if phase2.empty:
             st.info("No trials match the selected stages or search.")
         else:
