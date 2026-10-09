@@ -131,7 +131,9 @@ def select_trial_activity(rows, choice):
     if choice == "Active / recruiting trials":
         return rows.loc[active].copy()
     if choice == "Completed trials":
-        return rows.loc[states.isin({"COMPLETED", "TERMINATED"})].copy()
+        return rows.loc[states.eq("COMPLETED")].copy()
+    if choice == "Stopped / withdrawn studies":
+        return rows.loc[states.isin({"TERMINATED", "WITHDRAWN", "SUSPENDED"})].copy()
     if choice == "Regulatory / no registry status":
         return rows.loc[
             rows["record_type"].fillna("").astype(str).str.contains(
@@ -309,6 +311,7 @@ def render_strategy_page(universe, issue_catalog):
             "All clinical / regulatory records",
             "Active / recruiting trials",
             "Completed trials",
+            "Stopped / withdrawn studies",
             "Regulatory / no registry status",
         ],
         key="strategy_trial_activity",
