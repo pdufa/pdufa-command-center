@@ -118,5 +118,28 @@ class StrategyViewTests(unittest.TestCase):
         self.assertEqual(len(active), 4)
 
 
+    def test_activity_filter_retains_stages_and_distinguishes_terminated(self):
+        from strategy_view import select_trial_activity
+        source = sample_pool()
+        source.loc[0, "status"] = "RECRUITING"
+        source.loc[1, "status"] = "COMPLETED"
+        source.loc[2, "status"] = "TERMINATED"
+        strategy = prepare_strategy_rows(source, pd.DataFrame())
+        self.assertEqual(len(select_trial_activity(
+            strategy, "All clinical / regulatory records"
+        )), 3)
+        self.assertEqual(len(select_trial_activity(
+            strategy, "Active / recruiting trials"
+        )), 1)
+        self.assertEqual(len(select_trial_activity(
+            strategy, "Completed trials"
+        )), 1)
+        stopped = select_trial_activity(strategy, "Stopped / withdrawn studies")
+        self.assertEqual(len(stopped), 1)
+        self.assertEqual(stopped.iloc[0]["ticker"], "XYZ")
+        # Filtering STRATEGY never modifies the source Pipeline pool.
+        self.assertEqual(len(source), 3)
+
+
 if __name__ == "__main__":
     unittest.main()
