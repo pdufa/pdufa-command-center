@@ -3209,6 +3209,12 @@ elif page == "PIPELINE":
                 f"{state.get('status', 'UNKNOWN')} · "
                 f"Company warnings: {state.get('companies_with_warnings', 0):,}"
             )
+            if "tracked_trials_total" in state:
+                st.caption(
+                    f"Saved trial IDs checked: {state.get('tracked_trials_checked', 0):,} / "
+                    f"{state.get('tracked_trials_total', 0):,} · "
+                    f"Trial check warnings: {state.get('tracked_trials_with_warnings', 0):,}"
+                )
         except (OSError, ValueError):
             pass
     st.caption("Source and evidence status are retained on each record. Posted results do not establish trial success, and a past PDUFA target does not establish an FDA decision. Historical outcomes are marked as recorded evidence.")
