@@ -3184,6 +3184,18 @@ elif page == "PIPELINE":
             all_phase_df = pd.read_csv(all_phase_path, dtype=str).fillna("")
         except (OSError, ValueError, pd.errors.ParserError) as exc:
             st.warning(f"Unable to load all-phase inventory: {exc}")
+    inventory_is_saved_subset = False
+    if all_phase_df.empty:
+        saved_trials = pd.DataFrame(read_phase_rows(Path("data/phase_pipeline.csv")))
+        if not saved_trials.empty:
+            all_phase_df = saved_trials.rename(columns={
+                "phases": "phase", "trial_status": "status",
+                "results_first_posted": "results_posted",
+            }).copy()
+            # Retain real trial records; do not use the old program eligibility/count.
+            valid_trials = all_phase_df["nct_id"].fillna("").astype(str).str.fullmatch(r"NCT\d{8}")
+            all_phase_df = all_phase_df.loc[valid_trials].copy()
+            inventory_is_saved_subset = not all_phase_df.empty
     all_phase_labels = {
         "EARLY_PHASE1": "Early Phase 1", "PHASE1": "Phase 1",
         "PHASE2": "Phase 2", "PHASE3": "Phase 3", "PHASE4": "Phase 4",
@@ -3228,6 +3240,8 @@ elif page == "PIPELINE":
         all_phase_visible = all_phase_visible.drop_duplicates(subset=["nct_id"])
     st.metric("Trials displayed", f"{len(all_phase_visible):,}")
     st.markdown("### ALL-PHASE OVERNIGHT TRIAL INVENTORY")
+    if inventory_is_saved_subset:
+        st.info("Showing saved Phase 2/3 trial records. Full all-phase coverage is pending the expanded scan.")
     if all_phase_state:
         st.caption(
             f"Registry companies checked: {all_phase_state.get('companies_checked', 0):,} / "
