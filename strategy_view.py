@@ -9,6 +9,9 @@ import re
 
 import pandas as pd
 from pipeline_universe import STAGES, select_records, stage_counts
+from disease_taxonomy import (
+    group_indication, burden_for, population_label, RARE_CATEGORIES,
+)
 
 
 NCT_PATTERN = re.compile(r"^NCT\d{8}$")
@@ -94,12 +97,14 @@ def prepare_strategy_rows(pipeline_pool, catalog=None):
     for name in ("curated_issue", "curated_trial_name",
                  "curated_population_note", "curated_evidence_url"):
         rows[name] = rows[name].fillna("").map(_text)
-    rows["issue"] = rows.apply(
-        lambda r: _text(r["curated_issue"]) or
-                  _text(r["indication"]) or
-                  "Indication / disease not yet classified",
-        axis=1,
-    )
+    # Do not let 9,000+ precise registry phrasings splinter disease counts.
+    # Match a conservative disease taxonomy, while preserving the complete
+    # indication on every underlying trial for auditing.
+    rows["issue"] = [
+        group_indication(indication, curated_issue)
+        for indication, curated_issue in
+        zip(rows["indication"], rows["curated_issue"])
+    ]
     rows["approach"] = rows.apply(_approach, axis=1)
     rows["trial_name"] = rows["curated_trial_name"]
     rows["target_population_note"] = rows["curated_population_note"]
@@ -108,22 +113,67 @@ def prepare_strategy_rows(pipeline_pool, catalog=None):
     return rows
 
 
-def issue_summary(rows):
+def issue_summary(rows, sort_by="Patient population (global)"):
+    """One row per disease; prevalence is context, never addressable market."""
+    columns = [
+        "Disease / issue", "Pool records", "Unique NCT IDs", "Companies",
+        "Worldwide affected", "US affected", "Patient-data year",
+        "Population definition", "Burden source", "US data source", "Rare-disease group",
+    ]
     if rows.empty:
-        return pd.DataFrame(columns=["Disease / issue", "Pool records",
-                                     "Unique NCT IDs", "Companies"])
+        return pd.DataFrame(columns=columns)
     grouped = rows.groupby("issue", dropna=False).agg(
         records=("record_id", "size"),
         nct_ids=("nct_id", lambda s: s.loc[s.ne("")].nunique()),
         companies=("ticker", lambda s: s.loc[s.ne("")].nunique()),
     ).reset_index()
+    grouped["_world_sort"] = grouped["issue"].map(
+        lambda issue: burden_for(issue).get("world_people", 0)
+    )
+    grouped["_us_sort"] = grouped["issue"].map(
+        lambda issue: burden_for(issue).get("us_people", 0)
+    )
+    grouped["Worldwide affected"] = grouped["issue"].map(
+        lambda issue: population_label(burden_for(issue).get("world_people"))
+    )
+    grouped["US affected"] = grouped["issue"].map(
+        lambda issue: (
+            population_label(burden_for(issue).get("us_people"))
+            if burden_for(issue).get("us_people")
+            else burden_for(issue).get("us_percent", "Not verified")
+        )
+    )
+    grouped["Patient-data year"] = grouped["issue"].map(
+        lambda issue: burden_for(issue).get("year", "Not verified")
+    )
+    grouped["Population definition"] = grouped["issue"].map(
+        lambda issue: burden_for(issue).get("definition", "")
+    )
+    grouped["Burden source"] = grouped["issue"].map(
+        lambda issue: burden_for(issue).get("source", "")
+    )
+    grouped["US data source"] = grouped["issue"].map(
+        lambda issue: burden_for(issue).get("us_source", "")
+    )
+    grouped["Rare-disease group"] = grouped["issue"].map(
+        lambda issue: "Potentially rare — verify" if issue in RARE_CATEGORIES else ""
+    )
+    if sort_by == "Patient population (US)":
+        order = ["_us_sort", "records", "issue"]
+        descending = [False, False, True]
+    elif sort_by == "Most Pipeline trials / programs":
+        order = ["records", "_world_sort", "issue"]
+        descending = [False, False, True]
+    else:
+        order = ["_world_sort", "records", "issue"]
+        descending = [False, False, True]
     grouped = grouped.sort_values(
-        ["records", "issue"], ascending=[False, True], kind="stable"
+        order, ascending=descending, kind="stable"
     )
     return grouped.rename(columns={
         "issue": "Disease / issue", "records": "Pool records",
         "nct_ids": "Unique NCT IDs", "companies": "Companies",
-    }).reset_index(drop=True)
+    })[columns].reset_index(drop=True)
 
 
 def _escape(value, fallback="Not recorded"):
@@ -196,10 +246,10 @@ def render_strategy_page(universe, issue_catalog):
 
     st.markdown("## STRATEGY — NESTED DISEASE / DRUG / TRIAL MAP")
     st.caption(
-        "Source: the same complete Pipeline universe and 14 stages as PIPELINE. "
-        "Disease → drug approach / mechanism → company and asset → clinical "
-        "trial or program. Curated issue labels enrich only exact NCT matches; "
-        "unmapped Pipeline records are always retained."
+        "Full PIPELINE pool → grouped disease → drug pathway → company / asset "
+        "→ registered trial. Disease groups combine common registry synonyms; "
+        "curated annotations match only exact NCT IDs. All source trials remain "
+        "in the pool, including records awaiting classification."
     )
     st.link_button("OPEN STRATEGY RESEARCH SHEET", STRATEGY_SHEET_URL)
 
@@ -229,13 +279,13 @@ def render_strategy_page(universe, issue_catalog):
     total_nct = rows["nct_id"].loc[rows["nct_id"].ne("")].nunique() if not rows.empty else 0
     curated_count = int(rows["curated_issue"].ne("").sum()) if not rows.empty else 0
     unclassified = int(
-        rows["issue"].eq("Indication / disease not yet classified").sum()
+        rows["issue"].eq("Indication not recorded").sum()
     ) if not rows.empty else 0
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Pipeline records displayed", f"{len(rows):,}")
     m2.metric("Unique registered NCT IDs", f"{total_nct:,}")
     m3.metric("Exact NCT issue matches", f"{curated_count:,}")
-    m4.metric("Issue not classified", f"{unclassified:,}")
+    m4.metric("Missing trial indication", f"{unclassified:,}")
 
     if not stages:
         st.info("Select at least one stage to populate STRATEGY.")
@@ -251,18 +301,39 @@ def render_strategy_page(universe, issue_catalog):
         rows = rows[rows["issue"].str.contains(
             issue_search, case=False, regex=False, na=False
         )].copy()
-    summary = issue_summary(rows)
-    st.markdown("### DISEASE / MEDICAL ISSUE LIST")
+    st.markdown("### DISEASE BURDEN — LARGEST AFFECTED POPULATIONS")
+    sort_by = st.selectbox(
+        "Rank conditions by", [
+            "Patient population (global)", "Patient population (US)",
+            "Most Pipeline trials / programs",
+        ], key="strategy_burden_sort"
+    )
+    verified_only = st.checkbox(
+        "Show only diseases with verified population data",
+        value=False, key="strategy_verified_burden_only",
+    )
+    summary = issue_summary(rows, sort_by=sort_by)
+    if verified_only:
+        summary = summary.loc[
+            summary["Burden source"].ne("") | summary["US data source"].ne("")
+        ].reset_index(drop=True)
     st.caption(
-        f"{len(summary):,} matching conditions · {len(rows):,} unique Pipeline records. "
-        "U.S. and worldwide patient populations and unmet need stay "
-        "UNVERIFIED until evidence and as-of dates are collected."
+        f"{len(summary):,} conditions shown · {len(rows):,} Pipeline records "
+        "in the selected stages. Population figures are source-dated "
+        "disease-wide estimates (often different years and definitions), "
+        "NOT trial-eligible patients or commercial forecasts. "
+        "Unverified figures remain blank."
     )
     if summary.empty:
-        st.info("No disease / issue names match this search.")
+        st.info("No diseases match these filters or have verified population data.")
         return
-    st.dataframe(summary, use_container_width=True,
-                 hide_index=True, height=280)
+    st.dataframe(
+        summary, use_container_width=True, hide_index=True, height=450,
+        column_config={
+            "Burden source": st.column_config.LinkColumn("Burden source"),
+            "US data source": st.column_config.LinkColumn("US data source"),
+        },
+    )
 
     page_size = st.selectbox(
         "Disease groups per page", [10, 25, 50, 100],
@@ -276,7 +347,8 @@ def render_strategy_page(universe, issue_catalog):
     subset = summary.iloc[start:start + page_size]
     st.caption(
         f"Displaying disease groups {start+1:,}–{start+len(subset):,} "
-        f"of {len(summary):,}; use the page control to reach all groups."
+        f"of {len(summary):,}. Open a disease to see its treatment pathways, "
+        "companies and clinical trials."
     )
 
     for item in subset.to_dict("records"):
@@ -287,10 +359,33 @@ def render_strategy_page(universe, issue_catalog):
             f"{item['Unique NCT IDs']:,} NCT ID(s)"
         )
         with st.expander(title, expanded=False):
-            st.caption(
-                "Patient population (U.S./worldwide): not verified · "
-                "Unmet medical need: pending evidence review"
+            context = burden_for(issue_name)
+            world = population_label(context.get("world_people"))
+            usa = (
+                population_label(context.get("us_people"))
+                if context.get("us_people")
+                else context.get("us_percent", "Not verified")
             )
+            st.markdown(
+                "**Worldwide affected:** " + world
+                + " · **US affected:** " + usa
+                + " · **Evidence year:** "
+                + context.get("year", "Not verified")
+            )
+            st.caption(
+                context.get("definition", "Patient population not yet verified")
+                + ". Clinical eligibility and unmet medical need require "
+                "indication-specific research."
+            )
+            if context.get("source"):
+                st.link_button("WORLD / POPULATION SOURCE", context["source"])
+            if context.get("us_source"):
+                st.link_button("US POPULATION SOURCE", context["us_source"])
+            if issue_name in RARE_CATEGORIES:
+                st.caption(
+                    "Potential rare-disease category — specific FDA orphan "
+                    "designation must be verified for each drug and indication."
+                )
             # Even a single unclassified disease group may include thousands
             # of records. Page within it rather than freezing the browser.
             if len(issue_records) > 100:
