@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = [
+    ("all_phase_inventory", "scripts/all_phase_scan.py", "all_phase_scan_state.json"),
     ("clinical_pipeline", "scripts/phase_pipeline.py", "phase_pipeline_state.json"),
     ("phase3_posted_results", "scripts/phase3_results_intake.py", "phase3_intake_status.json"),
 ]
@@ -34,6 +35,8 @@ def summarize(data_dir, executions):
             "status": status, "finished_at": state.get("finished_at"),
             "registry_companies": state.get("registry_companies"),
             "studies_checked": state.get("studies_checked", state.get("studies_scanned")),
+            "companies_checked": state.get("companies_checked"),
+            "companies_due": state.get("registry_companies"),
             "errors": state.get("errors", []),
             "exit_code": result.get("returncode"),
             "source_scope": state.get("scope", script),
