@@ -3185,8 +3185,8 @@ elif page == "PIPELINE":
         if not pipeline_state.get("complete"):
             st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
     st.markdown("### PICK DEVELOPMENT STAGES")
-    st.caption("Open the dropdown to enable or disable individual stages. Select multiple stages to filter the available trials.")
-    pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3"]
+    st.caption("Enable or disable any stage from Phase 1 through FDA decision. Regulatory milestones require corresponding records in the data source.")
+    pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
     selected_pipeline_stages = st.multiselect(
         "Enabled stages",
         options=pipeline_stage_options,
