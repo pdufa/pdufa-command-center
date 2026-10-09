@@ -140,6 +140,10 @@ class StrategyViewTests(unittest.TestCase):
         small = group_indications("Small Cell Lung Cancer")
         self.assertEqual(non_small, ("Non-small cell lung cancer",))
         self.assertEqual(small, ("Small cell lung cancer",))
+        self.assertEqual(group_indications("Pulmonary arterial hypertension"),
+                         ("Pulmonary arterial hypertension",))
+        self.assertEqual(group_indications("Diabetes insipidus"),
+                         ("Diabetes insipidus",))
 
     def test_population_sort_and_source_definitions(self):
         from disease_taxonomy import burden_for
