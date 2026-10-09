@@ -58,6 +58,16 @@ def assemble(live, pipeline, financing):
     combined = combined.drop_duplicates(subset=["Ticker","Drug","Indication","Trial ID","Result Posted"], keep="last")
     return combined
 
+def _today_watch_change(switch_key, ticker):
+    selected = bool(st.session_state.get(switch_key, False))
+    current = list(st.session_state.get("watchlist", []))
+    if selected and ticker not in current:
+        current.append(ticker)
+    elif not selected:
+        current = [x for x in current if x != ticker]
+    st.session_state["watchlist"] = current
+
+
 def render_today(live, pipeline, financing):
     now = datetime.now(TZ)
     yesterday = now.date() - timedelta(days=1)
@@ -85,17 +95,28 @@ def render_today(live, pipeline, financing):
         st.warning("No post–Phase 3 results qualified from the saved evidence.")
     st.metric("Rows needing result-source review", int(data["Research Status"].ne("SOURCE LINKED").sum()))
     fields = ["Ticker","Company","Drug","Indication","Phase 3 Result","Result Posted","Our Score","Score Change","Entry Gate","FINANCING","Runway Before (mo)","Runway After (mo)","Other Indications","Result Source","Financing Evidence","Financing Search","Last Verified","Research Status","Evidence Type","Verification Mark","Evidence Notes","Trial ID","Post–Phase 3 Evidence","Source List"]
-    def show(frame):
+    def show(frame, table_key):
         if frame.empty:
             st.info("No verified matching records in currently stored files.")
             return
         shown = frame[[c for c in fields if c in frame]].copy()
+        st.markdown("**MOVE TO WATCHLIST — turn on to add, off to remove**")
+        watch = st.session_state.setdefault("watchlist", [])
+        for row_num, (_, item) in enumerate(frame.iterrows()):
+            ticker = str(item.get("Ticker", "")).strip().upper()
+            if not ticker or ticker in ("NAN", "NONE"):
+                continue
+            name = str(item.get("Drug", "")).strip()
+            switch_key = f"today_watch_{table_key}_{row_num}_{ticker}"
+            st.toggle(f"{ticker} — {name}", value=ticker in watch,
+                      key=switch_key, on_change=_today_watch_change,
+                      args=(switch_key, ticker))
         st.dataframe(shown.style.map(lambda v: "background-color: #c7f2cd; color: #102c13" if str(v) == "FINISHED" else ("background-color: #fff0a6; color: #342900" if str(v) in ("STARTED","RUNNING") else ("background-color: #ffc8c8; color: #481313" if str(v) == "ANNOUNCED" else "")), subset=["FINANCING"]), use_container_width=True, hide_index=True, column_config={"Financing Search": st.column_config.LinkColumn("Financing Search"), "Result Source": st.column_config.LinkColumn("Result Source"), "Financing Evidence": st.column_config.LinkColumn("Financing Evidence")})
     st.subheader("TOP — Phase 3 results posted yesterday")
     if top.empty:
         st.warning("No verified yesterday Phase 3 posts are currently ingested. The Phase 3 pipeline source file is empty or lacks dated, source-linked result announcements; this is an intake gap, not proof that no results were published.")
-    show(top)
+    show(top, "top")
     st.subheader("BOTTOM — Cumulative Phase 3 result records (verified and review)")
-    show(bottom)
+    show(bottom, "bottom")
     st.caption("The bottom table lists trial-result records, not deduplicated unique drugs or confirmed positive outcomes. FINANCING: red announced, yellow started/running, green verified finished. Unverified records remain uncolored for review. Runway after financing is not inferred without a documented estimate.")
     st.download_button("Export TODAY", data.to_csv(index=False).encode("utf-8"), file_name=f"today_{now:%Y%m%d}.csv", mime="text/csv")
