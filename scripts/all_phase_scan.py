@@ -12,7 +12,7 @@ import requests
 ROOT = Path(__file__).resolve().parents[1]
 API = "https://clinicaltrials.gov/api/v2/studies"
 PHASES = ("EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4", "NA")
-FIELDS = ["ticker","company","nct_id","phase","status","drug","indication","start_date","primary_completion","study_completion","results_posted","source_updated","source_url","checked_at"]
+FIELDS = ["ticker","company","nct_id","phase","status","drug","intervention_type","route","indication","start_date","primary_completion","study_completion","results_posted","source_updated","source_url","checked_at"]
 def stamp():
     return datetime.now(timezone.utc).isoformat()
 def sponsor_query_name(v):
@@ -34,6 +34,33 @@ def save_csv(path, records):
         w=csv.DictWriter(f,fieldnames=FIELDS,extrasaction="ignore");w.writeheader();w.writerows(records)
     temp.replace(path)
 
+ROUTE_PATTERNS = (
+    ("Oral", r"\b(?:oral|orally|by mouth)\b"),
+    ("Subcutaneous", r"\b(?:subcutaneous|sub-cutaneous|subcut(?:aneous)?)\b"),
+    ("Intravenous", r"\b(?:intravenous|i\.?v\.?)\b"),
+    ("Intramuscular", r"\b(?:intramuscular|i\.?m\.?)\b"),
+    ("Inhaled", r"\b(?:inhaled|inhalation)\b"),
+    ("Intranasal", r"\b(?:intranasal|nasal spray)\b"),
+    ("Topical", r"\btopical\b"),
+    ("Transdermal", r"\btransdermal\b"),
+    ("Sublingual", r"\bsublingual\b"),
+    ("Intrathecal", r"\bintrathecal\b"),
+    ("Intradermal", r"\bintradermal\b"),
+    ("Ophthalmic", r"\bophthalmic\b"),
+    ("Rectal", r"\brectal\b"),
+    ("Vaginal", r"\bvaginal\b"),
+)
+
+def extract_routes(interventions):
+    text = " ".join(
+        f"{item.get('name', '')} {item.get('description', '')}"
+        for item in interventions
+    )
+    return "|".join(
+        label for label, pattern in ROUTE_PATTERNS
+        if re.search(pattern, text, re.IGNORECASE)
+    )
+
 def record_from_study(study, company, ticker):
     p=study.get("protocolSection",{})
     ident=p.get("identificationModule",{}).get("nctId","")
@@ -41,11 +68,15 @@ def record_from_study(study, company, ticker):
         raise ValueError("Missing or invalid NCT ID")
     design=p.get("designModule",{});status=p.get("statusModule",{})
     arms=p.get("armsInterventionsModule",{})
-    drugs=sorted({x.get("name","") for x in arms.get("interventions",[])
+    interventions=arms.get("interventions",[]) or []
+    intervention_types=sorted({x.get("type","") for x in interventions if x.get("type")})
+    drugs=sorted({x.get("name","") for x in interventions
                   if x.get("type") in ("DRUG","BIOLOGICAL") and x.get("name")})
     return {"ticker":ticker,"company":company,"nct_id":ident,
         "phase":"|".join(design.get("phases",[]) or ["NA"]),
         "status":status.get("overallStatus",""),"drug":" | ".join(drugs),
+        "intervention_type":"|".join(intervention_types),
+        "route":extract_routes(interventions),
         "indication":" | ".join(p.get("conditionsModule",{}).get("conditions",[])),
         "start_date":status.get("startDateStruct",{}).get("date",""),
         "primary_completion":status.get("primaryCompletionDateStruct",{}).get("date",""),
@@ -151,7 +182,7 @@ def scan(data_dir):
         due=[nct for nct in sorted(tracked)
              if trial_checks.get(nct,{}).get("status")!="COMPLETE"]
         changed=0
-        monitored=("phase","status","drug","indication","start_date",
+        monitored=("phase","status","drug","intervention_type","route","indication","start_date",
                    "primary_completion","study_completion","results_posted","source_updated")
         for offset in range(0,len(due),100):
             batch=due[offset:offset+100]
