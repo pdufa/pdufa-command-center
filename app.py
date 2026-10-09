@@ -3188,6 +3188,76 @@ elif page == "PIPELINE":
             st.warning("The latest clinical pipeline scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
         elif pipeline_state.get("status") == "COMPLETE WITH WARNINGS":
             st.warning("Clinical pipeline collection finished, but some market-cap/source evidence needs review. This does not certify the entire PDUFA overnight universe.")
+    # Full-registry clinical inventory: all registered phases, separate from the
+    # legacy Phase 2 graduation table and its market-cap eligibility gate.
+    all_phase_path = Path("data/all_phase_trials.csv")
+    all_phase_state_path = Path("data/all_phase_scan_state.json")
+    all_phase_state = {}
+    if all_phase_state_path.exists():
+        try:
+            all_phase_state = json.loads(all_phase_state_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            pass
+    st.markdown("### ALL-PHASE OVERNIGHT TRIAL INVENTORY")
+    if all_phase_state:
+        st.caption(
+            f"Registry companies checked: {all_phase_state.get('companies_checked', 0):,} / "
+            f"{all_phase_state.get('registry_companies', 0):,} · "
+            f"Clinical source status: {all_phase_state.get('status', 'UNKNOWN')} · "
+            f"Last scan: {all_phase_state.get('finished_at', 'Unknown')}"
+        )
+        st.caption("This is ClinicalTrials.gov coverage only, not an all-source FDA/SEC/market overnight completion status.")
+    if all_phase_path.exists():
+        try:
+            all_phase_df = pd.read_csv(all_phase_path, dtype=str).fillna("")
+        except (OSError, ValueError, pd.errors.ParserError) as exc:
+            st.warning(f"Unable to load all-phase inventory: {exc}")
+            all_phase_df = pd.DataFrame()
+        if not all_phase_df.empty:
+            all_phase_labels = {
+                "EARLY_PHASE1": "Early Phase 1", "PHASE1": "Phase 1",
+                "PHASE2": "Phase 2", "PHASE3": "Phase 3", "PHASE4": "Phase 4",
+                "NA": "Not Applicable"
+            }
+            def _all_phase_label(value):
+                tokens = str(value).upper().split("|")
+                recognized = [all_phase_labels[token] for token in tokens if token in all_phase_labels]
+                return "/".join(recognized) if recognized else "Unknown"
+            all_phase_df["Development Stage"] = all_phase_df["phase"].map(_all_phase_label)
+            available_stages = sorted(all_phase_df["Development Stage"].unique().tolist())
+            enabled_all_phases = st.multiselect(
+                "Show registered clinical stages",
+                options=available_stages,
+                default=available_stages,
+                key="pipeline_all_phase_stages",
+            )
+            all_phase_search = st.text_input("Search all-phase trials", key="pipeline_all_phase_search").strip()
+            all_phase_visible = all_phase_df[all_phase_df["Development Stage"].isin(enabled_all_phases)].copy()
+            if all_phase_search:
+                searchable = all_phase_visible[["ticker", "company", "drug", "indication", "nct_id"]].astype(str).agg(" ".join, axis=1)
+                all_phase_visible = all_phase_visible[searchable.str.contains(all_phase_search, case=False, regex=False)]
+            all_phase_visible = all_phase_visible.drop_duplicates(subset=["nct_id"])
+            st.metric("All-phase trials displayed", f"{len(all_phase_visible):,}")
+            display_cols = ["ticker", "company", "Development Stage", "nct_id", "drug",
+                            "indication", "status", "start_date", "primary_completion",
+                            "study_completion", "results_posted", "source_updated", "source_url"]
+            display_cols = [col for col in display_cols if col in all_phase_visible.columns]
+            st.dataframe(
+                all_phase_visible[display_cols].rename(columns={
+                    "ticker": "Ticker", "company": "Company", "nct_id": "NCT ID",
+                    "drug": "Drug", "indication": "Indication", "status": "Trial Status",
+                    "start_date": "Start", "primary_completion": "Primary Completion",
+                    "study_completion": "Study Completion", "results_posted": "Results Posted",
+                    "source_updated": "Source Updated", "source_url": "Trial Evidence"
+                }),
+                use_container_width=True, hide_index=True, height=520,
+                column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence")}
+            )
+        else:
+            st.info("The all-phase inventory is empty. Run the overnight GitHub workflow to populate it.")
+    else:
+        st.info("All-phase inventory is not available yet. Run the overnight GitHub workflow to populate it.")
+    st.markdown("### LEGACY PHASE 2 / PHASE 3 GRADUATION")
     st.markdown("### PICK DEVELOPMENT STAGES")
     st.caption("Start with no stages selected. Choose stages to populate the table and update the trial count. Regulatory stages require corresponding records in the source.")
     pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
