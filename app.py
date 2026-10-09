@@ -3185,13 +3185,15 @@ elif page == "PIPELINE":
         if not pipeline_state.get("complete"):
             st.warning("The latest scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
     st.markdown("### PICK DEVELOPMENT STAGES")
-    st.caption("Select one or more stages to filter the available registered trials. Phase 1 coverage depends on the records collected by the scanner.")
+    st.caption("Open the dropdown to enable or disable individual stages. Select multiple stages to filter the available trials.")
     pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3"]
-    stage_cols = st.columns(5)
-    selected_pipeline_stages = []
-    for stage_i, stage_label in enumerate(pipeline_stage_options):
-        if stage_cols[stage_i].checkbox(stage_label, value=True, key=f"pipeline_pick_{stage_label.replace('/', '_').replace(' ', '_')}"):
-            selected_pipeline_stages.append(stage_label)
+    selected_pipeline_stages = st.multiselect(
+        "Enabled stages",
+        options=pipeline_stage_options,
+        default=pipeline_stage_options,
+        key="pipeline_enabled_stages",
+        placeholder="Choose development stages",
+    )
     if not selected_pipeline_stages:
         st.info("Select at least one development stage to display trials.")
 
