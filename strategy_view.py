@@ -10,7 +10,7 @@ import re
 import pandas as pd
 from pipeline_universe import STAGES, select_records, stage_counts
 from disease_taxonomy import (
-    group_indication, burden_for, population_label, RARE_CATEGORIES,
+    group_indication, group_indications, burden_for, population_label, RARE_CATEGORIES,
 )
 
 
@@ -105,6 +105,11 @@ def prepare_strategy_rows(pipeline_pool, catalog=None):
         for indication, curated_issue in
         zip(rows["indication"], rows["curated_issue"])
     ]
+    rows["issues"] = [
+        group_indications(indication, curated_issue)
+        for indication, curated_issue in
+        zip(rows["indication"], rows["curated_issue"])
+    ]
     rows["approach"] = rows.apply(_approach, axis=1)
     rows["trial_name"] = rows["curated_trial_name"]
     rows["target_population_note"] = rows["curated_population_note"]
@@ -143,7 +148,17 @@ def select_trial_activity(rows, choice):
     return rows
 
 
+def expand_strategy_rows(rows):
+    """Cross-list multi-condition studies, retaining distinct source records."""
+    if rows is None or rows.empty or "issues" not in rows:
+        return rows
+    associations = rows.explode("issues").copy()
+    associations["issue"] = associations["issues"]
+    return associations.drop(columns=["issues"])
+
+
 def issue_summary(rows, sort_by="Patient population (global)"):
+    rows = expand_strategy_rows(rows)
     """One row per disease; prevalence is context, never addressable market."""
     columns = [
         "Disease / issue", "Worldwide affected", "US affected",
@@ -347,17 +362,18 @@ def render_strategy_page(universe, issue_catalog):
         st.info("No Pipeline records match the selected stages or search.")
         return
 
+    disease_rows = expand_strategy_rows(rows)
     issue_search = st.text_input(
         "Search disease / issue names", key="strategy_disease_search"
     ).strip()
     if issue_search:
         # Include the precise registry indication in disease search.
-        matches = rows["issue"].str.contains(
+        matches = disease_rows["issue"].str.contains(
             issue_search, case=False, regex=False, na=False
-        ) | rows["indication"].str.contains(
+        ) | disease_rows["indication"].str.contains(
             issue_search, case=False, regex=False, na=False
         )
-        rows = rows.loc[matches].copy()
+        disease_rows = disease_rows.loc[matches].copy()
     st.markdown("### DISEASE BURDEN — LARGEST AFFECTED POPULATIONS")
     sort_by = st.selectbox(
         "Rank conditions by", [
@@ -369,14 +385,15 @@ def render_strategy_page(universe, issue_catalog):
         "Show only diseases with verified population data",
         value=False, key="strategy_verified_burden_only",
     )
-    summary = issue_summary(rows, sort_by=sort_by)
+    summary = issue_summary(disease_rows, sort_by=sort_by)
     if verified_only:
         summary = summary.loc[
             summary["Burden source"].ne("") | summary["US data source"].ne("")
         ].reset_index(drop=True)
     st.caption(
-        f"{len(summary):,} conditions shown · {len(rows):,} Pipeline records "
-        "in the selected stages. Population figures are source-dated "
+        f"{len(summary):,} disease groups · {len(rows):,} Pipeline records "
+        f"· {len(disease_rows):,} disease associations (multi-condition studies can appear "
+        "more than once in disease groups). Population figures are source-dated "
         "disease-wide estimates (often different years and definitions), "
         "NOT trial-eligible patients or commercial forecasts. "
         "Unverified figures remain blank."
@@ -410,7 +427,7 @@ def render_strategy_page(universe, issue_catalog):
 
     for item in subset.to_dict("records"):
         issue_name = item["Disease / issue"]
-        issue_records = rows.loc[rows["issue"].eq(issue_name)]
+        issue_records = disease_rows.loc[disease_rows["issue"].eq(issue_name)]
         title = (
             f"{issue_name} — {item['Pool records']:,} record(s), "
             f"{item['Unique NCT IDs']:,} NCT ID(s)"
