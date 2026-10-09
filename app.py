@@ -3358,24 +3358,6 @@ elif page == "PIPELINE":
                 st.session_state["pipeline_master_transfers"] = dict(transfers)
                 st.session_state["pipeline_transfer_notice"] = f"{int(chosen.sum()):,} program(s) moved to MASTER TABLE for review."
                 st.rerun()
-        with st.expander(f"Moved to MASTER TABLE ({len(moved) + len(manual_moved):,})", expanded=not moved.empty or not manual_moved.empty):
-            if not manual_moved.empty:
-                st.markdown("#### Manually moved for review")
-                manual_fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phases": "Registered Phase", "trial_status": "Trial Status", "source_url": "Trial Evidence"}
-                manual_view = manual_moved[list(manual_fields)].rename(columns=manual_fields)
-                manual_view.insert(0, "In MASTER TABLE", True)
-                retained = grouped_editor(manual_view, use_container_width=True, hide_index=True,
-                              key="pipeline_master_return_editor", disabled=list(manual_fields.values()),
-                              column_config={"In MASTER TABLE": st.column_config.CheckboxColumn("IN MASTER TABLE", help="Uncheck to return this manually moved program to PIPELINE."),
-                                             "Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial")})
-                returned = ~retained["In MASTER TABLE"].fillna(False).astype(bool)
-                if returned.any():
-                    for row_id in returned.index[returned]:
-                        transfers.pop(str(manual_moved.loc[row_id, "program_key"]), None)
-                    st.session_state["pipeline_master_transfers"] = dict(transfers)
-                    st.session_state["pipeline_transfer_notice"] = f"{int(returned.sum()):,} program(s) returned to PIPELINE."
-                    st.rerun()
-            st.button("OPEN MASTER TABLE", on_click=go_page, args=("MASTER TABLE",), key="pipeline_open_master")
     if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh"):
         load_phase_pipeline_data.clear()
         st.rerun()
