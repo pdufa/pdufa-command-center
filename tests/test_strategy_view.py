@@ -122,6 +122,25 @@ class StrategyViewTests(unittest.TestCase):
         self.assertFalse(burden_for("Type 2 diabetes"))
         self.assertFalse(burden_for("Overweight"))
 
+    def test_named_drug_mechanism_and_evidence_link(self):
+        from drug_mechanisms import classify_named_interventions
+        cls, evidence = classify_named_interventions("placebo | semaglutide")
+        self.assertIn("GLP-1", cls)
+        self.assertTrue(evidence.startswith("https://"))
+        self.assertEqual(classify_named_interventions("AR-101 (unclassified)"), ("", ""))
+        pool = sample_pool()
+        pool.loc[1, "drug"] = "semaglutide | placebo"
+        rows = prepare_strategy_rows(pool, pd.DataFrame())
+        self.assertIn("GLP-1", rows.loc[1, "approach"])
+        self.assertIn("Named ingredient class source", _trial_html(rows.loc[1].to_dict()))
+
+    def test_non_small_cell_and_small_cell_are_not_mixed(self):
+        from disease_taxonomy import group_indications
+        non_small = group_indications("Non-Small Cell Lung Cancer")
+        small = group_indications("Small Cell Lung Cancer")
+        self.assertEqual(non_small, ("Non-small cell lung cancer",))
+        self.assertEqual(small, ("Small cell lung cancer",))
+
     def test_population_sort_and_source_definitions(self):
         from disease_taxonomy import burden_for
         frame = pd.DataFrame([
