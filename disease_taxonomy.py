@@ -225,9 +225,21 @@ def group_indications(indication, curated_issue=""):
     for label, pattern in COMPILED:
         if pattern.search(raw) and label not in seen:
             seen.append(label)
-    specifics = {"Type 1 diabetes", "Type 2 diabetes"}
+    specifics = {"Type 1 diabetes", "Type 2 diabetes", "Diabetes insipidus"}
     if seen and "Diabetes" in seen and specifics.intersection(seen):
         seen.remove("Diabetes")
+    if "Hypertension" in seen and (
+        "Pulmonary arterial hypertension" in seen
+        or "Intracranial hypertension" in seen
+    ):
+        seen.remove("Hypertension")
+    specific_cancers = {"Breast cancer", "Non-small cell lung cancer",
+        "Small cell lung cancer", "Prostate cancer", "Colorectal cancer",
+        "Pancreatic cancer", "Melanoma", "Multiple myeloma",
+        "Acute myeloid leukemia", "Chronic lymphocytic leukemia",
+        "Hepatocellular carcinoma", "Ovarian cancer"}
+    if "Cancer — other / multi-tumor" in seen and specific_cancers.intersection(seen):
+        seen.remove("Cancer — other / multi-tumor")
     if "Healthy volunteers / no disease" in seen and len(seen) > 1:
         seen.remove("Healthy volunteers / no disease")
     if "Weight management (unspecified)" in seen and (
