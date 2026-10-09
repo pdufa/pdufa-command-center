@@ -15,8 +15,12 @@ PHASES = ("EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4", "NA")
 FIELDS = ["ticker","company","nct_id","phase","status","drug","indication","start_date","primary_completion","study_completion","results_posted","source_updated","source_url","checked_at"]
 def stamp():
     return datetime.now(timezone.utc).isoformat()
+def sponsor_query_name(v):
+    # SEC issuer names can end with a jurisdiction marker such as \DE\.
+    # Those backslashes are query syntax, not part of the trial sponsor name.
+    return re.sub(r"\s*\\[A-Za-z]{2}\\\s*$", "", str(v or "")).strip()
 def normalized(v):
-    return re.sub(r"[^a-z0-9]+"," ",str(v or "").lower()).strip()
+    return re.sub(r"[^a-z0-9]+"," ",sponsor_query_name(v).lower()).strip()
 def rows(path):
     if not path.exists(): return []
     with path.open(newline="",encoding="utf-8") as f: return list(csv.DictReader(f))
@@ -32,7 +36,7 @@ def save_csv(path, records):
 def collect(session, company, ticker):
     token=None;found={}; pages=0
     while True:
-        params={"query.spons":company,"pageSize":100,"format":"json"}
+        params={"query.spons":sponsor_query_name(company),"pageSize":100,"format":"json"}
         if token:params["pageToken"]=token
         for attempt in range(4):
             try:
