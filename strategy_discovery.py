@@ -250,7 +250,7 @@ def render_optional_discovery(associations):
         "indication": "Exact registry indication",
         "source_url": "Original study / regulatory source",
     }
-    detail = selected[[key for key in fields if key in selected.columns]].rename(columns=fields)
+    detail = selected.reindex(columns=list(fields), fill_value="").rename(columns=fields)
     st.dataframe(
         detail, use_container_width=True, hide_index=True, height=420,
         column_config={
