@@ -3167,7 +3167,7 @@ if page == "MASTER TABLE":
     st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
 
 elif page == "PIPELINE":
-    st.markdown("## PIPELINE — PHASE 2 THROUGH FDA DECISION")
+    st.markdown("## PIPELINE — PHASE 1 THROUGH FDA DECISION")
     st.caption("Check MOVE TO MASTER TABLE to transfer a program for review. Manual transfers keep their recorded phase and REVIEW gates. Verified standalone Phase 3 starts also move automatically.")
     transfers = st.session_state.setdefault("pipeline_master_transfers", {})
     notice = st.session_state.pop("pipeline_transfer_notice", None)
@@ -3194,11 +3194,11 @@ elif page == "PIPELINE":
                 st.error(error)
     st.markdown("### 2026+ DEVELOPMENT & REGULATORY HORIZON")
     st.caption("Events from January 1, 2026 onward. Historical and future milestones are separated; missing dates remain unknown. This combines currently loaded sources and is not a complete clinical-trial universe.")
-    horizon_stages = ["Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
+    horizon_stages = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
     horizon = []
     for _, rec in pipeline_frame.iterrows():
         phase_text = str(rec.get("phases", "")).upper()
-        stage = "Phase 2/3" if "2/3" in phase_text else ("Phase 3" if "3" in phase_text else "Phase 2")
+        stage = "Phase 1/2" if "PHASE1" in phase_text and "PHASE2" in phase_text else ("Phase 2/3" if "PHASE2" in phase_text and "PHASE3" in phase_text else ("Phase 3" if "PHASE3" in phase_text else ("Phase 1" if "PHASE1" in phase_text else "Phase 2")))
         for date_col, milestone in [("start_date", "Trial Start"), ("primary_completion", "Primary Completion"), ("results_first_posted", "Results Posted"), ("phase3_target_start", "Phase 3 Target Start"), ("phase3_start_date", "Phase 3 Actual Start")]:
             when = pd.to_datetime(rec.get(date_col), errors="coerce", utc=True)
             if pd.notna(when) and when.year >= 2026:
@@ -3211,6 +3211,7 @@ elif page == "PIPELINE":
         base = {"Ticker": ticker, "Company": rec.get("company", ""), "Drug": rec.get("drug", ""),
                 "Indication": rec.get("indication", "")}
         events = [
+            ("phase1_date", "Phase 1", "Phase 1 Milestone", "trial_evidence_url"),
             ("phase2_date", "Phase 2", "Phase 2 Milestone", "trial_evidence_url"),
             ("phase3_date", "Phase 3 Results", "Phase 3 Readout / Milestone", "trial_evidence_url"),
             ("nda_submission_date", "NDA/BLA Submission", "Application Submitted", "pdufa_evidence_url"),
@@ -3237,7 +3238,7 @@ elif page == "PIPELINE":
     selected_stages = st.multiselect(
         "Development stages — click to activate one or several",
         horizon_stages,
-        default=["Phase 2"],
+        default=["Phase 1"],
         key="pipeline_selected_stages",
         help="Choose multiple stages to display their trials together. Remove a stage to deactivate it.",
     )
@@ -3250,11 +3251,15 @@ elif page == "PIPELINE":
     st.metric("Selected stages — dated milestones", len(stage_events))
     if not selected_stages:
         st.info("Select one or more stages above to display their trials.")
-    elif not pipeline_frame.empty and any(x in selected_stages for x in ("Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results")):
+    elif not pipeline_frame.empty and any(x in selected_stages for x in ("Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results")):
         phase_label = pipeline_frame["phases"].fillna("").astype(str).str.upper()
         trial_parts = []
         for stage_name in selected_stages:
-            if stage_name == "Phase 2":
+            if stage_name == "Phase 1":
+                subset = pipeline_frame[phase_label.eq("PHASE1")].copy()
+            elif stage_name == "Phase 1/2":
+                subset = pipeline_frame[phase_label.str.contains("PHASE1", regex=False) & phase_label.str.contains("PHASE2", regex=False)].copy()
+            elif stage_name == "Phase 2":
                 subset = pipeline_frame[phase_label.eq("PHASE2")].copy()
             elif stage_name == "Phase 2/3":
                 subset = pipeline_frame[phase_label.str.contains("PHASE2", regex=False) & phase_label.str.contains("PHASE3", regex=False)].copy()
