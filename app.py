@@ -3170,26 +3170,8 @@ if page == "MASTER TABLE":
 
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — PHASE 1 THROUGH FDA DECISION")
-    st.caption("Check MOVE TO MASTER TABLE to transfer a program for review. Manual transfers keep their recorded phase and REVIEW gates. Verified standalone Phase 3 starts also move automatically.")
-    transfers = st.session_state.setdefault("pipeline_master_transfers", {})
-    notice = st.session_state.pop("pipeline_transfer_notice", None)
-    if notice:
-        st.success(notice)
-    records, pipeline_state = current_phase_pipeline()
-    pipeline_frame = pd.DataFrame(records)
-    if pipeline_state:
-        stamp = safe_text(pipeline_state.get("finished_at"), "Not completed")
-        try:
-            stamp = datetime.fromisoformat(stamp).astimezone(ZoneInfo("America/Los_Angeles")).strftime("%b %d, %Y %I:%M %p %Z")
-        except ValueError:
-            pass
-        st.caption(f"Daily monitoring · Last scan: {stamp} · Clinical pipeline status: {pipeline_state.get('status', 'UNKNOWN')}")
-        if not pipeline_state.get("complete"):
-            st.warning("The latest clinical pipeline scan did not cover its full scope. Saved records remain available; missing matches are not treated as verified.")
-        elif pipeline_state.get("status") == "COMPLETE WITH WARNINGS":
-            st.warning("Clinical pipeline collection finished, but some market-cap/source evidence needs review. This does not certify the entire PDUFA overnight universe.")
-    # Full-registry clinical inventory: all registered phases, separate from the
-    # legacy Phase 2 graduation table and its market-cap eligibility gate.
+    st.caption("Select registered clinical stages to filter the overnight trial inventory and its displayed count.")
+    # Full-registry clinical inventory across all registered phases.
     all_phase_path = Path("data/all_phase_trials.csv")
     all_phase_state_path = Path("data/all_phase_scan_state.json")
     all_phase_state = {}
@@ -3257,91 +3239,7 @@ elif page == "PIPELINE":
             st.info("The all-phase inventory is empty. Run the overnight GitHub workflow to populate it.")
     else:
         st.info("All-phase inventory is not available yet. Run the overnight GitHub workflow to populate it.")
-    st.markdown("### LEGACY PHASE 2 / PHASE 3 GRADUATION")
-    st.markdown("### PICK DEVELOPMENT STAGES")
-    st.caption("Start with no stages selected. Choose stages to populate the table and update the trial count. Regulatory stages require corresponding records in the source.")
-    pipeline_stage_options = ["Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision"]
-    selected_pipeline_stages = st.multiselect(
-        "Enabled stages",
-        options=pipeline_stage_options,
-        default=[],
-        key="pipeline_enabled_stages_v2",
-        placeholder="Choose development stages",
-    )
-    if not selected_pipeline_stages:
-        st.info("Select at least one development stage to display trials.")
-
-    if pipeline_frame.empty:
-        st.info("The Phase 2 collection has not produced verified company matches yet.")
-    else:
-        phase2 = pipeline_frame[pipeline_frame["destination"].eq("PIPELINE") & pipeline_frame["universe_gate"].eq("PASS")].copy()
-        # Match exact registered phase tokens; do not mistake Phase 1/2 for Phase 2.
-        def _pipeline_stage_label(value):
-            phase = str(value).upper().replace(" ", "")
-            has1, has2, has3 = ("PHASE1" in phase or "EARLY_PHASE1" in phase), "PHASE2" in phase, "PHASE3" in phase
-            if has1 and has2:
-                return "Phase 1/2"
-            if has2 and has3:
-                return "Phase 2/3"
-            if has3:
-                return "Phase 3"
-            if has2:
-                return "Phase 2"
-            if has1:
-                return "Phase 1"
-            return None
-        phase2 = phase2[phase2["phases"].map(_pipeline_stage_label).isin(selected_pipeline_stages)].copy()
-        phase2 = phase2.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
-        manual_moved = phase2[phase2["program_key"].isin(transfers)].copy()
-        phase2 = phase2[~phase2["program_key"].isin(transfers)].copy()
-        moved = pipeline_frame[pipeline_frame["destination"].eq("MASTER TABLE") & pipeline_frame["universe_gate"].eq("PASS") & pipeline_frame["nct_id"].eq(pipeline_frame["phase3_nct_id"])].copy()
-        moved = moved.sort_values("promoted_at", ascending=False).drop_duplicates("program_key")
-        review = pipeline_frame[(pipeline_frame["destination"].eq("REVIEW") | pipeline_frame["universe_gate"].eq("REVIEW")) & ~pipeline_frame["universe_gate"].eq("FAIL")].copy()
-        review = review.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
-        search = st.text_input("Find ticker, drug or indication", key="pipeline_search").strip()
-        if search:
-            matching = phase2[["ticker", "company", "drug", "indication"]].fillna("").astype(str).agg(" ".join, axis=1).str.contains(search, case=False, regex=False)
-            phase2 = phase2[matching]
-        labels = {
-            "ticker": "Ticker", "company": "Company", "drug": "Drug", "indication": "Indication",
-            "trial_status": "Phase 2 Status", "phases": "Registered Phase", "market_cap": "Market Cap", "start_date": "Phase 2 Start", "start_date_type": "Start Date Type",
-            "primary_completion": "Primary Completion", "primary_completion_type": "Completion Date Type",
-            "results_first_posted": "Results Posted", "phase2_nct_ids": "Phase 2 Trials",
-            "phase3_candidate_nct": "Phase 3 Trial Found", "phase3_target_start": "Phase 3 Target Start",
-            "promotion_status": "Graduation Status", "source_updated": "Source Updated",
-            "checked_at": "Last Checked", "source_url": "Trial Evidence",
-        }
-        if not phase2.empty:
-            filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2, expanded=True)
-            # Preserve the user's multi-stage sort order, not just the filtered rows.
-            phase2 = phase2.loc[filtered_phase2.index]
-        # Count the rows that actually populate the table for the currently enabled stages.
-        visible_trial_count = len(phase2) if selected_pipeline_stages else 0
-        st.metric("Trials displayed", f"{visible_trial_count:,}")
-        st.caption("Selected: " + (", ".join(selected_pipeline_stages) if selected_pipeline_stages else "None") + " · Count reflects the table below.")
-        if phase2.empty:
-            st.info("No trials match the selected stages or search.")
-        else:
-            phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
-            # stage_filter_panel already sorted the records in the selected workflow,
-            # stage priority, or PDUFA-countdown order; do not reorder by trial date.
-            transfer_view = phase2[list(labels)].rename(columns=labels)
-            transfer_view.insert(0, "Move to MASTER TABLE", False)
-            transferred = grouped_editor(transfer_view, stage_controls=False, use_container_width=True, hide_index=True, height=560,
-                         key="pipeline_master_transfer_editor", disabled=list(labels.values()), stage_source=phase2,
-                         column_config={"Move to MASTER TABLE": st.column_config.CheckboxColumn("MOVE TO MASTER TABLE", help="Move this drug and indication into MASTER TABLE for review. Phase 3 still requires verified evidence.", default=False),
-                                        "Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial"),
-                                        "Phase 3 Target Start": st.column_config.TextColumn("Phase 3 Target Start", help="Registered target date; this is not proof that Phase 3 has started.")})
-            chosen = transferred["Move to MASTER TABLE"].fillna(False).astype(bool)
-            if chosen.any():
-                stamp = datetime.now(timezone.utc).isoformat()
-                for row_id in chosen.index[chosen]:
-                    transfers[str(phase2.loc[row_id, "program_key"])] = stamp
-                st.session_state["pipeline_master_transfers"] = dict(transfers)
-                st.session_state["pipeline_transfer_notice"] = f"{int(chosen.sum()):,} program(s) moved to MASTER TABLE for review."
-                st.rerun()
     if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh"):
-        load_phase_pipeline_data.clear()
         st.rerun()
 
 elif page == "DISEASE & MARKET HORIZON":
