@@ -113,6 +113,34 @@ def prepare_strategy_rows(pipeline_pool, catalog=None):
     return rows
 
 
+# Registry participation states, not evidence of trial success.
+ACTIVE_TRIAL_STATES = {
+    "RECRUITING", "NOT_YET_RECRUITING", "ACTIVE_NOT_RECRUITING",
+    "ENROLLING_BY_INVITATION",
+}
+
+
+def select_trial_activity(rows, choice):
+    """Filter display rows only; PIPELINE and its 14 stage counts stay intact."""
+    if rows.empty or choice == "All clinical / regulatory records":
+        return rows
+    states = rows["status"].fillna("").astype(str).str.upper().str.replace(
+        " ", "_", regex=False
+    )
+    active = states.isin(ACTIVE_TRIAL_STATES)
+    if choice == "Active / recruiting trials":
+        return rows.loc[active].copy()
+    if choice == "Completed trials":
+        return rows.loc[states.isin({"COMPLETED", "TERMINATED"})].copy()
+    if choice == "Regulatory / no registry status":
+        return rows.loc[
+            rows["record_type"].fillna("").astype(str).str.contains(
+                "Regulatory", case=False, regex=False
+            ) | states.eq("")
+        ].copy()
+    return rows
+
+
 def issue_summary(rows, sort_by="Patient population (global)"):
     """One row per disease; prevalence is context, never addressable market."""
     columns = [
@@ -274,7 +302,19 @@ def render_strategy_page(universe, issue_catalog):
         key="pipeline_universe_search",
     ).strip()
     pool = select_records(universe, stages, search)
-    rows = prepare_strategy_rows(pool, issue_catalog)
+    all_rows = prepare_strategy_rows(pool, issue_catalog)
+    activity_mode = st.selectbox(
+        "Trial activity",
+        [
+            "All clinical / regulatory records",
+            "Active / recruiting trials",
+            "Completed trials",
+            "Regulatory / no registry status",
+        ],
+        key="strategy_trial_activity",
+        help="Filter STRATEGY results without changing the PIPELINE universe or individual stage counts.",
+    )
+    rows = select_trial_activity(all_rows, activity_mode)
 
     total_nct = rows["nct_id"].loc[rows["nct_id"].ne("")].nunique() if not rows.empty else 0
     curated_count = int(rows["curated_issue"].ne("").sum()) if not rows.empty else 0
@@ -286,6 +326,11 @@ def render_strategy_page(universe, issue_catalog):
     m2.metric("Unique registered NCT IDs", f"{total_nct:,}")
     m3.metric("Exact NCT issue matches", f"{curated_count:,}")
     m4.metric("Missing trial indication", f"{unclassified:,}")
+    if len(all_rows) != len(rows):
+        st.caption(
+            f"Showing {len(rows):,} of {len(all_rows):,} records matching "
+            "the selected Pipeline stages and activity filter."
+        )
     st.caption(
         "Source completeness: classification is available only when "
         "registry / company evidence supports it. Mechanisms not present "
