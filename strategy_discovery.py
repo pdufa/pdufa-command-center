@@ -4,8 +4,6 @@ All company/trial results are sourced from the already-filtered Pipeline pool.
 Questions are research prompts, NOT verified care gaps or efficacy claims.
 Biological targets and ingredient drug classes are distinct evidence levels.
 """
-from collections import OrderedDict
-
 import pandas as pd
 
 
@@ -114,13 +112,28 @@ def mechanism_evidence(record):
 
     target = clean("mechanism_target")
     if target:
-        return "Annotated biological target / mechanism", target, clean("classification_source_url")
+        source = clean("classification_source_url")
+        return (
+            "Annotated biological target / mechanism" if source
+            else "Target / mechanism noted — source missing",
+            target, source,
+        )
     drug_class = clean("drug_class")
     if drug_class:
-        return "Annotated drug class (target not established)", drug_class, clean("classification_source_url")
+        source = clean("classification_source_url")
+        return (
+            "Annotated drug class (target not established)" if source
+            else "Drug class noted — source missing",
+            drug_class, source,
+        )
     named = clean("named_mechanism")
     if named:
-        return "Named ingredient drug class (not necessarily trial lead)", named, clean("named_mechanism_source")
+        source = clean("named_mechanism_source")
+        return (
+            "Named ingredient drug class (not necessarily trial lead)" if source
+            else "Named ingredient class — source missing",
+            named, source,
+        )
     return "Unclassified — source research needed", "Not classified", ""
 
 
@@ -216,11 +229,11 @@ def render_optional_discovery(associations):
     b.metric("Unique NCT IDs", f"{nct:,}")
     c.metric("Distinct tickers", f"{companies:,}")
 
-    st.markdown("**Source-backed targets and intervention classes**")
+    st.markdown("**Recorded targets and intervention classes — check evidence links**")
     st.caption(
         "An annotated molecular target is distinct from an ingredient's "
-        "pharmacologic class. Unclassified entries remain unclassified; "
-        "nothing here demonstrates treatment success."
+        "pharmacologic class. Entries without a source link are explicitly marked "
+        "as missing evidence; nothing here demonstrates treatment success."
     )
     summary = target_summary(selected)
     st.dataframe(
