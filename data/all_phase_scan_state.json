@@ -1,12 +1,12 @@
 {
   "run_date": "2026-10-09",
-  "finished_at": "2026-10-09T13:42:35.465203+00:00",
+  "finished_at": "2026-10-09T13:58:07.408025+00:00",
   "registry_companies": 717,
   "companies_checked": 717,
-  "companies_with_warnings": 1,
+  "companies_with_warnings": 0,
   "trials_stored": 6109,
-  "status": "COMPLETE WITH WARNINGS",
-  "complete": false,
+  "status": "COMPLETE",
+  "complete": true,
   "scope": "All registered phases, all registry companies; exact lead-sponsor matching only",
   "limitations": "Does not cover subsidiary/alternate sponsors or FDA/SEC/market sources",
   "checks": {
@@ -1911,9 +1911,9 @@
       "matched_trials": 1
     },
     "LFCR|LIFECORE BIOMEDICAL, INC. \\DE\\": {
-      "status": "WARNING",
-      "checked_at": "2026-10-09T13:40:57.565844+00:00",
-      "error": "400 Client Error: Bad Request for url: https://clinicaltrials.gov/api/v2/studies?query.spons=LIFECORE+BIOMEDICAL%2C+INC.+%5CDE%5C&pageSize=100&format=json"
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:58:07.219230+00:00",
+      "matched_trials": 0
     },
     "LFVN|Lifevantage Corp": {
       "status": "COMPLETE",
