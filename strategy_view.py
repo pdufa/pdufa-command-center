@@ -10,6 +10,7 @@ import re
 import pandas as pd
 from pipeline_universe import STAGES, select_records, stage_counts
 from drug_mechanisms import classify_named_interventions
+from strategy_discovery import render_optional_discovery
 from disease_taxonomy import (
     group_indication, group_indications, burden_for, population_label, RARE_CATEGORIES,
 )
@@ -388,6 +389,8 @@ def render_strategy_page(universe, issue_catalog):
             issue_search, case=False, regex=False, na=False
         )
         disease_rows = disease_rows.loc[matches].copy()
+    render_optional_discovery(disease_rows)
+
     st.markdown("### DISEASE BURDEN — LARGEST AFFECTED POPULATIONS")
     sort_by = st.selectbox(
         "Rank conditions by", [
