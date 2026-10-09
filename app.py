@@ -3224,8 +3224,6 @@ elif page == "PIPELINE":
         moved = moved.sort_values("promoted_at", ascending=False).drop_duplicates("program_key")
         review = pipeline_frame[(pipeline_frame["destination"].eq("REVIEW") | pipeline_frame["universe_gate"].eq("REVIEW")) & ~pipeline_frame["universe_gate"].eq("FAIL")].copy()
         review = review.sort_values("source_updated", ascending=False).drop_duplicates("program_key")
-        outside = pipeline_frame.loc[pipeline_frame["universe_gate"].eq("FAIL"), "program_key"].nunique()
-        st.caption(f"{outside:,} programs outside the verified market-cap range are excluded from this view.")
         search = st.text_input("Find ticker, drug or indication", key="pipeline_search").strip()
         if search:
             matching = phase2[["ticker", "company", "drug", "indication"]].fillna("").astype(str).agg(" ".join, axis=1).str.contains(search, case=False, regex=False)
@@ -3245,9 +3243,9 @@ elif page == "PIPELINE":
             phase2 = phase2.loc[filtered_phase2.index]
         # Count exactly the rows populated in the visible trial list after all filters.
         visible_trial_count = len(phase2)
-        st.metric("Trials displayed", f"{visible_trial_count:,}")
+        st.metric("Trials displayed for selected stages", f"{visible_trial_count:,}")
         if phase2.empty:
-            st.info("No Phase 2 programs match the selected stages or search.")
+            st.info("No trials match the selected stages or search.")
         else:
             phase2["market_cap"] = pd.to_numeric(phase2["market_cap"], errors="coerce").map(fmt_cap)
             # stage_filter_panel already sorted the records in the selected workflow,
