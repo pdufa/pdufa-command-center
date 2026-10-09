@@ -3203,7 +3203,36 @@ elif page == "PIPELINE":
             when = pd.to_datetime(rec.get(date_col), errors="coerce", utc=True)
             if pd.notna(when) and when.year >= 2026:
                 horizon.append({"Ticker": rec.get("ticker", ""), "Company": rec.get("company", ""), "Drug": rec.get("drug", ""), "Indication": rec.get("indication", ""), "Stage": "Phase 3" if date_col.startswith("phase3_") else ("Phase 3 Results" if date_col == "results_first_posted" and stage == "Phase 3" else stage), "Milestone": milestone, "Date": when.date().isoformat(), "Period": "Upcoming" if when.date() > date.today() else "Historical / Today", "Evidence": rec.get("source_url", ""), "Status": rec.get("trial_status", "")})
-    horizon_frame = pd.DataFrame(horizon)
+    # Merge regulatory milestones from the existing master PDUFA candidate feed.
+    # This does not assume that a reported PDUFA date or trial milestone is verified.
+    for _, rec in df.iterrows():
+        outcome = str(rec.get("outcome", "") or "").strip().upper()
+        ticker = str(rec.get("ticker", "") or "").strip()
+        base = {"Ticker": ticker, "Company": rec.get("company", ""), "Drug": rec.get("drug", ""),
+                "Indication": rec.get("indication", "")}
+        events = [
+            ("phase2_date", "Phase 2", "Phase 2 Milestone", "trial_evidence_url"),
+            ("phase3_date", "Phase 3 Results", "Phase 3 Readout / Milestone", "trial_evidence_url"),
+            ("nda_submission_date", "NDA/BLA Submission", "Application Submitted", "pdufa_evidence_url"),
+            ("fda_acceptance_date", "FDA Acceptance", "Application Accepted", "pdufa_evidence_url"),
+            ("pdufa_date", "PDUFA Decision", "Reported PDUFA Goal", "pdufa_evidence_url"),
+            ("decision_date", "Post-Decision", "FDA Decision / Outcome", "pdufa_evidence_url"),
+        ]
+        for col, stage, milestone, evidence_col in events:
+            when = pd.to_datetime(rec.get(col), errors="coerce", utc=True)
+            if pd.isna(when) or when.year < 2026:
+                continue
+            status = outcome if stage == "Post-Decision" and outcome else str(rec.get("check_status", "") or "")
+            if stage == "PDUFA Decision":
+                status = str(rec.get("pdufa_confirmation", "") or "UNVERIFIED")
+            horizon.append({**base, "Stage": stage, "Milestone": milestone,
+                            "Date": when.date().isoformat(),
+                            "Period": "Upcoming" if when.date() > date.today() else "Historical / Today",
+                            "Evidence": rec.get(evidence_col, ""), "Status": status,
+                            "Source": "PDUFA master feed"})
+    for event in horizon:
+        event.setdefault("Source", "ClinicalTrials.gov pipeline")
+    horizon_frame = pd.DataFrame(horizon).drop_duplicates(subset=["Ticker", "Drug", "Indication", "Stage", "Milestone", "Date"]) if horizon else pd.DataFrame()
     horizon_stage = st.multiselect("Stages in horizon", horizon_stages, default=horizon_stages, key="pipeline_horizon_stages")
     horizon_period = st.radio("Time period", ["All 2026+", "Upcoming", "Historical / Today"], horizontal=True, key="pipeline_horizon_period")
     if not horizon_frame.empty:
@@ -3215,7 +3244,7 @@ elif page == "PIPELINE":
         grouped_dataframe(horizon_frame, stage_controls=False, use_container_width=True, hide_index=True, height=420)
     else:
         st.info("No dated milestones from 2026 onward in the currently loaded Phase 2/3 source.")
-    st.caption("NDA/BLA submissions, FDA acceptances, PDUFA decisions and post-decision outcomes require additional source reconciliation; selecting those stages does not imply they are already populated.")
+    st.caption("This combines the existing trial pipeline and PDUFA master feed, not the complete public universe. Dates and outcomes retain their source verification statuses; unverified reported goals are not confirmed FDA decisions.")
     if pipeline_frame.empty:
         st.info("The Phase 2 collection has not produced verified company matches yet.")
     else:
