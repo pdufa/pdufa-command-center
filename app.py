@@ -3243,7 +3243,9 @@ elif page == "PIPELINE":
             filtered_phase2 = stage_filter_panel(phase2, key="pipeline_phase2", source=phase2, expanded=True)
             # Preserve the user's multi-stage sort order, not just the filtered rows.
             phase2 = phase2.loc[filtered_phase2.index]
-        st.metric("Trials in selected list", f"{len(phase2):,}")
+        # Count exactly the rows populated in the visible trial list after all filters.
+        visible_trial_count = len(phase2)
+        st.metric("Trials displayed", f"{visible_trial_count:,}")
         if phase2.empty:
             st.info("No Phase 2 programs match the selected stages or search.")
         else:
