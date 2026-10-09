@@ -81,6 +81,66 @@ class OptionalDiscoveryTests(unittest.TestCase):
             ), "Source"].iloc[0].startswith("https://")
         )
 
+    def test_missing_mechanism_source_is_labeled_as_unverified(self):
+        raw = {
+            "mechanism_target": "Candidate receptor X",
+            "classification_source_url": "",
+        }
+        label, name, url = mechanism_evidence(raw)
+        self.assertIn("source missing", label)
+        self.assertEqual(name, "Candidate receptor X")
+        self.assertEqual(url, "")
+
+    def test_toggle_on_displays_real_scoped_evidence_without_editing_pool(self):
+        pool = self.sample()
+        original = pool.copy(deep=True)
+        events = []
+        tables = []
+        metrics = []
+        class Metric:
+            def metric(self, label, value):
+                metrics.append((label, value))
+        def table(df, **kwargs):
+            tables.append(df.copy())
+        def selectbox(label, options, **kwargs):
+            events.append(("selectbox", label, tuple(options)))
+            return options[0]
+        fake = types.SimpleNamespace(
+            markdown=lambda msg, **kwargs: events.append(("markdown", msg)),
+            checkbox=lambda label, **kwargs:
+                (events.append(("checkbox", kwargs)), True)[1],
+            caption=lambda msg: events.append(("caption", msg)),
+            selectbox=selectbox,
+            columns=lambda n: [Metric() for _ in range(n)],
+            dataframe=table,
+            column_config=types.SimpleNamespace(LinkColumn=lambda label: label),
+            info=lambda msg: events.append(("info", msg)),
+        )
+        with patch.dict(sys.modules, {"streamlit": fake}):
+            render_optional_discovery(pool)
+        self.assertEqual(len(tables), 2, "Targets and individual trials must render")
+        self.assertIn("Evidence type", tables[0].columns)
+        self.assertIn("Original study / regulatory source", tables[1].columns)
+        self.assertEqual(len(tables[1]), 3)
+        self.assertEqual(set(tables[1]["Ticker"]), {"AA", "BB", "CC"})
+        self.assertEqual(len(metrics), 3)
+        self.assertIn(("Unique NCT IDs", "3"), metrics)
+        self.assertTrue(any("Questions requiring evidence review" in str(e) for e in events))
+        self.assertEqual(len([e for e in events if e[0] == "selectbox"]), 2)
+        pd.testing.assert_frame_equal(pool, original)
+
+    def test_toggle_on_empty_subset_exits_cleanly(self):
+        events = []
+        fake = types.SimpleNamespace(
+            markdown=lambda msg, **_: events.append(("markdown", msg)),
+            checkbox=lambda label, **_: True,
+            caption=lambda msg: events.append(("caption", msg)),
+            info=lambda msg: events.append(("info", msg)),
+        )
+        with patch.dict(sys.modules, {"streamlit": fake}):
+            render_optional_discovery(pd.DataFrame())
+        self.assertTrue(any(e[0] == "info" for e in events))
+
     def test_toggle_off_by_default_and_does_not_touch_data(self):
         pool = self.sample()
         original = pool.copy(deep=True)
