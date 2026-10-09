@@ -1,14 +1,14 @@
 {
   "mode": "daily",
-  "started_at": "2026-10-08T17:50:47.703847+00:00",
+  "started_at": "2026-10-09T13:43:18.736595+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3969,
-  "matched_posted_results": 94,
-  "new_records": 0,
+  "studies_checked": 3973,
+  "matched_posted_results": 98,
+  "new_records": 4,
   "complete": true,
   "errors": [],
-  "finished_at": "2026-10-08T17:51:00.075641+00:00",
-  "stored_results": 2476,
+  "finished_at": "2026-10-09T13:43:26.226866+00:00",
+  "stored_results": 2480,
   "status": "COMPLETE"
 }

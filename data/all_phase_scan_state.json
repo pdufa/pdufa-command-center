@@ -1,0 +1,3599 @@
+{
+  "run_date": "2026-10-09",
+  "finished_at": "2026-10-09T13:42:35.465203+00:00",
+  "registry_companies": 717,
+  "companies_checked": 717,
+  "companies_with_warnings": 1,
+  "trials_stored": 6109,
+  "status": "COMPLETE WITH WARNINGS",
+  "complete": false,
+  "scope": "All registered phases, all registry companies; exact lead-sponsor matching only",
+  "limitations": "Does not cover subsidiary/alternate sponsors or FDA/SEC/market sources",
+  "checks": {
+    "AAPG|ASCENTAGE PHARMA GROUP INTERNATIONAL": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:15.853461+00:00",
+      "matched_trials": 0
+    },
+    "AARD|Aardvark Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:16.099629+00:00",
+      "matched_trials": 6
+    },
+    "ABBV|AbbVie Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:16.504487+00:00",
+      "matched_trials": 0
+    },
+    "ABCL|AbCellera Biologics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:16.746529+00:00",
+      "matched_trials": 2
+    },
+    "ABEO|ABEONA THERAPEUTICS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:16.978270+00:00",
+      "matched_trials": 11
+    },
+    "ABOS|Acumen Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:17.198264+00:00",
+      "matched_trials": 0
+    },
+    "ABSI|Absci Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:17.416487+00:00",
+      "matched_trials": 0
+    },
+    "ABT|ABBOTT LABORATORIES": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:17.642790+00:00",
+      "matched_trials": 0
+    },
+    "ABUS|Arbutus Biopharma Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:17.866066+00:00",
+      "matched_trials": 0
+    },
+    "ABVC|ABVC BIOPHARMA, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:18.091268+00:00",
+      "matched_trials": 0
+    },
+    "ABVX|Abivax S.A.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:18.335750+00:00",
+      "matched_trials": 23
+    },
+    "ACAD|ACADIA PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:18.593771+00:00",
+      "matched_trials": 41
+    },
+    "ACB|AURORA CANNABIS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:18.816874+00:00",
+      "matched_trials": 1
+    },
+    "ACET|Adicet Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:19.036096+00:00",
+      "matched_trials": 0
+    },
+    "ACHV|ACHIEVE LIFE SCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:19.261811+00:00",
+      "matched_trials": 0
+    },
+    "ACIU|AC Immune SA": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:19.501151+00:00",
+      "matched_trials": 8
+    },
+    "ACOG|Alpha Cognition Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:19.725789+00:00",
+      "matched_trials": 1
+    },
+    "ACRS|Aclaris Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:19.979093+00:00",
+      "matched_trials": 33
+    },
+    "ACRV|Acrivon Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:20.198087+00:00",
+      "matched_trials": 0
+    },
+    "ACTU|ACTUATE THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:20.432357+00:00",
+      "matched_trials": 5
+    },
+    "ACXP|Acurx Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:20.657774+00:00",
+      "matched_trials": 2
+    },
+    "ADAG|Adagene Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:20.933932+00:00",
+      "matched_trials": 7
+    },
+    "ADCT|ADC Therapeutics SA": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:21.151335+00:00",
+      "matched_trials": 0
+    },
+    "ADIL|ADIAL PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:21.370204+00:00",
+      "matched_trials": 0
+    },
+    "ADMA|ADMA BIOLOGICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:21.602612+00:00",
+      "matched_trials": 7
+    },
+    "ADPT|Adaptive Biotechnologies Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:21.823720+00:00",
+      "matched_trials": 0
+    },
+    "ADXN|Addex Therapeutics Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:22.048163+00:00",
+      "matched_trials": 0
+    },
+    "AEON|AEON Biopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:22.278961+00:00",
+      "matched_trials": 4
+    },
+    "AGEN|AGENUS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:22.597863+00:00",
+      "matched_trials": 31
+    },
+    "AGIO|AGIOS PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:22.878830+00:00",
+      "matched_trials": 52
+    },
+    "AGMB|AgomAb Therapeutics NV": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:23.119244+00:00",
+      "matched_trials": 0
+    },
+    "AIDX|20/20 Biolabs, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:23.342335+00:00",
+      "matched_trials": 0
+    },
+    "AIM|AIM ImmunoTech Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:23.591900+00:00",
+      "matched_trials": 9
+    },
+    "AKAN|AKANDA CORP.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:23.810366+00:00",
+      "matched_trials": 0
+    },
+    "AKBA|Akebia Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:24.037259+00:00",
+      "matched_trials": 0
+    },
+    "AKTS|Aktis Oncology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:24.263109+00:00",
+      "matched_trials": 2
+    },
+    "AKTX|Akari Therapeutics Plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:24.488639+00:00",
+      "matched_trials": 0
+    },
+    "ALDX|Aldeyra Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:24.733757+00:00",
+      "matched_trials": 35
+    },
+    "ALEC|Alector, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:24.969549+00:00",
+      "matched_trials": 10
+    },
+    "ALGS|Aligos Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:25.192725+00:00",
+      "matched_trials": 0
+    },
+    "ALKS|Alkermes plc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:25.416638+00:00",
+      "matched_trials": 0
+    },
+    "ALLO|Allogene Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:25.639843+00:00",
+      "matched_trials": 0
+    },
+    "ALLR|Allarity Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:25.869008+00:00",
+      "matched_trials": 0
+    },
+    "ALMS|ALUMIS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:26.102485+00:00",
+      "matched_trials": 13
+    },
+    "ALNY|ALNYLAM PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:26.332267+00:00",
+      "matched_trials": 0
+    },
+    "ALT|Altimmune, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:26.569113+00:00",
+      "matched_trials": 20
+    },
+    "ALVO|Alvotech": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:26.807322+00:00",
+      "matched_trials": 0
+    },
+    "ALXO|ALX ONCOLOGY HOLDINGS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:27.033222+00:00",
+      "matched_trials": 0
+    },
+    "ALZN|Alzamend Neuro, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:27.262647+00:00",
+      "matched_trials": 4
+    },
+    "AMGN|AMGEN INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:27.524564+00:00",
+      "matched_trials": 0
+    },
+    "AMLX|Amylyx Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:27.756814+00:00",
+      "matched_trials": 13
+    },
+    "AMPH|Amphastar Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:27.993598+00:00",
+      "matched_trials": 21
+    },
+    "AMRN|AMARIN CORP PLC\\UK": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:28.220159+00:00",
+      "matched_trials": 0
+    },
+    "AMRX|Amneal Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:28.444327+00:00",
+      "matched_trials": 0
+    },
+    "ANAB|ANAPTYSBIO, INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:28.679248+00:00",
+      "matched_trials": 8
+    },
+    "ANIP|ANI PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:28.899103+00:00",
+      "matched_trials": 0
+    },
+    "ANIX|Anixa Biosciences Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:29.124393+00:00",
+      "matched_trials": 0
+    },
+    "ANL|Adlai Nortye Group Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:29.349552+00:00",
+      "matched_trials": 0
+    },
+    "ANNX|Annexon, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:29.582649+00:00",
+      "matched_trials": 16
+    },
+    "ANRO|Alto Neuroscience, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:29.801877+00:00",
+      "matched_trials": 0
+    },
+    "ANTX|AN2 Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:30.033672+00:00",
+      "matched_trials": 6
+    },
+    "ANVS|Annovis Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:30.267037+00:00",
+      "matched_trials": 8
+    },
+    "APLM|Apollomics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:30.494743+00:00",
+      "matched_trials": 5
+    },
+    "APMD|Apnimed, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:30.721655+00:00",
+      "matched_trials": 0
+    },
+    "APRE|Aprea Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:30.948832+00:00",
+      "matched_trials": 0
+    },
+    "APUS|Apimeds Pharmaceuticals US, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:31.173986+00:00",
+      "matched_trials": 0
+    },
+    "APVO|Aptevo Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:31.395230+00:00",
+      "matched_trials": 0
+    },
+    "AQST|Aquestive Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:31.620091+00:00",
+      "matched_trials": 0
+    },
+    "ARCT|Arcturus Therapeutics Holdings Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:31.843141+00:00",
+      "matched_trials": 0
+    },
+    "ARDX|ARDELYX, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:32.066335+00:00",
+      "matched_trials": 0
+    },
+    "ARGX|ARGENX SE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:32.289802+00:00",
+      "matched_trials": 0
+    },
+    "ARMP|Armata Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:32.526606+00:00",
+      "matched_trials": 13
+    },
+    "ARQT|Arcutis Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:32.776440+00:00",
+      "matched_trials": 25
+    },
+    "ARTL|ARTELO BIOSCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:33.000101+00:00",
+      "matched_trials": 0
+    },
+    "ARTV|Artiva Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:33.224515+00:00",
+      "matched_trials": 4
+    },
+    "ARVN|ARVINAS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:33.477141+00:00",
+      "matched_trials": 5
+    },
+    "ARWR|ARROWHEAD PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:33.705395+00:00",
+      "matched_trials": 0
+    },
+    "ASBP|Aspire Biopharma Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:33.932318+00:00",
+      "matched_trials": 0
+    },
+    "ASMB|ASSEMBLY BIOSCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:34.161412+00:00",
+      "matched_trials": 0
+    },
+    "ASND|Ascendis Pharma A/S": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:34.414615+00:00",
+      "matched_trials": 15
+    },
+    "ATHE|ALTERITY THERAPEUTICS LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:34.638077+00:00",
+      "matched_trials": 0
+    },
+    "ATNM|Actinium Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:34.861069+00:00",
+      "matched_trials": 0
+    },
+    "ATOS|ATOSSA THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:35.090500+00:00",
+      "matched_trials": 9
+    },
+    "ATRA|Atara Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:35.313605+00:00",
+      "matched_trials": 0
+    },
+    "ATTO|Attovia Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:35.543612+00:00",
+      "matched_trials": 4
+    },
+    "ATYR|aTYR PHARMA INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:35.781170+00:00",
+      "matched_trials": 9
+    },
+    "AUPH|Aurinia Pharmaceuticals Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:36.029397+00:00",
+      "matched_trials": 19
+    },
+    "AURA|Aura Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:36.254955+00:00",
+      "matched_trials": 0
+    },
+    "AUTL|Autolus Therapeutics plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:36.477502+00:00",
+      "matched_trials": 0
+    },
+    "AVBP|ArriVent BioPharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:36.705204+00:00",
+      "matched_trials": 5
+    },
+    "AVIR|Atea Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:36.962193+00:00",
+      "matched_trials": 33
+    },
+    "AVLN|Avalyn Pharma Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:37.194064+00:00",
+      "matched_trials": 3
+    },
+    "AVTX|Avalo Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:37.435378+00:00",
+      "matched_trials": 10
+    },
+    "AVXL|ANAVEX LIFE SCIENCES CORP.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:37.671404+00:00",
+      "matched_trials": 11
+    },
+    "AXSM|Axsome Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:37.980638+00:00",
+      "matched_trials": 37
+    },
+    "AYTU|AYTU BIOPHARMA, INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:38.212131+00:00",
+      "matched_trials": 4
+    },
+    "AZN|ASTRAZENECA PLC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:38.442454+00:00",
+      "matched_trials": 0
+    },
+    "AZTR|Azitra, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:38.666056+00:00",
+      "matched_trials": 4
+    },
+    "BBIO|BridgeBio Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:38.893066+00:00",
+      "matched_trials": 0
+    },
+    "BBOT|BridgeBio Oncology Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:39.118064+00:00",
+      "matched_trials": 0
+    },
+    "BCAX|Bicara Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:39.337908+00:00",
+      "matched_trials": 0
+    },
+    "BCDA|BioCardia, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:39.564350+00:00",
+      "matched_trials": 6
+    },
+    "BCRX|BIOCRYST PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:39.794372+00:00",
+      "matched_trials": 0
+    },
+    "BCTX|BriaCell Therapeutics Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:40.017876+00:00",
+      "matched_trials": 0
+    },
+    "BCYC|BICYCLE THERAPEUTICS PLC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:40.239547+00:00",
+      "matched_trials": 0
+    },
+    "BDRX|Biodexa Pharmaceuticals Plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:40.463489+00:00",
+      "matched_trials": 0
+    },
+    "BDTX|Black Diamond Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:40.694436+00:00",
+      "matched_trials": 3
+    },
+    "BEAM|Beam Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:40.920306+00:00",
+      "matched_trials": 6
+    },
+    "BFRG|BullFrog AI Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:41.141559+00:00",
+      "matched_trials": 0
+    },
+    "BFRI|Biofrontera Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:41.372513+00:00",
+      "matched_trials": 3
+    },
+    "BGM|BGM Group Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:41.596705+00:00",
+      "matched_trials": 0
+    },
+    "BHC|Bausch Health Companies Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:41.822147+00:00",
+      "matched_trials": 0
+    },
+    "BHST|BIOHARVEST SCIENCES INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:42.051008+00:00",
+      "matched_trials": 0
+    },
+    "BHVN|Biohaven Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:42.287985+00:00",
+      "matched_trials": 0
+    },
+    "BIAF|bioAffinity Technologies, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:42.509883+00:00",
+      "matched_trials": 5
+    },
+    "BIIB|BIOGEN INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:42.796098+00:00",
+      "matched_trials": 0
+    },
+    "BIOA|BioAge Labs, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:43.026348+00:00",
+      "matched_trials": 7
+    },
+    "BIVI|BIOVIE INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:43.258376+00:00",
+      "matched_trials": 6
+    },
+    "BKHA|Black Hawk Acquisition Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:43.485722+00:00",
+      "matched_trials": 0
+    },
+    "BLRX|BioLineRx Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:43.736469+00:00",
+      "matched_trials": 18
+    },
+    "BLSM|BlossomHill Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:43.959760+00:00",
+      "matched_trials": 0
+    },
+    "BLTE|BELITE BIO, INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:44.191887+00:00",
+      "matched_trials": 4
+    },
+    "BMEA|Biomea Fusion, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:44.421631+00:00",
+      "matched_trials": 9
+    },
+    "BMRA|BIOMERICA INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:44.645296+00:00",
+      "matched_trials": 0
+    },
+    "BMRN|BIOMARIN PHARMACEUTICAL INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:44.867892+00:00",
+      "matched_trials": 0
+    },
+    "BMY|BRISTOL MYERS SQUIBB CO": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:45.235704+00:00",
+      "matched_trials": 0
+    },
+    "BNTC|Benitec Biopharma Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:45.458394+00:00",
+      "matched_trials": 2
+    },
+    "BNTX|BioNTech SE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:46.060725+00:00",
+      "matched_trials": 74
+    },
+    "BOLD|Boundless Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:46.328612+00:00",
+      "matched_trials": 3
+    },
+    "BOLT|Bolt Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:46.560745+00:00",
+      "matched_trials": 4
+    },
+    "BON|Bon Natural Life Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:46.815563+00:00",
+      "matched_trials": 0
+    },
+    "BRVE|Braveheart Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:47.039038+00:00",
+      "matched_trials": 1
+    },
+    "BSEM|BioStem Technologies, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:47.263529+00:00",
+      "matched_trials": 0
+    },
+    "BTMD|biote Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:47.487320+00:00",
+      "matched_trials": 0
+    },
+    "BYSI|BeyondSpring Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:47.723618+00:00",
+      "matched_trials": 0
+    },
+    "CABA|Cabaletta Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:47.946002+00:00",
+      "matched_trials": 0
+    },
+    "CADL|Candel Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:48.188616+00:00",
+      "matched_trials": 13
+    },
+    "CALC|CalciMedica, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:48.443499+00:00",
+      "matched_trials": 7
+    },
+    "CAMP|Camp4 Therapeutics Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:48.671532+00:00",
+      "matched_trials": 0
+    },
+    "CANF|Can-Fite BioPharma Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:48.895366+00:00",
+      "matched_trials": 0
+    },
+    "CAPR|CAPRICOR THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:49.121913+00:00",
+      "matched_trials": 0
+    },
+    "CATX|Perspective Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:49.443882+00:00",
+      "matched_trials": 0
+    },
+    "CBIO|CRESCENT BIOPHARMA, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:49.668597+00:00",
+      "matched_trials": 1
+    },
+    "CCCC|C4 Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:49.893544+00:00",
+      "matched_trials": 5
+    },
+    "CDIO|Cardio Diagnostics Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:50.124496+00:00",
+      "matched_trials": 0
+    },
+    "CDT|CDT Equity Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:50.350369+00:00",
+      "matched_trials": 0
+    },
+    "CELU|Celularity Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:50.576826+00:00",
+      "matched_trials": 0
+    },
+    "CELZ|CREATIVE MEDICAL TECHNOLOGY HOLDINGS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:50.807023+00:00",
+      "matched_trials": 4
+    },
+    "CERS|Cerus Corporation - Common Stock": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:51.033022+00:00",
+      "matched_trials": 0
+    },
+    "CGC|Canopy Growth Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:51.255553+00:00",
+      "matched_trials": 0
+    },
+    "CGEM|Cullinan Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:51.492030+00:00",
+      "matched_trials": 12
+    },
+    "CGEN|COMPUGEN LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:51.719491+00:00",
+      "matched_trials": 5
+    },
+    "CGON|CG Oncology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:51.960046+00:00",
+      "matched_trials": 8
+    },
+    "CGTX|COGNITION THERAPEUTICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:52.185168+00:00",
+      "matched_trials": 0
+    },
+    "CHRS|Coherus Oncology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:52.436928+00:00",
+      "matched_trials": 18
+    },
+    "CING|Cingulate Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:52.660111+00:00",
+      "matched_trials": 0
+    },
+    "CLDI|Calidi Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:52.888433+00:00",
+      "matched_trials": 0
+    },
+    "CLDX|Celldex Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:53.113112+00:00",
+      "matched_trials": 0
+    },
+    "CLLS|Cellectis S.A.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:53.348348+00:00",
+      "matched_trials": 6
+    },
+    "CLNN|Clene Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:53.574187+00:00",
+      "matched_trials": 0
+    },
+    "CLRB|Cellectar Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:53.815022+00:00",
+      "matched_trials": 13
+    },
+    "CLYM|Climb Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:54.041232+00:00",
+      "matched_trials": 6
+    },
+    "CMMB|Chemomab Therapeutics Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:54.268045+00:00",
+      "matched_trials": 0
+    },
+    "CMND|Clearmind Medicine Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:54.494053+00:00",
+      "matched_trials": 1
+    },
+    "CMPS|COMPASS Pathways plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:54.723370+00:00",
+      "matched_trials": 0
+    },
+    "CMPX|Compass Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:54.946843+00:00",
+      "matched_trials": 0
+    },
+    "CNSP|CNS Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:55.170407+00:00",
+      "matched_trials": 1
+    },
+    "CNTB|Connect Biopharma Holdings Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:55.395783+00:00",
+      "matched_trials": 0
+    },
+    "CNTX|Context Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:55.626871+00:00",
+      "matched_trials": 5
+    },
+    "COAG|Hemab Therapeutics Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:55.849384+00:00",
+      "matched_trials": 0
+    },
+    "COCP|Cocrystal Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:56.083208+00:00",
+      "matched_trials": 6
+    },
+    "COGT|Cogent Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:56.324024+00:00",
+      "matched_trials": 14
+    },
+    "COLL|COLLEGIUM PHARMACEUTICAL, INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:56.555389+00:00",
+      "matched_trials": 1
+    },
+    "CORT|CORCEPT THERAPEUTICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:56.781065+00:00",
+      "matched_trials": 0
+    },
+    "COYA|Coya Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:57.010868+00:00",
+      "matched_trials": 0
+    },
+    "CPHI|CHINA PHARMA HOLDINGS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:57.230494+00:00",
+      "matched_trials": 0
+    },
+    "CPIX|CUMBERLAND PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:57.453453+00:00",
+      "matched_trials": 0
+    },
+    "CRBP|Corbus Pharmaceuticals Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:57.679535+00:00",
+      "matched_trials": 0
+    },
+    "CRBU|Caribou Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:57.908232+00:00",
+      "matched_trials": 5
+    },
+    "CRDF|Cardiff Oncology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:58.131145+00:00",
+      "matched_trials": 0
+    },
+    "CRDL|Cardiol Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:58.362632+00:00",
+      "matched_trials": 4
+    },
+    "CRIS|CURIS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:58.600938+00:00",
+      "matched_trials": 13
+    },
+    "CRL|CHARLES RIVER LABORATORIES INTERNATIONAL, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:58.828623+00:00",
+      "matched_trials": 0
+    },
+    "CRMD|CorMedix Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:59.058881+00:00",
+      "matched_trials": 0
+    },
+    "CRON|Cronos Group Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:59.287768+00:00",
+      "matched_trials": 0
+    },
+    "CRSP|CRISPR Therapeutics AG": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:59.523639+00:00",
+      "matched_trials": 12
+    },
+    "CRVO|CervoMed Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:59.753487+00:00",
+      "matched_trials": 0
+    },
+    "CRVS|Corvus Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:39:59.989822+00:00",
+      "matched_trials": 11
+    },
+    "CSBR|CHAMPIONS ONCOLOGY, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:00.213124+00:00",
+      "matched_trials": 0
+    },
+    "CTMX|CytomX Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:00.440186+00:00",
+      "matched_trials": 0
+    },
+    "CTNM|Contineum Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:00.666225+00:00",
+      "matched_trials": 0
+    },
+    "CTOR|CITIUS ONCOLOGY, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:00.890457+00:00",
+      "matched_trials": 0
+    },
+    "CTXR|Citius Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:01.128635+00:00",
+      "matched_trials": 2
+    },
+    "CUE|Cue Biopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:01.353569+00:00",
+      "matched_trials": 0
+    },
+    "CURX|Curanex Pharmaceuticals Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:01.582625+00:00",
+      "matched_trials": 0
+    },
+    "CVKD|Cadrenal Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:01.812099+00:00",
+      "matched_trials": 0
+    },
+    "CVM|CEL SCI CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:02.046272+00:00",
+      "matched_trials": 0
+    },
+    "CYPH|CYPHERPUNK TECHNOLOGIES INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:02.280884+00:00",
+      "matched_trials": 0
+    },
+    "CYRX|Cryoport, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:02.510474+00:00",
+      "matched_trials": 0
+    },
+    "CYTK|CYTOKINETICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:02.747680+00:00",
+      "matched_trials": 0
+    },
+    "DARE|Dare Bioscience, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:02.974935+00:00",
+      "matched_trials": 0
+    },
+    "DBVT|DBV Technologies S.A.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:03.201840+00:00",
+      "matched_trials": 0
+    },
+    "DCOY|Decoy Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:03.424269+00:00",
+      "matched_trials": 0
+    },
+    "DERM|Journey Medical Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:03.652389+00:00",
+      "matched_trials": 0
+    },
+    "DFTX|Definium Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:03.896081+00:00",
+      "matched_trials": 0
+    },
+    "DMAC|DiaMedica Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:04.128186+00:00",
+      "matched_trials": 7
+    },
+    "DMRA|Damora Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:04.357184+00:00",
+      "matched_trials": 0
+    },
+    "DNA|Ginkgo Bioworks Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:04.583771+00:00",
+      "matched_trials": 0
+    },
+    "DNLI|Denali Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:04.836748+00:00",
+      "matched_trials": 19
+    },
+    "DNTH|Dianthus Therapeutics, Inc. /DE/": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:05.060380+00:00",
+      "matched_trials": 0
+    },
+    "DRMA|Dermata Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:05.284737+00:00",
+      "matched_trials": 0
+    },
+    "DRUG|BRIGHT MINDS BIOSCIENCES INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:05.514979+00:00",
+      "matched_trials": 0
+    },
+    "DSGN|Design Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:05.745215+00:00",
+      "matched_trials": 5
+    },
+    "DTIL|PRECISION BIOSCIENCES INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:05.977790+00:00",
+      "matched_trials": 6
+    },
+    "DWTX|Dogwood Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:06.207731+00:00",
+      "matched_trials": 1
+    },
+    "DYAI|DYADIC INTERNATIONAL INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:06.431398+00:00",
+      "matched_trials": 0
+    },
+    "DYN|Dyne Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:06.659445+00:00",
+      "matched_trials": 0
+    },
+    "EBS|Emergent BioSolutions Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:06.902059+00:00",
+      "matched_trials": 0
+    },
+    "EDIT|Editas Medicine, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:07.131876+00:00",
+      "matched_trials": 5
+    },
+    "EDSA|Edesa Biotech, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:07.362517+00:00",
+      "matched_trials": 2
+    },
+    "EIKN|Eikon Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:07.591512+00:00",
+      "matched_trials": 0
+    },
+    "ELAB|PMGC Holdings Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:07.814675+00:00",
+      "matched_trials": 0
+    },
+    "ELAN|Elanco Animal Health Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:08.039342+00:00",
+      "matched_trials": 0
+    },
+    "ELDN|Eledon Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:08.267393+00:00",
+      "matched_trials": 0
+    },
+    "ELOX|Eloxx Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:08.506541+00:00",
+      "matched_trials": 9
+    },
+    "ELTX|Elicio Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:08.729426+00:00",
+      "matched_trials": 0
+    },
+    "ELUT|ELUTIA INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:08.967705+00:00",
+      "matched_trials": 14
+    },
+    "ELVN|Enliven Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:09.196711+00:00",
+      "matched_trials": 0
+    },
+    "ENGN|enGene Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:09.419174+00:00",
+      "matched_trials": 0
+    },
+    "ENLV|Enlivex Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:09.683976+00:00",
+      "matched_trials": 0
+    },
+    "ENSC|Ensysce Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:09.917332+00:00",
+      "matched_trials": 0
+    },
+    "ENTA|ENANTA PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:10.188234+00:00",
+      "matched_trials": 45
+    },
+    "ENTX|Entera Bio Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:10.418877+00:00",
+      "matched_trials": 6
+    },
+    "ENVB|Enveric Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:10.648104+00:00",
+      "matched_trials": 0
+    },
+    "EOCN|Galmed Pharmaceuticals Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:10.890980+00:00",
+      "matched_trials": 10
+    },
+    "EOLS|Evolus, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:11.127367+00:00",
+      "matched_trials": 6
+    },
+    "EPRX|EUPRAXIA PHARMACEUTICALS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:11.358652+00:00",
+      "matched_trials": 3
+    },
+    "EQ|Equillium, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:11.587209+00:00",
+      "matched_trials": 0
+    },
+    "ERAS|Erasca, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:11.819988+00:00",
+      "matched_trials": 9
+    },
+    "ERNA|Ernexa Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:12.047608+00:00",
+      "matched_trials": 0
+    },
+    "ESLA|Estrella Immunopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:12.277178+00:00",
+      "matched_trials": 1
+    },
+    "ETON|Eton Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:12.502228+00:00",
+      "matched_trials": 0
+    },
+    "ETRA|Electra Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:12.731364+00:00",
+      "matched_trials": 3
+    },
+    "EVAX|Evaxion A/S": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:12.961042+00:00",
+      "matched_trials": 0
+    },
+    "EVMN|Evommune, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:13.194696+00:00",
+      "matched_trials": 6
+    },
+    "EVO|Evotec SE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:13.421445+00:00",
+      "matched_trials": 0
+    },
+    "EWTX|Edgewise Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:13.661423+00:00",
+      "matched_trials": 17
+    },
+    "EXEL|EXELIXIS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:14.001691+00:00",
+      "matched_trials": 0
+    },
+    "EXOZ|EXOZYMES INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:14.231612+00:00",
+      "matched_trials": 0
+    },
+    "FATE|FATE THERAPEUTICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:14.456123+00:00",
+      "matched_trials": 0
+    },
+    "FBIO|Fortress Biotech, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:14.679289+00:00",
+      "matched_trials": 0
+    },
+    "FBLG|FibroBiologics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:14.906278+00:00",
+      "matched_trials": 0
+    },
+    "FDMT|4D Molecular Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:15.135821+00:00",
+      "matched_trials": 0
+    },
+    "FENC|FENNEC PHARMACEUTICALS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:15.361381+00:00",
+      "matched_trials": 0
+    },
+    "FHTX|Foghorn Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:15.594541+00:00",
+      "matched_trials": 3
+    },
+    "FLNA|FILANA THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:15.819205+00:00",
+      "matched_trials": 0
+    },
+    "FTH|Faeth Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:16.051143+00:00",
+      "matched_trials": 0
+    },
+    "FTLF|FITLIFE BRANDS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:16.277357+00:00",
+      "matched_trials": 0
+    },
+    "FULC|Fulcrum Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:16.506834+00:00",
+      "matched_trials": 0
+    },
+    "GALT|GALECTIN THERAPEUTICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:16.749554+00:00",
+      "matched_trials": 10
+    },
+    "GANX|Gain Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:16.979036+00:00",
+      "matched_trials": 2
+    },
+    "GDTC|CytoMed Therapeutics Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:17.206585+00:00",
+      "matched_trials": 0
+    },
+    "GELS|Gelteq Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:17.433877+00:00",
+      "matched_trials": 0
+    },
+    "GENB|Generate Biomedicines, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:17.657834+00:00",
+      "matched_trials": 0
+    },
+    "GERN|GERON CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:17.885402+00:00",
+      "matched_trials": 0
+    },
+    "GHRS|GH Research PLC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:18.114903+00:00",
+      "matched_trials": 0
+    },
+    "GILD|GILEAD SCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:18.408602+00:00",
+      "matched_trials": 0
+    },
+    "GLAS|Glass House Brands Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:18.636690+00:00",
+      "matched_trials": 0
+    },
+    "GLSI|Greenwich LifeSciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:18.864057+00:00",
+      "matched_trials": 1
+    },
+    "GLUE|Monte Rosa Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:19.100901+00:00",
+      "matched_trials": 4
+    },
+    "GMAB|GENMAB A/S": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:19.331434+00:00",
+      "matched_trials": 0
+    },
+    "GNLX|GENELUX Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:19.559314+00:00",
+      "matched_trials": 0
+    },
+    "GNPX|Genprex, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:19.789660+00:00",
+      "matched_trials": 4
+    },
+    "GNTA|Genenta Science S.p.A.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:20.013858+00:00",
+      "matched_trials": 0
+    },
+    "GOSS|Gossamer Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:20.259059+00:00",
+      "matched_trials": 0
+    },
+    "GOVX|GeoVax Labs, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:20.484987+00:00",
+      "matched_trials": 0
+    },
+    "GPCR|Structure Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:20.717745+00:00",
+      "matched_trials": 0
+    },
+    "GRCE|Grace Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:20.965731+00:00",
+      "matched_trials": 8
+    },
+    "GRFS|Grifols SA": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:21.189192+00:00",
+      "matched_trials": 0
+    },
+    "GRI|GRI Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:21.420087+00:00",
+      "matched_trials": 0
+    },
+    "GRML|Greenland Mines Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:21.653144+00:00",
+      "matched_trials": 0
+    },
+    "GSK|GSK plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:21.915138+00:00",
+      "matched_trials": 0
+    },
+    "GTBP|GT Biopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:22.147170+00:00",
+      "matched_trials": 1
+    },
+    "GYRE|GYRE THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:22.373089+00:00",
+      "matched_trials": 0
+    },
+    "HALO|HALOZYME THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:22.605404+00:00",
+      "matched_trials": 0
+    },
+    "HCM|HUTCHMED (China) Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:22.828780+00:00",
+      "matched_trials": 0
+    },
+    "HCWB|HCW Biologics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:23.052892+00:00",
+      "matched_trials": 0
+    },
+    "HELP|CYBIN INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:23.283667+00:00",
+      "matched_trials": 0
+    },
+    "HIND|Vyome Holdings, Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:23.511186+00:00",
+      "matched_trials": 0
+    },
+    "HOWL|Werewolf Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:23.746327+00:00",
+      "matched_trials": 3
+    },
+    "HRMY|Harmony Biosciences Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:23.969718+00:00",
+      "matched_trials": 0
+    },
+    "HROW|HARROW, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:24.199454+00:00",
+      "matched_trials": 4
+    },
+    "HRTX|HERON THERAPEUTICS, INC. /DE/": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:24.426124+00:00",
+      "matched_trials": 0
+    },
+    "HUMA|Humacyte, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:24.667486+00:00",
+      "matched_trials": 15
+    },
+    "HURA|TuHURA Biosciences, Inc./NV": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:24.890978+00:00",
+      "matched_trials": 0
+    },
+    "HYFT|MindWalk Holdings Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:25.116111+00:00",
+      "matched_trials": 0
+    },
+    "HYPD|HYPERION DEFI, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:25.339513+00:00",
+      "matched_trials": 0
+    },
+    "IBAC|IB Acquisition Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:25.566570+00:00",
+      "matched_trials": 0
+    },
+    "IBIO|iBio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:25.795812+00:00",
+      "matched_trials": 1
+    },
+    "IBO|IMPACT BIOMEDICAL INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:26.020904+00:00",
+      "matched_trials": 0
+    },
+    "IBRX|ImmunityBio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:26.318473+00:00",
+      "matched_trials": 83
+    },
+    "ICCC|IMMUCELL CORP /DE/": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:26.542160+00:00",
+      "matched_trials": 0
+    },
+    "ICLR|ICON PLC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:27.060625+00:00",
+      "matched_trials": 0
+    },
+    "IDXX|IDEXX LABORATORIES INC /DE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:27.287536+00:00",
+      "matched_trials": 0
+    },
+    "IDYA|IDEAYA Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:27.512918+00:00",
+      "matched_trials": 0
+    },
+    "IFRX|InflaRx N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:27.739081+00:00",
+      "matched_trials": 0
+    },
+    "IGC|IGC Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:27.965869+00:00",
+      "matched_trials": 0
+    },
+    "IKT|Inhibikase Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:28.191946+00:00",
+      "matched_trials": 0
+    },
+    "IMA|ImageneBio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:28.416079+00:00",
+      "matched_trials": 0
+    },
+    "IMCC|IM Cannabis Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:28.639452+00:00",
+      "matched_trials": 0
+    },
+    "IMCR|Immunocore Holdings plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:28.868440+00:00",
+      "matched_trials": 0
+    },
+    "IMDX|Insight Molecular Diagnostics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:29.094262+00:00",
+      "matched_trials": 0
+    },
+    "IMMP|IMMUTEP Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:29.324402+00:00",
+      "matched_trials": 0
+    },
+    "IMMX|Immix Biopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:29.551984+00:00",
+      "matched_trials": 1
+    },
+    "IMNM|Immunome Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:29.789101+00:00",
+      "matched_trials": 10
+    },
+    "IMNN|Imunon, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:30.018964+00:00",
+      "matched_trials": 0
+    },
+    "IMRN|Immuron Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:30.252147+00:00",
+      "matched_trials": 4
+    },
+    "IMRX|Immuneering Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:30.476315+00:00",
+      "matched_trials": 0
+    },
+    "IMTX|Immatics N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:30.704232+00:00",
+      "matched_trials": 0
+    },
+    "IMUX|IMMUNIC, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:30.939102+00:00",
+      "matched_trials": 0
+    },
+    "IMVT|Immunovant, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:31.166200+00:00",
+      "matched_trials": 0
+    },
+    "INAB|IN8BIO, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:31.390242+00:00",
+      "matched_trials": 1
+    },
+    "INBX|Inhibrx Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:31.626692+00:00",
+      "matched_trials": 6
+    },
+    "INCR|Intercure Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:31.866189+00:00",
+      "matched_trials": 0
+    },
+    "INCY|INCYTE CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:32.094820+00:00",
+      "matched_trials": 0
+    },
+    "INDP|Indaptus Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:32.323508+00:00",
+      "matched_trials": 1
+    },
+    "INDV|Indivior Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:32.550473+00:00",
+      "matched_trials": 0
+    },
+    "INKT|MiNK Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:32.775610+00:00",
+      "matched_trials": 0
+    },
+    "INM|InMed Pharmaceuticals Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:33.009754+00:00",
+      "matched_trials": 1
+    },
+    "INMB|Inmune Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:33.242444+00:00",
+      "matched_trials": 7
+    },
+    "INO|INOVIO PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:33.485157+00:00",
+      "matched_trials": 0
+    },
+    "INSM|INSMED Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:33.709884+00:00",
+      "matched_trials": 0
+    },
+    "INTS|INTENSITY THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:33.941058+00:00",
+      "matched_trials": 2
+    },
+    "INVA|Innoviva, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:34.170520+00:00",
+      "matched_trials": 0
+    },
+    "IONS|IONIS PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:34.801071+00:00",
+      "matched_trials": 118
+    },
+    "IOVA|IOVANCE BIOTHERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:35.129341+00:00",
+      "matched_trials": 16
+    },
+    "IPHA|Innate Pharma SA": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:35.354047+00:00",
+      "matched_trials": 0
+    },
+    "IPSC|Century Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:35.584882+00:00",
+      "matched_trials": 3
+    },
+    "IQV|IQVIA HOLDINGS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:35.810441+00:00",
+      "matched_trials": 0
+    },
+    "IRD|Opus Genetics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:36.106721+00:00",
+      "matched_trials": 17
+    },
+    "IRON|Disc Medicine, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:36.379405+00:00",
+      "matched_trials": 11
+    },
+    "IRWD|IRONWOOD PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:36.702818+00:00",
+      "matched_trials": 25
+    },
+    "ISPC|iSpecimen Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:36.932093+00:00",
+      "matched_trials": 3
+    },
+    "IVA|Inventiva S.A.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:37.160304+00:00",
+      "matched_trials": 0
+    },
+    "IVVD|Invivyd, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:37.397907+00:00",
+      "matched_trials": 8
+    },
+    "IXHL|Incannex Healthcare Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:37.628639+00:00",
+      "matched_trials": 0
+    },
+    "JAGX|Jaguar Health, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:37.861880+00:00",
+      "matched_trials": 0
+    },
+    "JANX|Janux Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:38.088846+00:00",
+      "matched_trials": 0
+    },
+    "JAZZ|Jazz Pharmaceuticals plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:38.316510+00:00",
+      "matched_trials": 0
+    },
+    "JBIO|Jade Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:38.983840+00:00",
+      "matched_trials": 4
+    },
+    "JNJ|JOHNSON & JOHNSON": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:42.377521+00:00",
+      "matched_trials": 0
+    },
+    "JSPR|Jasper Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:42.613840+00:00",
+      "matched_trials": 7
+    },
+    "JUNS|JUPITER NEUROSCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:42.844197+00:00",
+      "matched_trials": 0
+    },
+    "KALA|KALA BIO, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:43.070985+00:00",
+      "matched_trials": 0
+    },
+    "KAPA|Kairos Pharma, LTD.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:43.298335+00:00",
+      "matched_trials": 0
+    },
+    "KARD|Kardigan, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:43.533351+00:00",
+      "matched_trials": 5
+    },
+    "KLRA|Kailera Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:43.767254+00:00",
+      "matched_trials": 0
+    },
+    "KLRS|Kalaris Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:43.998220+00:00",
+      "matched_trials": 0
+    },
+    "KMDA|KAMADA LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:44.245013+00:00",
+      "matched_trials": 11
+    },
+    "KNSA|Kiniksa Pharmaceuticals International, plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:44.489491+00:00",
+      "matched_trials": 5
+    },
+    "KOD|Kodiak Sciences Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:44.729014+00:00",
+      "matched_trials": 12
+    },
+    "KPRX|KIORA PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:44.966173+00:00",
+      "matched_trials": 5
+    },
+    "KPTI|Karyopharm Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:45.334005+00:00",
+      "matched_trials": 37
+    },
+    "KROS|Keros Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:45.576142+00:00",
+      "matched_trials": 3
+    },
+    "KRRO|Korro Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:46.344087+00:00",
+      "matched_trials": 2
+    },
+    "KRSA|Korsana Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:46.570985+00:00",
+      "matched_trials": 0
+    },
+    "KRYS|Krystal Biotech, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:46.817077+00:00",
+      "matched_trials": 18
+    },
+    "KTTA|Pasithea Therapeutics Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:47.048287+00:00",
+      "matched_trials": 2
+    },
+    "KURA|Kura Oncology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:47.307880+00:00",
+      "matched_trials": 17
+    },
+    "KYMR|Kymera Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:47.547362+00:00",
+      "matched_trials": 12
+    },
+    "KYNB|KYNTRA BIO, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:47.840347+00:00",
+      "matched_trials": 0
+    },
+    "KYTX|Kyverna Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:48.070884+00:00",
+      "matched_trials": 0
+    },
+    "KZIA|KAZIA THERAPEUTICS LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:48.298431+00:00",
+      "matched_trials": 0
+    },
+    "LAB|STANDARD BIOTOOLS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:48.529659+00:00",
+      "matched_trials": 0
+    },
+    "LABT|Lakewood-Amedex Biotherapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:48.758743+00:00",
+      "matched_trials": 0
+    },
+    "LBRX|LB PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:48.990221+00:00",
+      "matched_trials": 6
+    },
+    "LCTX|Lineage Cell Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:49.452113+00:00",
+      "matched_trials": 5
+    },
+    "LEGN|Legend Biotech Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:49.681729+00:00",
+      "matched_trials": 0
+    },
+    "LENZ|LENZ Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:49.913050+00:00",
+      "matched_trials": 8
+    },
+    "LEXX|Lexaria Bioscience Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:50.144386+00:00",
+      "matched_trials": 1
+    },
+    "LFCR|LIFECORE BIOMEDICAL, INC. \\DE\\": {
+      "status": "WARNING",
+      "checked_at": "2026-10-09T13:40:57.565844+00:00",
+      "error": "400 Client Error: Bad Request for url: https://clinicaltrials.gov/api/v2/studies?query.spons=LIFECORE+BIOMEDICAL%2C+INC.+%5CDE%5C&pageSize=100&format=json"
+    },
+    "LFVN|Lifevantage Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:57.796832+00:00",
+      "matched_trials": 0
+    },
+    "LGND|LIGAND PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:58.037641+00:00",
+      "matched_trials": 0
+    },
+    "LGVN|Longeveron Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:58.279106+00:00",
+      "matched_trials": 10
+    },
+    "LIMN|Liminatus Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:58.508165+00:00",
+      "matched_trials": 0
+    },
+    "LITS|Lite Strategy, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:58.738207+00:00",
+      "matched_trials": 0
+    },
+    "LKFT|Lakefront Biotherapeutics NV": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:59.219984+00:00",
+      "matched_trials": 113
+    },
+    "LLY|ELI LILLY & Co": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:59.500398+00:00",
+      "matched_trials": 0
+    },
+    "LNAI|Lunai Bioworks Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:59.738259+00:00",
+      "matched_trials": 0
+    },
+    "LNTH|Lantheus Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:40:59.971442+00:00",
+      "matched_trials": 0
+    },
+    "LONA|LeonaBio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:00.210021+00:00",
+      "matched_trials": 0
+    },
+    "LPCN|Lipocine Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:00.455275+00:00",
+      "matched_trials": 9
+    },
+    "LQDA|Liquidia Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:00.685932+00:00",
+      "matched_trials": 0
+    },
+    "LRMR|Larimar Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:00.943870+00:00",
+      "matched_trials": 8
+    },
+    "LSTA|LISATA THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:01.194152+00:00",
+      "matched_trials": 17
+    },
+    "LTGO|Latigo Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:01.423971+00:00",
+      "matched_trials": 0
+    },
+    "LTRN|Lantern Pharma Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:01.658931+00:00",
+      "matched_trials": 3
+    },
+    "LXEO|Lexeo Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:01.893207+00:00",
+      "matched_trials": 0
+    },
+    "LXRX|LEXICON PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:02.123870+00:00",
+      "matched_trials": 0
+    },
+    "LYEL|Lyell Immunopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:02.362225+00:00",
+      "matched_trials": 7
+    },
+    "MAIA|MAIA Biotechnology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:02.594718+00:00",
+      "matched_trials": 0
+    },
+    "MANE|Veradermics, Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:02.826135+00:00",
+      "matched_trials": 5
+    },
+    "MAZE|Maze Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:03.059768+00:00",
+      "matched_trials": 0
+    },
+    "MBIO|MUSTANG BIO, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:03.293877+00:00",
+      "matched_trials": 0
+    },
+    "MBRX|Moleculin Biotech, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:03.532776+00:00",
+      "matched_trials": 7
+    },
+    "MBX|MBX Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:03.764603+00:00",
+      "matched_trials": 0
+    },
+    "MCRB|Seres Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:04.005328+00:00",
+      "matched_trials": 8
+    },
+    "MDCX|Medicus Pharma Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:04.237883+00:00",
+      "matched_trials": 0
+    },
+    "MDGL|MADRIGAL PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:04.490790+00:00",
+      "matched_trials": 21
+    },
+    "MDWD|MediWound Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:04.736453+00:00",
+      "matched_trials": 15
+    },
+    "MEDP|Medpace Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:04.966708+00:00",
+      "matched_trials": 0
+    },
+    "MENS|Jyong Biotech Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:05.199266+00:00",
+      "matched_trials": 0
+    },
+    "MESO|MESOBLAST LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:05.485490+00:00",
+      "matched_trials": 15
+    },
+    "MGNX|MACROGENICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:05.717058+00:00",
+      "matched_trials": 0
+    },
+    "MGTX|MeiraGTx Holdings plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:05.946463+00:00",
+      "matched_trials": 0
+    },
+    "MGX|Metagenomi Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:06.175954+00:00",
+      "matched_trials": 0
+    },
+    "MIRA|MIRA PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:06.406155+00:00",
+      "matched_trials": 0
+    },
+    "MIRM|Mirum Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:06.688330+00:00",
+      "matched_trials": 39
+    },
+    "MIST|Milestone Pharmaceuticals Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:06.937786+00:00",
+      "matched_trials": 9
+    },
+    "MLTX|MoonLake Immunotherapeutics": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:07.184292+00:00",
+      "matched_trials": 0
+    },
+    "MLYS|Mineralys Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:07.418999+00:00",
+      "matched_trials": 6
+    },
+    "MNKD|MANNKIND CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:07.652359+00:00",
+      "matched_trials": 0
+    },
+    "MNOV|MEDICINOVA INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:07.883942+00:00",
+      "matched_trials": 0
+    },
+    "MNPR|Monopar Therapeutics": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:08.120377+00:00",
+      "matched_trials": 6
+    },
+    "MOLN|MOLECULAR PARTNERS AG": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:08.371320+00:00",
+      "matched_trials": 10
+    },
+    "MPLT|MapLight Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:08.607172+00:00",
+      "matched_trials": 0
+    },
+    "MREO|Mereo BioPharma Group plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:08.837981+00:00",
+      "matched_trials": 0
+    },
+    "MRK|Merck & Co., Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:09.721358+00:00",
+      "matched_trials": 0
+    },
+    "MRKR|Marker Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:09.960310+00:00",
+      "matched_trials": 6
+    },
+    "MRNA|Moderna, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:10.195920+00:00",
+      "matched_trials": 0
+    },
+    "MRVI|MARAVAI LIFESCIENCES HOLDINGS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:10.424170+00:00",
+      "matched_trials": 0
+    },
+    "MSLE|Satellos Bioscience Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:10.699317+00:00",
+      "matched_trials": 3
+    },
+    "MTEX|MANNATECH INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:10.930320+00:00",
+      "matched_trials": 0
+    },
+    "MTNB|Matinas BioPharma Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:11.159912+00:00",
+      "matched_trials": 0
+    },
+    "MTVA|MetaVia Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:11.393914+00:00",
+      "matched_trials": 0
+    },
+    "MXCT|MAXCYTE, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:11.632041+00:00",
+      "matched_trials": 1
+    },
+    "MYGN|MYRIAD GENETICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:11.929803+00:00",
+      "matched_trials": 0
+    },
+    "NAGE|Niagen Bioscience, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:12.156547+00:00",
+      "matched_trials": 0
+    },
+    "NAII|NATURAL ALTERNATIVES INTERNATIONAL INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:12.389010+00:00",
+      "matched_trials": 0
+    },
+    "NAMS|NewAmsterdam Pharma Co N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:12.623634+00:00",
+      "matched_trials": 0
+    },
+    "NATR|NATURES SUNSHINE PRODUCTS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:12.856988+00:00",
+      "matched_trials": 0
+    },
+    "NBIX|NEUROCRINE BIOSCIENCES INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:13.089968+00:00",
+      "matched_trials": 0
+    },
+    "NBP|NovaBridge Biosciences": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:13.324204+00:00",
+      "matched_trials": 0
+    },
+    "NBTX|Nanobiotix S.A.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:13.555738+00:00",
+      "matched_trials": 0
+    },
+    "NCEL|NewcelX Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:13.792171+00:00",
+      "matched_trials": 0
+    },
+    "NCNA|NuCana plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:14.031548+00:00",
+      "matched_trials": 6
+    },
+    "NEO|NEOGENOMICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:14.282804+00:00",
+      "matched_trials": 0
+    },
+    "NEOG|NEOGEN CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:14.514938+00:00",
+      "matched_trials": 0
+    },
+    "NERV|Minerva Neurosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:14.745201+00:00",
+      "matched_trials": 0
+    },
+    "NEUP|Neuphoria Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:14.980019+00:00",
+      "matched_trials": 0
+    },
+    "NGEN|NERVGEN PHARMA CORP.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:15.214524+00:00",
+      "matched_trials": 0
+    },
+    "NGNE|Neurogene Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:15.448869+00:00",
+      "matched_trials": 6
+    },
+    "NKTR|NEKTAR THERAPEUTICS": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:15.806190+00:00",
+      "matched_trials": 39
+    },
+    "NKTX|Nkarta, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:16.038163+00:00",
+      "matched_trials": 4
+    },
+    "NMAD|NOMAD POWER SOLUTIONS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:16.272881+00:00",
+      "matched_trials": 0
+    },
+    "NMRA|Neumora Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:16.508898+00:00",
+      "matched_trials": 7
+    },
+    "NNNN|Anbio Biotechnology": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:16.742358+00:00",
+      "matched_trials": 0
+    },
+    "NNVC|NANOVIRICIDES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:16.969851+00:00",
+      "matched_trials": 0
+    },
+    "NRC|NRC HEALTH": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:17.204006+00:00",
+      "matched_trials": 0
+    },
+    "NRIX|Nurix Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:17.478702+00:00",
+      "matched_trials": 10
+    },
+    "NRSN|NeuroSense Therapeutics Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:17.725815+00:00",
+      "matched_trials": 6
+    },
+    "NRXP|NRX Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:17.960454+00:00",
+      "matched_trials": 0
+    },
+    "NSRX|Nasus Pharma Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:18.199418+00:00",
+      "matched_trials": 0
+    },
+    "NTHI|NEONC TECHNOLOGIES HOLDINGS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:18.430677+00:00",
+      "matched_trials": 0
+    },
+    "NTLA|Intellia Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:18.662302+00:00",
+      "matched_trials": 0
+    },
+    "NUVB|Nuvation Bio Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:18.912002+00:00",
+      "matched_trials": 19
+    },
+    "NVAX|NOVAVAX INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:19.143463+00:00",
+      "matched_trials": 0
+    },
+    "NVCT|Nuvectis Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:19.378393+00:00",
+      "matched_trials": 4
+    },
+    "NVO|NOVO NORDISK A S": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:22.909095+00:00",
+      "matched_trials": 1399
+    },
+    "NVS|NOVARTIS AG": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:23.173244+00:00",
+      "matched_trials": 0
+    },
+    "NXTC|NextCure, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:23.434886+00:00",
+      "matched_trials": 8
+    },
+    "NXTS|Nexentis Technologies Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:23.673493+00:00",
+      "matched_trials": 0
+    },
+    "OABI|OmniAb, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:23.910190+00:00",
+      "matched_trials": 0
+    },
+    "OBX|Obsidian Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:24.157921+00:00",
+      "matched_trials": 1
+    },
+    "OCGN|Ocugen, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:24.398041+00:00",
+      "matched_trials": 0
+    },
+    "OCS|Oculis Holding AG": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:24.638132+00:00",
+      "matched_trials": 0
+    },
+    "OCUL|OCULAR THERAPEUTIX, INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:24.921911+00:00",
+      "matched_trials": 33
+    },
+    "ODTX|Odyssey Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:25.162626+00:00",
+      "matched_trials": 2
+    },
+    "OGEN|ORAGENICS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:25.413362+00:00",
+      "matched_trials": 3
+    },
+    "OGI|ORGANIGRAM GLOBAL INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:25.654408+00:00",
+      "matched_trials": 0
+    },
+    "OGN|Organon & Co.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:26.677329+00:00",
+      "matched_trials": 0
+    },
+    "OKUR|OnKure Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:26.923865+00:00",
+      "matched_trials": 0
+    },
+    "OKYO|OKYO Pharma Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:27.169034+00:00",
+      "matched_trials": 3
+    },
+    "OLMA|Olema Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:27.417281+00:00",
+      "matched_trials": 6
+    },
+    "OMER|OMEROS CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:27.651757+00:00",
+      "matched_trials": 0
+    },
+    "ONC|BeOne Medicines Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:27.902215+00:00",
+      "matched_trials": 0
+    },
+    "ONCO|Onconetix, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:28.144206+00:00",
+      "matched_trials": 0
+    },
+    "ONCY|ONCOLYTICS BIOTECH INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:28.383443+00:00",
+      "matched_trials": 0
+    },
+    "ONMD|OneMedNet Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:28.621535+00:00",
+      "matched_trials": 0
+    },
+    "OPK|OPKO HEALTH, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:28.908919+00:00",
+      "matched_trials": 49
+    },
+    "OPTH|Optimi Health Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:29.149733+00:00",
+      "matched_trials": 0
+    },
+    "ORGO|Organogenesis Holdings Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:29.389667+00:00",
+      "matched_trials": 0
+    },
+    "ORIC|Oric Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:29.635121+00:00",
+      "matched_trials": 0
+    },
+    "ORKA|Oruka Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:29.879819+00:00",
+      "matched_trials": 7
+    },
+    "ORMP|ORAMED PHARMACEUTICALS INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:30.117408+00:00",
+      "matched_trials": 0
+    },
+    "OSTX|OS Therapies Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:30.356089+00:00",
+      "matched_trials": 0
+    },
+    "OTLK|Outlook Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:30.605029+00:00",
+      "matched_trials": 5
+    },
+    "OVID|Ovid Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:30.850427+00:00",
+      "matched_trials": 3
+    },
+    "PAHC|PHIBRO ANIMAL HEALTH CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:31.091416+00:00",
+      "matched_trials": 0
+    },
+    "PALI|PALISADE BIO, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:31.339237+00:00",
+      "matched_trials": 0
+    },
+    "PASG|Passage BIO, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:31.584603+00:00",
+      "matched_trials": 1
+    },
+    "PBH|Prestige Consumer Healthcare Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:31.821675+00:00",
+      "matched_trials": 0
+    },
+    "PBLS|Parabilis Medicines, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:32.062644+00:00",
+      "matched_trials": 1
+    },
+    "PBM|PSYENCE BIOMEDICAL LTD.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:32.301569+00:00",
+      "matched_trials": 0
+    },
+    "PBYI|PUMA BIOTECHNOLOGY, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:32.617956+00:00",
+      "matched_trials": 38
+    },
+    "PCRX|Pacira BioSciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:32.855253+00:00",
+      "matched_trials": 0
+    },
+    "PCSA|Processa Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:33.100015+00:00",
+      "matched_trials": 0
+    },
+    "PCVX|Vaxcyte, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:33.359704+00:00",
+      "matched_trials": 9
+    },
+    "PDSB|PDS Biotechnology Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:33.600564+00:00",
+      "matched_trials": 3
+    },
+    "PEPG|PepGen Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:33.843052+00:00",
+      "matched_trials": 5
+    },
+    "PFE|PFIZER INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:35.532196+00:00",
+      "matched_trials": 0
+    },
+    "PGEN|PRECIGEN, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:35.773441+00:00",
+      "matched_trials": 5
+    },
+    "PHAR|Pharming Group N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:36.013123+00:00",
+      "matched_trials": 0
+    },
+    "PHAT|Phathom Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:36.269628+00:00",
+      "matched_trials": 15
+    },
+    "PHIO|Phio Pharmaceuticals Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:36.511383+00:00",
+      "matched_trials": 0
+    },
+    "PHVS|Pharvaris N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:36.755727+00:00",
+      "matched_trials": 0
+    },
+    "PLRX|PLIANT THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:37.014949+00:00",
+      "matched_trials": 7
+    },
+    "PLUR|Pluri Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:37.251045+00:00",
+      "matched_trials": 0
+    },
+    "PLX|Protalix BioTherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:37.488143+00:00",
+      "matched_trials": 0
+    },
+    "PLYX|Polaryx Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:37.730104+00:00",
+      "matched_trials": 2
+    },
+    "PMCB|PharmaCyte Biotech, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:37.969467+00:00",
+      "matched_trials": 0
+    },
+    "PMN|ProMIS Neurosciences Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:38.215612+00:00",
+      "matched_trials": 2
+    },
+    "PMVP|PMV Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:38.461724+00:00",
+      "matched_trials": 6
+    },
+    "PPBT|PURPLE BIOTECH LTD.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:38.708587+00:00",
+      "matched_trials": 0
+    },
+    "PPCB|Propanc Biopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:38.948227+00:00",
+      "matched_trials": 0
+    },
+    "PRAX|Praxis Precision Medicines, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:39.188388+00:00",
+      "matched_trials": 0
+    },
+    "PRE|Prenetics Global Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:39.433427+00:00",
+      "matched_trials": 0
+    },
+    "PRFX|PRF Technologies Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:39.670988+00:00",
+      "matched_trials": 0
+    },
+    "PRGO|PERRIGO Co plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:39.911607+00:00",
+      "matched_trials": 0
+    },
+    "PRLD|Prelude Therapeutics Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:40.151156+00:00",
+      "matched_trials": 0
+    },
+    "PRME|Prime Medicine, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:40.394523+00:00",
+      "matched_trials": 3
+    },
+    "PROK|PROKIDNEY CORP.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:40.635650+00:00",
+      "matched_trials": 0
+    },
+    "PRQR|ProQR Therapeutics N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:40.873558+00:00",
+      "matched_trials": 0
+    },
+    "PRTA|PROTHENA CORP PUBLIC LTD CO": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:41.116073+00:00",
+      "matched_trials": 0
+    },
+    "PTCT|PTC THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:41.354658+00:00",
+      "matched_trials": 0
+    },
+    "PTGX|Protagonist Therapeutics, Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:41.608132+00:00",
+      "matched_trials": 13
+    },
+    "PTHS|Pelthos Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:41.844283+00:00",
+      "matched_trials": 0
+    },
+    "PTN|PALATIN TECHNOLOGIES INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:42.101499+00:00",
+      "matched_trials": 11
+    },
+    "PULM|Pulmatrix, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:42.350951+00:00",
+      "matched_trials": 15
+    },
+    "PVLA|PALVELLA THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:42.603201+00:00",
+      "matched_trials": 9
+    },
+    "PYXS|Pyxis Oncology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:42.850015+00:00",
+      "matched_trials": 3
+    },
+    "QCLS|Q/C TECHNOLOGIES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:43.095491+00:00",
+      "matched_trials": 0
+    },
+    "QDEL|QuidelOrtho Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:43.337908+00:00",
+      "matched_trials": 0
+    },
+    "QGEN|QIAGEN N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:43.579835+00:00",
+      "matched_trials": 0
+    },
+    "QNCX|Quince Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:43.817921+00:00",
+      "matched_trials": 0
+    },
+    "QNRX|Quoin Pharmaceuticals Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:44.059177+00:00",
+      "matched_trials": 0
+    },
+    "QNTM|Quantum Biopharma Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:44.301549+00:00",
+      "matched_trials": 0
+    },
+    "QTTB|Q32 Bio Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:44.547029+00:00",
+      "matched_trials": 3
+    },
+    "QUCY|Quantum Cyber N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:44.791938+00:00",
+      "matched_trials": 0
+    },
+    "QURE|uniQure N.V.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:45.033749+00:00",
+      "matched_trials": 0
+    },
+    "RACC|Research Alliance Corp III": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:45.272005+00:00",
+      "matched_trials": 0
+    },
+    "RADX|Radiopharm Theranostics Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:45.513713+00:00",
+      "matched_trials": 7
+    },
+    "RANI|Rani Therapeutics Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:45.758086+00:00",
+      "matched_trials": 0
+    },
+    "RAPP|Rapport Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:46.003916+00:00",
+      "matched_trials": 5
+    },
+    "RARE|Ultragenyx Pharmaceutical Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:46.315375+00:00",
+      "matched_trials": 63
+    },
+    "RCKT|ROCKET PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:46.573215+00:00",
+      "matched_trials": 19
+    },
+    "RCUS|Arcus Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:46.857109+00:00",
+      "matched_trials": 32
+    },
+    "RDHL|RedHill Biopharma Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:47.099983+00:00",
+      "matched_trials": 0
+    },
+    "RDY|DR REDDYS LABORATORIES LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:47.341889+00:00",
+      "matched_trials": 0
+    },
+    "REGN|REGENERON PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:47.613176+00:00",
+      "matched_trials": 0
+    },
+    "REPL|Replimune Group, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:47.852199+00:00",
+      "matched_trials": 0
+    },
+    "REVB|REVELATION BIOSCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:48.094418+00:00",
+      "matched_trials": 1
+    },
+    "RFL|Rafael Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:48.333023+00:00",
+      "matched_trials": 0
+    },
+    "RGC|Regencell Bioscience Holdings Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:48.595130+00:00",
+      "matched_trials": 0
+    },
+    "RGEN|REPLIGEN CORP": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:48.840925+00:00",
+      "matched_trials": 0
+    },
+    "RGNX|REGENXBIO Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:49.097097+00:00",
+      "matched_trials": 18
+    },
+    "RIGL|RIGEL PHARMACEUTICALS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:49.340290+00:00",
+      "matched_trials": 0
+    },
+    "RKTO|Rocket One Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:49.580004+00:00",
+      "matched_trials": 0
+    },
+    "RLAY|Relay Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:49.829976+00:00",
+      "matched_trials": 5
+    },
+    "RLMD|RELMADA THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:50.080435+00:00",
+      "matched_trials": 11
+    },
+    "RLYB|Rallybio Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:50.322506+00:00",
+      "matched_trials": 0
+    },
+    "RMTI|ROCKWELL MEDICAL, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:50.588115+00:00",
+      "matched_trials": 0
+    },
+    "RNA|Atrium Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:50.827288+00:00",
+      "matched_trials": 0
+    },
+    "RNAC|Cartesian Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:51.071713+00:00",
+      "matched_trials": 0
+    },
+    "RNAZ|Transcode Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:51.310328+00:00",
+      "matched_trials": 0
+    },
+    "RNTX|Rein Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:51.552555+00:00",
+      "matched_trials": 0
+    },
+    "ROIV|Roivant Sciences Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:51.800462+00:00",
+      "matched_trials": 0
+    },
+    "RPRX|Royalty Pharma plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:52.047813+00:00",
+      "matched_trials": 0
+    },
+    "RVMD|Revolution Medicines, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:52.325108+00:00",
+      "matched_trials": 20
+    },
+    "RXRX|RECURSION PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:52.571203+00:00",
+      "matched_trials": 7
+    },
+    "RYTM|RHYTHM PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:52.866535+00:00",
+      "matched_trials": 29
+    },
+    "RZLT|Rezolute, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:53.105794+00:00",
+      "matched_trials": 0
+    },
+    "SABS|SAB Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:53.384698+00:00",
+      "matched_trials": 6
+    },
+    "SANA|Sana Biotechnology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:53.625968+00:00",
+      "matched_trials": 0
+    },
+    "SBFM|Sunshine Biopharma Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:53.866168+00:00",
+      "matched_trials": 0
+    },
+    "SCLX|Scilex Holding Co": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:54.107149+00:00",
+      "matched_trials": 0
+    },
+    "SCNI|Scinai Immunotherapeutics Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:54.349167+00:00",
+      "matched_trials": 0
+    },
+    "SCNX|Scienture Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:54.588426+00:00",
+      "matched_trials": 0
+    },
+    "SCTX|Scribe Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:54.833330+00:00",
+      "matched_trials": 0
+    },
+    "SCYX|SCYNEXIS INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:55.095311+00:00",
+      "matched_trials": 18
+    },
+    "SDGR|Schrodinger, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:55.342498+00:00",
+      "matched_trials": 0
+    },
+    "SEPN|Septerna, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:55.585096+00:00",
+      "matched_trials": 2
+    },
+    "SER|Serina Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:55.830372+00:00",
+      "matched_trials": 0
+    },
+    "SGMT|Sagimet Biosciences Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:56.080909+00:00",
+      "matched_trials": 10
+    },
+    "SHPH|Shuttle Pharmaceuticals Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:56.324779+00:00",
+      "matched_trials": 0
+    },
+    "SIGA|SIGA TECHNOLOGIES INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:56.568398+00:00",
+      "matched_trials": 0
+    },
+    "SILO|Silo Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:56.809862+00:00",
+      "matched_trials": 0
+    },
+    "SION|Sionna Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:57.051384+00:00",
+      "matched_trials": 2
+    },
+    "SKYE|Skye Bioscience, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:57.301470+00:00",
+      "matched_trials": 2
+    },
+    "SLBT|SL Science Holding Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:57.542312+00:00",
+      "matched_trials": 0
+    },
+    "SLDB|Solid Biosciences Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:57.803927+00:00",
+      "matched_trials": 6
+    },
+    "SLGL|Sol-Gel Technologies Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:58.059514+00:00",
+      "matched_trials": 15
+    },
+    "SLN|Silence Therapeutics plc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:58.312597+00:00",
+      "matched_trials": 6
+    },
+    "SLS|SELLAS Life Sciences Group, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:58.554514+00:00",
+      "matched_trials": 0
+    },
+    "SLXN|Silexion Therapeutics Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:58.799967+00:00",
+      "matched_trials": 0
+    },
+    "SMMT|Summit Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:59.041748+00:00",
+      "matched_trials": 0
+    },
+    "SNDL|SNDL Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:59.286383+00:00",
+      "matched_trials": 0
+    },
+    "SNDX|Syndax Pharmaceuticals Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:59.531041+00:00",
+      "matched_trials": 0
+    },
+    "SNGX|SOLIGENIX, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:41:59.771012+00:00",
+      "matched_trials": 0
+    },
+    "SNTI|Senti Biosciences Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:00.021700+00:00",
+      "matched_trials": 0
+    },
+    "SNY|Sanofi": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:06.205878+00:00",
+      "matched_trials": 1546
+    },
+    "SNYR|Synergy CHC Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:06.457971+00:00",
+      "matched_trials": 0
+    },
+    "SPRB|SPRUCE BIOSCIENCES, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:06.710973+00:00",
+      "matched_trials": 0
+    },
+    "SPRC|SciSparc Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:06.965667+00:00",
+      "matched_trials": 0
+    },
+    "SPRO|Spero Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:07.216089+00:00",
+      "matched_trials": 0
+    },
+    "SPRY|ARS Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:07.472589+00:00",
+      "matched_trials": 5
+    },
+    "SPTX|Seaport Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:07.720436+00:00",
+      "matched_trials": 0
+    },
+    "SRPT|Sarepta Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:08.020314+00:00",
+      "matched_trials": 52
+    },
+    "SRRK|Scholar Rock Holding Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:08.268606+00:00",
+      "matched_trials": 0
+    },
+    "SRZN|Surrozen, Inc./DE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:08.519261+00:00",
+      "matched_trials": 0
+    },
+    "STOK|Stoke Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:08.798203+00:00",
+      "matched_trials": 3
+    },
+    "STRO|SUTRO BIOPHARMA, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:09.060388+00:00",
+      "matched_trials": 8
+    },
+    "STTK|Shattuck Labs, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:09.327541+00:00",
+      "matched_trials": 7
+    },
+    "SUPN|SUPERNUS PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:09.694392+00:00",
+      "matched_trials": 64
+    },
+    "SVA|SINOVAC BIOTECH LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:10.107026+00:00",
+      "matched_trials": 0
+    },
+    "SVRA|Savara Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:10.369961+00:00",
+      "matched_trials": 11
+    },
+    "SXTC|China SXT Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:10.628421+00:00",
+      "matched_trials": 0
+    },
+    "SXTP|60 DEGREES PHARMACEUTICALS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:10.880229+00:00",
+      "matched_trials": 0
+    },
+    "SYRE|Spyre Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:11.141593+00:00",
+      "matched_trials": 8
+    },
+    "TAK|TAKEDA PHARMACEUTICAL CO LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:11.396344+00:00",
+      "matched_trials": 0
+    },
+    "TARA|Protara Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:11.646314+00:00",
+      "matched_trials": 0
+    },
+    "TARS|Tarsus Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:11.905148+00:00",
+      "matched_trials": 12
+    },
+    "TBPH|Theravance Biopharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:12.167348+00:00",
+      "matched_trials": 0
+    },
+    "TCRT|Alaunos Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:12.419663+00:00",
+      "matched_trials": 0
+    },
+    "TCRX|TScan Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:12.678161+00:00",
+      "matched_trials": 9
+    },
+    "TECH|BIO-TECHNE Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:12.930667+00:00",
+      "matched_trials": 0
+    },
+    "TECX|Tectonic Therapeutic, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:13.182796+00:00",
+      "matched_trials": 0
+    },
+    "TELO|Telomir Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:13.433333+00:00",
+      "matched_trials": 1
+    },
+    "TENX|TENAX THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:13.691125+00:00",
+      "matched_trials": 9
+    },
+    "TEVA|TEVA PHARMACEUTICAL INDUSTRIES LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:13.973152+00:00",
+      "matched_trials": 4
+    },
+    "TGTX|TG THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:14.275684+00:00",
+      "matched_trials": 40
+    },
+    "TIL|Instil Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:14.529814+00:00",
+      "matched_trials": 0
+    },
+    "TKNO|Alpha Teknova, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:14.783314+00:00",
+      "matched_trials": 0
+    },
+    "TLPH|TALPHERA, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:15.053114+00:00",
+      "matched_trials": 18
+    },
+    "TLRY|Tilray Brands, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:15.303539+00:00",
+      "matched_trials": 0
+    },
+    "TLSA|Tiziana Life Sciences Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:15.568325+00:00",
+      "matched_trials": 14
+    },
+    "TLX|Telix Pharmaceuticals Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:15.825271+00:00",
+      "matched_trials": 0
+    },
+    "TNGX|Tango Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:16.110934+00:00",
+      "matched_trials": 6
+    },
+    "TNXP|Tonix Pharmaceuticals Holding Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:16.360693+00:00",
+      "matched_trials": 0
+    },
+    "TNYA|Tenaya Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:16.612353+00:00",
+      "matched_trials": 0
+    },
+    "TOVX|Theriva Biologics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:16.873115+00:00",
+      "matched_trials": 8
+    },
+    "TPST|Tempest Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:17.125937+00:00",
+      "matched_trials": 0
+    },
+    "TRAW|Traws Pharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:17.423827+00:00",
+      "matched_trials": 35
+    },
+    "TRAX|First Tracks Biotherapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:17.675395+00:00",
+      "matched_trials": 0
+    },
+    "TRDA|Entrada Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:17.932773+00:00",
+      "matched_trials": 4
+    },
+    "TRIB|TRINITY BIOTECH PLC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:18.188944+00:00",
+      "matched_trials": 0
+    },
+    "TRLV|Trulieve Cannabis Corp.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:18.436254+00:00",
+      "matched_trials": 0
+    },
+    "TRVI|Trevi Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:18.689116+00:00",
+      "matched_trials": 0
+    },
+    "TSHA|Taysha Gene Therapies, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:18.946398+00:00",
+      "matched_trials": 4
+    },
+    "TTRX|Turn Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:19.201712+00:00",
+      "matched_trials": 0
+    },
+    "TVGN|Tevogen Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:19.454035+00:00",
+      "matched_trials": 0
+    },
+    "TVRD|Tvardi Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:19.706146+00:00",
+      "matched_trials": 0
+    },
+    "TVTX|Travere Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:19.981397+00:00",
+      "matched_trials": 14
+    },
+    "TWST|Twist Bioscience Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:20.229194+00:00",
+      "matched_trials": 0
+    },
+    "TXMD|TherapeuticsMD, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:20.483001+00:00",
+      "matched_trials": 0
+    },
+    "TYRA|Tyra Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:20.742311+00:00",
+      "matched_trials": 7
+    },
+    "ULS|UL Solutions Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:20.996781+00:00",
+      "matched_trials": 0
+    },
+    "UNCY|Unicycive Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:21.254082+00:00",
+      "matched_trials": 1
+    },
+    "UPB|Upstream Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:21.511049+00:00",
+      "matched_trials": 6
+    },
+    "UPC|Universe Pharmaceuticals INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:21.808612+00:00",
+      "matched_trials": 0
+    },
+    "URGN|UroGen Pharma Ltd.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:22.079605+00:00",
+      "matched_trials": 19
+    },
+    "USNA|USANA HEALTH SCIENCES INC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:22.336085+00:00",
+      "matched_trials": 0
+    },
+    "UTHR|UNITED THERAPEUTICS Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:22.591698+00:00",
+      "matched_trials": 0
+    },
+    "VALN|Valneva SE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:22.850443+00:00",
+      "matched_trials": 0
+    },
+    "VBIO|Valion Bio, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:23.103684+00:00",
+      "matched_trials": 0
+    },
+    "VCEL|Vericel Corp": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:23.356948+00:00",
+      "matched_trials": 0
+    },
+    "VCRE|Vicore Pharma Holding AB": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:23.608266+00:00",
+      "matched_trials": 0
+    },
+    "VERA|Vera Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:23.866125+00:00",
+      "matched_trials": 6
+    },
+    "VERU|VERU INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:24.125748+00:00",
+      "matched_trials": 12
+    },
+    "VIR|Vir Biotechnology, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:24.426412+00:00",
+      "matched_trials": 22
+    },
+    "VIVS|VivoSim Labs, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:24.678174+00:00",
+      "matched_trials": 0
+    },
+    "VKTX|Viking Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:24.946590+00:00",
+      "matched_trials": 13
+    },
+    "VNDA|Vanda Pharmaceuticals Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:25.202006+00:00",
+      "matched_trials": 0
+    },
+    "VNRX|VOLITIONRX LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:25.453642+00:00",
+      "matched_trials": 0
+    },
+    "VOGX|Vogenx, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:25.713520+00:00",
+      "matched_trials": 3
+    },
+    "VOR|Vor Biopharma Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:25.970860+00:00",
+      "matched_trials": 0
+    },
+    "VRAX|Virax Biolabs Group Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:26.223349+00:00",
+      "matched_trials": 0
+    },
+    "VRCA|Verrica Pharmaceuticals Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:26.489174+00:00",
+      "matched_trials": 9
+    },
+    "VRDN|Viridian Therapeutics, Inc.\\DE": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:26.741742+00:00",
+      "matched_trials": 0
+    },
+    "VRTX|VERTEX PHARMACEUTICALS INC / MA": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:26.993632+00:00",
+      "matched_trials": 0
+    },
+    "VRXA|Veraxa Biotech AG - Post de-SPAC": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:27.250266+00:00",
+      "matched_trials": 0
+    },
+    "VSTM|Verastem, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:27.557006+00:00",
+      "matched_trials": 27
+    },
+    "VTGN|Vistagen Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:27.820133+00:00",
+      "matched_trials": 11
+    },
+    "VTRS|Viatris Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:29.308669+00:00",
+      "matched_trials": 6
+    },
+    "VTVT|vTv Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:29.562307+00:00",
+      "matched_trials": 0
+    },
+    "VYGR|Voyager Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:29.816027+00:00",
+      "matched_trials": 0
+    },
+    "WHWK|Whitehawk Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:30.073147+00:00",
+      "matched_trials": 2
+    },
+    "WVE|Wave Life Sciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:30.364706+00:00",
+      "matched_trials": 0
+    },
+    "XBIO|Xenetic Biosciences, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:30.624913+00:00",
+      "matched_trials": 1
+    },
+    "XBIT|XBiotech Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:30.887516+00:00",
+      "matched_trials": 8
+    },
+    "XCUR|EXICURE, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:31.138841+00:00",
+      "matched_trials": 2
+    },
+    "XENE|Xenon Pharmaceuticals Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:31.405253+00:00",
+      "matched_trials": 23
+    },
+    "XERS|Xeris Biopharma Holdings, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:31.653903+00:00",
+      "matched_trials": 0
+    },
+    "XFOR|X4 Pharmaceuticals, Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:31.908893+00:00",
+      "matched_trials": 0
+    },
+    "XLO|Xilio Therapeutics, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:32.165381+00:00",
+      "matched_trials": 0
+    },
+    "XNCR|Xencor Inc": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:32.438203+00:00",
+      "matched_trials": 30
+    },
+    "XRTX|XORTX Therapeutics Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:32.689817+00:00",
+      "matched_trials": 0
+    },
+    "XTLB|XTL BIOPHARMACEUTICALS LTD": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:32.939958+00:00",
+      "matched_trials": 0
+    },
+    "YARW|Yarrow Bioscience, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:33.195766+00:00",
+      "matched_trials": 1
+    },
+    "ZBIO|Zenas BioPharma, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:33.446560+00:00",
+      "matched_trials": 0
+    },
+    "ZLAB|Zai Lab Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:33.738639+00:00",
+      "matched_trials": 0
+    },
+    "ZNTL|Zentalis Pharmaceuticals, Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:33.994974+00:00",
+      "matched_trials": 0
+    },
+    "ZTS|Zoetis Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:34.252842+00:00",
+      "matched_trials": 0
+    },
+    "ZURA|Zura Bio Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:34.507943+00:00",
+      "matched_trials": 0
+    },
+    "ZVRA|ZEVRA THERAPEUTICS, INC.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:34.766765+00:00",
+      "matched_trials": 0
+    },
+    "ZYBT|Zhengye Biotechnology Holding Ltd": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:35.024170+00:00",
+      "matched_trials": 0
+    },
+    "ZYME|Zymeworks Inc.": {
+      "status": "COMPLETE",
+      "checked_at": "2026-10-09T13:42:35.279468+00:00",
+      "matched_trials": 0
+    }
+  }
+}

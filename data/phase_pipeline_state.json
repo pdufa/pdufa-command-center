@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-10-09T13:05:32.468902+00:00",
+  "started_at": "2026-10-09T13:42:35.704156+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
   "scope": "Industry Phase 2/3 records updated since 2024-10-09",
@@ -9,34 +9,13 @@
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "FDMT",
-      "drug": "4D-150 IVT (3x10^10 vg)",
-      "nct_id": "NCT07867080"
-    },
-    {
-      "ticker": "IRD",
-      "drug": "0.75% phentolamine ophthalmic solution",
-      "nct_id": "NCT06542497"
-    },
-    {
-      "ticker": "IRD",
-      "drug": "0.75% Phentolamine Ophthalmic Solution",
-      "nct_id": "NCT07140783"
-    },
-    {
-      "ticker": "IRD",
-      "drug": "phentolamine ophthalmic solution 0.75%, a non-selective alpha-1 and alpha-2 adrenergic antagonist",
-      "nct_id": "NCT06349759"
-    }
-  ],
-  "finished_at": "2026-10-09T13:06:14.032820+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-10-09T13:43:18.513989+00:00",
   "stored_trials": 3105,
   "phase2_programs": 440,
   "master_programs": 118,
   "review_trials": 1208,
   "market_cap_verified_tickers": 383,
-  "market_cap_source_unavailable": 14,
-  "market_cap_recent_cache_retained": 13
+  "market_cap_source_unavailable": 2,
+  "market_cap_recent_cache_retained": 1
 }

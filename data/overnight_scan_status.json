@@ -1,0 +1,52 @@
+{
+  "started_at": "2026-10-09T13:39:15.573983+00:00",
+  "finished_at": "2026-10-09T13:43:26.307563+00:00",
+  "status": "PARTIAL",
+  "complete": false,
+  "source_checks": {
+    "all_phase_inventory": {
+      "status": "COMPLETE WITH WARNINGS",
+      "finished_at": "2026-10-09T13:42:35.465203+00:00",
+      "registry_companies": 717,
+      "studies_checked": null,
+      "companies_checked": 717,
+      "companies_due": 717,
+      "errors": [],
+      "exit_code": 0,
+      "source_scope": "All registered phases, all registry companies; exact lead-sponsor matching only"
+    },
+    "clinical_pipeline": {
+      "status": "COMPLETE WITH WARNINGS",
+      "finished_at": "2026-10-09T13:43:18.513989+00:00",
+      "registry_companies": 717,
+      "studies_checked": 15662,
+      "companies_checked": null,
+      "companies_due": 717,
+      "errors": [],
+      "exit_code": 0,
+      "source_scope": "Industry Phase 2/3 records updated since 2024-10-09"
+    },
+    "phase3_posted_results": {
+      "status": "COMPLETE",
+      "finished_at": "2026-10-09T13:43:26.226866+00:00",
+      "registry_companies": 717,
+      "studies_checked": 3973,
+      "companies_checked": null,
+      "companies_due": 717,
+      "errors": [],
+      "exit_code": 0,
+      "source_scope": "scripts/phase3_results_intake.py"
+    }
+  },
+  "completed_collectors": 3,
+  "total_collectors": 3,
+  "missing_required_source_families": [
+    "FDA regulatory decisions",
+    "SEC financing and dilution",
+    "issuer investor relations",
+    "cash and runway",
+    "price, volume and ownership",
+    "all-company coverage audit"
+  ],
+  "note": "Collector completion does not establish full-universe completion. Historical verified records retained."
+}
