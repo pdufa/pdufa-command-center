@@ -3375,24 +3375,7 @@ elif page == "PIPELINE":
                     st.session_state["pipeline_master_transfers"] = dict(transfers)
                     st.session_state["pipeline_transfer_notice"] = f"{int(returned.sum()):,} program(s) returned to PIPELINE."
                     st.rerun()
-            if not moved.empty:
-                st.markdown("#### Verified Phase 3 transitions")
-            if moved.empty:
-                st.info("No verified Phase 3 transitions have qualified yet.")
-            else:
-                fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phase2_nct_ids": "Phase 2 Trials",
-                          "phase3_nct_id": "Phase 3 Trial", "phase3_start_date": "Actual Phase 3 Start",
-                          "promoted_at": "Moved to Master", "promotion_status": "Current Evidence", "phase3_source_url": "Transition Evidence"}
-                grouped_dataframe(moved[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
-                             column_config={"Transition Evidence": st.column_config.LinkColumn("Transition Evidence", display_text="Open evidence")})
             st.button("OPEN MASTER TABLE", on_click=go_page, args=("MASTER TABLE",), key="pipeline_open_master")
-        if not review.empty:
-            with st.expander("Programs requiring verification"):
-                fields = {"ticker": "Ticker", "drug": "Drug", "indication": "Indication", "phases": "Registered Phase",
-                          "trial_status": "Trial Status", "start_date": "Start Date", "start_date_type": "Start Date Type",
-                          "promotion_reason": "Review Reason", "universe_gate": "Market Cap Gate", "universe_reason": "Market Cap Review", "source_url": "Trial Evidence"}
-                grouped_dataframe(review[list(fields)].rename(columns=fields), use_container_width=True, hide_index=True,
-                             column_config={"Trial Evidence": st.column_config.LinkColumn("Trial Evidence", display_text="Open trial")})
     if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh"):
         load_phase_pipeline_data.clear()
         st.rerun()
