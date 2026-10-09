@@ -46,11 +46,11 @@ class StrategyViewTests(unittest.TestCase):
         rows = prepare_strategy_rows(pool, issue_catalog)
         self.assertEqual(len(rows), 3)
         self.assertEqual(rows["record_id"].nunique(), 3)
-        self.assertEqual(rows.iloc[0]["issue"], "Neurology")
+        self.assertEqual(rows.iloc[0]["issue"], "Epilepsy")
         self.assertEqual(rows.iloc[0]["approach"], "Kv7 modulator")
         self.assertEqual(rows.iloc[1]["issue"], "chronic hepatitis B")
         self.assertEqual(rows.iloc[2]["issue"],
-                         "Indication / disease not yet classified")
+                         "Indication not recorded")
 
     def test_no_false_matching_by_ticker(self):
         pool = sample_pool()
@@ -86,6 +86,36 @@ class StrategyViewTests(unittest.TestCase):
         rendered = _trial_html(rows.iloc[0].to_dict())
         self.assertNotIn("javascript:alert", rendered)
         self.assertNotIn("<malicious>", rendered)
+
+    def test_disease_synonyms_are_combined_without_mixing_trial_ids(self):
+        from disease_taxonomy import group_indication
+        self.assertEqual(group_indication("Diabetes | Diabetes Mellitus, Type 2"), "Diabetes")
+        self.assertEqual(group_indication("Type 2 Diabetes Mellitus"), "Diabetes")
+        self.assertEqual(group_indication("Pulmonary Arterial Hypertension"), "Pulmonary arterial hypertension")
+        self.assertEqual(group_indication("Non-small Cell Lung Cancer"), "Non-small cell lung cancer")
+        self.assertEqual(group_indication("Prader-Willi Syndrome | Hyperphagia"), "Prader-Willi syndrome")
+        self.assertEqual(group_indication("Healthy Volunteers"), "Healthy volunteers / no disease")
+        self.assertEqual(group_indication("Diabetes Insipidus"), "Diabetes insipidus")
+
+    def test_population_sort_and_source_definitions(self):
+        from disease_taxonomy import burden_for
+        frame = pd.DataFrame([
+            {"record_id": "1", "issue": "Diabetes", "nct_id": "NCT00000001", "ticker": "AA"},
+            {"record_id": "2", "issue": "Hypertension", "nct_id": "NCT00000002", "ticker": "BB"},
+            {"record_id": "3", "issue": "Osteoarthritis", "nct_id": "NCT00000003", "ticker": "CC"},
+            {"record_id": "4", "issue": "Rare Unknown", "nct_id": "NCT00000004", "ticker": "DD"},
+        ])
+        summary = issue_summary(frame)
+        self.assertEqual(summary.iloc[0]["Disease / issue"], "Hypertension")
+        self.assertEqual(summary.iloc[1]["Disease / issue"], "Diabetes")
+        self.assertEqual(summary.iloc[2]["Disease / issue"], "Osteoarthritis")
+        self.assertEqual(summary.iloc[3]["Worldwide affected"], "Not verified")
+        self.assertEqual(burden_for("Diabetes")["us_people"], 40100000)
+        self.assertTrue(summary.iloc[0]["Burden source"].startswith("https://"))
+        us = issue_summary(frame, sort_by="Patient population (US)")
+        self.assertEqual(us.iloc[0]["Disease / issue"], "Hypertension")
+        active = issue_summary(frame, sort_by="Most Pipeline trials / programs")
+        self.assertEqual(len(active), 4)
 
 
 if __name__ == "__main__":
