@@ -7,6 +7,7 @@ from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS a
 from strategy_view import render_strategy_page
 from today_page import render_today
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
+from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
 from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
@@ -3589,6 +3590,43 @@ if page == "PIPELINE":
                     _pre_evidence = pd.DataFrame()
         st.caption("Pre-release scoring is based on documented information only. The system does not certify uploaded publications or establish a clinical success probability. For historical assessments, same-day publication order cannot be established from date-only fields.")
         _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
+        # Phase 2 p evidence is a pre-readout predictor input, never a
+        # Phase 3 result or automatic point award. Exact phase2_nct_ids,
+        # issuer ticker, registry publication, and first-observed cutoff
+        # are all required; missing values remain explicitly unverified.
+        try:
+            _phase2_p = pd.read_csv(
+                "data/phase2_primary_p_evidence.csv", dtype=str,
+                keep_default_na=False,
+            )
+        except (OSError, ValueError, pd.errors.ParserError):
+            _phase2_p = pd.DataFrame()
+        _p3_candidates = join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)
+        try:
+            _p2_state = json.loads(
+                Path("data/phase2_p_intake_status.json").read_text(encoding="utf-8")
+            )
+            st.caption(
+                "Phase 2 primary p evidence: "
+                + str(_p2_state.get("primary_p_observations_stored", 0))
+                + " observed analyses · "
+                + str(_p2_state.get("primary_p_linked_nct", 0))
+                + " linked Phase 2 trials · "
+                + str(_p2_state.get("status", "UNKNOWN"))
+                + " · verified observation cutoff "
+                + str(_p2_state.get("as_of", "unavailable"))
+            )
+            if _p2_state.get("status") != "COMPLETE":
+                st.warning("Phase 2 p collection is partial. Missing p data cannot be treated as a failed trial.")
+        except (OSError, ValueError, TypeError):
+            st.warning("Phase 2 primary p evidence has not been collected yet.")
+        st.caption(
+            "PHASE 2 p-value evidence is shown only when first observed BEFORE the Phase 3 "
+            "assessment cutoff, from an explicitly linked Phase 2 trial. A small p-value "
+            "does not establish a clinically meaningful effect or Phase 3 success. "
+            "The 100-point research score still requires sourced efficacy, safety, "
+            "design, regulatory alignment, execution, and issuer verification."
+        )
         # Audit PRE-RELEASE input presence separately from clinical scoring.
         # The input counter does not inspect Phase 3 outcomes or p-values.
         _input_rows, _input_counts = audit_pre_readout_inputs(
@@ -3689,6 +3727,16 @@ if page == "PIPELINE":
         pc2.metric("Verified program identity", ready_identity)
         pc3.metric("Phase 2 trial ID linked", linked_phase2)
         pc4.metric("Complete 100-point assessments", fully_scored)
+        _p2_matched = (
+            int(_p3_candidates["Phase 2 p Evidence"].eq(
+                "REPORTED — MANUAL CLINICAL REVIEW"
+            ).sum()) if "Phase 2 p Evidence" in _p3_candidates else 0
+        )
+        st.caption(
+            f"Phase 2 primary p-value evidence linked and date-verified for "
+            f"{_p2_matched:,} / {len(_p3_candidates):,} pre-readout candidates. "
+            "Research interpretation is still required."
+        )
         if fully_scored == 0:
             st.warning(
                 "NOT READY FOR PHASE 3 SUCCESS PROBABILITIES: no pre-readout "
