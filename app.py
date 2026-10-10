@@ -1512,7 +1512,7 @@ def stock_chart_url(ticker):
     symbol = safe_text(ticker, "").upper().strip()
     return APP_BASE_URL + "Stock_Chart?" + urllib.parse.urlencode({"ticker": symbol})
 
-def event_detail_url(row, source="live", return_page="MASTER TABLE"):
+def event_detail_url(row, source="live", return_page="WATCHLIST"):
     event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
     return APP_BASE_URL + "?" + urllib.parse.urlencode({
         "page": "detail",
@@ -1537,7 +1537,7 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
     st.session_state.selected_detail_source = source
-    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "MASTER TABLE")
+    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "WATCHLIST")
     st.session_state.detail_open = True
     if len(st.query_params):
         st.query_params.clear()
@@ -2560,7 +2560,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
 
 
-def table_view(frame, return_page="MASTER TABLE"):
+def table_view(frame, return_page="WATCHLIST"):
     out = frame.copy()
 
     # Guarantee every master-table column exists even if the source feed is incomplete.
@@ -2638,7 +2638,7 @@ query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
 query_source = st.query_params.get("source") or "live"
-query_return = st.query_params.get("return") or "MASTER TABLE"
+query_return = st.query_params.get("return") or "WATCHLIST"
 
 if query_page == "detail" and query_event:
     st.session_state.selected_event_key = str(query_event)
@@ -2700,13 +2700,13 @@ def scan_approval_all():
     return _record_streamlit_scan("PROBABILITY OF APPROVAL", "ALL")
 
 if "nav" not in st.session_state:
-    st.session_state.nav = "MASTER TABLE"
+    st.session_state.nav = "WATCHLIST"
 if "detail_open" not in st.session_state:
     st.session_state.detail_open = False
 if "selected_detail_source" not in st.session_state:
     st.session_state.selected_detail_source = "live"
 if "detail_return_page" not in st.session_state:
-    st.session_state.detail_return_page = "MASTER TABLE"
+    st.session_state.detail_return_page = "WATCHLIST"
 if "selected_ticker" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
@@ -2720,19 +2720,19 @@ if "selected_event_key" not in st.session_state:
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
 st.caption("BUILD 2026-10-06K · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 + REGULATORY BLIND-SPOT MONITOR · STATS + CMC + FACILITY + BIMO GATES · FINANCING CACHE FIX")
-st.caption("OPERATING FLOW: MASTER TABLE → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
+st.caption("OPERATING FLOW: PIPELINE → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["PIPELINE","TODAY","MASTER TABLE","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PIPELINE","TODAY","WATCHLIST","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 if st.session_state.nav not in nav_options:
-    st.session_state.nav = "MASTER TABLE"
+    st.session_state.nav = "WATCHLIST"
 if st.session_state.detail_return_page not in nav_options:
-    st.session_state.detail_return_page = "MASTER TABLE"
+    st.session_state.detail_return_page = "WATCHLIST"
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -2761,9 +2761,9 @@ if page == "TODAY":
         st.warning("Phase 3 automated intake has not yet reported a completed scan. Historical coverage remains incomplete.")
     render_today(df, _phase_today, _finance_today)
 
-if page == "MASTER TABLE":
-    st.markdown("## MASTER TABLE — PROGRAM REVIEW THROUGH FDA DECISION")
-    st.caption("Verified Phase 3 programs and manually selected PIPELINE programs arrive here. Watchlist, Analysis and Invest follow below; recorded phases, scores and entry eligibility remain subject to their own evidence checks.")
+if page == "WATCHLIST":
+    st.markdown("## WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION")
+    st.caption("Phase 3 and manually selected PIPELINE records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
     master, phase3_arrivals, phase_pipeline_state = master_with_phase3(df)
     master = master.reset_index(drop=True)
     manual_arrivals = sum(row.get("pipeline_transfer_mode") == "MANUAL REVIEW" for row in phase3_arrivals)
@@ -3006,24 +3006,39 @@ if page == "MASTER TABLE":
                             st.dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
             else:
                 st.info("No PDUFA candidates available in the loaded events.")
-        st.markdown("### MASTER TABLE — WATCHLIST")
-        st.caption("Ticker → STAGE → DAYS TO PDUFA stays visible in every view. Related fields are grouped into tabs; use the field selector for additional sections.")
-        display_view = stage_filter_panel(combined, key="master_table", source=master, expanded=True)
-        display_fields = list(display_view.columns)
-        display_help = {c: st.column_config.TextColumn(c + " ⓘ", help=f"{c}: source or calculated event field; verify evidence and reporting date.") for c in display_fields if c != "Watchlist"}
-        display_help["Watchlist"] = st.column_config.CheckboxColumn("WATCHLIST ⓘ", help="Check to add this ticker to your Watchlist.", default=False)
-        edited_master = grouped_editor(display_view, stage_controls=False, use_container_width=True, hide_index=True, height=650, column_config=display_help, disabled=[c for c in display_fields if c != "Watchlist"], key="master_watchlist_main_editor")
-        changed_watch = edited_master["Watchlist"].fillna(False).astype(bool).ne(display_view["Watchlist"].fillna(False).astype(bool))
-        if changed_watch.any():
-            selected_watch = set(watch_values)
-            for row_id in display_view.index[changed_watch]:
-                ticker = ticker_values.loc[row_id]
-                if ticker:
-                    if bool(edited_master.loc[row_id, "Watchlist"]):
-                        selected_watch.add(ticker)
-                    else:
-                        selected_watch.discard(ticker)
-            st.session_state["watchlist"] = sorted(selected_watch)
+        # Keep the enriched master frame for downstream tabs, but do not
+        # render the large editable Master Table. Manage stocks by ticker.
+        st.markdown("### WATCHLIST MANAGEMENT")
+        st.caption("Search a ticker to add or remove it. Watchlist, Analysis, and Invest remain available below.")
+        ticker_choices = sorted({ticker for ticker in ticker_values if ticker})
+        picker_col, add_col, remove_col = st.columns([3, 1, 1], gap="small")
+        with picker_col:
+            selected_watch_ticker = st.selectbox(
+                "Find ticker", options=ticker_choices, index=None,
+                placeholder="Search ticker...", key="watchlist_ticker_picker_v1",
+                disabled=not ticker_choices,
+            )
+        with add_col:
+            st.write("")
+            st.write("")
+            add_watch = st.button(
+                "ADD TO WATCHLIST", use_container_width=True,
+                disabled=not selected_watch_ticker or selected_watch_ticker in watch_values,
+                key="watchlist_add_picker_v1",
+            )
+        with remove_col:
+            st.write("")
+            st.write("")
+            remove_watch = st.button(
+                "REMOVE", use_container_width=True,
+                disabled=not selected_watch_ticker or selected_watch_ticker not in watch_values,
+                key="watchlist_remove_picker_v1",
+            )
+        if add_watch and selected_watch_ticker:
+            st.session_state["watchlist"] = sorted(watch_values | {selected_watch_ticker})
+            st.rerun()
+        if remove_watch and selected_watch_ticker:
+            st.session_state["watchlist"] = sorted(watch_values - {selected_watch_ticker})
             st.rerun()
         st.caption(f"Watchlist: {len(watch_values)} tickers selected")
         # Watchlist rows can be promoted independently to Analysis and Invest.
@@ -3092,7 +3107,7 @@ if page == "MASTER TABLE":
             watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
             watch_cols += displayed_indicators
             if watch_rows.empty:
-                st.info("No Watchlist stocks selected. Check WATCHLIST in the Master Table above.")
+                st.info("No Watchlist stocks selected. Use WATCHLIST MANAGEMENT above to add a ticker.")
             else:
                 analysis_set = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
                 watch_rows.insert(0, "Add to Analysis", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(analysis_set))
@@ -3205,7 +3220,7 @@ if page == "MASTER TABLE":
                     grouped_dataframe(source_frame, use_container_width=True, hide_index=True)
                 else:
                     st.info("No loaded records.")
-    st.caption("The Master Table consolidates loaded source columns. Missing evidence is not treated as verified.")
+    st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
 
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
@@ -5245,8 +5260,8 @@ else:
     with b1:
         st.write("")
         st.write("")
-        if st.button("← MASTER TABLE", use_container_width=True):
-            go_page("MASTER TABLE")
+        if st.button("← WATCHLIST", use_container_width=True):
+            go_page("WATCHLIST")
             st.rerun()
     with b2:
         st.write("")
