@@ -3252,6 +3252,12 @@ elif page == "PIPELINE":
         for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
     )
     universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
+    # Changed stage/date/search/sort selections must invalidate the prior
+    # explicitly requested chart, including when the count would be unchanged.
+    def _clear_pipeline_chart_v7():
+        st.session_state["pipeline_chart_request_v7"] = None
+
+    st.caption("Pipeline chart version: DECISION-COUNT-LIVE-V7")
     stage_col, date_col = st.columns(2, gap="medium")
     with stage_col:
         with st.container(border=True):
@@ -3260,8 +3266,9 @@ elif page == "PIPELINE":
                 "Stages to display",
                 options=list(PIPELINE_STAGES),
                 selection_mode="multi",
-                default=list(PIPELINE_STAGES),
-                key="pipeline_universe_stages_pills",
+                default=[],
+                key="pipeline_universe_stages_pills_v7",
+                on_change=_clear_pipeline_chart_v7,
                 width="stretch",
                 help="Click one or more stages to filter the pipeline.",
             )
@@ -3319,27 +3326,53 @@ elif page == "PIPELINE":
                 "DATES to display",
                 options=list(date_bands),
                 selection_mode="multi",
-                default=list(date_bands),
+                default=[],
                 format_func=lambda band: (
                     f"{date_symbols[band]} {band} ({date_counts.get(band, 0):,})"
                 ),
-                key="pipeline_universe_dates_pills",
+                key="pipeline_universe_dates_pills_v7",
+                on_change=_clear_pipeline_chart_v7,
                 width="stretch",
                 help="Click one or more countdown ranges; colors match the pipeline table.",
             )
             sort_dates = st.selectbox(
                 "Sort pipeline", ["Closest PDUFA first", "Ticker A–Z"],
-                key="pipeline_universe_date_sort",
+                key="pipeline_universe_date_sort_v7",
+                on_change=_clear_pipeline_chart_v7,
             )
             st.caption("Colored circles identify the date bands; rows retain their date colors. "
                        "Countdowns update daily. NO PDUFA YET means no linked PDUFA date; "
                        "PAST / RECHECK does not imply an FDA decision.")
     date_filtered = universe[universe["DATES"].isin(selected_dates)].copy()
-    search = st.text_input("Find ticker, drug, indication or NCT ID", key="pipeline_universe_search").strip()
+    search = st.text_input(
+        "Find ticker, drug, indication or NCT ID",
+        key="pipeline_universe_search_v7",
+        on_change=_clear_pipeline_chart_v7,
+    ).strip()
     # A shared, record-ID-deduplicated intersection powers BOTH count tables
     # and the main table. Each record contributes once to its CURRENT stage
     # and once to exactly one PDUFA date band, so both TOTALs always match.
-    visible = select_pipeline_records(date_filtered, enabled_stages, search)
+    # Fail-closed display: no selections and no Apply click mean NO rows.
+    # Derive all breakdowns AND the table from this exact same dataframe.
+    stage_date_ready = bool(enabled_stages) and bool(selected_dates)
+    apply_clicked = st.button(
+        "Show matching trials", type="primary",
+        disabled=not stage_date_ready, use_container_width=True,
+        key="pipeline_show_matching_v7",
+    )
+    selection_signature = (
+        tuple(enabled_stages), tuple(selected_dates), search, sort_dates
+    )
+    if apply_clicked:
+        st.session_state["pipeline_chart_request_v7"] = selection_signature
+    chart_applied = (
+        stage_date_ready
+        and st.session_state.get("pipeline_chart_request_v7") == selection_signature
+    )
+    visible = (
+        select_pipeline_records(date_filtered, enabled_stages, search)
+        if chart_applied else date_filtered.iloc[0:0].copy()
+    )
     total_records = len(visible)
     primary_stages = visible["current_stage"].fillna("").replace("", "Unknown")
     primary_stages = primary_stages.where(primary_stages.isin(PIPELINE_STAGES), "Unknown")
@@ -3420,7 +3453,7 @@ elif page == "PIPELINE":
     else:
         visible = visible.sort_values(["_date_rank", "Days to PDUFA", "ticker"], na_position="last")
     visible = visible.drop(columns=["_date_rank"])
-    st.metric("Trials / programs displayed", f"{len(visible):,}")
+    st.metric("Trials / programs displayed (actual chart rows)", f"{len(visible):,}")
     trial_count = visible.loc[visible["nct_id"].ne(""), "nct_id"].nunique()
     st.caption(f"Unique registered trial IDs in this list: {trial_count:,}")
     state_path = Path("data/all_phase_scan_state.json")
@@ -3443,9 +3476,11 @@ elif page == "PIPELINE":
             pass
     st.caption("Source and evidence status are retained on each record. Posted results do not establish trial success, and a past PDUFA target does not establish an FDA decision. Historical outcomes are marked as recorded evidence.")
     if not enabled_stages:
-        st.info("Choose at least one stage to display records.")
+        st.info("No trials. Select at least one STAGE.")
     elif not selected_dates:
-        st.info("Choose at least one DATES range to display records.")
+        st.info("No trials. Select a DATES range.")
+    elif not chart_applied:
+        st.info("No trials displayed until you click Show matching trials.")
     elif visible.empty:
         st.info("No loaded records match these stages or search.")
     else:
