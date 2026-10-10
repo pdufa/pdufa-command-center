@@ -105,6 +105,13 @@ class PreReadoutTests(unittest.TestCase):
         self.assertTrue(pd.isna(late.iloc[0]["Pre-Readout Evidence Points"]))
         self.assertIn("phase2_efficacy", late.iloc[0]["Missing Evidence"])
 
+    def test_date_only_same_day_efficacy_source_cannot_enter_pre_readout_score(self):
+        rated = assess(self.queue, pd.DataFrame([evidence(
+            phase2_efficacy_source_date="2026-10-10")]), self.as_of)
+        self.assertTrue(pd.isna(rated.iloc[0]["Pre-Readout Evidence Points"]))
+        self.assertTrue(pd.isna(rated.iloc[0]["Phase 3 Success Probability %"]))
+        self.assertIn("same-day sources excluded", rated.iloc[0]["Missing Evidence"])
+
     def test_readout_source_and_cutoff_are_mandatory(self):
         unknown = assess(self.queue, pd.DataFrame([evidence(
             issuer_readout_status="UNVERIFIED")]), self.as_of)
