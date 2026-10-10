@@ -3526,8 +3526,9 @@ if page == "PIPELINE":
         st.caption(
             "100-point research rubric (NOT probability): "
             + " · ".join(f"{name.replace('_', ' ').title()} {weight}" for name, weight in PRE_READOUT_WEIGHTS.items())
-            + ". All six dimensions require original evidence and publication dates "
-            "no later than the frozen pre-readout cutoff. Success probability stays blank "
+            + ". All six dimensions require original evidence published BEFORE "
+            "the scoring date; same-day date-only sources cannot establish release order. "
+            "Success probability stays blank "
             "until independent historical calibration and out-of-sample validation."
         )
         cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date()
