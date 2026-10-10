@@ -247,6 +247,26 @@ class PreReadoutTests(unittest.TestCase):
                         section.index("phase3_pre_readout_queue("))
 
 
+    def test_no_future_readout_date_in_historical_score(self):
+        future = evidence(actual_topline_release_date="2026-10-11")
+        scored = assess(self.queue, pd.DataFrame([future]), self.as_of)
+        self.assertTrue(pd.isna(scored.iloc[0]["Pre-Readout Evidence Points"]))
+        self.assertIn("outcome-era knowledge", scored.iloc[0]["Missing Evidence"])
+        unknown = evidence(actual_topline_release_date="not-yet-confirmed")
+        scored2 = assess(self.queue, pd.DataFrame([unknown]), self.as_of)
+        self.assertTrue(pd.isna(scored2.iloc[0]["Pre-Readout Evidence Points"]))
+
+    def test_pipeline_allows_only_in_session_strict_source_scoring(self):
+        from pathlib import Path
+        source = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
+        part = source.split("with pre_tab:", 1)[1].split("with intake_tab:", 1)[0]
+        self.assertIn("pre_readout_evidence_upload_v1", part)
+        self.assertIn("require_protocol=True", part)
+        self.assertIn("_expected.issubset(_p3_import.columns)", part)
+        self.assertIn("_p3_import[\"nct_id\"].astype(str).duplicated().any()", part)
+        self.assertIn("Session-only evidence loaded.", part)
+
+
 
 if __name__ == "__main__":
     unittest.main()
