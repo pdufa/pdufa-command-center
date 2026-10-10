@@ -1,0 +1,72 @@
+name: Phase 3 Pre-Readout Protocol Design Intake
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/pre-readout-protocol.yml"
+      - "scripts/pre_readout_protocol_intake.py"
+  schedule:
+    - cron: "45 6 * * *"
+      timezone: "America/Los_Angeles"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase3-pre-readout-protocol-intake
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install pandas
+      - name: Capture design-only protocol evidence (no Phase 3 outcome section)
+        id: collect
+        run: python scripts/pre_readout_protocol_intake.py --limit 180 --workers 8
+        continue-on-error: true
+      - name: Save incremental protocol coverage and honest status
+        run: |
+          git config user.name "pdufa-pre-readout-bot"
+          git config user.email "pdufa-pre-readout-bot@users.noreply.github.com"
+          git add data/pre_readout_protocols.csv data/pre_readout_intake_status.json
+          if git diff --cached --quiet; then
+            echo "No new protocol evidence to commit."
+            exit 0
+          fi
+          git commit -m "Refresh pre-readout Phase 3 design evidence"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Saved prospective protocol evidence on attempt $attempt"
+              exit 0
+            fi
+            sleep $((attempt * 4))
+          done
+          echo "::error::Could not safely save protocol evidence after retries"
+          exit 1
+      - name: Validate external-source collection
+        if: always()
+        env:
+          COLLECT_OUTCOME: ${{ steps.collect.outcome }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          state = json.loads(Path("data/pre_readout_intake_status.json").read_text())
+          print({k:v for k,v in state.items() if k not in ("errors","limitations")})
+          assert state["protocol_records_stored"] >= 0
+          if os.environ.get("COLLECT_OUTCOME") != "success":
+              raise SystemExit("Protocol collector reported source fetch errors; partial records saved when possible.")
+          PY
