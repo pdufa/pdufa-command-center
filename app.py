@@ -3309,7 +3309,7 @@ elif page == "PIPELINE":
     universe["DATES"] = universe["Days to PDUFA"].map(date_band)
     # Cross-filter: STAGES selections control per-DATE counts, without
     # hiding unselected date bands or projecting dates onto other trials.
-    stage_universe = select_pipeline_records(universe, enabled_stages)
+    stage_universe = select_pipeline_records(universe, enabled_stages, current_only=True)
     with date_col:
         with st.container(border=True):
             st.markdown("### DATES")
@@ -3370,7 +3370,7 @@ elif page == "PIPELINE":
         and st.session_state.get("pipeline_chart_request_v7") == selection_signature
     )
     visible = (
-        select_pipeline_records(date_filtered, enabled_stages, search)
+        select_pipeline_records(date_filtered, enabled_stages, search, current_only=True)
         if chart_applied else date_filtered.iloc[0:0].copy()
     )
     total_records = len(visible)
