@@ -3,7 +3,7 @@ import unittest
 from datetime import date
 import pandas as pd
 
-from pre_phase3_trading import trading_research_queue
+from pre_phase3_trading import trading_research_queue, research_discovery_pool
 
 
 def row(**updates):
@@ -126,12 +126,108 @@ class TradingResearchQueueTests(unittest.TestCase):
         self.assertEqual(float(q.loc[q["NCT ID"].eq("NCT10000002"),
                                      "Documented Inputs %"].iloc[0]), 46.2)
 
+
+    def test_all_trials_includes_past_and_unknown_milestones_for_review(self):
+        leads = pd.DataFrame([
+            row(**{"NCT ID": "NCT10000001", "Primary Completion": "2026-08-30"}),
+            row(**{"NCT ID": "NCT10000002", "Primary Completion": ""}),
+            row(**{"NCT ID": "NCT10000003", "Primary Completion": "2027-09"}),
+        ])
+        q = trading_research_queue(leads, self.day, "ALL")
+        self.assertEqual(len(q), 3)
+        self.assertIn("PAST — CHECK READOUT", q["Registry Milestone State"].tolist())
+        self.assertIn("DATE NOT VERIFIED", q["Registry Milestone State"].tolist())
+        self.assertTrue(q["Trading Entry Gate"].str.contains("NOT ENTRY-READY").all())
+
+    def test_stale_protocol_retains_research_leads_but_never_verification(self):
+        candidate = pd.DataFrame([row()])
+        proto = pd.DataFrame([{
+            "nct_id": "NCT12345678",
+            "checked_at": "2026-10-06T12:00:00+00:00",
+            "registry_overall_status": "RECRUITING",
+            "registry_results_first_posted": "",
+            "source_url": "https://clinicaltrials.gov/study/NCT12345678",
+        }])
+        pool = research_discovery_pool(candidate, pd.DataFrame(), proto, self.day)
+        self.assertEqual(len(pool), 1)
+        self.assertIn("RECHECK REQUIRED", pool.iloc[0]["Verification Status"])
+        q = trading_research_queue(pool, self.day, "ALL")
+        self.assertEqual(q["Ticker"].tolist(), ["OLMA"])
+        self.assertTrue(q["PRE PHASE 3 Score /100"].isna().all())
+
+    def test_known_posted_or_inactive_protocol_is_not_trading_lead(self):
+        broad = pd.DataFrame([
+            row(),
+            row(**{"NCT ID": "NCT10000001"}),
+            row(**{"NCT ID": "NCT10000002"}),
+        ])
+        protos = pd.DataFrame([
+            {"nct_id": "NCT12345678", "checked_at": "2026-10-09",
+             "registry_overall_status": "COMPLETED", "registry_results_first_posted": "",
+             "source_url": "https://clinicaltrials.gov/study/NCT12345678"},
+            {"nct_id": "NCT10000001", "checked_at": "2026-10-09",
+             "registry_overall_status": "RECRUITING", "registry_results_first_posted": "2026-10-08",
+             "source_url": "https://clinicaltrials.gov/study/NCT10000001"},
+            {"nct_id": "NCT10000002", "checked_at": "2026-10-08",
+             "registry_overall_status": "RECRUITING", "registry_results_first_posted": "",
+             "source_url": "https://clinicaltrials.gov/study/NCT10000002"},
+        ])
+        pool = research_discovery_pool(broad, pd.DataFrame(), protos, self.day)
+        self.assertEqual(pool["NCT ID"].tolist(), ["NCT10000002"])
+        self.assertIn("RECHECK REQUIRED", pool.iloc[0]["Verification Status"])
+
+    def test_strict_candidate_retains_clinical_score_and_freshness_label(self):
+        qualified = row(**{
+            "Combined Pre-Readout Score /100": 80,
+            "Phase 2 Clinical Score /25": 20,
+            "Phase 3 Pre-Readout Score /75": 60,
+            "Combined Score Status": "COMBINED RESEARCH SCORE — NOT A PROBABILITY",
+        })
+        pool = research_discovery_pool(
+            pd.DataFrame([row()]), pd.DataFrame([qualified]),
+            pd.DataFrame(), self.day
+        )
+        q = trading_research_queue(pool, self.day, "ALL")
+        self.assertEqual(float(q.iloc[0]["PRE PHASE 3 Score /100"]), 80)
+        self.assertIn("FRESH REGISTRY", q.iloc[0]["Verification Status"])
+
+    def test_saved_universe_still_has_visible_trials_after_protocol_freshness_expires(self):
+        """Guard against a full zero-candidate screen from stale registry data."""
+        from pathlib import Path
+        from datetime import timedelta
+        from pre_readout_score import candidate_queue
+        base = Path(__file__).resolve().parents[1] / "data"
+        pipeline = pd.read_csv(base / "phase_pipeline.csv", dtype=str, keep_default_na=False)
+        caps = pd.read_csv(base / "phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False)
+        announcements = pd.read_csv(base / "phase3_announcements.csv", dtype=str, keep_default_na=False)
+        protocols = pd.read_csv(base / "pre_readout_protocols.csv", dtype=str, keep_default_na=False)
+        latest_protocol = pd.to_datetime(
+            protocols["checked_at"], utc=True, errors="coerce"
+        ).max().date()
+        after_expiry = latest_protocol + timedelta(days=4)
+        broad = candidate_queue(pipeline, announcements, caps, after_expiry, protocols=None)
+        strict = candidate_queue(
+            pipeline, announcements, caps, after_expiry,
+            protocols=protocols, require_protocol=True,
+        )
+        self.assertGreater(len(broad), 0, "The saved Phase 3 research universe should be populated")
+        self.assertEqual(len(strict), 0, "Old protocols cannot pass the strict pre-readout gate")
+        pool = research_discovery_pool(broad, strict, protocols, after_expiry)
+        screen = trading_research_queue(pool, after_expiry, "ALL")
+        self.assertGreater(len(screen), 0, "Stale protocol must not hide all research leads")
+        self.assertTrue(screen["Verification Status"].str.contains("RECHECK REQUIRED").all())
+        self.assertTrue(screen["Trading Entry Gate"].str.contains("NOT ENTRY-READY").all())
+
     def test_source_app_exposes_candidates_without_hidden_toggle(self):
         from pathlib import Path
         src = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
         section = src.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
         self.assertIn("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH", section)
         self.assertIn("trading_research_queue(", section)
+        self.assertIn('["ALL", 90, 180, 365], index=0', section)
+        self.assertIn("research_discovery_pool(", section)
+        self.assertIn("PRE PHASE 3 TRIALS DISPLAYED:", section)
+        self.assertIn("PRE PHASE 3 — TRIALS", section)
         self.assertIn("PRE PHASE 3 SCORE /100", section)
         self.assertLess(section.index("_input_rows, _input_counts = audit_pre_readout_inputs("),
                         section.index("_trade_shortlist = trading_research_queue("))

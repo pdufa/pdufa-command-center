@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 SCORE COLUMN V1") && initial.includes("NAVIGATION V19");
+  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 VISIBLE TRIALS V2") && initial.includes("NAVIGATION V19");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -119,6 +119,12 @@ async function audit(){
         const tradeText=await appFrame.locator("body").innerText({timeout:9000});
         result.checks.prePhase3TradeResearchGate=tradeText.includes("Candidate discovery is not a BUY list")
           && tradeText.includes("NOT verified company topline/readout dates");
+        const displayedMatch=tradeText.match(/PRE PHASE 3 TRIALS DISPLAYED:\s*([0-9,]+) records/);
+        result.prePhase3DisplayedTrials=displayedMatch?Number(displayedMatch[1].replace(/,/g,"")):null;
+        result.checks.prePhase3NonemptyTrials=Number.isInteger(result.prePhase3DisplayedTrials)
+          && result.prePhase3DisplayedTrials>0 && tradeText.includes("ALL TRIALS");
+        if(!result.checks.prePhase3NonemptyTrials)
+          result.errors.push("PRE PHASE 3 trial table rendered zero records or did not expose the ALL TRIALS screen.");
         result.checks.prePhase3ScoreVisible=tradeText.includes("PRE PHASE 3 SCORE /100")
           && tradeText.includes("NOT SCORED means clinical evidence is incomplete")
           && tradeText.includes("NOT a chance of trial success");
@@ -251,7 +257,7 @@ async function audit(){
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
-                   "preReadoutMetrics","preReadoutMissingInputsVisible",
+                   "preReadoutMetrics","prePhase3NonemptyTrials","preReadoutMissingInputsVisible",
                    "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle","preReadoutCandidatesShown",
                    "workbenchSubtabRemoved"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
