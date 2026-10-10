@@ -3300,6 +3300,9 @@ elif page == "PIPELINE":
         return "+90 DAYS"
 
     universe["DATES"] = universe["Days to PDUFA"].map(date_band)
+    # Cross-filter: STAGES selections control per-DATE counts, without
+    # hiding unselected date bands or projecting dates onto other trials.
+    stage_universe = select_pipeline_records(universe, enabled_stages)
     with date_col:
         with st.container(border=True):
             st.markdown("### DATES")
@@ -3311,7 +3314,7 @@ elif page == "PIPELINE":
                 "NO PDUFA YET": "⚪",
                 "PAST / RECHECK": "🟣",
             }
-            date_counts = universe["DATES"].value_counts().to_dict()
+            date_counts = stage_universe["DATES"].value_counts().to_dict()
             selected_dates = st.pills(
                 "DATES to display",
                 options=list(date_bands),
@@ -3332,12 +3335,40 @@ elif page == "PIPELINE":
                        "Countdowns update daily. NO PDUFA YET means no linked PDUFA date; "
                        "PAST / RECHECK does not imply an FDA decision.")
     date_filtered = universe[universe["DATES"].isin(selected_dates)].copy()
-    st.markdown("### COUNT FOR EACH STAGE")
-    st.dataframe(
-        pipeline_stage_counts(date_filtered), use_container_width=True,
-        hide_index=True, height=530,
-    )
-    st.caption("Counts reflect your selected DATES ranges. A trial may be counted in multiple development stages; the combined list counts it once.")
+    stage_count_col, date_count_col = st.columns(2, gap="medium")
+    with stage_count_col:
+        with st.container(border=True):
+            st.markdown("### COUNT FOR EACH STAGE")
+            st.dataframe(
+                pipeline_stage_counts(date_filtered), use_container_width=True,
+                hide_index=True, height=530,
+            )
+            st.caption(
+                "Counts reflect selected DATES ranges. Records may appear in "
+                "multiple development stage totals."
+            )
+    with date_count_col:
+        with st.container(border=True):
+            st.markdown("### COUNT FOR EACH DATE")
+            per_date_counts = pd.DataFrame([
+                {"DATES": band, "Count": int(date_counts.get(band, 0))}
+                for band in date_bands
+            ])
+            st.dataframe(
+                per_date_counts.style.apply(
+                    lambda row: [
+                        f"background-color:{band_colors.get(row['DATES'], '#ffffff')};"
+                        "color:#18202a;"
+                        for _ in row
+                    ],
+                    axis=1,
+                ),
+                use_container_width=True, hide_index=True, height=530,
+            )
+            st.caption(
+                "Counts reflect selected STAGES. Every record has one DATES "
+                "classification; bands with no records remain visible."
+            )
     search = st.text_input("Find ticker, drug, indication or NCT ID", key="pipeline_universe_search").strip()
     visible = select_pipeline_records(date_filtered, enabled_stages, search)
     date_order = {band: index for index, band in enumerate(date_bands)}
