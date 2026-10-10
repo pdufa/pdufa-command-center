@@ -3186,7 +3186,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
