@@ -3522,7 +3522,9 @@ if page == "PIPELINE":
             "NOT confirmed unpublished company topline events. "
             "We do not yet have the Phase 2 efficacy, detailed Phase 3 protocol, "
             "safety or FDA-alignment evidence needed to assign a defensible "
-            "success probability. Never use published Phase 3 outcomes or "
+            "success probability. Phase 2 primary p-values must be linked to "
+            "the correct Phase 2 trial and available before the readout. "
+            "Never use published Phase 3 outcomes or "
             "post-readout price action to score this tab."
         )
         st.caption(
@@ -3734,6 +3736,17 @@ if page == "PIPELINE":
             "statistical power, endpoint validity, trial success probability, "
             "or suitability for single-arm/open-label indications. Missing "
             "protocols stay blank rather than scoring zero."
+        )
+        st.markdown("### PHASE 2 p + PHASE 3 PRE-READOUT = ONE RESEARCH SCORE")
+        st.caption(
+            "Phase 2 efficacy contributes up to 25 of 100 research points, "
+            "using a verified Phase 2 primary endpoint p-value PLUS effect size, "
+            "clinical meaning and exact linked trial identity. The remaining 75 "
+            "points cover pre-release Phase 3 design, safety, FDA alignment, "
+            "execution and evidence quality. Points are awarded only when every "
+            "required pre-cutoff source and issuer-unreleased check passes. "
+            "A statistically significant p-value alone does not prove clinical "
+            "benefit. These points are NOT a probability of Phase 3 success."
         )
         st.markdown("### INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT")
         st.caption(
