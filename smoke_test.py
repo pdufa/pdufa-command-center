@@ -391,7 +391,7 @@ required_ui_contracts = [
     '"data/recheck_status.csv"',
     'nav_options = ["PDUFA"',
     'key="pdufa_subtab", on_change="rerun"',
-    '["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"]',
+    '["PIPELINE", "PRE PHASE 3", "POST PHASE 3"]',
     '"PIPELINE"',
     '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
     'master_with_phase3(df)',
