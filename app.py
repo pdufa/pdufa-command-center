@@ -3199,6 +3199,7 @@ if page == "PIPELINE":
                 ("FDA Freezes", fda_freezes),
                 ("Historical Predictions", prediction_history),
             )
+            pending_source_columns = {}
             for prefix, frame in extra_sources:
                 if not isinstance(frame, pd.DataFrame) or frame.empty:
                     continue
@@ -3220,15 +3221,16 @@ if page == "PIPELINE":
                     unique = source_valid & ~source_keys.duplicated(keep=False)
                 for field in frame.columns:
                     label = prefix + " · " + str(field)
-                    if label in combined.columns:
+                    if label in combined.columns or label in pending_source_columns:
                         continue
                     if eligible and field not in keys:
                         mapping = pd.Series(frame.loc[unique, field].to_numpy(), index=source_keys.loc[unique])
-                        combined[label] = target_keys.map(mapping).where(target_valid)
+                        pending_source_columns[label] = target_keys.map(mapping).where(target_valid)
                     else:
-                        # Retain column discoverability while keeping unrelated
-                        # historical rows and incomplete keys out of live records.
-                        combined[label] = pd.Series(pd.NA, index=combined.index, dtype="object")
+                        # Unjoinable source columns retain missing values.
+                        pending_source_columns[label] = pd.Series(pd.NA, index=combined.index, dtype="object")
+            if pending_source_columns:
+                combined = pd.concat([combined, pd.DataFrame(pending_source_columns, index=combined.index)], axis=1).copy()
             # All source fields are visible in the master, including fields that
             # cannot safely be joined. No synthetic evidence is treated as a pass.
             # Shared column tabs keep related fields compact and preserve every source column.
