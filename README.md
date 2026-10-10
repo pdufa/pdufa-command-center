@@ -5,7 +5,7 @@ Streamlit presentation layer for the PDUFA research, calendar, and prediction sy
 ## Navigation
 - **PIPELINE → TRIALS & DATES:** Current-stage and PDUFA-window selectors, stage/date count charts, and the matching trials table. Both selectors and an explicit SHOW click are required to populate the table.
 - **PIPELINE → PDUFA WORKBENCH:** Preserves the source-enriched master processing and PDUFA countdown, with compact ticker-based Watchlist management followed by Watchlist, Analysis, and Invest tables. The oversized Master Table display and standalone Watchlist page are removed; source data and internal master-transfer labels remain intact.
-- **TODAY:** Phase 3 intake, financing and PDUFA update summary.
+- **PIPELINE → PHASE 3 DAILY:** The former TODAY reporting is here. Latest intake status appears immediately; select **SHOW PHASE 3 DAILY REPORT** to load yesterday’s source-linked Phase 3 posts, cumulative Phase 3 result records, financing evidence, ticker Watchlist management, and CSV export. Loading the large report on demand keeps the Trial/Date and PDUFA Workbench views responsive. Collectors and source-data files run independently of the UI.
 - **Additional pages:** Disease & Market Horizon, Strategy, PDUFA Calendar, FDA Decision, Scans, Recheck, Prediction Engine, Match Optimizer, and Plan.
 
 ## Visible approval probabilities
