@@ -3265,7 +3265,7 @@ elif page == "PIPELINE":
                 width="stretch",
                 help="Click one or more stages to filter the pipeline.",
             )
-    # The DATES selector belongs immediately below "Stages to display".
+    # DATES renders in the right-hand column beside the STAGES selector.
     # Do not project a company's application deadline onto unrelated trials.
     date_bands = (
         "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS",
