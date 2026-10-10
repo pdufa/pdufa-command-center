@@ -14,15 +14,14 @@ on:
           - monthly
           - full
   schedule:
-    # 5:15 AM Pacific daily, covering PST/PDT. Local-time guard below runs one.
-    - cron: "15 12 * * *"
-    - cron: "15 13 * * *"
-    # 4:00 AM Pacific Sunday deep review, covering PST/PDT.
-    - cron: "0 11 * * 0"
-    - cron: "0 12 * * 0"
-    # 4:30 AM Pacific on the first of each month, covering PST/PDT.
-    - cron: "30 11 1 * *"
-    - cron: "30 12 1 * *"
+    # One trigger per mode, with automatic Pacific daylight-saving handling.
+    # Queueing may delay execution; never check the runner's exact minute.
+    - cron: "15 5 * * *"
+      timezone: "America/Los_Angeles"
+    - cron: "0 4 * * 0"
+      timezone: "America/Los_Angeles"
+    - cron: "30 4 1 * *"
+      timezone: "America/Los_Angeles"
 
 permissions:
   contents: write
@@ -48,30 +47,16 @@ jobs:
       - name: Install dependencies
         run: pip install pandas requests
 
-      - name: Select surveillance mode from scheduled UTC cron
+      - name: Resolve delayed-safe Pacific scheduled mode
         id: mode
         env:
           GH_EVENT_NAME: ${{ github.event_name }}
           GH_SCHEDULE: ${{ github.event.schedule }}
           MANUAL_MODE: ${{ inputs.mode }}
-        run: |
-          python - <<'PY'
-          import os
-          from scripts.surveillance_schedule import mode_for_schedule
-
-          if os.environ.get("GH_EVENT_NAME") == "workflow_dispatch":
-              mode = os.environ.get("MANUAL_MODE") or "daily"
-          else:
-              mode = mode_for_schedule(os.environ.get("GH_SCHEDULE", ""))
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as result:
-              result.write("run=" + ("yes" if mode != "skip" else "no") + "\n")
-              result.write("mode=" + mode + "\n")
-          print("Event:", os.environ.get("GH_EVENT_NAME"))
-          print("Scheduled cron:", os.environ.get("GH_SCHEDULE", "(manual)"))
-          print("Selected mode:", mode)
-          PY
+        run: python scripts/surveillance_schedule.py --resolve
 
       - name: Daily discovery
+        id: discovery_daily
         if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'daily' || steps.mode.outputs.mode == 'weekly' || steps.mode.outputs.mode == 'full')
         env:
           DISCOVERY_LOOKBACK_DAYS: "10"
@@ -81,6 +66,7 @@ jobs:
         run: python scripts/discover_new_companies.py
 
       - name: Monthly full universe reconciliation
+        id: discovery_monthly
         if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'monthly' || steps.mode.outputs.mode == 'full')
         env:
           DISCOVERY_LOOKBACK_DAYS: "45"
@@ -90,10 +76,12 @@ jobs:
         run: python scripts/discover_new_companies.py
 
       - name: Daily recheck of all tracked PDUFA events
+        id: recheck_daily
         if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'daily' || steps.mode.outputs.mode == 'full')
         run: python scripts/recheck_events.py --all --categories "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"
 
       - name: Sunday deep review of next 7 days
+        id: recheck_weekly
         if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'weekly' || steps.mode.outputs.mode == 'full')
         run: |
           python - <<'PY'
@@ -125,10 +113,12 @@ jobs:
           PY
 
       - name: Monthly recheck of all tracked events
+        id: recheck_monthly
         if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'monthly' || steps.mode.outputs.mode == 'full')
         run: python scripts/recheck_events.py --all --categories "pdufa_date,phase3,financing,cash_runway,market_data,ownership_insiders"
 
       - name: Refresh Strict, Broad, regulatory and extension layers
+        id: refresh_fda
         if: steps.mode.outputs.run == 'yes'
         run: |
           python scripts/fda_decision_engine.py --freeze
@@ -138,8 +128,18 @@ jobs:
           python scripts/fda_100_on_100_gate.py
 
       - name: Validate surveillance outputs
+        id: validate
         if: steps.mode.outputs.run == 'yes'
         run: python smoke_test.py
+
+      - name: Verify executed scans and save audit state
+        if: steps.mode.outputs.run == 'yes'
+        env:
+          GH_EVENT_NAME: ${{ github.event_name }}
+          GH_SCHEDULE: ${{ github.event.schedule }}
+          SURVEILLANCE_MODE: ${{ steps.mode.outputs.mode }}
+          SURVEILLANCE_STEPS: ${{ toJSON(steps) }}
+        run: python scripts/surveillance_schedule.py --record
 
       - name: Commit surveillance updates
         if: steps.mode.outputs.run == 'yes'
