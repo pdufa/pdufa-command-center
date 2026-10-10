@@ -2770,6 +2770,23 @@ def render_pre_phase3():
     _p3_candidates = join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)
     _p3_candidates = combine_phase2_phase3(_p3_candidates, _pre_evidence)
 
+    # Audit documented inputs BEFORE constructing the stock shortlist.
+    # These measures describe source availability, not clinical likelihood.
+    # Audit PRE-RELEASE input presence separately from clinical scoring.
+    # The input counter does not inspect Phase 3 outcomes or p-values.
+    _input_rows, _input_counts = audit_pre_readout_inputs(
+        _p3_candidates, _p3_protocols, _pre_evidence, as_of=cutoff,
+    )
+    if not _p3_candidates.empty and not _input_rows.empty:
+        _p3_candidates = _p3_candidates.merge(
+            _input_rows[["NCT ID", "Input Coverage %",
+                         "Basic Design Safeguards /5",
+                         "Observed Design Safeguards",
+                         "Unobserved Design Safeguards",
+                         "Available Inputs", "Missing Inputs", "Issuer Check"]],
+            on="NCT ID", how="left", validate="one_to_one",
+        )
+
     # Trading-research candidates are always visible. This is a prospective
     # registry completion screen, NOT a verified issuer readout calendar or
     # an entry signal. Keep the clinical evidence assessment independent.
@@ -2791,6 +2808,14 @@ def render_pre_phase3():
         _p3_candidates, cutoff, lookahead_days=_window_days
     )
     _candidate_tickers = sorted(set(_trade_shortlist["Ticker"])) if not _trade_shortlist.empty else []
+    _scored_n = int(_trade_shortlist["PRE PHASE 3 Score /100"].notna().sum())
+    st.caption(
+        f"PRE PHASE 3 SCORE /100: {_scored_n:,} fully source-reviewed records "
+        f"out of {len(_trade_shortlist):,} shortlisted trials. "
+        "NOT SCORED means clinical evidence is incomplete, not a zero or a failed trial. "
+        "Documented Inputs % and Basic Design Safeguards /5 are separate "
+        "data-availability measures, NOT a chance of trial success or a BUY signal."
+    )
     st.caption(
         f"{len(_p3_candidates):,} possible registry trial records in the clinical queue; "
         f"{len(_trade_shortlist):,} trial records / {len(_candidate_tickers):,} unique tickers "
@@ -2801,6 +2826,20 @@ def render_pre_phase3():
         st.dataframe(
             _trade_shortlist, hide_index=True, use_container_width=True,
             column_config={
+                "PRE PHASE 3 Score /100": st.column_config.NumberColumn(
+                    "PRE PHASE 3 SCORE /100", format="%.1f",
+                    help="Phase 2 efficacy /25 plus pre-readout Phase 3 /75. "
+                         "Only shown after exact-trial, source-date and issuer checks. "
+                         "Blank means NOT SCORED, never zero or probability."
+                ),
+                "Documented Inputs %": st.column_config.NumberColumn(
+                    "Documented Inputs %", format="%.1f%%",
+                    help="Available pre-release inputs; not the clinical score."
+                ),
+                "Basic Design Safeguards /5": st.column_config.NumberColumn(
+                    "Design Safeguards /5", format="%.0f",
+                    help="Observed protocol metadata checklist, not trial success."
+                ),
                 "Registry Source": st.column_config.LinkColumn("ClinicalTrials.gov"),
                 "Market Cap": st.column_config.NumberColumn(
                     "Cached market cap ($)", format="$%.0f"
@@ -2877,20 +2916,6 @@ def render_pre_phase3():
         "The 100-point research score still requires sourced efficacy, safety, "
         "design, regulatory alignment, execution, and issuer verification."
     )
-    # Audit PRE-RELEASE input presence separately from clinical scoring.
-    # The input counter does not inspect Phase 3 outcomes or p-values.
-    _input_rows, _input_counts = audit_pre_readout_inputs(
-        _p3_candidates, _p3_protocols, _pre_evidence, as_of=cutoff,
-    )
-    if not _p3_candidates.empty and not _input_rows.empty:
-        _p3_candidates = _p3_candidates.merge(
-            _input_rows[["NCT ID", "Input Coverage %",
-                         "Basic Design Safeguards /5",
-                         "Observed Design Safeguards",
-                         "Unobserved Design Safeguards",
-                         "Available Inputs", "Missing Inputs", "Issuer Check"]],
-            on="NCT ID", how="left", validate="one_to_one",
-        )
     _design_evidence = pd.DataFrame()
     # The automated collector fills DESIGN METADATA COVERAGE, not the manual
     # 100-point pre-readout evidence-quality rubric or an inferred PoS.

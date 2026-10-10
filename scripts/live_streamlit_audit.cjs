@@ -119,6 +119,11 @@ async function audit(){
         const tradeText=await appFrame.locator("body").innerText({timeout:9000});
         result.checks.prePhase3TradeResearchGate=tradeText.includes("Candidate discovery is not a BUY list")
           && tradeText.includes("NOT verified company topline/readout dates");
+        result.checks.prePhase3ScoreVisible=tradeText.includes("PRE PHASE 3 SCORE /100")
+          && tradeText.includes("NOT SCORED means clinical evidence is incomplete")
+          && tradeText.includes("NOT a chance of trial success");
+        if(!result.checks.prePhase3ScoreVisible)
+          result.errors.push("PRE PHASE 3 research candidates lack clinical score/status or data-coverage disclosure.");
         result.checks.prePhase3TradeWatchlistVisible=await appFrame.getByText(
           "ADD SELECTED TO PRE PHASE 3 WATCHLIST",{exact:true}).count()>0;
         if(!result.checks.prePhase3TradeResearchGate || !result.checks.prePhase3TradeWatchlistVisible)
