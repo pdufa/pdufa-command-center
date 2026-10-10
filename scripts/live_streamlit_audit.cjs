@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("NAVIGATION V18") && initial.includes("PRE PHASE 3 TAB V1");
+  result.checks.newBuildLabel=initial.includes("NAVIGATION V19") && initial.includes("PRE PHASE 3 TAB V1");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -78,7 +78,7 @@ async function audit(){
     result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
-    result.checks.threePdufaTabs=["PIPELINE","PRE PHASE 3","PHASE 3 DAILY"].every(x=>result.tabs.includes(x));
+    result.checks.threePdufaTabs=["PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
     result.checks.researchInsidePipeline=await appFrame.getByText("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS",{exact:false}).count()>0;
     result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
@@ -87,15 +87,15 @@ async function audit(){
     result.checks.dateCountChart=await appFrame.getByText("DATE TRIAL COUNTS",{exact:true}).count()>0;
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
     if(result.checks.threePdufaTabs){
-      await appFrame.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
-      const toggle=appFrame.getByText("SHOW PHASE 3 DAILY REPORT",{exact:false}).first();
+      await appFrame.getByRole("tab",{name:"POST PHASE 3"}).click({timeout:15000});
+      const toggle=appFrame.getByText("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).first();
       try{
         await toggle.waitFor({state:"visible",timeout:65000});
         result.checks.dailyReportToggle=true;
       }catch(err){
         result.checks.dailyReportToggle=false;
         const dailyText=await appFrame.locator("body").innerText({timeout:9000});
-        result.notes.push("PHASE 3 DAILY toggle missing after wait: "+dailyText.slice(-650));
+        result.notes.push("POST PHASE 3 toggle missing after wait: "+dailyText.slice(-650));
       }
       await page.screenshot({path:path.join(outDir,"streamlit-phase3-before-toggle.png"),fullPage:false});
       if(result.checks.dailyReportToggle){
