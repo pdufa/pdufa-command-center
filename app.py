@@ -3081,6 +3081,10 @@ if page == "PIPELINE":
                 dates = pd.to_datetime(combined["PDUFA Date"], errors="coerce")
                 combined["DAYS TO PDUFA"] = (dates - today).dt.days.astype("Int64")
                 combined["PDUFA Horizon"] = combined["DAYS TO PDUFA"].map(pdufa_segment)
+                # Streamlit/Arrow needs a single scalar type in display columns.
+                # Keep calculated countdown numeric; render date values as text
+                # before applying the "Not verified" placeholder downstream.
+                combined["PDUFA Date"] = combined["PDUFA Date"].astype("string").fillna("")
             if "Market Cap" in combined:
                 cap = pd.to_numeric(combined["Market Cap"], errors="coerce")
                 combined["Market Cap Band"] = pd.cut(
