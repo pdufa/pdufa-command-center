@@ -14,10 +14,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
-
-from pre_readout import ACTIVE, MIN_CAP, MAX_CAP, clean, rows, _announced_ids, _market_caps
+from zoneinfo import ZoneInfo
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from pre_readout import ACTIVE, MIN_CAP, MAX_CAP, clean, rows, _announced_ids, _market_caps
 FIELDS = (
     "nct_id", "primary_endpoint", "primary_timeframe", "allocation", "masking",
     "intervention_model", "comparator", "enrollment", "enrollment_type",
@@ -38,15 +41,18 @@ def eligible_ids(root, today, include_unknown_caps=False):
             continue
         if clean(trial.get("status")).upper() not in ACTIVE:
             continue
-        posted = clean(trial.get("results_posted"))[:10]
-        if posted and posted <= today.isoformat():
+        # Never include a trial for which this ledger contains any result date.
+        if clean(trial.get("results_posted")):
             continue
         cap = caps.get(clean(trial.get("ticker")).upper(), {})
         try:
             value = float(cap.get("market_cap"))
         except (TypeError, ValueError):
             value = None
-        if not (value is not None and MIN_CAP <= value <= MAX_CAP):
+        verified = clean(cap.get("market_cap_status")).upper() == "VERIFIED"
+        checked = clean(cap.get("market_cap_checked_at"))[:10]
+        cap_valid = verified and checked and checked <= today.isoformat()
+        if not (cap_valid and value is not None and MIN_CAP <= value <= MAX_CAP):
             if not (include_unknown_caps and value is None):
                 continue
         selected[nct] = trial
@@ -124,17 +130,26 @@ def save_csv(path, records):
 
 
 def run(data_dir, limit=160, workers=8, include_unknown_caps=False):
-    from datetime import date
     data_dir = Path(data_dir)
     out = data_dir / "pre_readout_protocols.csv"
     existing = {r.get("nct_id"):r for r in rows(out) if r.get("nct_id")}
-    selected = eligible_ids(data_dir, date.today(), include_unknown_caps=include_unknown_caps)
+    today_local = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    selected = eligible_ids(data_dir, today_local, include_unknown_caps=include_unknown_caps)
     today = datetime.now(timezone.utc)
     age_seconds = 24*3600
-    due = [n for n in sorted(selected) if not existing.get(n) or
-           not clean(existing[n].get("checked_at")) or
-           (today - datetime.fromisoformat(existing[n]["checked_at"].replace("Z","+00:00"))).total_seconds()>age_seconds]
-    due = due[:max(1,limit)]
+    # Collect missing IDs first. Refresh older snapshots only after all
+    # remaining uncollected trials have had a chance to enter the scorecard.
+    fresh = [n for n in sorted(selected) if n not in existing]
+    def stale(n):
+        stamp = clean(existing[n].get("checked_at"))
+        if not stamp:
+            return True
+        try:
+            return (today - datetime.fromisoformat(stamp.replace("Z","+00:00"))).total_seconds()>age_seconds
+        except (TypeError, ValueError):
+            return True
+    old = [n for n in sorted(selected) if n in existing and stale(n)]
+    due = (fresh + old)[:max(1,limit)]
     errors = {}
     with ThreadPoolExecutor(max_workers=max(1,min(workers,12))) as pool:
         jobs = {pool.submit(fetch,nct):nct for nct in due}
