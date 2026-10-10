@@ -3346,6 +3346,23 @@ elif page == "PIPELINE":
     stage_count_values = primary_stages.value_counts().to_dict()
     date_count_values = visible["DATES"].value_counts().to_dict()
 
+    # Independently reconcile category subtotals with the unique-record count.
+    stage_subtotal = sum(int(n) for n in stage_count_values.values())
+    date_subtotal = sum(int(n) for n in date_count_values.values())
+    if stage_subtotal != total_records or date_subtotal != total_records:
+        st.error(
+            "PIPELINE COUNT MISMATCH: stage subtotal "
+            f"{stage_subtotal:,}, date subtotal {date_subtotal:,}, "
+            f"unique records {total_records:,}. Check the source data."
+        )
+    else:
+        st.caption(
+            f"COUNT AUDIT PASSED: STAGES {stage_subtotal:,} = "
+            f"DATES {date_subtotal:,} = displayed records {total_records:,}. "
+            "These are unique pipeline record counts, not unique "
+            "FDA applications or traded tickers."
+        )
+
     stage_count_col, date_count_col = st.columns(2, gap="medium")
     with stage_count_col:
         with st.container(border=True):
@@ -3366,8 +3383,9 @@ elif page == "PIPELINE":
                 use_container_width=True, hide_index=True, height=600,
             )
             st.caption(
-                "One current stage per unique record. Counts use both selectors "
-                "and the search field, without double-counting prior milestones."
+                "Counts show each record's current-stage label only, not every "
+                "milestone reached. Phase 3 Results can mean registry results "
+                "posted; it does NOT establish positive efficacy."
             )
     with date_count_col:
         with st.container(border=True):
@@ -3390,8 +3408,10 @@ elif page == "PIPELINE":
                 use_container_width=True, hide_index=True, height=600,
             )
             st.caption(
-                "One date category per unique record. TOTAL always matches "
-                "the stage TOTAL and the displayed pipeline count."
+                "Counts use saved PDUFA target dates, including reported-only "
+                "and already-resolved applications. NO PDUFA YET means no "
+                "date linked to this record, not proof none exists. "
+                "TOTAL reconciles to STAGES and displayed records."
             )
     date_order = {band: index for index, band in enumerate(date_bands)}
     visible = visible.assign(_date_rank=visible["DATES"].map(date_order))
