@@ -113,6 +113,16 @@ async function audit(){
       try{
         await appFrame.getByText("Potential pre-readout Phase 3 trials").first().waitFor({timeout:90000});
         result.checks.preReadoutMetrics=true;
+        await appFrame.getByText("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH",{exact:false})
+          .first().waitFor({state:"visible",timeout:60000});
+        result.checks.prePhase3TradeResearchVisible=true;
+        const tradeText=await appFrame.locator("body").innerText({timeout:9000});
+        result.checks.prePhase3TradeResearchGate=tradeText.includes("Candidate discovery is not a BUY list")
+          && tradeText.includes("NOT verified company topline/readout dates");
+        result.checks.prePhase3TradeWatchlistVisible=await appFrame.getByText(
+          "ADD SELECTED TO PRE PHASE 3 WATCHLIST",{exact:true}).count()>0;
+        if(!result.checks.prePhase3TradeResearchGate || !result.checks.prePhase3TradeWatchlistVisible)
+          result.errors.push("PRE PHASE 3 stock research screen lacks verification gate or watchlist.");
         await appFrame.getByText("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT",{exact:false}).first().waitFor({state:"visible",timeout:60000});
         result.checks.preReadoutMissingInputsVisible=true;
         await appFrame.getByText("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES",{exact:false}).first().waitFor({state:"visible",timeout:60000});
