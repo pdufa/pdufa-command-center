@@ -107,6 +107,20 @@ class InputAuditTests(unittest.TestCase):
         self.assertEqual(d.iloc[0]["Available Inputs"], 2)
         self.assertEqual(sum(counts.values()), 2)
 
+    def test_hindsight_future_release_date_cannot_count_as_pre_readout_issuer_check(self):
+        r, _ = audit_inputs(
+            candidate(), protocol(),
+            manual(actual_topline_release_date="2026-10-11"), as_of=DAY,
+        )
+        self.assertEqual(r.iloc[0]["Issuer Check"], "NOT VERIFIED")
+        self.assertEqual(r.iloc[0]["Available Inputs"], 11)
+        stale, _ = audit_inputs(
+            candidate(), protocol(),
+            manual(issuer_readout_checked_at="2026-10-09"), as_of=DAY,
+        )
+        self.assertEqual(stale.iloc[0]["Issuer Check"], "NOT VERIFIED")
+
+
 
 if __name__ == "__main__":
     unittest.main()
