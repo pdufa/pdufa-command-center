@@ -1,9 +1,9 @@
 {
   "mode": "daily",
-  "started_at": "2026-10-09T17:33:30.836018+00:00",
+  "started_at": "2026-10-10T16:23:39.803425+00:00",
   "total_registered_trials": 2474,
-  "targets": 37,
-  "checked": 37,
+  "targets": 36,
+  "checked": 36,
   "failed": 0,
   "errors": [],
   "complete": true,
@@ -11,6 +11,6 @@
   "primary_endpoint_analysis_rows": 7608,
   "trials_without_reported_primary_pvalue": 1112,
   "unprocessed_registered_trials": 0,
-  "finished_at": "2026-10-09T17:33:41.387496+00:00",
+  "finished_at": "2026-10-10T16:23:48.849599+00:00",
   "status": "COMPLETE"
 }
