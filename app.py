@@ -8,7 +8,6 @@ from strategy_view import render_strategy_page
 from today_page import render_today
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
-from pre_readout_readiness import audit_inputs as pre_readout_input_audit
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
 from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
@@ -3659,41 +3658,6 @@ if page == "PIPELINE":
         pc2.metric("Verified program identity", ready_identity)
         pc3.metric("Phase 2 trial ID linked", linked_phase2)
         pc4.metric("Complete 100-point assessments", fully_scored)
-        st.markdown("#### INPUTS AVAILABLE BEFORE RESULTS")
-        _input_audit = pre_readout_input_audit(
-            _p3_candidates, _design_evidence, _pre_evidence, cutoff,
-        )
-        _priority_labels = [
-            "Earlier Phase 2 trial IDs linked",
-            "Prospective protocol design records",
-            "Issuer topline absence checked today (analyst entry)",
-            "Phase 2 efficacy analysis source-dated",
-            "Clinical safety assessment source-dated",
-            "FDA/regulatory alignment source-dated",
-            "Complete 100-point research rubric",
-            "Independently calibrated Phase 3 probability",
-        ]
-        _priority = _input_audit[
-            _input_audit["Pre-readout input"].isin(_priority_labels)
-        ]
-        st.dataframe(
-            _priority, use_container_width=True, hide_index=True,
-            column_config={
-                "Present": st.column_config.NumberColumn(
-                    "With input", format="%d",
-                ),
-                "Missing": st.column_config.NumberColumn(
-                    "Missing input", format="%d",
-                ),
-            },
-        )
-        with st.expander("SHOW ALL DESIGN-FIELD INPUT COUNTS"):
-            st.dataframe(_input_audit, hide_index=True, use_container_width=True)
-        st.caption(
-            "A source-dated analyst entry has not been independently verified by the "
-            "scanner. Missing Phase 2 effect sizes, safety interpretation, statistical "
-            "power and FDA correspondence prevent a calibrated trial-success probability."
-        )
         st.caption(
             "Scope: USD 300M–USD 10B verified market cap; active standalone Phase 3; "
             "no recorded registry result posting or exactly matched result announcement. "
