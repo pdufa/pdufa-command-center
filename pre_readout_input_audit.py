@@ -114,9 +114,8 @@ def audit_inputs(candidates, protocols=None, evidence=None, *, as_of):
             "issuer_check":(
                 clean(e.get("issuer_readout_status")).upper()=="VERIFIED_UNRELEASED"
                 and http(e.get("issuer_readout_source"))
-                and in_time(e,cutoff,fields=("issuer_readout_checked_at",))
-                and (day(e.get("actual_topline_release_date")) is None or
-                     day(e.get("actual_topline_release_date"))>cutoff)
+                and day(e.get("issuer_readout_checked_at")) == cutoff
+                and not clean(e.get("actual_topline_release_date"))
             ),
         }
         available=[label for label,k in INPUTS if checks[k]]
