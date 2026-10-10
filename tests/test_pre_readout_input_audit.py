@@ -56,9 +56,9 @@ class InputAuditTests(unittest.TestCase):
             candidate(), protocol(), as_of=DAY,
         )
         row = details.iloc[0]
-        self.assertEqual(len(INPUTS), 12)
+        self.assertEqual(len(INPUTS), 13)
         self.assertEqual(row["Available Inputs"], 7)
-        self.assertEqual(row["Input Coverage %"], 58.3)
+        self.assertEqual(row["Input Coverage %"], 53.8)
         self.assertEqual(coverage["Verified Phase 2 efficacy source"], 0)
         self.assertEqual(coverage["Documented FDA alignment"], 0)
         self.assertEqual(row["Issuer Check"], "NOT VERIFIED")
@@ -68,7 +68,7 @@ class InputAuditTests(unittest.TestCase):
     def test_manual_sources_fill_all_domains_only_with_matching_identity(self):
         a, _ = audit_inputs(candidate(), protocol(), manual(), as_of=DAY)
         self.assertEqual(a.iloc[0]["Available Inputs"], 12)
-        self.assertEqual(a.iloc[0]["Input Coverage %"], 100.0)
+        self.assertEqual(a.iloc[0]["Input Coverage %"], 92.3)
         self.assertEqual(a.iloc[0]["Issuer Check"], "CHECKED — ANALYST DOCUMENTED")
         wrong, _ = audit_inputs(candidate(), protocol(), manual(ticker="OTHER"), as_of=DAY)
         self.assertEqual(wrong.iloc[0]["Available Inputs"], 7)
@@ -98,6 +98,21 @@ class InputAuditTests(unittest.TestCase):
         self.assertEqual(counts["Verified Phase 2 efficacy source"], 0)
         self.assertIn("Verified Phase 2 efficacy source", results.iloc[0]["Missing Inputs"])
         self.assertEqual(results.iloc[0]["Available Inputs"], 11)
+
+    def test_linked_phase2_p_is_separate_required_input(self):
+        base, _ = audit_inputs(candidate(), protocol(), manual(), as_of=DAY)
+        self.assertIn("Phase 2 primary p-value", base.iloc[0]["Missing Inputs"])
+        valid = manual(
+            phase2_nct_id="NCT87654321",
+            phase2_primary_pvalue="0.012",
+            phase2_primary_endpoint_met="YES",
+            phase2_pvalue_source="https://clinicaltrials.gov/study/NCT87654321",
+            phase2_pvalue_source_date="2026-09-15",
+        )
+        audited, counts = audit_inputs(candidate(), protocol(), valid, as_of=DAY)
+        self.assertEqual(audited.iloc[0]["Available Inputs"], 13)
+        self.assertEqual(audited.iloc[0]["Input Coverage %"], 100.0)
+        self.assertEqual(counts["Phase 2 primary p-value + endpoint interpretation"], 1)
 
     def test_zero_assessed_points_mean_negative_assessment_not_missing_source(self):
         r, _ = audit_inputs(candidate(), protocol(),
