@@ -1,16 +1,16 @@
 {
-  "as_of": "2026-10-10T16:30:23.666809+00:00",
+  "as_of": "2026-10-10T16:31:46.844088+00:00",
   "market_cap_range_usd": [
     300000000,
     10000000000
   ],
   "active_registry_unposted_phase3_trials": 210,
-  "protocol_records_stored": 180,
-  "fetched_this_run": 180,
+  "protocol_records_stored": 210,
+  "fetched_this_run": 30,
   "failed_fetches": 0,
-  "uncollected_trials": 30,
+  "uncollected_trials": 0,
   "errors": {},
   "clinical_success_probability": "NOT CALIBRATED",
   "limitations": "Registry-only release status; issuer topline could already be public. Current protocol revisions are not archived historical snapshots. No Phase 2 effects, safety dossier, power analysis, or FDA correspondence collected.",
-  "status": "PARTIAL"
+  "status": "COMPLETE"
 }
