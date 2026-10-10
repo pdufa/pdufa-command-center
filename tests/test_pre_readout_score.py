@@ -32,7 +32,8 @@ def market():
 
 def evidence(**overrides):
     row = {
-        "nct_id": "NCT12345678", "assessment_cutoff_date": "2026-10-10",
+        "nct_id": "NCT12345678", "ticker": "TEST", "drug": "Candidate A",
+        "indication": "Indication A", "assessment_cutoff_date": "2026-10-10",
         "issuer_readout_status": "VERIFIED_UNRELEASED",
         "issuer_readout_checked_at": "2026-10-10",
         "issuer_readout_source": "https://example.com/company/investors",
@@ -120,6 +121,13 @@ class PreReadoutTests(unittest.TestCase):
             phase3_design_points="31")]), self.as_of)
         self.assertTrue(pd.isna(out_of_bounds.iloc[0]["Pre-Readout Evidence Points"]))
         self.assertEqual(sum(WEIGHTS.values()), 100)
+
+    def test_wrong_trial_identity_blocks_manual_research_score(self):
+        for bad in ({"ticker": "OTHER"}, {"drug": "Other Drug"},
+                    {"indication": "Other indication"}):
+            result = assess(self.queue, pd.DataFrame([evidence(**bad)]), self.as_of)
+            self.assertTrue(pd.isna(result.iloc[0]["Pre-Readout Evidence Points"]))
+            self.assertIn("matching trial", result.iloc[0]["Missing Evidence"])
 
     def test_blank_export_template_never_invents_scores(self):
         frame = evidence_template(self.queue)
