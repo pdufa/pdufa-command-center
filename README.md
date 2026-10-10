@@ -2,7 +2,7 @@
 
 ## Phase 2 p-values → Phase 3 pre-readout evidence (not calibrated PoS)
 
-Open the main **PRE PHASE 3** tab for the $300M–$10B active standalone Phase 3 candidate screen. The view now lists Phase 2 **PRIMARY** p-value analyses only when the Phase 2 NCT is explicitly linked to that Phase 3 program, the ticker matches, and the p was actually observed no later than the assessment cutoff. It shows the original Phase 2 registry result-posted date, the **first date the system verified that p-value**, days elapsed since that verification, and the original ClinicalTrials.gov study source. The verified-observation date—not the possibly earlier registry post date—is the safe historical cutoff.
+Open **PDUFA → PRE PHASE 3** for the $300M–$10B active standalone Phase 3 candidate screen. The view now lists Phase 2 **PRIMARY** p-value analyses only when the Phase 2 NCT is explicitly linked to that Phase 3 program, the ticker matches, and the p was actually observed no later than the assessment cutoff. It shows the original Phase 2 registry result-posted date, the **first date the system verified that p-value**, days elapsed since that verification, and the original ClinicalTrials.gov study source. The verified-observation date—not the possibly earlier registry post date—is the safe historical cutoff.
 
 The scheduled collector is `scripts/phase2_pre_readout_pvalues_intake.py`, running at **7:00 AM Pacific** via `.github/workflows/phase2-pre-readout-p.yml`. Evidence is append-only by analyzed endpoint/comparison/value so future changes don't overwrite the original first-seen observation. Status is persisted to `data/phase2_p_intake_status.json`; a missing p remains unverified, never interpreted as a failed Phase 2 trial.
 
@@ -14,7 +14,7 @@ Streamlit presentation layer for the PDUFA research, calendar, and prediction sy
 ## Navigation
 - **PDUFA → PIPELINE:** The single combined research workflow: current-stage and PDUFA-window selectors, stage/date count charts, the matching trial table (both selectors plus SHOW required), PDUFA countdown, ticker Watchlist management, and Watchlist → Analysis → Invest promotion. Technical ENTRY/EXIT indicators, FDA approval evidence, and second-financing fields remain available here. The separate PDUFA WORKBENCH submenu is removed, while all of its useful tools remain in PIPELINE. Data processing and internal source labels are unchanged.
 - **PDUFA → PHASE 3 DAILY:** The former TODAY reporting is here. Latest intake status appears immediately; select **SHOW PHASE 3 DAILY REPORT** to load yesterday’s source-linked Phase 3 posts, cumulative Phase 3 result records, financing evidence, ticker Watchlist management, and CSV export. Loading the large report on demand keeps the PIPELINE view responsive. Collectors and source-data files run independently of the UI.
-- **PRE PHASE 3:** Main navigation tab for linked Phase 2 primary p-values, the combined pre-readout research score, Phase 3 design coverage, missing inputs, evidence import, and CSV exports. It uses only information available before the Phase 3 readout.
+- **PDUFA → PRE PHASE 3:** Submenu immediately beside PIPELINE for linked Phase 2 primary p-values, the combined pre-readout research score, Phase 3 design coverage, missing inputs, evidence import, and CSV exports. It uses only information available before the Phase 3 readout.
 - **Additional pages:** Disease & Market Horizon, Strategy, PDUFA Calendar, FDA Decision, Scans, Recheck, Prediction Engine, Match Optimizer, and Plan.
 
 ## Visible approval probabilities
