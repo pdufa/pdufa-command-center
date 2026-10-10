@@ -91,7 +91,7 @@ class PipelineDisplayTests(unittest.TestCase):
         self.assertIn('["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"]', section)
         self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
         self.assertIn('with pre_phase3_tab:', section)
-        self.assertIn('if pre_phase3_tab.open:', section)
+        self.assertIn('st.session_state.get("pdufa_subtab") == "PRE PHASE 3" or pre_phase3_tab.open:', section)
         self.assertIn('render_pre_phase3()', section)
         self.assertNotIn('elif page == "PRE PHASE 3":', source)
         self.assertNotIn('"PDUFA WORKBENCH"', section)
