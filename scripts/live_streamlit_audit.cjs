@@ -124,9 +124,26 @@ async function audit(){
         result.checks.preReadoutCandidateToggle=true;
         const beforeCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
         await showQueue.click({timeout:15000});
-        await sleep(2000);
-        const afterCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
-        result.checks.preReadoutCandidatesShown=afterCount>beforeCount;
+        // The keyed PDUFA subtab triggers a complete Streamlit rerun, including
+        // Pipeline source preparation. Two seconds was insufficient on Cloud.
+        // Inspect the selected tab and wait for the actual extra dataframe.
+        result.checks.preReadoutCandidatesShown=false;
+        let afterCount=beforeCount;
+        let activeTab="unknown";
+        for(let attempt=0;attempt<60;attempt++){
+          await sleep(1000);
+          afterCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
+          activeTab=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
+          if(afterCount>beforeCount && activeTab==="true"){
+            result.checks.preReadoutCandidatesShown=true;
+            break;
+          }
+        }
+        if(!result.checks.preReadoutCandidatesShown){
+          result.notes.push("Candidate table after toggle: before="+beforeCount
+            +", after="+afterCount+", prephase tab aria-selected="+activeTab
+            +", toggle visible="+await showQueue.count());
+        }
       }catch(err){
         result.checks.preReadoutMetrics=false;
         result.notes.push("Pre-readout assessment check failed: "+String(err.message).slice(0,190));
