@@ -25,6 +25,8 @@ EVIDENCE_COLUMNS = [
     "nct_id", "ticker", "drug", "indication", "assessment_cutoff_date",
     "issuer_readout_status", "issuer_readout_checked_at", "issuer_readout_source",
     "actual_topline_release_date",
+    "phase2_primary_pvalue", "phase2_primary_endpoint_met",
+    "phase2_pvalue_source", "phase2_pvalue_source_date", "phase2_nct_id",
 ] + [
     field for name in WEIGHTS for field in
     (f"{name}_points", f"{name}_source", f"{name}_source_date")
@@ -223,6 +225,24 @@ def assess(queue, evidence, as_of):
         # pre-release evidence snapshot does not know the actual release date.
         if str(e.get("actual_topline_release_date", "")).strip():
             missing.append("actual topline date is outcome-era knowledge; exclude")
+        # Phase 2 primary p supports, but never replaces, effect size,
+        # clinical relevance, safety or the prespecified endpoint analysis.
+        linked = set(re.findall(r"NCT\\d{8}", str(row.get("Phase 2 NCT Links", ""))))
+        phase2_nct = str(e.get("phase2_nct_id", "")).strip().upper()
+        try:
+            phase2_p = float(str(e.get("phase2_primary_pvalue", "")).strip())
+        except (ValueError, TypeError):
+            phase2_p = float("nan")
+        phase2_p_source = str(e.get("phase2_pvalue_source", "")).strip()
+        phase2_p_date = _iso_day(e.get("phase2_pvalue_source_date"))
+        if not (
+            phase2_nct in linked
+            and 0 <= phase2_p <= 1
+            and str(e.get("phase2_primary_endpoint_met", "")).strip().upper() == "YES"
+            and phase2_p_source.startswith(("http://", "https://"))
+            and phase2_p_date is not None and phase2_p_date < cutoff
+        ):
+            missing.append("verified pre-cutoff Phase 2 primary p, endpoint interpretation and exact linked NCT")
         total = 0.0
         for name, maximum in WEIGHTS.items():
             try:
