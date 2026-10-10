@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
+import pyarrow as pa
 
 
 APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
@@ -14,6 +15,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertFalse(list(app.error))
         self.assertIn("STAGES", {item.label for item in app.multiselect})
         self.assertIn("DATES", {item.label for item in app.multiselect})
+        self.assertEqual(len(app.get("vega_lite_chart")), 2)
         self.assertEqual(len(app.dataframe[0].value), 0)
         metrics = [item for item in app.metric
                    if item.label == "Trials / programs displayed"]
@@ -33,6 +35,15 @@ class PipelinePageSmokeTests(unittest.TestCase):
         metric = next(item for item in app.metric
                       if item.label == "Trials / programs displayed")
         self.assertEqual(int(metric.value), len(shown))
+        # The charts under the selectors must use the displayed records.
+        charts = app.get("vega_lite_chart")
+        self.assertEqual(len(charts), 2)
+        for chart, column in zip(charts, ("Current Stage", "DATES")):
+            data = pa.ipc.open_stream(chart.proto.datasets[0].data.data).read_all().to_pandas()
+            self.assertEqual(int(data["Trials / programs"].sum()), len(shown))
+            expected = shown[column].value_counts().to_dict()
+            for _, row in data.iterrows():
+                self.assertEqual(int(row["Trials / programs"]), expected.get(row["Category"], 0))
         # The two independently rendered count tables must reconcile to the
         # rows the user actually sees, rather than historical milestone tags.
         for audit in app.dataframe[1:]:
@@ -49,6 +60,9 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
         exceptions = [str(error.message) for error in app.exception]
         self.assertFalse(exceptions, f"Streamlit render exceptions: {exceptions}")
+        self.assertEqual(len(app.get("vega_lite_chart")), 2)
+        self.assertTrue(any("STAGE COUNTS" in item.body for item in app.markdown))
+        self.assertTrue(any("DATE TRIAL COUNTS" in item.body for item in app.markdown))
         selectors = {item.label: item for item in app.multiselect}
         self.assertIn("STAGES", selectors)
         self.assertIn("DATES", selectors)
