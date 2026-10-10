@@ -84,9 +84,16 @@ async function audit(){
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
     if(result.checks.threePipelineTabs){
       await appFrame.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
-      await sleep(1500);
       const toggle=appFrame.getByText("SHOW PHASE 3 DAILY REPORT",{exact:false}).first();
-      result.checks.dailyReportToggle=await toggle.count()>0;
+      try{
+        await toggle.waitFor({state:"visible",timeout:65000});
+        result.checks.dailyReportToggle=true;
+      }catch(err){
+        result.checks.dailyReportToggle=false;
+        const dailyText=await appFrame.locator("body").innerText({timeout:9000});
+        result.notes.push("PHASE 3 DAILY toggle missing after wait: "+dailyText.slice(-650));
+      }
+      await page.screenshot({path:path.join(outDir,"streamlit-phase3-before-toggle.png"),fullPage:false});
       if(result.checks.dailyReportToggle){
         await toggle.click({timeout:15000});
         try{
@@ -114,7 +121,7 @@ async function audit(){
   if(!result.checks.pdufaHeader) result.errors.push("App did not render in an inspected browser frame.");
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pipelineNavigation","threePipelineTabs","stageAndDateControls",
-                   "stageCountChart","dateCountChart","dailyReportLoads","workbenchVisible"]){
+                   "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads","workbenchVisible"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
   if(!result.checks.scriptError)result.errors.push("Live app displays an exception.");
