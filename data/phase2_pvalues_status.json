@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-10T17:51:03.895492+00:00",
+  "linked_phase2_trials": 79,
+  "phase2_trials_with_recorded_primary_p": 4,
+  "linked_phase3_trials_with_phase2_p": 7,
+  "primary_p_analysis_rows": 13,
+  "api_errors": 0,
+  "errors": {},
+  "status": "COMPLETE",
+  "note": "Published Phase 2 primary-endpoint p-values, not trial success. An original publication date before the target Phase 3 readout is required."
+}
