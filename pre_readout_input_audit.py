@@ -28,7 +28,9 @@ CHECK_KEYS = [label for label, _ in INPUTS]
 
 def clean(v):
     text = "" if v is None else str(v).strip()
-    return "" if text.lower() in {"nan", "nat", "none", "<na>"} else text
+    # ClinicalTrials.gov's literal NONE is a meaningful masking value
+    # (open-label), not a missing-data sentinel.
+    return "" if text.lower() in {"nan", "nat", "<na>"} or text == "None" else text
 
 
 def day(v):
