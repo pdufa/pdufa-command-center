@@ -113,10 +113,13 @@ class PreReadoutProtocolTests(unittest.TestCase):
         self.assertEqual(safe["primary_endpoint"], "Symptom score")
         self.assertNotIn("0.000001", text)
         self.assertNotIn("37", text)
+        self.assertEqual(safe["registry_results_first_posted"], "")
+        self.assertEqual(safe["registry_overall_status"], "")
         self.assertEqual(set(safe), {
             "nct_id","primary_endpoint","primary_timeframe","allocation","masking",
             "intervention_model","comparator","enrollment","enrollment_type",
             "study_type","first_posted","source_updated","source_url","checked_at",
+            "registry_overall_status","registry_results_first_posted",
         })
 
     def test_collector_does_not_collect_excluded_phase_or_bad_cap(self):
