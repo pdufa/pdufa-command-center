@@ -16,6 +16,7 @@ def trial(**overrides):
         "results_first_posted": "", "source_url": "https://clinicaltrials.gov/study/NCT12345678",
         "primary_completion": "2027-03-01", "primary_completion_type": "ESTIMATED",
         "program_identity_status": "VERIFIED", "phase2_nct_ids": "NCT87654321",
+        "checked_at": "2026-10-10T08:00:00Z", "source_updated": "2026-10-09",
     }
     row.update(overrides)
     return row
@@ -127,6 +128,29 @@ class PreReadoutTests(unittest.TestCase):
         self.assertEqual(frame.iloc[0]["nct_id"], "NCT12345678")
         self.assertEqual(frame.iloc[0]["phase2_efficacy_points"], "")
         self.assertEqual(frame.iloc[0]["issuer_readout_status"], "")
+
+
+    def test_future_trial_snapshot_cannot_be_backcast(self):
+        old_caps = market()
+        old_caps.loc[0, "market_cap_checked_at"] = "2026-10-01T10:00:00Z"
+        current_snapshot = pd.DataFrame([trial(
+            checked_at="2026-10-10", source_updated="2026-10-09",
+        )])
+        historical = candidate_queue(current_snapshot, pd.DataFrame(), old_caps,
+                                     date(2026, 10, 8))
+        self.assertTrue(historical.empty)
+        historical_with_future_revision = candidate_queue(pd.DataFrame([trial(
+            checked_at="2026-10-07", source_updated="2026-10-09",
+        )]), pd.DataFrame(), old_caps, date(2026, 10, 8))
+        self.assertTrue(historical_with_future_revision.empty)
+
+    def test_issuer_check_must_be_current_to_score(self):
+        rated = assess(self.queue, pd.DataFrame([evidence(
+            issuer_readout_checked_at="2026-10-08",
+        )]), self.as_of)
+        self.assertTrue(pd.isna(rated.iloc[0]["Pre-Readout Evidence Points"]))
+        self.assertIn("issuer check performed", rated.iloc[0]["Missing Evidence"])
+
 
 
 if __name__ == "__main__":
