@@ -1,6 +1,6 @@
 {
   "mode": "daily",
-  "started_at": "2026-10-10T13:59:33.093167+00:00",
+  "started_at": "2026-10-10T14:41:20.692957+00:00",
   "registry_companies": 717,
   "pages": 4,
   "studies_checked": 3973,
@@ -8,7 +8,7 @@
   "new_records": 0,
   "complete": true,
   "errors": [],
-  "finished_at": "2026-10-10T13:59:40.708937+00:00",
+  "finished_at": "2026-10-10T14:41:27.473037+00:00",
   "stored_results": 2480,
   "status": "COMPLETE"
 }
