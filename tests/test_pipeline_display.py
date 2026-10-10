@@ -83,15 +83,37 @@ class PipelineDisplayTests(unittest.TestCase):
     def test_stage_and_date_controls_are_both_present_above_chart(self):
         from pathlib import Path
         source = Path("app.py").read_text(encoding="utf-8")
-        start = source.index('elif page == "PIPELINE":')
+        start = source.index('if page == "PIPELINE":')
         end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
         section = source[start:end]
-        self.assertIn('st.multiselect(\n            "STAGES"', section)
-        self.assertIn('st.multiselect(\n            "DATES"', section)
+        self.assertIn('with trial_tab:', section)
+        self.assertIn('with trade_tab:', section)
+        self.assertIn('st.multiselect(\n                "STAGES"', section)
+        self.assertIn('st.multiselect(\n                "DATES"', section)
         self.assertLess(section.index('selected_dates ='), section.index('### PIPELINE TRIALS / PROGRAMS'))
         self.assertLess(section.index('### PIPELINE TRIALS / PROGRAMS'), section.index('STAGES / DATES count audit'))
         self.assertIn('if not applied:', section)
         self.assertIn('empty_chart', section)
+
+    def test_trade_workflow_lives_inside_pipeline_without_master_grid(self):
+        from pathlib import Path
+        source = Path("app.py").read_text(encoding="utf-8")
+        nav = source.split("nav_options =", 1)[1].split("\n", 1)[0]
+        self.assertIn('"PIPELINE"', nav)
+        self.assertNotIn('"WATCHLIST"', nav)
+        section = source.split('if page == "PIPELINE":', 1)[1].split(
+            'elif page == "DISEASE & MARKET HORIZON":', 1
+        )[0]
+        self.assertLess(
+            section.index('with trial_tab:'), section.index('with trade_tab:')
+        )
+        self.assertIn('### PDUFA COUNTDOWN — DATE GRADIENT', section)
+        self.assertIn('master_with_phase3(df)', section)
+        self.assertIn('WATCHLIST MANAGEMENT', section)
+        self.assertIn('render_watchlist_indicators()', section)
+        self.assertIn('render_analysis_invest_signals()', section)
+        self.assertNotIn('master_watchlist_main_editor', section)
+        self.assertNotIn('if page == "WATCHLIST":', source)
 
 
 if __name__ == "__main__":
