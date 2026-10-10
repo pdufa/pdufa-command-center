@@ -157,6 +157,11 @@ def assess(queue, evidence, as_of):
             continue
         e = lookup.loc[nct]
         missing = []
+        # Never attach evidence for a different ticker, intervention or
+        # indication simply because an NCT identifier matches.
+        for src, dst in (("ticker", "Ticker"), ("drug", "Drug"), ("indication", "Indication")):
+            if str(e.get(src, "")).strip() != str(row.get(dst, "")).strip():
+                missing.append("matching trial " + src)
         if str(row.get("Program Identity", "")).strip().upper() != "VERIFIED":
             missing.append("verified investigational drug and program identity")
         if not str(row.get("Source", "")).strip().startswith(("http://", "https://")):
