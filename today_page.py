@@ -1,4 +1,4 @@
-"""TODAY: conservative, source-traceable Phase 3 and post-readout daily view."""
+"""Pipeline Phase 3 Daily report: conservative, traceable research views."""
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from urllib.parse import quote_plus
@@ -87,7 +87,7 @@ def _today_watchlist_controls(frame):
 def render_today(live, pipeline, financing):
     now = datetime.now(TZ)
     yesterday = now.date() - timedelta(days=1)
-    st.title("TODAY")
+    st.subheader("DAILY PHASE 3 RESULT REPORT")
     st.caption(f"Pacific reporting date: {now:%Y-%m-%d} · Yesterday: {yesterday} · Data is sourced from stored project files; opening this page does not run an overnight web scan.")
     data = assemble(live, pipeline, financing)
     if data.empty:
@@ -100,7 +100,7 @@ def render_today(live, pipeline, financing):
     phase3 = pd.to_datetime(first(data, "phase3_date", "phase3_readout_date", "phase3_results_date").astype("string").str.slice(0, 10), errors="coerce").dt.date
     status = first(data, "phase3_status", "current_stage").fillna("").astype(str).str.upper()
     eligible = status.str.contains("RESULTS_VERIFIED|RESULTS_REVIEW", regex=True) | (data["Result Source"].fillna("").astype(str).str.startswith("http") & posted.notna())
-    # TODAY bottom is the full tracked universe, not only rows with an explicit
+    # The cumulative report covers the tracked result universe, not only rows with an explicit
     # Phase 3 readout date. Keep qualification transparent for every record.
     data["Post–Phase 3 Evidence"] = eligible.map({True: "RECORDED POST–PHASE 3", False: "REVIEW — PHASE 3 NOT VERIFIED"})
     bottom = data.loc[eligible].copy()
@@ -131,4 +131,4 @@ def render_today(live, pipeline, financing):
     st.subheader("BOTTOM — Cumulative Phase 3 result records (verified and review)")
     show(bottom, "bottom")
     st.caption("Rows are ordered by most recent result-post date. They represent trial-result records, not deduplicated drugs or confirmed positive outcomes. FINANCING: red announced, yellow started/running, green verified finished. Unverified stays uncolored. Post-financing runway is not inferred without evidence.")
-    st.download_button("Export TODAY", data.to_csv(index=False).encode("utf-8"), file_name=f"today_{now:%Y%m%d}.csv", mime="text/csv")
+    st.download_button("EXPORT PHASE 3 DAILY CSV", data.to_csv(index=False).encode("utf-8"), file_name=f"phase3_daily_{now:%Y%m%d}.csv", mime="text/csv")
