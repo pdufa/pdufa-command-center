@@ -81,6 +81,13 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of):
     valid = nct.str.fullmatch(r"NCT\d{8}").fillna(False)
     ticker = _cols(x, "ticker").str.upper()
     not_posted = _cols(x, "results_first_posted").eq("")
+    # A current mutable registry record is never a valid historical snapshot
+    # for a cutoff preceding its actual retrieval OR posted protocol revision.
+    # Prevent "pre-readout" backtests from seeing later registry design fields.
+    checked = _dates(_cols(x, "checked_at"))
+    updated = _dates(_cols(x, "source_updated"))
+    cutoff_safe = checked.dt.date.le(as_of).fillna(False)
+    cutoff_safe &= (updated.isna() | updated.dt.date.le(as_of))
     if announcements is not None and not announcements.empty:
         published = _dates(_cols(announcements, "phase3_results_posted_at"))
         past_or_present = published.dt.date.le(as_of).fillna(False)
@@ -98,7 +105,7 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of):
     valid_date = cap_dates.dt.date.le(as_of).fillna(False)
     valid_caps = c.loc[verified & valid_date & caps.between(300e6, 10e9)]
     allowed = set(_cols(valid_caps, "ticker").str.upper())
-    chosen = x.loc[phase & active & valid & not_posted & ticker.isin(allowed)].copy()
+    chosen = x.loc[phase & active & valid & cutoff_safe & not_posted & ticker.isin(allowed)].copy()
     if chosen.empty:
         return pd.DataFrame(columns=RESULT_COLUMNS)
     chosen = chosen.drop_duplicates("nct_id", keep="last")
@@ -160,8 +167,8 @@ def assess(queue, evidence, as_of):
         if str(e.get("issuer_readout_status", "")).strip().upper() != "VERIFIED_UNRELEASED":
             missing.append("independent issuer topline-release verification")
         checked = _iso_day(e.get("issuer_readout_checked_at"))
-        if checked is None or checked > cutoff:
-            missing.append("issuer check date")
+        if checked is None or checked != cutoff:
+            missing.append("issuer check performed on the assessment cutoff date")
         issuer = str(e.get("issuer_readout_source", "")).strip()
         if not issuer.startswith(("https://", "http://")):
             missing.append("issuer release-status source")
