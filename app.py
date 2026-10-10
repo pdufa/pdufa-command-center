@@ -3220,14 +3220,77 @@ elif page == "PIPELINE":
         default=list(PIPELINE_STAGES), key="pipeline_universe_stages",
         placeholder="Choose one or more stages",
     )
+    # The DATES selector belongs immediately below "Stages to display".
+    # Do not project a company's application deadline onto unrelated trials.
+    date_bands = (
+        "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS",
+        "NO PDUFA YET", "PAST / RECHECK",
+    )
+    band_colors = {
+        "0–30 DAYS": "#fce0e0",
+        "31–60 DAYS": "#ffead5",
+        "61–90 DAYS": "#fff6ce",
+        "+90 DAYS": "#e0f2de",
+        "NO PDUFA YET": "#edf0f3",
+        "PAST / RECHECK": "#eadff3",
+    }
+    dates = pd.to_datetime(
+        universe["pdufa_date"].astype(str).str[:10],
+        format="%Y-%m-%d", errors="coerce",
+    )
+    universe = universe.copy()
+    universe["Days to PDUFA"] = (dates - pd.Timestamp(pipeline_today)).dt.days
+
+    def date_band(days):
+        if pd.isna(days):
+            return "NO PDUFA YET"
+        if days < 0:
+            return "PAST / RECHECK"
+        if days <= 30:
+            return "0–30 DAYS"
+        if days <= 60:
+            return "31–60 DAYS"
+        if days <= 90:
+            return "61–90 DAYS"
+        return "+90 DAYS"
+
+    universe["DATES"] = universe["Days to PDUFA"].map(date_band)
+    with st.container(border=True):
+        st.markdown("### PICK PDUFA DATES")
+        selected_dates = st.multiselect(
+            "DATES to display", options=list(date_bands),
+            default=list(date_bands), key="pipeline_universe_dates",
+            placeholder="Choose PDUFA countdown ranges",
+        )
+        sort_dates = st.selectbox(
+            "Sort pipeline", ["Closest PDUFA first", "Ticker A–Z"],
+            key="pipeline_universe_date_sort",
+        )
+        legend = " ".join(
+            '<span style="display:inline-block;border:1px solid #333;border-radius:6px;'
+            'padding:5px 9px;margin:3px;background:%s;color:#18202a;">%s: %s</span>' %
+            (band_colors[band], band, f'{int((universe["DATES"] == band).sum()):,}')
+            for band in date_bands
+        )
+        st.markdown(legend, unsafe_allow_html=True)
+        st.caption("Countdowns update daily. NO PDUFA YET means no date linked to that trial; "
+                   "PAST / RECHECK does not imply an FDA decision.")
+    date_filtered = universe[universe["DATES"].isin(selected_dates)].copy()
     st.markdown("### COUNT FOR EACH STAGE")
     st.dataframe(
-        pipeline_stage_counts(universe), use_container_width=True,
+        pipeline_stage_counts(date_filtered), use_container_width=True,
         hide_index=True, height=530,
     )
-    st.caption("Counts include registered trials and regulatory/program records. Filters match registered phases and recorded milestones, so a record can appear in multiple stage counts. The combined list counts each record once.")
+    st.caption("Counts reflect your selected DATES ranges. A trial may be counted in multiple development stages; the combined list counts it once.")
     search = st.text_input("Find ticker, drug, indication or NCT ID", key="pipeline_universe_search").strip()
-    visible = select_pipeline_records(universe, enabled_stages, search)
+    visible = select_pipeline_records(date_filtered, enabled_stages, search)
+    date_order = {band: index for index, band in enumerate(date_bands)}
+    visible = visible.assign(_date_rank=visible["DATES"].map(date_order))
+    if sort_dates == "Ticker A–Z":
+        visible = visible.sort_values(["ticker", "_date_rank", "Days to PDUFA"], na_position="last")
+    else:
+        visible = visible.sort_values(["_date_rank", "Days to PDUFA", "ticker"], na_position="last")
+    visible = visible.drop(columns=["_date_rank"])
     st.metric("Trials / programs displayed", f"{len(visible):,}")
     trial_count = visible.loc[visible["nct_id"].ne(""), "nct_id"].nunique()
     st.caption(f"Unique registered trial IDs in this list: {trial_count:,}")
@@ -3252,10 +3315,13 @@ elif page == "PIPELINE":
     st.caption("Source and evidence status are retained on each record. Posted results do not establish trial success, and a past PDUFA target does not establish an FDA decision. Historical outcomes are marked as recorded evidence.")
     if not enabled_stages:
         st.info("Choose at least one stage to display records.")
+    elif not selected_dates:
+        st.info("Choose at least one DATES range to display records.")
     elif visible.empty:
         st.info("No loaded records match these stages or search.")
     else:
         labels = {
+            "DATES": "DATES", "Days to PDUFA": "Days to PDUFA",
             "ticker": "Ticker", "company": "Company", "current_stage": "Current Stage",
             "record_type": "Record Type", "drug": "Drug", "indication": "Indication",
             "nct_id": "NCT ID", "registered_phase": "Registered Phase", "status": "Trial Status",
@@ -3266,7 +3332,12 @@ elif page == "PIPELINE":
             "source_url": "Source", "evidence_note": "Evidence Note",
         }
         st.dataframe(
-            visible[list(labels)].rename(columns=labels),
+            visible[list(labels)].rename(columns=labels).style.apply(
+                lambda row: [
+                    f"background-color:{band_colors.get(row['DATES'], '#ffffff')};color:#18202a;"
+                    for _ in row
+                ], axis=1,
+            ),
             use_container_width=True, hide_index=True, height=560,
             column_config={"Source": st.column_config.LinkColumn("Source")},
         )
