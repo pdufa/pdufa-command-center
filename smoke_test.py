@@ -389,7 +389,16 @@ required_ui_contracts = [
     'no current PDUFA event in the saved event feed',
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
-    '"MASTER TABLE"',
+    'nav_options = ["PIPELINE"',
+    '"TRIALS & DATES"',
+    '"PDUFA WORKBENCH"',
+    'master_with_phase3(df)',
+    '### PDUFA COUNTDOWN — DATE GRADIENT',
+    'WATCHLIST MANAGEMENT',
+    'render_watchlist_indicators()',
+    'render_analysis_invest_signals()',
+    'if not applied:',
+    'st.session_state.get("pipeline_applied_v9") == selection_signature',
     '"FDA MODEL %"',
     '"FDA CALL"',
     '"FDA GATE"',
@@ -441,6 +450,11 @@ required_ui_contracts = [
 for label in required_ui_contracts:
     if label not in app:
         raise SystemExit(f"app.py missing required audit/UI contract: {label}")
+# Obsolete navigation and the oversized table grid must not return.
+if 'if page == "WATCHLIST":' in app:
+    raise SystemExit("app.py: obsolete standalone WATCHLIST page restored")
+if "master_watchlist_main_editor" in app:
+    raise SystemExit("app.py: removed Master Table editor was restored")
 
 # Missing probabilities must remain missing/not-scored rather than being silently
 # coerced into a misleading literal 0% display.
