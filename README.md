@@ -1,5 +1,14 @@
 # PDUFA Command Center
 
+## Phase 2 p-values → Phase 3 pre-readout evidence (not calibrated PoS)
+
+Open **PIPELINE → PHASE 3 PRE-READOUT** for the $300M–$10B active standalone Phase 3 candidate screen. The view now lists Phase 2 **PRIMARY** p-value analyses only when the Phase 2 NCT is explicitly linked to that Phase 3 program, the ticker matches, and the p was actually observed no later than the assessment cutoff. It shows the original Phase 2 registry result-posted date, the **first date the system verified that p-value**, days elapsed since that verification, and the original ClinicalTrials.gov study source. The verified-observation date—not the possibly earlier registry post date—is the safe historical cutoff.
+
+The scheduled collector is `scripts/phase2_pre_readout_pvalues_intake.py`, running at **7:00 AM Pacific** via `.github/workflows/phase2-pre-readout-p.yml`. Evidence is append-only by analyzed endpoint/comparison/value so future changes don't overwrite the original first-seen observation. Status is persisted to `data/phase2_p_intake_status.json`; a missing p remains unverified, never interpreted as a failed Phase 2 trial.
+
+**Do not confuse these:** (a) a Phase 2 primary p-value, (b) the separate Phase 3 design metadata/data coverage score, (c) the 100-point analyst-reviewed clinical evidence rubric, and (d) a statistically calibrated Phase 3 probability of success. A significant Phase 2 p-value does not alone establish clinical relevance, endpoint multiplicity, safety, efficacy replication, or Phase 3 success. The Phase 3 success probability stays blank until independent calibration with pre-cutoff snapshots and untouched historical outcomes. The 100-point analyst score remains blank until all six dated evidence areas and an issuer-unreleased confirmation are documented.
+
+
 Streamlit presentation layer for the PDUFA research, calendar, and prediction system.
 
 ## Navigation
