@@ -3208,6 +3208,44 @@ if page == "MASTER TABLE":
 
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — ALL CLINICAL AND REGULATORY STAGES")
+
+    # Match the dimensions of STAGES and DATES clickable selections.
+    # Apply only to these two widgets, leaving other app controls unchanged.
+    st.markdown("""
+    <style>
+    .st-key-pipeline_universe_stages_pills [data-testid^="stBaseButton-pills"],
+    .st-key-pipeline_universe_dates_pills [data-testid^="stBaseButton-pills"] {
+        box-sizing: border-box !important;
+        flex: 0 0 188px !important;
+        width: 188px !important;
+        min-width: 188px !important;
+        max-width: 188px !important;
+        min-height: 46px !important;
+        height: 46px !important;
+        padding: 6px 8px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: normal !important;
+        line-height: 1.15 !important;
+        font-size: 13px !important;
+    }
+    @media (max-width: 450px) {
+        .st-key-pipeline_universe_stages_pills [data-testid^="stBaseButton-pills"],
+        .st-key-pipeline_universe_dates_pills [data-testid^="stBaseButton-pills"] {
+            flex-basis: 155px !important;
+            width: 155px !important;
+            min-width: 155px !important;
+            max-width: 155px !important;
+            min-height: 48px !important;
+            height: 48px !important;
+            font-size: 12px !important;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     pipeline_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     pipeline_signature = tuple(
         (name, (Path("data") / name).stat().st_mtime_ns)
@@ -3215,7 +3253,7 @@ elif page == "PIPELINE":
     )
     universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
     with st.container(border=True):
-        st.markdown("### PICK DEVELOPMENT STAGES")
+        st.markdown("### STAGES")
         enabled_stages = st.pills(
             "Stages to display",
             options=list(PIPELINE_STAGES),
@@ -3261,7 +3299,7 @@ elif page == "PIPELINE":
 
     universe["DATES"] = universe["Days to PDUFA"].map(date_band)
     with st.container(border=True):
-        st.markdown("### PICK PDUFA DATES")
+        st.markdown("### DATES")
         date_symbols = {
             "0–30 DAYS": "🔴",
             "31–60 DAYS": "🟠",
