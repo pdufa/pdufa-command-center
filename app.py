@@ -1518,7 +1518,7 @@ def stock_chart_url(ticker):
     symbol = safe_text(ticker, "").upper().strip()
     return APP_BASE_URL + "Stock_Chart?" + urllib.parse.urlencode({"ticker": symbol})
 
-def event_detail_url(row, source="live", return_page="PIPELINE"):
+def event_detail_url(row, source="live", return_page="PDUFA"):
     event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
     return APP_BASE_URL + "?" + urllib.parse.urlencode({
         "page": "detail",
@@ -1543,7 +1543,7 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
     st.session_state.selected_detail_source = source
-    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "PIPELINE")
+    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "PDUFA")
     st.session_state.detail_open = True
     if len(st.query_params):
         st.query_params.clear()
@@ -2566,7 +2566,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
 
 
-def table_view(frame, return_page="PIPELINE"):
+def table_view(frame, return_page="PDUFA"):
     out = frame.copy()
 
     # Guarantee every master-table column exists even if the source feed is incomplete.
@@ -2996,7 +2996,7 @@ query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
 query_source = st.query_params.get("source") or "live"
-query_return = st.query_params.get("return") or "PIPELINE"
+query_return = st.query_params.get("return") or "PDUFA"
 
 if query_page == "detail" and query_event:
     st.session_state.selected_event_key = str(query_event)
@@ -3058,13 +3058,13 @@ def scan_approval_all():
     return _record_streamlit_scan("PROBABILITY OF APPROVAL", "ALL")
 
 if "nav" not in st.session_state:
-    st.session_state.nav = "PIPELINE"
+    st.session_state.nav = "PDUFA"
 if "detail_open" not in st.session_state:
     st.session_state.detail_open = False
 if "selected_detail_source" not in st.session_state:
     st.session_state.selected_detail_source = "live"
 if "detail_return_page" not in st.session_state:
-    st.session_state.detail_return_page = "PIPELINE"
+    st.session_state.detail_return_page = "PDUFA"
 if "selected_ticker" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
@@ -3077,20 +3077,25 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V13 — TODAY MERGED INTO PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
-st.caption("OPERATING FLOW: PIPELINE → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V14 — PIPELINE TAB RENAMED PDUFA · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["PIPELINE","PRE PHASE 3","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PDUFA","PRE PHASE 3","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
+# Backwards compatibility: old saved sessions used PIPELINE as the page ID.
+if st.session_state.nav == "PIPELINE":
+    st.session_state.nav = "PDUFA"
+if st.session_state.detail_return_page == "PIPELINE":
+    st.session_state.detail_return_page = "PDUFA"
 if st.session_state.nav not in nav_options:
-    st.session_state.nav = "PIPELINE"
+    st.session_state.nav = "PDUFA"
 if st.session_state.detail_return_page not in nav_options:
-    st.session_state.detail_return_page = "PIPELINE"
+    st.session_state.detail_return_page = "PDUFA"
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -3099,7 +3104,7 @@ else:
     if len(st.query_params):
         st.query_params.clear()
 
-if page == "PIPELINE":
+if page == "PDUFA":
     # The trial selector and the former Master/Watchlist engine now live
     # together on Pipeline; the oversized Master Table grid stays removed.
     trial_tab, trade_tab, intake_tab = st.tabs([
@@ -3108,9 +3113,9 @@ if page == "PIPELINE":
         "PHASE 3 DAILY",
     ])
     with trial_tab:
-        st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
+        st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
         st.caption(
-            "PIPELINE-V13 · Select STAGES and DATES, then "
+            "PDUFA-V14 · Select STAGES and DATES, then "
             "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
         )
 
@@ -3286,7 +3291,7 @@ if page == "PIPELINE":
         _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES)
         _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS)
 
-        st.markdown("### PIPELINE TRIALS / PROGRAMS")
+        st.markdown("### PDUFA TRIALS / PROGRAMS")
         st.caption("Displayed count always equals the exact number of table rows.")
         empty_chart = pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values()))
         if not applied:
@@ -3346,14 +3351,14 @@ if page == "PIPELINE":
                     st.error("COUNT MISMATCH: displayed count and audit disagree.")
                 else:
                     st.caption("COUNT AUDIT PASSED: each chart row counted once.")
-        if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh_v9"):
+        if st.button("REFRESH PDUFA DATA", key="pipeline_refresh_v9"):
             load_pipeline_universe_data.clear()
             _clear_pipeline_results_v9()
             st.rerun()
 
     with trade_tab:
         st.markdown("## WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION")
-        st.caption("Phase 3 and manually selected PIPELINE records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
+        st.caption("Phase 3 and manually selected PDUFA records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
         # Do not mistake passing application tests for complete or fresh data.
         overnight_path = Path("data/overnight_scan_status.json")
         if overnight_path.exists():
@@ -5702,8 +5707,8 @@ else:
     with b1:
         st.write("")
         st.write("")
-        if st.button("← PIPELINE", use_container_width=True):
-            go_page("PIPELINE")
+        if st.button("← PDUFA", use_container_width=True):
+            go_page("PDUFA")
             st.rerun()
     with b2:
         st.write("")

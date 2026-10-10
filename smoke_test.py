@@ -389,7 +389,7 @@ required_ui_contracts = [
     'no current PDUFA event in the saved event feed',
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
-    'nav_options = ["PIPELINE"',
+    'nav_options = ["PDUFA"',
     '"TRIALS & DATES"',
     '"PDUFA WORKBENCH"',
     'master_with_phase3(df)',

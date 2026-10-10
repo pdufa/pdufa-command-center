@@ -77,14 +77,14 @@ class PipelinePageSmokeTests(unittest.TestCase):
         # Streamlit resolves relative paths against this test file in newer
         # versions; always point at the repository's actual entry point.
         app = AppTest.from_file(str(APP_PATH), default_timeout=60)
-        app.session_state["nav"] = "PIPELINE"
+        app.session_state["nav"] = "PDUFA"
         app.run()
 
         exceptions = [str(error.message) for error in app.exception]
         self.assertFalse(exceptions, f"Streamlit render exceptions: {exceptions}")
         self.assertEqual(len(self.count_charts(app)), 2)
         nav = next(item for item in app.radio if item.key == "nav")
-        self.assertIn("PIPELINE", nav.options)
+        self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         stage_rows = CountRows(self.count_charts(app)[0].body).rows
@@ -100,7 +100,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(selectors["STAGES"].value, [])
         self.assertEqual(selectors["DATES"].value, [])
         self.assertTrue(
-            any("PIPELINE TRIALS / PROGRAMS" in item.body for item in app.markdown),
+            any("PDUFA TRIALS / PROGRAMS" in item.body for item in app.markdown),
             "Bottom chart title was not rendered",
         )
         self.assertTrue(len(app.dataframe), "Bottom chart frame was not rendered")
@@ -175,9 +175,19 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(app.button(key="pipeline_show_v9").disabled)
 
 
-    def test_watchlist_add_remove_survives_master_table_removal(self):
+    def test_legacy_pipeline_navigation_migrates_to_pdufa(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=60)
         app.session_state["nav"] = "PIPELINE"
+        app.session_state["detail_return_page"] = "PIPELINE"
+        app.run()
+        self.assertFalse(list(app.exception))
+        self.assertEqual(app.radio(key="nav").value, "PDUFA")
+        self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
+        self.assertNotIn("PIPELINE", app.radio(key="nav").options)
+
+    def test_watchlist_add_remove_survives_master_table_removal(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=60)
+        app.session_state["nav"] = "PDUFA"
         app.run()
         self.assertFalse(list(app.exception))
         picker = app.selectbox(key="watchlist_ticker_picker_v1")
@@ -197,7 +207,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
     def test_phase3_daily_report_moved_from_today_into_pipeline(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
-        app.session_state["nav"] = "PIPELINE"
+        app.session_state["nav"] = "PDUFA"
         app.run()
         self.assertFalse(list(app.exception))
         nav = next(item for item in app.radio if item.key == "nav")
@@ -220,7 +230,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
     def test_phase3_pre_readout_tab_never_fabricates_success_probability(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
-        app.session_state["nav"] = "PIPELINE"
+        app.session_state["nav"] = "PDUFA"
         app.run()
         self.assertFalse(list(app.exception))
         nav = app.radio(key="nav")
@@ -255,9 +265,9 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(candidates["Phase 3 Success Probability %"].isna().all())
         self.assertTrue(any(item.key == "pre_readout_screen_download_v1"
                             for item in app.get("download_button")))
-        app.radio(key="nav").set_value("PIPELINE").run()
+        app.radio(key="nav").set_value("PDUFA").run()
         self.assertFalse(list(app.exception))
-        self.assertTrue(any("PIPELINE — CLINICAL AND REGULATORY STAGES" in item.body
+        self.assertTrue(any("PDUFA — CLINICAL AND REGULATORY STAGES" in item.body
                             for item in app.markdown))
 
 

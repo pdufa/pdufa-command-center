@@ -83,15 +83,15 @@ class PipelineDisplayTests(unittest.TestCase):
     def test_stage_and_date_controls_are_both_present_above_chart(self):
         from pathlib import Path
         source = Path("app.py").read_text(encoding="utf-8")
-        start = source.index('if page == "PIPELINE":')
+        start = source.index('if page == "PDUFA":')
         end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
         section = source[start:end]
         self.assertIn('with trial_tab:', section)
         self.assertIn('with trade_tab:', section)
         self.assertIn('st.multiselect(\n                "STAGES"', section)
         self.assertIn('st.multiselect(\n                "DATES"', section)
-        self.assertLess(section.index('selected_dates ='), section.index('### PIPELINE TRIALS / PROGRAMS'))
-        self.assertLess(section.index('### PIPELINE TRIALS / PROGRAMS'), section.index('STAGES / DATES count audit'))
+        self.assertLess(section.index('selected_dates ='), section.index('### PDUFA TRIALS / PROGRAMS'))
+        self.assertLess(section.index('### PDUFA TRIALS / PROGRAMS'), section.index('STAGES / DATES count audit'))
         self.assertIn('if not applied:', section)
         self.assertIn('empty_chart', section)
 
@@ -99,9 +99,9 @@ class PipelineDisplayTests(unittest.TestCase):
         from pathlib import Path
         source = Path("app.py").read_text(encoding="utf-8")
         nav = source.split("nav_options =", 1)[1].split("\n", 1)[0]
-        self.assertIn('"PIPELINE"', nav)
+        self.assertIn('"PDUFA"', nav)
         self.assertNotIn('"WATCHLIST"', nav)
-        section = source.split('if page == "PIPELINE":', 1)[1].split(
+        section = source.split('if page == "PDUFA":', 1)[1].split(
             'elif page == "DISEASE & MARKET HORIZON":', 1
         )[0]
         self.assertLess(
@@ -119,7 +119,7 @@ class PipelineDisplayTests(unittest.TestCase):
         """Both selectors must be before chart columns when st.columns stack."""
         from pathlib import Path
         app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        p = app.split('if page == "PIPELINE":', 1)[1].split('with trade_tab:', 1)[0]
+        p = app.split('if page == "PDUFA":', 1)[1].split('with trade_tab:', 1)[0]
         stage = p.index('key="pipeline_stages_v9"')
         dates = p.index('key="pipeline_dates_v9"')
         charts = p.index('stage_chart_col, date_chart_col = st.columns(2, gap="medium")')

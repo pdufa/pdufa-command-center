@@ -48,7 +48,7 @@ async function audit(){
       try{
         const updated=await appFrame.locator("body").innerText({timeout:5000});
         initial=updated;
-        if(updated.includes("PIPELINE — CLINICAL AND REGULATORY STAGES")
+        if(updated.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
           && updated.includes("STAGE COUNTS") && updated.includes("DATE TRIAL COUNTS")
           && updated.includes("PDUFA WORKBENCH"))break;
       }catch(_){}
@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 TAB V1");
+  result.checks.newBuildLabel=initial.includes("NAVIGATION V14") && initial.includes("PRE PHASE 3 TAB V1");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -74,7 +74,8 @@ async function audit(){
       result.radioInputCount=radioItems;
     }
     result.checks.noTodayNavigation=!result.navigation.includes("TODAY");
-    result.checks.pipelineNavigation=result.navigation.includes("PIPELINE");
+    result.checks.pdufaNavigation=result.navigation.includes("PDUFA");
+    result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3Navigation=result.navigation.includes("PRE PHASE 3");
     result.checks.threePipelineTabs=["TRIALS & DATES","PDUFA WORKBENCH","PHASE 3 DAILY"].every(x=>result.tabs.some(t=>t.includes(x)));
@@ -129,7 +130,7 @@ async function audit(){
         result.notes.push("Pre-readout assessment check failed: "+String(err.message).slice(0,190));
       }
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
-      await appFrame.getByText("PIPELINE",{exact:true}).first().click({timeout:15000});
+      await appFrame.getByText("PDUFA",{exact:true}).first().click({timeout:15000});
       await appFrame.getByRole("tab",{name:"PDUFA WORKBENCH"}).click({timeout:15000});
       await sleep(1500);
       result.checks.workbenchVisible=await appFrame.getByText("WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION",{exact:false}).count()>0;
@@ -188,7 +189,7 @@ async function audit(){
   if(result.http!==200) result.errors.push("Site HTTP status is not 200.");
   if(!result.checks.pdufaHeader) result.errors.push("App did not render in an inspected browser frame.");
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
-  for(const k of ["noTodayNavigation","pipelineNavigation","prePhase3Navigation","threePipelineTabs","stageAndDateControls",
+  for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3Navigation","threePipelineTabs","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
                    "preReadoutMetrics","preReadoutMissingInputsVisible",
                    "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle","preReadoutCandidatesShown",

@@ -60,7 +60,7 @@ class TodayTabTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         app = (root / "app.py").read_text(encoding="utf-8")
         source = (root / "today_page.py").read_text(encoding="utf-8")
-        pipeline = app.split('if page == "PIPELINE":', 1)[1].split(
+        pipeline = app.split('if page == "PDUFA":', 1)[1].split(
             'elif page == "PRE PHASE 3":', 1
         )[0]
         nav_line = next(line for line in app.splitlines()
