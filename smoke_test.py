@@ -390,7 +390,7 @@ required_ui_contracts = [
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
     'nav_options = ["PDUFA"',
-    '"TRIALS & DATES"',
+    '"TRIALS AND DATES"',
     '"PDUFA WORKBENCH"',
     'master_with_phase3(df)',
     '### PDUFA COUNTDOWN — DATE GRADIENT',
