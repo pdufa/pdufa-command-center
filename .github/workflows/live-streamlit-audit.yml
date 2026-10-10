@@ -1,0 +1,49 @@
+name: Live Streamlit Cloud Browser Audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/live-streamlit-audit.yml"
+      - "scripts/live_streamlit_audit.cjs"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-streamlit-cloud-audit
+  cancel-in-progress: true
+
+jobs:
+  check-deployment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser instrumentation
+        run: npm install --no-save playwright-core
+      - name: Verify runner browser exists
+        shell: bash
+        run: |
+          if [ -x /usr/bin/google-chrome ]; then
+            echo "CHROME_PATH=/usr/bin/google-chrome" >> "$GITHUB_ENV"
+          elif [ -x /usr/bin/google-chrome-stable ]; then
+            echo "CHROME_PATH=/usr/bin/google-chrome-stable" >> "$GITHUB_ENV"
+          else
+            echo "::error::Google Chrome not available on runner"
+            exit 1
+          fi
+      - name: Open live Streamlit app and inspect rendered navigation
+        run: node scripts/live_streamlit_audit.cjs
+      - name: Upload live audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-streamlit-cloud-audit
+          path: live-audit-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
