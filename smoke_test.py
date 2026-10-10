@@ -391,7 +391,7 @@ required_ui_contracts = [
     '"data/recheck_status.csv"',
     'nav_options = ["PDUFA"',
     '"PIPELINE"',
-    '"PDUFA WORKBENCH"',
+    '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
     'master_with_phase3(df)',
     '### PDUFA COUNTDOWN — DATE GRADIENT',
     'WATCHLIST MANAGEMENT',
