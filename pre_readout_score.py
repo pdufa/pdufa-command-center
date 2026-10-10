@@ -57,7 +57,7 @@ def _iso_day(value):
         return None
 
 
-def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None):
+def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *, require_protocol=False):
     """Return *potential* pre-readout Phase 3 trials in $300M–$10B universe.
 
     Not a certification that topline results have not been announced elsewhere.
@@ -95,6 +95,13 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None):
         # If issuer announcements have no exact NCT ID, do NOT assume a ticker
         # match establishes a particular trial's outcome.
         not_posted &= ~nct.isin(prior_ncts - {""})
+    # Production screening fails closed when a contemporaneous exact-NCT
+    # protocol is missing: the broad Phase 3 ledger may be stale about
+    # discontinued studies and already posted registry results.
+    if require_protocol and (
+        protocols is None or protocols.empty or "nct_id" not in protocols
+    ):
+        return pd.DataFrame(columns=RESULT_COLUMNS)
     # A fresh protocol fetch can detect posted results or a stopped study
     # before the slower local pipeline registry ledger is refreshed. Never
     # score it as pre-readout simply because that ledger is stale.
@@ -116,9 +123,14 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None):
         blocked = set(protocol_nct.loc[valid_proto & (published_proto | not_active_proto)])
         # Only accept an exact-NCT protocol fetched and last revised by cutoff.
         # A stale Phase 3 ledger alone is insufficient to rule out a readout.
+        protocol_revision = _dates(_cols(p, "source_updated")).dt.date
+        # Do not call a trial presently unreleased based on a stale protocol:
+        # its registry results or status might have changed since that fetch.
+        checked_day = checked_proto.dt.date
+        recent_proto = checked_day.ge(as_of - pd.Timedelta(days=2)).fillna(False)
         latest_active = set(protocol_nct.loc[
             valid_proto & ~published_proto & ~not_active_proto
-            & _dates(_cols(p, "source_updated")).dt.date.le(as_of).fillna(False)
+            & protocol_revision.le(as_of).fillna(False) & recent_proto
         ])
         not_posted &= ~nct.isin(blocked) & nct.isin(latest_active)
     if cap_cache is None or cap_cache.empty or "ticker" not in cap_cache:
