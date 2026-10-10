@@ -191,6 +191,33 @@ class TradingResearchQueueTests(unittest.TestCase):
         self.assertEqual(float(q.iloc[0]["PRE PHASE 3 Score /100"]), 80)
         self.assertIn("FRESH REGISTRY", q.iloc[0]["Verification Status"])
 
+    def test_saved_universe_still_has_visible_trials_after_protocol_freshness_expires(self):
+        """Guard against a full zero-candidate screen from stale registry data."""
+        from pathlib import Path
+        from datetime import timedelta
+        from pre_readout_score import candidate_queue
+        base = Path(__file__).resolve().parents[1] / "data"
+        pipeline = pd.read_csv(base / "phase_pipeline.csv", dtype=str, keep_default_na=False)
+        caps = pd.read_csv(base / "phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False)
+        announcements = pd.read_csv(base / "phase3_announcements.csv", dtype=str, keep_default_na=False)
+        protocols = pd.read_csv(base / "pre_readout_protocols.csv", dtype=str, keep_default_na=False)
+        latest_protocol = pd.to_datetime(
+            protocols["checked_at"], utc=True, errors="coerce"
+        ).max().date()
+        after_expiry = latest_protocol + timedelta(days=4)
+        broad = candidate_queue(pipeline, announcements, caps, after_expiry, protocols=None)
+        strict = candidate_queue(
+            pipeline, announcements, caps, after_expiry,
+            protocols=protocols, require_protocol=True,
+        )
+        self.assertGreater(len(broad), 0, "The saved Phase 3 research universe should be populated")
+        self.assertEqual(len(strict), 0, "Old protocols cannot pass the strict pre-readout gate")
+        pool = research_discovery_pool(broad, strict, protocols, after_expiry)
+        screen = trading_research_queue(pool, after_expiry, "ALL")
+        self.assertGreater(len(screen), 0, "Stale protocol must not hide all research leads")
+        self.assertTrue(screen["Verification Status"].str.contains("RECHECK REQUIRED").all())
+        self.assertTrue(screen["Trading Entry Gate"].str.contains("NOT ENTRY-READY").all())
+
     def test_source_app_exposes_candidates_without_hidden_toggle(self):
         from pathlib import Path
         src = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
