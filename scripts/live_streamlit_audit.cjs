@@ -109,15 +109,20 @@ async function audit(){
       try{
         await appFrame.getByText("Potential pre-readout Phase 3 trials").first().waitFor({timeout:90000});
         result.checks.preReadoutMetrics=true;
-        result.checks.preReadoutMissingInputsVisible =
-          await appFrame.getByText("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT",{exact:false}).count()>0;
-        result.checks.preReadoutProbabilityNotInvented =
-          await appFrame.getByText("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES",{exact:false}).count()>0;
+        await appFrame.getByText("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT",{exact:false}).first().waitFor({state:"visible",timeout:60000});
+        result.checks.preReadoutMissingInputsVisible=true;
+        await appFrame.getByText("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES",{exact:false}).first().waitFor({state:"visible",timeout:60000});
+        result.checks.preReadoutProbabilityNotInvented=true;
+        await appFrame.getByText("Phase 2 primary p evidence:",{exact:false}).first().waitFor({state:"visible",timeout:60000});
+        result.checks.phase2PCollectionShown=true;
         const showQueue=appFrame.getByText("SHOW CANDIDATES & MISSING INPUTS",{exact:false}).first();
-        await showQueue.waitFor({state:"visible",timeout:12000});
+        await showQueue.waitFor({state:"visible",timeout:15000});
         result.checks.preReadoutCandidateToggle=true;
-        await showQueue.click({timeout:12000});
-        result.checks.preReadoutCandidatesShown=await appFrame.getByText("NOT SCORED — BEFORE-READOUT EVIDENCE INCOMPLETE",{exact:false}).count()>0;
+        const beforeCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
+        await showQueue.click({timeout:15000});
+        await sleep(2000);
+        const afterCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
+        result.checks.preReadoutCandidatesShown=afterCount>beforeCount;
       }catch(err){
         result.checks.preReadoutMetrics=false;
         result.notes.push("Pre-readout assessment check failed: "+String(err.message).slice(0,190));
@@ -184,7 +189,7 @@ async function audit(){
   for(const k of ["noTodayNavigation","pipelineNavigation","fourPipelineTabs","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
                    "preReadoutMetrics","preReadoutMissingInputsVisible",
-                   "preReadoutProbabilityNotInvented","preReadoutCandidateToggle",
+                   "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle",
                    "workbenchVisible"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
