@@ -218,5 +218,25 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
 
 
+    def test_phase3_pre_readout_tab_never_fabricates_success_probability(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        app.session_state["nav"] = "PIPELINE"
+        app.run()
+        self.assertFalse(list(app.exception))
+        headings = [item.body for item in app.markdown]
+        self.assertTrue(any("PHASE 3 PRE-READOUT — CLINICAL SUCCESS ASSESSMENT" in x
+                            for x in headings))
+        self.assertTrue(any("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES" in x
+                            for x in [str(w.message) for w in app.warning]))
+        self.assertTrue(any(item.label == "Potential pre-readout Phase 3 trials"
+                            for item in app.metric))
+        self.assertTrue(any(item.label == "Complete 100-point assessments"
+                            and int(item.value) == 0 for item in app.metric))
+        self.assertTrue(any("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT" in x
+                            for x in headings))
+        self.assertTrue(any(item.key == "pre_readout_show_candidates_v1"
+                            for item in app.get("toggle")))
+
+
 if __name__ == "__main__":
     unittest.main()
