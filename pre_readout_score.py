@@ -227,7 +227,7 @@ def assess(queue, evidence, as_of):
             missing.append("actual topline date is outcome-era knowledge; exclude")
         # Phase 2 primary p supports, but never replaces, effect size,
         # clinical relevance, safety or the prespecified endpoint analysis.
-        linked = set(re.findall(r"NCT\\d{8}", str(row.get("Phase 2 NCT Links", ""))))
+        linked = set(re.findall(r"NCT\d{8}", str(row.get("Phase 2 NCT Links", ""))))
         phase2_nct = str(e.get("phase2_nct_id", "")).strip().upper()
         try:
             phase2_p = float(str(e.get("phase2_primary_pvalue", "")).strip())
