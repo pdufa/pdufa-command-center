@@ -3077,7 +3077,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V17 — WORKBENCH MERGED INTO PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V18 — PRE PHASE 3 NESTED BESIDE PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3085,12 +3085,16 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["PDUFA","PRE PHASE 3","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # Backwards compatibility: old saved sessions used PIPELINE as the page ID.
+if st.session_state.nav == "PRE PHASE 3":
+    # Migrate existing sessions to the new PDUFA submenu without losing the selected view.
+    st.session_state.nav = "PDUFA"
+    st.session_state["pdufa_subtab"] = "PRE PHASE 3"
 if st.session_state.nav == "PIPELINE":
     st.session_state.nav = "PDUFA"
-if st.session_state.detail_return_page == "PIPELINE":
+if st.session_state.detail_return_page in ("PIPELINE", "PRE PHASE 3"):
     st.session_state.detail_return_page = "PDUFA"
 if st.session_state.nav not in nav_options:
     st.session_state.nav = "PDUFA"
@@ -3105,9 +3109,12 @@ else:
         st.query_params.clear()
 
 if page == "PDUFA":
-    # One PIPELINE submenu includes discovery, countdown, watchlist, analysis,
-    # and invest. Phase 3 Daily remains a separate submenu.
-    pipeline_tab, intake_tab = st.tabs(["PIPELINE", "PHASE 3 DAILY"])
+    # PDUFA hosts the combined Pipeline workflow, pre-readout research, and daily intake.
+    # Track the selected tab to avoid running the pre-readout evidence screen in the background.
+    pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(
+        ["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"],
+        key="pdufa_subtab", on_change="rerun",
+    )
     with pipeline_tab:
         st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
         st.caption(
@@ -3870,6 +3877,10 @@ if page == "PDUFA":
                         st.info("No loaded records.")
         st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
 
+    with pre_phase3_tab:
+        if pre_phase3_tab.open:
+            render_pre_phase3()
+
     with intake_tab:
         st.markdown("## PHASE 3 DAILY INTAKE")
         st.caption("The former TODAY reports are here: recent result posts, cumulative Phase 3 records, financing, Watchlist management and CSV export. Opening this view does not run collectors.")
@@ -3902,9 +3913,6 @@ if page == "PDUFA":
             except (OSError, pd.errors.ParserError):
                 _finance_today = pd.DataFrame()
             render_today(df, _phase_today, _finance_today)
-
-elif page == "PRE PHASE 3":
-    render_pre_phase3()
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
