@@ -2786,9 +2786,13 @@ if page == "PIPELINE":
                 on_change=_clear_pipeline_results_v9,
                 help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
             )
-        with stage_col:
+        # Separate chart columns from selector columns. On iPhone, Streamlit
+        # stacks each column vertically; reusing stage_col/date_col here hid
+        # the DATES selector behind the tall STAGE COUNTS chart.
+        stage_chart_col, date_chart_col = st.columns(2, gap="medium")
+        with stage_chart_col:
             stage_count_slot = st.container()
-        with date_col:
+        with date_chart_col:
             date_count_slot = st.container()
         search_col, sort_col = st.columns([2, 1], gap="medium")
         with search_col:
