@@ -161,5 +161,43 @@ class PreReadoutTests(unittest.TestCase):
 
 
 
+    def test_protocol_revision_and_status_are_required_for_pre_readout_queue(self):
+        base = pd.DataFrame([trial()])
+        url = "https://clinicaltrials.gov/study/NCT12345678"
+        valid = {
+            "nct_id": "NCT12345678", "source_url": url,
+            "checked_at": "2026-10-10T08:00:00Z",
+            "source_updated": "2026-10-09",
+            "registry_overall_status": "RECRUITING",
+            "registry_results_first_posted": "",
+        }
+        for changes in (
+            {"registry_overall_status": ""},
+            {"registry_overall_status": "COMPLETED"},
+            {"registry_overall_status": "TERMINATED"},
+            {"registry_results_first_posted": "2026-10-09"},
+            {"source_updated": "2026-10-11"},
+            {"checked_at": "2026-10-11"},
+            {"source_url": "https://example.com/unverified"},
+        ):
+            p = pd.DataFrame([{**valid, **changes}])
+            q = candidate_queue(base, pd.DataFrame(), market(), self.as_of,
+                                protocols=p)
+            self.assertTrue(q.empty, f"Unsafe pre-readout protocol admitted: {changes}")
+        admitted = candidate_queue(base, pd.DataFrame(), market(), self.as_of,
+                                   protocols=pd.DataFrame([valid]))
+        self.assertEqual(len(admitted), 1)
+        self.assertTrue(pd.isna(admitted.iloc[0]["Phase 3 Success Probability %"]))
+
+    def test_missing_exact_protocol_is_not_treated_as_verified_unreleased(self):
+        foreign = pd.DataFrame([{
+            "nct_id": "NCT87654321", "source_url": "https://clinicaltrials.gov/study/NCT87654321",
+            "checked_at": "2026-10-10", "source_updated": "2026-10-09",
+            "registry_overall_status": "RECRUITING", "registry_results_first_posted": "",
+        }])
+        self.assertTrue(candidate_queue(pd.DataFrame([trial()]), pd.DataFrame(),
+                                        market(), self.as_of, protocols=foreign).empty)
+
+
 if __name__ == "__main__":
     unittest.main()
