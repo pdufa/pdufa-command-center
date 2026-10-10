@@ -9,6 +9,7 @@ from today_page import render_today
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
+from pre_phase3_trading import trading_research_queue
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
@@ -2768,6 +2769,89 @@ def render_pre_phase3():
         _phase2_p = pd.DataFrame()
     _p3_candidates = join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)
     _p3_candidates = combine_phase2_phase3(_p3_candidates, _pre_evidence)
+
+    # Trading-research candidates are always visible. This is a prospective
+    # registry completion screen, NOT a verified issuer readout calendar or
+    # an entry signal. Keep the clinical evidence assessment independent.
+    st.markdown("### PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH")
+    st.caption(
+        "Candidate discovery is not a BUY list. Registry primary-completion dates "
+        "are NOT verified company topline/readout dates. A trial may already "
+        "have released results outside the registry. Confirm the company "
+        "announcement, financing/dilution, liquidity/volume, price stabilization "
+        "and safety/effect-size evidence before any entry review."
+    )
+    _window_days = st.radio(
+        "PRIMARY COMPLETION LOOKAHEAD (not topline announcement)",
+        [90, 180, 365], index=1, horizontal=True,
+        format_func=lambda days: f"Next {days} days",
+        key="pre_phase3_trade_lookahead_v1",
+    )
+    _trade_shortlist = trading_research_queue(
+        _p3_candidates, cutoff, lookahead_days=_window_days
+    )
+    _candidate_tickers = sorted(set(_trade_shortlist["Ticker"])) if not _trade_shortlist.empty else []
+    st.caption(
+        f"{len(_p3_candidates):,} possible registry trial records in the clinical queue; "
+        f"{len(_trade_shortlist):,} trial records / {len(_candidate_tickers):,} unique tickers "
+        f"have a primary-completion WINDOW intersecting the next {_window_days} days. "
+        "These are unconfirmed trading-research leads; none passes the trading entry gate."
+    )
+    if not _trade_shortlist.empty:
+        st.dataframe(
+            _trade_shortlist, hide_index=True, use_container_width=True,
+            column_config={
+                "Registry Source": st.column_config.LinkColumn("ClinicalTrials.gov"),
+                "Market Cap": st.column_config.NumberColumn(
+                    "Cached market cap ($)", format="$%.0f"
+                ),
+            },
+            key="pre_phase3_trade_research_table_v1",
+        )
+        if "pre_phase3_trade_watchlist" not in st.session_state:
+            st.session_state["pre_phase3_trade_watchlist"] = []
+        _trade_watchlist = {
+            str(v).upper().strip()
+            for v in st.session_state["pre_phase3_trade_watchlist"] if str(v).strip()
+        }
+        st.markdown("#### PRE PHASE 3 — RESEARCH WATCHLIST")
+        st.caption(
+            "Select tickers for closer issuer/SEC/price review. Saved within this "
+            "session only; this list is separate from the post-Phase-3 / PDUFA "
+            "entry watchlist. The CSV below is your portable backup."
+        )
+        _watch_selected = st.multiselect(
+            "Stock tickers to add",
+            options=_candidate_tickers,
+            key="pre_phase3_research_tickers_v1",
+        )
+        if st.button(
+            "ADD SELECTED TO PRE PHASE 3 WATCHLIST",
+            key="pre_phase3_add_watchlist_v1",
+            disabled=not _watch_selected,
+        ):
+            _trade_watchlist.update(_watch_selected)
+            st.session_state["pre_phase3_trade_watchlist"] = sorted(_trade_watchlist)
+            st.rerun()
+        st.caption(
+            "Current PRE PHASE 3 research watchlist: "
+            + (", ".join(sorted(_trade_watchlist)) if _trade_watchlist else "None")
+        )
+        _watch_export = _trade_shortlist.loc[
+            _trade_shortlist["Ticker"].isin(_trade_watchlist)
+        ]
+        st.download_button(
+            "DOWNLOAD PRE PHASE 3 RESEARCH WATCHLIST (.CSV)",
+            data=_watch_export.to_csv(index=False).encode("utf-8"),
+            file_name=f"pre_phase3_research_watchlist_{cutoff:%Y%m%d}.csv",
+            mime="text/csv", key="pre_phase3_trade_watchlist_export_v1",
+        )
+    else:
+        st.info(
+            "No registry primary-completion windows in the selected horizon. "
+            "Use a longer lookahead; do not infer that there are no actual "
+            "issuer-announced Phase 3 readouts."
+        )
     try:
         _p2_state = json.loads(
             Path("data/phase2_p_intake_status.json").read_text(encoding="utf-8")
@@ -3077,7 +3161,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
