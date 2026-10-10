@@ -86,7 +86,12 @@ class PipelinePageSmokeTests(unittest.TestCase):
         nav = next(item for item in app.radio if item.key == "nav")
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
+        submenu_labels = [item.label for item in app.get("tab") if item.label in
+                          {"PIPELINE", "PHASE 3 DAILY", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["PIPELINE", "PHASE 3 DAILY"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
+        self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
+                            for item in app.markdown))
         stage_rows = CountRows(self.count_charts(app)[0].body).rows
         self.assertEqual([label for label, _ in stage_rows], app.multiselect(key="pipeline_stages_v9").options)
         self.assertEqual(len(stage_rows), 14)
