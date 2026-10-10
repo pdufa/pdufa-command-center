@@ -390,6 +390,8 @@ required_ui_contracts = [
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
     'nav_options = ["PDUFA"',
+    'key="pdufa_subtab", on_change="rerun"',
+    '["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"]',
     '"PIPELINE"',
     '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
     'master_with_phase3(df)',
