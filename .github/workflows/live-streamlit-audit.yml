@@ -7,6 +7,10 @@ on:
     paths:
       - ".github/workflows/live-streamlit-audit.yml"
       - "scripts/live_streamlit_audit.cjs"
+      - "app.py"
+      - "pre_readout.py"
+      - "pre_readout_score.py"
+      - "data/pre_readout_intake_status.json"
 
 permissions:
   contents: read
