@@ -66,7 +66,11 @@ def score_row(trial, protocol=None, cap=None, *, as_of):
     if not re.fullmatch(r"NCT\d{8}", nct) or phase != "PHASE3":
         return None
     published = clean(trial.get("results_posted"))[:10]
-    if published and published <= as_of.isoformat():
+    if published:
+        # Current registry rows with any results date are never reused as
+        # pre-outcome observations, even for retrospective cutoffs.
+        return None
+    if clean(trial.get("checked_at"))[:10] > as_of.isoformat():
         return None
     status = clean(trial.get("status")).upper()
     if status not in ACTIVE:
@@ -75,6 +79,10 @@ def score_row(trial, protocol=None, cap=None, *, as_of):
         return None
 
     protocol = protocol or {}
+    if clean(protocol.get("checked_at"))[:10] > as_of.isoformat():
+        # A newly fetched protocol cannot be retroactively treated as having
+        # been known at an earlier historical prediction cutoff.
+        protocol = {}
     cap = cap or {}
     points = 0
     gaps = []
@@ -145,6 +153,10 @@ def score_row(trial, protocol=None, cap=None, *, as_of):
     ])
     value = pd.to_numeric(cap.get("market_cap", ""), errors="coerce")
     cap_value = float(value) if pd.notna(value) else None
+    if (clean(cap.get("market_cap_status")).upper() != "VERIFIED"
+            or not clean(cap.get("market_cap_checked_at"))[:10]
+            or clean(cap.get("market_cap_checked_at"))[:10] > as_of.isoformat()):
+        cap_value = None
     cap_status = "IN RANGE" if cap_value is not None and MIN_CAP <= cap_value <= MAX_CAP else (
         "OUT OF RANGE" if cap_value is not None else "UNVERIFIED"
     )
