@@ -1,0 +1,73 @@
+name: Phase 2 Primary p Pre-Readout Evidence Intake
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/phase2-pre-readout-p.yml"
+      - "scripts/phase2_pre_readout_pvalues_intake.py"
+  schedule:
+    - cron: "0 7 * * *"
+      timezone: "America/Los_Angeles"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase2-pre-readout-p-intake
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install pandas
+      - name: Capture PRE-Phase-3 linked Phase 2 primary analyses
+        id: collect
+        continue-on-error: true
+        run: python scripts/phase2_pre_readout_pvalues_intake.py --limit 150
+      - name: Save first-observed evidence and collector audit
+        run: |
+          git config user.name "pdufa-phase2-evidence-bot"
+          git config user.email "pdufa-phase2-evidence-bot@users.noreply.github.com"
+          git add data/phase2_primary_p_evidence.csv data/phase2_p_intake_status.json
+          if git diff --cached --quiet; then
+            echo "No updated observations."
+            exit 0
+          fi
+          git commit -m "Refresh prospective Phase 2 p evidence for Phase 3 readout candidates"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Saved research evidence (attempt $attempt)"
+              exit 0
+            fi
+            sleep $((attempt * 4))
+          done
+          echo "::error::Safe evidence push failed after five retries"
+          exit 1
+      - name: Fail visibly if Phase 2 registry intake was incomplete
+        if: always()
+        env:
+          COLLECT_OUTCOME: ${{ steps.collect.outcome }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          state=json.loads(Path("data/phase2_p_intake_status.json").read_text())
+          print({k:v for k,v in state.items() if k!="errors"})
+          if os.environ.get("COLLECT_OUTCOME")!="success":
+              raise SystemExit("Phase 2 p-source intake failed; inspect persisted errors.")
+          if state.get("status") != "COMPLETE":
+              raise SystemExit("Phase 2 p-source intake incomplete; no missing p was imputed.")
+          PY
