@@ -180,11 +180,22 @@ async function audit(){
       await mobilePlanChoice.click({timeout:15000});
       await appFrame.getByText("11. PLAN — SYSTEM RULES & OPERATING RHYTHM",{exact:false})
         .first().waitFor({timeout:60000});
-      const mobilePlanText=await appFrame.locator("body").innerText({timeout:9000});
+      // Streamlit may paint the PLAN title before its editor/action widgets.
+      // Wait for the actual controls, not only the heading, at iPhone width.
+      let mobilePlanText="";
+      for(let attempt=0;attempt<35;attempt++){
+        mobilePlanText=await appFrame.locator("body").innerText({timeout:9000});
+        if(mobilePlanText.includes("Edit plan")
+          && mobilePlanText.includes("SAVE PLAN CHANGES")
+          && mobilePlanText.includes("DOWNLOAD PLAN BACKUP"))break;
+        await sleep(1000);
+      }
       result.checks.mobilePlanOpens=mobilePlanText.includes("Edit plan")
         && mobilePlanText.includes("SAVE PLAN CHANGES")
         && mobilePlanText.includes("DOWNLOAD PLAN BACKUP")
-        && !/This app has encountered an error|Traceback \(most recent call last\)/i.test(mobilePlanText);
+        && !/This app has encountered an error|Traceback \(most recent call\)/i.test(mobilePlanText);
+      if(!result.checks.mobilePlanOpens)
+        result.notes.push("Mobile PLAN render incomplete: "+mobilePlanText.slice(-650));
       await page.screenshot({path:path.join(outDir,"streamlit-iphone-plan.png"),fullPage:false});
       if(!result.checks.mobilePlanNavigationVisible || !result.checks.mobilePlanOpens)
         result.errors.push("11. PLAN is not reachable and usable on mobile.");
