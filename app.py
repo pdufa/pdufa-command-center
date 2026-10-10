@@ -3635,8 +3635,11 @@ if page == "PIPELINE":
         )
         if not _p3_candidates.empty and not _input_rows.empty:
             _p3_candidates = _p3_candidates.merge(
-                _input_rows[["NCT ID", "Input Coverage %", "Available Inputs",
-                             "Missing Inputs", "Issuer Check"]],
+                _input_rows[["NCT ID", "Input Coverage %",
+                             "Basic Design Safeguards /5",
+                             "Observed Design Safeguards",
+                             "Unobserved Design Safeguards",
+                             "Available Inputs", "Missing Inputs", "Issuer Check"]],
                 on="NCT ID", how="left", validate="one_to_one",
             )
         _design_evidence = pd.DataFrame()
@@ -3686,6 +3689,14 @@ if page == "PIPELINE":
             "PROTOCOL DATA COVERAGE /100 measures documented registry-design fields only. "
             "It is NOT the clinical research score and is NOT a success probability; "
             "it can improve simply because more metadata was collected."
+        )
+        st.caption(
+            "BASIC DESIGN SAFEGUARDS /5 is an automatically observed checklist: "
+            "endpoint with time frame, randomized allocation, double-or-greater "
+            "masking, recorded comparator, and sample size. It does NOT measure "
+            "statistical power, endpoint validity, trial success probability, "
+            "or suitability for single-arm/open-label indications. Missing "
+            "protocols stay blank rather than scoring zero."
         )
         st.markdown("### INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT")
         st.caption(
