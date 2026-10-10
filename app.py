@@ -3252,17 +3252,19 @@ elif page == "PIPELINE":
         for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
     )
     universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
-    with st.container(border=True):
-        st.markdown("### STAGES")
-        enabled_stages = st.pills(
-            "Stages to display",
-            options=list(PIPELINE_STAGES),
-            selection_mode="multi",
-            default=list(PIPELINE_STAGES),
-            key="pipeline_universe_stages_pills",
-            width="stretch",
-            help="Click one or more stages to filter the pipeline.",
-        )
+    stage_col, date_col = st.columns(2, gap="medium")
+    with stage_col:
+        with st.container(border=True):
+            st.markdown("### STAGES")
+            enabled_stages = st.pills(
+                "Stages to display",
+                options=list(PIPELINE_STAGES),
+                selection_mode="multi",
+                default=list(PIPELINE_STAGES),
+                key="pipeline_universe_stages_pills",
+                width="stretch",
+                help="Click one or more stages to filter the pipeline.",
+            )
     # The DATES selector belongs immediately below "Stages to display".
     # Do not project a company's application deadline onto unrelated trials.
     date_bands = (
@@ -3298,36 +3300,37 @@ elif page == "PIPELINE":
         return "+90 DAYS"
 
     universe["DATES"] = universe["Days to PDUFA"].map(date_band)
-    with st.container(border=True):
-        st.markdown("### DATES")
-        date_symbols = {
-            "0–30 DAYS": "🔴",
-            "31–60 DAYS": "🟠",
-            "61–90 DAYS": "🟡",
-            "+90 DAYS": "🟢",
-            "NO PDUFA YET": "⚪",
-            "PAST / RECHECK": "🟣",
-        }
-        date_counts = universe["DATES"].value_counts().to_dict()
-        selected_dates = st.pills(
-            "DATES to display",
-            options=list(date_bands),
-            selection_mode="multi",
-            default=list(date_bands),
-            format_func=lambda band: (
-                f"{date_symbols[band]} {band} ({date_counts.get(band, 0):,})"
-            ),
-            key="pipeline_universe_dates_pills",
-            width="stretch",
-            help="Click one or more countdown ranges; colors match the pipeline table.",
-        )
-        sort_dates = st.selectbox(
-            "Sort pipeline", ["Closest PDUFA first", "Ticker A–Z"],
-            key="pipeline_universe_date_sort",
-        )
-        st.caption("Colored circles identify the date bands; rows retain their date colors. "
-                   "Countdowns update daily. NO PDUFA YET means no linked PDUFA date; "
-                   "PAST / RECHECK does not imply an FDA decision.")
+    with date_col:
+        with st.container(border=True):
+            st.markdown("### DATES")
+            date_symbols = {
+                "0–30 DAYS": "🔴",
+                "31–60 DAYS": "🟠",
+                "61–90 DAYS": "🟡",
+                "+90 DAYS": "🟢",
+                "NO PDUFA YET": "⚪",
+                "PAST / RECHECK": "🟣",
+            }
+            date_counts = universe["DATES"].value_counts().to_dict()
+            selected_dates = st.pills(
+                "DATES to display",
+                options=list(date_bands),
+                selection_mode="multi",
+                default=list(date_bands),
+                format_func=lambda band: (
+                    f"{date_symbols[band]} {band} ({date_counts.get(band, 0):,})"
+                ),
+                key="pipeline_universe_dates_pills",
+                width="stretch",
+                help="Click one or more countdown ranges; colors match the pipeline table.",
+            )
+            sort_dates = st.selectbox(
+                "Sort pipeline", ["Closest PDUFA first", "Ticker A–Z"],
+                key="pipeline_universe_date_sort",
+            )
+            st.caption("Colored circles identify the date bands; rows retain their date colors. "
+                       "Countdowns update daily. NO PDUFA YET means no linked PDUFA date; "
+                       "PAST / RECHECK does not imply an FDA decision.")
     date_filtered = universe[universe["DATES"].isin(selected_dates)].copy()
     st.markdown("### COUNT FOR EACH STAGE")
     st.dataframe(
