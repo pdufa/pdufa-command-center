@@ -38,6 +38,11 @@ def evidence(**overrides):
         "issuer_readout_checked_at": "2026-10-10",
         "issuer_readout_source": "https://example.com/company/investors",
         "actual_topline_release_date": "",
+        "phase2_nct_id": "NCT87654321",
+        "phase2_primary_pvalue": "0.012",
+        "phase2_primary_endpoint_met": "YES",
+        "phase2_pvalue_source": "https://clinicaltrials.gov/study/NCT87654321",
+        "phase2_pvalue_source_date": "2026-09-15",
     }
     for key, weight in WEIGHTS.items():
         row[f"{key}_points"] = str(weight)
@@ -95,6 +100,20 @@ class PreReadoutTests(unittest.TestCase):
         self.assertTrue(pd.isna(rated.iloc[0]["Phase 3 Success Probability %"]))
         self.assertEqual(rated.iloc[0]["Assessment Status"],
                          "100-POINT RESEARCH SCORE — UNCALIBRATED")
+
+    def test_phase2_p_is_mandatory_and_exact_trial_matched(self):
+        for override in (
+            {"phase2_primary_pvalue": ""},
+            {"phase2_primary_pvalue": "1.5"},
+            {"phase2_primary_endpoint_met": "NO"},
+            {"phase2_nct_id": "NCT99999999"},
+            {"phase2_pvalue_source_date": "2026-10-10"},
+            {"phase2_pvalue_source_date": "2026-10-11"},
+            {"phase2_pvalue_source": "not a source"},
+        ):
+            rated = assess(self.queue, pd.DataFrame([evidence(**override)]), self.as_of)
+            self.assertTrue(pd.isna(rated.iloc[0]["Pre-Readout Evidence Points"]), override)
+            self.assertTrue(pd.isna(rated.iloc[0]["Phase 3 Success Probability %"]))
 
     def test_result_date_or_late_source_blocks_score(self):
         after = assess(self.queue, pd.DataFrame([evidence(
