@@ -205,6 +205,48 @@ class PreReadoutTests(unittest.TestCase):
         self.assertTrue(q.empty)
         self.assertIn("Phase 3 Success Probability %", q.columns)
 
+    def test_production_fails_closed_without_recent_matching_protocol(self):
+        base = pd.DataFrame([trial()])
+        protocol = {
+            "nct_id": "NCT12345678",
+            "source_url": "https://clinicaltrials.gov/study/NCT12345678",
+            "checked_at": "2026-10-10T08:00:00Z",
+            "source_updated": "2026-10-09",
+            "registry_overall_status": "RECRUITING",
+            "registry_results_first_posted": "",
+        }
+        self.assertTrue(candidate_queue(base, pd.DataFrame(), market(),
+                         self.as_of, require_protocol=True).empty)
+        self.assertTrue(candidate_queue(base, pd.DataFrame(), market(),
+                         self.as_of, protocols=pd.DataFrame(),
+                         require_protocol=True).empty)
+        accepted = candidate_queue(base, pd.DataFrame(), market(),
+                                   self.as_of, protocols=pd.DataFrame([protocol]),
+                                   require_protocol=True)
+        self.assertEqual(len(accepted), 1)
+        self.assertTrue(pd.isna(accepted.iloc[0]["Phase 3 Success Probability %"]))
+        for change in (
+            {"checked_at": "2026-10-06"},
+            {"registry_overall_status": "COMPLETED"},
+            {"registry_results_first_posted": "2026-10-09"},
+            {"source_url": "https://example.org/wrong"},
+            {"nct_id": "NCT87654321"},
+        ):
+            unsafe = candidate_queue(base, pd.DataFrame(), market(),
+                                     self.as_of,
+                                     protocols=pd.DataFrame([{**protocol, **change}]),
+                                     require_protocol=True)
+            self.assertTrue(unsafe.empty, f"Unsafe protocol admitted: {change}")
+
+    def test_pipeline_uses_fresh_protocol_gate(self):
+        from pathlib import Path
+        app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
+        section = app.split("with pre_tab:", 1)[1].split("with intake_tab:", 1)[0]
+        self.assertIn("protocols=_p3_protocols, require_protocol=True", section)
+        self.assertLess(section.index('"data/pre_readout_protocols.csv"'),
+                        section.index("phase3_pre_readout_queue("))
+
+
 
 if __name__ == "__main__":
     unittest.main()
