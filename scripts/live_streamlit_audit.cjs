@@ -114,6 +114,47 @@ async function audit(){
       await sleep(1500);
       await page.screenshot({path:path.join(outDir,"streamlit-iphone-width.png"),fullPage:false});
     }
+    // Walk each independent main navigation page in the deployed browser.
+    // This catches runtime exceptions outside Pipeline, which unit tests
+    // and startup import checks do not exercise.
+    await page.setViewportSize({width:1440,height:900});
+    const pages=[
+      ["DISEASE & MARKET HORIZON","DISEASE & MARKET HORIZON"],
+      ["STRATEGY","STRATEGY — NESTED DISEASE"],
+      ["2. PDUFA CALENDAR","2. PDUFA CALENDAR"],
+      ["4. DECISION","4. DECISION — FDA OUTCOMES"],
+      ["5. SCANS","5. SCANS — FIND CHANGES"],
+      ["6. RECHECK","6. RECHECK — VERIFY"],
+      ["9. PREDICTION ENGINE","9. PREDICTION ENGINE"],
+      ["10. MATCH OPTIMIZER","10. MATCH OPTIMIZER"],
+      ["11. PLAN","11. PLAN — SYSTEM RULES"],
+    ];
+    result.pages=[];
+    for(const [name, expectedHeading] of pages){
+      const entry={name, expectedHeading};
+      try{
+        await appFrame.getByRole("radio",{name,exact:true}).check({timeout:15000});
+        for(let n=0;n<45;n++){
+          const titles=await appFrame.locator("h1,h2,h3").allInnerTexts();
+          entry.headings=titles.slice(0,8);
+          if(titles.some(t=>t.includes(expectedHeading)))break;
+          await sleep(1000);
+        }
+        const visible=await appFrame.locator("body").innerText({timeout:9000});
+        entry.headingFound=(entry.headings||[]).some(t=>t.includes(expectedHeading));
+        entry.noVisibleException=!visible.includes("This app has encountered an error")
+          && !visible.includes("Traceback (most recent call last)");
+        entry.passed=entry.headingFound&&entry.noVisibleException;
+        if(!entry.passed)result.errors.push("Navigation page failed live audit: "+name);
+        if(!entry.passed)await page.screenshot({path:path.join(outDir,
+          "page-error-"+name.replace(/[^a-z0-9]+/gi,"-")+".png"),fullPage:false});
+      }catch(err){
+        entry.passed=false;
+        entry.error=String(err.message||err).slice(0,220);
+        result.errors.push("Could not audit navigation page: "+name);
+      }
+      result.pages.push(entry);
+    }
   }
   result.failedRequests=failedRequests;
   result.browserPageErrors=browserErrors;
