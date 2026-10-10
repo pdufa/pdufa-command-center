@@ -3568,7 +3568,7 @@ if page == "PIPELINE":
         pc3.metric("Phase 2 trial ID linked", linked_phase2)
         pc4.metric("Complete 100-point assessments", fully_scored)
         st.caption(
-            "Scope: $300M–$10B VERIFIED market cap; active standalone Phase 3; "
+            "Scope: USD 300M–USD 10B verified market cap; active standalone Phase 3; "
             "no recorded registry result posting or exactly matched result announcement. "
             "Phase 2 trial ID is NOT Phase 2 efficacy evidence. "
             "Primary completion is NOT a public topline release date. "
