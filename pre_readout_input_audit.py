@@ -71,7 +71,9 @@ def audit_inputs(candidates, protocols=None, evidence=None, *, as_of):
     if cutoff is None:
         raise ValueError("A valid as-of date is mandatory")
     if candidates is None or candidates.empty:
-        return pd.DataFrame(columns=["NCT ID", "Input Coverage %", "Available Inputs",
+        return pd.DataFrame(columns=["NCT ID", "Basic Design Safeguards /5",
+                                     "Observed Design Safeguards", "Unobserved Design Safeguards",
+                                     "Input Coverage %", "Available Inputs",
                                      "Missing Inputs", "Issuer Check", *CHECK_KEYS]), {x: 0 for x in CHECK_KEYS}
     def records(df, field):
         if df is None or df.empty or field not in df:
@@ -121,8 +123,23 @@ def audit_inputs(candidates, protocols=None, evidence=None, *, as_of):
         }
         available=[label for label,k in INPUTS if checks[k]]
         missing=[label for label,k in INPUTS if not checks[k]]
+        # Transparent protocol-only safeguards, not a clinical strength
+        # estimate. An open-label or single-arm study can be appropriate in
+        # some indications; absent safeguards cannot be called trial failure.
+        design_flags = {
+            "Endpoint + timeframe": checks["endpoint"],
+            "Randomized allocation": clean(protocol.get("allocation")).upper() == "RANDOMIZED",
+            "Double-or-greater masking": clean(protocol.get("masking")).upper() in {"DOUBLE", "TRIPLE", "QUADRUPLE"},
+            "Comparator specified": checks["comparator"],
+            "Sample size specified": checks["enrollment"],
+        }
+        safeguards_score = (sum(design_flags.values()) if protocol else pd.NA)
         out.append({
-            "NCT ID":nct, "Input Coverage %":round(len(available)/len(INPUTS)*100,1),
+            "NCT ID":nct,
+            "Basic Design Safeguards /5": safeguards_score,
+            "Observed Design Safeguards": "; ".join(label for label, ok in design_flags.items() if ok) if protocol else "",
+            "Unobserved Design Safeguards": "; ".join(label for label, ok in design_flags.items() if not ok) if protocol else "No dated protocol verified",
+            "Input Coverage %":round(len(available)/len(INPUTS)*100,1),
             "Available Inputs":len(available),
             "Missing Inputs":"; ".join(missing),
             "Issuer Check":"CHECKED — ANALYST DOCUMENTED" if checks["issuer_check"] else "NOT VERIFIED",
