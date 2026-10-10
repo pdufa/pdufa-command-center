@@ -3624,6 +3624,14 @@ if page == "PIPELINE":
         )
         if not _p3_candidates.empty:
             st.download_button(
+                "DOWNLOAD PRE-READOUT SCREEN (.CSV)",
+                data=_p3_candidates.to_csv(index=False).encode("utf-8"),
+                file_name=f"phase3_pre_readout_screen_{cutoff:%Y%m%d}.csv",
+                mime="text/csv",
+                key="pre_readout_screen_download_v1",
+                help="Current prospective screening queue: protocol data coverage and uncalibrated clinical PoS are separate fields.",
+            )
+            st.download_button(
                 "DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE",
                 data=pre_readout_template(_p3_candidates).to_csv(index=False).encode("utf-8"),
                 file_name=f"phase3_pre_readout_evidence_{cutoff:%Y%m%d}.csv",
