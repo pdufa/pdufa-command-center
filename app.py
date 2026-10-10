@@ -6,6 +6,7 @@ from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELIN
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from today_page import render_today
+from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
 import json
@@ -2744,9 +2745,10 @@ else:
 if page == "PIPELINE":
     # The trial selector and the former Master/Watchlist engine now live
     # together on Pipeline; the oversized Master Table grid stays removed.
-    trial_tab, trade_tab, intake_tab = st.tabs([
+    trial_tab, trade_tab, pre_tab, intake_tab = st.tabs([
         "TRIALS & DATES",
         "PDUFA WORKBENCH",
+        "PHASE 3 PRE-READOUT",
         "PHASE 3 DAILY",
     ])
     with trial_tab:
@@ -3507,6 +3509,104 @@ if page == "PIPELINE":
                     else:
                         st.info("No loaded records.")
         st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
+
+    with pre_tab:
+        st.markdown("## PHASE 3 PRE-READOUT — CLINICAL SUCCESS ASSESSMENT")
+        st.warning(
+            "PRE-RESULTS ONLY: These are possible upcoming Phase 3 readouts, "
+            "NOT confirmed unpublished company topline events. "
+            "We do not yet have the Phase 2 efficacy, detailed Phase 3 protocol, "
+            "safety or FDA-alignment evidence needed to assign a defensible "
+            "success probability. Never use published Phase 3 outcomes or "
+            "post-readout price action to score this tab."
+        )
+        st.caption(
+            "100-point research rubric (NOT probability): "
+            + " · ".join(f"{name.replace('_', ' ').title()} {weight}" for name, weight in PRE_READOUT_WEIGHTS.items())
+            + ". All six dimensions require original evidence and publication dates "
+            "no later than the frozen pre-readout cutoff. Success probability stays blank "
+            "until independent historical calibration and out-of-sample validation."
+        )
+        cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+        try:
+            _p3_raw = pd.read_csv(
+                "data/phase_pipeline.csv", dtype=str, keep_default_na=False
+            )
+            _p3_posts = pd.read_csv(
+                "data/phase3_announcements.csv", dtype=str, keep_default_na=False
+            )
+            _p3_caps = pd.read_csv(
+                "data/phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False
+            )
+            _p3_candidates = phase3_pre_readout_queue(_p3_raw, _p3_posts, _p3_caps, cutoff)
+        except (OSError, ValueError, KeyError, pd.errors.ParserError, TypeError) as exc:
+            st.error("Pre-readout sources unavailable; no probability or research score inferred.")
+            st.caption("Pre-readout input error type: " + type(exc).__name__)
+            _p3_candidates = pd.DataFrame()
+        try:
+            _pre_evidence = pd.read_csv(
+                "data/phase3_pre_readout_evidence.csv", dtype=str, keep_default_na=False,
+            )
+        except (OSError, ValueError, pd.errors.ParserError):
+            _pre_evidence = pd.DataFrame()
+        _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
+        ready_identity = (
+            int(_p3_candidates["Program Identity"].eq("VERIFIED").sum())
+            if "Program Identity" in _p3_candidates else 0
+        )
+        linked_phase2 = (
+            int(_p3_candidates["Phase 2 NCT Links"].astype(str).str.strip().ne("").sum())
+            if "Phase 2 NCT Links" in _p3_candidates else 0
+        )
+        fully_scored = (
+            int(_p3_candidates["Pre-Readout Evidence Points"].notna().sum())
+            if "Pre-Readout Evidence Points" in _p3_candidates else 0
+        )
+        pc1, pc2, pc3, pc4 = st.columns(4)
+        pc1.metric("Potential pre-readout Phase 3 trials", len(_p3_candidates))
+        pc2.metric("Verified program identity", ready_identity)
+        pc3.metric("Phase 2 trial ID linked", linked_phase2)
+        pc4.metric("Complete 100-point assessments", fully_scored)
+        st.caption(
+            "Scope: $300M–$10B VERIFIED market cap; active standalone Phase 3; "
+            "no recorded registry result posting or exactly matched result announcement. "
+            "Phase 2 trial ID is NOT Phase 2 efficacy evidence. "
+            "Primary completion is NOT a public topline release date. "
+            f"As-of date: {cutoff.isoformat()} Pacific. Missing issuer checks stay NOT SCORED."
+        )
+        if not _p3_candidates.empty:
+            st.download_button(
+                "DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE",
+                data=pre_readout_template(_p3_candidates).to_csv(index=False).encode("utf-8"),
+                file_name=f"phase3_pre_readout_evidence_{cutoff:%Y%m%d}.csv",
+                mime="text/csv",
+                key="pre_readout_template_download_v1",
+            )
+            if st.toggle(
+                "SHOW CANDIDATES & MISSING INPUTS",
+                value=False,
+                key="pre_readout_show_candidates_v1",
+                help="Shows potential unpublished trial records only; each requires issuer confirmation.",
+            ):
+                st.dataframe(
+                    _p3_candidates, use_container_width=True, hide_index=True,
+                    column_config={
+                        "Source": st.column_config.LinkColumn("Registry study source"),
+                        "Market Cap": st.column_config.NumberColumn(
+                            "Market cap ($)", format="$%.0f"
+                        ),
+                        "Phase 3 Success Probability %": st.column_config.NumberColumn(
+                            "Phase 3 success probability (unavailable)", format="%.1f%%"
+                        ),
+                    },
+                )
+        else:
+            st.info("No preliminary Phase 3 pre-readout candidates match the present verified market-cap and registry gates.")
+        st.caption(
+            "Source warning: Current registry records are not historical frozen snapshots. "
+            "For past-case validation, reconstruct protocol versions and issuer publications "
+            "AS THEY EXISTED BEFORE RELEASE, then preserve unmodified frozen predictions."
+        )
 
     with intake_tab:
         st.markdown("## PHASE 3 DAILY INTAKE")
