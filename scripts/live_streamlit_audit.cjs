@@ -1,70 +1,103 @@
-// Headless audit of the ACTUAL public Streamlit deployment, not local AppTest.
+// Browser-level check of the deployed Streamlit site. Community Cloud may
+// embed the live app in an iframe; all checks must inspect the frame DOM.
 const { chromium } = require("playwright-core");
 const fs = require("fs");
 const path = require("path");
 const URL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/";
 const outDir = path.join(process.cwd(), "live-audit-artifacts");
 fs.mkdirSync(outDir, { recursive: true });
-const result = { url: URL, date: new Date().toISOString(), checks: {}, errors: [], notes: [], navigation: [], tabs: [] };
+const result = {url:URL,date:new Date().toISOString(),checks:{},errors:[],notes:[],navigation:[],tabs:[],frames:[]};
 let browser;
-async function audit() {
-  const chrome = process.env.CHROME_PATH || "/usr/bin/google-chrome";
-  browser = await chromium.launch({ executablePath: chrome, headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
-  const page = await browser.newPage({viewport:{width: 1440, height: 900}, deviceScaleFactor:1});
-  const browserErrors = [];
-  page.on("pageerror", err => browserErrors.push(String(err.message || err).slice(0,350)));
-  const response = await page.goto(URL, {waitUntil:"domcontentloaded",timeout:60000});
-  result.http = response ? response.status() : null;
-  result.finalUrl = page.url();
-  // Streamlit may be waking from hibernation. Check rendered UI, not HTML shell.
-  try {
-    await page.waitForFunction(() => {
-      const t = document.body ? document.body.innerText : "";
-      return t.includes("BIO PDUFA COMMAND CENTER") || t.includes("Sign in") ||
-        t.includes("This app has encountered an error") || t.includes("Your app is in the oven");
-    }, { timeout: 160000 });
-  } catch (_) { result.notes.push("Expected app header did not render before browser timeout."); }
-  await page.waitForTimeout(2000);
-  const initial = await page.locator("body").innerText();
-  result.visibleStart = initial.slice(0,1200);
-  result.checks.pdufaHeader = initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel = initial.includes("NAVIGATION V12");
-  result.checks.scriptError = !/This app has encountered an error|TypeError:|Traceback \(most recent call last\)/i.test(initial);
-  result.checks.loginRequired = /Sign in to Streamlit|Log in to Streamlit|Continue with Google/i.test(initial);
-  result.navigation = (await page.locator('[data-testid="stRadio"] label').allInnerTexts()).map(s => s.trim()).filter(Boolean);
-  const distinct = [...new Set(result.navigation)];
-  result.navigation = distinct;
-  result.checks.noTodayNavigation = !distinct.some(s => s === "TODAY");
-  result.checks.pipelineNavigation = distinct.includes("PIPELINE");
-  result.tabs = (await page.getByRole("tab").allInnerTexts()).map(s=>s.trim());
-  result.checks.threePipelineTabs = ["TRIALS & DATES","PDUFA WORKBENCH","PHASE 3 DAILY"].every(t=>result.tabs.some(s=>s.includes(t)));
-  await page.screenshot({ path: path.join(outDir,"streamlit-home.png"), fullPage:false });
-  if(result.checks.pdufaHeader && result.checks.threePipelineTabs){
-    const stage = await page.getByText("STAGES", {exact:true}).count();
-    const dates = await page.getByText("DATES", {exact:true}).count();
-    result.checks.stageAndDateControls = stage>0 && dates>0;
-    await page.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
-    const toggle=page.getByText("SHOW PHASE 3 DAILY REPORT", {exact:false}).first();
-    result.checks.dailyReportToggle=await toggle.count()>0;
-    if(result.checks.dailyReportToggle){
-      await toggle.click({timeout:10000});
-      try{await page.getByText("Yesterday: source-linked posts").first().waitFor({timeout:65000});result.checks.dailyReportLoads=true;}
-      catch(err){result.checks.dailyReportLoads=false;result.notes.push("Expanded report did not show counts: "+String(err.message).slice(0,180));}
-      await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
+const sleep = ms => new Promise(resolve=>setTimeout(resolve,ms));
+async function inspectFrames(page) {
+  const frames = [];
+  for(const frame of page.frames()){
+    let text = "";
+    try { text = await frame.locator("body").innerText({timeout:3500}); } catch (_) {}
+    frames.push({frame, url:frame.url(), text});
+  }
+  return frames;
+}
+async function audit(){
+  browser = await chromium.launch({executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",
+    headless:true,args:["--no-sandbox","--disable-dev-shm-usage"]});
+  const page = await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1});
+  const browserErrors=[], failedRequests=[];
+  page.on("pageerror",err=>browserErrors.push(String(err.message||err).slice(0,300)));
+  page.on("requestfailed",req=>{if(failedRequests.length<25)failedRequests.push({url:req.url().slice(0,160),error:req.failure()?.errorText});});
+  const response=await page.goto(URL,{waitUntil:"domcontentloaded",timeout:60000});
+  result.http=response?.status()??null;
+  result.finalUrl=page.url();
+  let appFrame=null, initial="";
+  for(let attempt=0;attempt<80;attempt++){
+    const observations=await inspectFrames(page);
+    result.frames=observations.map(x=>({url:x.url,textLength:x.text.length,textStart:x.text.slice(0,130)}));
+    const matched=observations.find(x=>x.text.includes("BIO PDUFA COMMAND CENTER"));
+    if(matched){appFrame=matched.frame;initial=matched.text;break;}
+    if(observations.some(x=>/Sign in|This app has encountered an error/i.test(x.text))){
+      result.notes.push("App shows sign-in or a visible exception.");
+      initial=observations.map(x=>x.text).join("\n");
+      break;
+    }
+    await sleep(2000);
+  }
+  result.visibleStart=initial.slice(0,1100);
+  result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
+  result.checks.newBuildLabel=initial.includes("NAVIGATION V12");
+  result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
+  result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
+  await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
+  if(appFrame){
+    result.appFrameUrl=appFrame.url();
+    const nav=(await appFrame.locator('[data-testid="stRadio"] label').allInnerTexts()).map(x=>x.trim()).filter(Boolean);
+    result.navigation=[...new Set(nav)];
+    result.checks.noTodayNavigation=!result.navigation.includes("TODAY");
+    result.checks.pipelineNavigation=result.navigation.includes("PIPELINE");
+    result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
+    result.checks.threePipelineTabs=["TRIALS & DATES","PDUFA WORKBENCH","PHASE 3 DAILY"].every(x=>result.tabs.some(t=>t.includes(x)));
+    result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
+      await appFrame.getByText("DATES",{exact:true}).count()>0;
+    result.checks.stageCountChart=await appFrame.getByText("STAGE COUNTS",{exact:true}).count()>0;
+    result.checks.dateCountChart=await appFrame.getByText("DATE TRIAL COUNTS",{exact:true}).count()>0;
+    result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
+    if(result.checks.threePipelineTabs){
+      await appFrame.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
+      const toggle=appFrame.getByText("SHOW PHASE 3 DAILY REPORT",{exact:false}).first();
+      result.checks.dailyReportToggle=await toggle.count()>0;
+      if(result.checks.dailyReportToggle){
+        await toggle.click({timeout:15000});
+        try{
+          await appFrame.getByText("Yesterday: source-linked posts").first().waitFor({timeout:110000});
+          result.checks.dailyReportLoads=true;
+        }catch(err){
+          result.checks.dailyReportLoads=false;
+          result.notes.push("Daily report did not show result metrics: "+String(err.message).slice(0,170));
+        }
+        await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
+      }
+      await appFrame.getByRole("tab",{name:"PDUFA WORKBENCH"}).click({timeout:15000});
+      result.checks.workbenchVisible=await appFrame.getByText("WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION",{exact:false}).count()>0;
+      await page.screenshot({path:path.join(outDir,"streamlit-workbench.png"),fullPage:false});
+      await appFrame.getByRole("tab",{name:"TRIALS & DATES"}).click({timeout:15000});
+      await page.setViewportSize({width:390,height:844});
+      await sleep(1500);
+      await page.screenshot({path:path.join(outDir,"streamlit-iphone-width.png"),fullPage:false});
     }
   }
+  result.failedRequests=failedRequests;
   result.browserPageErrors=browserErrors;
-  if(result.http !== 200) result.errors.push("App HTTP response not 200.");
-  if(!result.checks.pdufaHeader) result.errors.push("PDUFA app did not render in public browser.");
-  if(result.checks.pdufaHeader && !result.checks.newBuildLabel) result.errors.push("DEPLOYMENT STALE OR WRONG ENTRYPOINT: NAVIGATION V12 marker missing.");
-  if(result.checks.pdufaHeader && !result.checks.noTodayNavigation) result.errors.push("Standalone TODAY still appears as navigation.");
-  if(result.checks.pdufaHeader && !result.checks.threePipelineTabs) result.errors.push("Three expected Pipeline tabs are missing.");
-  if(result.checks.pdufaHeader && !result.checks.scriptError) result.errors.push("Visible application exception.");
-  if(result.checks.dailyReportLoads === false) result.errors.push("Expanded Phase 3 Daily report failed to load.");
+  if(result.http!==200) result.errors.push("Site HTTP status is not 200.");
+  if(!result.checks.pdufaHeader) result.errors.push("App did not render in an inspected browser frame.");
+  if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
+  for(const k of ["noTodayNavigation","pipelineNavigation","threePipelineTabs","stageAndDateControls",
+                   "stageCountChart","dateCountChart","dailyReportLoads","workbenchVisible"]){
+    if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
+  }
+  if(!result.checks.scriptError)result.errors.push("Live app displays an exception.");
 }
-audit().catch(err=>result.errors.push(String(err.stack||err).slice(0,1000))).finally(async()=>{
-  if(browser) await browser.close();
+audit().catch(err=>result.errors.push(String(err.stack||err).slice(0,1500))).finally(async()=>{
+  if(browser)await browser.close();
   fs.writeFileSync(path.join(outDir,"live-audit.json"),JSON.stringify(result,null,2));
-  process.stdout.write("LIVE STREAMLIT AUDIT\n"+JSON.stringify(result,null,2)+"\n");
-  process.exitCode = result.errors.length ? 1 : 0;
+  console.log("LIVE STREAMLIT AUDIT\n"+JSON.stringify(result,null,2));
+  process.exitCode=result.errors.length?1:0;
 });
