@@ -60,5 +60,19 @@ jobs:
           git add data/phase3_announcements.csv data/phase3_intake_status.json data/phase3_drug_identity_review.csv data/phase3_drug_identity_status.json
           if ! git diff --cached --quiet; then
             git commit -m "Update cumulative Phase 3 results evidence"
-            git push
+            # Other scanners may advance main while the intake is collecting.
+            # Rebase our evidence commit and retry without force-pushing or
+            # replacing another scanner's data. Conflicts fail visibly.
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then
+                echo "Saved Phase 3 evidence on attempt $attempt"
+                exit 0
+              fi
+              echo "Concurrent update prevented push (attempt $attempt/5)." >&2
+              sleep $((attempt * 3))
+            done
+            echo "Could not save Phase 3 evidence after five safe retries." >&2
+            exit 1
           fi
