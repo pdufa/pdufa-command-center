@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 from zoneinfo import ZoneInfo
 import sys
 
@@ -110,7 +111,9 @@ def protocol_only(study, *, checked_at):
 
 def fetch(nct):
     url = "https://clinicaltrials.gov/api/v2/studies/" + nct
-    for attempt in range(3):
+    # Be respectful of ClinicalTrials.gov rate limits: on a 429 response
+    # honor Retry-After if supplied, otherwise use exponential backoff.
+    for attempt in range(5):
         try:
             req = Request(url, headers={"User-Agent":"PDUFA-Pre-Readout-Research/1.0", "Accept":"application/json"})
             with urlopen(req, timeout=25) as resp:
@@ -119,10 +122,24 @@ def fetch(nct):
             if data["nct_id"] != nct:
                 raise ValueError("Registry NCT differs from requested study")
             return data
-        except Exception:
-            if attempt == 2:
+        except HTTPError as exc:
+            if exc.code == 429:
+                if attempt == 4:
+                    raise
+                retry_header = exc.headers.get("Retry-After", "") if exc.headers else ""
+                try:
+                    delay = min(120, max(5, int(retry_header)))
+                except (TypeError, ValueError):
+                    delay = min(90, 10 * (2 ** attempt))
+                time.sleep(delay)
+                continue
+            if attempt == 4 or exc.code in (400, 401, 403, 404):
                 raise
-            time.sleep(1 + attempt * 2)
+            time.sleep(min(60, 2 ** (attempt + 1)))
+        except (TimeoutError, OSError):
+            if attempt == 4:
+                raise
+            time.sleep(min(60, 2 ** (attempt + 1)))
 
 
 def save_csv(path, records):
@@ -134,7 +151,7 @@ def save_csv(path, records):
     temp.replace(path)
 
 
-def run(data_dir, limit=160, workers=8, include_unknown_caps=False):
+def run(data_dir, limit=160, workers=3, include_unknown_caps=False):
     data_dir = Path(data_dir)
     out = data_dir / "pre_readout_protocols.csv"
     existing = {r.get("nct_id"):r for r in rows(out) if r.get("nct_id")}
@@ -192,7 +209,7 @@ if __name__ == "__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("--data-dir",type=Path,default=ROOT/"data")
     parser.add_argument("--limit",type=int,default=160)
-    parser.add_argument("--workers",type=int,default=8)
+    parser.add_argument("--workers",type=int,default=3)
     parser.add_argument("--include-unknown-caps",action="store_true")
     args=parser.parse_args()
     raise SystemExit(run(args.data_dir,args.limit,args.workers,args.include_unknown_caps))
