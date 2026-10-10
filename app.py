@@ -3660,6 +3660,13 @@ if page == "PIPELINE":
         pc2.metric("Verified program identity", ready_identity)
         pc3.metric("Phase 2 trial ID linked", linked_phase2)
         pc4.metric("Complete 100-point assessments", fully_scored)
+        if fully_scored == 0:
+            st.warning(
+                "NOT READY FOR PHASE 3 SUCCESS PROBABILITIES: no pre-readout "
+                "candidate has all six source-dated clinical research "
+                "assessments and an independent issuer-unreleased check. "
+                "Protocol-data coverage is NOT probability of success."
+            )
         st.caption(
             "Scope: USD 300M–USD 10B verified market cap; active standalone Phase 3; "
             "no recorded registry result posting or exactly matched result announcement. "
