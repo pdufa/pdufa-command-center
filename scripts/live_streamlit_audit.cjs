@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("NAVIGATION V17") && initial.includes("PRE PHASE 3 TAB V1");
+  result.checks.newBuildLabel=initial.includes("NAVIGATION V18") && initial.includes("PRE PHASE 3 TAB V1");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -77,8 +77,8 @@ async function audit(){
     result.checks.pdufaNavigation=result.navigation.includes("PDUFA");
     result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
-    result.checks.prePhase3Navigation=result.navigation.includes("PRE PHASE 3");
-    result.checks.twoPdufaTabs=["PIPELINE","PHASE 3 DAILY"].every(x=>result.tabs.includes(x));
+    result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
+    result.checks.threePdufaTabs=["PIPELINE","PRE PHASE 3","PHASE 3 DAILY"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
     result.checks.researchInsidePipeline=await appFrame.getByText("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS",{exact:false}).count()>0;
     result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
@@ -86,7 +86,7 @@ async function audit(){
     result.checks.stageCountChart=await appFrame.getByText("STAGE COUNTS",{exact:true}).count()>0;
     result.checks.dateCountChart=await appFrame.getByText("DATE TRIAL COUNTS",{exact:true}).count()>0;
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
-    if(result.checks.twoPdufaTabs){
+    if(result.checks.threePdufaTabs){
       await appFrame.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
       const toggle=appFrame.getByText("SHOW PHASE 3 DAILY REPORT",{exact:false}).first();
       try{
@@ -109,7 +109,7 @@ async function audit(){
         }
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
       }
-      await appFrame.getByText("PRE PHASE 3",{exact:true}).first().click({timeout:15000});
+      await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       try{
         await appFrame.getByText("Potential pre-readout Phase 3 trials").first().waitFor({timeout:90000});
         result.checks.preReadoutMetrics=true;
@@ -132,7 +132,6 @@ async function audit(){
         result.notes.push("Pre-readout assessment check failed: "+String(err.message).slice(0,190));
       }
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
-      await appFrame.getByText("PDUFA",{exact:true}).first().click({timeout:15000});
       await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
       await sleep(1500);
       result.checks.watchlistInsidePipeline=await appFrame.getByText("WATCHLIST MANAGEMENT",{exact:true}).count()>0;
@@ -190,7 +189,7 @@ async function audit(){
   if(result.http!==200) result.errors.push("Site HTTP status is not 200.");
   if(!result.checks.pdufaHeader) result.errors.push("App did not render in an inspected browser frame.");
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
-  for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3Navigation","twoPdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
+  for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
                    "preReadoutMetrics","preReadoutMissingInputsVisible",
                    "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle","preReadoutCandidatesShown",

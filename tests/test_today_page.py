@@ -61,13 +61,14 @@ class TodayTabTests(unittest.TestCase):
         app = (root / "app.py").read_text(encoding="utf-8")
         source = (root / "today_page.py").read_text(encoding="utf-8")
         pipeline = app.split('if page == "PDUFA":', 1)[1].split(
-            'elif page == "PRE PHASE 3":', 1
+            'elif page == "DISEASE & MARKET HORIZON":', 1
         )[0]
         nav_line = next(line for line in app.splitlines()
                         if line.startswith("nav_options ="))
         self.assertNotIn('"TODAY"', nav_line)
         self.assertNotIn('if page == "TODAY":', app)
-        self.assertIn('pipeline_tab, intake_tab = st.tabs(["PIPELINE", "PHASE 3 DAILY"])', pipeline)
+        self.assertIn('pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(', pipeline)
+        self.assertIn('["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"]', pipeline)
         self.assertNotIn('"PDUFA WORKBENCH"', pipeline)
         self.assertIn("with intake_tab:", pipeline)
         self.assertIn("## PHASE 3 DAILY INTAKE", pipeline)
