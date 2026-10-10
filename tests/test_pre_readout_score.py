@@ -199,5 +199,12 @@ class PreReadoutTests(unittest.TestCase):
                                         market(), self.as_of, protocols=foreign).empty)
 
 
+    def test_explicitly_missing_protocol_ledger_fails_closed(self):
+        q = candidate_queue(pd.DataFrame([trial()]), pd.DataFrame(),
+                            market(), self.as_of, protocols=pd.DataFrame())
+        self.assertTrue(q.empty)
+        self.assertIn("Phase 3 Success Probability %", q.columns)
+
+
 if __name__ == "__main__":
     unittest.main()
