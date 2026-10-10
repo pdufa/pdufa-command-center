@@ -180,7 +180,7 @@ def assess(queue, evidence, as_of):
     """Add strictly pre-result 100-point *research* assessments, not PoS.
 
     Every score component must have a source URL and its original publication
-    date no later than the cutoff. An explicit issuer readout check is required.
+    date strictly earlier than the cutoff; date-only same-day order is unknown. An explicit issuer readout check is required.
     Evidence entered after the fact is not automatically eligible for a
     historical/backtest prediction.
     """
@@ -234,8 +234,8 @@ def assess(queue, evidence, as_of):
                 continue
             source = str(e.get(f"{name}_source", "")).strip()
             published = _iso_day(e.get(f"{name}_source_date"))
-            if not source.startswith(("https://", "http://")) or published is None or published > cutoff:
-                missing.append(f"{name} source published on/before cutoff")
+            if not source.startswith(("https://", "http://")) or published is None or published >= cutoff:
+                missing.append(f"{name} source must predate cutoff (date-only same-day sources excluded)")
                 continue
             total += value
         if missing:
