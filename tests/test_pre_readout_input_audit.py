@@ -89,6 +89,16 @@ class InputAuditTests(unittest.TestCase):
         self.assertEqual(later.iloc[0]["Available Inputs"], 10)
         self.assertEqual(later.iloc[0]["Issuer Check"], "NOT VERIFIED")
 
+    def test_same_day_date_only_phase2_evidence_cannot_count_as_eligible(self):
+        results, counts = audit_inputs(
+            candidate(), protocol(),
+            manual(phase2_efficacy_source_date="2026-10-10"),
+            as_of=DAY,
+        )
+        self.assertEqual(counts["Verified Phase 2 efficacy source"], 0)
+        self.assertIn("Verified Phase 2 efficacy source", results.iloc[0]["Missing Inputs"])
+        self.assertEqual(results.iloc[0]["Available Inputs"], 11)
+
     def test_zero_assessed_points_mean_negative_assessment_not_missing_source(self):
         r, _ = audit_inputs(candidate(), protocol(),
                             manual(phase2_efficacy_points="0"), as_of=DAY)
