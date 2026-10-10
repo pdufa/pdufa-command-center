@@ -264,12 +264,15 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for x in headings))
         self.assertTrue(any(item.key == "pre_readout_show_candidates_v1"
                             for item in app.get("toggle")))
-        before_count = len(app.dataframe)
         next(item for item in app.get("toggle")
              if item.key == "pre_readout_show_candidates_v1").set_value(True).run()
         self.assertFalse(list(app.exception))
-        self.assertGreater(len(app.dataframe), before_count)
-        candidates = app.dataframe[-1].value
+        candidate_frames = [
+            item.value for item in app.dataframe
+            if "Combined Pre-Readout Score /100" in item.value.columns
+        ]
+        self.assertTrue(candidate_frames, "PRE PHASE 3 candidate table must load")
+        candidates = candidate_frames[-1]
         self.assertIn("Combined Pre-Readout Score /100", candidates.columns)
         self.assertIn("Phase 2 p Evidence", candidates.columns)
         self.assertTrue(candidates["Phase 3 Success Probability %"].isna().all())
