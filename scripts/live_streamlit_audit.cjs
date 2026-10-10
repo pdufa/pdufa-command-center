@@ -133,7 +133,9 @@ async function audit(){
     for(const [name, expectedHeading] of pages){
       const entry={name, expectedHeading};
       try{
-        await appFrame.getByRole("radio",{name,exact:true}).check({timeout:15000});
+        // Streamlit hides the native radio input; click its visible label.
+        const choice=appFrame.getByText(name,{exact:true}).first();
+        await choice.click({timeout:15000});
         for(let n=0;n<45;n++){
           const titles=await appFrame.locator("h1,h2,h3").allInnerTexts();
           entry.headings=titles.slice(0,8);
