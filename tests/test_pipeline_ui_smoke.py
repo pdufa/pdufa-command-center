@@ -17,7 +17,7 @@ class CountRows(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         values = dict(attrs)
-        if tag == "li" and "data-category" in values:
+        if tag in {"li", "div"} and "data-category" in values and "data-count" in values:
             self.rows.append((values["data-category"], int(values["data-count"])))
 
 
@@ -61,8 +61,15 @@ class PipelinePageSmokeTests(unittest.TestCase):
                 self.assertEqual(count, expected.get(category, 0))
         # The two independently rendered count tables must reconcile to the
         # rows the user actually sees, rather than historical milestone tags.
-        for audit in app.dataframe[1:]:
-            counts = audit.value["Count"]
+        # The second Pipeline sub-tab also contains watchlist and research
+        # dataframes, so only inspect the two stage/date count audit tables.
+        audit_tables = [
+            item.value for item in app.dataframe[1:]
+            if list(item.value.columns) in (["Stage", "Count"], ["DATES", "Count"])
+        ]
+        self.assertEqual(len(audit_tables), 2)
+        for audit in audit_tables:
+            counts = audit["Count"]
             self.assertEqual(int(counts.iloc[-1]), len(shown))
             self.assertEqual(int(counts.iloc[:-1].sum()), len(shown))
 
@@ -76,6 +83,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
         exceptions = [str(error.message) for error in app.exception]
         self.assertFalse(exceptions, f"Streamlit render exceptions: {exceptions}")
         self.assertEqual(len(self.count_charts(app)), 2)
+        nav = next(item for item in app.radio if item.key == "nav")
+        self.assertIn("PIPELINE", nav.options)
+        self.assertNotIn("WATCHLIST", nav.options)
+        self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         stage_rows = CountRows(self.count_charts(app)[0].body).rows
         self.assertEqual([label for label, _ in stage_rows], app.multiselect(key="pipeline_stages_v9").options)
         self.assertEqual(len(stage_rows), 14)
