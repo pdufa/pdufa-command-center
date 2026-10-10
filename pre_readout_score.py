@@ -219,11 +219,9 @@ def assess(queue, evidence, as_of):
         issuer = str(e.get("issuer_readout_source", "")).strip()
         if not issuer.startswith(("https://", "http://")):
             missing.append("issuer release-status source")
-        released = _iso_day(e.get("actual_topline_release_date"))
-        # The *actual* release date is future knowledge in a historical
-        # backtest, even when later than the frozen cutoff. This field must
-        # remain blank on an admissible pre-release evidence snapshot.
-        if released is not None:
+        # Any filled actual release date is potentially hindsight. A true
+        # pre-release evidence snapshot does not know the actual release date.
+        if str(e.get("actual_topline_release_date", "")).strip():
             missing.append("actual topline date is outcome-era knowledge; exclude")
         total = 0.0
         for name, maximum in WEIGHTS.items():
