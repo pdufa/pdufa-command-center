@@ -3315,37 +3315,64 @@ elif page == "PIPELINE":
             width = 100 * count / maximum if maximum else 0
             label = html.escape(str(category), quote=True)
             rows.append(
-                f'<li class="pipeline-count-row" data-category="{label}" data-count="{count}" '
+                f'<div class="pipeline-count-row" role="listitem" '
+                f'data-category="{label}" data-count="{count}" '
                 f'aria-label="{label}: {count:,} trials / programs">'
-                f'<span class="pipeline-count-label">{label}</span>'
+                f'<span class="pipeline-count-label" title="{label}">{label}</span>'
                 '<span class="pipeline-count-track" aria-hidden="true">'
                 f'<span class="pipeline-count-bar" style="width:{width:.4f}%"></span></span>'
-                f'<span class="pipeline-count-value">{count:,}</span></li>'
+                f'<span class="pipeline-count-value">{count:,}</span></div>'
             )
         chart_html = """<style>
-        .pipeline-count-chart { width:100%; }
-        .pipeline-count-chart ul { margin:0; padding:0; list-style:none; }
+        /* One physical grid row for every label, bar and value. No wrapping or
+           inherited list-item margins that can offset adjacent legend entries. */
+        .pipeline-count-chart {
+            width:100%; max-width:100%; box-sizing:border-box;
+            overflow-x:auto; padding:6px 8px; background:#fff; color:#111;
+            border:2px solid #111; border-radius:10px;
+        }
+        .pipeline-count-chart .pipeline-count-list {
+            display:grid; grid-auto-rows:34px; row-gap:2px;
+            width:100%; min-width:250px; margin:0; padding:0;
+        }
         .pipeline-count-chart .pipeline-count-row {
-            display:grid; grid-template-columns:minmax(140px,170px) minmax(32px,1fr) 64px;
-            align-items:center; column-gap:8px; height:32px; margin:0; padding:0;
+            display:grid !important;
+            grid-template-columns:146px minmax(24px,1fr) 52px;
+            column-gap:8px; align-items:center;
+            min-height:34px; height:34px; box-sizing:border-box;
+            margin:0 !important; padding:0 !important;
         }
         .pipeline-count-chart .pipeline-count-label,
         .pipeline-count-chart .pipeline-count-value {
-            display:flex; align-items:center; height:32px;
-            font-size:12px; line-height:1; white-space:nowrap;
+            display:block !important; min-width:0; height:18px;
+            margin:0 !important; padding:0 !important;
+            font-size:12px !important; line-height:18px !important;
+            white-space:nowrap !important; align-self:center;
         }
-        .pipeline-count-chart .pipeline-count-label { justify-content:flex-end; text-align:right; }
-        .pipeline-count-chart .pipeline-count-value { justify-content:flex-end; font-variant-numeric:tabular-nums; }
-        .pipeline-count-chart .pipeline-count-track { display:flex; align-items:center; height:32px; min-width:0; }
-        .pipeline-count-chart .pipeline-count-bar { display:block; height:18px; background:#23856a; }
+        .pipeline-count-chart .pipeline-count-label {
+            text-align:right; overflow:hidden; text-overflow:clip;
+        }
+        .pipeline-count-chart .pipeline-count-value {
+            text-align:right; font-variant-numeric:tabular-nums;
+        }
+        .pipeline-count-chart .pipeline-count-track {
+            display:flex; align-items:center; align-self:center;
+            height:20px; min-width:0; overflow:hidden;
+            background:#edf2ed; border-radius:3px;
+        }
+        .pipeline-count-chart .pipeline-count-bar {
+            display:block; flex:0 0 auto;
+            height:18px; background:#23856a;
+        }
         @media(max-width:600px) {
             .pipeline-count-chart .pipeline-count-row {
-                grid-template-columns:140px minmax(32px,1fr) 52px; column-gap:6px;
+                grid-template-columns:140px minmax(24px,1fr) 52px;
+                column-gap:6px;
             }
         }
         </style>""" + (
-            f'<div class="pipeline-count-chart" role="img" aria-label="{html.escape(title)}">'
-            '<ul>' + "".join(rows) + '</ul></div>'
+            f'<div class="pipeline-count-chart" aria-label="{html.escape(title)}">'
+            '<div class="pipeline-count-list" role="list">' + "".join(rows) + '</div></div>'
         )
         with slot:
             st.markdown("#### " + title)
