@@ -3315,7 +3315,8 @@ elif page == "PIPELINE":
             for category in categories
         ])
         base = alt.Chart(count_table).encode(
-            y=alt.Y("Category:N", sort=list(categories), title=None),
+            y=alt.Y("Category:N", sort=list(categories), title=None,
+                    axis=alt.Axis(labelOverlap=False, labelLimit=180)),
             x=alt.X("Trials / programs:Q", title="Trials / programs", axis=alt.Axis(tickMinStep=1)),
             tooltip=[alt.Tooltip("Category:N"), alt.Tooltip("Trials / programs:Q", format=",d")],
         )
