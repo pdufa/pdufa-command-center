@@ -195,6 +195,25 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertNotIn(ticker, app.session_state["watchlist"])
 
 
+    def test_phase3_daily_report_moved_from_today_into_pipeline(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        app.session_state["nav"] = "PIPELINE"
+        app.run()
+        self.assertFalse(list(app.exception))
+        nav = next(item for item in app.radio if item.key == "nav")
+        self.assertNotIn("TODAY", nav.options)
+        self.assertTrue(any("PHASE 3 DAILY INTAKE" in item.body for item in app.markdown))
+        details = app.get("toggle")
+        self.assertTrue(any(item.key == "pipeline_phase3_daily_details_v1" for item in details))
+        app.get("toggle")(key="pipeline_phase3_daily_details_v1").set_value(True).run()
+        self.assertFalse(list(app.exception), "Migrated Phase 3 Daily report must render")
+        self.assertTrue(any(item.label == "Yesterday: source-linked posts" for item in app.metric))
+        self.assertTrue(any(item.label == "Recorded Phase 3 result rows" for item in app.metric))
+        self.assertTrue(app.selectbox(key="today_watchlist_ticker_v2").options)
+        self.assertTrue(any("TOP — Phase 3 results posted yesterday" in item.body for item in app.markdown))
+        self.assertTrue(any("BOTTOM — Cumulative Phase 3 result records" in item.body for item in app.markdown))
+
+
 
 if __name__ == "__main__":
     unittest.main()
