@@ -220,8 +220,11 @@ def assess(queue, evidence, as_of):
         if not issuer.startswith(("https://", "http://")):
             missing.append("issuer release-status source")
         released = _iso_day(e.get("actual_topline_release_date"))
-        if released is not None and released <= cutoff:
-            missing.append("Phase 3 already publicly released")
+        # The *actual* release date is future knowledge in a historical
+        # backtest, even when later than the frozen cutoff. This field must
+        # remain blank on an admissible pre-release evidence snapshot.
+        if released is not None:
+            missing.append("actual topline date is outcome-era knowledge; exclude")
         total = 0.0
         for name, maximum in WEIGHTS.items():
             try:
