@@ -3531,6 +3531,12 @@ if page == "PIPELINE":
         )
         cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date()
         try:
+            _p3_protocols = pd.read_csv(
+                "data/pre_readout_protocols.csv", dtype=str, keep_default_na=False,
+            )
+        except (OSError, ValueError, pd.errors.ParserError):
+            _p3_protocols = pd.DataFrame()
+        try:
             _p3_raw = pd.read_csv(
                 "data/phase_pipeline.csv", dtype=str, keep_default_na=False
             )
@@ -3540,7 +3546,9 @@ if page == "PIPELINE":
             _p3_caps = pd.read_csv(
                 "data/phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False
             )
-            _p3_candidates = phase3_pre_readout_queue(_p3_raw, _p3_posts, _p3_caps, cutoff)
+            _p3_candidates = phase3_pre_readout_queue(
+                _p3_raw, _p3_posts, _p3_caps, cutoff, protocols=_p3_protocols,
+            )
         except (OSError, ValueError, KeyError, pd.errors.ParserError, TypeError) as exc:
             st.error("Pre-readout sources unavailable; no probability or research score inferred.")
             st.caption("Pre-readout input error type: " + type(exc).__name__)
@@ -3554,12 +3562,6 @@ if page == "PIPELINE":
         _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
         # Audit PRE-RELEASE input presence separately from clinical scoring.
         # The input counter does not inspect Phase 3 outcomes or p-values.
-        try:
-            _p3_protocols = pd.read_csv(
-                "data/pre_readout_protocols.csv", dtype=str, keep_default_na=False,
-            )
-        except (OSError, ValueError, pd.errors.ParserError):
-            _p3_protocols = pd.DataFrame()
         _input_rows, _input_counts = audit_pre_readout_inputs(
             _p3_candidates, _p3_protocols, _pre_evidence, as_of=cutoff,
         )
