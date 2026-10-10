@@ -3,19 +3,34 @@ import unittest
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
-import pyarrow as pa
+from html.parser import HTMLParser
 
 
 APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
 
 
+class CountRows(HTMLParser):
+    def __init__(self, body):
+        super().__init__()
+        self.rows = []
+        self.feed(body)
+
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if tag == "li" and "data-category" in values:
+            self.rows.append((values["data-category"], int(values["data-count"])))
+
+
 class PipelinePageSmokeTests(unittest.TestCase):
+    def count_charts(self, app):
+        return [item for item in app.markdown if '<div class="pipeline-count-chart"' in item.body]
+
     def assert_empty_chart(self, app):
         self.assertFalse(list(app.exception))
         self.assertFalse(list(app.error))
         self.assertIn("STAGES", {item.label for item in app.multiselect})
         self.assertIn("DATES", {item.label for item in app.multiselect})
-        self.assertEqual(len(app.get("vega_lite_chart")), 2)
+        self.assertEqual(len(self.count_charts(app)), 2)
         self.assertEqual(len(app.dataframe[0].value), 0)
         metrics = [item for item in app.metric
                    if item.label == "Trials / programs displayed"]
@@ -36,14 +51,14 @@ class PipelinePageSmokeTests(unittest.TestCase):
                       if item.label == "Trials / programs displayed")
         self.assertEqual(int(metric.value), len(shown))
         # The charts under the selectors must use the displayed records.
-        charts = app.get("vega_lite_chart")
+        charts = self.count_charts(app)
         self.assertEqual(len(charts), 2)
         for chart, column in zip(charts, ("Current Stage", "DATES")):
-            data = pa.ipc.open_stream(chart.proto.datasets[0].data.data).read_all().to_pandas()
-            self.assertEqual(int(data["Trials / programs"].sum()), len(shown))
+            rows = CountRows(chart.body).rows
+            self.assertEqual(sum(count for _, count in rows), len(shown))
             expected = shown[column].value_counts().to_dict()
-            for _, row in data.iterrows():
-                self.assertEqual(int(row["Trials / programs"]), expected.get(row["Category"], 0))
+            for category, count in rows:
+                self.assertEqual(count, expected.get(category, 0))
         # The two independently rendered count tables must reconcile to the
         # rows the user actually sees, rather than historical milestone tags.
         for audit in app.dataframe[1:]:
@@ -60,7 +75,12 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
         exceptions = [str(error.message) for error in app.exception]
         self.assertFalse(exceptions, f"Streamlit render exceptions: {exceptions}")
-        self.assertEqual(len(app.get("vega_lite_chart")), 2)
+        self.assertEqual(len(self.count_charts(app)), 2)
+        stage_rows = CountRows(self.count_charts(app)[0].body).rows
+        self.assertEqual([label for label, _ in stage_rows], app.multiselect(key="pipeline_stages_v9").options)
+        self.assertEqual(len(stage_rows), 14)
+        date_rows = CountRows(self.count_charts(app)[1].body).rows
+        self.assertEqual([label for label, _ in date_rows], app.multiselect(key="pipeline_dates_v9").options)
         self.assertTrue(any("STAGE COUNTS" in item.body for item in app.markdown))
         self.assertTrue(any("DATE TRIAL COUNTS" in item.body for item in app.markdown))
         selectors = {item.label: item for item in app.multiselect}
