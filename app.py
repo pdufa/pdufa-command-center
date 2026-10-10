@@ -2654,7 +2654,7 @@ def _scan_scope_frame(scope):
     scope = str(scope).upper()
     active = df[df["pdufa_date"].notna() & (df["pdufa_date"] >= today)].copy()
     if scope == "TODAY":
-        return active[active["pdufa_date"].dt.date == date.today()].copy()
+        return active[active["pdufa_date"].dt.date == today.date()].copy()
     if scope == "WEEK":
         end = today + pd.Timedelta(days=7)
         return active[(active["pdufa_date"] >= today) & (active["pdufa_date"] <= end)].copy()
@@ -4429,7 +4429,7 @@ elif page == "5. SCANS":
     found_leads = 0
     financing_checked = 0
     financing_last_scan = "Waiting for scan data"
-    currently_checking = "Historical financing backlog"
+    currently_checking = "Not reported"
 
     try:
         pursuit = pd.read_csv("data/financing_pursuit_log.csv", keep_default_na=False)
@@ -4465,17 +4465,17 @@ elif page == "5. SCANS":
                 financing_last_scan = dates.max().strftime("%Y-%m-%d %H:%M UTC")
 
     financing_left = max(financing_total - found_leads, 0)
-    st.markdown("### 🔎 HISTORICAL FINANCING SCAN — LIVE COUNT")
+    st.markdown("### 🔎 HISTORICAL FINANCING SCAN — SAVED COUNTS")
     fc1, fc2, fc3, fc4 = st.columns(4)
     fc1.metric("TOTAL PDUFA", f"{financing_total:,}")
     fc2.metric("FOUND LEAD", f"{found_leads:,}")
     fc3.metric("VERIFIED 2ND CLOSE", f"{verified_second_close:,}")
     fc4.metric("LEFT", f"{financing_left:,}")
     st.markdown(
-        f"""<div class="card"><b>Scan status:</b> ACTIVE &nbsp; | &nbsp;
+        f"""<div class="card"><b>Live scan status:</b> NOT VERIFIED &nbsp; | &nbsp;
         <b>Reviewed/classified:</b> {financing_checked:,}/{financing_total:,} &nbsp; | &nbsp;
         <b>Last evidence update:</b> {html.escape(financing_last_scan)} &nbsp; | &nbsp;
-        <b>Currently checking:</b> {html.escape(currently_checking)}</div>""",
+        <b>Last recorded target:</b> {html.escape(currently_checking)}</div>""",
         unsafe_allow_html=True,
     )
     st.caption("FOUND LEAD = a credible financing notice was discovered. VERIFIED 2ND CLOSE = the second distinct post–Phase-3 financing has reliable closing/funding evidence. LEFT is based on records without a found lead.")
@@ -4545,7 +4545,7 @@ elif page == "5. SCANS":
 
     st.divider()
     st.markdown("### MANUAL ACTION CENTER")
-    st.caption("One-click controls: pressing a button selects that scope and immediately triggers its matching action. No second Run/Submit step.")
+    st.caption("These controls refresh the deployed files and cached calculations for the selected scope. They do not start new SEC, FDA, registry or live market-data scans.")
     st.info("Today = PDUFA events due today. Week = today through the next 7 days. All = all active/future PDUFA events currently loaded.")
 
     left, right = st.columns(2)
@@ -4591,7 +4591,7 @@ elif page == "5. SCANS":
     req = st.session_state.get("scan_request")
     if req:
         st.success(
-            f"Triggered: {req['action']} · {req['scope']} · "
+            f"Cached data refreshed: {req['action']} · {req['scope']} · "
             f"{req['candidate_count']} candidate(s) · {req['requested_at']}"
         )
 
@@ -4798,8 +4798,10 @@ elif page == "6. RECHECK":
             )
 
     st.info(
-        "Persistence: the same worker is scheduled in GitHub every day at 10 PM Pacific. "
-        "The workflow uses two UTC cron entries with a Pacific-time gate so daylight-saving changes do not shift the intended local run time."
+        "Persistent surveillance is scheduled in GitHub at 5:15 AM Pacific daily. "
+        "This page can run the recheck worker against locally stored event records; "
+        "the separate scheduled workflow commits its own results. "
+        "The legacy Daily PDUFA Recheck workflow is manual-only."
     )
 
 
