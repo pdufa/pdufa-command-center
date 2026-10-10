@@ -3335,42 +3335,64 @@ elif page == "PIPELINE":
                        "Countdowns update daily. NO PDUFA YET means no linked PDUFA date; "
                        "PAST / RECHECK does not imply an FDA decision.")
     date_filtered = universe[universe["DATES"].isin(selected_dates)].copy()
+    search = st.text_input("Find ticker, drug, indication or NCT ID", key="pipeline_universe_search").strip()
+    # A shared, record-ID-deduplicated intersection powers BOTH count tables
+    # and the main table. Each record contributes once to its CURRENT stage
+    # and once to exactly one PDUFA date band, so both TOTALs always match.
+    visible = select_pipeline_records(date_filtered, enabled_stages, search)
+    total_records = len(visible)
+    primary_stages = visible["current_stage"].fillna("").replace("", "Unknown")
+    primary_stages = primary_stages.where(primary_stages.isin(PIPELINE_STAGES), "Unknown")
+    stage_count_values = primary_stages.value_counts().to_dict()
+    date_count_values = visible["DATES"].value_counts().to_dict()
+
     stage_count_col, date_count_col = st.columns(2, gap="medium")
     with stage_count_col:
         with st.container(border=True):
             st.markdown("### COUNT FOR EACH STAGE")
+            per_stage_counts = pd.DataFrame(
+                [{"Stage": stage, "Count": int(stage_count_values.get(stage, 0))}
+                 for stage in PIPELINE_STAGES]
+                + [{"Stage": "TOTAL", "Count": total_records}]
+            )
             st.dataframe(
-                pipeline_stage_counts(date_filtered), use_container_width=True,
-                hide_index=True, height=530,
+                per_stage_counts.style.apply(
+                    lambda row: [
+                        "background-color:#e6eef4;color:#111111;font-weight:800;"
+                        if row["Stage"] == "TOTAL" else ""
+                        for _ in row
+                    ], axis=1,
+                ),
+                use_container_width=True, hide_index=True, height=600,
             )
             st.caption(
-                "Counts reflect selected DATES ranges. Records may appear in "
-                "multiple development stage totals."
+                "One current stage per unique record. Counts use both selectors "
+                "and the search field, without double-counting prior milestones."
             )
     with date_count_col:
         with st.container(border=True):
             st.markdown("### COUNT FOR EACH DATE")
-            per_date_counts = pd.DataFrame([
-                {"DATES": band, "Count": int(date_counts.get(band, 0))}
-                for band in date_bands
-            ])
+            per_date_counts = pd.DataFrame(
+                [{"DATES": band, "Count": int(date_count_values.get(band, 0))}
+                 for band in date_bands]
+                + [{"DATES": "TOTAL", "Count": total_records}]
+            )
             st.dataframe(
                 per_date_counts.style.apply(
                     lambda row: [
-                        f"background-color:{band_colors.get(row['DATES'], '#ffffff')};"
-                        "color:#18202a;"
+                        ("background-color:#e6eef4;color:#111111;font-weight:800;"
+                         if row["DATES"] == "TOTAL"
+                         else f"background-color:{band_colors.get(row['DATES'], '#ffffff')};"
+                              "color:#18202a;")
                         for _ in row
-                    ],
-                    axis=1,
+                    ], axis=1,
                 ),
-                use_container_width=True, hide_index=True, height=530,
+                use_container_width=True, hide_index=True, height=600,
             )
             st.caption(
-                "Counts reflect selected STAGES. Every record has one DATES "
-                "classification; bands with no records remain visible."
+                "One date category per unique record. TOTAL always matches "
+                "the stage TOTAL and the displayed pipeline count."
             )
-    search = st.text_input("Find ticker, drug, indication or NCT ID", key="pipeline_universe_search").strip()
-    visible = select_pipeline_records(date_filtered, enabled_stages, search)
     date_order = {band: index for index, band in enumerate(date_bands)}
     visible = visible.assign(_date_rank=visible["DATES"].map(date_order))
     if sort_dates == "Ticker A–Z":
