@@ -8,6 +8,7 @@ from strategy_view import render_strategy_page
 from today_page import render_today
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
+from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
 from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
 import json
@@ -3551,6 +3552,23 @@ if page == "PIPELINE":
         except (OSError, ValueError, pd.errors.ParserError):
             _pre_evidence = pd.DataFrame()
         _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
+        # Audit PRE-RELEASE input presence separately from clinical scoring.
+        # The input counter does not inspect Phase 3 outcomes or p-values.
+        try:
+            _p3_protocols = pd.read_csv(
+                "data/pre_readout_protocols.csv", dtype=str, keep_default_na=False,
+            )
+        except (OSError, ValueError, pd.errors.ParserError):
+            _p3_protocols = pd.DataFrame()
+        _input_rows, _input_counts = audit_pre_readout_inputs(
+            _p3_candidates, _p3_protocols, _pre_evidence, as_of=cutoff,
+        )
+        if not _p3_candidates.empty and not _input_rows.empty:
+            _p3_candidates = _p3_candidates.merge(
+                _input_rows[["NCT ID", "Input Coverage %", "Available Inputs",
+                             "Missing Inputs", "Issuer Check"]],
+                on="NCT ID", how="left", validate="one_to_one",
+            )
         # The automated collector fills DESIGN METADATA COVERAGE, not the manual
         # 100-point pre-readout evidence-quality rubric or an inferred PoS.
         try:
@@ -3598,6 +3616,30 @@ if page == "PIPELINE":
             "It is NOT the clinical research score and is NOT a success probability; "
             "it can improve simply because more metadata was collected."
         )
+        st.markdown("### INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT")
+        st.caption(
+            "Counts below refer to possible pre-readout candidates in the USD 300M–10B universe. "
+            "Documented means a source field exists, NOT that the trial design is adequate. "
+            "A blank input is UNKNOWN, not evidence of trial failure. "
+            "The current registry protocol is not a historical frozen snapshot."
+        )
+        input_counts_df = pd.DataFrame([
+            {"Required pre-readout input": key,
+             "With documented input": _input_counts.get(key, 0),
+             "Missing / unverified": len(_p3_candidates) - _input_counts.get(key, 0)}
+            for key in PRE_READOUT_CHECK_KEYS
+        ])
+        st.dataframe(input_counts_df, hide_index=True, use_container_width=True)
+        if not _p3_candidates.empty and "Input Coverage %" in _p3_candidates:
+            _mean_input_coverage = pd.to_numeric(
+                _p3_candidates["Input Coverage %"], errors="coerce"
+            ).mean()
+            st.caption(
+                f"Average pre-readout INPUT COVERAGE: {_mean_input_coverage:.1f}% "
+                "across eligible trials. This is NOT a Phase 3 success probability. "
+                "Issuer topline verification and a validated Phase 2 efficacy/safety "
+                "assessment are mandatory before issuing a clinical research score."
+            )
         ready_identity = (
             int(_p3_candidates["Program Identity"].eq("VERIFIED").sum())
             if "Program Identity" in _p3_candidates else 0
