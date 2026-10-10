@@ -205,7 +205,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(any("PHASE 3 DAILY INTAKE" in item.body for item in app.markdown))
         details = app.get("toggle")
         self.assertTrue(any(item.key == "pipeline_phase3_daily_details_v1" for item in details))
-        app.get("toggle")(key="pipeline_phase3_daily_details_v1").set_value(True).run()
+        next(item for item in app.get("toggle") if item.key == "pipeline_phase3_daily_details_v1").set_value(True).run()
         self.assertFalse(list(app.exception), "Migrated Phase 3 Daily report must render")
         self.assertTrue(any(item.label == "Yesterday: source-linked posts" for item in app.metric))
         self.assertTrue(any(item.label == "Recorded Phase 3 result rows" for item in app.metric))
