@@ -115,6 +115,23 @@ class PipelineDisplayTests(unittest.TestCase):
         self.assertNotIn('master_watchlist_main_editor', section)
         self.assertNotIn('if page == "WATCHLIST":', source)
 
+    def test_pipeline_mobile_selectors_precede_both_count_charts(self):
+        """Both selectors must be before chart columns when st.columns stack."""
+        from pathlib import Path
+        app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
+        p = app.split('if page == "PIPELINE":', 1)[1].split('with trade_tab:', 1)[0]
+        stage = p.index('key="pipeline_stages_v9"')
+        dates = p.index('key="pipeline_dates_v9"')
+        charts = p.index('stage_chart_col, date_chart_col = st.columns(2, gap="medium")')
+        first_chart = p.index('stage_count_slot = st.container()')
+        second_chart = p.index('date_count_slot = st.container()')
+        self.assertLess(stage, dates)
+        self.assertLess(dates, charts)
+        self.assertLess(charts, first_chart)
+        self.assertLess(first_chart, second_chart)
+        self.assertNotIn("with stage_col:\\n            stage_count_slot", p)
+
+
 
 if __name__ == "__main__":
     unittest.main()
