@@ -205,13 +205,16 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(any("PHASE 3 DAILY INTAKE" in item.body for item in app.markdown))
         details = app.get("toggle")
         self.assertTrue(any(item.key == "pipeline_phase3_daily_details_v1" for item in details))
+        table_count_before = len(app.dataframe)
         next(item for item in app.get("toggle") if item.key == "pipeline_phase3_daily_details_v1").set_value(True).run()
         self.assertFalse(list(app.exception), "Migrated Phase 3 Daily report must render")
         self.assertTrue(any(item.label == "Yesterday: source-linked posts" for item in app.metric))
         self.assertTrue(any(item.label == "Recorded Phase 3 result rows" for item in app.metric))
         self.assertTrue(app.selectbox(key="today_watchlist_ticker_v2").options)
-        self.assertTrue(any("TOP — Phase 3 results posted yesterday" in item.body for item in app.markdown))
-        self.assertTrue(any("BOTTOM — Cumulative Phase 3 result records" in item.body for item in app.markdown))
+        self.assertGreater(len(app.dataframe), table_count_before)
+        daily_source = (APP_PATH.parent / "today_page.py").read_text(encoding="utf-8")
+        self.assertIn("TOP — Phase 3 results posted yesterday", daily_source)
+        self.assertIn("BOTTOM — Cumulative Phase 3 result records", daily_source)
 
 
 
