@@ -41,6 +41,20 @@ async function audit(){
     }
     await sleep(2000);
   }
+  // A Streamlit iframe paints the header before completing its Python rerun.
+  // Wait for the actual filter labels, charts and navigation before auditing.
+  if(appFrame){
+    for(let readyAttempt=0;readyAttempt<80;readyAttempt++){
+      try{
+        const updated=await appFrame.locator("body").innerText({timeout:5000});
+        initial=updated;
+        if(updated.includes("PIPELINE — CLINICAL AND REGULATORY STAGES")
+          && updated.includes("STAGE COUNTS") && updated.includes("DATE TRIAL COUNTS")
+          && updated.includes("PDUFA WORKBENCH"))break;
+      }catch(_){}
+      await sleep(2000);
+    }
+  }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
   result.checks.newBuildLabel=initial.includes("NAVIGATION V12");
@@ -51,6 +65,14 @@ async function audit(){
     result.appFrameUrl=appFrame.url();
     const nav=(await appFrame.locator('[data-testid="stRadio"] label').allInnerTexts()).map(x=>x.trim()).filter(Boolean);
     result.navigation=[...new Set(nav)];
+    if(!result.navigation.length){
+      // Fallback: Streamlit's BaseWeb radio labels may not carry stRadio.
+      const radioItems=await appFrame.locator('input[type="radio"]').count();
+      const labels=await appFrame.locator('input[type="radio"]').evaluateAll(nodes=>
+        nodes.map(x=>x.parentElement?.innerText||x.getAttribute("aria-label")||"").map(x=>x.trim()).filter(Boolean));
+      if(labels.length)result.navigation=[...new Set(labels)];
+      result.radioInputCount=radioItems;
+    }
     result.checks.noTodayNavigation=!result.navigation.includes("TODAY");
     result.checks.pipelineNavigation=result.navigation.includes("PIPELINE");
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
@@ -62,6 +84,7 @@ async function audit(){
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
     if(result.checks.threePipelineTabs){
       await appFrame.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
+      await sleep(1500);
       const toggle=appFrame.getByText("SHOW PHASE 3 DAILY REPORT",{exact:false}).first();
       result.checks.dailyReportToggle=await toggle.count()>0;
       if(result.checks.dailyReportToggle){
@@ -76,6 +99,7 @@ async function audit(){
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
       }
       await appFrame.getByRole("tab",{name:"PDUFA WORKBENCH"}).click({timeout:15000});
+      await sleep(1500);
       result.checks.workbenchVisible=await appFrame.getByText("WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION",{exact:false}).count()>0;
       await page.screenshot({path:path.join(outDir,"streamlit-workbench.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"TRIALS & DATES"}).click({timeout:15000});
