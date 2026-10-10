@@ -28,6 +28,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install intake test dependencies
+        run: pip install pandas
       - name: Intake dated Phase 2 primary p-value evidence
         run: python scripts/phase2_pvalues_intake.py
       - name: Validate intake and boundary tests
