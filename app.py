@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
 from stages import program_stage
-from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe, select_records as select_pipeline_records, stage_counts as pipeline_stage_counts
+from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from today_page import render_today
@@ -3210,7 +3210,7 @@ if page == "MASTER TABLE":
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
     st.caption(
-        "PIPELINE-SELECTORS-RESTORED-V9 · Select STAGES and DATES, then "
+        "PIPELINE-V10 · Select STAGES and DATES, then "
         "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
     )
 
