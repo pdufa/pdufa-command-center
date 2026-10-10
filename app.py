@@ -1512,7 +1512,7 @@ def stock_chart_url(ticker):
     symbol = safe_text(ticker, "").upper().strip()
     return APP_BASE_URL + "Stock_Chart?" + urllib.parse.urlencode({"ticker": symbol})
 
-def event_detail_url(row, source="live", return_page="WATCHLIST"):
+def event_detail_url(row, source="live", return_page="PIPELINE"):
     event_key = safe_text(row.get("event_key"), "") if source == "history" else make_event_key(row)
     return APP_BASE_URL + "?" + urllib.parse.urlencode({
         "page": "detail",
@@ -1537,7 +1537,7 @@ def go_individual(ticker=None, event_key=None, source="live", return_page=None):
     if event_key is not None:
         st.session_state.selected_event_key = str(event_key)
     st.session_state.selected_detail_source = source
-    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "WATCHLIST")
+    st.session_state.detail_return_page = return_page or st.session_state.get("nav", "PIPELINE")
     st.session_state.detail_open = True
     if len(st.query_params):
         st.query_params.clear()
@@ -2560,7 +2560,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
 
 
-def table_view(frame, return_page="WATCHLIST"):
+def table_view(frame, return_page="PIPELINE"):
     out = frame.copy()
 
     # Guarantee every master-table column exists even if the source feed is incomplete.
@@ -2638,7 +2638,7 @@ query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
 query_source = st.query_params.get("source") or "live"
-query_return = st.query_params.get("return") or "WATCHLIST"
+query_return = st.query_params.get("return") or "PIPELINE"
 
 if query_page == "detail" and query_event:
     st.session_state.selected_event_key = str(query_event)
@@ -2700,13 +2700,13 @@ def scan_approval_all():
     return _record_streamlit_scan("PROBABILITY OF APPROVAL", "ALL")
 
 if "nav" not in st.session_state:
-    st.session_state.nav = "WATCHLIST"
+    st.session_state.nav = "PIPELINE"
 if "detail_open" not in st.session_state:
     st.session_state.detail_open = False
 if "selected_detail_source" not in st.session_state:
     st.session_state.selected_detail_source = "live"
 if "detail_return_page" not in st.session_state:
-    st.session_state.detail_return_page = "WATCHLIST"
+    st.session_state.detail_return_page = "PIPELINE"
 if "selected_ticker" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_ticker = str(base.iloc[0]["ticker"]) if not base.empty else ""
@@ -2727,12 +2727,12 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["PIPELINE","TODAY","WATCHLIST","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PIPELINE","TODAY","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 if st.session_state.nav not in nav_options:
-    st.session_state.nav = "WATCHLIST"
+    st.session_state.nav = "PIPELINE"
 if st.session_state.detail_return_page not in nav_options:
-    st.session_state.detail_return_page = "WATCHLIST"
+    st.session_state.detail_return_page = "PIPELINE"
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
@@ -2761,706 +2761,713 @@ if page == "TODAY":
         st.warning("Phase 3 automated intake has not yet reported a completed scan. Historical coverage remains incomplete.")
     render_today(df, _phase_today, _finance_today)
 
-if page == "WATCHLIST":
-    st.markdown("## WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION")
-    st.caption("Phase 3 and manually selected PIPELINE records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
-    master, phase3_arrivals, phase_pipeline_state = master_with_phase3(df)
-    master = master.reset_index(drop=True)
-    manual_arrivals = sum(row.get("pipeline_transfer_mode") == "MANUAL REVIEW" for row in phase3_arrivals)
-    st.caption(f"{len(phase3_arrivals) - manual_arrivals:,} additional Phase 3 programs · {manual_arrivals:,} manual PIPELINE reviews · PDUFA dates remain blank until confirmed.")
-    if master.empty:
-        st.info("No PDUFA records are currently loaded.")
-    else:
-        # Canonical columns collapse equivalent names without discarding conflicting evidence.
-        aliases = {
-            "Ticker": ["ticker", "symbol"],
-            "Drug": ["drug", "drug_name", "product_name"],
-            "Indication": ["indication", "disease"],
-            "Current Stage": ["current_stage"],
-            "Next Milestone": ["next_milestone"],
-            "Phase 3 Started": ["phase3_start_date"],
-            "Moved to Master": ["pipeline_promoted_at"],
-            "Stage Evidence": ["pipeline_evidence_status"],
-            "NCT": ["nct_id", "nct"],
-            "Phase 3 Readout": ["phase3_date", "phase_3_date", "readout_date"],
-            "P (p-value)": ["reported_p_values", "p_value"],
-            "Trial Status": ["trial_status", "study_status"],
-            "Financing #1 Date": ["first_financing_date"],
-            "Financing #2 Date": ["second_financing_date"],
-            "Financing Type": ["second_financing_type", "financing_type"],
-            "Financing Proceeds": ["financing_proceeds"],
-            "Dilution / ATM": ["new_dilution_flag"],
-            "Cash": ["cash"],
-            "Cash Runway (months)": ["cash_runway_months"],
-            "NDA Submission": ["nda_submission_date"],
-            "FDA Acceptance": ["fda_acceptance_date"],
-            "PDUFA Date": ["pdufa_date"],
-            "FDA PoA": ["approval_probability"],
-            "Entry Gate": ["entry_gate"],
-            "Market Cap": ["market_cap", "market_cap_usd"],
-            "Evidence Status": ["check_status"],
-        }
-        combined = pd.DataFrame(index=master.index)
-        consumed = set()
-        for title, choices in aliases.items():
-            present = [c for c in choices if c in master.columns]
-            if present:
-                combined[title] = master[present[0]]
-                consumed.add(present[0])
-                for other in present[1:]:
-                    # Keep alternative values separate if both sources disagree.
-                    left = combined[title].astype("string").fillna("").str.strip()
-                    right = master[other].astype("string").fillna("").str.strip()
-                    conflict = left.ne("") & right.ne("") & left.ne(right)
-                    if conflict.any():
-                        combined[other + " (alternate)"] = master[other]
-                    else:
-                        combined[title] = combined[title].where(left.ne(""), master[other])
-                    consumed.add(other)
-        for col in master.columns:
-            if col not in consumed and col not in combined.columns:
-                combined[col] = master[col]
-        # Add computed views from Funnel, Trading Flow and Market Cap without
-        # duplicating their shared source columns.
-        if "Ticker" in combined:
-            tickers = combined["Ticker"].fillna("").astype(str).str.upper()
-            combined["Watchlist #2"] = tickers.isin(
-                {str(x).upper() for x in st.session_state.get("watchlist", [])}
-            )
-            combined["Entry Review"] = tickers.isin(
-                {str(x).upper() for x in st.session_state.get("position_candidates", [])}
-            )
-        if "PDUFA Date" in combined:
-            dates = pd.to_datetime(combined["PDUFA Date"], errors="coerce")
-            combined["DAYS TO PDUFA"] = (dates - today).dt.days.astype("Int64")
-            combined["PDUFA Horizon"] = combined["DAYS TO PDUFA"].map(pdufa_segment)
-        if "Market Cap" in combined:
-            cap = pd.to_numeric(combined["Market Cap"], errors="coerce")
-            combined["Market Cap Band"] = pd.cut(
-                cap, bins=[0, 300_000_000, 1_000_000_000, 3_000_000_000, 10_000_000_000, float("inf")],
-                labels=["UNDER $300M", "$300M–$1B", "$1B–$3B", "$3B–$10B", "OVER $10B"],
-                include_lowest=True, right=False
-            ).astype("string").fillna("UNKNOWN")
-        if "Financing #2 Date" in combined:
-            combined["Second Financing Date Recorded"] = (
-                combined["Financing #2 Date"].notna()
-                & combined["Financing #2 Date"].astype(str).str.strip().ne("")
-            )
-            combined["Financing Close Verified"] = "REVIEW — verify SEC/company closing evidence"
-        if "Entry Gate" in combined:
-            combined["Funnel Stage (provisional)"] = combined["Entry Gate"].fillna("REVIEW").astype(str).map(
-                lambda v: "ENTRY REVIEW" if v.upper() == "PASS" else "REVIEW / DISCOVERY"
-            )
-        # FDA directional assessments are event-level only when ticker, drug,
-        # and PDUFA date uniquely match. Never join by ticker alone.
-        if isinstance(fda_directional_live, pd.DataFrame) and not fda_directional_live.empty:
-            fda_keys = ("ticker", "drug", "pdufa_date")
-            if all(k in fda_directional_live.columns for k in fda_keys) and all(k in master.columns for k in fda_keys):
-                fda_subset = fda_directional_live.copy()
-                def _event_key(frame):
-                    return (
-                        frame["ticker"].fillna("").astype(str).str.upper().str.strip()
-                        + "|" + frame["drug"].fillna("").astype(str).str.upper().str.strip()
-                        + "|" + pd.to_datetime(frame["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
-                    )
-                fda_subset["_event_key"] = _event_key(fda_subset)
-                source_keys = _event_key(master)
-                valid = fda_subset["_event_key"].str.split("|", regex=False).map(
-                    lambda parts: len(parts) == 3 and all(parts)
-                )
-                fda_subset = fda_subset[valid & ~fda_subset["_event_key"].duplicated(keep=False)]
-                fda_subset = fda_subset.set_index("_event_key")
-                for field, label in (("forced_direction", "FDA Direction"), ("directional_score", "FDA Direction Score"),
-                                     ("confidence", "FDA Confidence"), ("strict_v3_prediction", "FDA Strict Prediction")):
-                    if field in fda_subset:
-                        combined[label] = source_keys.map(fda_subset[field])
-        # Step 1: preserve Trading Flow and Funnel derived fields.
-        def _finance_closed(row):
-            values = []
-            for field in ("second_financing_status", "second_financing_close_verified", "second_financing_closed"):
-                value = row.get(field, "")
-                values.append("" if pd.isna(value) else str(value).upper())
-            status = " ".join(values)
-            return "SECOND_CLOSE_VERIFIED" in status or "RED_CLOSED" in status or any(v in ("YES", "TRUE", "1", "VERIFIED") for v in values)
-        closed_flags = master.apply(_finance_closed, axis=1)
-        readout_flags = pd.to_datetime(master.get("phase3_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
-        gate_flags = master.get("entry_gate", pd.Series("REVIEW", index=master.index)).fillna("REVIEW").astype(str).str.upper().eq("PASS")
-        combined["Funnel Stage"] = "4 · WATCHLIST / ENTRY REVIEW"
-        combined.loc[~readout_flags, "Funnel Stage"] = "1 · DISCOVERY / READOUT REVIEW"
-        combined.loc[readout_flags & ~closed_flags, "Funnel Stage"] = "3 · FINANCING REVIEW"
-        combined.loc[readout_flags & closed_flags & gate_flags, "Funnel Stage"] = "5 · ENTRY REVIEW — GATE PASS"
-        combined["Second Financing Verified"] = closed_flags.map({True: "YES", False: "REVIEW"})
-        combined["🟢 Financing Started"] = ""
-        combined["🟡 Financing In Progress"] = ""
-        combined["🔴 Financing Closed"] = closed_flags.map({True: "🔴 CLOSED", False: ""})
-        status_values = master.get("second_financing_status", pd.Series("", index=master.index)).fillna("").astype(str).str.upper()
-        combined.loc[status_values.str.contains("STARTED|ANNOUNCED", regex=True), "🟢 Financing Started"] = "🟢 STARTED"
-        combined.loc[status_values.str.contains("IN_PROGRESS|PENDING|PRICED", regex=True), "🟡 Financing In Progress"] = "🟡 IN PROGRESS"
-        for source, label in (("second_financing_status", "Financing #2 Status"), ("second_financing_source", "Financing Close Evidence"), ("market_cap_bucket", "Validated Market Cap Bucket"), ("public_approval_probability", "Our FDA PoA"), ("trade_score", "Our Trade/PDUFA Score"), ("phase3_date", "Company Readout Date"), ("nct_id", "NCT"), ("trial_status", "Trial Status"), ("primary_completion", "Primary Completion"), ("study_completion", "Study Completion"), ("results_first_posted", "Results First Posted")):
-            if source in master:
-                combined[label] = master[source]
-        submitted = pd.to_datetime(master.get("nda_submission_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
-        accepted = pd.to_datetime(master.get("fda_acceptance_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
-        combined["NDA/BLA Status"] = "REVIEW"
-        combined.loc[submitted, "NDA/BLA Status"] = "SUBMITTED"
-        combined.loc[accepted, "NDA/BLA Status"] = "FDA ACCEPTED"
-        # Step 2: attach FDA monitor data by exact, unique event identity.
-        def _attach_event_fields(source_frame, prefix):
-            if not isinstance(source_frame, pd.DataFrame) or source_frame.empty:
-                return
-            keys = ("ticker", "drug", "pdufa_date")
-            if not all(k in source_frame.columns for k in keys) or not all(k in master.columns for k in keys):
-                return
-            def make_key(frame):
-                return frame["ticker"].fillna("").astype(str).str.upper().str.strip() + "|" + frame["drug"].fillna("").astype(str).str.upper().str.strip() + "|" + pd.to_datetime(frame["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
-            source = source_frame.copy()
-            source["_master_key"] = make_key(source)
-            source = source[source["_master_key"].map(lambda v: all(v.split("|")))]
-            source = source[~source["_master_key"].duplicated(keep=False)].set_index("_master_key")
-            target = make_key(master)
-            for field in source.columns:
-                if field not in keys:
-                    label = prefix + " · " + field.replace("_", " ").title()
-                    combined[label] = target.map(source[field])
-        _attach_event_fields(fda_regulatory_signals, "FDA Monitor")
-        _attach_event_fields(fda_extension_ledger, "FDA Extension")
-        _attach_event_fields(fda_directional_live, "FDA Directional")
-        # Preserve detailed FDA review fields merged into df at startup.
-        for field in master.columns:
-            if field.startswith("fda_") and field not in combined:
-                combined[field] = master[field]
-        # Step 3: market-cap bands and historical All PDUFA coverage.
-        if "Market Cap" in combined:
-            cap_numeric = pd.to_numeric(combined["Market Cap"], errors="coerce")
-            fine_edges = [0, 300e6, 500e6, 750e6, 1e9, 2e9, 3e9, 5e9, 7.5e9, 10e9, float("inf")]
-            fine_labels = ["<$300M", "$300M–$500M", "$500M–$750M", "$750M–$1B", "$1B–$2B", "$2B–$3B", "$3B–$5B", "$5B–$7.5B", "$7.5B–$10B", ">$10B"]
-            combined["Detailed Market Cap Band"] = pd.cut(cap_numeric, bins=fine_edges, labels=fine_labels, right=False).astype("string").fillna("UNKNOWN")
-        # Historical cohorts are not live events. Expose their columns in the
-        # master schema without fabricating event-level joins.
-        historical_count = len(prediction_history) if isinstance(prediction_history, pd.DataFrame) else 0
-        combined["Record Source"] = master.get("record_source", pd.Series("LIVE PDUFA EVENT", index=master.index)).fillna("LIVE PDUFA EVENT")
-        # Bring every loaded source schema into the master, preserving provenance.
-        # Unique event keys are required; duplicate or incomplete keys are
-        # intentionally left blank rather than assigned to the wrong drug.
-        extra_sources = (
-            ("FDA Facilities", fda_facilities),
-            ("FDA Backfill", fda_backfill_queue),
-            ("FDA Freezes", fda_freezes),
-            ("Historical Predictions", prediction_history),
+if page == "PIPELINE":
+    # The trial selector and the former Master/Watchlist engine now live
+    # together on Pipeline; the oversized Master Table grid stays removed.
+    trial_tab, trade_tab = st.tabs([
+        "TRIAL STAGES & DATES",
+        "PDUFA COUNTDOWN · WATCHLIST · ANALYSIS · INVEST",
+    ])
+    with trial_tab:
+        st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
+        st.caption(
+            "PIPELINE-V12 · Select STAGES and DATES, then "
+            "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
         )
-        for prefix, frame in extra_sources:
-            if not isinstance(frame, pd.DataFrame) or frame.empty:
-                continue
-            keys = ("ticker", "drug", "pdufa_date")
-            eligible = all(k in frame.columns for k in keys) and all(k in master.columns for k in keys)
-            source_keys = None
-            if eligible:
-                def _complete_keys(f):
-                    parts = [
-                        f[k].fillna("").astype(str).str.strip().str.upper()
-                        if k != "pdufa_date" else
-                        pd.to_datetime(f[k], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
-                        for k in keys
-                    ]
-                    valid = parts[0].ne("") & parts[1].ne("") & parts[2].ne("")
-                    return parts[0] + "|" + parts[1] + "|" + parts[2], valid
-                source_keys, source_valid = _complete_keys(frame)
-                target_keys, target_valid = _complete_keys(master)
-                unique = source_valid & ~source_keys.duplicated(keep=False)
-            for field in frame.columns:
-                label = prefix + " · " + str(field)
-                if label in combined.columns:
-                    continue
-                if eligible and field not in keys:
-                    mapping = pd.Series(frame.loc[unique, field].to_numpy(), index=source_keys.loc[unique])
-                    combined[label] = target_keys.map(mapping).where(target_valid)
+
+        def _clear_pipeline_results_v9():
+            st.session_state["pipeline_applied_v9"] = None
+
+        def _reset_pipeline_filters_v9():
+            st.session_state["pipeline_stages_v9"] = []
+            st.session_state["pipeline_dates_v9"] = []
+            st.session_state["pipeline_query_v9"] = ""
+            st.session_state["pipeline_sort_v9"] = "Closest PDUFA first"
+            _clear_pipeline_results_v9()
+
+        # Compact widgets: both STAGES and DATES stay in view on desktop and mobile.
+        stage_col, date_col = st.columns(2, gap="medium")
+        with stage_col:
+            selected_stages = st.multiselect(
+                "STAGES",
+                options=list(PIPELINE_STAGES), default=[],
+                placeholder="Select stage (e.g. PDUFA Decision)",
+                key="pipeline_stages_v9",
+                on_change=_clear_pipeline_results_v9,
+                help="Select CURRENT stage, not any historical milestone.",
+            )
+        with date_col:
+            selected_dates = st.multiselect(
+                "DATES",
+                options=list(PIPELINE_DATE_BANDS), default=[],
+                placeholder="Select PDUFA date window",
+                key="pipeline_dates_v9",
+                on_change=_clear_pipeline_results_v9,
+                help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
+            )
+        with stage_col:
+            stage_count_slot = st.container()
+        with date_col:
+            date_count_slot = st.container()
+        search_col, sort_col = st.columns([2, 1], gap="medium")
+        with search_col:
+            query = st.text_input(
+                "Find ticker, drug, indication or NCT ID",
+                key="pipeline_query_v9",
+                on_change=_clear_pipeline_results_v9,
+                placeholder="Optional search",
+            ).strip()
+        with sort_col:
+            sort_mode = st.selectbox(
+                "Sort trials", options=["Closest PDUFA first", "Ticker A–Z"],
+                key="pipeline_sort_v9",
+                on_change=_clear_pipeline_results_v9,
+            )
+
+        button_col, reset_col = st.columns([2, 1], gap="medium")
+        with button_col:
+            show_clicked = st.button(
+                "SHOW MATCHING TRIALS", type="primary", use_container_width=True,
+                disabled=not (selected_stages and selected_dates),
+                key="pipeline_show_v9",
+            )
+        with reset_col:
+            st.button(
+                "CLEAR STAGE / DATE", on_click=_reset_pipeline_filters_v9,
+                use_container_width=True, key="pipeline_clear_v9",
+            )
+
+        selection_signature = (
+            tuple(selected_stages), tuple(selected_dates), query, sort_mode
+        )
+        if show_clicked and selected_stages and selected_dates:
+            st.session_state["pipeline_applied_v9"] = selection_signature
+        applied = bool(selected_stages and selected_dates) and (
+            st.session_state.get("pipeline_applied_v9") == selection_signature
+        )
+
+        pipeline_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+        pipeline_signature = tuple(
+            (name, (Path("data") / name).stat().st_mtime_ns)
+            for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
+        )
+        try:
+            universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
+            prepared = prepare_pipeline(universe, pipeline_today)
+            # Unselected dimensions show the available universe; selecting both
+            # makes both count charts reconcile to the eventual spreadsheet rows.
+            count_records = filter_pipeline(
+                prepared, selected_stages or list(PIPELINE_STAGES),
+                selected_dates or list(PIPELINE_DATE_BANDS), query,
+            )
+        except (KeyError, ValueError, TypeError, OSError, AttributeError) as exc:
+            st.error("Could not load Pipeline records. Check Streamlit application logs.")
+            st.caption(f"Pipeline error type: {type(exc).__name__}")
+            prepared = pd.DataFrame()
+            count_records = pd.DataFrame()
+
+        def _render_pipeline_counts(slot, title, field, categories):
+            counts = (count_records[field].value_counts().to_dict()
+                      if field in count_records else {})
+            maximum = max((int(counts.get(category, 0)) for category in categories), default=0)
+            rows = []
+            for category in categories:
+                count = int(counts.get(category, 0))
+                width = 100 * count / maximum if maximum else 0
+                label = html.escape(str(category), quote=True)
+                rows.append(
+                    f'<div class="pipeline-count-row" role="listitem" '
+                    f'data-category="{label}" data-count="{count}" '
+                    f'aria-label="{label}: {count:,} trials / programs">'
+                    f'<span class="pipeline-count-label" title="{label}">{label}</span>'
+                    '<span class="pipeline-count-track" aria-hidden="true">'
+                    f'<span class="pipeline-count-bar" style="width:{width:.4f}%"></span></span>'
+                    f'<span class="pipeline-count-value">{count:,}</span></div>'
+                )
+            chart_html = """<style>
+            /* One physical grid row for every label, bar and value. No wrapping or
+               inherited list-item margins that can offset adjacent legend entries. */
+            .pipeline-count-chart {
+                width:100%; max-width:100%; box-sizing:border-box;
+                overflow-x:auto; padding:6px 8px; background:#fff; color:#111;
+                border:2px solid #111; border-radius:10px;
+            }
+            .pipeline-count-chart .pipeline-count-list {
+                display:grid; grid-auto-rows:34px; row-gap:2px;
+                width:100%; min-width:250px; margin:0; padding:0;
+            }
+            .pipeline-count-chart .pipeline-count-row {
+                display:grid !important;
+                grid-template-columns:146px minmax(24px,1fr) 52px;
+                column-gap:8px; align-items:center;
+                min-height:34px; height:34px; box-sizing:border-box;
+                margin:0 !important; padding:0 !important;
+            }
+            .pipeline-count-chart .pipeline-count-label,
+            .pipeline-count-chart .pipeline-count-value {
+                display:block !important; min-width:0; height:18px;
+                margin:0 !important; padding:0 !important;
+                font-size:12px !important; line-height:18px !important;
+                white-space:nowrap !important; align-self:center;
+            }
+            .pipeline-count-chart .pipeline-count-label {
+                text-align:right; overflow:hidden; text-overflow:clip;
+            }
+            .pipeline-count-chart .pipeline-count-value {
+                text-align:right; font-variant-numeric:tabular-nums;
+            }
+            .pipeline-count-chart .pipeline-count-track {
+                display:flex; align-items:center; align-self:center;
+                height:20px; min-width:0; overflow:hidden;
+                background:#edf2ed; border-radius:3px;
+            }
+            .pipeline-count-chart .pipeline-count-bar {
+                display:block; flex:0 0 auto;
+                height:18px; background:#23856a;
+            }
+            @media(max-width:600px) {
+                .pipeline-count-chart .pipeline-count-row {
+                    grid-template-columns:140px minmax(24px,1fr) 52px;
+                    column-gap:6px;
+                }
+            }
+            </style>""" + (
+                f'<div class="pipeline-count-chart" aria-label="{html.escape(title)}">'
+                '<div class="pipeline-count-list" role="list">' + "".join(rows) + '</div></div>'
+            )
+            with slot:
+                st.markdown("#### " + title)
+                st.markdown(chart_html, unsafe_allow_html=True)
+                st.caption(f"TOTAL: {len(count_records):,} trials / programs")
+
+        _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES)
+        _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS)
+
+        st.markdown("### PIPELINE TRIALS / PROGRAMS")
+        st.caption("Displayed count always equals the exact number of table rows.")
+        empty_chart = pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values()))
+        if not applied:
+            st.metric("Trials / programs displayed", 0)
+            st.dataframe(
+                empty_chart, hide_index=True, use_container_width=True, height=220
+            )
+            if not selected_stages or not selected_dates:
+                st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
+            else:
+                st.info("Click SHOW MATCHING TRIALS to populate the chart.")
+        else:
+            filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
+            shown = chart_rows(filtered, sort_mode)
+
+            st.metric("Trials / programs displayed", len(shown))
+            st.dataframe(
+                shown, hide_index=True, use_container_width=True, height=540,
+                column_config={"Source": st.column_config.LinkColumn("Source")},
+            )
+            if shown.empty:
+                st.info("No matching programs for that STAGES + DATES selection.")
+            else:
+                unique_ids = (
+                    filtered["nct_id"].replace("", pd.NA).dropna().nunique()
+                    if "nct_id" in filtered else 0
+                )
+                st.caption(
+                    f"{len(shown):,} displayed rows · {unique_ids:,} unique linked trial IDs. "
+                    "Saved dates are not all FDA-verified."
+                )
+            with st.expander("STAGES / DATES count audit", expanded=False):
+                stage_counts = (
+                    filtered["current_stage"].value_counts().to_dict()
+                    if "current_stage" in filtered else {}
+                )
+                date_counts = (
+                    filtered["DATES"].value_counts().to_dict()
+                    if "DATES" in filtered else {}
+                )
+                col_a, col_b = st.columns(2)
+                with col_a:
+                    stage_table = pd.DataFrame(
+                        [{"Stage": stage, "Count": int(stage_counts.get(stage, 0))}
+                         for stage in PIPELINE_STAGES]
+                        + [{"Stage": "TOTAL", "Count": len(shown)}]
+                    )
+                    st.dataframe(stage_table, hide_index=True, use_container_width=True, height=250)
+                with col_b:
+                    date_table = pd.DataFrame(
+                        [{"DATES": band, "Count": int(date_counts.get(band, 0))}
+                         for band in PIPELINE_DATE_BANDS]
+                        + [{"DATES": "TOTAL", "Count": len(shown)}]
+                    )
+                    st.dataframe(date_table, hide_index=True, use_container_width=True, height=250)
+                if sum(stage_counts.values()) != len(shown) or sum(date_counts.values()) != len(shown):
+                    st.error("COUNT MISMATCH: displayed count and audit disagree.")
                 else:
-                    # Retain column discoverability while keeping unrelated
-                    # historical rows and incomplete keys out of live records.
-                    combined[label] = pd.Series(pd.NA, index=combined.index, dtype="object")
-        # All source fields are visible in the master, including fields that
-        # cannot safely be joined. No synthetic evidence is treated as a pass.
-        # Shared column tabs keep related fields compact and preserve every source column.
-        if "watchlist" not in st.session_state:
-            st.session_state["watchlist"] = []
-        ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
-        watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
-        combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
-        st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
-        st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")
-        if "DAYS TO PDUFA" in combined.columns:
-            countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") if c in combined.columns]].copy()
-            if not countdown.empty:
-                countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
-                countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
-                countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable", na_position="last")
-                tab_labels = ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
-                category_tabs = st.tabs([f"{label} ({len(countdown) if label == 'ALL' else int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
-                for label, category_tab in zip(tab_labels, category_tabs):
-                    with category_tab:
-                        section = countdown.copy() if label == "ALL" else countdown.loc[countdown["PDUFA Horizon"] == label].copy()
-                        if section.empty:
-                            st.info(f"No candidates in {label}.")
+                    st.caption("COUNT AUDIT PASSED: each chart row counted once.")
+        if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh_v9"):
+            load_pipeline_universe_data.clear()
+            _clear_pipeline_results_v9()
+            st.rerun()
+
+    with trade_tab:
+        st.markdown("## WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION")
+        st.caption("Phase 3 and manually selected PIPELINE records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
+        master, phase3_arrivals, phase_pipeline_state = master_with_phase3(df)
+        master = master.reset_index(drop=True)
+        manual_arrivals = sum(row.get("pipeline_transfer_mode") == "MANUAL REVIEW" for row in phase3_arrivals)
+        st.caption(f"{len(phase3_arrivals) - manual_arrivals:,} additional Phase 3 programs · {manual_arrivals:,} manual PIPELINE reviews · PDUFA dates remain blank until confirmed.")
+        if master.empty:
+            st.info("No PDUFA records are currently loaded.")
+        else:
+            # Canonical columns collapse equivalent names without discarding conflicting evidence.
+            aliases = {
+                "Ticker": ["ticker", "symbol"],
+                "Drug": ["drug", "drug_name", "product_name"],
+                "Indication": ["indication", "disease"],
+                "Current Stage": ["current_stage"],
+                "Next Milestone": ["next_milestone"],
+                "Phase 3 Started": ["phase3_start_date"],
+                "Moved to Master": ["pipeline_promoted_at"],
+                "Stage Evidence": ["pipeline_evidence_status"],
+                "NCT": ["nct_id", "nct"],
+                "Phase 3 Readout": ["phase3_date", "phase_3_date", "readout_date"],
+                "P (p-value)": ["reported_p_values", "p_value"],
+                "Trial Status": ["trial_status", "study_status"],
+                "Financing #1 Date": ["first_financing_date"],
+                "Financing #2 Date": ["second_financing_date"],
+                "Financing Type": ["second_financing_type", "financing_type"],
+                "Financing Proceeds": ["financing_proceeds"],
+                "Dilution / ATM": ["new_dilution_flag"],
+                "Cash": ["cash"],
+                "Cash Runway (months)": ["cash_runway_months"],
+                "NDA Submission": ["nda_submission_date"],
+                "FDA Acceptance": ["fda_acceptance_date"],
+                "PDUFA Date": ["pdufa_date"],
+                "FDA PoA": ["approval_probability"],
+                "Entry Gate": ["entry_gate"],
+                "Market Cap": ["market_cap", "market_cap_usd"],
+                "Evidence Status": ["check_status"],
+            }
+            combined = pd.DataFrame(index=master.index)
+            consumed = set()
+            for title, choices in aliases.items():
+                present = [c for c in choices if c in master.columns]
+                if present:
+                    combined[title] = master[present[0]]
+                    consumed.add(present[0])
+                    for other in present[1:]:
+                        # Keep alternative values separate if both sources disagree.
+                        left = combined[title].astype("string").fillna("").str.strip()
+                        right = master[other].astype("string").fillna("").str.strip()
+                        conflict = left.ne("") & right.ne("") & left.ne(right)
+                        if conflict.any():
+                            combined[other + " (alternate)"] = master[other]
                         else:
-                            styled_section = section.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
-                            st.dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
-            else:
-                st.info("No PDUFA candidates available in the loaded events.")
-        # Keep the enriched master frame for downstream tabs, but do not
-        # render the large editable Master Table. Manage stocks by ticker.
-        st.markdown("### WATCHLIST MANAGEMENT")
-        st.caption("Search a ticker to add or remove it. Watchlist, Analysis, and Invest remain available below.")
-        ticker_choices = sorted({ticker for ticker in ticker_values if ticker})
-        picker_col, add_col, remove_col = st.columns([3, 1, 1], gap="small")
-        with picker_col:
-            selected_watch_ticker = st.selectbox(
-                "Find ticker", options=ticker_choices, index=None,
-                placeholder="Search ticker...", key="watchlist_ticker_picker_v1",
-                disabled=not ticker_choices,
+                            combined[title] = combined[title].where(left.ne(""), master[other])
+                        consumed.add(other)
+            for col in master.columns:
+                if col not in consumed and col not in combined.columns:
+                    combined[col] = master[col]
+            # Add computed views from Funnel, Trading Flow and Market Cap without
+            # duplicating their shared source columns.
+            if "Ticker" in combined:
+                tickers = combined["Ticker"].fillna("").astype(str).str.upper()
+                combined["Watchlist #2"] = tickers.isin(
+                    {str(x).upper() for x in st.session_state.get("watchlist", [])}
+                )
+                combined["Entry Review"] = tickers.isin(
+                    {str(x).upper() for x in st.session_state.get("position_candidates", [])}
+                )
+            if "PDUFA Date" in combined:
+                dates = pd.to_datetime(combined["PDUFA Date"], errors="coerce")
+                combined["DAYS TO PDUFA"] = (dates - today).dt.days.astype("Int64")
+                combined["PDUFA Horizon"] = combined["DAYS TO PDUFA"].map(pdufa_segment)
+            if "Market Cap" in combined:
+                cap = pd.to_numeric(combined["Market Cap"], errors="coerce")
+                combined["Market Cap Band"] = pd.cut(
+                    cap, bins=[0, 300_000_000, 1_000_000_000, 3_000_000_000, 10_000_000_000, float("inf")],
+                    labels=["UNDER $300M", "$300M–$1B", "$1B–$3B", "$3B–$10B", "OVER $10B"],
+                    include_lowest=True, right=False
+                ).astype("string").fillna("UNKNOWN")
+            if "Financing #2 Date" in combined:
+                combined["Second Financing Date Recorded"] = (
+                    combined["Financing #2 Date"].notna()
+                    & combined["Financing #2 Date"].astype(str).str.strip().ne("")
+                )
+                combined["Financing Close Verified"] = "REVIEW — verify SEC/company closing evidence"
+            if "Entry Gate" in combined:
+                combined["Funnel Stage (provisional)"] = combined["Entry Gate"].fillna("REVIEW").astype(str).map(
+                    lambda v: "ENTRY REVIEW" if v.upper() == "PASS" else "REVIEW / DISCOVERY"
+                )
+            # FDA directional assessments are event-level only when ticker, drug,
+            # and PDUFA date uniquely match. Never join by ticker alone.
+            if isinstance(fda_directional_live, pd.DataFrame) and not fda_directional_live.empty:
+                fda_keys = ("ticker", "drug", "pdufa_date")
+                if all(k in fda_directional_live.columns for k in fda_keys) and all(k in master.columns for k in fda_keys):
+                    fda_subset = fda_directional_live.copy()
+                    def _event_key(frame):
+                        return (
+                            frame["ticker"].fillna("").astype(str).str.upper().str.strip()
+                            + "|" + frame["drug"].fillna("").astype(str).str.upper().str.strip()
+                            + "|" + pd.to_datetime(frame["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+                        )
+                    fda_subset["_event_key"] = _event_key(fda_subset)
+                    source_keys = _event_key(master)
+                    valid = fda_subset["_event_key"].str.split("|", regex=False).map(
+                        lambda parts: len(parts) == 3 and all(parts)
+                    )
+                    fda_subset = fda_subset[valid & ~fda_subset["_event_key"].duplicated(keep=False)]
+                    fda_subset = fda_subset.set_index("_event_key")
+                    for field, label in (("forced_direction", "FDA Direction"), ("directional_score", "FDA Direction Score"),
+                                         ("confidence", "FDA Confidence"), ("strict_v3_prediction", "FDA Strict Prediction")):
+                        if field in fda_subset:
+                            combined[label] = source_keys.map(fda_subset[field])
+            # Step 1: preserve Trading Flow and Funnel derived fields.
+            def _finance_closed(row):
+                values = []
+                for field in ("second_financing_status", "second_financing_close_verified", "second_financing_closed"):
+                    value = row.get(field, "")
+                    values.append("" if pd.isna(value) else str(value).upper())
+                status = " ".join(values)
+                return "SECOND_CLOSE_VERIFIED" in status or "RED_CLOSED" in status or any(v in ("YES", "TRUE", "1", "VERIFIED") for v in values)
+            closed_flags = master.apply(_finance_closed, axis=1)
+            readout_flags = pd.to_datetime(master.get("phase3_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
+            gate_flags = master.get("entry_gate", pd.Series("REVIEW", index=master.index)).fillna("REVIEW").astype(str).str.upper().eq("PASS")
+            combined["Funnel Stage"] = "4 · WATCHLIST / ENTRY REVIEW"
+            combined.loc[~readout_flags, "Funnel Stage"] = "1 · DISCOVERY / READOUT REVIEW"
+            combined.loc[readout_flags & ~closed_flags, "Funnel Stage"] = "3 · FINANCING REVIEW"
+            combined.loc[readout_flags & closed_flags & gate_flags, "Funnel Stage"] = "5 · ENTRY REVIEW — GATE PASS"
+            combined["Second Financing Verified"] = closed_flags.map({True: "YES", False: "REVIEW"})
+            combined["🟢 Financing Started"] = ""
+            combined["🟡 Financing In Progress"] = ""
+            combined["🔴 Financing Closed"] = closed_flags.map({True: "🔴 CLOSED", False: ""})
+            status_values = master.get("second_financing_status", pd.Series("", index=master.index)).fillna("").astype(str).str.upper()
+            combined.loc[status_values.str.contains("STARTED|ANNOUNCED", regex=True), "🟢 Financing Started"] = "🟢 STARTED"
+            combined.loc[status_values.str.contains("IN_PROGRESS|PENDING|PRICED", regex=True), "🟡 Financing In Progress"] = "🟡 IN PROGRESS"
+            for source, label in (("second_financing_status", "Financing #2 Status"), ("second_financing_source", "Financing Close Evidence"), ("market_cap_bucket", "Validated Market Cap Bucket"), ("public_approval_probability", "Our FDA PoA"), ("trade_score", "Our Trade/PDUFA Score"), ("phase3_date", "Company Readout Date"), ("nct_id", "NCT"), ("trial_status", "Trial Status"), ("primary_completion", "Primary Completion"), ("study_completion", "Study Completion"), ("results_first_posted", "Results First Posted")):
+                if source in master:
+                    combined[label] = master[source]
+            submitted = pd.to_datetime(master.get("nda_submission_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
+            accepted = pd.to_datetime(master.get("fda_acceptance_date", pd.Series(pd.NaT, index=master.index)), errors="coerce").notna()
+            combined["NDA/BLA Status"] = "REVIEW"
+            combined.loc[submitted, "NDA/BLA Status"] = "SUBMITTED"
+            combined.loc[accepted, "NDA/BLA Status"] = "FDA ACCEPTED"
+            # Step 2: attach FDA monitor data by exact, unique event identity.
+            def _attach_event_fields(source_frame, prefix):
+                if not isinstance(source_frame, pd.DataFrame) or source_frame.empty:
+                    return
+                keys = ("ticker", "drug", "pdufa_date")
+                if not all(k in source_frame.columns for k in keys) or not all(k in master.columns for k in keys):
+                    return
+                def make_key(frame):
+                    return frame["ticker"].fillna("").astype(str).str.upper().str.strip() + "|" + frame["drug"].fillna("").astype(str).str.upper().str.strip() + "|" + pd.to_datetime(frame["pdufa_date"], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+                source = source_frame.copy()
+                source["_master_key"] = make_key(source)
+                source = source[source["_master_key"].map(lambda v: all(v.split("|")))]
+                source = source[~source["_master_key"].duplicated(keep=False)].set_index("_master_key")
+                target = make_key(master)
+                for field in source.columns:
+                    if field not in keys:
+                        label = prefix + " · " + field.replace("_", " ").title()
+                        combined[label] = target.map(source[field])
+            _attach_event_fields(fda_regulatory_signals, "FDA Monitor")
+            _attach_event_fields(fda_extension_ledger, "FDA Extension")
+            _attach_event_fields(fda_directional_live, "FDA Directional")
+            # Preserve detailed FDA review fields merged into df at startup.
+            for field in master.columns:
+                if field.startswith("fda_") and field not in combined:
+                    combined[field] = master[field]
+            # Step 3: market-cap bands and historical All PDUFA coverage.
+            if "Market Cap" in combined:
+                cap_numeric = pd.to_numeric(combined["Market Cap"], errors="coerce")
+                fine_edges = [0, 300e6, 500e6, 750e6, 1e9, 2e9, 3e9, 5e9, 7.5e9, 10e9, float("inf")]
+                fine_labels = ["<$300M", "$300M–$500M", "$500M–$750M", "$750M–$1B", "$1B–$2B", "$2B–$3B", "$3B–$5B", "$5B–$7.5B", "$7.5B–$10B", ">$10B"]
+                combined["Detailed Market Cap Band"] = pd.cut(cap_numeric, bins=fine_edges, labels=fine_labels, right=False).astype("string").fillna("UNKNOWN")
+            # Historical cohorts are not live events. Expose their columns in the
+            # master schema without fabricating event-level joins.
+            historical_count = len(prediction_history) if isinstance(prediction_history, pd.DataFrame) else 0
+            combined["Record Source"] = master.get("record_source", pd.Series("LIVE PDUFA EVENT", index=master.index)).fillna("LIVE PDUFA EVENT")
+            # Bring every loaded source schema into the master, preserving provenance.
+            # Unique event keys are required; duplicate or incomplete keys are
+            # intentionally left blank rather than assigned to the wrong drug.
+            extra_sources = (
+                ("FDA Facilities", fda_facilities),
+                ("FDA Backfill", fda_backfill_queue),
+                ("FDA Freezes", fda_freezes),
+                ("Historical Predictions", prediction_history),
             )
-        with add_col:
-            st.write("")
-            st.write("")
-            add_watch = st.button(
-                "ADD TO WATCHLIST", use_container_width=True,
-                disabled=not selected_watch_ticker or selected_watch_ticker in watch_values,
-                key="watchlist_add_picker_v1",
-            )
-        with remove_col:
-            st.write("")
-            st.write("")
-            remove_watch = st.button(
-                "REMOVE", use_container_width=True,
-                disabled=not selected_watch_ticker or selected_watch_ticker not in watch_values,
-                key="watchlist_remove_picker_v1",
-            )
-        if add_watch and selected_watch_ticker:
-            st.session_state["watchlist"] = sorted(watch_values | {selected_watch_ticker})
-            st.rerun()
-        if remove_watch and selected_watch_ticker:
-            st.session_state["watchlist"] = sorted(watch_values - {selected_watch_ticker})
-            st.rerun()
-        st.caption(f"Watchlist: {len(watch_values)} tickers selected")
-        # Watchlist rows can be promoted independently to Analysis and Invest.
-        for state_key in ("master_analysis", "master_invest"):
-            if state_key not in st.session_state:
-                st.session_state[state_key] = []
-        @st.fragment(run_every="60s")
-        def render_watchlist_indicators():
-            st.markdown("### WATCHLIST — SELECTED STOCKS")
-            current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
-            watch_rows = combined[ticker_values.isin(current_watch)].copy()
-            if not watch_rows.empty:
-                watch_rows = stage_filter_panel(watch_rows, key="watchlist_stage", source=master)
-            st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
-            # Eight paired technical indicators are displayed in both ENTRY and EXIT mode.
-            # Never synthesize trade calls when a verified scanner feed is unavailable.
-            indicator_names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
-                               "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
-                               "OBV", "ATR (14)"]
-            signal_mode = st.radio("WATCHLIST INDICATORS", ["ENTRY", "EXIT", "BOTH"],
-                                   horizontal=True, key="watchlist_indicator_mode")
-            st.caption("Eight matching indicators per stock. NOT SCANNED means no validated technical signal has been loaded; it is not a buy or sell recommendation.")
-            indicator_file = Path("data/watchlist_indicator_signals.csv")
-            signal_rows = pd.DataFrame()
-            if indicator_file.exists():
-                try:
-                    signal_rows = pd.read_csv(indicator_file, dtype=str, keep_default_na=False)
-                    if not {"ticker", "mode"}.issubset(signal_rows.columns):
+            for prefix, frame in extra_sources:
+                if not isinstance(frame, pd.DataFrame) or frame.empty:
+                    continue
+                keys = ("ticker", "drug", "pdufa_date")
+                eligible = all(k in frame.columns for k in keys) and all(k in master.columns for k in keys)
+                source_keys = None
+                if eligible:
+                    def _complete_keys(f):
+                        parts = [
+                            f[k].fillna("").astype(str).str.strip().str.upper()
+                            if k != "pdufa_date" else
+                            pd.to_datetime(f[k], errors="coerce").dt.strftime("%Y-%m-%d").fillna("")
+                            for k in keys
+                        ]
+                        valid = parts[0].ne("") & parts[1].ne("") & parts[2].ne("")
+                        return parts[0] + "|" + parts[1] + "|" + parts[2], valid
+                    source_keys, source_valid = _complete_keys(frame)
+                    target_keys, target_valid = _complete_keys(master)
+                    unique = source_valid & ~source_keys.duplicated(keep=False)
+                for field in frame.columns:
+                    label = prefix + " · " + str(field)
+                    if label in combined.columns:
+                        continue
+                    if eligible and field not in keys:
+                        mapping = pd.Series(frame.loc[unique, field].to_numpy(), index=source_keys.loc[unique])
+                        combined[label] = target_keys.map(mapping).where(target_valid)
+                    else:
+                        # Retain column discoverability while keeping unrelated
+                        # historical rows and incomplete keys out of live records.
+                        combined[label] = pd.Series(pd.NA, index=combined.index, dtype="object")
+            # All source fields are visible in the master, including fields that
+            # cannot safely be joined. No synthetic evidence is treated as a pass.
+            # Shared column tabs keep related fields compact and preserve every source column.
+            if "watchlist" not in st.session_state:
+                st.session_state["watchlist"] = []
+            ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
+            watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
+            combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
+            st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
+            st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")
+            if "DAYS TO PDUFA" in combined.columns:
+                countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") if c in combined.columns]].copy()
+                if not countdown.empty:
+                    countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
+                    countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
+                    countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable", na_position="last")
+                    tab_labels = ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
+                    category_tabs = st.tabs([f"{label} ({len(countdown) if label == 'ALL' else int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
+                    for label, category_tab in zip(tab_labels, category_tabs):
+                        with category_tab:
+                            section = countdown.copy() if label == "ALL" else countdown.loc[countdown["PDUFA Horizon"] == label].copy()
+                            if section.empty:
+                                st.info(f"No candidates in {label}.")
+                            else:
+                                styled_section = section.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
+                                st.dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
+                else:
+                    st.info("No PDUFA candidates available in the loaded events.")
+            # Keep the enriched master frame for downstream tabs, but do not
+            # render the large editable Master Table. Manage stocks by ticker.
+            st.markdown("### WATCHLIST MANAGEMENT")
+            st.caption("Search a ticker to add or remove it. Watchlist, Analysis, and Invest remain available below.")
+            ticker_choices = sorted({ticker for ticker in ticker_values if ticker})
+            picker_col, add_col, remove_col = st.columns([3, 1, 1], gap="small")
+            with picker_col:
+                selected_watch_ticker = st.selectbox(
+                    "Find ticker", options=ticker_choices, index=None,
+                    placeholder="Search ticker...", key="watchlist_ticker_picker_v1",
+                    disabled=not ticker_choices,
+                )
+            with add_col:
+                st.write("")
+                st.write("")
+                add_watch = st.button(
+                    "ADD TO WATCHLIST", use_container_width=True,
+                    disabled=not selected_watch_ticker or selected_watch_ticker in watch_values,
+                    key="watchlist_add_picker_v1",
+                )
+            with remove_col:
+                st.write("")
+                st.write("")
+                remove_watch = st.button(
+                    "REMOVE", use_container_width=True,
+                    disabled=not selected_watch_ticker or selected_watch_ticker not in watch_values,
+                    key="watchlist_remove_picker_v1",
+                )
+            if add_watch and selected_watch_ticker:
+                st.session_state["watchlist"] = sorted(watch_values | {selected_watch_ticker})
+                st.rerun()
+            if remove_watch and selected_watch_ticker:
+                st.session_state["watchlist"] = sorted(watch_values - {selected_watch_ticker})
+                st.rerun()
+            st.caption(f"Watchlist: {len(watch_values)} tickers selected")
+            # Watchlist rows can be promoted independently to Analysis and Invest.
+            for state_key in ("master_analysis", "master_invest"):
+                if state_key not in st.session_state:
+                    st.session_state[state_key] = []
+            @st.fragment(run_every="60s")
+            def render_watchlist_indicators():
+                st.markdown("### WATCHLIST — SELECTED STOCKS")
+                current_watch = {str(v).upper().strip() for v in st.session_state.get("watchlist", [])}
+                watch_rows = combined[ticker_values.isin(current_watch)].copy()
+                if not watch_rows.empty:
+                    watch_rows = stage_filter_panel(watch_rows, key="watchlist_stage", source=master)
+                st.caption(f"{len(watch_rows):,} selected event rows · {len(current_watch):,} tickers")
+                # Eight paired technical indicators are displayed in both ENTRY and EXIT mode.
+                # Never synthesize trade calls when a verified scanner feed is unavailable.
+                indicator_names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
+                                   "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
+                                   "OBV", "ATR (14)"]
+                signal_mode = st.radio("WATCHLIST INDICATORS", ["ENTRY", "EXIT", "BOTH"],
+                                       horizontal=True, key="watchlist_indicator_mode")
+                st.caption("Eight matching indicators per stock. NOT SCANNED means no validated technical signal has been loaded; it is not a buy or sell recommendation.")
+                indicator_file = Path("data/watchlist_indicator_signals.csv")
+                signal_rows = pd.DataFrame()
+                if indicator_file.exists():
+                    try:
+                        signal_rows = pd.read_csv(indicator_file, dtype=str, keep_default_na=False)
+                        if not {"ticker", "mode"}.issubset(signal_rows.columns):
+                            signal_rows = pd.DataFrame()
+                        else:
+                            signal_rows["ticker"] = signal_rows["ticker"].str.upper().str.strip()
+                            signal_rows["mode"] = signal_rows["mode"].str.upper().str.strip()
+                    except (OSError, ValueError, pd.errors.ParserError):
                         signal_rows = pd.DataFrame()
-                    else:
-                        signal_rows["ticker"] = signal_rows["ticker"].str.upper().str.strip()
-                        signal_rows["mode"] = signal_rows["mode"].str.upper().str.strip()
-                except (OSError, ValueError, pd.errors.ParserError):
-                    signal_rows = pd.DataFrame()
-                    st.warning("Indicator data could not be loaded; signals are marked NOT SCANNED.")
-            active_modes = ["ENTRY", "EXIT"] if signal_mode == "BOTH" else [signal_mode]
-            displayed_indicators = []
-            if not watch_rows.empty:
-                tickers_for_signals = watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip()
-                for active_mode in active_modes:
-                    mode_rows = signal_rows.loc[signal_rows["mode"].eq(active_mode)] if not signal_rows.empty else pd.DataFrame()
-                    if not mode_rows.empty:
-                        mode_rows = mode_rows.drop_duplicates("ticker", keep="last").set_index("ticker")
-                    for indicator in indicator_names:
-                        label = f"{active_mode} | {indicator}" if signal_mode == "BOTH" else indicator
-                        displayed_indicators.append(label)
-                        if not mode_rows.empty and indicator in mode_rows.columns:
-                            values = tickers_for_signals.map(mode_rows[indicator])
-                            watch_rows[label] = values.fillna("").replace("", "NOT SCANNED").to_numpy()
+                        st.warning("Indicator data could not be loaded; signals are marked NOT SCANNED.")
+                active_modes = ["ENTRY", "EXIT"] if signal_mode == "BOTH" else [signal_mode]
+                displayed_indicators = []
+                if not watch_rows.empty:
+                    tickers_for_signals = watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip()
+                    for active_mode in active_modes:
+                        mode_rows = signal_rows.loc[signal_rows["mode"].eq(active_mode)] if not signal_rows.empty else pd.DataFrame()
+                        if not mode_rows.empty:
+                            mode_rows = mode_rows.drop_duplicates("ticker", keep="last").set_index("ticker")
+                        for indicator in indicator_names:
+                            label = f"{active_mode} | {indicator}" if signal_mode == "BOTH" else indicator
+                            displayed_indicators.append(label)
+                            if not mode_rows.empty and indicator in mode_rows.columns:
+                                values = tickers_for_signals.map(mode_rows[indicator])
+                                watch_rows[label] = values.fillna("").replace("", "NOT SCANNED").to_numpy()
+                            else:
+                                watch_rows[label] = "NOT SCANNED"
+                        timestamp_label = f"{active_mode} | Updated" if signal_mode == "BOTH" else "Signal Updated"
+                        displayed_indicators.append(timestamp_label)
+                        if not mode_rows.empty and "updated_at" in mode_rows.columns:
+                            watch_rows[timestamp_label] = tickers_for_signals.map(mode_rows["updated_at"]).fillna("NOT SCANNED").to_numpy()
                         else:
-                            watch_rows[label] = "NOT SCANNED"
-                    timestamp_label = f"{active_mode} | Updated" if signal_mode == "BOTH" else "Signal Updated"
-                    displayed_indicators.append(timestamp_label)
-                    if not mode_rows.empty and "updated_at" in mode_rows.columns:
-                        watch_rows[timestamp_label] = tickers_for_signals.map(mode_rows["updated_at"]).fillna("NOT SCANNED").to_numpy()
-                    else:
-                        watch_rows[timestamp_label] = "NOT SCANNED"
-            else:
-                displayed_indicators = [
-                    f"{mode} | {name}" if signal_mode == "BOTH" else name
-                    for mode in active_modes for name in indicator_names
-                ] + (["ENTRY | Updated", "EXIT | Updated"] if signal_mode == "BOTH" else ["Signal Updated"])
-            st.caption("This watchlist display refreshes every 60 seconds while the app is open. Live indicator calculations require a connected 1-minute data feed and scanner; missing signals stay NOT SCANNED.")
-            if st.button("↻ REFRESH WATCHLIST NOW", key="refresh_watchlist_signals"):
-                st.rerun(scope="fragment")
-            watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
-            watch_cols += displayed_indicators
-            if watch_rows.empty:
-                st.info("No Watchlist stocks selected. Use WATCHLIST MANAGEMENT above to add a ticker.")
-            else:
-                analysis_set = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
-                watch_rows.insert(0, "Add to Analysis", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(analysis_set))
-                visible = ["Add to Analysis"] + watch_cols
-                watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
-                watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
-                watch_edited = grouped_editor(watch_rows[visible], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
-                changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
-                if changed_analysis.any():
-                    for row_id in watch_rows.index:
-                        ticker = str(watch_rows.loc[row_id, "Ticker"]).upper().strip()
-                        if not ticker:
-                            continue
-                        if changed_analysis.loc[row_id]:
-                            (analysis_set.add if bool(watch_edited.loc[row_id, "Add to Analysis"]) else analysis_set.discard)(ticker)
-                    st.session_state["master_analysis"] = sorted(analysis_set)
-                    st.rerun()
-        render_watchlist_indicators()
-        def attach_technical_columns(rows, selected_mode):
-            """Read one shared signal snapshot; do not infer missing trading signals."""
-            names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
-                     "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
-                     "OBV", "ATR (14)"]
-            modes = ["ENTRY", "EXIT"] if selected_mode == "BOTH" else [selected_mode]
-            columns = []
-            out = rows.copy()
-            source = Path("data/watchlist_indicator_signals.csv")
-            feed = pd.DataFrame()
-            if source.exists():
-                try:
-                    feed = pd.read_csv(source, dtype=str, keep_default_na=False)
-                    if {"ticker", "mode"}.issubset(feed.columns):
-                        feed["ticker"] = feed["ticker"].str.upper().str.strip()
-                        feed["mode"] = feed["mode"].str.upper().str.strip()
-                    else:
+                            watch_rows[timestamp_label] = "NOT SCANNED"
+                else:
+                    displayed_indicators = [
+                        f"{mode} | {name}" if signal_mode == "BOTH" else name
+                        for mode in active_modes for name in indicator_names
+                    ] + (["ENTRY | Updated", "EXIT | Updated"] if signal_mode == "BOTH" else ["Signal Updated"])
+                st.caption("This watchlist display refreshes every 60 seconds while the app is open. Live indicator calculations require a connected 1-minute data feed and scanner; missing signals stay NOT SCANNED.")
+                if st.button("↻ REFRESH WATCHLIST NOW", key="refresh_watchlist_signals"):
+                    st.rerun(scope="fragment")
+                watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+                watch_cols += displayed_indicators
+                if watch_rows.empty:
+                    st.info("No Watchlist stocks selected. Use WATCHLIST MANAGEMENT above to add a ticker.")
+                else:
+                    analysis_set = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
+                    watch_rows.insert(0, "Add to Analysis", watch_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(analysis_set))
+                    visible = ["Add to Analysis"] + watch_cols
+                    watch_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Watchlist event field: " + c) for c in watch_cols}
+                    watch_config["Add to Analysis"] = st.column_config.CheckboxColumn("Analysis ⓘ", help="Check to add this ticker to the Analysis table; uncheck to remove it.")
+                    watch_edited = grouped_editor(watch_rows[visible], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=watch_config, disabled=watch_cols, key="watchlist_promotion_editor")
+                    changed_analysis = watch_edited["Add to Analysis"].fillna(False).astype(bool).ne(watch_rows["Add to Analysis"].fillna(False).astype(bool))
+                    if changed_analysis.any():
+                        for row_id in watch_rows.index:
+                            ticker = str(watch_rows.loc[row_id, "Ticker"]).upper().strip()
+                            if not ticker:
+                                continue
+                            if changed_analysis.loc[row_id]:
+                                (analysis_set.add if bool(watch_edited.loc[row_id, "Add to Analysis"]) else analysis_set.discard)(ticker)
+                        st.session_state["master_analysis"] = sorted(analysis_set)
+                        st.rerun()
+            render_watchlist_indicators()
+            def attach_technical_columns(rows, selected_mode):
+                """Read one shared signal snapshot; do not infer missing trading signals."""
+                names = ["Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
+                         "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)",
+                         "OBV", "ATR (14)"]
+                modes = ["ENTRY", "EXIT"] if selected_mode == "BOTH" else [selected_mode]
+                columns = []
+                out = rows.copy()
+                source = Path("data/watchlist_indicator_signals.csv")
+                feed = pd.DataFrame()
+                if source.exists():
+                    try:
+                        feed = pd.read_csv(source, dtype=str, keep_default_na=False)
+                        if {"ticker", "mode"}.issubset(feed.columns):
+                            feed["ticker"] = feed["ticker"].str.upper().str.strip()
+                            feed["mode"] = feed["mode"].str.upper().str.strip()
+                        else:
+                            feed = pd.DataFrame()
+                    except (OSError, ValueError, pd.errors.ParserError):
                         feed = pd.DataFrame()
-                except (OSError, ValueError, pd.errors.ParserError):
-                    feed = pd.DataFrame()
-            symbols = out["Ticker"].fillna("").astype(str).str.upper().str.strip() if "Ticker" in out else pd.Series(dtype=str)
-            for mode in modes:
-                subset = feed.loc[feed["mode"].eq(mode)].drop_duplicates("ticker", keep="last").set_index("ticker") if not feed.empty else pd.DataFrame()
-                for name in names:
-                    label = f"{mode} | {name}" if selected_mode == "BOTH" else name
+                symbols = out["Ticker"].fillna("").astype(str).str.upper().str.strip() if "Ticker" in out else pd.Series(dtype=str)
+                for mode in modes:
+                    subset = feed.loc[feed["mode"].eq(mode)].drop_duplicates("ticker", keep="last").set_index("ticker") if not feed.empty else pd.DataFrame()
+                    for name in names:
+                        label = f"{mode} | {name}" if selected_mode == "BOTH" else name
+                        columns.append(label)
+                        if not subset.empty and name in subset.columns:
+                            out[label] = symbols.map(subset[name]).fillna("").replace("", "NOT SCANNED").to_numpy()
+                        else:
+                            out[label] = "NOT SCANNED"
+                    label = f"{mode} | Updated" if selected_mode == "BOTH" else "Signal Updated"
                     columns.append(label)
-                    if not subset.empty and name in subset.columns:
-                        out[label] = symbols.map(subset[name]).fillna("").replace("", "NOT SCANNED").to_numpy()
+                    if not subset.empty and "updated_at" in subset.columns:
+                        out[label] = symbols.map(subset["updated_at"]).fillna("").replace("", "NOT SCANNED").to_numpy()
                     else:
                         out[label] = "NOT SCANNED"
-                label = f"{mode} | Updated" if selected_mode == "BOTH" else "Signal Updated"
-                columns.append(label)
-                if not subset.empty and "updated_at" in subset.columns:
-                    out[label] = symbols.map(subset["updated_at"]).fillna("").replace("", "NOT SCANNED").to_numpy()
+                return out, columns
+
+            @st.fragment(run_every="60s")
+            def render_analysis_invest_signals():
+                # Keep both tables on the same signal snapshot and display mode.
+                shared_mode = st.radio("ANALYSIS / INVEST INDICATORS",
+                                       ["ENTRY", "EXIT", "BOTH"], horizontal=True,
+                                       index=2, key="analysis_invest_indicator_mode")
+                st.caption("Refreshes every minute while open. Signals require the connected scanner; NOT SCANNED means no validated data.")
+                if st.button("↻ REFRESH ANALYSIS / INVEST", key="refresh_analysis_invest_signals"):
+                    st.rerun(scope="fragment")
+                analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
+                invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
+                analysis_rows = combined[ticker_values.isin(analysis_tickers)].copy()
+                if not analysis_rows.empty:
+                    analysis_rows = stage_filter_panel(analysis_rows, key="analysis_stage", source=master)
+                st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
+                detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
+                if analysis_rows.empty:
+                    st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
                 else:
-                    out[label] = "NOT SCANNED"
-            return out, columns
-
-        @st.fragment(run_every="60s")
-        def render_analysis_invest_signals():
-            # Keep both tables on the same signal snapshot and display mode.
-            shared_mode = st.radio("ANALYSIS / INVEST INDICATORS",
-                                   ["ENTRY", "EXIT", "BOTH"], horizontal=True,
-                                   index=2, key="analysis_invest_indicator_mode")
-            st.caption("Refreshes every minute while open. Signals require the connected scanner; NOT SCANNED means no validated data.")
-            if st.button("↻ REFRESH ANALYSIS / INVEST", key="refresh_analysis_invest_signals"):
-                st.rerun(scope="fragment")
-            analysis_tickers = {str(v).upper().strip() for v in st.session_state["master_analysis"]}
-            invest_tickers = {str(v).upper().strip() for v in st.session_state["master_invest"]}
-            analysis_rows = combined[ticker_values.isin(analysis_tickers)].copy()
-            if not analysis_rows.empty:
-                analysis_rows = stage_filter_panel(analysis_rows, key="analysis_stage", source=master)
-            st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
-            detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
-            if analysis_rows.empty:
-                st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
-            else:
-                analysis_rows, tech_cols = attach_technical_columns(analysis_rows, shared_mode)
-                analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
-                invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols + tech_cols}
-                invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
-                edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols + tech_cols, key="analysis_to_invest_editor")
-                invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
-                if invest_changed.any():
-                    for row_id in analysis_rows.index[invest_changed]:
-                        ticker = str(analysis_rows.loc[row_id, "Ticker"]).upper().strip()
-                        if ticker:
-                            if bool(edited_analysis.loc[row_id, "Add to Invest"]):
-                                invest_tickers.add(ticker)
-                            else:
-                                invest_tickers.discard(ticker)
-                    st.session_state["master_invest"] = sorted(invest_tickers)
-                    st.rerun()
-            invest_rows = combined[ticker_values.isin(invest_tickers)].copy()
-            if not invest_rows.empty:
-                invest_rows = stage_filter_panel(invest_rows, key="invest_stage", source=master)
-            st.markdown("#### INVEST" + f" ({len(invest_rows):,})")
-            if invest_rows.empty:
-                st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
-            else:
-                invest_rows, tech_cols = attach_technical_columns(invest_rows, shared_mode)
-                grouped_dataframe(invest_rows[detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True)
-
-        render_analysis_invest_signals()
-        st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
-
-        with st.expander("Additional original-source tables (preserved without unsafe joins)"):
-            for source_name, source_frame in (("FDA regulatory signals", fda_regulatory_signals), ("FDA extensions", fda_extension_ledger), ("FDA facilities", fda_facilities), ("FDA backfill queue", fda_backfill_queue), ("FDA prediction freezes", fda_freezes), ("Historical predictions", prediction_history)):
-                st.markdown("#### " + source_name)
-                if isinstance(source_frame, pd.DataFrame) and not source_frame.empty:
-                    st.caption(f"{len(source_frame):,} records · {len(source_frame.columns)} columns")
-                    grouped_dataframe(source_frame, use_container_width=True, hide_index=True)
+                    analysis_rows, tech_cols = attach_technical_columns(analysis_rows, shared_mode)
+                    analysis_rows.insert(0, "Add to Invest", analysis_rows["Ticker"].fillna("").astype(str).str.upper().str.strip().isin(invest_tickers))
+                    invest_config = {c: st.column_config.TextColumn(c + " ⓘ", help="Analysis event field: " + c) for c in detail_cols + tech_cols}
+                    invest_config["Add to Invest"] = st.column_config.CheckboxColumn("Invest ⓘ", help="Check to add this ticker to Invest; uncheck to remove it.")
+                    edited_analysis = grouped_editor(analysis_rows[["Add to Invest"] + detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True, height=360, column_config=invest_config, disabled=detail_cols + tech_cols, key="analysis_to_invest_editor")
+                    invest_changed = edited_analysis["Add to Invest"].fillna(False).astype(bool).ne(analysis_rows["Add to Invest"].fillna(False).astype(bool))
+                    if invest_changed.any():
+                        for row_id in analysis_rows.index[invest_changed]:
+                            ticker = str(analysis_rows.loc[row_id, "Ticker"]).upper().strip()
+                            if ticker:
+                                if bool(edited_analysis.loc[row_id, "Add to Invest"]):
+                                    invest_tickers.add(ticker)
+                                else:
+                                    invest_tickers.discard(ticker)
+                        st.session_state["master_invest"] = sorted(invest_tickers)
+                        st.rerun()
+                invest_rows = combined[ticker_values.isin(invest_tickers)].copy()
+                if not invest_rows.empty:
+                    invest_rows = stage_filter_panel(invest_rows, key="invest_stage", source=master)
+                st.markdown("#### INVEST" + f" ({len(invest_rows):,})")
+                if invest_rows.empty:
+                    st.info("No candidates selected for Invest. Use the Invest checkbox in Analysis above.")
                 else:
-                    st.info("No loaded records.")
-    st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
+                    invest_rows, tech_cols = attach_technical_columns(invest_rows, shared_mode)
+                    grouped_dataframe(invest_rows[detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True)
 
-elif page == "PIPELINE":
-    st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
-    st.caption(
-        "PIPELINE-V12 · Select STAGES and DATES, then "
-        "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
-    )
+            render_analysis_invest_signals()
+            st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
 
-    def _clear_pipeline_results_v9():
-        st.session_state["pipeline_applied_v9"] = None
-
-    def _reset_pipeline_filters_v9():
-        st.session_state["pipeline_stages_v9"] = []
-        st.session_state["pipeline_dates_v9"] = []
-        st.session_state["pipeline_query_v9"] = ""
-        st.session_state["pipeline_sort_v9"] = "Closest PDUFA first"
-        _clear_pipeline_results_v9()
-
-    # Compact widgets: both STAGES and DATES stay in view on desktop and mobile.
-    stage_col, date_col = st.columns(2, gap="medium")
-    with stage_col:
-        selected_stages = st.multiselect(
-            "STAGES",
-            options=list(PIPELINE_STAGES), default=[],
-            placeholder="Select stage (e.g. PDUFA Decision)",
-            key="pipeline_stages_v9",
-            on_change=_clear_pipeline_results_v9,
-            help="Select CURRENT stage, not any historical milestone.",
-        )
-    with date_col:
-        selected_dates = st.multiselect(
-            "DATES",
-            options=list(PIPELINE_DATE_BANDS), default=[],
-            placeholder="Select PDUFA date window",
-            key="pipeline_dates_v9",
-            on_change=_clear_pipeline_results_v9,
-            help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
-        )
-    with stage_col:
-        stage_count_slot = st.container()
-    with date_col:
-        date_count_slot = st.container()
-    search_col, sort_col = st.columns([2, 1], gap="medium")
-    with search_col:
-        query = st.text_input(
-            "Find ticker, drug, indication or NCT ID",
-            key="pipeline_query_v9",
-            on_change=_clear_pipeline_results_v9,
-            placeholder="Optional search",
-        ).strip()
-    with sort_col:
-        sort_mode = st.selectbox(
-            "Sort trials", options=["Closest PDUFA first", "Ticker A–Z"],
-            key="pipeline_sort_v9",
-            on_change=_clear_pipeline_results_v9,
-        )
-
-    button_col, reset_col = st.columns([2, 1], gap="medium")
-    with button_col:
-        show_clicked = st.button(
-            "SHOW MATCHING TRIALS", type="primary", use_container_width=True,
-            disabled=not (selected_stages and selected_dates),
-            key="pipeline_show_v9",
-        )
-    with reset_col:
-        st.button(
-            "CLEAR STAGE / DATE", on_click=_reset_pipeline_filters_v9,
-            use_container_width=True, key="pipeline_clear_v9",
-        )
-
-    selection_signature = (
-        tuple(selected_stages), tuple(selected_dates), query, sort_mode
-    )
-    if show_clicked and selected_stages and selected_dates:
-        st.session_state["pipeline_applied_v9"] = selection_signature
-    applied = bool(selected_stages and selected_dates) and (
-        st.session_state.get("pipeline_applied_v9") == selection_signature
-    )
-
-    pipeline_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
-    pipeline_signature = tuple(
-        (name, (Path("data") / name).stat().st_mtime_ns)
-        for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
-    )
-    try:
-        universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
-        prepared = prepare_pipeline(universe, pipeline_today)
-        # Unselected dimensions show the available universe; selecting both
-        # makes both count charts reconcile to the eventual spreadsheet rows.
-        count_records = filter_pipeline(
-            prepared, selected_stages or list(PIPELINE_STAGES),
-            selected_dates or list(PIPELINE_DATE_BANDS), query,
-        )
-    except (KeyError, ValueError, TypeError, OSError, AttributeError) as exc:
-        st.error("Could not load Pipeline records. Check Streamlit application logs.")
-        st.caption(f"Pipeline error type: {type(exc).__name__}")
-        prepared = pd.DataFrame()
-        count_records = pd.DataFrame()
-
-    def _render_pipeline_counts(slot, title, field, categories):
-        counts = (count_records[field].value_counts().to_dict()
-                  if field in count_records else {})
-        maximum = max((int(counts.get(category, 0)) for category in categories), default=0)
-        rows = []
-        for category in categories:
-            count = int(counts.get(category, 0))
-            width = 100 * count / maximum if maximum else 0
-            label = html.escape(str(category), quote=True)
-            rows.append(
-                f'<div class="pipeline-count-row" role="listitem" '
-                f'data-category="{label}" data-count="{count}" '
-                f'aria-label="{label}: {count:,} trials / programs">'
-                f'<span class="pipeline-count-label" title="{label}">{label}</span>'
-                '<span class="pipeline-count-track" aria-hidden="true">'
-                f'<span class="pipeline-count-bar" style="width:{width:.4f}%"></span></span>'
-                f'<span class="pipeline-count-value">{count:,}</span></div>'
-            )
-        chart_html = """<style>
-        /* One physical grid row for every label, bar and value. No wrapping or
-           inherited list-item margins that can offset adjacent legend entries. */
-        .pipeline-count-chart {
-            width:100%; max-width:100%; box-sizing:border-box;
-            overflow-x:auto; padding:6px 8px; background:#fff; color:#111;
-            border:2px solid #111; border-radius:10px;
-        }
-        .pipeline-count-chart .pipeline-count-list {
-            display:grid; grid-auto-rows:34px; row-gap:2px;
-            width:100%; min-width:250px; margin:0; padding:0;
-        }
-        .pipeline-count-chart .pipeline-count-row {
-            display:grid !important;
-            grid-template-columns:146px minmax(24px,1fr) 52px;
-            column-gap:8px; align-items:center;
-            min-height:34px; height:34px; box-sizing:border-box;
-            margin:0 !important; padding:0 !important;
-        }
-        .pipeline-count-chart .pipeline-count-label,
-        .pipeline-count-chart .pipeline-count-value {
-            display:block !important; min-width:0; height:18px;
-            margin:0 !important; padding:0 !important;
-            font-size:12px !important; line-height:18px !important;
-            white-space:nowrap !important; align-self:center;
-        }
-        .pipeline-count-chart .pipeline-count-label {
-            text-align:right; overflow:hidden; text-overflow:clip;
-        }
-        .pipeline-count-chart .pipeline-count-value {
-            text-align:right; font-variant-numeric:tabular-nums;
-        }
-        .pipeline-count-chart .pipeline-count-track {
-            display:flex; align-items:center; align-self:center;
-            height:20px; min-width:0; overflow:hidden;
-            background:#edf2ed; border-radius:3px;
-        }
-        .pipeline-count-chart .pipeline-count-bar {
-            display:block; flex:0 0 auto;
-            height:18px; background:#23856a;
-        }
-        @media(max-width:600px) {
-            .pipeline-count-chart .pipeline-count-row {
-                grid-template-columns:140px minmax(24px,1fr) 52px;
-                column-gap:6px;
-            }
-        }
-        </style>""" + (
-            f'<div class="pipeline-count-chart" aria-label="{html.escape(title)}">'
-            '<div class="pipeline-count-list" role="list">' + "".join(rows) + '</div></div>'
-        )
-        with slot:
-            st.markdown("#### " + title)
-            st.markdown(chart_html, unsafe_allow_html=True)
-            st.caption(f"TOTAL: {len(count_records):,} trials / programs")
-
-    _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES)
-    _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS)
-
-    st.markdown("### PIPELINE TRIALS / PROGRAMS")
-    st.caption("Displayed count always equals the exact number of table rows.")
-    empty_chart = pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values()))
-    if not applied:
-        st.metric("Trials / programs displayed", 0)
-        st.dataframe(
-            empty_chart, hide_index=True, use_container_width=True, height=220
-        )
-        if not selected_stages or not selected_dates:
-            st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
-        else:
-            st.info("Click SHOW MATCHING TRIALS to populate the chart.")
-    else:
-        filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
-        shown = chart_rows(filtered, sort_mode)
-
-        st.metric("Trials / programs displayed", len(shown))
-        st.dataframe(
-            shown, hide_index=True, use_container_width=True, height=540,
-            column_config={"Source": st.column_config.LinkColumn("Source")},
-        )
-        if shown.empty:
-            st.info("No matching programs for that STAGES + DATES selection.")
-        else:
-            unique_ids = (
-                filtered["nct_id"].replace("", pd.NA).dropna().nunique()
-                if "nct_id" in filtered else 0
-            )
-            st.caption(
-                f"{len(shown):,} displayed rows · {unique_ids:,} unique linked trial IDs. "
-                "Saved dates are not all FDA-verified."
-            )
-        with st.expander("STAGES / DATES count audit", expanded=False):
-            stage_counts = (
-                filtered["current_stage"].value_counts().to_dict()
-                if "current_stage" in filtered else {}
-            )
-            date_counts = (
-                filtered["DATES"].value_counts().to_dict()
-                if "DATES" in filtered else {}
-            )
-            col_a, col_b = st.columns(2)
-            with col_a:
-                stage_table = pd.DataFrame(
-                    [{"Stage": stage, "Count": int(stage_counts.get(stage, 0))}
-                     for stage in PIPELINE_STAGES]
-                    + [{"Stage": "TOTAL", "Count": len(shown)}]
-                )
-                st.dataframe(stage_table, hide_index=True, use_container_width=True, height=250)
-            with col_b:
-                date_table = pd.DataFrame(
-                    [{"DATES": band, "Count": int(date_counts.get(band, 0))}
-                     for band in PIPELINE_DATE_BANDS]
-                    + [{"DATES": "TOTAL", "Count": len(shown)}]
-                )
-                st.dataframe(date_table, hide_index=True, use_container_width=True, height=250)
-            if sum(stage_counts.values()) != len(shown) or sum(date_counts.values()) != len(shown):
-                st.error("COUNT MISMATCH: displayed count and audit disagree.")
-            else:
-                st.caption("COUNT AUDIT PASSED: each chart row counted once.")
-    if st.button("REFRESH PIPELINE DATA", key="pipeline_refresh_v9"):
-        load_pipeline_universe_data.clear()
-        _clear_pipeline_results_v9()
-        st.rerun()
+            with st.expander("Additional original-source tables (preserved without unsafe joins)"):
+                for source_name, source_frame in (("FDA regulatory signals", fda_regulatory_signals), ("FDA extensions", fda_extension_ledger), ("FDA facilities", fda_facilities), ("FDA backfill queue", fda_backfill_queue), ("FDA prediction freezes", fda_freezes), ("Historical predictions", prediction_history)):
+                    st.markdown("#### " + source_name)
+                    if isinstance(source_frame, pd.DataFrame) and not source_frame.empty:
+                        st.caption(f"{len(source_frame):,} records · {len(source_frame.columns)} columns")
+                        grouped_dataframe(source_frame, use_container_width=True, hide_index=True)
+                    else:
+                        st.info("No loaded records.")
+        st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
@@ -5260,8 +5267,8 @@ else:
     with b1:
         st.write("")
         st.write("")
-        if st.button("← WATCHLIST", use_container_width=True):
-            go_page("WATCHLIST")
+        if st.button("← PIPELINE", use_container_width=True):
+            go_page("PIPELINE")
             st.rerun()
     with b2:
         st.write("")
