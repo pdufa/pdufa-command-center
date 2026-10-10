@@ -109,6 +109,10 @@ async function audit(){
       try{
         await appFrame.getByText("Potential pre-readout Phase 3 trials").first().waitFor({timeout:90000});
         result.checks.preReadoutMetrics=true;
+        result.checks.preReadoutMissingInputsVisible =
+          await appFrame.getByText("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT",{exact:false}).count()>0;
+        result.checks.preReadoutProbabilityNotInvented =
+          await appFrame.getByText("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES",{exact:false}).count()>0;
         const showQueue=appFrame.getByText("SHOW CANDIDATES & MISSING INPUTS",{exact:false}).first();
         await showQueue.waitFor({state:"visible",timeout:12000});
         result.checks.preReadoutCandidateToggle=true;
@@ -178,7 +182,10 @@ async function audit(){
   if(!result.checks.pdufaHeader) result.errors.push("App did not render in an inspected browser frame.");
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pipelineNavigation","fourPipelineTabs","stageAndDateControls",
-                   "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads","preReadoutMetrics","preReadoutCandidateToggle","workbenchVisible"]){
+                   "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
+                   "preReadoutMetrics","preReadoutMissingInputsVisible",
+                   "preReadoutProbabilityNotInvented","preReadoutCandidateToggle",
+                   "workbenchVisible"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
   if(!result.checks.scriptError)result.errors.push("Live app displays an exception.");
