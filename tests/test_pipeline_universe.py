@@ -80,5 +80,42 @@ class PipelineUniverseTests(unittest.TestCase):
         frame = build_universe(clinical=[row], today=TODAY)
         self.assertEqual(len(select_records(frame, ["Phase 3 Results"])), 0)
 
+    def test_pipeline_current_stage_count_equals_displayed_rows(self):
+        # Regression: historical tags can match fifteen programs even when
+        # only twelve are CURRENTLY at the PDUFA Decision stage.
+        import pandas as pd
+        rows = [
+            {
+                "record_id": f"APPLICATION|{i}",
+                "ticker": f"BIO{i:02d}",
+                "company": f"Bio {i}",
+                "drug": f"Drug {i}",
+                "indication": "Test",
+                "nct_id": "",
+                "stage_tags": ("FDA Acceptance", "PDUFA Decision"),
+                "current_stage": (
+                    "PDUFA Decision" if i < 12 else "FDA Acceptance"
+                ),
+            }
+            for i in range(15)
+        ]
+        frame = pd.DataFrame(rows)
+        self.assertEqual(
+            len(select_records(frame, ["PDUFA Decision"])), 15
+        )  # Historical milestone search remains available.
+        chart = select_records(
+            frame, ["PDUFA Decision"], current_only=True
+        )
+        self.assertEqual(len(chart), 12)
+        self.assertEqual(
+            int(chart["current_stage"].eq("PDUFA Decision").sum()), len(chart)
+        )
+        self.assertTrue(
+            select_records(frame, [], current_only=True).empty
+        )
+        self.assertEqual(
+            len(select_records(frame, ["FDA Acceptance"], current_only=True)), 3
+        )
+
 if __name__ == "__main__":
     unittest.main()
