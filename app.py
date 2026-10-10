@@ -3878,7 +3878,9 @@ if page == "PDUFA":
         st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
 
     with pre_phase3_tab:
-        if pre_phase3_tab.open:
+        # Prefer the keyed session selection, which persists through child-widget
+        # reruns and AppTest; .open is a fallback for Streamlit tab transitions.
+        if st.session_state.get("pdufa_subtab") == "PRE PHASE 3" or pre_phase3_tab.open:
             render_pre_phase3()
 
     with intake_tab:
