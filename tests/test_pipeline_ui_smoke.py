@@ -87,8 +87,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         submenu_labels = [item.label for item in app.get("tab") if item.label in
-                          {"PIPELINE", "PHASE 3 DAILY", "PDUFA WORKBENCH"}]
-        self.assertEqual(submenu_labels, ["PIPELINE", "PHASE 3 DAILY"])
+                          {"PIPELINE", "PRE PHASE 3", "POST PHASE 3", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
                             for item in app.markdown))
@@ -210,14 +210,25 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertNotIn(ticker, app.session_state["watchlist"])
 
 
-    def test_phase3_daily_report_moved_from_today_into_pipeline(self):
+    def test_old_phase3_daily_tab_selection_migrates(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        app.session_state["nav"] = "PDUFA"
+        app.session_state["pdufa_subtab"] = "PHASE 3 DAILY"
+        app.run()
+        self.assertFalse(list(app.exception))
+        self.assertEqual(app.session_state["pdufa_subtab"], "POST PHASE 3")
+        labels = [item.label for item in app.get("tab")]
+        self.assertIn("POST PHASE 3", labels)
+        self.assertNotIn("PHASE 3 DAILY", labels)
+
+    def test_post_phase3_report_remains_under_pdufa(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.run()
         self.assertFalse(list(app.exception))
         nav = next(item for item in app.radio if item.key == "nav")
         self.assertNotIn("TODAY", nav.options)
-        self.assertTrue(any("PHASE 3 DAILY INTAKE" in item.body for item in app.markdown))
+        self.assertTrue(any("POST PHASE 3 — DAILY RESULTS & INTAKE" in item.body for item in app.markdown))
         details = app.get("toggle")
         self.assertTrue(any(item.key == "pipeline_phase3_daily_details_v1" for item in details))
         table_count_before = len(app.dataframe)

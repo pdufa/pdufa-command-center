@@ -3077,7 +3077,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V18 — PRE PHASE 3 NESTED BESIDE PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3109,10 +3109,13 @@ else:
         st.query_params.clear()
 
 if page == "PDUFA":
+    # Preserve existing Streamlit sessions after renaming the daily tab.
+    if st.session_state.get("pdufa_subtab") == "PHASE 3 DAILY":
+        st.session_state["pdufa_subtab"] = "POST PHASE 3"
     # PDUFA hosts the combined Pipeline workflow, pre-readout research, and daily intake.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
     pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(
-        ["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"],
+        ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"],
         key="pdufa_subtab", on_change="rerun",
     )
     with pipeline_tab:
@@ -3882,7 +3885,7 @@ if page == "PDUFA":
             render_pre_phase3()
 
     with intake_tab:
-        st.markdown("## PHASE 3 DAILY INTAKE")
+        st.markdown("## POST PHASE 3 — DAILY RESULTS & INTAKE")
         st.caption("The former TODAY reports are here: recent result posts, cumulative Phase 3 records, financing, Watchlist management and CSV export. Opening this view does not run collectors.")
         try:
             _intake_state = json.loads(Path("data/phase3_intake_status.json").read_text(encoding="utf-8"))
@@ -3899,7 +3902,7 @@ if page == "PDUFA":
         except (OSError, ValueError, TypeError):
             st.warning("Phase 3 intake status is unavailable; do not assume completeness.")
         if st.toggle(
-            "SHOW PHASE 3 DAILY REPORT — results, Watchlist and export",
+            "SHOW POST PHASE 3 DAILY REPORT — results, Watchlist and export",
             key="pipeline_phase3_daily_details_v1",
             value=False,
             help="Large tables load on demand so Stage/Date filters stay responsive.",
