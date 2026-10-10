@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("NAVIGATION V12");
+  result.checks.newBuildLabel=initial.includes("PRE-READOUT INPUT AUDIT V1");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
