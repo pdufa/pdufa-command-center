@@ -87,7 +87,13 @@ class PipelineDisplayTests(unittest.TestCase):
         end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
         section = source[start:end]
         self.assertIn('with pipeline_tab:', section)
-        self.assertIn('pipeline_tab, intake_tab = st.tabs(["PIPELINE", "PHASE 3 DAILY"])', section)
+        self.assertIn('pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(', section)
+        self.assertIn('["PIPELINE", "PRE PHASE 3", "PHASE 3 DAILY"]', section)
+        self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
+        self.assertIn('with pre_phase3_tab:', section)
+        self.assertIn('if pre_phase3_tab.open:', section)
+        self.assertIn('render_pre_phase3()', section)
+        self.assertNotIn('elif page == "PRE PHASE 3":', source)
         self.assertNotIn('"PDUFA WORKBENCH"', section)
         self.assertEqual(section.count('with pipeline_tab:'), 2)
         self.assertNotIn('"TRIALS AND DATES"', section)
@@ -104,6 +110,7 @@ class PipelineDisplayTests(unittest.TestCase):
         source = Path("app.py").read_text(encoding="utf-8")
         nav = source.split("nav_options =", 1)[1].split("\n", 1)[0]
         self.assertIn('"PDUFA"', nav)
+        self.assertNotIn('"PRE PHASE 3"', nav)
         self.assertNotIn('"WATCHLIST"', nav)
         section = source.split('if page == "PDUFA":', 1)[1].split(
             'elif page == "DISEASE & MARKET HORIZON":', 1
