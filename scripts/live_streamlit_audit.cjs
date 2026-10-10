@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("NAVIGATION V15") && initial.includes("PRE PHASE 3 TAB V1");
+  result.checks.newBuildLabel=initial.includes("NAVIGATION V16") && initial.includes("PRE PHASE 3 TAB V1");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -78,7 +78,7 @@ async function audit(){
     result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3Navigation=result.navigation.includes("PRE PHASE 3");
-    result.checks.threePipelineTabs=["TRIALS AND DATES","PDUFA WORKBENCH","PHASE 3 DAILY"].every(x=>result.tabs.some(t=>t.includes(x)));
+    result.checks.threePipelineTabs=["PIPELINE","PDUFA WORKBENCH","PHASE 3 DAILY"].every(x=>result.tabs.some(t=>t.includes(x)));
     result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
       await appFrame.getByText("DATES",{exact:true}).count()>0;
     result.checks.stageCountChart=await appFrame.getByText("STAGE COUNTS",{exact:true}).count()>0;
@@ -135,7 +135,7 @@ async function audit(){
       await sleep(1500);
       result.checks.workbenchVisible=await appFrame.getByText("WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION",{exact:false}).count()>0;
       await page.screenshot({path:path.join(outDir,"streamlit-workbench.png"),fullPage:false});
-      await appFrame.getByRole("tab",{name:"TRIALS AND DATES"}).click({timeout:15000});
+      await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
       await page.setViewportSize({width:390,height:844});
       await sleep(1500);
       await page.screenshot({path:path.join(outDir,"streamlit-iphone-width.png"),fullPage:false});

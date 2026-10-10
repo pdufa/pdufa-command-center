@@ -3077,7 +3077,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V15 — PDUFA TRIALS AND DATES SUBMENU · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V16 — PDUFA PIPELINE SUBMENU · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3109,7 +3109,7 @@ if page == "PDUFA":
     # together on Pipeline; the oversized Master Table grid stays removed.
     # Submenus nested under the PDUFA main navigation tab.
     trial_tab, trade_tab, intake_tab = st.tabs([
-        "TRIALS AND DATES",
+        "PIPELINE",
         "PDUFA WORKBENCH",
         "PHASE 3 DAILY",
     ])
