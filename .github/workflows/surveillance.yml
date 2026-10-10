@@ -48,33 +48,28 @@ jobs:
       - name: Install dependencies
         run: pip install pandas requests
 
-      - name: Select surveillance mode in Pacific time
+      - name: Select surveillance mode from scheduled UTC cron
         id: mode
-        shell: bash
+        env:
+          GH_EVENT_NAME: ${{ github.event_name }}
+          GH_SCHEDULE: ${{ github.event.schedule }}
+          MANUAL_MODE: ${{ inputs.mode }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "run=yes" >> "$GITHUB_OUTPUT"
-            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          python - <<'PY'
+          import os
+          from scripts.surveillance_schedule import mode_for_schedule
 
-          local_hm="$(TZ=America/Los_Angeles date +%H:%M)"
-          local_dow="$(TZ=America/Los_Angeles date +%w)"
-          local_dom="$(TZ=America/Los_Angeles date +%d)"
-
-          if [ "$local_dom" = "01" ] && [ "$local_hm" = "04:30" ]; then
-            echo "run=yes" >> "$GITHUB_OUTPUT"
-            echo "mode=monthly" >> "$GITHUB_OUTPUT"
-          elif [ "$local_dow" = "0" ] && [ "$local_hm" = "04:00" ]; then
-            echo "run=yes" >> "$GITHUB_OUTPUT"
-            echo "mode=weekly" >> "$GITHUB_OUTPUT"
-          elif [ "$local_hm" = "05:15" ]; then
-            echo "run=yes" >> "$GITHUB_OUTPUT"
-            echo "mode=daily" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=no" >> "$GITHUB_OUTPUT"
-            echo "mode=skip" >> "$GITHUB_OUTPUT"
-          fi
+          if os.environ.get("GH_EVENT_NAME") == "workflow_dispatch":
+              mode = os.environ.get("MANUAL_MODE") or "daily"
+          else:
+              mode = mode_for_schedule(os.environ.get("GH_SCHEDULE", ""))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as result:
+              result.write("run=" + ("yes" if mode != "skip" else "no") + "\n")
+              result.write("mode=" + mode + "\n")
+          print("Event:", os.environ.get("GH_EVENT_NAME"))
+          print("Scheduled cron:", os.environ.get("GH_SCHEDULE", "(manual)"))
+          print("Selected mode:", mode)
+          PY
 
       - name: Daily discovery
         if: steps.mode.outputs.run == 'yes' && (steps.mode.outputs.mode == 'daily' || steps.mode.outputs.mode == 'weekly' || steps.mode.outputs.mode == 'full')
