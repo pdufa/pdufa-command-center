@@ -33,7 +33,7 @@ jobs:
         run: pip install pandas
       - name: Capture design-only protocol evidence (no Phase 3 outcome section)
         id: collect
-        run: python scripts/pre_readout_protocol_intake.py --limit 180 --workers 8
+        run: python scripts/pre_readout_protocol_intake.py --limit 300 --workers 8
         continue-on-error: true
       - name: Save incremental protocol coverage and honest status
         run: |
