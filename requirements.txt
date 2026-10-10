@@ -1,3 +1,3 @@
 streamlit>=1.52
 pandas>=2.0
-# Streamlit Cloud redeploy trigger: 2026-10-10 navigation V16 (PDUFA > PIPELINE submenu; PRE PHASE 3 retained)
+# Streamlit Cloud redeploy trigger: 2026-10-10 navigation V17 (Workbench research merged into PDUFA > PIPELINE; PRE PHASE 3 retained)
