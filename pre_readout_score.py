@@ -57,7 +57,7 @@ def _iso_day(value):
         return None
 
 
-def candidate_queue(pipeline, announcements, cap_cache, as_of):
+def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None):
     """Return *potential* pre-readout Phase 3 trials in $300M–$10B universe.
 
     Not a certification that topline results have not been announced elsewhere.
@@ -95,6 +95,26 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of):
         # If issuer announcements have no exact NCT ID, do NOT assume a ticker
         # match establishes a particular trial's outcome.
         not_posted &= ~nct.isin(prior_ncts - {""})
+    # A fresh protocol fetch can detect posted results or a stopped study
+    # before the slower local pipeline registry ledger is refreshed. Never
+    # score it as pre-readout simply because that ledger is stale.
+    if protocols is not None and not protocols.empty and "nct_id" in protocols:
+        p = protocols.copy()
+        protocol_nct = _cols(p, "nct_id").str.upper()
+        source = _cols(p, "source_url")
+        checked_proto = _dates(_cols(p, "checked_at"))
+        valid_proto = (
+            protocol_nct.str.fullmatch(r"NCT\d{8}").fillna(False)
+            & source.eq("https://clinicaltrials.gov/study/" + protocol_nct)
+            & checked_proto.dt.date.le(as_of).fillna(False)
+        )
+        published_proto = _cols(p, "registry_results_first_posted").ne("")
+        stopped_proto = (
+            _cols(p, "registry_overall_status").str.upper().ne("")
+            & ~_cols(p, "registry_overall_status").str.upper().isin(ACTIVE)
+        )
+        blocked = set(protocol_nct.loc[valid_proto & (published_proto | stopped_proto)])
+        not_posted &= ~nct.isin(blocked)
     if cap_cache is None or cap_cache.empty or "ticker" not in cap_cache:
         return pd.DataFrame(columns=RESULT_COLUMNS)
     c = cap_cache.copy().drop_duplicates("ticker", keep="last")
