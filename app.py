@@ -3547,7 +3547,8 @@ if page == "PIPELINE":
                 "data/phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False
             )
             _p3_candidates = phase3_pre_readout_queue(
-                _p3_raw, _p3_posts, _p3_caps, cutoff, protocols=_p3_protocols,
+                _p3_raw, _p3_posts, _p3_caps, cutoff,
+                protocols=_p3_protocols, require_protocol=True,
             )
         except (OSError, ValueError, KeyError, pd.errors.ParserError, TypeError) as exc:
             st.error("Pre-readout sources unavailable; no probability or research score inferred.")
@@ -3669,7 +3670,8 @@ if page == "PIPELINE":
             )
         st.caption(
             "Scope: USD 300M–USD 10B verified market cap; active standalone Phase 3; "
-            "no recorded registry result posting or exactly matched result announcement. "
+            "fresh exact-NCT protocol (last 2 days), no posted registry result or "
+            "exactly matched result announcement. "
             "Phase 2 trial ID is NOT Phase 2 efficacy evidence. "
             "Primary completion is NOT a public topline release date. "
             f"As-of date: {cutoff.isoformat()} Pacific. Missing issuer checks stay NOT SCORED."
