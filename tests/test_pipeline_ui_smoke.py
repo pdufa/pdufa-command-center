@@ -223,8 +223,15 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.session_state["nav"] = "PIPELINE"
         app.run()
         self.assertFalse(list(app.exception))
+        nav = app.radio(key="nav")
+        self.assertIn("PRE PHASE 3", nav.options)
+        self.assertFalse(any("CLINICAL SUCCESS ASSESSMENT" in item.body
+                             for item in app.markdown))
+        nav.set_value("PRE PHASE 3").run()
+        self.assertFalse(list(app.exception))
+        self.assertEqual(app.radio(key="nav").value, "PRE PHASE 3")
         headings = [item.body for item in app.markdown]
-        self.assertTrue(any("PHASE 3 PRE-READOUT — CLINICAL SUCCESS ASSESSMENT" in x
+        self.assertTrue(any("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT" in x
                             for x in headings))
         self.assertTrue(any("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES" in x
                             for x in [str(w.body) for w in app.warning]))
@@ -236,6 +243,22 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for x in headings))
         self.assertTrue(any(item.key == "pre_readout_show_candidates_v1"
                             for item in app.get("toggle")))
+        self.assertFalse(any(item.key == "pipeline_show_v9" for item in app.button))
+        before_count = len(app.dataframe)
+        next(item for item in app.get("toggle")
+             if item.key == "pre_readout_show_candidates_v1").set_value(True).run()
+        self.assertFalse(list(app.exception))
+        self.assertGreater(len(app.dataframe), before_count)
+        candidates = app.dataframe[-1].value
+        self.assertIn("Combined Pre-Readout Score /100", candidates.columns)
+        self.assertIn("Phase 2 p Evidence", candidates.columns)
+        self.assertTrue(candidates["Phase 3 Success Probability %"].isna().all())
+        self.assertTrue(any(item.key == "pre_readout_screen_download_v1"
+                            for item in app.get("download_button")))
+        app.radio(key="nav").set_value("PIPELINE").run()
+        self.assertFalse(list(app.exception))
+        self.assertTrue(any("PIPELINE — CLINICAL AND REGULATORY STAGES" in item.body
+                            for item in app.markdown))
 
 
 if __name__ == "__main__":

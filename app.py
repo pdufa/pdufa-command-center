@@ -2640,6 +2640,358 @@ def table_view(frame, return_page="PIPELINE"):
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
 
+def render_pre_phase3():
+    """Review linked Phase 2 evidence and Phase 3 design before readout."""
+    st.markdown("## PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT")
+    st.warning(
+        "PRE-RESULTS ONLY: These are possible upcoming Phase 3 readouts, "
+        "NOT confirmed unpublished company topline events. "
+        "We do not yet have the Phase 2 efficacy, detailed Phase 3 protocol, "
+        "safety or FDA-alignment evidence needed to assign a defensible "
+        "success probability. Phase 2 primary p-values must be linked to "
+        "the correct Phase 2 trial and available before the readout. "
+        "Never use published Phase 3 outcomes or "
+        "post-readout price action to score this tab."
+    )
+    st.caption(
+        "100-point research rubric (NOT probability): "
+        + " · ".join(f"{name.replace('_', ' ').title()} {weight}" for name, weight in PRE_READOUT_WEIGHTS.items())
+        + ". All six dimensions require original evidence published BEFORE "
+        "the scoring date; same-day date-only sources cannot establish release order. "
+        "Success probability stays blank "
+        "until independent historical calibration and out-of-sample validation."
+    )
+    cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    try:
+        _p3_protocols = pd.read_csv(
+            "data/pre_readout_protocols.csv", dtype=str, keep_default_na=False,
+        )
+    except (OSError, ValueError, pd.errors.ParserError):
+        _p3_protocols = pd.DataFrame()
+    try:
+        _p3_raw = pd.read_csv(
+            "data/phase_pipeline.csv", dtype=str, keep_default_na=False
+        )
+        _p3_posts = pd.read_csv(
+            "data/phase3_announcements.csv", dtype=str, keep_default_na=False
+        )
+        _p3_caps = pd.read_csv(
+            "data/phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False
+        )
+        _p3_candidates = phase3_pre_readout_queue(
+            _p3_raw, _p3_posts, _p3_caps, cutoff,
+            protocols=_p3_protocols, require_protocol=True,
+        )
+    except (OSError, ValueError, KeyError, pd.errors.ParserError, TypeError) as exc:
+        st.error("Pre-readout sources unavailable; no probability or research score inferred.")
+        st.caption("Pre-readout input error type: " + type(exc).__name__)
+        _p3_candidates = pd.DataFrame()
+    try:
+        _pre_evidence = pd.read_csv(
+            "data/phase3_pre_readout_evidence.csv", dtype=str, keep_default_na=False,
+        )
+    except (OSError, ValueError, pd.errors.ParserError):
+        _pre_evidence = pd.DataFrame()
+    _p3_upload = st.file_uploader(
+        "IMPORT PRE-READOUT EVIDENCE (.CSV) — current session only",
+        type=["csv"], key="pre_readout_evidence_upload_v1",
+        help="Fill the downloadable evidence template with original dated clinical sources. Uploaded data is not written to GitHub and sources are not independently adjudicated.",
+    )
+    if _p3_upload is not None:
+        if _p3_upload.size > 2_000_000:
+            st.error("Evidence CSV exceeds the 2 MB safety limit; scores remain unavailable.")
+            _pre_evidence = pd.DataFrame()
+        else:
+            try:
+                _p3_import = pd.read_csv(
+                    _p3_upload, dtype=str, keep_default_na=False,
+                )
+                _expected = set(pre_readout_template(pd.DataFrame()).columns)
+                if not _expected.issubset(_p3_import.columns):
+                    st.error("Evidence CSV is missing template columns; use DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE.")
+                    _pre_evidence = pd.DataFrame()
+                elif _p3_import["nct_id"].astype(str).duplicated().any():
+                    st.error("Duplicate NCT IDs in evidence upload; resolve them before scoring.")
+                    _pre_evidence = pd.DataFrame()
+                else:
+                    _pre_evidence = _p3_import
+                    st.info("Session-only evidence loaded. Research scores require exact trial identity, pre-cutoff publication dates and issuer confirmation. URLs are analyst-provided, not independently verified.")
+            except (OSError, ValueError, TypeError, pd.errors.ParserError, UnicodeError):
+                st.error("Could not parse evidence CSV; no uploaded scores applied.")
+                _pre_evidence = pd.DataFrame()
+    st.caption("Pre-release scoring is based on documented information only. The system does not certify uploaded publications or establish a clinical success probability. For historical assessments, same-day publication order cannot be established from date-only fields.")
+    _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
+    # Phase 2 primary-p evidence is an earlier-stage INPUT, not an
+    # automatic clinical quality score or Phase 3 success probability.
+    try:
+        _p2_primary = pd.read_csv(
+            "data/phase2_primary_pvalues.csv", dtype=str, keep_default_na=False,
+        )
+    except (OSError, ValueError, pd.errors.ParserError):
+        _p2_primary = pd.DataFrame()
+    _p3_candidates = attach_phase2_p(_p3_candidates, _p2_primary, cutoff)
+    _p2_n_with_p = (
+        int(_p3_candidates["Phase 2 Primary p Recorded"].str.startswith("YES").sum())
+        if "Phase 2 Primary p Recorded" in _p3_candidates else 0
+    )
+    st.caption(
+        f"Phase 2 primary-endpoint p-value documented before cutoff: "
+        f"{_p2_n_with_p:,} / {len(_p3_candidates):,} current candidates. "
+        "A p-value is not proof of clinical efficacy, and it is not a "
+        "Phase 3 success probability. No p values are inferred."
+    )
+    try:
+        _p2_state = json.loads(
+            Path("data/phase2_pvalues_status.json").read_text(encoding="utf-8")
+        )
+        st.caption(
+            f"Phase 2 source check: {_p2_state.get('status', 'UNKNOWN')} · "
+            f"{_p2_state.get('linked_phase2_trials', 0)} linked prior-stage trials · "
+            f"{_p2_state.get('phase2_trials_with_recorded_primary_p', 0)} with primary p · "
+            f"{_p2_state.get('api_errors', 0)} source errors."
+        )
+    except (OSError, ValueError, TypeError):
+        st.warning(
+            "Phase 2 primary p-value intake has not run or is unavailable; "
+            "the displayed zero is NOT evidence that trials lack p-values."
+        )
+    # Phase 2 p evidence is a pre-readout predictor input, never a
+    # Phase 3 result or automatic point award. Exact phase2_nct_ids,
+    # issuer ticker, registry publication, and first-observed cutoff
+    # are all required; missing values remain explicitly unverified.
+    try:
+        _phase2_p = pd.read_csv(
+            "data/phase2_primary_p_evidence.csv", dtype=str,
+            keep_default_na=False,
+        )
+    except (OSError, ValueError, pd.errors.ParserError):
+        _phase2_p = pd.DataFrame()
+    _p3_candidates = join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)
+    _p3_candidates = combine_phase2_phase3(_p3_candidates, _pre_evidence)
+    try:
+        _p2_state = json.loads(
+            Path("data/phase2_p_intake_status.json").read_text(encoding="utf-8")
+        )
+        st.caption(
+            "Phase 2 primary p evidence: "
+            + str(_p2_state.get("primary_p_observations_stored", 0))
+            + " observed analyses · "
+            + str(_p2_state.get("primary_p_linked_nct", 0))
+            + " linked Phase 2 trials · "
+            + str(_p2_state.get("status", "UNKNOWN"))
+            + " · verified observation cutoff "
+            + str(_p2_state.get("as_of", "unavailable"))
+        )
+        if _p2_state.get("status") != "COMPLETE":
+            st.warning("Phase 2 p collection is partial. Missing p data cannot be treated as a failed trial.")
+    except (OSError, ValueError, TypeError):
+        st.warning("Phase 2 primary p evidence has not been collected yet.")
+    st.caption(
+        "PHASE 2 p-value evidence is shown only when first observed BEFORE the Phase 3 "
+        "assessment cutoff, from an explicitly linked Phase 2 trial. A small p-value "
+        "does not establish a clinically meaningful effect or Phase 3 success. "
+        "The 100-point research score still requires sourced efficacy, safety, "
+        "design, regulatory alignment, execution, and issuer verification."
+    )
+    # Audit PRE-RELEASE input presence separately from clinical scoring.
+    # The input counter does not inspect Phase 3 outcomes or p-values.
+    _input_rows, _input_counts = audit_pre_readout_inputs(
+        _p3_candidates, _p3_protocols, _pre_evidence, as_of=cutoff,
+    )
+    if not _p3_candidates.empty and not _input_rows.empty:
+        _p3_candidates = _p3_candidates.merge(
+            _input_rows[["NCT ID", "Input Coverage %",
+                         "Basic Design Safeguards /5",
+                         "Observed Design Safeguards",
+                         "Unobserved Design Safeguards",
+                         "Available Inputs", "Missing Inputs", "Issuer Check"]],
+            on="NCT ID", how="left", validate="one_to_one",
+        )
+    _design_evidence = pd.DataFrame()
+    # The automated collector fills DESIGN METADATA COVERAGE, not the manual
+    # 100-point pre-readout evidence-quality rubric or an inferred PoS.
+    try:
+        _design_evidence = load_pre_readout_design_coverage(
+            "data", as_of=cutoff, cap_filter=True,
+        )
+        _verified_design = _design_evidence[
+            _design_evidence["Coverage"].eq("PROTOCOL PARTIAL")
+        ].drop_duplicates(subset=["NCT ID"], keep="last")
+        _design_map = _verified_design.set_index("NCT ID")
+        for _title, _field in (
+            ("Protocol Data Coverage /100", "Evidence Score / 100"),
+            ("Protocol Primary Endpoint", "Primary Endpoints"),
+            ("Design Allocation", "Allocation"),
+            ("Design Masking", "Masking"),
+            ("Protocol Evidence Gaps", "Evidence Gaps"),
+            ("Protocol Checked", "Protocol Checked"),
+            ("Design Source", "Protocol Source"),
+        ):
+            if "NCT ID" in _p3_candidates:
+                _p3_candidates[_title] = _p3_candidates["NCT ID"].map(
+                    _design_map[_field]
+                )
+    except (OSError, ValueError, TypeError, KeyError, pd.errors.ParserError):
+        st.warning("Automated Phase 3 protocol coverage is unavailable. Manual research score remains unassigned.")
+    try:
+        _pr_status = json.loads(
+            Path("data/pre_readout_intake_status.json").read_text(encoding="utf-8")
+        )
+        st.caption(
+            "Current Phase 3 protocol-only intake: "
+            + str(_pr_status.get("status", "UNKNOWN"))
+            + " · " + str(_pr_status.get("protocol_records_stored", 0))
+            + " design records / "
+            + str(_pr_status.get("active_registry_unposted_phase3_trials", 0))
+            + " registry candidates · "
+            + str(_pr_status.get("as_of", "unavailable"))
+        )
+        if _pr_status.get("status") != "COMPLETE":
+            st.warning("Prospective protocol collection is partial. Missing design fields receive no metadata coverage points.")
+    except (OSError, TypeError, ValueError):
+        st.caption("Protocol-only scanner has not produced a saved coverage audit yet.")
+    st.caption(
+        "PROTOCOL DATA COVERAGE /100 measures documented registry-design fields only. "
+        "It is NOT the clinical research score and is NOT a success probability; "
+        "it can improve simply because more metadata was collected."
+    )
+    st.caption(
+        "BASIC DESIGN SAFEGUARDS /5 is an automatically observed checklist: "
+        "endpoint with time frame, randomized allocation, double-or-greater "
+        "masking, recorded comparator, and sample size. It does NOT measure "
+        "statistical power, endpoint validity, trial success probability, "
+        "or suitability for single-arm/open-label indications. Missing "
+        "protocols stay blank rather than scoring zero."
+    )
+    st.markdown("### PHASE 2 p + PHASE 3 PRE-READOUT = ONE RESEARCH SCORE")
+    st.caption(
+        "Phase 2 efficacy contributes up to 25 of 100 research points, "
+        "using a verified Phase 2 primary endpoint p-value PLUS effect size, "
+        "clinical meaning and exact linked trial identity. The remaining 75 "
+        "points cover pre-release Phase 3 design, safety, FDA alignment, "
+        "execution and evidence quality. Points are awarded only when every "
+        "required pre-cutoff source and issuer-unreleased check passes. "
+        "A statistically significant p-value alone does not prove clinical "
+        "benefit. These points are NOT a probability of Phase 3 success."
+    )
+    st.markdown("### INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT")
+    st.caption(
+        "Counts below refer to possible pre-readout candidates in the USD 300M–10B universe. "
+        "Documented means a source field exists, NOT that the trial design is adequate. "
+        "A blank input is UNKNOWN, not evidence of trial failure. "
+        "The current registry protocol is not a historical frozen snapshot."
+    )
+    input_counts_df = pd.DataFrame([
+        {"Required pre-readout input": key,
+         "With documented input": _input_counts.get(key, 0),
+         "Missing / unverified": len(_p3_candidates) - _input_counts.get(key, 0)}
+        for key in PRE_READOUT_CHECK_KEYS
+    ])
+    st.dataframe(input_counts_df, hide_index=True, use_container_width=True)
+    if not _p3_candidates.empty and "Input Coverage %" in _p3_candidates:
+        _mean_input_coverage = pd.to_numeric(
+            _p3_candidates["Input Coverage %"], errors="coerce"
+        ).mean()
+        st.caption(
+            f"Average pre-readout INPUT COVERAGE: {_mean_input_coverage:.1f}% "
+            "across eligible trials. This is NOT a Phase 3 success probability. "
+            "Issuer topline verification and a validated Phase 2 efficacy/safety "
+            "assessment are mandatory before issuing a clinical research score."
+        )
+    ready_identity = (
+        int(_p3_candidates["Program Identity"].eq("VERIFIED").sum())
+        if "Program Identity" in _p3_candidates else 0
+    )
+    linked_phase2 = (
+        int(_p3_candidates["Phase 2 NCT Links"].astype(str).str.strip().ne("").sum())
+        if "Phase 2 NCT Links" in _p3_candidates else 0
+    )
+    fully_scored = (
+        int(_p3_candidates["Pre-Readout Evidence Points"].notna().sum())
+        if "Pre-Readout Evidence Points" in _p3_candidates else 0
+    )
+    pc1, pc2, pc3, pc4 = st.columns(4)
+    pc1.metric("Potential pre-readout Phase 3 trials", len(_p3_candidates))
+    pc2.metric("Verified program identity", ready_identity)
+    pc3.metric("Phase 2 trial ID linked", linked_phase2)
+    pc4.metric("Complete 100-point assessments", fully_scored)
+    _combined_n = int(_p3_candidates["Combined Pre-Readout Score /100"].notna().sum())
+    st.metric("Phase 2 + Phase 3 fully reviewed combinations", _combined_n)
+    st.caption(
+        "PHASE 2 /25 + PRE-READOUT OTHER EVIDENCE /75 = combined /100, "
+        "only when a linked primary Phase 2 p-value was observed before "
+        "cutoff AND every clinical domain was independently reviewed. "
+        "A p-value alone never earns 25 points. The combined score is NOT "
+        "a calibrated chance of Phase 3 success."
+    )
+    _p2_matched = (
+        int(_p3_candidates["Phase 2 p Evidence"].eq(
+            "REPORTED — MANUAL CLINICAL REVIEW"
+        ).sum()) if "Phase 2 p Evidence" in _p3_candidates else 0
+    )
+    st.caption(
+        f"Phase 2 primary p-value evidence linked and date-verified for "
+        f"{_p2_matched:,} / {len(_p3_candidates):,} pre-readout candidates. "
+        "Research interpretation is still required."
+    )
+    if fully_scored == 0:
+        st.warning(
+            "NOT READY FOR PHASE 3 SUCCESS PROBABILITIES: no pre-readout "
+            "candidate has all six source-dated clinical research "
+            "assessments and an independent issuer-unreleased check. "
+            "Protocol-data coverage is NOT probability of success."
+        )
+    st.caption(
+        "Scope: USD 300M–USD 10B verified market cap; active standalone Phase 3; "
+        "fresh exact-NCT protocol (last 2 days), no posted registry result or "
+        "exactly matched result announcement. "
+        "Phase 2 trial ID is NOT Phase 2 efficacy evidence. "
+        "Primary completion is NOT a public topline release date. "
+        f"As-of date: {cutoff.isoformat()} Pacific. Missing issuer checks stay NOT SCORED."
+    )
+    if not _p3_candidates.empty:
+        st.download_button(
+            "DOWNLOAD PRE-READOUT SCREEN (.CSV)",
+            data=_p3_candidates.to_csv(index=False).encode("utf-8"),
+            file_name=f"phase3_pre_readout_screen_{cutoff:%Y%m%d}.csv",
+            mime="text/csv",
+            key="pre_readout_screen_download_v1",
+            help="Current prospective screening queue: protocol data coverage and uncalibrated clinical PoS are separate fields.",
+        )
+        st.download_button(
+            "DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE",
+            data=pre_readout_template(_p3_candidates).to_csv(index=False).encode("utf-8"),
+            file_name=f"phase3_pre_readout_evidence_{cutoff:%Y%m%d}.csv",
+            mime="text/csv",
+            key="pre_readout_template_download_v1",
+        )
+        if st.toggle(
+            "SHOW CANDIDATES & MISSING INPUTS",
+            value=False,
+            key="pre_readout_show_candidates_v1",
+            help="Shows potential unpublished trial records only; each requires issuer confirmation.",
+        ):
+            st.dataframe(
+                _p3_candidates, use_container_width=True, hide_index=True,
+                column_config={
+                    "Source": st.column_config.LinkColumn("Registry study source"),
+                    "Market Cap": st.column_config.NumberColumn(
+                        "Market cap ($)", format="$%.0f"
+                    ),
+                    "Phase 3 Success Probability %": st.column_config.NumberColumn(
+                        "Phase 3 success probability (unavailable)", format="%.1f%%"
+                    ),
+                },
+            )
+    else:
+        st.info("No preliminary Phase 3 pre-readout candidates match the present verified market-cap and registry gates.")
+    st.caption(
+        "Source warning: Current registry records are not historical frozen snapshots. "
+        "For past-case validation, reconstruct protocol versions and issuer publications "
+        "AS THEY EXISTED BEFORE RELEASE, then preserve unmodified frozen predictions."
+    )
+
+
 query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
 query_page = st.query_params.get("page")
@@ -2725,7 +3077,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V12 — TODAY MERGED INTO PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V13 — TODAY MERGED INTO PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PIPELINE → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -2733,7 +3085,7 @@ if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
 
-nav_options = ["PIPELINE","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PIPELINE","PRE PHASE 3","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 if st.session_state.nav not in nav_options:
     st.session_state.nav = "PIPELINE"
@@ -2750,16 +3102,15 @@ else:
 if page == "PIPELINE":
     # The trial selector and the former Master/Watchlist engine now live
     # together on Pipeline; the oversized Master Table grid stays removed.
-    trial_tab, trade_tab, pre_tab, intake_tab = st.tabs([
+    trial_tab, trade_tab, intake_tab = st.tabs([
         "TRIALS & DATES",
         "PDUFA WORKBENCH",
-        "PHASE 3 PRE-READOUT",
         "PHASE 3 DAILY",
     ])
     with trial_tab:
         st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
         st.caption(
-            "PIPELINE-V12 · Select STAGES and DATES, then "
+            "PIPELINE-V13 · Select STAGES and DATES, then "
             "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
         )
 
@@ -3515,356 +3866,6 @@ if page == "PIPELINE":
                         st.info("No loaded records.")
         st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
 
-    with pre_tab:
-        st.markdown("## PHASE 3 PRE-READOUT — CLINICAL SUCCESS ASSESSMENT")
-        st.warning(
-            "PRE-RESULTS ONLY: These are possible upcoming Phase 3 readouts, "
-            "NOT confirmed unpublished company topline events. "
-            "We do not yet have the Phase 2 efficacy, detailed Phase 3 protocol, "
-            "safety or FDA-alignment evidence needed to assign a defensible "
-            "success probability. Phase 2 primary p-values must be linked to "
-            "the correct Phase 2 trial and available before the readout. "
-            "Never use published Phase 3 outcomes or "
-            "post-readout price action to score this tab."
-        )
-        st.caption(
-            "100-point research rubric (NOT probability): "
-            + " · ".join(f"{name.replace('_', ' ').title()} {weight}" for name, weight in PRE_READOUT_WEIGHTS.items())
-            + ". All six dimensions require original evidence published BEFORE "
-            "the scoring date; same-day date-only sources cannot establish release order. "
-            "Success probability stays blank "
-            "until independent historical calibration and out-of-sample validation."
-        )
-        cutoff = datetime.now(ZoneInfo("America/Los_Angeles")).date()
-        try:
-            _p3_protocols = pd.read_csv(
-                "data/pre_readout_protocols.csv", dtype=str, keep_default_na=False,
-            )
-        except (OSError, ValueError, pd.errors.ParserError):
-            _p3_protocols = pd.DataFrame()
-        try:
-            _p3_raw = pd.read_csv(
-                "data/phase_pipeline.csv", dtype=str, keep_default_na=False
-            )
-            _p3_posts = pd.read_csv(
-                "data/phase3_announcements.csv", dtype=str, keep_default_na=False
-            )
-            _p3_caps = pd.read_csv(
-                "data/phase_pipeline_market_caps.csv", dtype=str, keep_default_na=False
-            )
-            _p3_candidates = phase3_pre_readout_queue(
-                _p3_raw, _p3_posts, _p3_caps, cutoff,
-                protocols=_p3_protocols, require_protocol=True,
-            )
-        except (OSError, ValueError, KeyError, pd.errors.ParserError, TypeError) as exc:
-            st.error("Pre-readout sources unavailable; no probability or research score inferred.")
-            st.caption("Pre-readout input error type: " + type(exc).__name__)
-            _p3_candidates = pd.DataFrame()
-        try:
-            _pre_evidence = pd.read_csv(
-                "data/phase3_pre_readout_evidence.csv", dtype=str, keep_default_na=False,
-            )
-        except (OSError, ValueError, pd.errors.ParserError):
-            _pre_evidence = pd.DataFrame()
-        _p3_upload = st.file_uploader(
-            "IMPORT PRE-READOUT EVIDENCE (.CSV) — current session only",
-            type=["csv"], key="pre_readout_evidence_upload_v1",
-            help="Fill the downloadable evidence template with original dated clinical sources. Uploaded data is not written to GitHub and sources are not independently adjudicated.",
-        )
-        if _p3_upload is not None:
-            if _p3_upload.size > 2_000_000:
-                st.error("Evidence CSV exceeds the 2 MB safety limit; scores remain unavailable.")
-                _pre_evidence = pd.DataFrame()
-            else:
-                try:
-                    _p3_import = pd.read_csv(
-                        _p3_upload, dtype=str, keep_default_na=False,
-                    )
-                    _expected = set(pre_readout_template(pd.DataFrame()).columns)
-                    if not _expected.issubset(_p3_import.columns):
-                        st.error("Evidence CSV is missing template columns; use DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE.")
-                        _pre_evidence = pd.DataFrame()
-                    elif _p3_import["nct_id"].astype(str).duplicated().any():
-                        st.error("Duplicate NCT IDs in evidence upload; resolve them before scoring.")
-                        _pre_evidence = pd.DataFrame()
-                    else:
-                        _pre_evidence = _p3_import
-                        st.info("Session-only evidence loaded. Research scores require exact trial identity, pre-cutoff publication dates and issuer confirmation. URLs are analyst-provided, not independently verified.")
-                except (OSError, ValueError, TypeError, pd.errors.ParserError, UnicodeError):
-                    st.error("Could not parse evidence CSV; no uploaded scores applied.")
-                    _pre_evidence = pd.DataFrame()
-        st.caption("Pre-release scoring is based on documented information only. The system does not certify uploaded publications or establish a clinical success probability. For historical assessments, same-day publication order cannot be established from date-only fields.")
-        _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
-        # Phase 2 primary-p evidence is an earlier-stage INPUT, not an
-        # automatic clinical quality score or Phase 3 success probability.
-        try:
-            _p2_primary = pd.read_csv(
-                "data/phase2_primary_pvalues.csv", dtype=str, keep_default_na=False,
-            )
-        except (OSError, ValueError, pd.errors.ParserError):
-            _p2_primary = pd.DataFrame()
-        _p3_candidates = attach_phase2_p(_p3_candidates, _p2_primary, cutoff)
-        _p2_n_with_p = (
-            int(_p3_candidates["Phase 2 Primary p Recorded"].str.startswith("YES").sum())
-            if "Phase 2 Primary p Recorded" in _p3_candidates else 0
-        )
-        st.caption(
-            f"Phase 2 primary-endpoint p-value documented before cutoff: "
-            f"{_p2_n_with_p:,} / {len(_p3_candidates):,} current candidates. "
-            "A p-value is not proof of clinical efficacy, and it is not a "
-            "Phase 3 success probability. No p values are inferred."
-        )
-        try:
-            _p2_state = json.loads(
-                Path("data/phase2_pvalues_status.json").read_text(encoding="utf-8")
-            )
-            st.caption(
-                f"Phase 2 source check: {_p2_state.get('status', 'UNKNOWN')} · "
-                f"{_p2_state.get('linked_phase2_trials', 0)} linked prior-stage trials · "
-                f"{_p2_state.get('phase2_trials_with_recorded_primary_p', 0)} with primary p · "
-                f"{_p2_state.get('api_errors', 0)} source errors."
-            )
-        except (OSError, ValueError, TypeError):
-            st.warning(
-                "Phase 2 primary p-value intake has not run or is unavailable; "
-                "the displayed zero is NOT evidence that trials lack p-values."
-            )
-        # Phase 2 p evidence is a pre-readout predictor input, never a
-        # Phase 3 result or automatic point award. Exact phase2_nct_ids,
-        # issuer ticker, registry publication, and first-observed cutoff
-        # are all required; missing values remain explicitly unverified.
-        try:
-            _phase2_p = pd.read_csv(
-                "data/phase2_primary_p_evidence.csv", dtype=str,
-                keep_default_na=False,
-            )
-        except (OSError, ValueError, pd.errors.ParserError):
-            _phase2_p = pd.DataFrame()
-        _p3_candidates = join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)
-        _p3_candidates = combine_phase2_phase3(_p3_candidates, _pre_evidence)
-        try:
-            _p2_state = json.loads(
-                Path("data/phase2_p_intake_status.json").read_text(encoding="utf-8")
-            )
-            st.caption(
-                "Phase 2 primary p evidence: "
-                + str(_p2_state.get("primary_p_observations_stored", 0))
-                + " observed analyses · "
-                + str(_p2_state.get("primary_p_linked_nct", 0))
-                + " linked Phase 2 trials · "
-                + str(_p2_state.get("status", "UNKNOWN"))
-                + " · verified observation cutoff "
-                + str(_p2_state.get("as_of", "unavailable"))
-            )
-            if _p2_state.get("status") != "COMPLETE":
-                st.warning("Phase 2 p collection is partial. Missing p data cannot be treated as a failed trial.")
-        except (OSError, ValueError, TypeError):
-            st.warning("Phase 2 primary p evidence has not been collected yet.")
-        st.caption(
-            "PHASE 2 p-value evidence is shown only when first observed BEFORE the Phase 3 "
-            "assessment cutoff, from an explicitly linked Phase 2 trial. A small p-value "
-            "does not establish a clinically meaningful effect or Phase 3 success. "
-            "The 100-point research score still requires sourced efficacy, safety, "
-            "design, regulatory alignment, execution, and issuer verification."
-        )
-        # Audit PRE-RELEASE input presence separately from clinical scoring.
-        # The input counter does not inspect Phase 3 outcomes or p-values.
-        _input_rows, _input_counts = audit_pre_readout_inputs(
-            _p3_candidates, _p3_protocols, _pre_evidence, as_of=cutoff,
-        )
-        if not _p3_candidates.empty and not _input_rows.empty:
-            _p3_candidates = _p3_candidates.merge(
-                _input_rows[["NCT ID", "Input Coverage %",
-                             "Basic Design Safeguards /5",
-                             "Observed Design Safeguards",
-                             "Unobserved Design Safeguards",
-                             "Available Inputs", "Missing Inputs", "Issuer Check"]],
-                on="NCT ID", how="left", validate="one_to_one",
-            )
-        _design_evidence = pd.DataFrame()
-        # The automated collector fills DESIGN METADATA COVERAGE, not the manual
-        # 100-point pre-readout evidence-quality rubric or an inferred PoS.
-        try:
-            _design_evidence = load_pre_readout_design_coverage(
-                "data", as_of=cutoff, cap_filter=True,
-            )
-            _verified_design = _design_evidence[
-                _design_evidence["Coverage"].eq("PROTOCOL PARTIAL")
-            ].drop_duplicates(subset=["NCT ID"], keep="last")
-            _design_map = _verified_design.set_index("NCT ID")
-            for _title, _field in (
-                ("Protocol Data Coverage /100", "Evidence Score / 100"),
-                ("Protocol Primary Endpoint", "Primary Endpoints"),
-                ("Design Allocation", "Allocation"),
-                ("Design Masking", "Masking"),
-                ("Protocol Evidence Gaps", "Evidence Gaps"),
-                ("Protocol Checked", "Protocol Checked"),
-                ("Design Source", "Protocol Source"),
-            ):
-                if "NCT ID" in _p3_candidates:
-                    _p3_candidates[_title] = _p3_candidates["NCT ID"].map(
-                        _design_map[_field]
-                    )
-        except (OSError, ValueError, TypeError, KeyError, pd.errors.ParserError):
-            st.warning("Automated Phase 3 protocol coverage is unavailable. Manual research score remains unassigned.")
-        try:
-            _pr_status = json.loads(
-                Path("data/pre_readout_intake_status.json").read_text(encoding="utf-8")
-            )
-            st.caption(
-                "Current Phase 3 protocol-only intake: "
-                + str(_pr_status.get("status", "UNKNOWN"))
-                + " · " + str(_pr_status.get("protocol_records_stored", 0))
-                + " design records / "
-                + str(_pr_status.get("active_registry_unposted_phase3_trials", 0))
-                + " registry candidates · "
-                + str(_pr_status.get("as_of", "unavailable"))
-            )
-            if _pr_status.get("status") != "COMPLETE":
-                st.warning("Prospective protocol collection is partial. Missing design fields receive no metadata coverage points.")
-        except (OSError, TypeError, ValueError):
-            st.caption("Protocol-only scanner has not produced a saved coverage audit yet.")
-        st.caption(
-            "PROTOCOL DATA COVERAGE /100 measures documented registry-design fields only. "
-            "It is NOT the clinical research score and is NOT a success probability; "
-            "it can improve simply because more metadata was collected."
-        )
-        st.caption(
-            "BASIC DESIGN SAFEGUARDS /5 is an automatically observed checklist: "
-            "endpoint with time frame, randomized allocation, double-or-greater "
-            "masking, recorded comparator, and sample size. It does NOT measure "
-            "statistical power, endpoint validity, trial success probability, "
-            "or suitability for single-arm/open-label indications. Missing "
-            "protocols stay blank rather than scoring zero."
-        )
-        st.markdown("### PHASE 2 p + PHASE 3 PRE-READOUT = ONE RESEARCH SCORE")
-        st.caption(
-            "Phase 2 efficacy contributes up to 25 of 100 research points, "
-            "using a verified Phase 2 primary endpoint p-value PLUS effect size, "
-            "clinical meaning and exact linked trial identity. The remaining 75 "
-            "points cover pre-release Phase 3 design, safety, FDA alignment, "
-            "execution and evidence quality. Points are awarded only when every "
-            "required pre-cutoff source and issuer-unreleased check passes. "
-            "A statistically significant p-value alone does not prove clinical "
-            "benefit. These points are NOT a probability of Phase 3 success."
-        )
-        st.markdown("### INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT")
-        st.caption(
-            "Counts below refer to possible pre-readout candidates in the USD 300M–10B universe. "
-            "Documented means a source field exists, NOT that the trial design is adequate. "
-            "A blank input is UNKNOWN, not evidence of trial failure. "
-            "The current registry protocol is not a historical frozen snapshot."
-        )
-        input_counts_df = pd.DataFrame([
-            {"Required pre-readout input": key,
-             "With documented input": _input_counts.get(key, 0),
-             "Missing / unverified": len(_p3_candidates) - _input_counts.get(key, 0)}
-            for key in PRE_READOUT_CHECK_KEYS
-        ])
-        st.dataframe(input_counts_df, hide_index=True, use_container_width=True)
-        if not _p3_candidates.empty and "Input Coverage %" in _p3_candidates:
-            _mean_input_coverage = pd.to_numeric(
-                _p3_candidates["Input Coverage %"], errors="coerce"
-            ).mean()
-            st.caption(
-                f"Average pre-readout INPUT COVERAGE: {_mean_input_coverage:.1f}% "
-                "across eligible trials. This is NOT a Phase 3 success probability. "
-                "Issuer topline verification and a validated Phase 2 efficacy/safety "
-                "assessment are mandatory before issuing a clinical research score."
-            )
-        ready_identity = (
-            int(_p3_candidates["Program Identity"].eq("VERIFIED").sum())
-            if "Program Identity" in _p3_candidates else 0
-        )
-        linked_phase2 = (
-            int(_p3_candidates["Phase 2 NCT Links"].astype(str).str.strip().ne("").sum())
-            if "Phase 2 NCT Links" in _p3_candidates else 0
-        )
-        fully_scored = (
-            int(_p3_candidates["Pre-Readout Evidence Points"].notna().sum())
-            if "Pre-Readout Evidence Points" in _p3_candidates else 0
-        )
-        pc1, pc2, pc3, pc4 = st.columns(4)
-        pc1.metric("Potential pre-readout Phase 3 trials", len(_p3_candidates))
-        pc2.metric("Verified program identity", ready_identity)
-        pc3.metric("Phase 2 trial ID linked", linked_phase2)
-        pc4.metric("Complete 100-point assessments", fully_scored)
-        _combined_n = int(_p3_candidates["Combined Pre-Readout Score /100"].notna().sum())
-        st.metric("Phase 2 + Phase 3 fully reviewed combinations", _combined_n)
-        st.caption(
-            "PHASE 2 /25 + PRE-READOUT OTHER EVIDENCE /75 = combined /100, "
-            "only when a linked primary Phase 2 p-value was observed before "
-            "cutoff AND every clinical domain was independently reviewed. "
-            "A p-value alone never earns 25 points. The combined score is NOT "
-            "a calibrated chance of Phase 3 success."
-        )
-        _p2_matched = (
-            int(_p3_candidates["Phase 2 p Evidence"].eq(
-                "REPORTED — MANUAL CLINICAL REVIEW"
-            ).sum()) if "Phase 2 p Evidence" in _p3_candidates else 0
-        )
-        st.caption(
-            f"Phase 2 primary p-value evidence linked and date-verified for "
-            f"{_p2_matched:,} / {len(_p3_candidates):,} pre-readout candidates. "
-            "Research interpretation is still required."
-        )
-        if fully_scored == 0:
-            st.warning(
-                "NOT READY FOR PHASE 3 SUCCESS PROBABILITIES: no pre-readout "
-                "candidate has all six source-dated clinical research "
-                "assessments and an independent issuer-unreleased check. "
-                "Protocol-data coverage is NOT probability of success."
-            )
-        st.caption(
-            "Scope: USD 300M–USD 10B verified market cap; active standalone Phase 3; "
-            "fresh exact-NCT protocol (last 2 days), no posted registry result or "
-            "exactly matched result announcement. "
-            "Phase 2 trial ID is NOT Phase 2 efficacy evidence. "
-            "Primary completion is NOT a public topline release date. "
-            f"As-of date: {cutoff.isoformat()} Pacific. Missing issuer checks stay NOT SCORED."
-        )
-        if not _p3_candidates.empty:
-            st.download_button(
-                "DOWNLOAD PRE-READOUT SCREEN (.CSV)",
-                data=_p3_candidates.to_csv(index=False).encode("utf-8"),
-                file_name=f"phase3_pre_readout_screen_{cutoff:%Y%m%d}.csv",
-                mime="text/csv",
-                key="pre_readout_screen_download_v1",
-                help="Current prospective screening queue: protocol data coverage and uncalibrated clinical PoS are separate fields.",
-            )
-            st.download_button(
-                "DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE",
-                data=pre_readout_template(_p3_candidates).to_csv(index=False).encode("utf-8"),
-                file_name=f"phase3_pre_readout_evidence_{cutoff:%Y%m%d}.csv",
-                mime="text/csv",
-                key="pre_readout_template_download_v1",
-            )
-            if st.toggle(
-                "SHOW CANDIDATES & MISSING INPUTS",
-                value=False,
-                key="pre_readout_show_candidates_v1",
-                help="Shows potential unpublished trial records only; each requires issuer confirmation.",
-            ):
-                st.dataframe(
-                    _p3_candidates, use_container_width=True, hide_index=True,
-                    column_config={
-                        "Source": st.column_config.LinkColumn("Registry study source"),
-                        "Market Cap": st.column_config.NumberColumn(
-                            "Market cap ($)", format="$%.0f"
-                        ),
-                        "Phase 3 Success Probability %": st.column_config.NumberColumn(
-                            "Phase 3 success probability (unavailable)", format="%.1f%%"
-                        ),
-                    },
-                )
-        else:
-            st.info("No preliminary Phase 3 pre-readout candidates match the present verified market-cap and registry gates.")
-        st.caption(
-            "Source warning: Current registry records are not historical frozen snapshots. "
-            "For past-case validation, reconstruct protocol versions and issuer publications "
-            "AS THEY EXISTED BEFORE RELEASE, then preserve unmodified frozen predictions."
-        )
-
     with intake_tab:
         st.markdown("## PHASE 3 DAILY INTAKE")
         st.caption("The former TODAY reports are here: recent result posts, cumulative Phase 3 records, financing, Watchlist management and CSV export. Opening this view does not run collectors.")
@@ -3897,6 +3898,9 @@ if page == "PIPELINE":
             except (OSError, pd.errors.ParserError):
                 _finance_today = pd.DataFrame()
             render_today(df, _phase_today, _finance_today)
+
+elif page == "PRE PHASE 3":
+    render_pre_phase3()
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")

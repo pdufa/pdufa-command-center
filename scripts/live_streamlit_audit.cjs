@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("PRE-READOUT INPUT AUDIT V1");
+  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 TAB V1");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -76,13 +76,14 @@ async function audit(){
     result.checks.noTodayNavigation=!result.navigation.includes("TODAY");
     result.checks.pipelineNavigation=result.navigation.includes("PIPELINE");
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
-    result.checks.fourPipelineTabs=["TRIALS & DATES","PDUFA WORKBENCH","PHASE 3 PRE-READOUT","PHASE 3 DAILY"].every(x=>result.tabs.some(t=>t.includes(x)));
+    result.checks.prePhase3Navigation=result.navigation.includes("PRE PHASE 3");
+    result.checks.threePipelineTabs=["TRIALS & DATES","PDUFA WORKBENCH","PHASE 3 DAILY"].every(x=>result.tabs.some(t=>t.includes(x)));
     result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
       await appFrame.getByText("DATES",{exact:true}).count()>0;
     result.checks.stageCountChart=await appFrame.getByText("STAGE COUNTS",{exact:true}).count()>0;
     result.checks.dateCountChart=await appFrame.getByText("DATE TRIAL COUNTS",{exact:true}).count()>0;
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
-    if(result.checks.fourPipelineTabs){
+    if(result.checks.threePipelineTabs){
       await appFrame.getByRole("tab",{name:"PHASE 3 DAILY"}).click({timeout:15000});
       const toggle=appFrame.getByText("SHOW PHASE 3 DAILY REPORT",{exact:false}).first();
       try{
@@ -105,7 +106,7 @@ async function audit(){
         }
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
       }
-      await appFrame.getByRole("tab",{name:"PHASE 3 PRE-READOUT"}).click({timeout:15000});
+      await appFrame.getByText("PRE PHASE 3",{exact:true}).first().click({timeout:15000});
       try{
         await appFrame.getByText("Potential pre-readout Phase 3 trials").first().waitFor({timeout:90000});
         result.checks.preReadoutMetrics=true;
@@ -128,6 +129,7 @@ async function audit(){
         result.notes.push("Pre-readout assessment check failed: "+String(err.message).slice(0,190));
       }
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
+      await appFrame.getByText("PIPELINE",{exact:true}).first().click({timeout:15000});
       await appFrame.getByRole("tab",{name:"PDUFA WORKBENCH"}).click({timeout:15000});
       await sleep(1500);
       result.checks.workbenchVisible=await appFrame.getByText("WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION",{exact:false}).count()>0;
@@ -186,10 +188,10 @@ async function audit(){
   if(result.http!==200) result.errors.push("Site HTTP status is not 200.");
   if(!result.checks.pdufaHeader) result.errors.push("App did not render in an inspected browser frame.");
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
-  for(const k of ["noTodayNavigation","pipelineNavigation","fourPipelineTabs","stageAndDateControls",
+  for(const k of ["noTodayNavigation","pipelineNavigation","prePhase3Navigation","threePipelineTabs","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
                    "preReadoutMetrics","preReadoutMissingInputsVisible",
-                   "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle",
+                   "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle","preReadoutCandidatesShown",
                    "workbenchVisible"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }

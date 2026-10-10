@@ -267,7 +267,7 @@ class PreReadoutTests(unittest.TestCase):
     def test_pipeline_uses_fresh_protocol_gate(self):
         from pathlib import Path
         app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        section = app.split("with pre_tab:", 1)[1].split("with intake_tab:", 1)[0]
+        section = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
         self.assertIn("protocols=_p3_protocols, require_protocol=True", section)
         self.assertLess(section.index('"data/pre_readout_protocols.csv"'),
                         section.index("phase3_pre_readout_queue("))
@@ -285,7 +285,7 @@ class PreReadoutTests(unittest.TestCase):
     def test_pipeline_allows_only_in_session_strict_source_scoring(self):
         from pathlib import Path
         source = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        part = source.split("with pre_tab:", 1)[1].split("with intake_tab:", 1)[0]
+        part = source.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
         self.assertIn("pre_readout_evidence_upload_v1", part)
         self.assertIn("require_protocol=True", part)
         self.assertIn("_expected.issubset(_p3_import.columns)", part)
