@@ -3560,6 +3560,34 @@ if page == "PIPELINE":
             )
         except (OSError, ValueError, pd.errors.ParserError):
             _pre_evidence = pd.DataFrame()
+        _p3_upload = st.file_uploader(
+            "IMPORT PRE-READOUT EVIDENCE (.CSV) — current session only",
+            type=["csv"], key="pre_readout_evidence_upload_v1",
+            help="Fill the downloadable evidence template with original dated clinical sources. Uploaded data is not written to GitHub and sources are not independently adjudicated.",
+        )
+        if _p3_upload is not None:
+            if _p3_upload.size > 2_000_000:
+                st.error("Evidence CSV exceeds the 2 MB safety limit; scores remain unavailable.")
+                _pre_evidence = pd.DataFrame()
+            else:
+                try:
+                    _p3_import = pd.read_csv(
+                        _p3_upload, dtype=str, keep_default_na=False,
+                    )
+                    _expected = set(pre_readout_template(pd.DataFrame()).columns)
+                    if not _expected.issubset(_p3_import.columns):
+                        st.error("Evidence CSV is missing template columns; use DOWNLOAD PRE-READOUT EVIDENCE TEMPLATE.")
+                        _pre_evidence = pd.DataFrame()
+                    elif _p3_import["nct_id"].astype(str).duplicated().any():
+                        st.error("Duplicate NCT IDs in evidence upload; resolve them before scoring.")
+                        _pre_evidence = pd.DataFrame()
+                    else:
+                        _pre_evidence = _p3_import
+                        st.info("Session-only evidence loaded. Research scores require exact trial identity, pre-cutoff publication dates and issuer confirmation. URLs are analyst-provided, not independently verified.")
+                except (OSError, ValueError, TypeError, pd.errors.ParserError, UnicodeError):
+                    st.error("Could not parse evidence CSV; no uploaded scores applied.")
+                    _pre_evidence = pd.DataFrame()
+        st.caption("Pre-release scoring is based on documented information only. The system does not certify uploaded publications or establish a clinical success probability. For historical assessments, same-day publication order cannot be established from date-only fields.")
         _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
         # Audit PRE-RELEASE input presence separately from clinical scoring.
         # The input counter does not inspect Phase 3 outcomes or p-values.
