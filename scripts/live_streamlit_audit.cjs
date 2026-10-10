@@ -156,6 +156,23 @@ async function audit(){
       await page.setViewportSize({width:390,height:844});
       await sleep(1500);
       await page.screenshot({path:path.join(outDir,"streamlit-iphone-width.png"),fullPage:false});
+      // A real phone must reach PLAN without a horizontally hidden navigation option.
+      const mobilePlanChoice=appFrame.getByText("11. PLAN",{exact:true}).first();
+      result.checks.mobilePlanNavigationVisible=await mobilePlanChoice.evaluate(el=>{
+        const bounds=el.getBoundingClientRect();
+        return bounds.width>0 && bounds.left>=0 && bounds.right<=window.innerWidth;
+      });
+      await mobilePlanChoice.click({timeout:15000});
+      await appFrame.getByText("11. PLAN — SYSTEM RULES & OPERATING RHYTHM",{exact:false})
+        .first().waitFor({timeout:60000});
+      const mobilePlanText=await appFrame.locator("body").innerText({timeout:9000});
+      result.checks.mobilePlanOpens=mobilePlanText.includes("Edit plan")
+        && mobilePlanText.includes("SAVE PLAN CHANGES")
+        && mobilePlanText.includes("DOWNLOAD PLAN BACKUP")
+        && !/This app has encountered an error|Traceback \(most recent call last\)/i.test(mobilePlanText);
+      await page.screenshot({path:path.join(outDir,"streamlit-iphone-plan.png"),fullPage:false});
+      if(!result.checks.mobilePlanNavigationVisible || !result.checks.mobilePlanOpens)
+        result.errors.push("11. PLAN is not reachable and usable on mobile.");
     }
     // Walk each independent main navigation page in the deployed browser.
     // This catches runtime exceptions outside Pipeline, which unit tests
