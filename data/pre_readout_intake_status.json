@@ -1,25 +1,16 @@
 {
-  "as_of": "2026-10-10T16:50:08.977822+00:00",
+  "as_of": "2026-10-10T16:53:45.821705+00:00",
   "market_cap_range_usd": [
     300000000,
     10000000000
   ],
   "active_registry_unposted_phase3_trials": 210,
   "protocol_records_stored": 210,
-  "fetched_this_run": 210,
-  "failed_fetches": 8,
+  "fetched_this_run": 0,
+  "failed_fetches": 0,
   "uncollected_trials": 0,
-  "errors": {
-    "NCT07795164": "HTTP Error 429: Too Many Requests",
-    "NCT07793227": "HTTP Error 429: Too Many Requests",
-    "NCT07804186": "HTTP Error 429: Too Many Requests",
-    "NCT07807969": "HTTP Error 429: Too Many Requests",
-    "NCT07832552": "HTTP Error 429: Too Many Requests",
-    "NCT07868419": "HTTP Error 429: Too Many Requests",
-    "NCT07863193": "HTTP Error 429: Too Many Requests",
-    "NCT07867080": "HTTP Error 429: Too Many Requests"
-  },
+  "errors": {},
   "clinical_success_probability": "NOT CALIBRATED",
   "limitations": "Registry-only release status; issuer topline could already be public. Current protocol revisions are not archived historical snapshots. No Phase 2 effects, safety dossier, power analysis, or FDA correspondence collected.",
-  "status": "PARTIAL"
+  "status": "COMPLETE"
 }
