@@ -3210,7 +3210,7 @@ if page == "MASTER TABLE":
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
     st.caption(
-        "PIPELINE-V10 · Select STAGES and DATES, then "
+        "PIPELINE-V11 · Select STAGES and DATES, then "
         "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
     )
 
@@ -3244,6 +3244,10 @@ elif page == "PIPELINE":
             on_change=_clear_pipeline_results_v9,
             help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
         )
+    with stage_col:
+        stage_count_slot = st.container()
+    with date_col:
+        date_count_slot = st.container()
     search_col, sort_col = st.columns([2, 1], gap="medium")
     with search_col:
         query = st.text_input(
@@ -3281,8 +3285,53 @@ elif page == "PIPELINE":
         st.session_state.get("pipeline_applied_v9") == selection_signature
     )
 
-    # The chart itself is always visible and never shows data without a click.
-    # Move the 600px count breakdowns BELOW the chart into an expander.
+    pipeline_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    pipeline_signature = tuple(
+        (name, (Path("data") / name).stat().st_mtime_ns)
+        for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
+    )
+    try:
+        universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
+        prepared = prepare_pipeline(universe, pipeline_today)
+        # Unselected dimensions show the available universe; selecting both
+        # makes both count charts reconcile to the eventual spreadsheet rows.
+        count_records = filter_pipeline(
+            prepared, selected_stages or list(PIPELINE_STAGES),
+            selected_dates or list(PIPELINE_DATE_BANDS), query,
+        )
+    except (KeyError, ValueError, TypeError, OSError, AttributeError) as exc:
+        st.error("Could not load Pipeline records. Check Streamlit application logs.")
+        st.caption(f"Pipeline error type: {type(exc).__name__}")
+        prepared = pd.DataFrame()
+        count_records = pd.DataFrame()
+
+    def _render_pipeline_counts(slot, title, field, categories):
+        import altair as alt
+
+        counts = (count_records[field].value_counts().to_dict()
+                  if field in count_records else {})
+        count_table = pd.DataFrame([
+            {"Category": category, "Trials / programs": int(counts.get(category, 0))}
+            for category in categories
+        ])
+        base = alt.Chart(count_table).encode(
+            y=alt.Y("Category:N", sort=list(categories), title=None),
+            x=alt.X("Trials / programs:Q", title="Trials / programs", axis=alt.Axis(tickMinStep=1)),
+            tooltip=[alt.Tooltip("Category:N"), alt.Tooltip("Trials / programs:Q", format=",d")],
+        )
+        chart = (base.mark_bar(color="#23856a") + base.mark_text(
+            align="left", dx=5,
+        ).encode(text=alt.Text("Trials / programs:Q", format=",d"))).properties(
+            height=max(200, len(categories) * 24),
+        )
+        with slot:
+            st.markdown("#### " + title)
+            st.altair_chart(chart, use_container_width=True)
+            st.caption(f"TOTAL: {len(count_records):,} trials / programs")
+
+    _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES)
+    _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS)
+
     st.markdown("### PIPELINE TRIALS / PROGRAMS")
     st.caption("Displayed count always equals the exact number of table rows.")
     empty_chart = pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values()))
@@ -3296,24 +3345,8 @@ elif page == "PIPELINE":
         else:
             st.info("Click SHOW MATCHING TRIALS to populate the chart.")
     else:
-        pipeline_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
-        pipeline_signature = tuple(
-            (name, (Path("data") / name).stat().st_mtime_ns)
-            for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
-        )
-        try:
-            universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
-            prepared = prepare_pipeline(universe, pipeline_today)
-            filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
-            shown = chart_rows(filtered, sort_mode)
-        except (KeyError, ValueError, TypeError, OSError, AttributeError) as exc:
-            st.error(
-                "Could not load Pipeline records. The chart stays empty. "
-                "Check Streamlit application logs."
-            )
-            st.caption(f"Pipeline error type: {type(exc).__name__}")
-            shown = empty_chart
-            filtered = pd.DataFrame()
+        filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
+        shown = chart_rows(filtered, sort_mode)
 
         st.metric("Trials / programs displayed", len(shown))
         st.dataframe(
