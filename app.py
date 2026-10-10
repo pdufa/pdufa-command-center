@@ -7,6 +7,7 @@ from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS a
 from strategy_view import render_strategy_page
 from today_page import render_today
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
+from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
 import json
@@ -3550,6 +3551,53 @@ if page == "PIPELINE":
         except (OSError, ValueError, pd.errors.ParserError):
             _pre_evidence = pd.DataFrame()
         _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
+        # The automated collector fills DESIGN METADATA COVERAGE, not the manual
+        # 100-point pre-readout evidence-quality rubric or an inferred PoS.
+        try:
+            _design_evidence = load_pre_readout_design_coverage(
+                "data", as_of=cutoff, cap_filter=True,
+            )
+            _verified_design = _design_evidence[
+                _design_evidence["Coverage"].eq("PROTOCOL PARTIAL")
+            ].drop_duplicates(subset=["NCT ID"], keep="last")
+            _design_map = _verified_design.set_index("NCT ID")
+            for _title, _field in (
+                ("Protocol Data Coverage /100", "Evidence Score / 100"),
+                ("Protocol Primary Endpoint", "Primary Endpoints"),
+                ("Design Allocation", "Allocation"),
+                ("Design Masking", "Masking"),
+                ("Protocol Evidence Gaps", "Evidence Gaps"),
+                ("Protocol Checked", "Protocol Checked"),
+                ("Design Source", "Protocol Source"),
+            ):
+                if "NCT ID" in _p3_candidates:
+                    _p3_candidates[_title] = _p3_candidates["NCT ID"].map(
+                        _design_map[_field]
+                    )
+        except (OSError, ValueError, TypeError, KeyError, pd.errors.ParserError):
+            st.warning("Automated Phase 3 protocol coverage is unavailable. Manual research score remains unassigned.")
+        try:
+            _pr_status = json.loads(
+                Path("data/pre_readout_intake_status.json").read_text(encoding="utf-8")
+            )
+            st.caption(
+                "Current Phase 3 protocol-only intake: "
+                + str(_pr_status.get("status", "UNKNOWN"))
+                + " · " + str(_pr_status.get("protocol_records_stored", 0))
+                + " design records / "
+                + str(_pr_status.get("active_registry_unposted_phase3_trials", 0))
+                + " registry candidates · "
+                + str(_pr_status.get("as_of", "unavailable"))
+            )
+            if _pr_status.get("status") != "COMPLETE":
+                st.warning("Prospective protocol collection is partial. Missing design fields receive no metadata coverage points.")
+        except (OSError, TypeError, ValueError):
+            st.caption("Protocol-only scanner has not produced a saved coverage audit yet.")
+        st.caption(
+            "PROTOCOL DATA COVERAGE /100 measures documented registry-design fields only. "
+            "It is NOT the clinical research score and is NOT a success probability; "
+            "it can improve simply because more metadata was collected."
+        )
         ready_identity = (
             int(_p3_candidates["Program Identity"].eq("VERIFIED").sum())
             if "Program Identity" in _p3_candidates else 0
