@@ -2643,6 +2643,9 @@ def table_view(frame, return_page="PDUFA"):
 
 def render_pre_phase3():
     """Review linked Phase 2 evidence and Phase 3 design before readout."""
+    # Reserve the first screen area for actual trials. Its contents are
+    # populated after clinical verification and scoring are prepared below.
+    top_trials_container = st.container()
     st.markdown("## PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT")
     st.warning(
         "PRE-RESULTS ONLY: These are possible upcoming Phase 3 readouts, "
@@ -2800,123 +2803,125 @@ def render_pre_phase3():
     _p3_research_pool = research_discovery_pool(
         _p3_discovery, _p3_candidates, _p3_protocols, cutoff
     )
-    st.markdown("### PRE PHASE 3 — TRIALS")
-    st.markdown("### PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH")
-    st.caption(
-        "Candidate discovery is not a BUY list. Registry primary-completion dates "
-        "are NOT verified company topline/readout dates. A trial may already "
-        "have released results outside the registry. Confirm the company "
-        "announcement, financing/dilution, liquidity/volume, price stabilization "
-        "and safety/effect-size evidence before any entry review."
-    )
-    _window_days = st.radio(
-        "PRE PHASE 3 TRIALS (registry milestone window, not readout date)",
-        ["ALL", 90, 180, 365], index=0, horizontal=True,
-        format_func=lambda days: (
-            "ALL TRIALS" if days == "ALL" else f"Next {days} days"
-        ),
-        key="pre_phase3_trade_lookahead_v1",
-    )
-    _trade_shortlist = trading_research_queue(
-        _p3_research_pool, cutoff, lookahead_days=_window_days
-    )
-    _candidate_tickers = sorted(set(_trade_shortlist["Ticker"])) if not _trade_shortlist.empty else []
-    st.caption(
-        f"PRE PHASE 3 TRIALS DISPLAYED: {len(_trade_shortlist):,} records "
-        f"across {len(_candidate_tickers):,} tickers. "
-        f"Clinical pre-readout eligible with fresh protocol: {len(_p3_candidates):,}. "
-        "Rows requiring source recheck are research leads, NOT verified "
-        "unreleased company readouts."
-    )
-    if len(_p3_research_pool) > len(_p3_candidates):
-        st.warning(
-            "Some potential trials need a fresh exact-NCT registry check. "
-            "Their research rows remain visible and are labeled RECHECK REQUIRED; "
-            "do not treat them as confirmed unpublished programs."
-        )
-    _scored_n = int(_trade_shortlist["PRE PHASE 3 Score /100"].notna().sum())
-    st.caption(
-        f"PRE PHASE 3 SCORE /100: {_scored_n:,} fully source-reviewed records "
-        f"out of {len(_trade_shortlist):,} shortlisted trials. "
-        "NOT SCORED means clinical evidence is incomplete, not a zero or a failed trial. "
-        "Documented Inputs % and Basic Design Safeguards /5 are separate "
-        "data-availability measures, NOT a chance of trial success or a BUY signal."
-    )
-    st.caption(
-        f"{len(_p3_research_pool):,} prospective registry research leads; "
-        f"{len(_trade_shortlist):,} trial records / {len(_candidate_tickers):,} unique tickers "
-        f"shown in the selected window ({_window_days}). "
-        "These are unconfirmed trading-research leads; none passes the trading entry gate."
-    )
-    if not _trade_shortlist.empty:
-        st.dataframe(
-            _trade_shortlist, hide_index=True, use_container_width=True,
-            column_config={
-                "PRE PHASE 3 Score /100": st.column_config.NumberColumn(
-                    "PRE PHASE 3 SCORE /100", format="%.1f",
-                    help="Phase 2 efficacy /25 plus pre-readout Phase 3 /75. "
-                         "Only shown after exact-trial, source-date and issuer checks. "
-                         "Blank means NOT SCORED, never zero or probability."
-                ),
-                "Documented Inputs %": st.column_config.NumberColumn(
-                    "Documented Inputs %", format="%.1f%%",
-                    help="Available pre-release inputs; not the clinical score."
-                ),
-                "Basic Design Safeguards /5": st.column_config.NumberColumn(
-                    "Design Safeguards /5", format="%.0f",
-                    help="Observed protocol metadata checklist, not trial success."
-                ),
-                "Registry Source": st.column_config.LinkColumn("ClinicalTrials.gov"),
-                "Market Cap": st.column_config.NumberColumn(
-                    "Cached market cap ($)", format="$%.0f"
-                ),
-            },
-            key="pre_phase3_trade_research_table_v1",
-        )
-        if "pre_phase3_trade_watchlist" not in st.session_state:
-            st.session_state["pre_phase3_trade_watchlist"] = []
-        _trade_watchlist = {
-            str(v).upper().strip()
-            for v in st.session_state["pre_phase3_trade_watchlist"] if str(v).strip()
-        }
-        st.markdown("#### PRE PHASE 3 — RESEARCH WATCHLIST")
+    # The container renders in the FIRST viewport, before the long assessment.
+    with top_trials_container:
+        st.markdown("### PRE PHASE 3 — TRIALS")
+        st.markdown("### PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH")
         st.caption(
-            "Select tickers for closer issuer/SEC/price review. Saved within this "
-            "session only; this list is separate from the post-Phase-3 / PDUFA "
-            "entry watchlist. The CSV below is your portable backup."
+            "Candidate discovery is not a BUY list. Registry primary-completion dates "
+            "are NOT verified company topline/readout dates. A trial may already "
+            "have released results outside the registry. Confirm the company "
+            "announcement, financing/dilution, liquidity/volume, price stabilization "
+            "and safety/effect-size evidence before any entry review."
         )
-        _watch_selected = st.multiselect(
-            "Stock tickers to add",
-            options=_candidate_tickers,
-            key="pre_phase3_research_tickers_v1",
+        _window_days = st.radio(
+            "PRE PHASE 3 TRIALS (registry milestone window, not readout date)",
+            ["ALL", 90, 180, 365], index=0, horizontal=True,
+            format_func=lambda days: (
+                "ALL TRIALS" if days == "ALL" else f"Next {days} days"
+            ),
+            key="pre_phase3_trade_lookahead_v1",
         )
-        if st.button(
-            "ADD SELECTED TO PRE PHASE 3 WATCHLIST",
-            key="pre_phase3_add_watchlist_v1",
-            disabled=not _watch_selected,
-        ):
-            _trade_watchlist.update(_watch_selected)
-            st.session_state["pre_phase3_trade_watchlist"] = sorted(_trade_watchlist)
-            st.rerun()
+        _trade_shortlist = trading_research_queue(
+            _p3_research_pool, cutoff, lookahead_days=_window_days
+        )
+        _candidate_tickers = sorted(set(_trade_shortlist["Ticker"])) if not _trade_shortlist.empty else []
         st.caption(
-            "Current PRE PHASE 3 research watchlist: "
-            + (", ".join(sorted(_trade_watchlist)) if _trade_watchlist else "None")
+            f"PRE PHASE 3 TRIALS DISPLAYED: {len(_trade_shortlist):,} records "
+            f"across {len(_candidate_tickers):,} tickers. "
+            f"Clinical pre-readout eligible with fresh protocol: {len(_p3_candidates):,}. "
+            "Rows requiring source recheck are research leads, NOT verified "
+            "unreleased company readouts."
         )
-        _watch_export = _trade_shortlist.loc[
-            _trade_shortlist["Ticker"].isin(_trade_watchlist)
-        ]
-        st.download_button(
-            "DOWNLOAD PRE PHASE 3 RESEARCH WATCHLIST (.CSV)",
-            data=_watch_export.to_csv(index=False).encode("utf-8"),
-            file_name=f"pre_phase3_research_watchlist_{cutoff:%Y%m%d}.csv",
-            mime="text/csv", key="pre_phase3_trade_watchlist_export_v1",
+        if len(_p3_research_pool) > len(_p3_candidates):
+            st.warning(
+                "Some potential trials need a fresh exact-NCT registry check. "
+                "Their research rows remain visible and are labeled RECHECK REQUIRED; "
+                "do not treat them as confirmed unpublished programs."
+            )
+        _scored_n = int(_trade_shortlist["PRE PHASE 3 Score /100"].notna().sum())
+        st.caption(
+            f"PRE PHASE 3 SCORE /100: {_scored_n:,} fully source-reviewed records "
+            f"out of {len(_trade_shortlist):,} shortlisted trials. "
+            "NOT SCORED means clinical evidence is incomplete, not a zero or a failed trial. "
+            "Documented Inputs % and Basic Design Safeguards /5 are separate "
+            "data-availability measures, NOT a chance of trial success or a BUY signal."
         )
-    else:
-        st.warning(
-            "No trial records matched this view. Check ALL TRIALS and source "
-            "ingestion status; a missing or stale ledger does not prove "
-            "that publicly traded companies have no Phase 3 trials."
+        st.caption(
+            f"{len(_p3_research_pool):,} prospective registry research leads; "
+            f"{len(_trade_shortlist):,} trial records / {len(_candidate_tickers):,} unique tickers "
+            f"shown in the selected window ({_window_days}). "
+            "These are unconfirmed trading-research leads; none passes the trading entry gate."
         )
+        if not _trade_shortlist.empty:
+            st.dataframe(
+                _trade_shortlist, hide_index=True, use_container_width=True, height=520,
+                column_config={
+                    "PRE PHASE 3 Score /100": st.column_config.NumberColumn(
+                        "PRE PHASE 3 SCORE /100", format="%.1f",
+                        help="Phase 2 efficacy /25 plus pre-readout Phase 3 /75. "
+                             "Only shown after exact-trial, source-date and issuer checks. "
+                             "Blank means NOT SCORED, never zero or probability."
+                    ),
+                    "Documented Inputs %": st.column_config.NumberColumn(
+                        "Documented Inputs %", format="%.1f%%",
+                        help="Available pre-release inputs; not the clinical score."
+                    ),
+                    "Basic Design Safeguards /5": st.column_config.NumberColumn(
+                        "Design Safeguards /5", format="%.0f",
+                        help="Observed protocol metadata checklist, not trial success."
+                    ),
+                    "Registry Source": st.column_config.LinkColumn("ClinicalTrials.gov"),
+                    "Market Cap": st.column_config.NumberColumn(
+                        "Cached market cap ($)", format="$%.0f"
+                    ),
+                },
+                key="pre_phase3_trade_research_table_v1",
+            )
+            if "pre_phase3_trade_watchlist" not in st.session_state:
+                st.session_state["pre_phase3_trade_watchlist"] = []
+            _trade_watchlist = {
+                str(v).upper().strip()
+                for v in st.session_state["pre_phase3_trade_watchlist"] if str(v).strip()
+            }
+            st.markdown("#### PRE PHASE 3 — RESEARCH WATCHLIST")
+            st.caption(
+                "Select tickers for closer issuer/SEC/price review. Saved within this "
+                "session only; this list is separate from the post-Phase-3 / PDUFA "
+                "entry watchlist. The CSV below is your portable backup."
+            )
+            _watch_selected = st.multiselect(
+                "Stock tickers to add",
+                options=_candidate_tickers,
+                key="pre_phase3_research_tickers_v1",
+            )
+            if st.button(
+                "ADD SELECTED TO PRE PHASE 3 WATCHLIST",
+                key="pre_phase3_add_watchlist_v1",
+                disabled=not _watch_selected,
+            ):
+                _trade_watchlist.update(_watch_selected)
+                st.session_state["pre_phase3_trade_watchlist"] = sorted(_trade_watchlist)
+                st.rerun()
+            st.caption(
+                "Current PRE PHASE 3 research watchlist: "
+                + (", ".join(sorted(_trade_watchlist)) if _trade_watchlist else "None")
+            )
+            _watch_export = _trade_shortlist.loc[
+                _trade_shortlist["Ticker"].isin(_trade_watchlist)
+            ]
+            st.download_button(
+                "DOWNLOAD PRE PHASE 3 RESEARCH WATCHLIST (.CSV)",
+                data=_watch_export.to_csv(index=False).encode("utf-8"),
+                file_name=f"pre_phase3_research_watchlist_{cutoff:%Y%m%d}.csv",
+                mime="text/csv", key="pre_phase3_trade_watchlist_export_v1",
+            )
+        else:
+            st.warning(
+                "No trial records matched this view. Check ALL TRIALS and source "
+                "ingestion status; a missing or stale ledger does not prove "
+                "that publicly traded companies have no Phase 3 trials."
+            )
     try:
         _p2_state = json.loads(
             Path("data/phase2_p_intake_status.json").read_text(encoding="utf-8")
@@ -3212,7 +3217,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 VISIBLE TRIALS V2 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
