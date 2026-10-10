@@ -2765,8 +2765,8 @@ if page == "PIPELINE":
     # The trial selector and the former Master/Watchlist engine now live
     # together on Pipeline; the oversized Master Table grid stays removed.
     trial_tab, trade_tab = st.tabs([
-        "TRIAL STAGES & DATES",
-        "PDUFA COUNTDOWN · WATCHLIST · ANALYSIS · INVEST",
+        "TRIALS & DATES",
+        "PDUFA WORKBENCH",
     ])
     with trial_tab:
         st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
