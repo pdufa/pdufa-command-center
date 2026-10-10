@@ -3011,6 +3011,54 @@ if page == "PIPELINE":
     with trade_tab:
         st.markdown("## WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION")
         st.caption("Phase 3 and manually selected PIPELINE records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
+        # Do not mistake passing application tests for complete or fresh data.
+        overnight_path = Path("data/overnight_scan_status.json")
+        if overnight_path.exists():
+            try:
+                overnight_audit = json.loads(overnight_path.read_text(encoding="utf-8"))
+                if overnight_audit.get("status") != "COMPLETE":
+                    missing_families = overnight_audit.get("missing_required_source_families", [])
+                    st.warning(
+                        "SOURCE COVERAGE: " + str(overnight_audit.get("status", "UNKNOWN"))
+                        + ". Missing source families: "
+                        + (", ".join(str(name) for name in missing_families) if missing_families else "review required")
+                        + ". Do not treat this as a completed FDA/SEC/trading-data scan."
+                    )
+            except (OSError, ValueError, TypeError):
+                st.warning("Overnight source-coverage status could not be verified.")
+        recheck_path = Path("data/recheck_status.csv")
+        if recheck_path.exists():
+            try:
+                recheck_snapshot = pd.read_csv(
+                    recheck_path, dtype=str, keep_default_na=False,
+                    usecols=["completed_at_utc", "error_count"],
+                )
+                recheck_dates = pd.to_datetime(
+                    recheck_snapshot["completed_at_utc"], utc=True, errors="coerce",
+                )
+                latest_recheck = recheck_dates.max()
+                if pd.isna(latest_recheck) or (
+                    pd.Timestamp.now(tz="UTC") - latest_recheck > pd.Timedelta(days=2)
+                ):
+                    last_seen = (
+                        latest_recheck.strftime("%Y-%m-%d %H:%M UTC")
+                        if pd.notna(latest_recheck) else "unknown"
+                    )
+                    st.warning(
+                        "EVENT RECHECK DATA STALE: latest stored completion "
+                        + last_seen + ". Do not assume the stock data is current."
+                    )
+                error_rows = int(
+                    pd.to_numeric(recheck_snapshot["error_count"], errors="coerce")
+                    .fillna(0).gt(0).sum()
+                )
+                if error_rows:
+                    st.warning(
+                        f"EVENT RECHECK COVERAGE: {error_rows:,} of "
+                        f"{len(recheck_snapshot):,} stored events have recheck errors."
+                    )
+            except (OSError, ValueError, KeyError, pd.errors.ParserError):
+                st.warning("Event recheck freshness and error counts could not be verified.")
         master, phase3_arrivals, phase_pipeline_state = master_with_phase3(df)
         master = master.reset_index(drop=True)
         manual_arrivals = sum(row.get("pipeline_transfer_mode") == "MANUAL REVIEW" for row in phase3_arrivals)
