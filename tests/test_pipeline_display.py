@@ -86,10 +86,12 @@ class PipelineDisplayTests(unittest.TestCase):
         start = source.index('if page == "PDUFA":')
         end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
         section = source[start:end]
-        self.assertIn('with trial_tab:', section)
-        self.assertIn('trial_tab, trade_tab, intake_tab = st.tabs([\n        "PIPELINE",', section)
+        self.assertIn('with pipeline_tab:', section)
+        self.assertIn('pipeline_tab, intake_tab = st.tabs(["PIPELINE", "PHASE 3 DAILY"])', section)
+        self.assertNotIn('"PDUFA WORKBENCH"', section)
+        self.assertEqual(section.count('with pipeline_tab:'), 2)
         self.assertNotIn('"TRIALS AND DATES"', section)
-        self.assertIn('with trade_tab:', section)
+        self.assertIn('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS', section)
         self.assertIn('st.multiselect(\n                "STAGES"', section)
         self.assertIn('st.multiselect(\n                "DATES"', section)
         self.assertLess(section.index('selected_dates ='), section.index('### PDUFA TRIALS / PROGRAMS'))
@@ -107,7 +109,7 @@ class PipelineDisplayTests(unittest.TestCase):
             'elif page == "DISEASE & MARKET HORIZON":', 1
         )[0]
         self.assertLess(
-            section.index('with trial_tab:'), section.index('with trade_tab:')
+            section.index('with pipeline_tab:'), section.index('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS')
         )
         self.assertIn('### PDUFA COUNTDOWN — DATE GRADIENT', section)
         self.assertIn('master_with_phase3(df)', section)
@@ -121,7 +123,7 @@ class PipelineDisplayTests(unittest.TestCase):
         """Both selectors must be before chart columns when st.columns stack."""
         from pathlib import Path
         app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        p = app.split('if page == "PDUFA":', 1)[1].split('with trade_tab:', 1)[0]
+        p = app.split('if page == "PDUFA":', 1)[1].split('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS', 1)[0]
         stage = p.index('key="pipeline_stages_v9"')
         dates = p.index('key="pipeline_dates_v9"')
         charts = p.index('stage_chart_col, date_chart_col = st.columns(2, gap="medium")')
