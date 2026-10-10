@@ -73,6 +73,22 @@ class PipelinePageSmokeTests(unittest.TestCase):
             self.assertEqual(int(counts.iloc[-1]), len(shown))
             self.assertEqual(int(counts.iloc[:-1].sum()), len(shown))
 
+    def test_plan_tab_renders_editing_and_backup_without_errors(self):
+        """PLAN is a genuine reachable page, with an editor and backup controls."""
+        app = AppTest.from_file(str(APP_PATH), default_timeout=90)
+        app.session_state["nav"] = "11. PLAN"
+        app.run()
+        self.assertFalse(list(app.exception),
+                         [str(error.message) for error in app.exception])
+        self.assertEqual(app.radio(key="nav").value, "11. PLAN")
+        self.assertTrue(any("11. PLAN — SYSTEM RULES & OPERATING RHYTHM"
+                            in item.body for item in app.markdown))
+        self.assertTrue(any(item.label == "Plan Items" for item in app.metric))
+        self.assertTrue(any(item.key == "save_swiftlook_plan" for item in app.button))
+        self.assertTrue(any(item.key == "download_swiftlook_plan"
+                            for item in app.get("download_button")))
+        self.assertTrue(bool(app.get("data_editor")), "The PLAN editor must render")
+
     def test_pipeline_opens_with_both_selectors_and_empty_chart(self):
         # Streamlit resolves relative paths against this test file in newer
         # versions; always point at the repository's actual entry point.
