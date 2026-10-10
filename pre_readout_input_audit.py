@@ -17,6 +17,7 @@ INPUTS = (
     ("Comparator recorded", "comparator"),
     ("Sample size documented", "enrollment"),
     ("Linked Phase 2 trial ID", "phase2_id"),
+    ("Phase 2 primary p-value + endpoint interpretation", "phase2_p"),
     ("Verified Phase 2 efficacy source", "phase2_efficacy"),
     ("Verified Phase 2 safety source", "safety"),
     ("Phase 3 design / power dossier", "phase3_design"),
@@ -110,6 +111,17 @@ def audit_inputs(candidates, protocols=None, evidence=None, *, as_of):
             "enrollment":bool(re.fullmatch(r"\d+",clean(protocol.get("enrollment")))
                               and int(clean(protocol.get("enrollment")))>0),
             "phase2_id":bool(re.search(r"NCT\d{8}",clean(c.get("Phase 2 NCT Links")))),
+            "phase2_p":(
+                bool(re.fullmatch(r"NCT\d{8}", clean(e.get("phase2_nct_id"))))
+                and clean(e.get("phase2_nct_id")) in re.findall(
+                    r"NCT\d{8}", clean(c.get("Phase 2 NCT Links")))
+                and clean(e.get("phase2_primary_endpoint_met")).upper()=="YES"
+                and bool(re.fullmatch(r"(?:0(?:\.\d+)?|1(?:\.0+)?)",
+                                      clean(e.get("phase2_primary_pvalue"))))
+                and http(e.get("phase2_pvalue_source"))
+                and day(e.get("phase2_pvalue_source_date")) is not None
+                and day(e.get("phase2_pvalue_source_date")) < cutoff
+            ),
             "phase2_efficacy":manually_documented(e,"phase2_efficacy",25,cutoff),
             "safety":manually_documented(e,"safety",15,cutoff),
             "phase3_design":manually_documented(e,"phase3_design",30,cutoff),
