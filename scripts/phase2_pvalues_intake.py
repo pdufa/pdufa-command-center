@@ -32,9 +32,9 @@ def linked_trials(rows):
         if r.get("phases", "").upper() != "PHASE3":
             continue
         phase3 = r.get("nct_id", "")
-        if not re.fullmatch(r"NCT\\d{8}", phase3):
+        if not re.fullmatch(r"NCT\d{8}", phase3):
             continue
-        for phase2 in set(re.findall(r"NCT\\d{8}", r.get("phase2_nct_ids", ""))):
+        for phase2 in set(re.findall(r"NCT\d{8}", r.get("phase2_nct_ids", ""))):
             if phase2 != phase3:
                 links.setdefault(phase2, set()).add(
                     (phase3, r.get("ticker", ""), r.get("program_key", "")))
@@ -53,7 +53,7 @@ def evidence_from_study(nct, study, checked_at):
     status = protocol.get("statusModule") or {}
     phase = (protocol.get("designModule") or {}).get("phases") or []
     posted = (status.get("resultsFirstPostDateStruct") or {}).get("date", "")
-    if "PHASE2" not in phase or not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", posted):
+    if "PHASE2" not in phase or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", posted):
         return []
     measures = ((study.get("resultsSection") or {}).get("outcomeMeasuresModule") or {}).get("outcomeMeasures") or []
     rows = []
