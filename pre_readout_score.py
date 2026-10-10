@@ -108,13 +108,19 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None):
             & source.eq("https://clinicaltrials.gov/study/" + protocol_nct)
             & checked_proto.dt.date.le(as_of).fillna(False)
         )
+        # Fail closed on refreshed registry records with missing/unknown trial
+        # status or existing published results. An unresolved NCT is not safe
+        # to advertise as a pre-readout opportunity.
         published_proto = _cols(p, "registry_results_first_posted").ne("")
-        stopped_proto = (
-            _cols(p, "registry_overall_status").str.upper().ne("")
-            & ~_cols(p, "registry_overall_status").str.upper().isin(ACTIVE)
-        )
-        blocked = set(protocol_nct.loc[valid_proto & (published_proto | stopped_proto)])
-        not_posted &= ~nct.isin(blocked)
+        not_active_proto = ~_cols(p, "registry_overall_status").str.upper().isin(ACTIVE)
+        blocked = set(protocol_nct.loc[valid_proto & (published_proto | not_active_proto)])
+        # Only accept an exact-NCT protocol fetched and last revised by cutoff.
+        # A stale Phase 3 ledger alone is insufficient to rule out a readout.
+        latest_active = set(protocol_nct.loc[
+            valid_proto & ~published_proto & ~not_active_proto
+            & _dates(_cols(p, "source_updated")).dt.date.le(as_of).fillna(False)
+        ])
+        not_posted &= ~nct.isin(blocked) & nct.isin(latest_active)
     if cap_cache is None or cap_cache.empty or "ticker" not in cap_cache:
         return pd.DataFrame(columns=RESULT_COLUMNS)
     c = cap_cache.copy().drop_duplicates("ticker", keep="last")
