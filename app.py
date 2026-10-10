@@ -3077,7 +3077,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V16 — PDUFA PIPELINE SUBMENU · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V17 — WORKBENCH MERGED INTO PIPELINE · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3105,18 +3105,13 @@ else:
         st.query_params.clear()
 
 if page == "PDUFA":
-    # The trial selector and the former Master/Watchlist engine now live
-    # together on Pipeline; the oversized Master Table grid stays removed.
-    # Submenus nested under the PDUFA main navigation tab.
-    trial_tab, trade_tab, intake_tab = st.tabs([
-        "PIPELINE",
-        "PDUFA WORKBENCH",
-        "PHASE 3 DAILY",
-    ])
-    with trial_tab:
+    # One PIPELINE submenu includes discovery, countdown, watchlist, analysis,
+    # and invest. Phase 3 Daily remains a separate submenu.
+    pipeline_tab, intake_tab = st.tabs(["PIPELINE", "PHASE 3 DAILY"])
+    with pipeline_tab:
         st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
         st.caption(
-            "PDUFA-V14 · Select STAGES and DATES, then "
+            "PIPELINE · Select STAGES and DATES, then "
             "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
         )
 
@@ -3357,9 +3352,12 @@ if page == "PDUFA":
             _clear_pipeline_results_v9()
             st.rerun()
 
-    with trade_tab:
-        st.markdown("## WATCHLIST — PROGRAM REVIEW THROUGH FDA DECISION")
-        st.caption("Phase 3 and manually selected PDUFA records remain available for Watchlist, Analysis and Invest. The large Master Table display is hidden; data processing and evidence checks are retained.")
+    # Re-enter the same Streamlit tab: former Workbench features remain inside
+    # PIPELINE, without an independent or duplicate navigation submenu.
+    with pipeline_tab:
+        st.divider()
+        st.markdown("## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS")
+        st.caption("Continue from trial discovery to FDA countdown, Watchlist, Analysis, and Invest. All research fields and evidence checks are retained; no trading orders are placed.")
         # Do not mistake passing application tests for complete or fresh data.
         overnight_path = Path("data/overnight_scan_status.json")
         if overnight_path.exists():
