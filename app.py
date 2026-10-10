@@ -3210,7 +3210,7 @@ if page == "MASTER TABLE":
 elif page == "PIPELINE":
     st.markdown("## PIPELINE — CLINICAL AND REGULATORY STAGES")
     st.caption(
-        "PIPELINE-V11 · Select STAGES and DATES, then "
+        "PIPELINE-V12 · Select STAGES and DATES, then "
         "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
     )
 
@@ -3306,28 +3306,50 @@ elif page == "PIPELINE":
         count_records = pd.DataFrame()
 
     def _render_pipeline_counts(slot, title, field, categories):
-        import altair as alt
-
         counts = (count_records[field].value_counts().to_dict()
                   if field in count_records else {})
-        count_table = pd.DataFrame([
-            {"Category": category, "Trials / programs": int(counts.get(category, 0))}
-            for category in categories
-        ])
-        base = alt.Chart(count_table).encode(
-            y=alt.Y("Category:N", sort=list(categories), title=None,
-                    axis=alt.Axis(labelOverlap=False, labelLimit=180)),
-            x=alt.X("Trials / programs:Q", title="Trials / programs", axis=alt.Axis(tickMinStep=1)),
-            tooltip=[alt.Tooltip("Category:N"), alt.Tooltip("Trials / programs:Q", format=",d")],
-        )
-        chart = (base.mark_bar(color="#23856a") + base.mark_text(
-            align="left", dx=5,
-        ).encode(text=alt.Text("Trials / programs:Q", format=",d"))).properties(
-            height=max(200, len(categories) * 24),
+        maximum = max((int(counts.get(category, 0)) for category in categories), default=0)
+        rows = []
+        for category in categories:
+            count = int(counts.get(category, 0))
+            width = 100 * count / maximum if maximum else 0
+            label = html.escape(str(category), quote=True)
+            rows.append(
+                f'<li class="pipeline-count-row" data-category="{label}" data-count="{count}" '
+                f'aria-label="{label}: {count:,} trials / programs">'
+                f'<span class="pipeline-count-label">{label}</span>'
+                '<span class="pipeline-count-track" aria-hidden="true">'
+                f'<span class="pipeline-count-bar" style="width:{width:.4f}%"></span></span>'
+                f'<span class="pipeline-count-value">{count:,}</span></li>'
+            )
+        chart_html = """<style>
+        .pipeline-count-chart { width:100%; }
+        .pipeline-count-chart ul { margin:0; padding:0; list-style:none; }
+        .pipeline-count-chart .pipeline-count-row {
+            display:grid; grid-template-columns:minmax(140px,170px) minmax(32px,1fr) 64px;
+            align-items:center; column-gap:8px; height:32px; margin:0; padding:0;
+        }
+        .pipeline-count-chart .pipeline-count-label,
+        .pipeline-count-chart .pipeline-count-value {
+            display:flex; align-items:center; height:32px;
+            font-size:12px; line-height:1; white-space:nowrap;
+        }
+        .pipeline-count-chart .pipeline-count-label { justify-content:flex-end; text-align:right; }
+        .pipeline-count-chart .pipeline-count-value { justify-content:flex-end; font-variant-numeric:tabular-nums; }
+        .pipeline-count-chart .pipeline-count-track { display:flex; align-items:center; height:32px; min-width:0; }
+        .pipeline-count-chart .pipeline-count-bar { display:block; height:18px; background:#23856a; }
+        @media(max-width:600px) {
+            .pipeline-count-chart .pipeline-count-row {
+                grid-template-columns:140px minmax(32px,1fr) 52px; column-gap:6px;
+            }
+        }
+        </style>""" + (
+            f'<div class="pipeline-count-chart" role="img" aria-label="{html.escape(title)}">'
+            '<ul>' + "".join(rows) + '</ul></div>'
         )
         with slot:
             st.markdown("#### " + title)
-            st.altair_chart(chart, use_container_width=True)
+            st.markdown(chart_html, unsafe_allow_html=True)
             st.caption(f"TOTAL: {len(count_records):,} trials / programs")
 
     _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES)
