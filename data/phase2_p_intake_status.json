@@ -1,0 +1,9 @@
+{
+  "status": "NOT_RUN",
+  "as_of": null,
+  "eligible_phase3_trials": null,
+  "linked_unique_phase2_nct": null,
+  "primary_p_observations_stored": 0,
+  "primary_p_linked_nct": 0,
+  "limitations": "No primary Phase 2 p-value observations collected yet. No calibrated Phase 3 probability."
+}
