@@ -3,10 +3,10 @@
 Streamlit presentation layer for the PDUFA research, calendar, and prediction system.
 
 ## Navigation
-1. ALL PDUFA — configurable master event table with direct event detail links
-2. MARKET CAP GROUPS — event views grouped through the $300M–$10B range
-3. CALENDAR — next-four-week counts plus monthly event calendar
-4. PREDICTION ENGINE — historical validation, audit/rescore status, direction testing, and prospective gate view
+- **PIPELINE → TRIALS & DATES:** Current-stage and PDUFA-window selectors, stage/date count charts, and the matching trials table. Both selectors and an explicit SHOW click are required to populate the table.
+- **PIPELINE → PDUFA WORKBENCH:** Preserves the source-enriched master processing and PDUFA countdown, with compact ticker-based Watchlist management followed by Watchlist, Analysis, and Invest tables. The oversized Master Table display and standalone Watchlist page are removed; source data and internal master-transfer labels remain intact.
+- **TODAY:** Phase 3 intake, financing and PDUFA update summary.
+- **Additional pages:** Disease & Market Horizon, Strategy, PDUFA Calendar, FDA Decision, Scans, Recheck, Prediction Engine, Match Optimizer, and Plan.
 
 ## Visible approval probabilities
 The user-facing probability display is intentionally limited to two columns:
