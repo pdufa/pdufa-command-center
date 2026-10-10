@@ -9,7 +9,7 @@ from today_page import render_today
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
-from pre_phase3_trading import trading_research_queue
+from pre_phase3_trading import trading_research_queue, research_discovery_pool
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
@@ -2683,10 +2683,17 @@ def render_pre_phase3():
             _p3_raw, _p3_posts, _p3_caps, cutoff,
             protocols=_p3_protocols, require_protocol=True,
         )
+        # The broad discovery queue must not silently vanish when the
+        # two-day exact-NCT protocol refresh is overdue. It is NOT a
+        # verified-unreleased queue and must keep its review label.
+        _p3_discovery = phase3_pre_readout_queue(
+            _p3_raw, _p3_posts, _p3_caps, cutoff, protocols=None,
+        )
     except (OSError, ValueError, KeyError, pd.errors.ParserError, TypeError) as exc:
         st.error("Pre-readout sources unavailable; no probability or research score inferred.")
         st.caption("Pre-readout input error type: " + type(exc).__name__)
         _p3_candidates = pd.DataFrame()
+        _p3_discovery = pd.DataFrame()
     try:
         _pre_evidence = pd.read_csv(
             "data/phase3_pre_readout_evidence.csv", dtype=str, keep_default_na=False,
@@ -2787,9 +2794,13 @@ def render_pre_phase3():
             on="NCT ID", how="left", validate="one_to_one",
         )
 
-    # Trading-research candidates are always visible. This is a prospective
-    # registry completion screen, NOT a verified issuer readout calendar or
-    # an entry signal. Keep the clinical evidence assessment independent.
+    # Merge audited strict candidates into a persistent DISCOVERY pool.
+    # A stale exact-NCT record is shown as RECHECK REQUIRED, never silently
+    # excluded or treated as a verified unreleased readout.
+    _p3_research_pool = research_discovery_pool(
+        _p3_discovery, _p3_candidates, _p3_protocols, cutoff
+    )
+    st.markdown("### PRE PHASE 3 — TRIALS")
     st.markdown("### PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH")
     st.caption(
         "Candidate discovery is not a BUY list. Registry primary-completion dates "
@@ -2799,15 +2810,30 @@ def render_pre_phase3():
         "and safety/effect-size evidence before any entry review."
     )
     _window_days = st.radio(
-        "PRIMARY COMPLETION LOOKAHEAD (not topline announcement)",
-        [90, 180, 365], index=1, horizontal=True,
-        format_func=lambda days: f"Next {days} days",
+        "PRE PHASE 3 TRIALS (registry milestone window, not readout date)",
+        ["ALL", 90, 180, 365], index=0, horizontal=True,
+        format_func=lambda days: (
+            "ALL TRIALS" if days == "ALL" else f"Next {days} days"
+        ),
         key="pre_phase3_trade_lookahead_v1",
     )
     _trade_shortlist = trading_research_queue(
-        _p3_candidates, cutoff, lookahead_days=_window_days
+        _p3_research_pool, cutoff, lookahead_days=_window_days
     )
     _candidate_tickers = sorted(set(_trade_shortlist["Ticker"])) if not _trade_shortlist.empty else []
+    st.caption(
+        f"PRE PHASE 3 TRIALS DISPLAYED: {len(_trade_shortlist):,} records "
+        f"across {len(_candidate_tickers):,} tickers. "
+        f"Clinical pre-readout eligible with fresh protocol: {len(_p3_candidates):,}. "
+        "Rows requiring source recheck are research leads, NOT verified "
+        "unreleased company readouts."
+    )
+    if len(_p3_research_pool) > len(_p3_candidates):
+        st.warning(
+            "Some potential trials need a fresh exact-NCT registry check. "
+            "Their research rows remain visible and are labeled RECHECK REQUIRED; "
+            "do not treat them as confirmed unpublished programs."
+        )
     _scored_n = int(_trade_shortlist["PRE PHASE 3 Score /100"].notna().sum())
     st.caption(
         f"PRE PHASE 3 SCORE /100: {_scored_n:,} fully source-reviewed records "
@@ -2817,9 +2843,9 @@ def render_pre_phase3():
         "data-availability measures, NOT a chance of trial success or a BUY signal."
     )
     st.caption(
-        f"{len(_p3_candidates):,} possible registry trial records in the clinical queue; "
+        f"{len(_p3_research_pool):,} prospective registry research leads; "
         f"{len(_trade_shortlist):,} trial records / {len(_candidate_tickers):,} unique tickers "
-        f"have a primary-completion WINDOW intersecting the next {_window_days} days. "
+        f"shown in the selected window ({_window_days}). "
         "These are unconfirmed trading-research leads; none passes the trading entry gate."
     )
     if not _trade_shortlist.empty:
@@ -2886,10 +2912,10 @@ def render_pre_phase3():
             mime="text/csv", key="pre_phase3_trade_watchlist_export_v1",
         )
     else:
-        st.info(
-            "No registry primary-completion windows in the selected horizon. "
-            "Use a longer lookahead; do not infer that there are no actual "
-            "issuer-announced Phase 3 readouts."
+        st.warning(
+            "No trial records matched this view. Check ALL TRIALS and source "
+            "ingestion status; a missing or stale ledger does not prove "
+            "that publicly traded companies have no Phase 3 trials."
         )
     try:
         _p2_state = json.loads(
@@ -3186,7 +3212,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PRE PHASE 3 VISIBLE TRIALS V2 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
