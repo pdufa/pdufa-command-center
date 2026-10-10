@@ -87,8 +87,8 @@ class PipelineDisplayTests(unittest.TestCase):
         end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
         section = source[start:end]
         self.assertIn('with trial_tab:', section)
-        self.assertIn('trial_tab, trade_tab, intake_tab = st.tabs([\n        "TRIALS AND DATES",', section)
-        self.assertNotIn('"TRIALS & DATES"', section)
+        self.assertIn('trial_tab, trade_tab, intake_tab = st.tabs([\n        "PIPELINE",', section)
+        self.assertNotIn('"TRIALS AND DATES"', section)
         self.assertIn('with trade_tab:', section)
         self.assertIn('st.multiselect(\n                "STAGES"', section)
         self.assertIn('st.multiselect(\n                "DATES"', section)
