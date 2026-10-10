@@ -269,8 +269,11 @@ def load_universe(data_root, today=None):
 def select_records(frame, stages, query=""):
     if frame.empty or not stages:
         return frame.iloc[:0].copy()
+    # Pipeline STAGES represents the CURRENT stage, not all historical
+    # milestones in stage_tags. Using tags here over-included FDA decision
+    # rows while the stage counts used current_stage.
     wanted = set(stages)
-    result = frame[frame["stage_tags"].map(lambda tags: bool(wanted.intersection(tags)))].copy()
+    result = frame[frame["current_stage"].fillna("").isin(wanted)].copy()
     if clean(query) and not result.empty:
         text = result[["ticker", "company", "drug", "indication", "nct_id"]].astype(str).agg(" ".join, axis=1)
         result = result[text.str.contains(clean(query), case=False, regex=False)]
