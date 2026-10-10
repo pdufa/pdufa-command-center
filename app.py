@@ -7,6 +7,7 @@ from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS a
 from strategy_view import render_strategy_page
 from today_page import render_today
 from phase2_pre_readout_p import attach_phase2_p
+from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
@@ -3638,6 +3639,7 @@ if page == "PIPELINE":
         except (OSError, ValueError, pd.errors.ParserError):
             _phase2_p = pd.DataFrame()
         _p3_candidates = join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)
+        _p3_candidates = combine_phase2_phase3(_p3_candidates, _pre_evidence)
         try:
             _p2_state = json.loads(
                 Path("data/phase2_p_intake_status.json").read_text(encoding="utf-8")
@@ -3774,6 +3776,15 @@ if page == "PIPELINE":
         pc2.metric("Verified program identity", ready_identity)
         pc3.metric("Phase 2 trial ID linked", linked_phase2)
         pc4.metric("Complete 100-point assessments", fully_scored)
+        _combined_n = int(_p3_candidates["Combined Pre-Readout Score /100"].notna().sum())
+        st.metric("Phase 2 + Phase 3 fully reviewed combinations", _combined_n)
+        st.caption(
+            "PHASE 2 /25 + PRE-READOUT OTHER EVIDENCE /75 = combined /100, "
+            "only when a linked primary Phase 2 p-value was observed before "
+            "cutoff AND every clinical domain was independently reviewed. "
+            "A p-value alone never earns 25 points. The combined score is NOT "
+            "a calibrated chance of Phase 3 success."
+        )
         _p2_matched = (
             int(_p3_candidates["Phase 2 p Evidence"].eq(
                 "REPORTED — MANUAL CLINICAL REVIEW"
