@@ -56,7 +56,8 @@ def manually_documented(e, name, max_pts, cutoff):
     except (ValueError, TypeError):
         return False
     return (0 <= points <= max_pts and http(e.get(f"{name}_source"))
-            and in_time(e, cutoff, fields=(f"{name}_source_date",)))
+            and day(e.get(f"{name}_source_date")) is not None
+            and day(e.get(f"{name}_source_date")) < cutoff)
 
 
 def audit_inputs(candidates, protocols=None, evidence=None, *, as_of):
