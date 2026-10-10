@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 VISIBLE TRIALS V2") && initial.includes("NAVIGATION V19");
+  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 TRIALS FIRST V4") && initial.includes("NAVIGATION V19");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -123,6 +123,11 @@ async function audit(){
         result.prePhase3DisplayedTrials=displayedMatch?Number(displayedMatch[1].replace(/,/g,"")):null;
         result.checks.prePhase3NonemptyTrials=Number.isInteger(result.prePhase3DisplayedTrials)
           && result.prePhase3DisplayedTrials>0 && tradeText.includes("ALL TRIALS");
+        result.checks.prePhase3TrialsFirst=tradeText.indexOf("PRE PHASE 3 — TRIALS")>=0
+          && tradeText.indexOf("PRE PHASE 3 — TRIALS")<
+             tradeText.indexOf("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT");
+        if(!result.checks.prePhase3TrialsFirst)
+          result.errors.push("PRE PHASE 3 trials should appear before the long clinical assessment.");
         if(!result.checks.prePhase3NonemptyTrials)
           result.errors.push("PRE PHASE 3 trial table rendered zero records or did not expose the ALL TRIALS screen.");
         result.checks.prePhase3ScoreVisible=tradeText.includes("PRE PHASE 3 SCORE /100")

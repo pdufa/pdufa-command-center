@@ -224,6 +224,12 @@ class TradingResearchQueueTests(unittest.TestCase):
         section = src.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
         self.assertIn("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH", section)
         self.assertIn("trading_research_queue(", section)
+        self.assertIn("top_trials_container = st.container()", section)
+        self.assertIn("with top_trials_container:", section)
+        self.assertLess(section.index("top_trials_container = st.container()"),
+                        section.index("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT"))
+        self.assertLess(section.index("with top_trials_container:"),
+                        section.index("PRE PHASE 3 — TRIALS"))
         self.assertIn('["ALL", 90, 180, 365], index=0', section)
         self.assertIn("research_discovery_pool(", section)
         self.assertIn("PRE PHASE 3 TRIALS DISPLAYED:", section)
