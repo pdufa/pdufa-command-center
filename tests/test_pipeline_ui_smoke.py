@@ -175,5 +175,26 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(app.button(key="pipeline_show_v9").disabled)
 
 
+    def test_watchlist_add_remove_survives_master_table_removal(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=60)
+        app.session_state["nav"] = "PIPELINE"
+        app.run()
+        self.assertFalse(list(app.exception))
+        picker = app.selectbox(key="watchlist_ticker_picker_v1")
+        self.assertTrue(picker.options, "Ticker choices must come from saved Pipeline data")
+        ticker = picker.options[0]
+        picker.set_value(ticker).run()
+        self.assertFalse(list(app.exception))
+        self.assertFalse(app.button(key="watchlist_add_picker_v1").disabled)
+        app.button(key="watchlist_add_picker_v1").click().run()
+        self.assertFalse(list(app.exception))
+        self.assertIn(ticker, app.session_state["watchlist"])
+        self.assertFalse(app.button(key="watchlist_remove_picker_v1").disabled)
+        app.button(key="watchlist_remove_picker_v1").click().run()
+        self.assertFalse(list(app.exception))
+        self.assertNotIn(ticker, app.session_state["watchlist"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
