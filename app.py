@@ -6,6 +6,7 @@ from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELIN
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from today_page import render_today
+from phase2_pre_readout_p import attach_phase2_p
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
@@ -3591,6 +3592,40 @@ if page == "PIPELINE":
                     _pre_evidence = pd.DataFrame()
         st.caption("Pre-release scoring is based on documented information only. The system does not certify uploaded publications or establish a clinical success probability. For historical assessments, same-day publication order cannot be established from date-only fields.")
         _p3_candidates = assess_pre_readout(_p3_candidates, _pre_evidence, cutoff)
+        # Phase 2 primary-p evidence is an earlier-stage INPUT, not an
+        # automatic clinical quality score or Phase 3 success probability.
+        try:
+            _p2_primary = pd.read_csv(
+                "data/phase2_primary_pvalues.csv", dtype=str, keep_default_na=False,
+            )
+        except (OSError, ValueError, pd.errors.ParserError):
+            _p2_primary = pd.DataFrame()
+        _p3_candidates = attach_phase2_p(_p3_candidates, _p2_primary, cutoff)
+        _p2_n_with_p = (
+            int(_p3_candidates["Phase 2 Primary p Recorded"].str.startswith("YES").sum())
+            if "Phase 2 Primary p Recorded" in _p3_candidates else 0
+        )
+        st.caption(
+            f"Phase 2 primary-endpoint p-value documented before cutoff: "
+            f"{_p2_n_with_p:,} / {len(_p3_candidates):,} current candidates. "
+            "A p-value is not proof of clinical efficacy, and it is not a "
+            "Phase 3 success probability. No p values are inferred."
+        )
+        try:
+            _p2_state = json.loads(
+                Path("data/phase2_pvalues_status.json").read_text(encoding="utf-8")
+            )
+            st.caption(
+                f"Phase 2 source check: {_p2_state.get('status', 'UNKNOWN')} · "
+                f"{_p2_state.get('linked_phase2_trials', 0)} linked prior-stage trials · "
+                f"{_p2_state.get('phase2_trials_with_recorded_primary_p', 0)} with primary p · "
+                f"{_p2_state.get('api_errors', 0)} source errors."
+            )
+        except (OSError, ValueError, TypeError):
+            st.warning(
+                "Phase 2 primary p-value intake has not run or is unavailable; "
+                "the displayed zero is NOT evidence that trials lack p-values."
+            )
         # Phase 2 p evidence is a pre-readout predictor input, never a
         # Phase 3 result or automatic point award. Exact phase2_nct_ids,
         # issuer ticker, registry publication, and first-observed cutoff
