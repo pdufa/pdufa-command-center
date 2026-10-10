@@ -227,7 +227,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(any("PHASE 3 PRE-READOUT — CLINICAL SUCCESS ASSESSMENT" in x
                             for x in headings))
         self.assertTrue(any("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES" in x
-                            for x in [str(w.message) for w in app.warning]))
+                            for x in [str(w.body) for w in app.warning]))
         self.assertTrue(any(item.label == "Potential pre-readout Phase 3 trials"
                             for item in app.metric))
         self.assertTrue(any(item.label == "Complete 100-point assessments"
