@@ -1,9 +1,13 @@
 {
-  "status": "NOT_RUN",
-  "as_of": null,
-  "eligible_phase3_trials": null,
-  "linked_unique_phase2_nct": null,
-  "primary_p_observations_stored": 0,
-  "primary_p_linked_nct": 0,
-  "limitations": "No primary Phase 2 p-value observations collected yet. No calibrated Phase 3 probability."
+  "as_of": "2026-10-10T17:24:02.584908+00:00",
+  "eligible_phase3_trials": 201,
+  "linked_unique_phase2_nct": 25,
+  "phase2_nct_queried_this_run": 25,
+  "primary_p_observations_stored": 6,
+  "primary_p_linked_nct": 2,
+  "unattempted_linked_nct": 0,
+  "no_primary_p_this_run": 23,
+  "errors": {},
+  "status": "COMPLETE",
+  "limitations": "Only registry PRIMARY analyses for exact Phase 2 NCT links; p-value does not establish efficacy, trial success or calibrated Phase 3 PoS. First known date is actual collector observation, not results-first-posted. No issuer-level full-text Phase 2 results."
 }
