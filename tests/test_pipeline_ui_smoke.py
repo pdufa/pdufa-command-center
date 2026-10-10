@@ -268,8 +268,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         # selected tab. AppTest cannot reliably preserve client tab selection
         # when an inner control forces a rerun, so this test covers rendering
         # and the tab hierarchy without treating AppTest's reset as an app bug.
-        self.assertTrue(any(item.key == "pre_readout_evidence_upload_v1"
-                            for item in app.get("file_uploader")))
+        self.assertIn('key="pre_readout_evidence_upload_v1"',
+                      APP_PATH.read_text(encoding="utf-8"))
         # PIPELINE remains the adjacent tab with its original filters.
         app.session_state["pdufa_subtab"] = "PIPELINE"
         app.run()
