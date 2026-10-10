@@ -25,6 +25,7 @@ FIELDS = (
     "nct_id", "primary_endpoint", "primary_timeframe", "allocation", "masking",
     "intervention_model", "comparator", "enrollment", "enrollment_type",
     "study_type", "first_posted", "source_updated", "source_url", "checked_at",
+    "registry_overall_status", "registry_results_first_posted",
 )
 
 
@@ -100,6 +101,10 @@ def protocol_only(study, *, checked_at):
         source_updated=str(updated),
         source_url="https://clinicaltrials.gov/study/" + nct,
         checked_at=checked_at,
+        registry_overall_status=str(status.get("overallStatus") or ""),
+        registry_results_first_posted=str(
+            (status.get("resultsFirstPostDateStruct") or {}).get("date") or ""
+        ),
     )
 
 
@@ -141,6 +146,10 @@ def run(data_dir, limit=160, workers=8, include_unknown_caps=False):
     # remaining uncollected trials have had a chance to enter the scorecard.
     fresh = [n for n in sorted(selected) if n not in existing]
     def stale(n):
+        # A newly introduced release-status field must be populated by
+        # refetching; a recent old-schema row is not sufficient evidence.
+        if "registry_results_first_posted" not in existing[n] or "registry_overall_status" not in existing[n]:
+            return True
         stamp = clean(existing[n].get("checked_at"))
         if not stamp:
             return True
