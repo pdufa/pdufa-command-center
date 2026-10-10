@@ -78,7 +78,7 @@ def audit_inputs(queue, protocol, manual, cutoff):
         "NONE counts as described; quality must be assessed separately",
     )
     checks["Trial enrollment recorded"] = (
-        count_for(designs, "Enrollment", lambda s: s.str.fullmatch(r"\\d+").fillna(False)),
+        count_for(designs, "Enrollment", lambda s: s.str.fullmatch(r"\d+").fillna(False)),
         "Sample size recorded; power assumptions not validated",
     )
 
