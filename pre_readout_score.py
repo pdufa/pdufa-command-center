@@ -68,6 +68,10 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *
     as_of = _iso_day(as_of)
     if as_of is None:
         raise ValueError("as_of must be a valid YYYY-MM-DD cutoff")
+    # If the caller supplies a protocol ledger, its absence is not evidence
+    # that clinical topline results remain unpublished.
+    if protocols is not None and (protocols.empty or "nct_id" not in protocols):
+        return pd.DataFrame(columns=RESULT_COLUMNS)
     x = pipeline.copy()
     necessary = ["nct_id", "ticker", "phases", "trial_status"]
     if any(col not in x.columns for col in necessary):
