@@ -150,6 +150,10 @@ def assess(queue, evidence, as_of):
             continue
         e = lookup.loc[nct]
         missing = []
+        if str(row.get("Program Identity", "")).strip().upper() != "VERIFIED":
+            missing.append("verified investigational drug and program identity")
+        if not str(row.get("Source", "")).strip().startswith(("http://", "https://")):
+            missing.append("registry trial source")
         declared_cutoff = _iso_day(e.get("assessment_cutoff_date"))
         if declared_cutoff is None or declared_cutoff != cutoff:
             missing.append("exact assessment cutoff date")
