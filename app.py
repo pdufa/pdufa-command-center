@@ -3252,12 +3252,31 @@ elif page == "PIPELINE":
         for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
     )
     universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
+
+    def _pipeline_current_stage_rows_v8(source, stages, query=""):
+        """Filter directly in the page: compatible with older helper imports.
+
+        Stage counts, date counts, and displayed trial rows all use the same
+        record-ID-deduplicated result. Historical stage tags are not included.
+        """
+        if source.empty or not stages:
+            return source.iloc[0:0].copy()
+        rows = source.loc[
+            source["current_stage"].fillna("").isin(list(stages))
+        ].drop_duplicates(subset=["record_id"]).copy()
+        query = str(query or "").strip()
+        if query and not rows.empty:
+            columns = ["ticker", "company", "drug", "indication", "nct_id"]
+            values = rows[columns].fillna("").astype(str).agg(" ".join, axis=1)
+            rows = rows.loc[values.str.contains(query, case=False, regex=False)]
+        return rows
+
     # Changed stage/date/search/sort selections must invalidate the prior
     # explicitly requested chart, including when the count would be unchanged.
     def _clear_pipeline_chart_v7():
         st.session_state["pipeline_chart_request_v7"] = None
 
-    st.caption("Pipeline chart version: DECISION-COUNT-LIVE-V7")
+    st.caption("Pipeline chart version: DECISION-COUNT-LIVE-V8")
     stage_col, date_col = st.columns(2, gap="medium")
     with stage_col:
         with st.container(border=True):
@@ -3309,7 +3328,7 @@ elif page == "PIPELINE":
     universe["DATES"] = universe["Days to PDUFA"].map(date_band)
     # Cross-filter: STAGES selections control per-DATE counts, without
     # hiding unselected date bands or projecting dates onto other trials.
-    stage_universe = select_pipeline_records(universe, enabled_stages, current_only=True)
+    stage_universe = _pipeline_current_stage_rows_v8(universe, enabled_stages)
     with date_col:
         with st.container(border=True):
             st.markdown("### DATES")
@@ -3370,7 +3389,7 @@ elif page == "PIPELINE":
         and st.session_state.get("pipeline_chart_request_v7") == selection_signature
     )
     visible = (
-        select_pipeline_records(date_filtered, enabled_stages, search, current_only=True)
+        _pipeline_current_stage_rows_v8(date_filtered, enabled_stages, search)
         if chart_applied else date_filtered.iloc[0:0].copy()
     )
     total_records = len(visible)
