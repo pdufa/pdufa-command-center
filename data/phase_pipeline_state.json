@@ -1,21 +1,21 @@
 {
-  "started_at": "2026-10-09T18:31:47.302769+00:00",
+  "started_at": "2026-10-10T13:58:59.992067+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-09",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-10",
   "source_max_age_days": 180,
-  "studies_scanned": 15662,
-  "matched_trials": 3103,
+  "studies_scanned": 15616,
+  "matched_trials": 3102,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
   "new_master_programs": [],
-  "finished_at": "2026-10-09T18:32:39.773307+00:00",
+  "finished_at": "2026-10-10T13:59:32.887085+00:00",
   "stored_trials": 3105,
   "phase2_programs": 438,
   "master_programs": 117,
   "review_trials": 1208,
   "market_cap_verified_tickers": 383,
-  "market_cap_source_unavailable": 2,
-  "market_cap_recent_cache_retained": 1
+  "market_cap_source_unavailable": 1,
+  "market_cap_recent_cache_retained": 0
 }
