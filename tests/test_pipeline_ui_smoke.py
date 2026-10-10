@@ -233,18 +233,24 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
 
 
-    def test_phase3_pre_readout_tab_never_fabricates_success_probability(self):
+    def test_pre_phase3_subtab_never_fabricates_success_probability(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.run()
         self.assertFalse(list(app.exception))
         nav = app.radio(key="nav")
-        self.assertIn("PRE PHASE 3", nav.options)
+        self.assertIn("PDUFA", nav.options)
+        self.assertNotIn("PRE PHASE 3", nav.options)
+        self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
         self.assertFalse(any("CLINICAL SUCCESS ASSESSMENT" in item.body
                              for item in app.markdown))
-        nav.set_value("PRE PHASE 3").run()
+
+        # Switching the nested PDUFA tab must render the original full review.
+        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.run()
         self.assertFalse(list(app.exception))
-        self.assertEqual(app.radio(key="nav").value, "PRE PHASE 3")
+        self.assertEqual(app.radio(key="nav").value, "PDUFA")
+        self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
         headings = [item.body for item in app.markdown]
         self.assertTrue(any("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT" in x
                             for x in headings))
@@ -258,7 +264,6 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for x in headings))
         self.assertTrue(any(item.key == "pre_readout_show_candidates_v1"
                             for item in app.get("toggle")))
-        self.assertFalse(any(item.key == "pipeline_show_v9" for item in app.button))
         before_count = len(app.dataframe)
         next(item for item in app.get("toggle")
              if item.key == "pre_readout_show_candidates_v1").set_value(True).run()
@@ -270,9 +275,25 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(candidates["Phase 3 Success Probability %"].isna().all())
         self.assertTrue(any(item.key == "pre_readout_screen_download_v1"
                             for item in app.get("download_button")))
-        app.radio(key="nav").set_value("PDUFA").run()
+        # PIPELINE remains the adjacent tab with its original filters.
+        app.session_state["pdufa_subtab"] = "PIPELINE"
+        app.run()
         self.assertFalse(list(app.exception))
         self.assertTrue(any("PDUFA — CLINICAL AND REGULATORY STAGES" in item.body
+                            for item in app.markdown))
+        self.assertFalse(any("CLINICAL SUCCESS ASSESSMENT" in item.body
+                             for item in app.markdown))
+
+    def test_legacy_pre_phase3_main_navigation_redirects_to_subtab(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        app.session_state["nav"] = "PRE PHASE 3"
+        app.session_state["detail_return_page"] = "PRE PHASE 3"
+        app.run()
+        self.assertFalse(list(app.exception))
+        self.assertEqual(app.radio(key="nav").value, "PDUFA")
+        self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
+        self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
+        self.assertTrue(any("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT" in item.body
                             for item in app.markdown))
 
 
