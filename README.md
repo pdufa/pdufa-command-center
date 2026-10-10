@@ -12,7 +12,7 @@ The scheduled collector is `scripts/phase2_pre_readout_pvalues_intake.py`, runni
 Streamlit presentation layer for the PDUFA research, calendar, and prediction system.
 
 ## Navigation
-- **PDUFA → TRIALS & DATES:** Current-stage and PDUFA-window selectors, stage/date count charts, and the matching trials table. Both selectors and an explicit SHOW click are required to populate the table.
+- **PDUFA → TRIALS AND DATES:** Current-stage and PDUFA-window selectors, stage/date count charts, and the matching trials table. Both selectors and an explicit SHOW click are required to populate the table.
 - **PDUFA → PDUFA WORKBENCH:** Preserves the source-enriched master processing and PDUFA countdown, with compact ticker-based Watchlist management followed by Watchlist, Analysis, and Invest tables. The oversized Master Table display and standalone Watchlist page are removed; source data and internal master-transfer labels remain intact.
 - **PDUFA → PHASE 3 DAILY:** The former TODAY reporting is here. Latest intake status appears immediately; select **SHOW PHASE 3 DAILY REPORT** to load yesterday’s source-linked Phase 3 posts, cumulative Phase 3 result records, financing evidence, ticker Watchlist management, and CSV export. Loading the large report on demand keeps the Trial/Date and PDUFA Workbench views responsive. Collectors and source-data files run independently of the UI.
 - **PRE PHASE 3:** Main navigation tab for linked Phase 2 primary p-values, the combined pre-readout research score, Phase 3 design coverage, missing inputs, evidence import, and CSV exports. It uses only information available before the Phase 3 readout.
