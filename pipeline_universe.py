@@ -266,14 +266,19 @@ def load_universe(data_root, today=None):
         historical=read_rows(root / "prediction_engine_history.csv"),
         metadata=read_rows(root / "drug_metadata.csv"), today=today)
 
-def select_records(frame, stages, query=""):
+def select_records(frame, stages, query="", current_only=False):
     if frame.empty or not stages:
         return frame.iloc[:0].copy()
-    # Pipeline STAGES represents the CURRENT stage, not all historical
-    # milestones in stage_tags. Using tags here over-included FDA decision
-    # rows while the stage counts used current_stage.
     wanted = set(stages)
-    result = frame[frame["current_stage"].fillna("").isin(wanted)].copy()
+    if current_only:
+        # Exact CURRENT-stage matching for the interactive Pipeline table.
+        # Counts are also based on current_stage, so they cannot disagree.
+        result = frame[frame["current_stage"].fillna("").isin(wanted)].copy()
+    else:
+        # Retain milestone-tag search for research callers that intentionally
+        # ask whether a program ever reached a given stage.
+        result = frame[frame["stage_tags"].map(
+            lambda tags: bool(wanted.intersection(tags)))].copy()
     if clean(query) and not result.empty:
         text = result[["ticker", "company", "drug", "indication", "nct_id"]].astype(str).agg(" ".join, axis=1)
         result = result[text.str.contains(clean(query), case=False, regex=False)]
