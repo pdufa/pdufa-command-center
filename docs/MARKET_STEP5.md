@@ -46,3 +46,24 @@ Example explicit single-ticker CLI:
 ## Not yet verified or implemented
 
 No full-universe market backfill, walk-forward return validation, external persistent database, real-time feeds, automated options/short/institutional indicators, automatic trial phase evidence verification, or independently verified cloud deployment of the new page. Step 6 is reserved for PRE PHASE 3 display.
+## Full-universe market scan (one button)
+
+Open the separate **Market Intelligence** Streamlit page. At the top, choose **Full-universe scan controls** and click **SCAN ALL REGISTERED BIOTECH STOCKS**. This queues every unique ticker–CIK identity in data/company_registry.csv (no phase/date/market-cap eligibility filter on ticker selection). It uses three parallel workers by default with a global one-second spacing between public-provider requests. This is a *single triggered batch*, not 700 simultaneous HTTP requests; pacing protects the external service. An entire ~700-stock universe has a lower-bound fetch pacing of around 12 minutes at 1 request/second; provider failures, throttling and network timeouts can extend it substantially.
+
+Each stock receives a checkpoint in the shared local SQLite database as soon as it is processed. Pressing SCAN ALL again for the **same date, roster and optional phase-manifest input** skips successfully fetched names and retries errors; the user can export an all-stock CSV and inspect ranked candidates and errors. A different run/date/roster starts a separate checkpoint set. Streamlit Cloud local files are ephemeral; interruption by redeployment/restart can erase progress. A GitHub Actions alternative below produces downloadable artifacts, avoiding browser disconnects.
+
+**Unknown trial-phase evidence never defaults to PRE RESULTS.** When Phase 3 readout status is not supplied, the scanner records phase UNVERIFIED, a phase-specific score of null, and only a separate **neutral, 5-factor price/volume screening score (0–100)**. This is a preliminary stock-activity rank, not a clinical-stage assessment or financial/trading return prediction. The neutral ranking is separate from PRE and POST rankings.
+
+To classify a subset of companies, upload an optional CSV with header: ticker,phase,phase_url,phase_date,readout_date,pdufa_date,pdufa_url,pdufa_source_date. Valid phase values are PRE_RESULTS or POST_RESULTS. Each company requires relevant dated HTTPS documentary evidence; POST also requires actual readout publication date. Invalid/missing evidence still withholds phase-specific scoring. This is a researcher assertion; URL presence does not independently validate the filing or trial outcome. All companies without manifest rows remain unclassified.
+
+### Headless alternative — GitHub Actions
+
+From the GitHub repository open Actions → **Full Biotech Market Scan** → **Run workflow**. This initiates the entire universe on a GitHub runner (90-minute maximum) and uploads CSV, JSON summary and SQLite artifacts for 30 days, even when some tickers fail. The workflow does not run on each code push and is not scheduled daily. The workflow is not automatically connected back to Streamlit; artifacts must be downloaded/imported deliberately.
+
+Example local or Colab command:
+
+    python market_bulk_scan.py --as-of 2026-10-10 --max-workers 3 --min-interval 1.0 --db data/market_step5_history.sqlite3 --output reports/all_biotech_market_scan.csv
+
+Test/resume a small chunk: add --max-new 10 (omit it to scan **ALL**). The scanner uses delayed end-of-day Stooq. Exchange/issuer identity, splits, listed venue, options and short data are unverified. If every request fails, the command exits with failure instead of reporting an apparently successful scan.
+
+**Built but not performed:** This release does not mean the full 700+ public ticker universe has been scanned, nor that provider coverage is sufficient. A live all-stock run and empirical quote/issuer validation remain pending. PRE PHASE 3 stays blank for Step 6.
