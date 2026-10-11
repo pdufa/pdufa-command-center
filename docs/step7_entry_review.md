@@ -50,3 +50,20 @@ The PRE PHASE 3 clinical table presents **Ticker → Pre-readout research score 
 A **NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS** worklist follows the main table. Its selection rules are prospective active Phase 3/2–3 status, an exact valid NCT and ClinicalTrials.gov source URL, no registry-posted result, and no already-complete clinical score. Candidates with documented linked Phase 2 primary p, fresh protocols, recent registry checks, verified program identity, and an in-range verified market cap are reviewed first. This numerical research *review priority* is **not a clinical rating**.
 
 Download the worklist and the separate **SOURCE-REVIEW SCORING TEMPLATE FOR THESE 10**. For each case, independently investigate the Phase 2 primary endpoint and benefit magnitude, Phase 3 randomization/control/power, safety, regulatory alignment, trial execution, source quality, and whether issuer topline has *actually* been published. Save only sourced analyst decisions through the existing `data/phase3_pre_readout_evidence.csv` review process and run the strict 100-point research rubric; even a completed research score remains **uncalibrated** and is not Phase 3 probability of success. Downloads alone do not save records to GitHub.
+
+
+
+## First dated numerical clinical research pilots — provisional /100
+
+Two exact pivotal efficacy studies now have *preliminary* six-domain analyst research ratings drawn from peer-reviewed Phase 2 results, ClinicalTrials.gov protocols and dated issuer statements. These remain uncalibrated editorial judgments. They **do not** populate the strict independently attested `Pre-readout research score /100` field, do not measure Phase 3 success probability, and never change `ENTRY READY`.
+
+| Ticker | Exact NCT | Indication | Phase 2 /25 | Design /30 | Safety /15 | FDA alignment /15 | Execution /10 | Evidence /5 | **Provisional /100** |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| TRVI | NCT07671911 | IPF-related chronic cough | 22 | 25 | 10 | 12 | 7 | 4 | **80** |
+| LBRX | NCT07363577 | Schizophrenia | 20 | 24 | 9 | 8 | 7 | 4 | **72** |
+
+These values, category explanations, exact cited source URLs and original publication dates are stored in `data/pre_phase3_pilot_clinical_reviews.json`. The additional `Preliminary clinical score /100` and domain columns appear beside Ticker on the PRE PHASE 3 grid. Other studies remain blank.
+
+Critical safeguards: LBRX NCT07369154 (NOVA-3) is an open-label long-term safety study; it is **not** the pivotal efficacy NOVA-2 study and must not receive NOVA-2's score. A missing or non-active exact-NCT registry status or safety-only endpoint blocks provisional scoring. TRVI's second OCEAN program is not automatically assigned OCEAN-1's rating. A score only attaches to the specifically named trial whose current saved protocol, comparator, randomized allocation, Phase 3 registry status, source URL, and drug/indication match.
+
+There remains no source-independent issuer topline adjudication and no historical calibration of these 0–100 ratings. The rubric is for **research prioritization** only, not for forecasting the FDA outcome or issuing a buy recommendation. Even a source-cited provisional rating is not equivalent to a fully independently reviewed `Score /100` under `pre_readout_score.assess`.

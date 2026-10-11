@@ -305,10 +305,13 @@ class PipelinePageSmokeTests(unittest.TestCase):
                         "NCT ID", "Ticker"}.issubset(set(t.value.columns))]
         self.assertTrue(clinical, "PRE PHASE 3 clinical grid must render")
         columns = clinical[0].columns.tolist()
-        self.assertEqual(columns[:4], [
-            "Ticker", "Pre-readout research score /100", "Score status",
+        self.assertEqual(columns[:6], [
+            "Ticker", "Preliminary clinical score /100", "Preliminary score status",
+            "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p",
         ])
+        self.assertTrue(any("provisional, source-cited clinical research score(s) /100" in m.body
+                            for m in app.markdown))
         self.assertTrue(
             (clinical[0]["Pre-readout research score /100"].notna()
              & clinical[0]["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")

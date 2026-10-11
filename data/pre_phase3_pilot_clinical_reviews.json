@@ -1,0 +1,108 @@
+{
+  "rubric_version": "manual-evidence-review-v1",
+  "scope": "Prospective preliminary clinical research ratings; no PoS calibration or auditor attestation",
+  "records": [
+    {
+      "ticker": "TRVI",
+      "nct_id": "NCT07671911",
+      "drug": "NAL ER",
+      "indication": "Idiopathic Pulmonary Fibrosis",
+      "trial_type": "PIVOTAL_EFFICACY",
+      "phase2_nct_id": "NCT05964335",
+      "assessment_cutoff": "2026-10-10",
+      "review_status": "PRELIMINARY SOURCE-BASED ASSESSMENT — NOT INDEPENDENTLY ATTESTED",
+      "domain_points": {
+        "phase2_efficacy": 22,
+        "phase3_design": 25,
+        "safety": 10,
+        "regulatory_alignment": 12,
+        "execution": 7,
+        "evidence_quality": 4
+      },
+      "domain_sources": {
+        "phase2_efficacy": {
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186",
+          "published": "2026-01-22",
+          "assessment": "CORAL n=165, objective 24-hour cough frequency reduction at 54 mg BID vs placebo, registry p near 0, published trial notes assumptions about missing data and only six weeks treatment."
+        },
+        "phase3_design": {
+          "url": "https://clinicaltrials.gov/study/NCT07671911",
+          "published": "2026-09-14",
+          "assessment": "OCEAN-1 randomized, double-masked, placebo comparator, ~306 enrolled; primary 24-hour cough frequency at week 26 is objective, but Phase 2 evidence covers only six weeks and future attrition risks remain."
+        },
+        "safety": {
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186",
+          "published": "2026-01-22",
+          "assessment": "Nausea, vomiting, constipation, dizziness and other tolerability signals; short Phase 2 exposure is inadequate to establish 52-week fixed-dose safety."
+        },
+        "regulatory_alignment": {
+          "url": "https://ir.trevitherapeutics.com/news-releases/news-release-details/trevi-therapeutics-announces-completion-end-phase-2-meeting-0",
+          "published": "2026-03-09",
+          "assessment": "Company-reported End-of-Phase-2 FDA alignment for two pivotal trials; sponsor statement says final protocols still subject to FDA review, not direct proof of approval path."
+        },
+        "execution": {
+          "url": "https://ir.trevitherapeutics.com/news-releases/news-release-details/trevi-therapeutics-reports-second-quarter-2026-financial-results",
+          "published": "2026-08-06",
+          "assessment": "OCEAN-1 initiated and ongoing with company-reported runway into 2030; enrollment and 52-week duration create material operational execution risk."
+        },
+        "evidence_quality": {
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186",
+          "published": "2026-01-22",
+          "assessment": "Peer-reviewed randomized Phase 2b trial plus registered pivotal trial, but no Phase 3 efficacy outcome or prospective calibration."
+        }
+      },
+      "clinical_caveats": "Provisional human-readable analytical judgment, not a calibrated success probability. Longer treatment duration, adverse events, and company-reported regulatory alignment require independent review."
+    },
+    {
+      "ticker": "LBRX",
+      "nct_id": "NCT07363577",
+      "drug": "LB-102",
+      "indication": "Schizophrenia",
+      "trial_type": "PIVOTAL_EFFICACY",
+      "phase2_nct_id": "NCT06179108",
+      "assessment_cutoff": "2026-10-10",
+      "review_status": "PRELIMINARY SOURCE-BASED ASSESSMENT — NOT INDEPENDENTLY ATTESTED",
+      "domain_points": {
+        "phase2_efficacy": 20,
+        "phase3_design": 24,
+        "safety": 9,
+        "regulatory_alignment": 8,
+        "execution": 7,
+        "evidence_quality": 4
+      },
+      "domain_sources": {
+        "phase2_efficacy": {
+          "url": "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043",
+          "published": "2026-04-22",
+          "assessment": "NOVA-1 randomized n=359 met Week 4 PANSS primary, 50/75 mg placebo-adjusted ~5.0/~4.7 points; significant p values, but moderate magnitude and limited 4-week observation."
+        },
+        "phase3_design": {
+          "url": "https://clinicaltrials.gov/study/NCT07363577",
+          "published": "2026-07-27",
+          "assessment": "NOVA-2 pivotal randomized quadruple-masked placebo controlled ~456 patients, Week 6 PANSS, with prior Phase 2 Week 4 efficacy; trial has no published primary outcome yet."
+        },
+        "safety": {
+          "url": "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043",
+          "published": "2026-04-22",
+          "assessment": "Treatment-emergent events including weight gain and psychiatric adverse events in short-term NOVA-1; long-term exposure continues in separate open-label safety study NOVA-3."
+        },
+        "regulatory_alignment": {
+          "url": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
+          "published": "2026-03-25",
+          "assessment": "Issuer calls NOVA-2 pivotal and uses registrational PANSS endpoint, but no directly reviewed FDA meeting minutes or explicit protocol concurrence verified."
+        },
+        "execution": {
+          "url": "https://www.globenewswire.com/news-release/2026/07/22/3331267/0/en/LB-Pharmaceuticals-Announces-Accelerated-Timing-of-Topline-Results-from-the-Phase-3-NOVA-2-Trial-of-LB-102-in-Schizophrenia.html",
+          "published": "2026-07-22",
+          "assessment": "Ongoing 25-site pivotal study and accelerated issuer topline expectation to H1 2027; trial completion and execution remain uncertain."
+        },
+        "evidence_quality": {
+          "url": "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043",
+          "published": "2026-04-22",
+          "assessment": "Peer-reviewed Phase 2 randomized results with documented NCT06179108 and NCT07363577 pivotal registry protocol; issuer-sponsored data and uncalibrated future risk."
+        }
+      },
+      "clinical_caveats": "Not NOVA-3 (NCT07369154), which is open-label long-term safety; distinct NCT is essential. Primary research score requires issuer release check and independent attestation."
+    }
+  ]
+}

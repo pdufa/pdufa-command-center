@@ -124,17 +124,35 @@ async function audit(){
       }
       // Confirm the new scoring workflow is actually visible on the deployed
       // PRE PHASE 3 tab, not merely present in the Python source files.
-      for(let n=0;n<40;n++){
-        prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
-        if(prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
-          && prePhaseScreen.includes("filtered rows have a fully source-reviewed"))break;
-        if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(prePhaseScreen))break;
-        await sleep(1500);
+      for(let n=0;n<50;n++){
+        try{
+          // Streamlit Cloud reruns can detach and recreate the application iframe.
+          // Reacquire it instead of failing an otherwise healthy browser audit.
+          if(appFrame.isDetached()){
+            const candidates=await inspectFrames(page);
+            const current=candidates.find(x=>x.text.includes("BIO PDUFA COMMAND CENTER"));
+            if(current)appFrame=current.frame;
+            else{await sleep(1400);continue;}
+          }
+          prePhaseScreen=await appFrame.locator("body").innerText({timeout:8500});
+          if(prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
+            && prePhaseScreen.includes("filtered rows have a fully source-reviewed")
+            && prePhaseScreen.includes("provisional, source-cited clinical research score(s) /100"))break;
+          if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(prePhaseScreen))break;
+        }catch(err){
+          if(/detached|Target closed|Execution context was destroyed/i.test(String(err))){
+            const candidates=await inspectFrames(page);
+            const current=candidates.find(x=>x.text.includes("BIO PDUFA COMMAND CENTER"));
+            if(current)appFrame=current.frame;
+          }else throw err;
+        }
+        await sleep(1400);
       }
       const prePhaseTabSelected=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
       result.checks.prePhase3ScoringWorkflowVisible=prePhaseTabSelected==="true"
         && prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
-        && prePhaseScreen.includes("filtered rows have a fully source-reviewed");
+        && prePhaseScreen.includes("filtered rows have a fully source-reviewed")
+        && prePhaseScreen.includes("provisional, source-cited clinical research score(s) /100");
       if(!result.checks.prePhase3ScoringWorkflowVisible)
         result.errors.push("Deployed PRE PHASE 3 is missing the score-count caption or the ten-candidate clinical scoring review worklist.");
       result.prePhaseDiagnostic={
