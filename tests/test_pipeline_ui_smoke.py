@@ -373,7 +373,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception))
         trvi_grid = next(t.value for t in app.dataframe
-                         if {"NCT ID", "Preliminary clinical score /100"}.issubset(t.value.columns))
+                         if {"NCT ID", "Preliminary clinical score /100", "Review priority rank"}.issubset(t.value.columns))
         trvi = trvi_grid.loc[trvi_grid["NCT ID"].eq("NCT07671911")]
         self.assertEqual(len(trvi), 1)
         self.assertEqual(float(trvi.iloc[0]["Preliminary clinical score /100"]), 80.0)
@@ -382,7 +382,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception))
         lbrx_grid = next(t.value for t in app.dataframe
-                         if {"NCT ID", "Preliminary clinical score /100"}.issubset(t.value.columns))
+                         if {"NCT ID", "Preliminary clinical score /100", "Review priority rank"}.issubset(t.value.columns))
         nova2 = lbrx_grid.loc[lbrx_grid["NCT ID"].eq("NCT07363577")]
         nova3 = lbrx_grid.loc[lbrx_grid["NCT ID"].eq("NCT07369154")]
         self.assertEqual(len(nova2), 1)
@@ -420,7 +420,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
             app.session_state["pdufa_subtab"] = "PRE PHASE 3"
             app.run()
             reviewed_grid = next(t.value for t in app.dataframe
-                                 if {"NCT ID", "Pre-readout research score /100"}.issubset(t.value.columns))
+                                 if {"NCT ID", "Pre-readout research score /100", "Review priority rank"}.issubset(t.value.columns))
             reviewed = reviewed_grid.loc[reviewed_grid["NCT ID"].eq("NCT07671911")]
             self.assertEqual(len(reviewed), 1)
             self.assertEqual(float(reviewed.iloc[0]["Pre-readout research score /100"]), 80.0)
