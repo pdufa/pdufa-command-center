@@ -60,6 +60,14 @@ class Phase2EvidenceTests(unittest.TestCase):
         summary = phase2_linked_summary(idx, "TEST", "NCT11112222")
         self.assertIn("p<0.001", summary["Linked Phase 2 PRIMARY p"])
 
+    def test_source_reported_zero_does_not_assert_an_exact_zero_or_invent_bound(self):
+        idx = primary_evidence_index([observation(p_value="0.0000")], NOW)
+        summary = phase2_linked_summary(idx, "TEST", "NCT11112222")
+        self.assertIn("p reported as 0.0000 (exact p unavailable)", summary["Linked Phase 2 PRIMARY p"])
+        self.assertNotIn("p=0.0000", summary["Linked Phase 2 PRIMARY p"])
+        self.assertNotIn("p<", summary["Linked Phase 2 PRIMARY p"])
+        self.assertEqual(idx[("TEST", "NCT11112222")][0]["p_value"], "0.0000")
+
     def test_missing_evidence_is_explicit_and_non_diagnostic(self):
         empty = phase2_linked_summary({}, "TEST", "NCT11112222")
         self.assertEqual(empty["Phase 2 PRIMARY evidence count"], 0)
