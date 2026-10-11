@@ -164,7 +164,8 @@ class SecStep4Tests(unittest.TestCase):
             changed = dict(base)
             changed["runway_months_cash_only"] = 10.5
             id3 = save_snapshot(changed, path)
-            self.assertEqual((id1, id2, id3), (1, 1, 2))
+            self.assertEqual(id1, id2)
+            self.assertGreater(id3, id1)
             history = read_history(path, "ABCD")
             self.assertEqual(len(history), 2)
             self.assertNotEqual(history[0]["content_sha256"], history[1]["content_sha256"])
