@@ -45,7 +45,7 @@ class PdufaGridTests(unittest.TestCase):
             with self.subTest(name=name):
                 sample = pd.DataFrame({name: [90], "Ticker": ["XYZ"]})
                 header = header_config(sample)[name]
-                self.assertIn("\\n", header["label"])
+                self.assertIn("\n", header["label"])
                 for band in ("+90", "90–60", "59–30", "29–0"):
                     self.assertIn(band, header["label"])
                 self.assertEqual(header["width"], "large")
