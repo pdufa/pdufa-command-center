@@ -13,7 +13,7 @@ from pdufa_display_columns import sort_pdufa_rows, align_pdufa_finance_columns, 
 from pdufa_table_headers import pdufa_dataframe, pdufa_editor
 
 
-MAX_COLUMNS = 10
+MAX_COLUMNS = 8
 CONTROL_COLUMNS = {"watchlist", "add to analysis", "add to invest", "move to master table", "in master table"}
 GROUP_ORDER = ("Overview", "Clinical", "FDA", "Financing", "Market", "Trading", "Evidence", "Tasks", "Schedule", "Actions")
 TOPIC_ORDER = {
@@ -141,8 +141,13 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
         named["financing"] = "FINANCING"
     controls = [c for c in columns if _name(c) in CONTROL_COLUMNS]
     countdown = "days to pdufa" if "days to pdufa" in named else "days left"
+    has_finance_neighbors = (
+        countdown in named and all(c in columns for c in FINANCE_NEIGHBORS)
+    )
     pin_names = ("ticker", "stage", countdown, "2nd financing completed",
-                 "cash runway months", "financing", "drug")
+                 "cash runway months", "financing")
+    if not has_finance_neighbors:
+        pin_names += ("drug",)
     identity = [named[n] for n in pin_names if n in named]
     if not identity:
         identity = [named[n] for n in ("order", "task") if n in named]
@@ -150,6 +155,13 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
         identity = [columns[0]]
     pinned = list(dict.fromkeys(controls + identity))
     capacity = max_columns - len(pinned)
+    if capacity < 1 and has_finance_neighbors:
+        # Keep the two finance fields adjacent to days even with multiple
+        # selection checkboxes; generic FINANCING remains in its topic pane.
+        legacy_stage = named.get("financing")
+        if legacy_stage in pinned:
+            pinned.remove(legacy_stage)
+            capacity = max_columns - len(pinned)
     if capacity < 1:
         raise ValueError("Too many shared columns for a compact table")
     preferred = ("indication", "current stage", "next milestone", "evidence status", "pdufa date", "current evidence", "graduation status", "company")
