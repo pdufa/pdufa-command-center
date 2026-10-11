@@ -2794,8 +2794,29 @@ def render_pre_phase3():
             "Month-only registry dates are approximated to the first of the month for date filtering, "
             "not treated as a confirmed corporate readout day."
         )
+        # Keep actual linked Phase 2 p-values visible without horizontal scrolling
+        # through the wide source-evidence research table.
+        phase2_preview = selected.loc[
+            selected["Trial phase"].isin(["Phase 3", "Phase 2/3"])
+            & selected["Phase 2 PRIMARY evidence count"].gt(0),
+            ["Ticker", "Phase 2 p", "NCT ID", "Phase 2 PRIMARY first observed UTC"],
+        ].sort_values(["Ticker", "NCT ID"], kind="stable").head(6)
+        st.markdown("#### PHASE 2 PRIMARY p — LINKED TO PHASE 3")
+        st.caption(
+            "Source-observed Phase 2 primary analyses for exact ticker + linked Phase 2 NCT only. "
+            "This is NOT a Phase 3 p-value or a success probability. "
+            "Search TRVI or LBRX below to inspect the trial and original study sources."
+        )
+        if phase2_preview.empty:
+            st.info("No linked Phase 2 primary p-values in the current filters. Missing is not a negative trial result.")
+        else:
+            st.table(phase2_preview.rename(columns={
+                "Phase 2 p": "PHASE 2 p",
+                "NCT ID": "Phase 3 NCT",
+                "Phase 2 PRIMARY first observed UTC": "Evidence first observed UTC",
+            }))
         display = [
-            "Ticker", "Drug", "Indication", "Trial phase", "Registry status",
+            "Ticker", "Phase 2 p", "Drug", "Indication", "Trial phase", "Registry status",
             "NCT ID", "Research category", "Registry primary completion",
             "Registry results posted", "Primary endpoint p values observed",
             "Linked Phase 2 PRIMARY p", "Phase 2 PRIMARY evidence count",
