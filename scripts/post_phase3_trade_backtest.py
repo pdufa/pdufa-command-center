@@ -15,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+from post_phase3_backfill_queue import FIELDS as BACKFILL_FIELDS, build_backfill_queue  # noqa: E402
 from post_phase3_trade_backtest import (  # noqa: E402
     BAR_FIELDS, EVENT_FIELDS, PAIRED_FIELDS, SUMMARY_FIELDS, TRADE_FIELDS,
     paired_comparison, read_csv, run_backtest,
@@ -75,6 +76,8 @@ def main(argv=None):
     except ValueError as exc:
         parser.error(str(exc))
     audit["present_day_source_inventory_NOT_BACKTEST_EVIDENCE"] = source_inventory()
+    backfill_rows, backfill_meta = build_backfill_queue(ROOT/"data")
+    audit["historical_research_backfill"] = backfill_meta
     audit["methodology"] = {
         "price_entries":"Next available session OPEN strictly after all required public evidence; no same-day lookahead.",
         "price_exits":"Last actual session CLOSE no later than PDUFA minus 30/14/7 calendar days.",
@@ -91,12 +94,15 @@ def main(argv=None):
     write_csv(args.output_dir/"scenario_summary.csv", SUMMARY_FIELDS, summary)
     write_csv(args.output_dir/"matched_event_comparison.csv", PAIRED_FIELDS,
               paired_comparison(trades))
+    write_csv(args.output_dir/"historical_source_backfill_queue.csv", BACKFILL_FIELDS,
+              backfill_rows)
     (args.output_dir/"readiness_and_blockers.json").write_text(
         json.dumps(audit, indent=2, sort_keys=True)+"\n", encoding="utf-8")
     print(json.dumps({
         "status":audit["status"], "audited_event_rows":audit["event_rows"],
         "historical_ohlcv_rows":audit["price_rows"],
         "completed_scenarios":audit["completed_scenarios"],
+        "backfill_research_items":len(backfill_rows),
         "early_action_censored":audit["early_action_censored_scenarios"],
         "output_dir":str(args.output_dir),
     }, sort_keys=True))
