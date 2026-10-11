@@ -228,7 +228,8 @@ class TradingResearchQueueTests(unittest.TestCase):
         app = (root / "app.py").read_text(encoding="utf-8")
         section = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
         clinical = (root / "clinical_step3.py").read_text(encoding="utf-8")
-        self.assertIn("render_clinical_review()", section)
+        self.assertNotIn("render_clinical_review()", section)
+        self.assertIn("pass", section)
         self.assertIn("Phase 1–3 company–trial leads", clinical)
         self.assertIn("SAVE NEW AUDIT REVISION", clinical)
         self.assertIn("Versioned assessment history", clinical)
