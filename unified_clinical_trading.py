@@ -1,0 +1,116 @@
+"""Read-only combined clinical-to-trading overview, no ordinal rankings."""
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import pandas as pd
+import streamlit as st
+from pipeline_universe import load_universe
+from post_phase3_unified import build_queue
+
+@st.cache_data(ttl=120, show_spinner=False)
+def _load(day):
+    pipeline = load_universe("data", today=day)
+    post, health = build_queue("data", as_of=day)
+    return pipeline, post, health
+
+def render_combined_overview():
+    st.markdown("## UNIFIED CLINICAL → TRADING OVERVIEW")
+    st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
+    today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    try:
+        pipeline, post, health = _load(today)
+    except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
+        st.error("Saved source data could not be loaded. No eligibility has been verified.")
+        return
+    if not health.get("feed_current"):
+        st.warning("Post–Phase 3 verification snapshot is stale. No entry-ready qualification is inferred.")
+    if not isinstance(pipeline, pd.DataFrame) or pipeline.empty:
+        st.info("The saved Pipeline feed is empty.")
+        return
+    src = pipeline.copy()
+    for c in ("ticker", "nct_id", "drug", "indication", "current_stage", "pdufa_date",
+              "primary_completion", "source_url", "status", "record_id"):
+        if c not in src:
+            src[c] = ""
+    src["Ticker"] = src["ticker"].fillna("").astype(str).str.strip().str.upper()
+    src["NCT ID"] = src["nct_id"].fillna("").astype(str).str.strip().str.upper()
+    src["Drug"] = src["drug"].fillna("").astype(str)
+    src["Indication"] = src["indication"].fillna("").astype(str)
+    src["Pipeline stage"] = src["current_stage"].fillna("").astype(str)
+    src["Clinical status"] = src["status"].fillna("").astype(str)
+    src["Primary completion"] = src["primary_completion"].fillna("").astype(str)
+    src["PDUFA date (pipeline)"] = src["pdufa_date"].fillna("").astype(str)
+    src["Pipeline source"] = src["source_url"].fillna("").astype(str)
+    src["Research phase"] = src["Pipeline stage"].map(
+        lambda x: "PRE PHASE 3" if x in ("Phase 3", "Phase 2/3", "Phase 2",
+        "Phase 1", "Phase 1/2", "Early Phase 1") else
+        "POST PHASE 3 / REGULATORY" if x in ("Phase 3 Results",
+        "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision")
+        else "OTHER / REVIEW"
+    )
+    # A ticker-only match is prohibited: it can mix unrelated drugs and trials.
+    post_by_id = {}
+    ambiguous = set()
+    for item in post:
+        ticker = str(item.get("Ticker") or "").strip().upper()
+        nct = str(item.get("NCT ID") or "").strip().upper()
+        if not ticker or not nct:
+            continue
+        identity = (ticker, nct)
+        if identity in post_by_id:
+            ambiguous.add(identity)
+        else:
+            post_by_id[identity] = item
+    for identity in ambiguous:
+        post_by_id.pop(identity, None)
+    cols = ("Entry qualification", "Phase 3 evidence", "Financing #2",
+            "Financing cycle (separate)", "Evidence score /100",
+            "Research priority /100", "Days to PDUFA", "Planned exit (-7 days)",
+            "Blockers", "Next action", "Phase 3 source", "Financing source",
+            "PDUFA source")
+    records = []
+    for r in src.to_dict("records"):
+        key = (r["Ticker"], r["NCT ID"])
+        matched = post_by_id.get(key)
+        entry = {k: r[k] for k in ("Ticker", "NCT ID", "Drug", "Indication",
+                                  "Research phase", "Pipeline stage", "Clinical status",
+                                  "Primary completion", "PDUFA date (pipeline)", "Pipeline source")}
+        entry["Post evidence match"] = ("AMBIGUOUS — REVIEW" if key in ambiguous
+                                        else "EXACT TICKER + NCT" if matched else "NOT LINKED")
+        for c in cols:
+            entry[c] = matched.get(c, "") if matched else ""
+        if key in ambiguous:
+            entry["Entry qualification"] = "REVIEW — AMBIGUOUS TRIAL MATCH"
+        records.append(entry)
+    df = pd.DataFrame(records)
+    a, b, c = st.columns(3)
+    a.metric("Pipeline records", len(df))
+    b.metric("Exact post evidence matches", int(df["Post evidence match"].eq("EXACT TICKER + NCT").sum()))
+    c.metric("Post evidence REVIEW", health.get("review_count", 0))
+    f1, f2, f3 = st.columns([1, 1, 2])
+    with f1:
+        phase = st.selectbox("Research phase", ["All", "PRE PHASE 3", "POST PHASE 3 / REGULATORY", "OTHER / REVIEW"], key="unified_phase")
+    with f2:
+        stage = st.selectbox("Stage", ["All"] + sorted(df["Pipeline stage"].dropna().unique().tolist()), key="unified_stage")
+    with f3:
+        search = st.text_input("Ticker, drug, indication or NCT", key="unified_query").strip()
+    if phase != "All":
+        df = df.loc[df["Research phase"].eq(phase)]
+    if stage != "All":
+        df = df.loc[df["Pipeline stage"].eq(stage)]
+    if search:
+        hay = df[["Ticker", "Drug", "Indication", "NCT ID"]].fillna("").astype(str).agg(" ".join, axis=1)
+        df = df.loc[hay.str.contains(search, case=False, regex=False)]
+    df = df.sort_values(["Ticker", "NCT ID", "Drug"], kind="stable")
+    st.dataframe(df.head(350), hide_index=True, use_container_width=True,
+                 column_config={
+                     "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
+                     "Phase 3 source": st.column_config.LinkColumn("Phase 3 source"),
+                     "Financing source": st.column_config.LinkColumn("Financing source"),
+                     "PDUFA source": st.column_config.LinkColumn("PDUFA source"),
+                 })
+    if len(df) > 350:
+        st.caption("Showing 350 rows; export contains all matching records.")
+    st.download_button("EXPORT COMBINED TRIAL VIEW", df.to_csv(index=False).encode(),
+                       file_name="pdufa_unified_trial_view.csv", mime="text/csv",
+                       key="unified_export")
+    st.caption("An exact ticker/NCT match is an identity link only, not independent clinical or SEC verification. Multiple post evidence rows for the same pair are intentionally withheld from automatic matching. Unlinked fields remain blank, not zero.")
