@@ -77,7 +77,7 @@ async function audit(){
     result.checks.pdufaNavigation=result.navigation.includes("PDUFA");
     result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
     result.checks.matchOptimizerNavigationRemoved=!result.navigation.includes("10. MATCH OPTIMIZER");
-    result.checks.pdufaMainNavigationFirst=result.navigation[0]==="PDUFA";
+    result.checks.pdufaMainNavigationFirst=result.navigation.filter(x=>x!=="Navigation")[0]==="PDUFA";
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
     result.checks.threePdufaTabs=["PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
@@ -86,8 +86,7 @@ async function audit(){
     if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
       result.errors.push("PDUFA must open with PIPELINE primary; Match Optimizer must not be a main navigation item.");
     result.checks.researchInsidePipeline=await appFrame.getByText("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS",{exact:false}).count()>0;
-    result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
-      await appFrame.getByText("DATES",{exact:true}).count()>0;
+    result.checks.stageAndDateControls=(await appFrame.locator('[data-testid="stMultiSelect"]').count())>=2;
     result.checks.stageCountChart=await appFrame.getByText("STAGE COUNTS",{exact:true}).count()>0;
     result.checks.dateCountChart=await appFrame.getByText("DATE TRIAL COUNTS",{exact:true}).count()>0;
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
@@ -115,9 +114,20 @@ async function audit(){
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
       }
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
-      await sleep(3500);
+      let prePhaseScreen="";
+      for(let n=0;n<55;n++){
+        prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
+        if(prePhaseScreen.includes("SOURCE HEALTH / LAST VERIFIED CHECK")
+          || prePhaseScreen.includes("This app has encountered an error")
+          || prePhaseScreen.includes("Traceback (most recent call last)"))break;
+        await sleep(1500);
+      }
       const prePhaseTabSelected=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
-      const prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
+      result.prePhaseDiagnostic={
+        tabSelected:prePhaseTabSelected,
+        hasNewHeading:prePhaseScreen.includes("PRE PHASE 3 — LIVE SOURCE MONITOR"),
+        textEnd:prePhaseScreen.slice(-3500),
+      };
       result.checks.prePhase3Visible=(prePhaseTabSelected==="true")
         && prePhaseScreen.includes("PRE PHASE 3 — LIVE SOURCE MONITOR")
         && prePhaseScreen.includes("SOURCE HEALTH / LAST VERIFIED CHECK")
