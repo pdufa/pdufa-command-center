@@ -41,9 +41,9 @@ Monthly operating burn uses the **quarter's negative operating cash flow**, divi
 
 Cash runway = reported cash / estimated monthly net operating burn. A numeric runway is withheld if cash or cash flow evidence is too stale (older than 150 days), the periods are materially mismatched, or there is no confirmed net operating cash burn.
 
-A **risk band** highlights short runway. The composite financial score stays **NOT SCORED** until documented, defensible scoring inputs and validation are available.
+A **risk band** highlights short runway. A separate **cash-runway-only risk index** rates documented runway: 100 for under 3 months, 85 for 3–under 6, 65 for 6–under 12, 40 for 12–under 18, and 15 for 18+ months (higher means greater *cash-runway* risk; NOT an approval or trading score). With missing/stale evidence, this index remains unset. The composite financial score stays **NOT SCORED** until documented, defensible cross-factor inputs and validation are available.
 
-SEC company revenue is **not** assumed to be product revenue. Missing current/noncurrent debt is not assumed to be zero; the financing maturity schedule, ATM utilization, dilution from financing and *actual offering close* require filing-document evidence, not just structured SEC facts.
+SEC company revenue is **not** assumed to be product revenue. Missing current/noncurrent debt is not assumed to be zero. Reported outstanding-share changes are calculated from two dated `dei` filing facts when available, **but may reflect stock splits or corporate actions and are not proof of dilution from financing**. The financing maturity schedule, ATM utilization, dilution from financing and *actual offering close* require filing-document evidence, not just structured SEC facts.
 
 ## Financing evidence
 
