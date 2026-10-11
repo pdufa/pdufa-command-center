@@ -1,0 +1,32 @@
+# PRE PHASE 3 / Step 7: source review and entry gate rules
+
+**Status:** Research automation is implemented. Any trade signal still requires verified, exact-event human review. The monitor is not an automated issuer-filing adjudicator or a real-time quote terminal.
+
+## Independent data channels
+
+1. **Clinical registry:** `data/phase_pipeline.csv`, `data/phase3_announcements.csv`, `data/phase3_primary_pvalues.csv`. These establish registry status, reported primary p-values, and whether effect-size/CI fields are present for an exact ticker + NCT. Results being posted, p below 0.05, and trial completion are NOT Phase 3 success determinations.
+2. **Pre-readout trial design:** `data/pre_readout_protocols.csv` contributes six recorded inputs (primary endpoint, timeframe, allocation, masking, comparator, sample size). The existing `pre_readout_score.candidate_queue` + `assess` rubric provides a **source-dated, uncalibrated clinical research score /100** only when properly documented in `data/phase3_pre_readout_evidence.csv`. Coverage /6 is not statistical or clinical quality. Neither research score is FDA approval probability.
+3. **SEC second financing:** `data/second_financing_status.csv` supplies the historical transactions, but the eligibility gate requires exact event identity, ordered **post-readout** closings, two SEC archive document URLs, documented financing review within 30 days, a successful SEC-source check within 2 days, and explicit reviewer attestation. The source's text must actually establish closing (not merely filing, registration or announcement). `SOURCE_BLOCKED_RETAINED` or any partial/failed SEC check always blocks it. Historical closing alone never qualifies for entry.
+4. **Market:** `data/step7_market_status.csv` stores approximately 35 EOD close/volume rows per financing-watchlist ticker, alongside time and source. The source-reported EOD feed is not exchange certified. The market gate computes the past ten closing-price range (max/min - 1) and five-session mean volume versus the preceding twenty sessions. **Research heuristic only:** close-price range <= 15%; volume ratio 0.50-1.25; >=31 bars and >=10 sessions after the documented readout; quote within five calendar days and source check within two days. A reviewer must independently assess chart, stabilization and issuer mapping.
+5. **ENTRY READY:** `step7_entry.evaluate_entry` requires eight independent gates with all valid exact-event, NCT, source/date, and reviewer evidence. Verdict `ENTRY READY — ATTESTED EVIDENCE / NOT INDEPENDENTLY AUDITED` explicitly means a reviewer supplied and attested the primary links; the engine has not re-read, fact-checked, or audited every issuer/SEC document. Otherwise `REVIEW`; past/decided PDUFA events are `EXCLUDED`.
+
+## Eight hard gates
+
+- Exact issuer / drug / NCT / source and current reviewer identity
+- Actual Phase 3 primary endpoint met, as independently interpreted and attested
+- Meaningful effect size and confidence interval with clinical relevance review
+- No major unresolved safety concern
+- Two ordered, source-confirmed post-readout financing closures, current SEC check
+- No unresolved ATM / secondary dilution with a separate recent SEC review
+- Base stability supported by dated price history **and** manual chart review
+- Normalized volume supported by dated price history **and** manual volume review
+
+## How to complete missing inputs without fabricating PASS
+
+Open **PDUFA → PRE PHASE 3** and download the *PRE-READOUT CLINICAL SCORING EVIDENCE TEMPLATE* for the trial-design rubric, and the *BLANK 8-GATE EVIDENCE REVIEW TEMPLATE* for event-level review. Review and populate the matching CSVs at `data/phase3_pre_readout_evidence.csv` and `data/step7_entry_evidence.csv`. Keep trial and event keys exact. An absence of entries is normal and means no event is eligible; it is not a negative clinical trial outcome.
+
+The Streamlit **RELOAD SAVED SOURCE FILES** button reloads repository-managed data after it is deployed; it does not contact the SEC or automatically sign an attestation. Daily GitHub Actions collect registry, market and source snapshots separately.
+
+For SEC 403: configure a genuine `SEC_USER_AGENT` in **GitHub → Settings → Secrets and variables → Actions**, such as `ResearchApp your-real-contact@example.com` with the actual contact details (not the literal example). The surveillance and recheck workflows pass this secret to the SEC client. Retry the relevant GitHub Actions recheck. Some cloud-hosted runner IP addresses remain blocked by SEC regardless of user agent; in that case, source access must be resolved or the documents manually inspected in the SEC Financial Analysis page. A human reading a document is an evidence-review path, not an automated SEC verification.
+
+Always read the `SOURCE HEALTH` panel; any stale, blocked or unresolved source gate must remain REVIEW. The FDA/PoA prediction engine stays independent from these trading gates.
