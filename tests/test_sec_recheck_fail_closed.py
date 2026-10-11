@@ -20,6 +20,21 @@ class SecRecheckFailClosed(unittest.TestCase):
         self.assertFalse(result.get("closed"))
         self.assertIn("SEC", result.get("source", "").upper())
 
+    def test_all_financing_filing_requests_failed(self):
+        source = {"financing_evidence_url":"https://www.sec.gov/Archives/edgar/data/123/a.htm"}
+        with patch.object(mod, "get", side_effect=PermissionError("HTTP 403")):
+            result = mod.financing_check(source, [])
+        self.assertEqual(result["status"], "SOURCE_BLOCKED_RETAINED")
+        self.assertFalse(result.get("closed"))
+
+    def test_partial_financing_filing_requests_failed(self):
+        source = {"financing_evidence_url":"https://www.sec.gov/Archives/edgar/data/123/a.htm"}
+        filings = [{"form":"8-K","url":"https://www.sec.gov/Archives/edgar/data/123/b.htm"}]
+        with patch.object(mod, "get", side_effect=["Nothing about financing close", PermissionError("HTTP 403")]):
+            result = mod.financing_check(source, filings)
+        self.assertEqual(result["status"], "PARTIAL_SOURCE_REVIEW")
+        self.assertFalse(result.get("closed"))
+
     def test_blocked_sec_counts_as_unsuccessful_run_and_cannot_change_closure(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
