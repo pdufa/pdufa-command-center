@@ -109,11 +109,11 @@ def _stage3():
         st.caption("Only identical verified programs appear in the matched-method comparison.")
     else:
         st.caption(
-            "Prioritized by exact program identity and retrospective financing "
+            "Grouped by exact program identity and retrospective financing "
             "references. None of these rows is cleared for historical trading simulation."
         )
         columns = (
-            "priority", "ticker", "drug", "nct_id", "pdufa_date_reference",
+            "ticker", "drug", "nct_id", "pdufa_date_reference",
             "financing_audit_status_reference", "missing_historical_requirements",
             "next_research_step",
         )
