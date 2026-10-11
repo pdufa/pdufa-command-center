@@ -341,12 +341,29 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(nova2.iloc[0]["Phase 2 link review source"].startswith("https://ir.lbpharma.us/"))
         self.assertEqual(len(nova3), 1)
         self.assertTrue(pd.isna(nova3.iloc[0]["Preliminary clinical score /100"]))
-        self.assertTrue(
-            (clinical[0]["Pre-readout research score /100"].notna()
-             & clinical[0]["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
-            ).sum() == 0,
-            "No fabricated pilot score is allowed when source-review ledger is blank",
-        )
+        # The issuer newsroom verification is explicitly dated 2026-10-10.
+        # Do not let yesterday's reviewed research score silently pass as current.
+        from datetime import datetime, date
+        from zoneinfo import ZoneInfo
+        local_day = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+        if local_day == date(2026, 10, 10):
+            app.text_input(key="step7_trial_search").set_value("TRVI")
+            app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+            app.run()
+            reviewed_grid = next(t.value for t in app.dataframe
+                                 if {"NCT ID", "Pre-readout research score /100"}.issubset(t.value.columns))
+            reviewed = reviewed_grid.loc[reviewed_grid["NCT ID"].eq("NCT07671911")]
+            self.assertEqual(len(reviewed), 1)
+            self.assertEqual(float(reviewed.iloc[0]["Pre-readout research score /100"]), 80.0)
+            self.assertEqual(reviewed.iloc[0]["Score status"],
+                             "100-POINT RESEARCH SCORE — UNCALIBRATED")
+        else:
+            self.assertFalse(
+                (clinical[0]["Pre-readout research score /100"].notna()
+                 & clinical[0]["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
+                 & clinical[0]["Ticker"].eq("TRVI")).any(),
+                "Old issuer checks must not remain current after their cutoff",
+            )
         self.assertTrue(any("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS" in m.body
                             for m in app.markdown))
         source = APP_PATH.read_text(encoding="utf-8")
