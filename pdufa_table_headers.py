@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 from pandas.io.formats.style import Styler
 import streamlit as st
+from pdufa_display_columns import align_pdufa_finance_columns, PDUFA_DAY_COLUMNS, FINANCE_NEIGHBORS
 
 
 HELP_ICON = "?\u20dd"
@@ -247,6 +248,17 @@ def render_survey_box(data):
 
 def pdufa_dataframe(data, **kwargs):
     source = kwargs.pop("survey_source", data)
+    if isinstance(data, pd.DataFrame):
+        data = align_pdufa_finance_columns(data)
+        requested = kwargs.get("column_order")
+        if requested:
+            ordered = list(requested)
+            days = next((c for c in PDUFA_DAY_COLUMNS if c in ordered), None)
+            if days:
+                ordered = [c for c in ordered if c not in FINANCE_NEIGHBORS]
+                insertion = ordered.index(days) + 1
+                ordered[insertion:insertion] = [c for c in FINANCE_NEIGHBORS if c in data]
+                kwargs["column_order"] = ordered
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
     result = st.dataframe(data, **kwargs)
     render_survey_box(source)
