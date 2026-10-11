@@ -2662,6 +2662,7 @@ def render_pre_phase3():
     source_files = [
         "phase_pipeline.csv", "phase_pipeline_state.json",
         "phase3_intake_status.json", "phase3_announcements.csv", "phase3_primary_pvalues.csv",
+        "phase2_primary_p_evidence.csv", "phase2_p_intake_status.json",
         "pre_readout_protocols.csv", "pre_readout_intake_status.json",
         "phase_pipeline_market_caps.csv", "second_financing_status.csv",
         "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
@@ -2774,6 +2775,8 @@ def render_pre_phase3():
             "Ticker", "Drug", "Indication", "Trial phase", "Registry status",
             "NCT ID", "Research category", "Registry primary completion",
             "Registry results posted", "Primary endpoint p values observed",
+            "Linked Phase 2 PRIMARY p", "Phase 2 PRIMARY evidence count",
+            "Phase 2 PRIMARY first observed UTC", "Phase 2 PRIMARY registry sources",
             "Primary effect size and CI recorded", "Phase 3 result interpretation",
             "Registry primary result source", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
@@ -2798,6 +2801,11 @@ def render_pre_phase3():
             step7_pre_readout_template(p3_for_rubric).to_csv(index=False).encode("utf-8-sig"),
             file_name="phase3_pre_readout_scoring_template.csv",
             mime="text/csv", key="step7_pre_readout_rubric_export",
+        )
+        st.caption(
+            "Linked Phase 2 PRIMARY p-values are shown only for exact ticker + Phase 2 NCT links with a recorded collector-observation timestamp. "
+            "They are descriptive registry statistics—not proof of clinical benefit, Phase 3 success, or a corporate readout. "
+            "A displayed 0.0000 may be a rounded reported p-value, not an exact zero."
         )
         st.caption(
             "Pre-readout score requires independently reviewed, dated Phase 2 efficacy, "
