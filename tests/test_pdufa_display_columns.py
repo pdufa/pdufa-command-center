@@ -71,6 +71,78 @@ class PdufaGridTests(unittest.TestCase):
             self.assertIn(color, rendered)
         self.assertIn("color: #000000", rendered)
 
+    def test_each_of_four_tabs_receives_model_specific_score(self):
+        """Review triage scores are visibly distinct from clinical evidence."""
+        cases = [
+            ("PIPELINE", {"Review priority /100": 58,
+                          "Review priority status": "REVIEW CANDIDATE"}, 58,
+             "PRE: review priority"),
+            ("PRE PHASE 3", {"Review priority /100": 47,
+                             "Review priority status": "REVIEW CANDIDATE"}, 47,
+             "PRE: review priority"),
+            ("POST PHASE 3", {"Research priority /100": 34}, 34,
+             "POST: research triage"),
+            ("UNIFIED", {"Pre-readout research score /100": 81,
+                         "Research priority /100": 33}, 81,
+             "PRE: reviewed clinical"),
+        ]
+        for view, evidence, expected, label in cases:
+            with self.subTest(view=view):
+                frame = pd.DataFrame([{"Ticker": "TEST", **evidence}])
+                result = prepare_pdufa_grid(frame, view=view,
+                                            as_of=date(2026, 10, 11))
+                self.assertEqual(result.columns[:len(FRONT)].tolist(), list(FRONT))
+                self.assertEqual(result.loc[0, "Score /100"], expected)
+                self.assertEqual(result.loc[0, "Score type"], label)
+
+    def test_clinical_and_evidence_score_overrides_research_priority(self):
+        frame = pd.DataFrame([{
+            "Ticker": "TEST",
+            "Evidence score /100": 74,
+            "Research priority /100": 10,
+            "Pre-readout research score /100": 88,
+            "Review priority /100": 35,
+        }])
+        expected = {
+            "POST PHASE 3": (74, "POST: evidence"),
+            "PRE PHASE 3": (88, "PRE: reviewed clinical"),
+            "PIPELINE": (88, "PRE: reviewed clinical"),
+            "UNIFIED": (74, "POST: evidence"),
+        }
+        for view, (score, label) in expected.items():
+            result = prepare_pdufa_grid(frame, view=view)
+            self.assertEqual(result.loc[0, "Score /100"], score)
+            self.assertEqual(result.loc[0, "Score type"], label)
+
+    def test_excluded_pre_priority_not_attached_and_invalid_scores_not_used(self):
+        frame = pd.DataFrame([{
+            "Ticker": "TEST", "Review priority /100": 88,
+            "Review priority status": "EXCLUDED — unverified identity",
+            "Research priority /100": "not a number",
+            "Evidence score /100": 110,
+        }])
+        for view in ("UNIFIED", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"):
+            result = prepare_pdufa_grid(frame, view=view)
+            self.assertTrue(pd.isna(result.loc[0, "Score /100"]))
+            self.assertEqual(result.loc[0, "Score type"], "NOT SCORED")
+
+    def test_pipeline_exact_trial_join_carries_review_priority_score(self):
+        pipeline = pd.DataFrame([{
+            "Ticker": "TEST", "NCT ID": "NCT12345678", "Drug": "Alpha",
+        }])
+        pre = [{
+            "Ticker": "TEST", "NCT ID": "NCT12345678", "Drug": "Alpha",
+            "Review priority /100": 62, "Review priority status": "REVIEW CANDIDATE",
+            "Priority stage /30": 30, "Priority identity /15": 15,
+        }]
+        matched = enrich_exact_trials(pipeline, pre=pre)
+        displayed = prepare_pdufa_grid(matched, view="PIPELINE",
+                                       as_of=date(2026, 10, 11))
+        self.assertEqual(displayed.loc[0, "Score /100"], 62)
+        self.assertEqual(displayed.loc[0, "Score type"], "PRE: review priority")
+        self.assertEqual(displayed.loc[0, "Priority stage /30"], 30)
+
+
 
 if __name__ == "__main__":
     unittest.main()
