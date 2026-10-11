@@ -390,6 +390,14 @@ required_ui_contracts = [
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
     'nav_options = ["PDUFA"',
+    'if st.session_state.nav == "10. MATCH OPTIMIZER":',
+    'st.session_state.nav = "9. PREDICTION ENGINE"',
+    'on_change=_on_main_nav_change',
+    '["PREDICTIONS", "HISTORICAL MATCH VALIDATION"]',
+    'if prediction_tab.open:',
+    'if validation_tab.open:',
+    'STEP 5 — Lock thresholds and test the untouched holdout',
+    'HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT',
     'key="pdufa_subtab", on_change="rerun"',
     '["PIPELINE", "PRE PHASE 3", "POST PHASE 3"]',
     '"PIPELINE"',
@@ -452,6 +460,11 @@ required_ui_contracts = [
 for label in required_ui_contracts:
     if label not in app:
         raise SystemExit(f"app.py missing required audit/UI contract: {label}")
+if ',"10. MATCH OPTIMIZER","11. PLAN"' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
+    raise SystemExit("Match Optimizer must not remain a standalone navigation page")
+if app.index('nav_options = ["PDUFA"') > app.index('elif page == "9. PREDICTION ENGINE":'):
+    raise SystemExit("PDUFA navigation must be initialized before secondary research pages")
+
 # Obsolete navigation and the oversized table grid must not return.
 if 'if page == "WATCHLIST":' in app:
     raise SystemExit("app.py: obsolete standalone WATCHLIST page restored")
