@@ -293,6 +293,34 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for item in app.markdown))
 
 
+    def test_pre_phase3_score_and_primary_p_are_first_columns_and_review_pilot_visible(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        app.session_state["nav"] = "PDUFA"
+        app.run()
+        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.run()
+        self.assertFalse(list(app.exception))
+        clinical = [t.value for t in app.dataframe
+                    if {"Linked Phase 2 PRIMARY p", "Pre-readout research score /100",
+                        "NCT ID", "Ticker"}.issubset(set(t.value.columns))]
+        self.assertTrue(clinical, "PRE PHASE 3 clinical grid must render")
+        columns = clinical[0].columns.tolist()
+        self.assertEqual(columns[:4], [
+            "Ticker", "Pre-readout research score /100", "Score status",
+            "Linked Phase 2 PRIMARY p",
+        ])
+        self.assertTrue(
+            (clinical[0]["Pre-readout research score /100"].notna()
+             & clinical[0]["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
+            ).sum() == 0,
+            "No fabricated pilot score is allowed when source-review ledger is blank",
+        )
+        self.assertTrue(any("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS" in m.body
+                            for m in app.markdown))
+        source = APP_PATH.read_text(encoding="utf-8")
+        self.assertIn('"DOWNLOAD SOURCE-REVIEW SCORING TEMPLATE FOR THESE 10"', source)
+
+
     def test_legacy_pre_phase3_main_navigation_redirects_to_subtab(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PRE PHASE 3"

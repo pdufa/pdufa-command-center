@@ -12,6 +12,7 @@ from pre_readout_score import candidate_queue as phase3_pre_readout_queue, asses
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
 from step7_live import build_snapshot as build_step7_snapshot, read_json as step7_read_json
 from pre_phase3_readiness import check_pre_phase3_readiness
+from pre_phase3_scoring_review import scoring_review_queue, COLUMNS as SCORING_REVIEW_COLUMNS
 from step7_entry import FIELDS as STEP7_ENTRY_FIELDS, sample_template as step7_entry_template
 from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
@@ -2795,19 +2796,26 @@ def render_pre_phase3():
             "not treated as a confirmed corporate readout day."
         )
         display = [
-            "Ticker", "Drug", "Indication", "Trial phase", "Registry status",
-            "NCT ID", "Research category", "Registry primary completion",
-            "Registry results posted", "Primary endpoint p values observed",
-            "Linked Phase 2 PRIMARY p", "Phase 2 PRIMARY evidence count",
+            "Ticker", "Pre-readout research score /100", "Score status",
+            "Linked Phase 2 PRIMARY p", "Drug", "Indication", "Trial phase",
+            "Registry status", "NCT ID", "Research category",
+            "Registry primary completion", "Registry results posted",
+            "Primary endpoint p values observed", "Phase 2 PRIMARY evidence count",
             "Phase 2 PRIMARY first observed UTC", "Phase 2 PRIMARY registry sources",
             "Primary effect size and CI recorded", "Phase 3 result interpretation",
             "Registry primary result source", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
             "Protocol check", "Design inputs present /6", "Design coverage meaning",
-            "Pre-readout research score /100", "Score status", "Missing pre-readout evidence",
-            "Issuer Phase 3 readout", "ENTRY READY",
+            "Missing pre-readout evidence", "Issuer Phase 3 readout", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
         ]
+        scored = selected["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
+        scored &= pd.to_numeric(selected["Pre-readout research score /100"], errors="coerce").between(0, 100)
+        st.caption(
+            f"{int(scored.sum())} of {len(selected):,} filtered rows have a fully source-reviewed "
+            "PRE PHASE 3 score /100. An empty score means NOT SCORED; it is not zero "
+            "and is not a Phase 3 success probability."
+        )
         st.dataframe(
             selected[display].head(500), use_container_width=True,
             hide_index=True, height=530,
@@ -2825,6 +2833,31 @@ def render_pre_phase3():
             file_name="phase3_pre_readout_scoring_template.csv",
             mime="text/csv", key="step7_pre_readout_rubric_export",
         )
+        review_items = scoring_review_queue(selected.to_dict("records"), limit=10)
+        st.markdown("### NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
+        st.caption(
+            "Prioritized research worklist, not a top ten trading recommendation. "
+            "Registry status does not confirm that issuer topline remains unreleased. "
+            "Every candidate still needs independently dated issuer, efficacy, safety "
+            "and protocol evidence before its 100-point research score can be computed."
+        )
+        if review_items:
+            worklist = pd.DataFrame(review_items, columns=SCORING_REVIEW_COLUMNS)
+            st.dataframe(worklist, hide_index=True, use_container_width=True, height=355)
+            st.download_button(
+                "DOWNLOAD 10-CANDIDATE SCORING REVIEW WORKLIST",
+                worklist.to_csv(index=False).encode("utf-8-sig"),
+                file_name="pre_phase3_scoring_review_worklist.csv",
+                mime="text/csv", key="pre_phase3_scoring_worklist_export",
+            )
+            st.download_button(
+                "DOWNLOAD SOURCE-REVIEW SCORING TEMPLATE FOR THESE 10",
+                step7_pre_readout_template(worklist).to_csv(index=False).encode("utf-8-sig"),
+                file_name="pre_phase3_top10_source_review_template.csv",
+                mime="text/csv", key="pre_phase3_top10_scoring_template",
+            )
+        else:
+            st.info("No active exact-NCT Phase 3 trials meet the worklist's basic identity and registry checks.")
         st.caption(
             "Linked Phase 2 PRIMARY p-values are shown only for exact ticker + Phase 2 NCT links with a recorded collector-observation timestamp. "
             "They are descriptive registry statistics—not proof of clinical benefit, Phase 3 success, or a corporate readout. "
