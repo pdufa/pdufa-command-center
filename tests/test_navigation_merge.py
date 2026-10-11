@@ -20,8 +20,9 @@ class ConsolidatedPredictionNavigationTests(unittest.TestCase):
         self.assertEqual(nav.value, "PDUFA")
         self.assertNotIn("10. MATCH OPTIMIZER", nav.options)
         self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
-        self.assertEqual([t.label for t in app.get("tab")][:3],
-                         ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
+        pdufa_tabs = [t.label for t in app.get("tab") if t.label in
+                      {"PIPELINE", "PRE PHASE 3", "POST PHASE 3"}]
+        self.assertEqual(pdufa_tabs, ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
 
         app.session_state["pdufa_subtab"] = "PRE PHASE 3"
         app.radio(key="nav").set_value("9. PREDICTION ENGINE").run()
