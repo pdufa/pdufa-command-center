@@ -9,7 +9,7 @@ Run locally or in a GitHub Actions workflow:
 python -m unittest discover -s tests -p 'test_post_phase3_trade_backtest.py' -v
 python scripts/post_phase3_trade_backtest.py --output-dir output/post_phase3_stage3
 ```
-Results and a source-readiness audit appear in `output/post_phase3_stage3/`: `per_event_scenarios.csv` (all valid/blocked/censored cases), `scenario_summary.csv` (four entry methods × exits at PDUFA-30/-14/-7), and `readiness_and_blockers.json` (data counts, gaps, source caveats). The workflow `stage3-trade-backtest.yml` uploads these outputs as a downloadable Actions artifact without committing private trading data.
+Results and a source-readiness audit appear in `output/post_phase3_stage3/`: `per_event_scenarios.csv` (all valid/blocked/censored cases), `scenario_summary.csv` (four entry methods × exits at PDUFA-30/-14/-7), `matched_event_comparison.csv` (returns compared only for exact programs with all four complete entry methods), and `readiness_and_blockers.json` (data counts, gaps, source caveats). The workflow `stage3-trade-backtest.yml` uploads these outputs as a downloadable Actions artifact without committing private trading data.
 
 ### Honest evidence boundary
 
