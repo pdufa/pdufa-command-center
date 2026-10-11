@@ -8,7 +8,8 @@ import pandas as pd
 import streamlit as st
 
 from post_phase3_unified import COLUMNS, build_queue
-from pdufa_display_columns import prepare_pdufa_grid, finance_style
+from pdufa_display_columns import (prepare_pdufa_grid, sort_pdufa_grid,
+                                   DISPLAY_ORDER_OPTIONS, finance_style)
 from post_phase3_lifecycle_ui import render_post_phase3_positions
 
 
@@ -113,8 +114,8 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         )
     with middle:
         sorting = st.selectbox(
-            "Display order (not a ranking)",
-            ["Ticker A–Z", "Soonest PDUFA", "Clinical stage / eligibility"],
+            "Display order",
+            DISPLAY_ORDER_OPTIONS,
             key="postphase3_stage1_sort",
         )
     with right:
@@ -139,26 +140,22 @@ def render_post_phase3_stage1(root="data", include_positions=True):
             .any(axis=1)
         )
         df = df.loc[mask]
-    # Preserve scores for evidence assessment, but do not rank programs.
-    df = df.copy()
-    df["_pdufa_sort"] = pd.to_numeric(df["Days to PDUFA"], errors="coerce").fillna(99999)
-    if sorting == "Soonest PDUFA":
-        df = df.sort_values(["_pdufa_sort", "Ticker", "NCT ID"],
-                            ascending=[True, True, True], kind="stable")
-    elif sorting == "Clinical stage / eligibility":
-        df = df.sort_values(["Entry qualification", "Ticker", "NCT ID"],
-                            kind="stable")
-    else:
-        df = df.sort_values(["Ticker", "NCT ID"], kind="stable")
-    df = df.drop(columns=["_pdufa_sort", "Research rank", "Evidence rank"],
-                 errors="ignore")
+    # Preserve every evidence field and score; only the visible row order changes.
+    df = df.drop(columns=["Research rank", "Evidence rank"], errors="ignore")
     st.caption(
         f"{len(df)} candidates match. RED WINDOW means do not start a new trade "
         "inside the final seven calendar days; it is not an executed sale. "
         "The separate Stage 2 panel below evaluates only positions you report."
     )
     st.markdown("#### ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
-    display_df = prepare_pdufa_grid(df, view="POST PHASE 3", as_of=today)
+    display_df = sort_pdufa_grid(
+        prepare_pdufa_grid(df, view="POST PHASE 3", as_of=today), sorting,
+    )
+    st.caption(
+        "Top Score uses the verified evidence score when available and labels "
+        "research-triage fallback scores separately. Higher scores are not "
+        "FDA approval probabilities or automatic entry signals."
+    )
     st.dataframe(
         finance_style(display_df.head(250)), use_container_width=True, hide_index=True,
         column_config={
