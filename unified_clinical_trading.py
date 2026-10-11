@@ -5,19 +5,27 @@ import pandas as pd
 import streamlit as st
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
+from step7_cached_snapshot import load_current_snapshot
+from datetime import timezone
+from pathlib import Path
 
 @st.cache_data(ttl=120, show_spinner=False)
 def _load(day):
     pipeline = load_universe("data", today=day)
     post, health = build_queue("data", as_of=day)
-    return pipeline, post, health
+    try:
+        snapshot = load_current_snapshot(Path("data"), datetime.now(timezone.utc))
+        pre = snapshot[0] if snapshot is not None else []
+    except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
+        pre = []
+    return pipeline, post, health, pre
 
 def render_combined_overview():
     st.markdown("## UNIFIED CLINICAL → TRADING OVERVIEW")
     st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:
-        pipeline, post, health = _load(today)
+        pipeline, post, health, pre = _load(today)
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         st.error("Saved source data could not be loaded. No eligibility has been verified.")
         return
@@ -67,25 +75,51 @@ def render_combined_overview():
             "Research priority /100", "Days to PDUFA", "Planned exit (-7 days)",
             "Blockers", "Next action", "Phase 3 source", "Financing source",
             "PDUFA source")
+    # Exact ticker + NCT match only; ambiguous records are withheld.
+    pre_by_id = {}
+    ambiguous_pre = set()
+    for item in pre:
+        ticker = str(item.get("Ticker") or "").strip().upper()
+        nct = str(item.get("NCT ID") or "").strip().upper()
+        if not ticker or not nct:
+            continue
+        key = (ticker, nct)
+        if key in pre_by_id:
+            ambiguous_pre.add(key)
+        else:
+            pre_by_id[key] = item
+    for key in ambiguous_pre:
+        pre_by_id.pop(key, None)
+    pre_fields = (
+        "PRE PHASE 3 Score /100", "Pre-readout research score /100",
+        "Preliminary clinical score /100", "Score status",
+        "Clinical score as of", "Linked Phase 2 PRIMARY p",
+    )
     records = []
     for r in src.to_dict("records"):
         key = (r["Ticker"], r["NCT ID"])
         matched = post_by_id.get(key)
+        pre_match = pre_by_id.get(key)
         entry = {k: r[k] for k in ("Ticker", "NCT ID", "Drug", "Indication",
                                   "Research phase", "Pipeline stage", "Clinical status",
                                   "Primary completion", "PDUFA date (pipeline)", "Pipeline source")}
         entry["Post evidence match"] = ("AMBIGUOUS — REVIEW" if key in ambiguous
                                         else "EXACT TICKER + NCT" if matched else "NOT LINKED")
+        entry["Pre Phase 3 evidence match"] = ("AMBIGUOUS — REVIEW" if key in ambiguous_pre
+                                                else "EXACT TICKER + NCT" if pre_match else "NOT LINKED")
+        for c in pre_fields:
+            entry[c] = pre_match.get(c, "") if pre_match else ""
         for c in cols:
             entry[c] = matched.get(c, "") if matched else ""
         if key in ambiguous:
             entry["Entry qualification"] = "REVIEW — AMBIGUOUS TRIAL MATCH"
         records.append(entry)
     df = pd.DataFrame(records)
-    a, b, c = st.columns(3)
+    a, b, c, d = st.columns(4)
     a.metric("Pipeline records", len(df))
     b.metric("Exact post evidence matches", int(df["Post evidence match"].eq("EXACT TICKER + NCT").sum()))
-    c.metric("Post evidence REVIEW", health.get("review_count", 0))
+    c.metric("Pre clinical matches", int(df["Pre Phase 3 evidence match"].eq("EXACT TICKER + NCT").sum()))
+    d.metric("Post evidence REVIEW", health.get("review_count", 0))
     f1, f2, f3 = st.columns([1, 1, 2])
     with f1:
         phase = st.selectbox("Research phase", ["All", "PRE PHASE 3", "POST PHASE 3 / REGULATORY", "OTHER / REVIEW"], key="unified_phase")
@@ -113,4 +147,4 @@ def render_combined_overview():
     st.download_button("EXPORT COMBINED TRIAL VIEW", df.to_csv(index=False).encode(),
                        file_name="pdufa_unified_trial_view.csv", mime="text/csv",
                        key="unified_export")
-    st.caption("An exact ticker/NCT match is an identity link only, not independent clinical or SEC verification. Multiple post evidence rows for the same pair are intentionally withheld from automatic matching. Unlinked fields remain blank, not zero.")
+    st.caption("Missing pre-readout scores remain blank. An exact ticker/NCT match is an identity link only, not independent clinical or SEC verification. Multiple post evidence rows for the same pair are intentionally withheld from automatic matching. Unlinked fields remain blank, not zero.")
