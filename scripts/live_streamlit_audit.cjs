@@ -123,9 +123,11 @@ async function audit(){
         await frame.getByRole("tab",{name:"POST PHASE 3",exact:true}).getAttribute("aria-selected")==="true"
         && text.includes("POST PHASE 3 — TRADING WORKSPACE")
         && text.includes("STAGE 1 — PHASE 3 → FINANCING #2 → GREEN ENTRY")
-        && text.includes("1 · Discover & qualify")
-        && text.includes("2 · Monitor & exit")
-        && text.includes("3 · Historical backtest")
+        && text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
+        && text.includes("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH")
+        && text.includes("No actual positions have been supplied.")
+        && text.includes("Historical research leads")
+        && text.includes("BACKTEST NOT READY")
         && text.includes("One combined candidate table")
         && text.includes("Display order (not a ranking)")
         && text.includes("ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
@@ -139,26 +141,19 @@ async function audit(){
       if(!result.checks.postPhase3CombinedRatingVisible)
         result.errors.push("POST PHASE 3 combined eligibility and rating sorter is missing.");
       await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-qualification.png"),fullPage:false});
-      await appFrame.getByText("2 · Monitor & exit",{exact:true}).first().click({timeout:15000});
-      const phase3Hold=await waitForRender(page,appFrame,
-        text=>text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
-          && text.includes("No actual positions have been supplied."));
-      appFrame=phase3Hold.frame;
-      result.checks.postPhase3Stage2Visible=true;
-      result.checks.noPhantomPositions=true;
-      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-positions.png"),fullPage:false});
-      await appFrame.getByText("3 · Historical backtest",{exact:true}).first().click({timeout:15000});
-      const phase3History=await waitForRender(page,appFrame,
-        text=>text.includes("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH")
-          && text.includes("Historical research leads")
-          && text.includes("BACKTEST NOT READY"));
-      appFrame=phase3History.frame;
-      result.checks.postPhase3Stage3Visible=true;
-      result.checks.noInventedTradeReturns=phase3History.text.includes("Simulated trade scenarios")
-        && phase3History.text.includes("BACKTEST NOT READY");
+      result.checks.postPhase3Stage2Visible=phase3Ready.text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH");
+      result.checks.noPhantomPositions=phase3Ready.text.includes("No actual positions have been supplied.");
+      result.checks.postPhase3Stage3Visible=phase3Ready.text.includes("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH");
+      result.checks.noInventedTradeReturns=phase3Ready.text.includes("Simulated trade scenarios")
+        && phase3Ready.text.includes("BACKTEST NOT READY");
+      result.checks.postPhase3ThreeSectionsMerged=result.checks.postPhase3Installed
+        && result.checks.postPhase3Stage2Visible && result.checks.postPhase3Stage3Visible
+        && !phase3Ready.text.includes("Post Phase 3 stage");
+      if(!result.checks.postPhase3ThreeSectionsMerged)
+        result.errors.push("POST PHASE 3 must display discovery, position monitor, and backtest on one page without a stage switch.");
       if(!result.checks.noInventedTradeReturns)
         result.errors.push("POST PHASE 3 Stage 3 falsely reports trade returns without evidence.");
-      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-backtesting.png"),fullPage:false});
+      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-unified-workspace.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       const preReady=await waitForRender(page,appFrame,(text,frame)=>
         frame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")
