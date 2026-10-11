@@ -7,7 +7,7 @@ import unittest
 from datetime import date, timedelta
 
 from post_phase3_trade_backtest import (
-    ENTRY_METHODS, EXIT_DAYS, bars_by_ticker, run_backtest, validate_event,
+    ENTRY_METHODS, EXIT_DAYS, bars_by_ticker, paired_comparison, run_backtest, validate_event,
 )
 
 TODAY = date(2026, 10, 11)
@@ -74,6 +74,23 @@ class TradeBacktest(unittest.TestCase):
         self.assertTrue(all(s["status"]=="EXPLORATORY_FEWER_THAN_30_TRADES"
                             for s in summary))
         self.assertTrue(all(s["events_attempted"]==1 for s in summary))
+
+    def test_paired_comparison_uses_only_full_matched_cohort(self):
+        trades, _, _ = self.run_one()
+        paired = paired_comparison(trades)
+        self.assertEqual(len(paired), 12)
+        self.assertTrue(all(r["matched_event_count"] == 1 for r in paired))
+        self.assertTrue(all(r["status"] == "EXPLORATORY_FEWER_THAN_30_MATCHED" for r in paired))
+        self.assertTrue(all(r["median_delta_vs_second_financing_pct_points"] == 0
+                            for r in paired if r["entry_method"] == "SECOND_FINANCING"))
+        incomplete = [r for r in trades if not (
+            r["entry_method"] == "READOUT_BENCHMARK"
+            and r["exit_days_before_pdufa"] == 7)]
+        filtered = paired_comparison(incomplete)
+        self.assertTrue(all(r["matched_event_count"] == 0
+                            for r in filtered if r["exit_days_before_pdufa"] == 7))
+        self.assertTrue(all(r["matched_event_count"] == 1
+                            for r in filtered if r["exit_days_before_pdufa"] in (30,14)))
 
     def test_next_session_open_after_signal(self):
         trades, _, _ = self.run_one()
