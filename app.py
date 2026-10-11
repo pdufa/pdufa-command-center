@@ -10,6 +10,7 @@ from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
+from step7_live import build_snapshot as build_step7_snapshot
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
@@ -2641,137 +2642,165 @@ def table_view(frame, return_page="PDUFA"):
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
 
+@st.cache_data(ttl=180, show_spinner=False)
+def _step7_snapshot(signature):
+    """Read existing scheduled-collector outputs; never fetch sources in a UI render."""
+    return build_step7_snapshot(Path("data"), datetime.now(timezone.utc))
+
+
 def render_pre_phase3():
-    """Visible source-grounded trial research and post-readout handoff.
-
-    Registry milestones are not issuer topline dates. A financing-ledger label
-    alone can never set ENTRY READY; all trading gates require fresh evidence.
-    """
-    st.markdown("## PRE PHASE 3 — TRIAL AND TRADE RESEARCH")
+    """Step 7: collector-synced Phase 1–3 research + exact-event financing review."""
+    st.markdown("## PRE PHASE 3 — LIVE SOURCE MONITOR")
     st.caption(
-        "Saved research records, not real-time trial verification or trade signals. "
-        "A trial completion date is not a confirmed company readout date."
+        "Source-dated scanner snapshots from scheduled jobs. This is not a real-time "
+        "price service, a confirmed corporate readout calendar, or a trade recommendation."
     )
-    root = Path("data")
+
+    data_root = Path("data")
+    source_files = [
+        "phase_pipeline.csv", "phase_pipeline_state.json",
+        "phase3_intake_status.json", "phase3_announcements.csv",
+        "pre_readout_protocols.csv", "pre_readout_intake_status.json",
+        "phase_pipeline_market_caps.csv", "second_financing_status.csv",
+        "recheck_status.csv",
+    ]
     signature = tuple(
-        (name, (root / name).stat().st_mtime_ns)
-        for name in PIPELINE_SOURCE_FILES if (root / name).exists()
+        (file, (data_root / file).stat().st_mtime_ns if (data_root / file).exists() else 0)
+        for file in source_files
     )
-    try:
-        universe = load_pipeline_universe_data(signature, today.date())
-    except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError) as exc:
-        st.error(f"Cannot read the trial source: {type(exc).__name__}. Check data/phase_pipeline.csv and data/all_phase_trials.csv.")
-        universe = pd.DataFrame()
-
-    phases = ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3"]
-    if universe.empty:
-        st.warning("No saved clinical trial records are available. Re-run the pipeline collector to populate this view.")
-    else:
-        trials = universe.loc[
-            universe["record_type"].eq("Registered trial")
-            & universe["registered_phase"].isin(phases)
-        ].drop_duplicates("record_id").copy()
-        trials["_completion"] = pd.to_datetime(trials["primary_completion"], errors="coerce")
-        trials["_registry_result"] = trials["results_posted"].fillna("").astype(str).str.strip().ne("")
-        p1, p2, p3, p4 = st.columns(4)
-        p1.metric("Saved trial leads", f"{len(trials):,}")
-        p2.metric("Phase 3 registered", f"{int(trials['registered_phase'].eq('Phase 3').sum()):,}")
-        p3.metric("Phase 2 / 2–3", f"{int(trials['registered_phase'].isin(['Phase 2','Phase 2/3']).sum()):,}")
-        p4.metric("Registry results recorded", f"{int(trials['_registry_result'].sum()):,}")
-
-        selected = st.multiselect("CLINICAL STAGES", phases, default=phases, key="pre3_display_stages_v2")
-        query = st.text_input("Find ticker, drug, disease or NCT", key="pre3_display_search_v2").strip()
-        milestone = st.selectbox(
-            "Registry primary-completion window (not a company readout)",
-            ["ALL / INCLUDE UNKNOWN", "NEXT 90 DAYS", "NEXT 180 DAYS", "PAST / RECHECK"],
-            key="pre3_display_window_v2",
+    refresh_col, actions_col = st.columns([1, 1])
+    with refresh_col:
+        if st.button("RELOAD SAVED SOURCE FILES", key="step7_source_reload", use_container_width=True):
+            _step7_snapshot.clear()
+            st.rerun()
+    with actions_col:
+        st.link_button(
+            "RUN / CHECK REFRESH JOBS IN GITHUB",
+            "https://github.com/pdufa/pdufa-command-center/actions/workflows/step7-live-feed.yml",
+            use_container_width=True,
         )
-        view = trials.loc[trials["registered_phase"].isin(selected)].copy()
-        if query:
-            searchable = view[["ticker", "company", "drug", "indication", "nct_id"]].fillna("").astype(str)
-            matched = searchable.agg(" ".join, axis=1).str.contains(query, case=False, regex=False)
-            view = view.loc[matched]
-        completion = view["_completion"]
-        cutoff = pd.Timestamp(today)
-        if milestone == "NEXT 90 DAYS":
-            view = view.loc[completion.between(cutoff, cutoff + pd.Timedelta(days=90))]
-        elif milestone == "NEXT 180 DAYS":
-            view = view.loc[completion.between(cutoff, cutoff + pd.Timedelta(days=180))]
-        elif milestone == "PAST / RECHECK":
-            view = view.loc[completion.lt(cutoff)]
-        view = view.sort_values(["_completion", "ticker", "nct_id"], na_position="last", kind="stable")
+    try:
+        trials, finance, manifest = _step7_snapshot(signature)
+    except (OSError, ValueError, TypeError, KeyError, pd.errors.ParserError) as exc:
+        st.error(
+            "Source integration failed. Original clinical and financing records were NOT changed. "
+            f"Error type: {type(exc).__name__}"
+        )
+        return
 
-        st.markdown(f"### Clinical trial research queue — {len(view):,} records")
-        if view.empty:
-            st.info("No records match these filters. Choose ALL / INCLUDE UNKNOWN to see the saved queue.")
-        else:
-            report = pd.DataFrame({
-                "Ticker": view["ticker"], "Company": view["company"],
-                "Drug / intervention": view["drug"], "Indication": view["indication"],
-                "Trial phase": view["registered_phase"], "NCT ID": view["nct_id"],
-                "Trial status": view["status"],
-                "Registry primary completion": view["primary_completion"],
-                "Registry results posted": view["results_posted"],
-                "Last source check": view["checked_at"],
-                "Study source": view["source_url"],
-                "Trade readiness": "REVIEW — Phase 3 success, second financing and trading setup not established here",
-            })
-            st.dataframe(report.head(500), use_container_width=True, hide_index=True, height=530)
-            if len(report) > 500:
-                st.caption("Showing first 500 rows; export the full filtered queue for all records.")
-            st.download_button(
-                "EXPORT PRE PHASE 3 RESEARCH (CSV)",
-                report.to_csv(index=False).encode("utf-8-sig"),
-                file_name="pre_phase3_research_queue.csv", mime="text/csv",
-                key="pre3_export_v2",
-            )
+    health = pd.DataFrame(manifest["source_checks"])
+    st.markdown("### SOURCE HEALTH / LAST VERIFIED CHECK")
+    st.dataframe(
+        health[["Source", "Health", "Collector status", "Last checked UTC",
+                "Blocked records", "Details"]],
+        use_container_width=True, hide_index=True, height=260,
+    )
+    if not health["Health"].eq("RECENT").all():
         st.warning(
-            "Research leads are not independently verified unreleased topline events. "
-            "Source checks and NCT↔issuer ownership may be incomplete or stale. "
-            "Missing Phase 3 readout, financing or market evidence always blocks ENTRY READY."
+            "Some inputs are stale, partial, blocked, or recently collected with warnings. "
+            "In particular, SEC financing errors are NOT evidence of a completed offering."
+        )
+    st.caption("Data status is computed from the saved collector timestamps. Reload does not start a scan or contact SEC.")
+
+    t0, t1, t2, t3 = st.columns(4)
+    t0.metric("Clinical trial leads", f"{len(trials):,}")
+    t1.metric("Phase 3 research", f"{sum(x['Trial phase'] == 'Phase 3' for x in trials):,}")
+    t2.metric("Financing event reviews", f"{len(finance):,}")
+    t3.metric("ENTRY READY", "0 — NOT VERIFIED")
+    st.markdown("### PRE PHASE 3 CLINICAL RESEARCH QUEUE")
+    if not trials:
+        st.info("No available trial rows. Check the Phase 2–3 collector in GitHub Actions.")
+    else:
+        tab = pd.DataFrame(trials)
+        phase_options = ["Phase 1", "Phase 2", "Phase 2/3", "Phase 3"]
+        phases = st.multiselect(
+            "TRIAL STAGES", phase_options, default=phase_options,
+            key="step7_phase_select",
+        )
+        query = st.text_input(
+            "Search ticker, drug, disease or exact NCT",
+            key="step7_trial_search", placeholder="e.g. AMLX or NCT12345678",
+        ).strip()
+        fcol, mcol = st.columns(2)
+        with fcol:
+            window = st.selectbox(
+                "REGISTRY PRIMARY COMPLETION",
+                ["ALL / UNKNOWN INCLUDED", "NEXT 90 DAYS", "NEXT 180 DAYS", "PAST / RECHECK"],
+                key="step7_completion_window",
+            )
+        with mcol:
+            cap_only = st.checkbox(
+                "Only recent $300M–$10B market-cap records", key="step7_cap_filter", value=False
+            )
+        selected = tab.loc[tab["Trial phase"].isin(phases)].copy()
+        if query:
+            fields = selected[["Ticker", "Company", "Drug", "Indication", "NCT ID"]].fillna("")
+            selected = selected.loc[
+                fields.astype(str).agg(" ".join, axis=1).str.contains(query, case=False, regex=False)
+            ]
+        if cap_only:
+            selected = selected.loc[selected["Market cap state"].eq("VERIFIED RECENT")
+                                    & selected["Market cap USD"].between(300_000_000, 10_000_000_000)]
+        if window != "ALL / UNKNOWN INCLUDED":
+            completions = pd.to_datetime(
+                selected["Registry primary completion"].astype(str),
+                errors="coerce", format="mixed",
+            )
+            present = pd.Timestamp(datetime.now(ZoneInfo("America/Los_Angeles")).date())
+            if window == "NEXT 90 DAYS":
+                selected = selected.loc[completions.between(present, present + pd.Timedelta(days=90))]
+            elif window == "NEXT 180 DAYS":
+                selected = selected.loc[completions.between(present, present + pd.Timedelta(days=180))]
+            else:
+                selected = selected.loc[completions.lt(present)]
+        st.caption(
+            f"Showing {min(len(selected), 500):,} of {len(selected):,} filtered exact ticker/NCT rows. "
+            "Month-only registry dates are approximated to the first of the month for date filtering, "
+            "not treated as a confirmed corporate readout day."
+        )
+        display = [
+            "Ticker", "Drug", "Indication", "Trial phase", "Registry status",
+            "NCT ID", "Research category", "Registry primary completion",
+            "Registry results posted", "Company/program identity",
+            "Market cap USD", "Market cap state", "Registry check",
+            "Protocol check", "Issuer Phase 3 readout", "ENTRY READY",
+            "NCT source", "Market source", "Last trial check UTC",
+        ]
+        st.dataframe(
+            selected[display].head(500), use_container_width=True,
+            hide_index=True, height=530,
+        )
+        st.download_button(
+            "EXPORT ALL FILTERED CLINICAL RECORDS (CSV)",
+            selected.to_csv(index=False).encode("utf-8-sig"),
+            file_name="step7_pre_phase3_research.csv", mime="text/csv",
+            key="step7_clinical_export",
         )
 
-    st.divider()
-    st.markdown("### Step 6 — Post-Phase-3 financing / trade review")
+    st.markdown("### POST-READOUT HANDOFF — FINANCING / TRADE REVIEW")
     st.caption(
-        "This is a separate handoff after readout, not the PRE PHASE 3 clinical score. "
-        "Financing history never by itself qualifies a stock for entry."
+        "Matched by exact financing event key, never ticker alone. "
+        "Saved historical financing closes are not proof of a new, current, dilution-free trading setup."
     )
-    fin_path = root / "second_financing_status.csv"
-    if not fin_path.exists():
-        st.info("Financing status file is not present. The trading research table cannot be shown.")
-        return
-    try:
-        finance = pd.read_csv(fin_path, dtype=str, keep_default_na=False)
-    except (OSError, pd.errors.ParserError):
-        st.warning("Financing file cannot be read; no trade is entry-ready on this evidence.")
-        return
-    if finance.empty or "event_key" not in finance.columns:
-        st.info("No event-keyed financing records are available for review.")
-        return
-    def fcol(name):
-        return finance[name] if name in finance else pd.Series("", index=finance.index)
-    overview = pd.DataFrame({
-        "Ticker": fcol("event_key").astype(str).str.split("|").str[0],
-        "Drug-specific event": fcol("event_key"),
-        "Financing review": fcol("second_financing_audit_status"),
-        "First recorded closing": fcol("first_financing_date"),
-        "Second recorded closing": fcol("second_financing_date"),
-        "First SEC source": fcol("first_financing_source"),
-        "Second SEC source": fcol("second_financing_source"),
-        "Evidence note": fcol("second_financing_evidence_note"),
-        "Trading entry gate": "REVIEW — clinical, safety, stabilization, volume, dilution and freshness gates not independently cleared",
-    })
-    st.metric("Events in financing review file", len(overview))
-    st.dataframe(overview, use_container_width=True, hide_index=True, height=420)
-    st.download_button(
-        "EXPORT FINANCING REVIEW (CSV)",
-        overview.to_csv(index=False).encode("utf-8-sig"),
-        file_name="pre_phase3_financing_review.csv", mime="text/csv",
-        key="pre3_fin_export_v2",
+    if finance:
+        financing_view = pd.DataFrame(finance)
+        st.dataframe(
+            financing_view, use_container_width=True, hide_index=True, height=390,
+        )
+        st.download_button(
+            "EXPORT FINANCING EVENT REVIEW (CSV)",
+            financing_view.to_csv(index=False).encode("utf-8-sig"),
+            file_name="step7_financing_event_review.csv", mime="text/csv",
+            key="step7_financing_export",
+        )
+    else:
+        st.info("No financing review records. This does not mean financing is complete or unnecessary.")
+    st.warning(
+        "ENTRY READY remains blocked until verified successful Phase 3 results, "
+        "clinically meaningful effect size and safety review, a valid ordered second "
+        "financing close, no unresolved dilution, post-readout price stabilization, "
+        "and volume normalization are all independently established with current sources."
     )
-    st.caption("Only saved source snapshots are shown. Recheck source documents and price/volume data before assessing any trade.")
-
 
 query_event = st.query_params.get("event")
 query_ticker = st.query_params.get("ticker")
