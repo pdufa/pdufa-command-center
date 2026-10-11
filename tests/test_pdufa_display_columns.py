@@ -39,11 +39,11 @@ class PdufaGridTests(unittest.TestCase):
         self.assertEqual(DISPLAY_ORDER_OPTIONS, ("Top Score", "Ticker A–Z"))
         frame = pd.DataFrame([
             {"Ticker": "ZZZ", "NCT ID": "NCT00000001",
-             "Evidence score /100": 20, "PDUFA Date": "2026-12-01"},
+             "Evidence score /100": 20, "Pre-readout research score /100": 20, "PDUFA Date": "2026-12-01"},
             {"Ticker": "BBB", "NCT ID": "NCT00000002",
-             "Evidence score /100": 90, "PDUFA Date": "2026-12-20"},
+             "Evidence score /100": 90, "Pre-readout research score /100": 90, "PDUFA Date": "2026-12-20"},
             {"Ticker": "AAA", "NCT ID": "NCT00000003",
-             "Evidence score /100": 90, "PDUFA Date": "2026-12-21"},
+             "Evidence score /100": 90, "Pre-readout research score /100": 90, "PDUFA Date": "2026-12-21"},
             {"Ticker": "CCC", "NCT ID": "NCT00000004",
              "PDUFA Date": ""},
         ])
