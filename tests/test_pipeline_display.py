@@ -87,8 +87,8 @@ class PipelineDisplayTests(unittest.TestCase):
         end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
         section = source[start:end]
         self.assertIn('with pipeline_tab:', section)
-        self.assertIn('pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(', section)
-        self.assertIn('["PIPELINE", "PRE PHASE 3", "POST PHASE 3"]', section)
+        self.assertIn('unified_tab, pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(', section)
+        self.assertIn('["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"]', section)
         self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
         self.assertIn('with pre_phase3_tab:', section)
         self.assertIn('if pre_phase3_tab.open:', section)
