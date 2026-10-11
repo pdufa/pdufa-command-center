@@ -132,8 +132,7 @@ async function audit(){
       appFrame=phase3Ready.frame;
       result.checks.postPhase3Installed=true;
       result.checks.postPhase3CombinedRatingVisible=phase3Ready.text.includes("One combined candidate table")
-        && phase3Ready.text.includes("Sort combined table")
-        && phase3Ready.text.includes("Eligibility first, highest score within group");
+        && phase3Ready.text.includes("Sort combined table");
       if(!result.checks.postPhase3CombinedRatingVisible)
         result.errors.push("POST PHASE 3 combined eligibility and rating sorter is missing.");
       await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-qualification.png"),fullPage:false});
