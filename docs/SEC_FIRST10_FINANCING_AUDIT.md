@@ -39,3 +39,18 @@ A 403 means *SEC access failed*. It never means a financing is closed or absent,
 ## Next checkpoint
 
 Only after source text and the original first/second post-readout financing sequence are reviewed and documented should the specific named financing gate be allowed to pass. Separate checks remain necessary for current ATM/dilution, Phase 3 clinical evidence, PDUFA identity/date, cash runway and post-readout price stabilization. Never mark an entry READY from SEC retrieval alone.
+
+
+## Initial document-level spot checks (October 10, 2026)
+
+These are human-readable research leads, not automatically accepted certification or ENTRY READY decisions.
+
+| Issuer | Source-level finding | Follow-up |
+|---|---|---|
+| BFRI | [SEC Exhibit 99.1](https://www.sec.gov/Archives/edgar/data/1858685/000149315225019006/ex99-1.htm) says the asset purchase closing released the final $2.5M of an $11M financing; do not treat the asset acquisition closing alone as a new financing. | Reconcile the separate original convertible-note financing and later capital funding as two distinct post-readout transactions. |
+| SRRK | [2026 10-Q](https://www.sec.gov/Archives/edgar/data/1727196/000110465926056667/srrk-20260331x10q.htm) reports receipt of $50M from a next tranche on September 29, 2025. | Check whether a tranche of an existing loan counts as a *second separate financing* under the strategy's definition. |
+| IRD | [2025 10-K](https://www.sec.gov/Archives/edgar/data/1228627/000114036126009247/ef20060643_10k.htm) explicitly states a $25M private placement closed February 18, 2026. | Independently check first-financing event and mapping to the correct program. |
+| CYTK | The linked [8-K](https://www.sec.gov/Archives/edgar/data/1061983/000119312526214606/d138544d8k.htm) describes underwriting and is signed May 8; the signature date is **not** itself closing proof. A separate [company announcement](https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Closing-of-Public-Offering-of-Common-Stock-and-Full-Exercise-of-the-Underwriters-Option-to-Purchase-Additional-Shares-for-Gross-Proceeds-of-805-Million/default.aspx) explicitly confirms the $805M offering closed May 8, 2026. | Replace or supplement the current proof with explicit closing evidence and independently assess the ordered first/second financing chain. |
+| SMMT | [2026 10-Q](https://www.sec.gov/Archives/edgar/data/1599298/000159929826000068/smmt-20260630.htm) says an October 2025 private placement was completed, but also reports 2026 ATM sales and remaining ATM capacity utilized after June 30. | Keep ATM/dilution risk as a separate **unresolved** entry gate regardless of completed PIPE. |
+
+The GitHub Actions report is still intentionally conservative: it requires compliant direct SEC retrieval and human review, even where a publicly accessible document appears to corroborate a historical claim.
