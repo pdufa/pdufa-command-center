@@ -1,5 +1,8 @@
 """Four PDUFA subtab presentation and financing identity regression checks."""
+import csv
+import tempfile
 import unittest
+from pathlib import Path
 from datetime import date, timedelta
 
 import pandas as pd
@@ -7,6 +10,7 @@ import pandas as pd
 from pdufa_display_columns import (
     FRONT, DISPLAY_ORDER_OPTIONS, enrich_exact_trials, finance_style,
     prepare_pdufa_grid, sort_pdufa_grid, sort_pdufa_rows,
+    align_pdufa_finance_columns,
 )
 
 
@@ -105,6 +109,63 @@ class PdufaGridTests(unittest.TestCase):
         linked = prepare_pdufa_grid(enrich_exact_trials(source, post=post))
         self.assertEqual(linked.loc[0, "2nd Financing Completed"], "YES — VERIFIED (HISTORICAL)")
         self.assertEqual(linked.loc[1, "2nd Financing Completed"], "NOT VERIFIED")
+
+    def test_legacy_event_table_adds_and_orders_financing_and_runway(self):
+        frame = pd.DataFrame({
+            "Ticker": ["ABC"], "event_key": ["ABC|PROGRAM"],
+            "Days Left": [45], "PDUFA Date": ["2026-12-01"],
+            "cash_runway_months": [15], "Drug": ["Alpha"],
+        })
+        out = align_pdufa_finance_columns(frame, audit_path="/nonexistent.csv")
+        i = out.columns.get_loc("Days Left")
+        self.assertEqual(out.columns[i+1:i+3].tolist(),
+                         ["2nd Financing Completed", "Cash Runway (months)"])
+        self.assertEqual(out.loc[0, "2nd Financing Completed"], "NOT VERIFIED")
+        self.assertEqual(out.loc[0, "Cash Runway (months)"], 15)
+        self.assertNotIn("Cash Runway (months)", frame)
+
+    def test_legacy_historical_prediction_without_countdown_gets_financial_neighbors(self):
+        frame = pd.DataFrame({"Ticker": ["ABC"], "PDUFA Date": ["2026-12-01"]})
+        original = align_pdufa_finance_columns(frame)
+        self.assertEqual(original.columns.tolist(), frame.columns.tolist())
+        displayed = align_pdufa_finance_columns(frame, add_countdown=True,
+                                                audit_path="/nonexistent.csv")
+        i = displayed.columns.get_loc("Days to PDUFA")
+        self.assertEqual(displayed.columns[i+1:i+3].tolist(),
+                         ["2nd Financing Completed", "Cash Runway (months)"])
+
+    def test_exact_event_ledger_and_duplicates_fail_closed(self):
+        columns = ["event_key", "second_financing_status",
+                   "second_financing_audit_status", "second_financing_closed",
+                   "second_financing_source"]
+        approved = {
+            "event_key": "ABC|PROGRAM",
+            "second_financing_status": "CLOSED",
+            "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+            "second_financing_closed": "YES",
+            "second_financing_source": "https://www.sec.gov/Archives/edgar/ABC",
+        }
+        frame = pd.DataFrame([
+            {"Ticker": "ABC", "event_key": "ABC|PROGRAM", "Days Left": 45},
+            {"Ticker": "XYZ", "event_key": "ABC|PROGRAM", "Days Left": 45},
+            {"Ticker": "ABC", "event_key": "ABC|OTHER", "Days Left": 45},
+        ])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "fin.csv"
+            def save(rows):
+                with path.open("w", newline="", encoding="utf-8") as output:
+                    writer = csv.DictWriter(output, fieldnames=columns)
+                    writer.writeheader()
+                    writer.writerows(rows)
+            save([approved])
+            shown = align_pdufa_finance_columns(frame, audit_path=path)
+            self.assertEqual(shown["2nd Financing Completed"].tolist(), [
+                "YES — VERIFIED (HISTORICAL)", "NOT VERIFIED", "NOT VERIFIED",
+            ])
+            save([approved, approved])
+            shown = align_pdufa_finance_columns(frame, audit_path=path)
+            self.assertEqual(shown["2nd Financing Completed"].tolist(),
+                             ["NOT VERIFIED"] * 3)
 
     def test_equal_scores_use_numeric_days_before_ticker_with_missing_days_last(self):
         frame = pd.DataFrame([
