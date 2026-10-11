@@ -21,6 +21,7 @@ FRESH_HOURS = {
     "Pre-readout protocol": 72,
     "Market capitalization": 72,
     "SEC financing recheck": 48,
+    "Market EOD price / volume": 72,
 }
 LIVE_STATES = {"COMPLETE", "COMPLETE WITH WARNINGS"}
 
@@ -116,6 +117,9 @@ def build_snapshot(root, now=None):
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
     financing = read_csv(root / "second_financing_status.csv")
     rechecks = read_csv(root / "recheck_status.csv")
+    market_rows = read_csv(root / "step7_market_status.csv")
+    market_state = read_json(root / "step7_market_status.json")
+    market_by_ticker = {r.get("ticker", "").upper(): r for r in market_rows if r.get("ticker")}
     trial_state = read_json(root / "phase_pipeline_state.json")
     p3_state = read_json(root / "phase3_intake_status.json")
     protocol_state = read_json(root / "pre_readout_intake_status.json")
@@ -213,8 +217,16 @@ def build_snapshot(root, now=None):
                       and as_of_date(fin.get("first_financing_date")) < as_of_date(fin.get("second_financing_date"))
                       and is_valid_source(fin.get("first_financing_source"))
                       and is_valid_source(fin.get("second_financing_source")))
+        quote = market_by_ticker.get(key.split("|", 1)[0].upper(), {})
+        quote_fresh = (quote.get("last_session_freshness") == "RECENT EOD"
+                       and quote.get("market_status") == "MARKET_UPDATED")
         events.append({
             "Ticker": key.split("|", 1)[0],
+            "Price last session": quote.get("last_session", "") if quote_fresh else "",
+            "Last EOD close USD": quote.get("last_close_usd", "") if quote_fresh else "",
+            "Relative volume": quote.get("relative_volume", "") if quote_fresh else "",
+            "Price feed quality": quote.get("last_session_freshness", "NOT CHECKED") or "NOT CHECKED",
+            "Price source": quote.get("market_source", "") if quote_fresh else "",
             "Exact financing event": key,
             "Historical second closing": "DOCUMENTED — RECHECK REQUIRED" if historical else "NOT VERIFIED",
             "Source scan": sec or "NOT RUN",
@@ -250,11 +262,16 @@ def build_snapshot(root, now=None):
                      latest_value(rechecks, "completed_at_utc"), now,
                      extra=f"{len(financing)} historical event records; SEC access may be blocked",
                      blocked=sec_blocked),
+        status_check("Market EOD price / volume", market_state.get("status"),
+                     market_state.get("completed_at_utc"), now,
+                     extra=f"{market_state.get('fresh_eod', 0)}/{market_state.get('expected', 0)} recent session quotes; not a stability certification",
+                     blocked=market_state.get("unavailable_or_stale", 0)),
     ]
     return trials, events, {
         "generated_at_utc": now.isoformat(timespec="seconds"),
         "source_checks": checks,
         "trial_rows": len(trials), "financing_events": len(events),
+        "market_eod_rows": len(market_rows),
         "entry_ready_count": 0,
         "entry_gate_note": "NO is intentional until independent source-verified Phase 3 success, clinically meaningful benefit, safety, current second financing closure, stable base, normalized volume and dilution conditions can all be confirmed.",
         "scope_note": "Saved scheduled-collector snapshots, not tick-by-tick market data. SEC failures are not masked.",
