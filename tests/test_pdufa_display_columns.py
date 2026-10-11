@@ -1,6 +1,6 @@
 """Four PDUFA subtab presentation and financing identity regression checks."""
 import unittest
-from datetime import date
+from datetime import date, timedelta
 
 import pandas as pd
 
@@ -151,6 +151,39 @@ class PdufaGridTests(unittest.TestCase):
         for color in ("#bbf7d0", "#fef08a", "#fecaca", "#e5e7eb"):
             self.assertIn(color, rendered)
         self.assertIn("color: #000000", rendered)
+
+    def test_financial_bands_color_runway_score_age_and_unknown(self):
+        today = pd.Timestamp.now(tz="America/Los_Angeles").date()
+        frame = pd.DataFrame({
+            "F": ["F START", "F RUN", "F CLOSED", "F UNKNOWN"],
+            "Cash Runway (months)": [18, 8, 3, pd.NA],
+            "Financing evidence /20": [18, 12, 4, pd.NA],
+            "Cash Runway As Of": [
+                today.isoformat(),
+                (today - timedelta(days=100)).isoformat(),
+                (today - timedelta(days=160)).isoformat(),
+                "",
+            ],
+            "Market Cap": ["$650M", "$4B", "", "NOT VERIFIED"],
+            "Cash": ["$80M", None, "$3M", ""],
+        })
+        html = finance_style(frame).to_html()
+        for color in ("#bbf7d0", "#fef08a", "#fecaca", "#dbeafe", "#e5e7eb"):
+            self.assertIn(color, html)
+        # Styles must never overwrite, backfill or reinterpret source values.
+        self.assertEqual(frame.loc[0, "Cash Runway (months)"], 18)
+        self.assertEqual(frame.loc[1, "Market Cap"], "$4B")
+        self.assertEqual(frame.loc[3, "F"], "F UNKNOWN")
+
+    def test_financial_unknown_and_future_asof_are_not_marked_current(self):
+        from pdufa_display_columns import finance_style
+        today = pd.Timestamp.now(tz="America/Los_Angeles").date()
+        frame = pd.DataFrame({"Cash Runway As Of": [
+            (today + timedelta(days=1)).isoformat(), "not verified",
+        ]})
+        html = finance_style(frame).to_html()
+        self.assertIn("#e5e7eb", html)
+        self.assertNotIn("#bbf7d0", html)
 
     def test_each_of_four_tabs_receives_model_specific_score(self):
         """Review triage scores are visibly distinct from clinical evidence."""
