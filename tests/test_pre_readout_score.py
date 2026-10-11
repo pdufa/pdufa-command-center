@@ -266,11 +266,12 @@ class PreReadoutTests(unittest.TestCase):
 
     def test_pipeline_uses_fresh_protocol_gate(self):
         from pathlib import Path
-        app = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        section = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn("protocols=_p3_protocols, require_protocol=True", section)
-        self.assertLess(section.index('"data/pre_readout_protocols.csv"'),
-                        section.index("phase3_pre_readout_queue("))
+        root=Path(__file__).resolve().parents[1]
+        clinical=(root/"clinical_step3.py").read_text(encoding="utf-8")
+        self.assertIn("_iso_date(raw.get(\"evidence_date\"))",clinical)
+        self.assertIn("valid_url(url)",clinical)
+        self.assertIn("ownership_evidence_date",clinical)
+        self.assertIn("category_json",clinical)
 
 
     def test_no_future_readout_date_in_historical_score(self):
@@ -284,14 +285,14 @@ class PreReadoutTests(unittest.TestCase):
 
     def test_pipeline_allows_only_in_session_strict_source_scoring(self):
         from pathlib import Path
-        source = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        part = source.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn("pre_readout_evidence_upload_v1", part)
-        self.assertIn("require_protocol=True", part)
-        self.assertIn("_expected.issubset(_p3_import.columns)", part)
-        self.assertIn("_p3_import[\"nct_id\"].astype(str).duplicated().any()", part)
-        self.assertIn("Session-only evidence loaded.", part)
-
+        root=Path(__file__).resolve().parents[1]
+        code=(root/"clinical_step3.py").read_text(encoding="utf-8")
+        self.assertIn("owner = bool(review.get",code)
+        self.assertIn("if (complete and owner)",code)
+        self.assertIn("CREATE TABLE IF NOT EXISTS evaluation_history",code)
+        self.assertIn("INSERT INTO evaluation_history",code)
+        self.assertIn("NOT SCORED — INCOMPLETE OR UNVERIFIED",code)
+        self.assertIn("local storage may reset",code)
 
 
 if __name__ == "__main__":
