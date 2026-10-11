@@ -115,23 +115,18 @@ async function audit(){
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
       }
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
-      try{
-        await appFrame.getByText("PRE PHASE 3 — Clinical Trial Evaluation",{exact:false}).first()
-          .waitFor({state:"visible",timeout:90000});
-        result.checks.step3ClinicalReviewVisible=true;
-        const assessment=await appFrame.locator("body").innerText({timeout:10000});
-        result.checks.step3EvidenceGate=assessment.includes("NOT SCORED")
-          && assessment.includes("NCT–ticker pairing")
-          && assessment.includes("Phase 1–3");
-        result.checks.step3ReviewAction=assessment.includes("SAVE NEW AUDIT REVISION");
-        result.checks.step3AuditHistory=assessment.includes("Versioned assessment history");
-        if(!result.checks.step3EvidenceGate || !result.checks.step3ReviewAction
-            || !result.checks.step3AuditHistory)
-          result.errors.push("PRE PHASE 3 Step 3 review/evidence/history controls not fully visible.");
-      }catch(err){
-        result.checks.step3ClinicalReviewVisible=false;
-        result.notes.push("Step 3 PRE PHASE 3 check failed: "+String(err.message).slice(0,190));
-      }
+      await sleep(3500);
+      const prePhaseTabSelected=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
+      const prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
+      result.checks.prePhase3Blank=(prePhaseTabSelected==="true")
+        && !prePhaseScreen.includes("PRE PHASE 3 — Clinical Trial Evaluation")
+        && !prePhaseScreen.includes("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT")
+        && !prePhaseScreen.includes("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH")
+        && !prePhaseScreen.includes("SAVE NEW AUDIT REVISION")
+        && !prePhaseScreen.includes("Phase 1–3 company–trial leads")
+        && !prePhaseScreen.includes("PDUFA — CLINICAL AND REGULATORY STAGES");
+      if(!result.checks.prePhase3Blank)
+        result.errors.push("PRE PHASE 3 must remain empty with no clinical research UI.");
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
       await sleep(1500);
@@ -239,8 +234,7 @@ async function audit(){
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
-                   "step3ClinicalReviewVisible","step3EvidenceGate","step3ReviewAction",
-                   "step3AuditHistory",
+                   "prePhase3Blank",
                    "workbenchSubtabRemoved"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
