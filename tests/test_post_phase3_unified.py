@@ -97,6 +97,17 @@ def test_stale_sources_remove_rating_without_reclassifying_as_green(tmp_path):
 
 def test_ranks_exist_for_review_candidates_with_no_strict_evidence(tmp_path):
     fixture(tmp_path)
+    # A reported but unverified PDUFA and an unadjudicated primary endpoint
+    # cannot produce a strict evidence score, yet should be research-ranked.
+    write_csv(tmp_path, "pdufa_candidates.csv", [{
+        "event_key": EVENT, "ticker": "ACME", "drug": "Drug A",
+        "indication": "Disease A", "nct_id": "NCT01234567",
+        "pdufa_date": (TODAY + timedelta(days=40)).isoformat(),
+        "pdufa_confirmation": "REPORTED_ONLY",
+        "phase3_date": "2026-01-01",
+        "phase3_status": "RESULTS_REVIEW",
+        "outcome": "", "conflict_flag": "NONE",
+    }])
     write_csv(tmp_path, "step7_financing_review.csv", [{
         "Exact financing event": EVENT,
         "Current gate": "REVIEW — ENTRY BLOCKED",
