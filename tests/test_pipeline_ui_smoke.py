@@ -173,7 +173,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assert_empty_chart(app)
         app.button(key="pipeline_show_v9").click().run()
         self.assert_matching_chart(app, "Phase 3")
-        self.assertTrue(app.dataframe[0].value["PDUFA Target"].eq("").all())
+        self.assertTrue(next(t.value for t in app.dataframe if "PDUFA Target" in t.value.columns)["PDUFA Target"].eq("").all())
 
         # Search and sort changes also invalidate a previously applied chart.
         app.text_input(key="pipeline_query_v9").set_value("NO_SUCH_PIPELINE_RECORD_9F2A").run()
@@ -185,7 +185,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assert_empty_chart(app)
         app.button(key="pipeline_show_v9").click().run()
         self.assert_matching_chart(app, "Phase 3")
-        tickers = app.dataframe[0].value["Ticker"].tolist()
+        tickers = next(t.value for t in app.dataframe if "Current Stage" in t.value.columns)["Ticker"].tolist()
         self.assertEqual(tickers, sorted(tickers))
 
         app.button(key="pipeline_clear_v9").click().run()
