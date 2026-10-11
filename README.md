@@ -1,5 +1,27 @@
 # PDUFA Command Center
 
+## Stage 3 — offline post-Phase-3 stock-trading backtest
+
+This stage **does not render anything in PDUFA → POST PHASE 3**. The tab must remain blank as requested. Stage 3 is an independent Python research engine, not the existing retrospective FDA-approval prediction scorecard.
+
+Run locally or in a GitHub Actions workflow:
+```sh
+python -m unittest discover -s tests -p 'test_post_phase3_trade_backtest.py' -v
+python scripts/post_phase3_trade_backtest.py --output-dir output/post_phase3_stage3
+```
+Results and a source-readiness audit appear in `output/post_phase3_stage3/`: `per_event_scenarios.csv` (all valid/blocked/censored cases), `scenario_summary.csv` (four entry methods × exits at PDUFA-30/-14/-7), `matched_event_comparison.csv` (returns compared only for exact programs with all four complete entry methods), and `readiness_and_blockers.json` (data counts, gaps, source caveats). The workflow `stage3-trade-backtest.yml` uploads these outputs as a downloadable Actions artifact without committing private trading data.
+
+### Honest evidence boundary
+
+The checked-in historical trade **event timeline** template (`data/post_phase3_historical_trade_events.csv`) and **split-adjusted OHLCV** template (`data/post_phase3_historical_adjusted_ohlcv.csv`) start with headers only. **Zero audited event rows or missing historical adjusted prices mean no completed backtest and NO WIN-RATE CLAIM.** The older historical FDA decision file and the recent 35-session EOD market snapshot are insufficient to compute post-readout/second-financing trading returns. They are reported solely as source inventory, not silently translated into qualifying trades. Historical funding sources must establish two distinct post-readout closes for the *same SEC CIK issuer* and exact clinical event. Readout, financing and PDUFA **public knowledge dates** are separate from when the underlying clinical/financial event occurred. An offering announcement or ATM authorization is not a closed financing.
+
+Four point-in-time entry variants are compared: **(1) clinical readout benchmark** and **(2) first-financing benchmark** are *conditional on eventual two-financing completion*, so they have serious selection/survivorship bias and are **not** eligible GREEN entries under the user's actual trading rule; **(3) second-financing disclosure**; **(4) 10-session post-second-financing stabilized base** using trailing *observed* close/volume data. Every entry occurs at the next session OPEN after the complete required public disclosure, never the same session closing price. Candidate PDUFA date must also already have been publicly disclosed by the entry. Each 30/14/7-calendar-day pre-PDUFA target exits using the last actual session CLOSE on or before its cutoff. Missing trading sessions, inadequate prior-20-day dollar liquidity, stale/future historical bars, incomplete SEC provenance, or incomplete efficacy/safety evidence keep the scenario BLOCKED. A known *early FDA decision* on or before planned exit marks the case CENSORED; those cases must be reported as risk, not excluded silently from the trade universe. Hypothetical returns apply stated per-leg slippage; real fills, fees, corporate action handling beyond verified split adjustment, halt gaps, taxes and short borrow are NOT simulated. Past gross/adjusted percentages do not imply future performance.
+
+**Do not treat the output as an optimized or validated trading strategy.** If completed samples are under 30, summary cells are marked exploratory, and a larger calendar-time chronological holdout plus separate treatment of early actions, delistings and the entire eligible trial universe are mandatory before claiming that one entry/exit period is better. The first two benchmark strategies must also be rerun on a historically complete readout universe to eliminate conditioning on future financings.
+
+To populate the templates, research issuer press releases and relevant SEC filings for dated publicly observable evidence and retrieve verifiable historical split-adjusted **daily OPEN/HIGH/LOW/CLOSE/VOLUME** with trustworthy source documentation. Audit historical issuer identity, filing availability and incomplete outcomes; do not backfill speculative clinical probabilities. The underlying source collector, data files and prior Stage 1/2 modules are preserved but NOT reconnected to the blank tab.
+
+
 ## POST PHASE 3 tab — intentionally cleared
 
 At the user's request on October 11, 2026, **PDUFA → POST PHASE 3 is empty**. No scanner, result report, financing review, trade journal, controls, or tables are rendered in this tab. The tab label remains for future reuse. The previously built research/position-monitoring modules and all saved data are preserved in the repository but are **not available from that tab**. PRE PHASE 3, PIPELINE, and the rest of the app are unchanged. To restore a feature later, make a separate explicit UI change; never treat retained backend code as a currently visible screen.
