@@ -34,6 +34,8 @@ jobs:
   surveillance:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
 
     steps:
       - uses: actions/checkout@v4
