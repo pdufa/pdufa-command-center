@@ -10,7 +10,8 @@ from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
-from step7_live import build_snapshot as build_step7_snapshot
+from step7_live import build_snapshot as build_step7_snapshot, read_json as step7_read_json
+from pre_phase3_readiness import check_pre_phase3_readiness
 from step7_entry import FIELDS as STEP7_ENTRY_FIELDS, sample_template as step7_entry_template
 from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
@@ -2662,6 +2663,7 @@ def render_pre_phase3():
     source_files = [
         "phase_pipeline.csv", "phase_pipeline_state.json",
         "phase3_intake_status.json", "phase3_announcements.csv", "phase3_primary_pvalues.csv",
+        "phase2_primary_p_evidence.csv", "phase2_p_intake_status.json",
         "pre_readout_protocols.csv", "pre_readout_intake_status.json",
         "phase_pipeline_market_caps.csv", "second_financing_status.csv",
         "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
@@ -2691,6 +2693,28 @@ def render_pre_phase3():
         )
         return
 
+    readiness = check_pre_phase3_readiness(
+        manifest, trials,
+        step7_read_json(data_root / "pre_readout_intake_status.json"),
+        step7_read_json(data_root / "phase2_p_intake_status.json"),
+    )
+    st.markdown("### PRE PHASE 3 COMPLETION CHECKLIST")
+    if readiness["blocked"]:
+        st.warning(
+            f"NOT COMPLETE — {readiness['passed']}/{readiness['total']} requirements passed. "
+            "Open items are listed below. SEC financing and post-readout ENTRY READY "
+            "are separate workflows and do not determine this pre-readout tab's status."
+        )
+    else:
+        st.info(
+            "PRE PHASE 3 data and scoring gates pass. Final live browser acceptance "
+            "is still required before declaring the tab finished."
+        )
+    st.dataframe(
+        pd.DataFrame(readiness["checks"]), hide_index=True,
+        use_container_width=True, height=370,
+    )
+    st.caption(readiness["note"])
     health = pd.DataFrame(manifest["source_checks"])
     st.markdown("### SOURCE HEALTH / LAST VERIFIED CHECK")
     st.dataframe(
@@ -2774,6 +2798,8 @@ def render_pre_phase3():
             "Ticker", "Drug", "Indication", "Trial phase", "Registry status",
             "NCT ID", "Research category", "Registry primary completion",
             "Registry results posted", "Primary endpoint p values observed",
+            "Linked Phase 2 PRIMARY p", "Phase 2 PRIMARY evidence count",
+            "Phase 2 PRIMARY first observed UTC", "Phase 2 PRIMARY registry sources",
             "Primary effect size and CI recorded", "Phase 3 result interpretation",
             "Registry primary result source", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
@@ -2798,6 +2824,11 @@ def render_pre_phase3():
             step7_pre_readout_template(p3_for_rubric).to_csv(index=False).encode("utf-8-sig"),
             file_name="phase3_pre_readout_scoring_template.csv",
             mime="text/csv", key="step7_pre_readout_rubric_export",
+        )
+        st.caption(
+            "Linked Phase 2 PRIMARY p-values are shown only for exact ticker + Phase 2 NCT links with a recorded collector-observation timestamp. "
+            "They are descriptive registry statistics—not proof of clinical benefit, Phase 3 success, or a corporate readout. "
+            "A displayed 0.0000 may be a rounded reported p-value, not an exact zero."
         )
         st.caption(
             "Pre-readout score requires independently reviewed, dated Phase 2 efficacy, "

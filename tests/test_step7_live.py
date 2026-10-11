@@ -30,7 +30,7 @@ class Step7Tests(unittest.TestCase):
              "trial_status":"RECRUITING", "drug":"Drug A", "indication":"Disease A",
              "results_first_posted":"", "checked_at":self.recent,
              "primary_completion":"2026-12", "source_url":"https://clinicaltrials.gov/study/NCT12345678",
-             "program_identity_status":"VERIFIED"},
+             "program_identity_status":"VERIFIED", "phase2_nct_ids":"NCT11112222"},
             {"ticker":"XYZ", "nct_id":"NCT87654321", "phases":"PHASE2",
              "trial_status":"RECRUITING", "drug":"Drug B", "indication":"Disease B",
              "results_first_posted":"2026-09-15", "checked_at":self.recent,
@@ -101,6 +101,33 @@ class Step7Tests(unittest.TestCase):
         self.assertEqual(b["Primary endpoint p values observed"], "")
         self.assertIn("REVIEW", a["Phase 3 result interpretation"])
         self.assertTrue(a["ENTRY READY"].startswith("NO"))
+
+    def test_linked_phase2_primary_p_is_source_dated_and_not_phase3_success(self):
+        table(self.root, "phase2_primary_p_evidence.csv", [
+            {"ticker":"ABC", "nct_id":"NCT11112222", "observation_id":"a",
+             "p_value":"0.012", "primary_endpoint":"Symptom change",
+             "comparison":"active vs placebo",
+             "results_first_posted":"2026-09-01",
+             "observed_at_utc":self.recent,
+             "source_url":"https://clinicaltrials.gov/study/NCT11112222"},
+            {"ticker":"XYZ", "nct_id":"NCT11112222", "observation_id":"b",
+             "p_value":"0.0001", "primary_endpoint":"Other effect",
+             "comparison":"active vs placebo",
+             "results_first_posted":"2026-09-01",
+             "observed_at_utc":self.recent,
+             "source_url":"https://clinicaltrials.gov/study/NCT11112222"},
+        ])
+        trials, _, state = build_snapshot(self.root, NOW)
+        abc = next(r for r in trials if r["Ticker"] == "ABC")
+        xyz = next(r for r in trials if r["Ticker"] == "XYZ")
+        self.assertIn("p=0.012", abc["Linked Phase 2 PRIMARY p"])
+        self.assertEqual(abc["Phase 2 PRIMARY evidence count"], 1)
+        self.assertEqual(xyz["Phase 2 PRIMARY evidence count"], 0)
+        self.assertEqual(abc["Issuer Phase 3 readout"], "NOT VERIFIED HERE")
+        self.assertIn("NO", abc["ENTRY READY"])
+        later, _, _ = build_snapshot(self.root, NOW - timedelta(days=1))
+        other = next(r for r in later if r["Ticker"] == "ABC")
+        self.assertEqual(other["Phase 2 PRIMARY evidence count"], 0)
 
     def test_no_ticker_only_protocol_or_market_match(self):
         trials, _, _ = build_snapshot(self.root, NOW)

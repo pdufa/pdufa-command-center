@@ -15,12 +15,14 @@ from pathlib import Path
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
+from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
     "Clinical trial pipeline": 48,
     "Phase 3 result intake": 48,
     "Phase 3 primary statistics": 72,
+    "Phase 2 primary p intake": 72,
     "Pre-readout protocol": 72,
     "Market capitalization": 72,
     "SEC financing recheck": 48,
@@ -118,6 +120,8 @@ def build_snapshot(root, now=None):
 
     trial_rows = read_csv(root / "phase_pipeline.csv")
     primary_results = read_csv(root / "phase3_primary_pvalues.csv")
+    phase2_primary = read_csv(root / "phase2_primary_p_evidence.csv")
+    phase2_index = primary_evidence_index(phase2_primary, now)
     protocols = read_csv(root / "pre_readout_protocols.csv")
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
     financing = read_csv(root / "second_financing_status.csv")
@@ -149,6 +153,7 @@ def build_snapshot(root, now=None):
         pre_scored = {}
     p3_state = read_json(root / "phase3_intake_status.json")
     p3_stats_state = read_json(root / "phase3_pvalues_status.json")
+    phase2_p_state = read_json(root / "phase2_p_intake_status.json")
     protocol_state = read_json(root / "pre_readout_intake_status.json")
 
     observed_primary = {}
@@ -222,6 +227,7 @@ def build_snapshot(root, now=None):
         # Do not turn a registry milestone into positive efficacy or an issuer readout.
         trial_check = freshness(row.get("checked_at"), now, 48)
         completion = row.get("primary_completion", "")
+        phase2_summary = phase2_linked_summary(phase2_index, ticker, row.get("phase2_nct_ids", ""))
         candidate = {
             "Ticker": ticker, "Company": row.get("company", ""),
             "Drug": row.get("drug", ""), "Indication": row.get("indication", ""),
@@ -247,6 +253,7 @@ def build_snapshot(root, now=None):
             "Market cap state": cap_state,
             "Market source": cap.get("market_cap_source", "") if cap_ok else "",
             "Market cap as of UTC": cap.get("market_cap_checked_at", ""),
+            **phase2_summary,
             "NCT source": row.get("source_url", ""),
             "Last trial check UTC": row.get("checked_at", ""),
             "ENTRY READY": "NO — mandatory clinical, financing and market gates unverified",
@@ -366,6 +373,9 @@ def build_snapshot(root, now=None):
         status_check("Phase 3 primary statistics", p3_stats_state.get("status"),
                      p3_stats_state.get("finished_at"), now,
                      extra=f"{len(primary_results)} exact-NCT result analysis rows; not adjudicated efficacy"),
+        status_check("Phase 2 primary p intake", phase2_p_state.get("status"),
+                     phase2_p_state.get("as_of"), now,
+                     extra=f"{len(phase2_primary)} PRIMARY p observations; {phase2_p_state.get('linked_unique_phase2_nct', '?')} linked Phase 2 NCT IDs checked; no observed p is not a negative study"),
         status_check("Pre-readout protocol", protocol_state.get("status"),
                      protocol_state.get("as_of"), now,
                      extra=f"{len(protocols)} exact NCT protocol records; issuer readout remains unchecked"),
