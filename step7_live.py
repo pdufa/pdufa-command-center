@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
 from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
+from pre_phase3_pilot_scores import attach_preliminary_scores
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -269,6 +270,11 @@ def build_snapshot(root, now=None):
     trials.sort(key=lambda r: r["_sort"])
     for row in trials:
         row.pop("_sort", None)
+    # Curated, source-dated analytical pilot scores are separate from strictly
+    # attested 100-point pre-readout assessments and NEVER clear ENTRY READY.
+    trials = attach_preliminary_scores(
+        trials, protocols, read_json(root / "pre_phase3_pilot_clinical_reviews.json"), local_today
+    )
 
     events = []
     for fin in financing:
