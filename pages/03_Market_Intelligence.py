@@ -39,6 +39,11 @@ if not tickers:
     st.warning("No uniquely matched tickers in data/company_registry.csv.")
     st.stop()
 
+from market_bulk_ui import render_batch_scanner
+render_batch_scanner(identities, date.today())
+
+st.divider()
+
 with st.form("market_step5_research"):
     left, right = st.columns([2, 2])
     with left:
