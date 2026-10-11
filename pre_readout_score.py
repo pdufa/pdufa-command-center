@@ -11,6 +11,7 @@ from datetime import date
 import re
 
 import pandas as pd
+from phase3_issuer_readouts import ISSUER_SOURCE, identity, issuer_readout_index
 
 WEIGHTS = {
     "phase2_efficacy": 25,
@@ -113,9 +114,13 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *
     cutoff_safe = checked.le(as_of).fillna(False)
     cutoff_safe &= (updated.isna() | updated.dt.date.le(as_of))
     if announcements is not None and not announcements.empty:
-        published = _dates(_cols(announcements, "phase3_results_posted_at"))
+        # Issuer reviews need exact program attribution, not just an NCT match.
+        released = issuer_readout_index(announcements.to_dict("records"), as_of)
+        not_posted &= ~x.apply(lambda row: identity(row) in released, axis=1)
+        registry = announcements.loc[~_cols(announcements, "source_type").eq(ISSUER_SOURCE)]
+        published = _dates(_cols(registry, "phase3_results_posted_at"))
         past_or_present = published.dt.date.le(as_of).fillna(False)
-        prior_ncts = set(_cols(announcements.loc[past_or_present], "nct_id").str.upper())
+        prior_ncts = set(_cols(registry.loc[past_or_present], "nct_id").str.upper())
         # If issuer announcements have no exact NCT ID, do NOT assume a ticker
         # match establishes a particular trial's outcome.
         not_posted &= ~nct.isin(prior_ncts - {""})

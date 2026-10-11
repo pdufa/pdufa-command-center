@@ -2843,6 +2843,7 @@ def render_pre_phase3():
             "Linked Phase 2 PRIMARY p", "Drug", "Indication", "Trial phase",
             "Registry status", "NCT ID", "Phase 3 trial type", "Research category",
             "Registry primary completion", "Registry results posted",
+            "Issuer Phase 3 readout", "Issuer readout publication date", "Issuer readout source",
             "Primary endpoint p values observed", "Phase 2 PRIMARY evidence count",
             "Phase 2 PRIMARY first observed UTC", "Phase 2 PRIMARY registry sources",
             "Phase 2 link review source", "Clinical score as of",
@@ -2853,7 +2854,7 @@ def render_pre_phase3():
             "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
             "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
             "Score Evidence", "Clinical rationale", "Clinical Caveats",
-            "Missing pre-readout evidence", "Issuer Phase 3 readout", "ENTRY READY",
+            "Missing pre-readout evidence", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
         ]
         # Old saved feeds can briefly coexist with a just-deployed app before

@@ -9,6 +9,7 @@ import re
 from datetime import date
 from pathlib import Path
 import pandas as pd
+from phase3_issuer_readouts import ISSUER_SOURCE, identity, issuer_readout_index
 
 FIELDS = (
     "Ticker", "Company", "Drug / Program", "Indication", "NCT ID",
@@ -52,6 +53,8 @@ def _announced_ids(announcements, as_of):
     """Suppress registry POSTED results, even when protocol ledger is stale."""
     flagged = set()
     for r in announcements:
+        if r.get("source_type") == ISSUER_SOURCE:
+            continue
         nct = clean(r.get("nct_id"))
         posted = clean(r.get("phase3_results_posted_at"))[:10]
         if re.fullmatch(r"NCT\d{8}", nct) and posted and posted <= as_of.isoformat():
@@ -196,8 +199,11 @@ def build_scorecard(trials, protocols=(), market_caps=(), announcements=(),
     indexed = by_nct_protocol(protocols)
     caps = _market_caps(market_caps)
     released = _announced_ids(announcements, as_of)
+    issuer_released = issuer_readout_index(announcements, as_of)
     scored = {}
     for trial in trials:
+        if identity(trial) in issuer_released:
+            continue
         nct = clean(trial.get("nct_id"))
         if nct in released:
             continue

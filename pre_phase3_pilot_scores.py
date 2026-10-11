@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 from urllib.parse import urlparse
 import re
+from phase3_issuer_readouts import ANNOUNCED
 
 RUBRIC = {
     "phase2_efficacy": 25, "phase3_design": 30,
@@ -208,6 +209,7 @@ def attach_preliminary_scores(trials, protocols, ledger, as_of):
         design_type = classify_phase3_protocol(protocol, key[1])
         src = str(row.get("NCT source") or "").strip()
         if not (record
+                and row.get("Issuer Phase 3 readout") != ANNOUNCED
                 and row.get("Trial phase") == "Phase 3"
                 and status in ACTIVE
                 and not str(row.get("Registry results posted") or "").strip()

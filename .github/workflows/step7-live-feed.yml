@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - step7_live.py
+      - phase3_issuer_readouts.py
+      - data/phase3_announcements.csv
       - pre_readout_score.py
       - pre_phase3_pilot_scores.py
       - pre_phase3_readiness.py
