@@ -1,5 +1,14 @@
 # PDUFA Command Center
 
+## Unified POST PHASE 3 trading research — Stage 1
+
+The top of **PDUFA → POST PHASE 3** now shows a searchable, downloadable candidate queue from (1) exact program PDUFA/financing events, (2) Phase 3 issuer/readout or registry-posted research leads from the saved trial pipeline, and (3) optional independently discovered leads. Add discoveries to data/post_phase3_discoveries.csv with exact ticker, drug, indication, NCT ID, a dated release and HTTPS source. A discovery remains REVIEW until independently verified.
+
+post_phase3_unified.py never uses ticker-only matches to validate financing. A registry result is not clinical success. GREEN — GATES ATTESTED requires eight attested Step 7 PASS gates, current SEC recheck, exact-event source-linked clinical results, verified PDUFA date, no conflicts, and more than seven days before PDUFA. It is not a recommendation, independent source-document audit or opened position. Snapshot expiry prevents GREEN. The planned PDUFA-minus-seven-day exit is shown; RED WINDOW — NO NEW ENTRY does not mean a position was sold. FDA-decided events are excluded.
+
+Financing cycle is separate from trading lifecycle: GREEN = financing started, YELLOW = running, RED = completed (historical when dated). Stage 2 will track active holdings and actual exits in a trade journal; Stage 1 invents neither orders nor transactions. Collector failures keep events in REVIEW; the PRE PHASE 3 feed is unaffected.
+
+
 ## Review priority across every saved trial
 
 **PDUFA → PRE PHASE 3 → ALL-TRIAL REVIEW PRIORITY** assigns every exact ticker/NCT row a **Review priority /100**. Active review candidates receive a global rank, sorted first by default. Filters preserve those global ranks. The order selector also supports clinical research score or ticker/NCT order; the CSV export includes every filtered row, all point components, source timestamps, evidence gaps and the next review action.
