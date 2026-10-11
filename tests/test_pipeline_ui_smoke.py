@@ -283,7 +283,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(metrics.get("Historical OHLCV rows"), "0")
         self.assertEqual(metrics.get("Simulated trade scenarios"), "0")
         self.assertTrue(any(
-            "BACKTEST NOT READY" in item.message for item in app.warning
+            "BACKTEST NOT READY" in item.body for item in app.warning
         ))
 
     def test_pre_phase3_subtab_never_fabricates_success_probability(self):
