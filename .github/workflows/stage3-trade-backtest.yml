@@ -8,7 +8,7 @@ on:
       - 'post_phase3_trade_backtest.py'
       - 'post_phase3_backfill_queue.py'
       - 'tests/test_post_phase3_backfill_queue.py'
-      - 'scripts/post_phase3_trade_backtest.py'
+      - 'scripts/run_post_phase3_trade_backtest.py'
       - 'tests/test_post_phase3_trade_backtest.py'
       - 'data/post_phase3_historical_trade_events.csv'
       - 'data/post_phase3_historical_adjusted_ohlcv.csv'
@@ -19,7 +19,7 @@ on:
       - 'post_phase3_trade_backtest.py'
       - 'post_phase3_backfill_queue.py'
       - 'tests/test_post_phase3_backfill_queue.py'
-      - 'scripts/post_phase3_trade_backtest.py'
+      - 'scripts/run_post_phase3_trade_backtest.py'
       - 'tests/test_post_phase3_trade_backtest.py'
       - 'data/post_phase3_historical_trade_events.csv'
       - 'data/post_phase3_historical_adjusted_ohlcv.csv'
@@ -43,7 +43,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_post_phase3_backfill_queue.py' -v
       - name: Produce audited historical-coverage and scenario output
         run: |
-          python scripts/post_phase3_trade_backtest.py --output-dir output/post_phase3_stage3
+          python scripts/run_post_phase3_trade_backtest.py --output-dir output/post_phase3_stage3
           python - <<'PY'
           import json
           from pathlib import Path
