@@ -30,11 +30,16 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_financing_first10_audit.py' -v
       - name: Generate baseline first-ten audit (no SEC HTTP)
         run: python scripts/financing_first10_audit.py --output output/first10_financing_audit.csv
-      - name: Optional compliant live SEC document review
-        if: github.event_name == 'workflow_dispatch' && inputs.live_sec_check
+      - name: Compliant live SEC evidence check (when configured)
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.live_sec_check)
         env:
           SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
-        run: python scripts/financing_first10_audit.py --live --output output/first10_financing_live.csv
+        run: |
+          if [ -z "$SEC_USER_AGENT" ]; then
+            echo "Live SEC check skipped: SEC_USER_AGENT secret is not configured."
+            exit 0
+          fi
+          python scripts/financing_first10_audit.py --live --output output/first10_financing_live.csv
       - name: Upload first-ten report
         if: always()
         uses: actions/upload-artifact@v4
