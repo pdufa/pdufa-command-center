@@ -330,8 +330,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         overview = next(item for item in overview_app.get("tab")
                         if item.label == "UNIFIED OVERVIEW")
         headings = [item.body for item in overview.get("markdown")]
-        for title in ("UNIFIED OVERVIEW — TRADING COMMAND CENTER",
-                      "### TRADING", "### PIPELINE", "### PDUFA TIMELINE"):
+        for title in ("## #1-DB", "### #2-PIPELINE",
+                      "### #3-PRE3", "### #4-POST3"):
             self.assertTrue(any(title in heading for heading in headings), title)
         self.assertTrue(any(item.key == "overview_export"
                             for item in overview.get("download_button")))
@@ -343,15 +343,26 @@ class PipelinePageSmokeTests(unittest.TestCase):
         focused = [item.value for item in overview.get("dataframe")
                    if {"Ticker", "Score /100", "Score type"}
                    .issubset(item.value.columns)]
-        self.assertEqual(len(focused), 4)
+        self.assertEqual(len(focused), 6)
+        self.assertGreaterEqual(sum(not frame.empty for frame in focused), 4)
         for frame in focused:
-            self.assertGreater(len(frame), 0)
             self.assertTrue(frame["Ticker"].eq(ticker).all())
         timeline = next(item.value for item in overview.get("dataframe")
                         if {"Date Classification", "PDUFA source"}.issubset(item.value.columns)
                         and "Score /100" not in item.value.columns)
         self.assertTrue(timeline["Ticker"].eq(ticker).all())
         self.assertTrue(timeline["PDUFA Date"].is_monotonic_increasing)
+        overview_app.text_input(key="overview_query").set_value("__NO_MATCH__").run()
+        self.assertFalse(list(overview_app.exception))
+        overview = next(item for item in overview_app.get("tab")
+                        if item.label == "UNIFIED OVERVIEW")
+        counts = {item.label: int(item.value) for item in overview.get("metric")
+                  if item.label in {"Matching programs", "Matching pre-readout programs",
+                                    "Matching candidates"}}
+        self.assertEqual(counts, {"Matching programs": 0,
+                                 "Matching pre-readout programs": 0,
+                                 "Matching candidates": 0})
+        overview_app.text_input(key="overview_query").set_value("").run()
         overview_app.selectbox(key="overview_shared_ticker").set_value("All tickers").run()
         self.assertFalse(list(overview_app.exception))
         self.assertTrue(any("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body

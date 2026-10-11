@@ -24,44 +24,52 @@ def _load(day, root="data"):
         pre = []
     return pipeline, post, health, pre, snapshot is not None
 
-def _render_command_center(df, post, *, today, ticker, phase, stage, search, display_order):
-    """Three synchronized panels; original evidence and score models stay intact."""
-    trading = prepare_pdufa_grid(pd.DataFrame(post), view="POST PHASE 3", as_of=today)
-    if ticker:
-        trading = trading.loc[trading["Ticker"].eq(ticker)]
-    if phase != "All" or stage != "All":
-        identities = set(zip(df["Ticker"], df["NCT ID"]))
-        trading = trading.loc[
-            [(row.get("Ticker"), row.get("NCT ID")) in identities
-             for row in trading.to_dict("records")]
-        ]
-    if search:
-        hay = trading.reindex(columns=["Ticker", "Drug", "Indication", "NCT ID"])
-        hay = hay.fillna("").astype(str).agg(" ".join, axis=1)
-        trading = trading.loc[hay.str.contains(search, case=False, regex=False)]
-    trading = sort_pdufa_grid(trading, display_order)
+def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search, display_order):
+    """Named source panels share filters without changing evidence or scores."""
+    def filtered_feed(records, view):
+        grid = prepare_pdufa_grid(pd.DataFrame(records), view=view, as_of=today)
+        if ticker:
+            grid = grid.loc[grid["Ticker"].eq(ticker)]
+        if phase != "All" or stage != "All":
+            identities = set(zip(df["Ticker"], df["NCT ID"]))
+            grid = grid.loc[
+                [(row.get("Ticker"), row.get("NCT ID")) in identities
+                 for row in grid.to_dict("records")]
+            ]
+        if search and not grid.empty:
+            hay = grid.reindex(columns=["Ticker", "Drug", "Indication", "NCT ID"])
+            hay = hay.fillna("").astype(str).agg(" ".join, axis=1)
+            grid = grid.loc[hay.str.contains(search, case=False, regex=False)]
+        return sort_pdufa_grid(grid, display_order)
+
+    pre3 = filtered_feed(pre, "PRE PHASE 3")
+    post3 = filtered_feed(post, "POST PHASE 3")
     st.markdown("""
     <style>
-    .st-key-overview_trading_panel, .st-key-overview_pipeline_panel,
-    .st-key-overview_timeline_panel {
+    .st-key-overview_dashboard_panel,
+    .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
+    .st-key-overview_post3_panel {
       background:#ffffff; border:2px solid #000000 !important;
       border-radius:14px; padding:14px; color:#111111;
       position:relative; isolation:isolate;
     }
-    .st-key-overview_trading_panel::before,
+    .st-key-overview_dashboard_panel::before,
     .st-key-overview_pipeline_panel::before,
-    .st-key-overview_timeline_panel::before {
+    .st-key-overview_pre3_panel::before,
+    .st-key-overview_post3_panel::before {
       position:absolute; top:2px; right:16px; z-index:-1;
       font-size:120px; font-weight:900; line-height:1;
       color:rgba(17,17,17,.10); pointer-events:none; user-select:none;
     }
-    .st-key-overview_trading_panel::before {content:"2";}
-    .st-key-overview_pipeline_panel::before {content:"3";}
-    .st-key-overview_timeline_panel::before {content:"4";}
+    .st-key-overview_dashboard_panel::before {content:"1";}
+    .st-key-overview_pipeline_panel::before {content:"2";}
+    .st-key-overview_pre3_panel::before {content:"3";}
+    .st-key-overview_post3_panel::before {content:"4";}
     @media (max-width:768px) {
-      .st-key-overview_trading_panel::before,
+      .st-key-overview_dashboard_panel::before,
       .st-key-overview_pipeline_panel::before,
-      .st-key-overview_timeline_panel::before {font-size:100px; right:12px;}
+      .st-key-overview_pre3_panel::before,
+      .st-key-overview_post3_panel::before {font-size:100px; right:12px;}
       .st-key-overview_panels [data-testid="stHorizontalBlock"] {flex-wrap:wrap;}
       .st-key-overview_panels [data-testid="stColumn"] {width:100% !important; flex:1 1 100% !important; min-width:0 !important;}
     }
@@ -69,26 +77,8 @@ def _render_command_center(df, post, *, today, ticker, phase, stage, search, dis
     """, unsafe_allow_html=True)
     with st.container(key="overview_panels"):
         left, right = st.columns(2, gap="medium")
-        with left, st.container(border=True, key="overview_trading_panel"):
-            st.markdown("### TRADING")
-            st.caption("Post-readout candidates · qualification, scores and financing evidence")
-            st.metric("Matching candidates", len(trading))
-            if trading.empty:
-                st.info("No current trading candidates match these filters.")
-            st.dataframe(finance_style(trading.head(150)), hide_index=True,
-                         use_container_width=True, height=310,
-                         column_order=[c for c in (
-                             "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
-                             "Score type", "Entry qualification", "F", "Drug", "NCT ID",
-                         ) if c in trading])
-            with st.expander("ALL TRADING FIELDS & EVIDENCE"):
-                st.dataframe(finance_style(trading.head(350)), hide_index=True,
-                             use_container_width=True)
-            st.download_button("EXPORT TRADING CANDIDATES", trading.to_csv(index=False).encode(),
-                               file_name="unified_trading_candidates.csv", mime="text/csv",
-                               key="overview_trading_export")
-        with right, st.container(border=True, key="overview_pipeline_panel"):
-            st.markdown("### PIPELINE")
+        with left, st.container(border=True, key="overview_pipeline_panel"):
+            st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
             st.metric("Matching programs", len(df))
             if df.empty:
@@ -98,37 +88,74 @@ def _render_command_center(df, post, *, today, ticker, phase, stage, search, dis
                          column_order=["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
                                        "Score type", "Pipeline stage", "F", "Drug", "NCT ID"])
             st.caption("Expand ALL FIELDS below for every clinical field, score component and source link.")
+        with right, st.container(border=True, key="overview_pre3_panel"):
+            st.markdown("### #3-PRE3")
+            st.caption("Pre-readout Phase 3 programs · clinical evidence, scores and review priority")
+            st.metric("Matching pre-readout programs", len(pre3))
+            if pre3.empty:
+                st.info("No current pre-readout programs match these filters.")
+            st.dataframe(finance_style(pre3.head(150)), hide_index=True,
+                         use_container_width=True, height=310,
+                         column_order=[c for c in (
+                             "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                             "Score type", "Score status", "F", "Drug", "NCT ID",
+                         ) if c in pre3])
+            with st.expander("ALL PRE3 FIELDS & EVIDENCE"):
+                st.dataframe(finance_style(pre3.head(350)), hide_index=True,
+                             use_container_width=True)
+            st.download_button("EXPORT PRE3 PROGRAMS", pre3.to_csv(index=False).encode(),
+                               file_name="unified_pre3_programs.csv", mime="text/csv",
+                               key="overview_pre3_export")
 
-    with st.container(border=True, key="overview_timeline_panel"):
-        st.markdown("### PDUFA TIMELINE")
-        st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
-        fields = ["Ticker", "PDUFA Date", "Days to PDUFA", "Date Classification",
-                  "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
-        timeline = pd.concat([df.reindex(columns=fields), trading.reindex(columns=fields)],
-                             ignore_index=True)
-        timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
-        timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
-        timeline = timeline.sort_values(["PDUFA Date", "Ticker", "Drug"], kind="mergesort")
-        a, b, c = st.columns(3)
-        days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
-        a.metric("Dated programs", len(timeline))
-        b.metric("PDUFA within 30 days", int(days.between(0, 30).sum()))
-        c.metric("Past dates to recheck", int(days.lt(0).sum()))
-        if timeline.empty:
-            st.info("No dated PDUFA programs match these filters. Undated programs remain in Pipeline.")
-        st.dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
-                     column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
-                                    "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
-        st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
-                           file_name="unified_pdufa_timeline.csv", mime="text/csv",
-                           key="overview_timeline_export")
+    with st.container(border=True, key="overview_post3_panel"):
+        st.markdown("### #4-POST3")
+        st.caption("Post-readout candidates · qualification, scores and financing evidence")
+        st.metric("Matching candidates", len(post3))
+        if post3.empty:
+            st.info("No current trading candidates match these filters.")
+        st.dataframe(finance_style(post3.head(150)), hide_index=True,
+                     use_container_width=True, height=310,
+                     column_order=[c for c in (
+                         "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                         "Score type", "Entry qualification", "F", "Drug", "NCT ID",
+                     ) if c in post3])
+        with st.expander("ALL TRADING FIELDS & EVIDENCE"):
+            st.dataframe(finance_style(post3.head(350)), hide_index=True,
+                         use_container_width=True)
+        st.download_button("EXPORT TRADING CANDIDATES", post3.to_csv(index=False).encode(),
+                           file_name="unified_trading_candidates.csv", mime="text/csv",
+                           key="overview_trading_export")
+        with st.expander("PDUFA TIMELINE", expanded=True):
+            st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
+            fields = ["Ticker", "PDUFA Date", "Days to PDUFA", "Date Classification",
+                      "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
+            timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
+                                  post3.reindex(columns=fields)], ignore_index=True)
+            timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
+            timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
+            timeline = timeline.sort_values(["PDUFA Date", "Ticker", "Drug"], kind="mergesort")
+            a, b, c = st.columns(3)
+            days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
+            a.metric("Dated programs", len(timeline))
+            b.metric("PDUFA within 30 days", int(days.between(0, 30).sum()))
+            c.metric("Past dates to recheck", int(days.lt(0).sum()))
+            if timeline.empty:
+                st.info("No dated PDUFA programs match these filters. Undated programs remain in their source panels.")
+            st.dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
+                         column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
+                                        "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
+            st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
+                               file_name="unified_pdufa_timeline.csv", mime="text/csv",
+                               key="overview_timeline_export")
 
 
 def render_combined_overview(root="data", *, dashboard=False):
     """Render linked clinical context and return the shared ticker focus."""
-    st.markdown("## UNIFIED OVERVIEW — TRADING COMMAND CENTER" if dashboard
-                else "### UNIFIED CLINICAL → TRADING DISPLAY")
-    st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
+    heading_panel = st.container(border=True, key="overview_dashboard_panel") if dashboard else st.container()
+    with heading_panel:
+        st.markdown("## #1-DB" if dashboard
+                    else "### UNIFIED CLINICAL → TRADING DISPLAY")
+        st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:
         with st.spinner("Loading saved pipeline, clinical and PDUFA evidence…"):
@@ -259,6 +286,7 @@ def render_combined_overview(root="data", *, dashboard=False):
     tickers = sorted({str(value).strip().upper()
                       for value in df["Ticker"].tolist()
                       + [item.get("Ticker", "") for item in post]
+                      + ([item.get("Ticker", "") for item in pre] if dashboard else [])
                       if str(value).strip()})
     focus_options = ["All tickers", *tickers]
     prefix = "overview" if dashboard else "unified"
@@ -267,7 +295,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         st.session_state[focus_key] = "All tickers"
     focus = st.selectbox("Focus ticker", focus_options, key=focus_key)
     ticker = None if focus == "All tickers" else focus
-    st.caption("One ticker selection updates Trading, Pipeline and PDUFA Timeline." if dashboard else
+    st.caption("One ticker selection updates #2-PIPELINE, #3-PRE3, #4-POST3 and the PDUFA Timeline." if dashboard else
                "This ticker selection links the clinical/pipeline display, PDUFA dates, "
                "candidate qualification, reported positions, and historical research below.")
     if ticker:
@@ -321,7 +349,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         df = df.loc[df["Research phase"].eq(phase)]
     if stage != "All":
         df = df.loc[df["Pipeline stage"].eq(stage)]
-    if search:
+    if search and not df.empty:
         hay = df[["Ticker", "Drug", "Indication", "NCT ID"]].fillna("").astype(str).agg(" ".join, axis=1)
         df = df.loc[hay.str.contains(search, case=False, regex=False)]
     display_order = st.selectbox(
@@ -334,7 +362,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         "interchangeable performance or approval probabilities."
     )
     if dashboard:
-        _render_command_center(df, post, today=today, ticker=ticker,
+        _render_command_center(df, pre, post, today=today, ticker=ticker,
                                phase=phase, stage=stage, search=search, display_order=display_order)
     full_view = st.expander("ALL FIELDS — CLINICAL, SCORES & SOURCE EVIDENCE") if dashboard else st.container()
     with full_view:

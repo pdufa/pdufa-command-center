@@ -2,14 +2,16 @@
 
 ## Unified Overview dashboard and Post Phase 3 workspace (October 11, 2026)
 
-**PDUFA → UNIFIED OVERVIEW** displays the linked **Trading**, **Pipeline** and
-**PDUFA Timeline** dashboard. One **Focus ticker** selection updates all three
+**PDUFA → UNIFIED OVERVIEW** displays **#1-DB** with linked **#2-PIPELINE**,
+**#3-PRE3** and **#4-POST3** blocks. One **Focus ticker** selection updates all three
 panels; shared phase, stage, search and sort controls narrow the view. The
 light-green background, white panels with black borders, and stacked mobile
 layout are retained. Expand the detail panels for all score components and
 source evidence; CSV exports include every matching record.
-Large, faint background numbers identify the panels: **2 — Trading**,
-**3 — Pipeline**, and **4 — PDUFA Timeline**.
+Large, faint background numbers match the exact panel titles: **#1-DB**,
+**#2-PIPELINE**, **#3-PRE3**, and **#4-POST3**. PRE3 shows the current validated
+pre-readout feed; POST3 shows current post-readout candidates. The expandable
+**PDUFA Timeline** and its export remain available within POST3.
 
 **PDUFA → POST PHASE 3** contains the combined clinical/pipeline display and
 all three trading sections: discovery/qualification, reported-position
