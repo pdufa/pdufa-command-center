@@ -48,7 +48,7 @@ class ReviewedIdentityTests(unittest.TestCase):
             self.assertFalse(reviewed_program_identity(NOVA2,changed,date(2026,10,10)),field)
 
     def test_prod_snapshot_scores_only_exact_nova2_and_expires(self):
-        now=datetime(2026,10,11,5,30,tzinfo=timezone.utc)
+        now=datetime(2026,10,11,14,30,tzinfo=timezone.utc)
         trials,_,_=build_snapshot(ROOT/"data",now=now)
         lbrx={x["NCT ID"]:x for x in trials if x["Ticker"]=="LBRX"}
         pivotal=lbrx["NCT07363577"]
