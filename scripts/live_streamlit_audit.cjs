@@ -107,7 +107,7 @@ async function audit(){
     result.checks.pdufaMainNavigationFirst=result.navigation.filter(x=>x!=="Navigation")[0]==="PDUFA";
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
-    result.checks.threePdufaTabs=["PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
+    result.checks.threePdufaTabs=["UNIFIED OVERVIEW","PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
     result.checks.pipelineDefaultActive=await appFrame.getByRole("tab",{name:"PIPELINE"}).getAttribute("aria-selected")==="true";
     if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
@@ -128,17 +128,13 @@ async function audit(){
         && text.includes("3 · Historical backtest")
         && text.includes("One combined candidate table")
         && text.includes("Sort combined table")
-        && text.includes("Ranked for research")
-        && text.includes("TOP 10 — RESEARCH PRIORITY")
-        && text.includes("ALL CANDIDATES — STATUS + RANKINGS + EVIDENCE GAPS")
+        && text.includes("ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
         && !text.includes("No active research candidates match this view"));
       appFrame=phase3Ready.frame;
       result.checks.postPhase3Installed=true;
       result.checks.postPhase3CombinedRatingVisible=phase3Ready.text.includes("One combined candidate table")
         && phase3Ready.text.includes("Sort combined table");
-      result.checks.postPhase3ResearchRanksVisible=phase3Ready.text.includes("Ranked for research")
-        && phase3Ready.text.includes("TOP 10 — RESEARCH PRIORITY")
-        && phase3Ready.text.includes("ALL CANDIDATES — STATUS + RANKINGS + EVIDENCE GAPS")
+      result.checks.postPhase3EvidenceTableVisible=phase3Ready.text.includes("ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
         && !phase3Ready.text.includes("No active research candidates match this view");
       if(!result.checks.postPhase3CombinedRatingVisible)
         result.errors.push("POST PHASE 3 combined eligibility and rating sorter is missing.");
