@@ -1,0 +1,60 @@
+name: Step 7 Live Research Feed
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - step7_live.py
+      - scripts/step7_refresh.py
+      - tests/test_step7_live.py
+      - .github/workflows/step7-live-feed.yml
+  schedule:
+    # 19:15 UTC = late morning / early afternoon Pacific. Source jobs
+    # usually complete first; the collector timestamp, not cron, sets freshness.
+    - cron: "15 19 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-surveillance
+  cancel-in-progress: false
+
+jobs:
+  step7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test evidence boundaries and source timestamps
+        run: python -m unittest discover -s tests -p 'test_step7_live.py' -v
+      - name: Build current trial/market/financing display feed
+        run: python scripts/step7_refresh.py
+      - name: Save auditable feed files
+        run: |
+          git config user.name "pdufa-step7-bot"
+          git config user.email "pdufa-step7-bot@users.noreply.github.com"
+          git add data/step7_pre_phase3_feed.csv data/step7_financing_review.csv data/step7_live_status.json
+          if git diff --cached --quiet; then
+            echo "Feed contents unchanged."
+            exit 0
+          fi
+          git commit -m "Refresh Step 7 PRE PHASE 3 source-dated feed"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "Persisted Step 7 live-source snapshot."
+              exit 0
+            fi
+            echo "Concurrent update prevented push (attempt $attempt/5)." >&2
+            sleep $((attempt * 3))
+          done
+          echo "::error::Could not persist the Step 7 feed after retries"
+          exit 1
