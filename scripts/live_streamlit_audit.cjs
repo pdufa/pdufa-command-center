@@ -35,11 +35,11 @@ async function waitForRender(page,frame,accepts,timeout=180000){
       text=await frame.locator("body").innerText({timeout:9000});
       if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(text))
         throw Error("Streamlit displays an application exception: "+text.slice(-650));
-      const running=await frame.getByRole("button",{name:"Stop",exact:true}).isVisible();
-      if(await accepts(text,frame) && !running){
+      if(await accepts(text,frame)){
         stableSince??=Date.now();
-        // The selected tab changes before the Python rerun starts. Require
-        // a stable completed screen, not a momentary gap before Running.
+        // Timed fragments can keep the global Running indicator active even
+        // after the target controls render. Require a stable target screen;
+        // background refresh activity is not proof that this screen is partial.
         if(Date.now()-stableSince>=1200)return {frame,text};
       }else stableSince=null;
     }catch(err){
@@ -141,6 +141,15 @@ async function audit(){
           result.notes.push("Daily report did not show result metrics: "+String(err.message).slice(0,170));
         }
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
+        // Verify the report, then close its optional large tables before
+        // testing other tabs so they are not rebuilt in every PDUFA rerun.
+        await appFrame.getByText("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).first()
+          .click({timeout:15000});
+        const reportClosed=await waitForRender(page,appFrame,async(text,frame)=>
+          text.includes("SHOW POST PHASE 3 DAILY REPORT")
+          && !await frame.getByLabel("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).isChecked()
+          && !text.includes("Yesterday: source-linked posts"));
+        appFrame=reportClosed.frame;
       }
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       const preReady=await waitForRender(page,appFrame,(text,frame)=>
