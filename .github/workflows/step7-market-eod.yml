@@ -39,18 +39,18 @@ jobs:
         run: |
           git config user.name "pdufa-step7-market-bot"
           git config user.email "pdufa-step7-market-bot@users.noreply.github.com"
-          git add data/step7_market_status.csv data/step7_market_status.json
-          if git diff --cached --quiet; then
-            echo "No new market data"; exit 0
-          fi
-          git commit -m "Refresh Step 7 EOD market source observations"
           for attempt in 1 2 3 4 5; do
             git fetch origin main
-            git rebase origin/main
+            git reset --mixed origin/main
+            git add data/step7_market_status.csv data/step7_market_status.json
+            if git diff --cached --quiet; then
+              echo "Market feed already matches remote"; exit 0
+            fi
+            git commit -m "Refresh Step 7 EOD market source observations"
             if git push origin HEAD:main; then
               exit 0
             fi
             sleep $((attempt * 3))
           done
-          echo "::error::Could not persist market observations"
+          echo "::error::Could not persist market observations after retry"
           exit 1
