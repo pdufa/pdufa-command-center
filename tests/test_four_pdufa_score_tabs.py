@@ -38,7 +38,7 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                 self.assertEqual(
                     main[0].columns[:5].tolist(),
                     ["Ticker", "Score /100", "PDUFA Date",
-                     "Days to PDUFA", "Score type"],
+                     "Days to PDUFA", "2nd Financing Completed"],
                 )
                 sort_key = {
                     "UNIFIED OVERVIEW": "overview_pdufa_display_order",
