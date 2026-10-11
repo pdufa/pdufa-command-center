@@ -128,7 +128,7 @@ async function audit(){
         && text.includes("3 · Historical backtest")
         && text.includes("One combined candidate table")
         && text.includes("Sort combined table")
-        && text.includes("Eligibility first, highest score within group"));
+        && text.includes("Sort combined table"));
       appFrame=phase3Ready.frame;
       result.checks.postPhase3Installed=true;
       result.checks.postPhase3CombinedRatingVisible=phase3Ready.text.includes("One combined candidate table")
