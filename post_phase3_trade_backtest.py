@@ -19,7 +19,7 @@ from statistics import mean, median
 from urllib.parse import urlsplit
 
 EVENT_FIELDS = (
-    "event_key", "ticker", "nct_id", "phase3_readout_date",
+    "event_key", "ticker", "nct_id", "issuer_cik", "phase3_readout_date",
     "phase3_public_date", "phase3_result", "clinical_benefit",
     "safety_status", "phase3_source_url", "first_financing_close_date",
     "first_financing_public_date", "first_financing_source_url",
@@ -77,15 +77,16 @@ def number(value):
         return None
 
 
-def https(url, *, sec=False):
+def https(url, *, sec=False, cik=None):
     try:
         u = urlsplit(str(url or "").strip())
         if (u.scheme != "https" or not u.hostname or u.username or
                 u.password or u.port not in (None, 443)):
             return False
         if sec:
-            return (u.hostname.lower() in {"sec.gov", "www.sec.gov"} and
-                    u.path.startswith("/Archives/edgar/data/"))
+            m = re.match(r"^/Archives/edgar/data/(\\d{1,10})/", u.path)
+            return bool(u.hostname.lower() in {"sec.gov", "www.sec.gov"} and
+                        m and (cik is None or int(m.group(1)) == int(cik)))
         return True
     except ValueError:
         return False
@@ -96,8 +97,10 @@ def validate_event(record):
     key = str(record.get("event_key") or "").strip()
     ticker = str(record.get("ticker") or "").strip().upper()
     nct = str(record.get("nct_id") or "").strip()
+    cik = str(record.get("issuer_cik") or "").strip()
     if (not KEY.fullmatch(key) or not TICKER.fullmatch(ticker) or
-            key.split("|")[0] != ticker or not NCT.fullmatch(nct)):
+            key.split("|")[0] != ticker or not NCT.fullmatch(nct) or
+            not cik.isdigit() or not 1 <= len(cik) <= 10):
         return "UNVERIFIED_EXACT_EVENT_IDENTITY", None
     dates = {k: day(record.get(k)) for k in (
         "phase3_readout_date", "phase3_public_date",
@@ -123,8 +126,8 @@ def validate_event(record):
             and str(record.get("pdufa_change_status")) == "NONE_DOCUMENTED"):
         return "CLINICAL_FINANCING_OR_REGULATORY_REVIEW", None
     if not (https(record.get("phase3_source_url"))
-            and https(record.get("first_financing_source_url"), sec=True)
-            and https(record.get("second_financing_source_url"), sec=True)
+            and https(record.get("first_financing_source_url"), sec=True, cik=cik)
+            and https(record.get("second_financing_source_url"), sec=True, cik=cik)
             and https(record.get("pdufa_source_url"))):
         return "MISSING_PRIMARY_SOURCE_LINK", None
     if (d["second_financing_public_date"] >= d["pdufa_date"] or
@@ -302,7 +305,8 @@ def run_backtest(events, bars, *, exit_days=EXIT_DAYS,
         raise ValueError("exit_days must be integers 1-90")
     if not isinstance(slippage_bps,(int,float)) or not 0 <= slippage_bps <= 1000:
         raise ValueError("slippage must be 0-1000 basis points")
-    if not isinstance(min_daily_dollars,(int,float)) or min_daily_dollars < 0:
+    if (not isinstance(min_daily_dollars,(int,float)) or
+            not math.isfinite(min_daily_dollars) or min_daily_dollars < 0):
         raise ValueError("min_daily_dollars must be nonnegative")
     grouped, invalid = bars_by_ticker(bars)
     keys = Counter(str(r.get("event_key") or "") for r in events)
