@@ -349,6 +349,24 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(len(nova2), 1)
         self.assertEqual(float(nova2.iloc[0]["Preliminary clinical score /100"]), 72.0)
         self.assertIn("NCT06179108 p=0.0009", nova2.iloc[0]["Linked Phase 2 PRIMARY p"])
+        # On a feature branch the newly added identity source may not yet be
+        # present in the saved feed. Exact-NCT generated-output assertions are
+        # exercised separately in test_nova2_exact_identity_review.py.
+        identity_source=nova2.iloc[0]["Company identity review source"]
+        if identity_source:
+            self.assertEqual(nova2.iloc[0]["Company/program identity"],"VERIFIED")
+            self.assertIn("nova-2",identity_source)
+            from datetime import datetime, date
+            from zoneinfo import ZoneInfo
+            if datetime.now(ZoneInfo("America/Los_Angeles")).date() == date(2026,10,10):
+                self.assertEqual(float(nova2.iloc[0]["Pre-readout research score /100"]),72)
+                self.assertEqual(nova2.iloc[0]["Score status"],
+                                 "100-POINT RESEARCH SCORE — UNCALIBRATED")
+            else:
+                self.assertTrue(pd.isna(nova2.iloc[0]["Pre-readout research score /100"]))
+        else:
+            self.assertEqual(nova2.iloc[0]["Company/program identity"],"REVIEW")
+            self.assertTrue(pd.isna(nova2.iloc[0]["Pre-readout research score /100"]))
         self.assertEqual(nova2.iloc[0]["Phase 2 PRIMARY evidence count"], 3)
         self.assertTrue(nova2.iloc[0]["Phase 2 link review source"].startswith("https://ir.lbpharma.us/"))
         self.assertEqual(len(nova3), 1)

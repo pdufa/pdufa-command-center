@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
 from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
 from pre_phase3_pilot_scores import (attach_preliminary_scores, classify_phase3_protocol,
-                                    review_index, reviewed_phase2_link)
+                                    review_index, reviewed_phase2_link, reviewed_program_identity)
 from listing_exclusions import validated_listing_exclusions, resolved_pipeline_status
 
 NCT = re.compile(r"^NCT\d{8}$")
@@ -141,12 +141,35 @@ def build_snapshot(root, now=None):
     market_state = read_json(root / "step7_market_status.json")
     market_by_ticker = {r.get("ticker", "").upper(): r for r in market_rows if r.get("ticker")}
     trial_state = read_json(root / "phase_pipeline_state.json")
+    # A manual source review can correct a dose-label identity mismatch only
+    # for its exact issuer, registry NCT, sponsor, drug and indication.
+    # Preserve the unmodified source pipeline and every other company record.
+    identity_sources = {}
+    scoring_rows = []
+    for original in trial_rows:
+        row = original.copy()
+        key = (str(row.get("ticker") or "").upper(), str(row.get("nct_id") or "").upper())
+        review = reviewed_programs.get(key)
+        identity_url = reviewed_program_identity(row, review, local_today)
+        if identity_url:
+            phase2_nct, _ = reviewed_phase2_link(row, review, local_today)
+            if phase2_nct:
+                row["program_identity_status"] = "VERIFIED"
+                row["phase2_nct_ids"] = " | ".join(
+                    sorted(set(re.findall(r"NCT\\d{8}", row.get("phase2_nct_ids", ""))) | {phase2_nct})
+                )
+                identity_sources[key] = identity_url
+        scoring_rows.append(row)
     pre_scored = {}
     try:
         import pandas as pd
         from pre_readout_score import candidate_queue, assess
-        raw_queue = candidate_queue(pd.DataFrame(trial_rows), pd.DataFrame(read_csv(root / "phase3_announcements.csv")),
-                                    pd.DataFrame(caps), local_today)
+        raw_queue = candidate_queue(
+            pd.DataFrame(scoring_rows),
+            pd.DataFrame(read_csv(root / "phase3_announcements.csv")),
+            pd.DataFrame(caps), local_today,
+            protocols=pd.DataFrame(protocols), require_protocol=True,
+        )
         manual = pd.DataFrame(read_csv(root / "phase3_pre_readout_evidence.csv"))
         if not raw_queue.empty and not manual.empty:
             raw_queue = assess(raw_queue, manual, local_today)
@@ -261,7 +284,9 @@ def build_snapshot(root, now=None):
             "Registry primary result source": "https://clinicaltrials.gov/study/" + nct if registry_primary else "",
             "Research category": ("RESULT POSTED — CLINICAL REVIEW" if registry_results
                                   else "PHASE 3 RESEARCH" if "PHASE3" in phases else "PRE PHASE 3 WATCH"),
-            "Company/program identity": row.get("program_identity_status", "") or "REVIEW",
+            "Company/program identity": ("VERIFIED" if (ticker, nct) in identity_sources
+                                          else row.get("program_identity_status", "") or "REVIEW"),
+            "Company identity review source": identity_sources.get((ticker, nct), ""),
             "Registry check": trial_check,
             "Protocol check": p_fresh if "PHASE3" in phases else "NOT REQUIRED FOR PHASE 2 WATCH",
             "Design inputs present /6": coverage_count,
