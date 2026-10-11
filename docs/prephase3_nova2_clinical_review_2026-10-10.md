@@ -1,0 +1,24 @@
+# NOVA-2 · LBRX — Second dated pre-readout clinical research pilot
+
+**Assessment date:** 2026-10-10 Pacific (fixed historical desk-research cutoff).  
+**Exact trial:** NCT07363577 / LB Pharmaceuticals Inc. (LBRX) / LB-102 (100 mg tablet) | LB-102 (50 mg tablet) / schizophrenia.  
+**Rubric:** 72/100 = Phase 2 efficacy 20/25, Phase 3 design 24/30, safety 9/15, FDA alignment 8/15, execution 7/10, source quality 4/5.  
+**Classification:** source-reviewed research assessment, **uncalibrated, not independently clinically audited**, and not a Phase 3 success or FDA approval probability.
+
+## Source-verified Phase 3 identity
+
+The [issuer's March 25, 2026 initiation release](https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/) explicitly names **NCT07363577**, NOVA-2, **50 mg and 100 mg** once-daily LB-102 versus placebo in schizophrenia. The [exact registry record](https://clinicaltrials.gov/study/NCT07363577) calls these arms `LB-102 (50 mg tablet)` and `LB-102 (100 mg tablet)`. The automated pipeline had placed NOVA-2 in `program_identity_status=REVIEW` because dose-specific names did not exactly match the earlier Phase 2 shorthand `LB-102`. This desk review verifies the **specific NCT/ticker/drug/sponsor/indication combination only**, with a dated source; it does not modify the saved raw pipeline, match any other LBRX trial, or independently confirm FDA concurrence. The dedicated review link and evidence status appear in PRE PHASE 3.
+
+## Published Phase 2 analysis and limitations
+
+The peer-reviewed [JAMA Psychiatry NOVA-1 randomized trial](https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043), **published 2026-04-22**, identifies **NCT06179108**, n=359, and a multiplicity-corrected primary Week-4 PANSS total score change. LB-102 50 mg improved versus placebo (P<0.001), and 75 mg also improved (P=0.002). The strict CSV records the *numeric* P=0.002 from the **75 mg Phase 2** primary comparison because the scorer requires a numerical value. **NOVA-2 tests 50/100 mg—not 75 mg.** This selected p is therefore trial-level evidence of a positive NOVA-1 primary result, not a dose-matched effect estimate. The registry's independently observed p-values 0.0009 / 0.0022 / 0.0017 remain in their own separate columns and must not be treated as identical journal contrasts.
+
+The adjusted Phase 2 treatment differences were approximately 5.0 PANSS points for 50 mg and 4.7 for 75 mg versus placebo at week 4, versus NOVA-2's **week 6** endpoint. The 100 mg NOVA-1 subgroup enrolled only 36 people and its p was **nominal**, not multiplicity-controlled. Safety concerns included treatment-emergent events, metabolic/weight and prolactin signals, and the very limited four-week treatment interval. The separate open-label long-term extension **NOVA-3 / NCT07369154 must never inherit this pivotal efficacy score**.
+
+## Phase 3 protocol and issuer readout check
+
+The source-dated [NOVA-2 registry](https://clinicaltrials.gov/study/NCT07363577) shows randomized allocation, quadruple masking, placebo comparison, approximately 456 planned patients and PANSS Week-6 primary outcome. The issuer March 25 announcement describes the pivotal trial; FDA meeting minutes or explicit signed FDA protocol concurrence have **not** been independently inspected.
+
+On **October 10, 2026**, review of the [issuer's dated news archive](https://ir.lbpharma.us/investors/news/) found the latest October 10 release about ongoing late-stage trials, with no NOVA-2 clinical topline announcement. The [October 10 company release](https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-presents-new-preclinical-data-supporting-lb-102s-bimodal-mechanism-of-action-and-highlights-ongoing-late-stage-clinical-development-programs-at-the-39th-ecnp-congress/) still identifies NOVA-2 as an **ongoing** randomized pivotal study, and the [October 6 release](https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/) expects topline in **first half 2027**. These support an **issuer archive–scoped, Oct 10-only** `VERIFIED_UNRELEASED` research check, not proof of no out-of-archive, private or subsequent disclosures. The strict score must disappear after that cutoff until reverified.
+
+The strict record is stored in `data/phase3_pre_readout_evidence.csv`; the separate dated identity source and exact-NCT check are in `data/pre_phase3_pilot_clinical_reviews.json`. Both must pass before the research score may be displayed. `Phase 3 Success Probability %` remains blank. A reviewed 72/100 is **research prioritization**, not an independently adjudicated clinical verdict, calibrated PoS, buy recommendation, or ENTRY READY signal. The POST PHASE 3 financing engine is unchanged.
