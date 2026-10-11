@@ -399,7 +399,7 @@ required_ui_contracts = [
     'STEP 5 — Lock thresholds and test the untouched holdout',
     'HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT',
     'key="pdufa_subtab", on_change="rerun"',
-    '["PIPELINE", "PRE PHASE 3", "POST PHASE 3"]',
+    '["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"]',
     '"PIPELINE"',
     '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
     'master_with_phase3(df)',
