@@ -32,7 +32,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("STAGES", {item.label for item in app.multiselect})
         self.assertIn("DATES", {item.label for item in app.multiselect})
         self.assertEqual(len(self.count_charts(app)), 2)
-        self.assertEqual(len(app.dataframe[0].value), 0)
+        self.assertEqual(len(next(item.value for item in app.dataframe if "Current Stage" in item.value.columns)), 0)
         metrics = [item for item in app.metric
                    if item.label == "Trials / programs displayed"]
         self.assertEqual(len(metrics), 1)
@@ -41,7 +41,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
     def assert_matching_chart(self, app, stage, low=None, high=None):
         self.assertFalse(list(app.exception))
         self.assertFalse(list(app.error))
-        shown = app.dataframe[0].value
+        shown = next(item.value for item in app.dataframe if "Current Stage" in item.value.columns)
         self.assertGreater(len(shown), 0)
         self.assertTrue(shown["Current Stage"].eq(stage).all())
         if low is not None:
@@ -65,7 +65,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         # The second Pipeline sub-tab also contains watchlist and research
         # dataframes, so only inspect the two stage/date count audit tables.
         audit_tables = [
-            item.value for item in app.dataframe[1:]
+            item.value for item in app.dataframe
             if list(item.value.columns) in (["Stage", "Count"], ["DATES", "Count"])
         ]
         self.assertEqual(len(audit_tables), 2)
@@ -107,8 +107,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         submenu_labels = [item.label for item in app.get("tab") if item.label in
-                          {"PIPELINE", "PRE PHASE 3", "POST PHASE 3", "PDUFA WORKBENCH"}]
-        self.assertEqual(submenu_labels, ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
+                          {"UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
                             for item in app.markdown))
@@ -265,16 +265,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
         ))
         sorting = app.selectbox(key="postphase3_stage1_sort")
         self.assertEqual(list(sorting.options), [
-            "Eligibility first, highest research priority",
-            "Highest research priority overall",
-            "Highest verified evidence score",
-            "Soonest PDUFA",
+            "Ticker A–Z", "Soonest PDUFA", "Clinical stage / eligibility",
         ])
-        self.assertTrue(any(
+        self.assertFalse(any(
             "TOP 10 — RESEARCH PRIORITY" in item.body for item in app.markdown
-        ))
-        self.assertTrue(any(
-            item.label == "Ranked for research" for item in app.metric
         ))
         self.assertFalse(any(
             "STAGE 2 — GREEN ENTRY" in item.body for item in app.markdown
