@@ -38,6 +38,8 @@ def scoring_review_queue(trials, limit=10):
             continue
         ticker = str(item.get("Ticker") or "").strip().upper()
         nct = str(item.get("NCT ID") or "").strip().upper()
+        if item.get("Phase 3 trial type") != "PIVOTAL EFFICACY DESIGN — SOURCE CHECKED":
+            continue
         if str(item.get("Score status") or "") == "100-POINT RESEARCH SCORE — UNCALIBRATED":
             # Completed scoring belongs in the normal table, not the to-do list.
             continue
