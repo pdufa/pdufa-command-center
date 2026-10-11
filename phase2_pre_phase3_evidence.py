@@ -38,6 +38,11 @@ def primary_evidence_index(records, as_of):
         ticker = str(record.get("ticker") or "").strip().upper()
         nct = str(record.get("nct_id") or "").strip().upper()
         pvalue = str(record.get("p_value") or "").strip()
+        modifier = str(record.get("p_value_modifier") or "=").strip()
+        try:
+            numeric_p = float(pvalue)
+        except (ValueError, TypeError):
+            numeric_p = float("nan")
         observed = _observed(record.get("observed_at_utc"))
         posted = _published(record.get("results_first_posted"))
         link = str(record.get("source_url") or "").strip()
@@ -47,8 +52,10 @@ def primary_evidence_index(records, as_of):
         if not (re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker)
                 and NCT_FULL.fullmatch(nct)
                 and link == f"https://clinicaltrials.gov/study/{nct}"
-                and observed and observed <= as_of and posted and posted <= as_of.date()
-                and pvalue and endpoint and comparison and oid):
+                and observed and observed <= as_of and posted and posted <= observed.date()
+                and posted <= as_of.date()
+                and 0 <= numeric_p <= 1 and modifier in {"=", "<", "<=", ">", ">="}
+                and endpoint and comparison and oid):
             continue
         # The collector records PRIMARY analyses only; treat the documented
         # field as a source claim, NOT an automatically verified endpoint label.
@@ -57,7 +64,7 @@ def primary_evidence_index(records, as_of):
             continue
         used_ids.add(unique)
         matched.setdefault((ticker, nct), []).append({
-            "nct_id": nct, "p_value": pvalue, "endpoint": endpoint,
+            "nct_id": nct, "p_value": pvalue, "modifier": modifier, "endpoint": endpoint,
             "comparison": comparison, "first_observed_at_utc": observed.isoformat(),
             "source_url": link, "registry_results_first_posted": posted.isoformat(),
         })
@@ -78,7 +85,7 @@ def phase2_linked_summary(index, ticker, phase2_links):
             "Phase 2 PRIMARY first observed UTC": "",
             "Phase 2 PRIMARY registry sources": "",
         }
-    summaries = [f"{v['nct_id']} p={v['p_value']} ({v['comparison']})" for v in evidence]
+    summaries = [f"{v['nct_id']} p{v['modifier']}{v['p_value']} ({v['comparison']})" for v in evidence]
     return {
         "Linked Phase 2 PRIMARY p": " | ".join(summaries[:6]) +
             (f" | +{len(evidence)-6} more" if len(evidence)>6 else ""),
