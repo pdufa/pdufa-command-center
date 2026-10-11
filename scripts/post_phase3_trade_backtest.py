@@ -16,8 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from post_phase3_trade_backtest import (  # noqa: E402
-    BAR_FIELDS, EVENT_FIELDS, SUMMARY_FIELDS, TRADE_FIELDS,
-    read_csv, run_backtest,
+    BAR_FIELDS, EVENT_FIELDS, PAIRED_FIELDS, SUMMARY_FIELDS, TRADE_FIELDS,
+    paired_comparison, read_csv, run_backtest,
 )
 
 
@@ -89,6 +89,8 @@ def main(argv=None):
     args.output_dir.mkdir(parents=True, exist_ok=True)
     write_csv(args.output_dir/"per_event_scenarios.csv", TRADE_FIELDS, trades)
     write_csv(args.output_dir/"scenario_summary.csv", SUMMARY_FIELDS, summary)
+    write_csv(args.output_dir/"matched_event_comparison.csv", PAIRED_FIELDS,
+              paired_comparison(trades))
     (args.output_dir/"readiness_and_blockers.json").write_text(
         json.dumps(audit, indent=2, sort_keys=True)+"\n", encoding="utf-8")
     print(json.dumps({
