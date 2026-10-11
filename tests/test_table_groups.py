@@ -42,6 +42,49 @@ class ColumnGroupsTests(unittest.TestCase):
         groups = column_groups(columns)
         self.assertTrue(all(fields[:3] == columns[:3] for panes in groups.values() for _, fields in panes))
 
+    def test_financial_neighbors_are_pinned_in_every_pdufa_pane(self):
+        fields = [
+            "Watchlist", "Ticker", "STAGE", "DAYS TO PDUFA",
+            "FINANCING", "Drug", "Indication", "PDUFA Date",
+            "2nd Financing Completed", "Cash Runway (months)",
+            "Market Cap", "Financing #2 Date", "Cash Runway As Of",
+            "Phase 3 Evidence", "Trial Status", "FDA PoA",
+            "NDA Submission", "FDA Acceptance", "Second Financing Verified",
+        ]
+        groups = column_groups(fields)
+        panes = [columns for family in groups.values() for _, columns in family]
+        self.assertGreater(len(panes), 1)
+        for columns in panes:
+            with self.subTest(pane=columns):
+                i = columns.index("DAYS TO PDUFA")
+                self.assertEqual(columns[i + 1:i + 3],
+                                 ["2nd Financing Completed", "Cash Runway (months)"])
+                self.assertEqual(columns[i + 3], "FINANCING")
+                self.assertLessEqual(len(columns), MAX_COLUMNS)
+
+    def test_old_calendar_days_left_shows_finance_neighbors_in_all_panes(self):
+        columns = [
+            "Ticker", "PDUFA Date", "Days Left", "Drug",
+            "2nd Financing Completed", "Cash Runway (months)",
+            "Market Cap", "Company", "FDA PoA", "Trade Score",
+            "Phase", "Financing", "Signal", "FDA Decision",
+        ]
+        for family in column_groups(columns).values():
+            for _, pane in family:
+                i = pane.index("Days Left")
+                self.assertEqual(pane[i+1:i+3],
+                                 ["2nd Financing Completed", "Cash Runway (months)"])
+
+    def test_small_countdown_table_keeps_finance_columns_adjacent(self):
+        columns = ["Ticker", "PDUFA Date", "Cash Runway (months)", "Days Left",
+                   "Outcome", "2nd Financing Completed"]
+        panes = column_groups(columns)
+        self.assertEqual(len(panes), 1)
+        pane = panes["Overview"][0][1]
+        i = pane.index("Days Left")
+        self.assertEqual(pane[i+1:i+3],
+                         ["2nd Financing Completed", "Cash Runway (months)"])
+
     def test_stage_and_countdown_stay_immediately_next_to_ticker(self):
         columns = ["Watchlist", "Ticker", "Drug", "Indication", "STAGE", "DAYS TO PDUFA", "FINANCING", "PDUFA Date", "FDA PoA", "Market Cap", "Trial Status", "Trial Evidence", "Cash"]
         for panes in column_groups(columns).values():
