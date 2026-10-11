@@ -32,6 +32,8 @@ def protocol(nct="NCT07671911", **updates):
         "source_url": f"https://clinicaltrials.gov/study/{nct}",
         "primary_endpoint": "Relative Change from Baseline in 24-hour Cough Frequency at Week 26",
         "comparator": "Placebo",
+        "registry_overall_status": "RECRUITING",
+        "allocation": "RANDOMIZED",
     }
     r.update(updates)
     return r
