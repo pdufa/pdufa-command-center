@@ -3654,6 +3654,38 @@ if page == "PDUFA":
                 combined.loc[readout_flags & ~closed_flags, "Funnel Stage"] = "3 · FINANCING REVIEW"
                 combined.loc[readout_flags & closed_flags & gate_flags, "Funnel Stage"] = "5 · ENTRY REVIEW — GATE PASS"
                 combined["Second Financing Verified"] = closed_flags.map({True: "YES", False: "REVIEW"})
+                # Strictly audited second-close status for the PDUFA countdown.
+                # The broader funnel's financing flag is NOT acceptable proof.
+                combined["2nd Financing Completed"] = "NOT VERIFIED"
+                if "event_key" in master.columns:
+                    try:
+                        financing_audit = pd.read_csv(
+                            "data/second_financing_status.csv", dtype=str, keep_default_na=False
+                        )
+                        required = {
+                            "event_key", "second_financing_status",
+                            "second_financing_audit_status", "second_financing_closed",
+                            "second_financing_source",
+                        }
+                        if required.issubset(financing_audit.columns):
+                            keys = financing_audit["event_key"].str.strip()
+                            unique = keys.ne("") & ~keys.duplicated(keep=False)
+                            eligible = (
+                                unique
+                                & financing_audit["second_financing_status"].str.upper().isin(["CLOSED", "FINISHED"])
+                                & financing_audit["second_financing_audit_status"].eq("VERIFIED_SECOND_POST_PHASE3_FINANCING")
+                                & financing_audit["second_financing_closed"].str.upper().eq("YES")
+                                & financing_audit["second_financing_source"].str.startswith("https://")
+                            )
+                            verified_events = set(keys.loc[eligible])
+                            combined.loc[
+                                master["event_key"].fillna("").astype(str).str.strip().isin(verified_events),
+                                "2nd Financing Completed",
+                            ] = "YES — VERIFIED (HISTORICAL)"
+                    except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
+                        pass  # Missing financing evidence never becomes a verified close.
+                if "Cash Runway (months)" not in combined.columns:
+                    combined["Cash Runway (months)"] = None
                 combined["🟢 Financing Started"] = ""
                 combined["🟡 Financing In Progress"] = ""
                 combined["🔴 Financing Closed"] = closed_flags.map({True: "🔴 CLOSED", False: ""})
@@ -3758,7 +3790,7 @@ if page == "PDUFA":
                 st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
                 st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")
                 if "DAYS TO PDUFA" in combined.columns:
-                    countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") if c in combined.columns]].copy()
+                    countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "2nd Financing Completed", "Cash Runway (months)", "PDUFA Horizon") if c in combined.columns]].copy()
                     if not countdown.empty:
                         countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
                         countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
@@ -3771,7 +3803,7 @@ if page == "PDUFA":
                                 if section.empty:
                                     st.info(f"No candidates in {label}.")
                                 else:
-                                    styled_section = section.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
+                                    styled_section = finance_style(section).apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
                                     pdufa_dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
                     else:
                         st.info("No PDUFA candidates available in the loaded events.")
@@ -3873,7 +3905,7 @@ if page == "PDUFA":
                     st.caption("This watchlist display refreshes every 60 seconds while the app is open. Live indicator calculations require a connected 1-minute data feed and scanner; missing signals stay NOT SCANNED.")
                     if st.button("↻ REFRESH WATCHLIST NOW", key="refresh_watchlist_signals"):
                         st.rerun(scope="fragment")
-                    watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
+                    watch_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Drug", "Indication", "PDUFA Date", "Funnel Stage", "Entry Gate", "FDA PoA", "Financing #2 Date", "Second Financing Verified", "Market Cap", "Evidence Status") if c in watch_rows.columns]
                     watch_cols += displayed_indicators
                     if watch_rows.empty:
                         st.info("No Watchlist stocks selected. Use WATCHLIST MANAGEMENT above to add a ticker.")
@@ -3948,7 +3980,7 @@ if page == "PDUFA":
                     if not analysis_rows.empty:
                         analysis_rows = stage_filter_panel(analysis_rows, key="analysis_stage", source=master)
                     st.markdown("#### ANALYSIS" + f" ({len(analysis_rows):,})")
-                    detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
+                    detail_cols = [c for c in ("Ticker", "STAGE", "DAYS TO PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Drug", "Indication", "PDUFA Date", "Entry Gate", "FDA PoA", "Evidence Status", "Financing #2 Date", "Market Cap") if c in combined.columns]
                     if analysis_rows.empty:
                         st.info("No candidates selected for Analysis. Use the Analysis checkbox in Watchlist above.")
                     else:
