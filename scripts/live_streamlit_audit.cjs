@@ -123,6 +123,13 @@ async function audit(){
         const ready=await waitForRender(page,appFrame,text=>text.includes("SHOW POST PHASE 3 DAILY REPORT"));
         appFrame=ready.frame;
         result.checks.dailyReportToggle=true;
+        // Stage 2 must render an empty journal safely, without inventing
+        // holdings or showing GREEN research rows as actual positions.
+        result.checks.positionMonitorVisible=ready.text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
+          && ready.text.includes("DOWNLOAD BLANK POSITION JOURNAL CSV");
+        result.checks.noPhantomPositions=ready.text.includes("No actual positions have been supplied.");
+        if(!result.checks.positionMonitorVisible || !result.checks.noPhantomPositions)
+          result.errors.push("POST PHASE 3 position monitor missing or asserts nonexistent holdings.");
       }catch(err){
         result.checks.dailyReportToggle=false;
         const dailyText=await appFrame.locator("body").innerText({timeout:9000});

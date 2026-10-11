@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from post_phase3_unified import COLUMNS, build_queue
+from post_phase3_lifecycle_ui import render_post_phase3_positions
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -23,6 +24,7 @@ def render_post_phase3_stage1(root="data"):
         "step7_live_status.json", "step7_financing_review.csv",
         "step7_pre_phase3_feed.csv", "pdufa_candidates.csv",
         "post_phase3_discoveries.csv",
+        "second_financing_status.csv",
     )
     signature = tuple(
         (name, (path / name).stat().st_mtime_ns if (path / name).exists() else 0)
@@ -53,6 +55,31 @@ def render_post_phase3_stage1(root="data"):
         f"Saved clinical-trial records scanned: {status['saved_trial_rows']}. "
         "No purchase order or position is created by this page."
     )
+    # Identify the actual outstanding SEC verification gap without claiming
+    # the saved reference financing history has been rechecked today.
+    sec_health = None
+    try:
+        import json
+        health = json.loads((path / "step7_live_status.json").read_text(encoding="utf-8"))
+        sec_health = next((item for item in health.get("source_checks", [])
+                           if item.get("Source") == "SEC financing recheck"), None)
+    except (OSError, ValueError, TypeError):
+        pass
+    if sec_health and (sec_health.get("Health") == "BLOCKED / PARTIAL" or
+                       sec_health.get("Freshness") == "STALE"):
+        st.warning(
+            f"SEC FINANCING RECHECK IS {sec_health.get('Health', 'PARTIAL')} "
+            f"({sec_health.get('Blocked records', 0)} blocked records; "
+            f"last check {sec_health.get('Last checked UTC', 'unknown')}). "
+            "Historical financing references are NOT current clearance. "
+            "Run the compliant SEC audit only when GitHub's SEC_USER_AGENT secret "
+            "and source access are configured. Do not override the entry gates."
+        )
+        st.link_button(
+            "CHECK SEC AUDIT WORKFLOW",
+            "https://github.com/pdufa/pdufa-command-center/actions/workflows/first10-financing-audit.yml",
+            key="postphase3_sec_audit_link",
+        )
     if not status["feed_current"]:
         st.warning(
             "DAILY SNAPSHOT EXPIRED — clinical and financing rows remain visible "
@@ -102,7 +129,7 @@ def render_post_phase3_stage1(root="data"):
     st.caption(
         f"{len(df)} candidates match. RED WINDOW means do not start a new trade "
         "inside the final seven calendar days; it is not an executed sale. "
-        "YELLOW running and RED position-exit tracking will use an actual trade journal in Stage 2."
+        "The separate Stage 2 panel below evaluates only positions you report."
     )
     st.dataframe(
         df.head(250), use_container_width=True, hide_index=True,
@@ -127,3 +154,4 @@ def render_post_phase3_stage1(root="data"):
         "verified PDUFA date pass. It is research eligibility—not an independently "
         "audited conclusion, investment recommendation or position status."
     )
+    render_post_phase3_positions(items, root)

@@ -1,5 +1,17 @@
 # PDUFA Command Center
 
+## Stage 2: reported positions and exit monitoring (no trading API)
+
+Under PDUFA → POST PHASE 3, below the unified Stage 1 discovery scanner, download the blank POSITION JOURNAL CSV. Add actual user-reported trade fills (trade_id, exact event_key, ticker, NCT ID, entry date/price/shares, PDUFA date observed at entry). Optional exit date/price/reason must represent an actual completed fill. Upload the CSV in the app for a read-only session report; **the upload is not saved to this public repository**, no brokerage API or trading order is connected, and a Streamlit restart may clear the upload. Do not put private positions into a GitHub issue, commit or PR. Download the monitored CSV and store it privately. Partial lot exits are not supported by this simple journal; use distinct complete trade lots.
+
+The monitor joins positions to clinical programs by **exact event key and NCT ID**, not ticker. Missing or duplicate IDs, conflicts and missing verified PDUFA dates remain REVIEW. GREEN signifies attested prospective research eligibility, not an executed buy. YELLOW represents the user's reported open positions while the pre-PDUFA monitoring window remains open. RED — EXIT DUE is a **notification**, NOT proof of sale; RED — EXIT RECORDED requires a valid user-supplied exit fill. Current resolved FDA events trigger urgent RED review, not an automatic sale. When a historical PDUFA-at-entry date differs from a current verified date, the earlier date determines the conservative PDUFA-minus-seven-calendar-days exit deadline and the difference is flagged. The app does not retroactively certify that entry gates passed when the user bought the stock.
+
+The stock value is marked only when a fresh, source-labeled provider-reported EOD quote exists *on or after the reported entry date*. No marked P/L is calculated from old or missing quotes. The simplified P/L excludes commissions, spread, tax, corporate actions and slippage. Exit reporting uses user-provided fill price. No live quotes, automated broker orders, private account sync or push notifications exist yet.
+
+### SEC second-financing bottleneck
+
+The unified screen surfaces source freshness and the count of blocked SEC events. The first-ten audit workflow is at .github/workflows/first10-financing-audit.yml. Live SEC checks require a valid identifiable SEC_USER_AGENT in the repository's GitHub Actions secret settings and working SEC access; HTTP 403 is a hard blocker. Use the historical filing/exhibit references to guide manual review, but never equate a registration, priced offering or issuance authorization with an actual closed financing. No unavailable SEC evidence is fabricated or silently promoted to a green entry gate.
+
 ## Unified POST PHASE 3 trading research — Stage 1
 
 The top of **PDUFA → POST PHASE 3** now shows a searchable, downloadable candidate queue from (1) exact program PDUFA/financing events, (2) Phase 3 issuer/readout or registry-posted research leads from the saved trial pipeline, and (3) optional independently discovered leads. Add discoveries to data/post_phase3_discoveries.csv with exact ticker, drug, indication, NCT ID, a dated release and HTTPS source. A discovery remains REVIEW until independently verified.
