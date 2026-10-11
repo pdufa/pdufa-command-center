@@ -7,6 +7,8 @@ from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS a
 from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
 from unified_clinical_trading import render_combined_overview
+from pdufa_display_columns import prepare_pdufa_grid, enrich_exact_trials, finance_style
+from unified_clinical_trading import _load as load_unified_evidence
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -2917,8 +2919,21 @@ def render_pre_phase3():
             "PRE PHASE 3 score /100. An empty score means NOT SCORED; it is not zero "
             "and is not a Phase 3 success probability."
         )
+        # The exact-trial financing join is only used for fresh, unique evidence.
+        try:
+            _, post_links, post_health, _, _ = load_unified_evidence(
+                datetime.now(ZoneInfo("America/Los_Angeles")).date()
+            )
+            post_links = post_links if post_health.get("feed_current") else []
+        except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
+            post_links = []
+        pre_grid = prepare_pdufa_grid(
+            enrich_exact_trials(selected[display], post=post_links),
+            view="PRE PHASE 3",
+            as_of=datetime.now(ZoneInfo("America/Los_Angeles")).date(),
+        )
         st.dataframe(
-            selected[display].head(500), use_container_width=True,
+            finance_style(pre_grid.head(500)), use_container_width=True,
             hide_index=True, height=530,
             column_config={
                 "Ticker": st.column_config.TextColumn(width="small"),
@@ -2939,6 +2954,7 @@ def render_pre_phase3():
                 ),
                 "Score status": st.column_config.TextColumn("Review gate", width="medium"),
                 "Linked Phase 2 PRIMARY p": st.column_config.TextColumn("p (Phase 2 PRIMARY)", width="large"),
+                "F": st.column_config.TextColumn("F", width="small"),
             },
         )
         st.download_button(
@@ -3367,11 +3383,14 @@ if page == "PDUFA":
 
         st.markdown("### PDUFA TRIALS / PROGRAMS")
         st.caption("Displayed count always equals the exact number of table rows.")
-        empty_chart = pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values()))
+        empty_chart = prepare_pdufa_grid(
+            pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values())),
+            view="PIPELINE", as_of=pipeline_today,
+        )
         if not applied:
             st.metric("Trials / programs displayed", 0)
             st.dataframe(
-                empty_chart, hide_index=True, use_container_width=True, height=220
+                finance_style(empty_chart), hide_index=True, use_container_width=True, height=220
             )
             if not selected_stages or not selected_dates:
                 st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
@@ -3380,11 +3399,23 @@ if page == "PDUFA":
         else:
             filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
             shown = chart_rows(filtered, sort_mode)
-
+            try:
+                _, post_links, post_health, pre_links, pre_fresh = load_unified_evidence(pipeline_today)
+                shown = enrich_exact_trials(
+                    shown,
+                    pre=pre_links if pre_fresh else [],
+                    post=post_links if post_health.get("feed_current") else [],
+                )
+            except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
+                pass  # Keep original Pipeline records; missing evidence stays blank.
+            shown = prepare_pdufa_grid(shown, view="PIPELINE", as_of=pipeline_today)
             st.metric("Trials / programs displayed", len(shown))
             st.dataframe(
-                shown, hide_index=True, use_container_width=True, height=540,
-                column_config={"Source": st.column_config.LinkColumn("Source")},
+                finance_style(shown), hide_index=True, use_container_width=True, height=540,
+                column_config={
+                    "Source": st.column_config.LinkColumn("Source"),
+                    "F": st.column_config.TextColumn("F", width="small"),
+                },
             )
             if shown.empty:
                 st.info("No matching programs for that STAGES + DATES selection.")
