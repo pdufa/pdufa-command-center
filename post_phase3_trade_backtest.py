@@ -84,7 +84,7 @@ def https(url, *, sec=False, cik=None):
                 u.password or u.port not in (None, 443)):
             return False
         if sec:
-            m = re.match(r"^/Archives/edgar/data/(\\d{1,10})/", u.path)
+            m = re.match(r"^/Archives/edgar/data/(\d{1,10})/", u.path)
             return bool(u.hostname.lower() in {"sec.gov", "www.sec.gov"} and
                         m and (cik is None or int(m.group(1)) == int(cik)))
         return True
@@ -202,7 +202,8 @@ def base_signal(bars, after):
 
 
 def simulate_event(event, bars, price_invalid=False, *, exit_days=EXIT_DAYS,
-                   min_daily_dollars=250_000.0, slippage_bps=10):
+                   min_daily_dollars=250_000.0, slippage_bps=10, as_of=None):
+    as_of = as_of or date.today()
     key = str(event.get("event_key") or "")
     ticker = str(event.get("ticker") or "").upper()
     nct = str(event.get("nct_id") or "")
@@ -240,6 +241,10 @@ def simulate_event(event, bars, price_invalid=False, *, exit_days=EXIT_DAYS,
             if reason:
                 results.append(record)
                 continue
+            if target > as_of:
+                record["reason"] = "EXIT_TARGET_NOT_YET_HISTORICAL"
+                results.append(record)
+                continue
             if price_invalid or not bars:
                 record["reason"] = "PRICE_HISTORY_UNAVAILABLE_OR_INVALID"
                 results.append(record)
@@ -259,9 +264,11 @@ def simulate_event(event, bars, price_invalid=False, *, exit_days=EXIT_DAYS,
                 results.append(record)
                 continue
             first_session, last_session = bars[entry_i]["session"], bars[exit_i]["session"]
-            if (first_session > target or
+            if (first_session > target or (first_session-signal).days > 7 or
                     # Guard against falsely exiting using a very old bar.
-                    (target-last_session).days > 5):
+                    (target-last_session).days > 5 or
+                    any((bars[i+1]["session"]-bars[i]["session"]).days > 7
+                        for i in range(entry_i, exit_i))):
                 record["reason"] = "EXIT_SESSION_MISSING"
                 results.append(record)
                 continue
@@ -300,7 +307,10 @@ def simulate_event(event, bars, price_invalid=False, *, exit_days=EXIT_DAYS,
 
 
 def run_backtest(events, bars, *, exit_days=EXIT_DAYS,
-                 min_daily_dollars=250_000.0, slippage_bps=10):
+                 min_daily_dollars=250_000.0, slippage_bps=10, as_of=None):
+    as_of = as_of or date.today()
+    if not isinstance(as_of, date):
+        raise ValueError("as_of must be a calendar date")
     if not all(isinstance(x,int) and 1 <= x <= 90 for x in exit_days):
         raise ValueError("exit_days must be integers 1-90")
     if not isinstance(slippage_bps,(int,float)) or not 0 <= slippage_bps <= 1000:
@@ -308,7 +318,8 @@ def run_backtest(events, bars, *, exit_days=EXIT_DAYS,
     if (not isinstance(min_daily_dollars,(int,float)) or
             not math.isfinite(min_daily_dollars) or min_daily_dollars < 0):
         raise ValueError("min_daily_dollars must be nonnegative")
-    grouped, invalid = bars_by_ticker(bars)
+    bars_visible = [b for b in bars if (day(b.get("session")) or date.max) <= as_of]
+    grouped, invalid = bars_by_ticker(bars_visible)
     keys = Counter(str(r.get("event_key") or "") for r in events)
     results = []
     for event in events:
@@ -316,7 +327,7 @@ def run_backtest(events, bars, *, exit_days=EXIT_DAYS,
         ticker = str(event.get("ticker") or "").upper()
         rows = simulate_event(event, grouped.get(ticker, []), ticker in invalid,
                               exit_days=exit_days, min_daily_dollars=min_daily_dollars,
-                              slippage_bps=slippage_bps)
+                              slippage_bps=slippage_bps, as_of=as_of)
         if keys[key] != 1:
             for row in rows:
                 row.update({"status":"BLOCKED", "reason":"DUPLICATE_EXACT_EVENT_KEY",
@@ -350,6 +361,8 @@ def run_backtest(events, bars, *, exit_days=EXIT_DAYS,
     reasons = Counter(r["reason"] for r in results if r["status"] != "COMPLETED")
     audit = {
         "event_rows":len(events), "price_rows":len(bars),
+        "simulation_as_of":as_of.isoformat(),
+        "future_price_rows_excluded":len(bars)-len(bars_visible),
         "unique_events":len(set(e.get("event_key","") for e in events)),
         "price_tickers_with_usable_bars":len(grouped),
         "price_tickers_invalid":sorted(invalid),
