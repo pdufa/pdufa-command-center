@@ -15,13 +15,15 @@ from pathlib import Path
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
+from step7_entry import GATES, safe_source
+
 PACIFIC = ZoneInfo("America/Los_Angeles")
 NCT = re.compile(r"^NCT\d{8}$")
 TICKER = re.compile(r"^[A-Z0-9.-]{1,15}$")
 RESOLVED = {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}
 COLUMNS = (
     "Source lane", "Ticker", "Drug", "Indication", "NCT ID",
-    "Exact event", "Phase 3 evidence", "Financing #2",
+    "Exact event", "Phase 3 evidence", "Financing #2", "Financing cycle (separate)",
     "Entry qualification", "Days to PDUFA", "PDUFA date",
     "Planned exit (-7 days)", "Next action", "Blockers",
     "Registry source", "Phase 3 source", "Financing source",
@@ -72,6 +74,7 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "Indication": indication, "NCT ID": nct,
         "Exact event": "", "Phase 3 evidence": "REVIEW — RESULT NOT ADJUDICATED",
         "Financing #2": "REVIEW — EXACT EVENT NOT VERIFIED",
+        "Financing cycle (separate)": "REVIEW — FINANCING UNVERIFIED",
         "Entry qualification": "REVIEW — RESEARCH LEAD",
         "Days to PDUFA": None, "PDUFA date": "",
         "Planned exit (-7 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
@@ -96,6 +99,16 @@ def build_queue(root, as_of=None):
     financing_rows = read_rows(root / "step7_financing_review.csv")
     trials = read_rows(root / "step7_pre_phase3_feed.csv")
     external = read_rows(root / "post_phase3_discoveries.csv")
+    finance_stages = {}
+    stage_duplicates = set()
+    for fin in read_rows(root / "second_financing_status.csv"):
+        key = clean(fin.get("event_key"))
+        if key in finance_stages:
+            stage_duplicates.add(key)
+        elif key:
+            finance_stages[key] = fin
+    for key in stage_duplicates:
+        finance_stages.pop(key, None)
 
     regulatory = {}
     ambiguous = set()
@@ -153,7 +166,33 @@ def build_queue(root, as_of=None):
                     and https_source(event.get("trial_evidence_url"))
                     and parsed_date(event.get("phase3_date")) is not None)
         gate = clean(funding.get("Current gate"))
-        attested_ready = gate.startswith("ENTRY READY")
+        details = clean(funding.get("Audited gate details"))
+        scan = clean(funding.get("Source scan")).upper()
+        attested_ready = (
+            gate.startswith("ENTRY READY") and
+            clean(funding.get("Proposed trade status")).startswith("ENTRY READY") and
+            all(f"{gate_name}: PASS" in details for gate_name in GATES) and
+            clean(funding.get("Recheck freshness")) == "RECENT" and
+            scan not in {"", "NOT_CHECKED", "SOURCE_UNAVAILABLE", "NO_SOURCE"} and
+            not any(term in scan for term in ("BLOCKED", "ERROR", "PARTIAL")) and
+            clean(funding.get("Historical second closing")).startswith("DOCUMENTED") and
+            safe_source(funding.get("Second source"), sec=True)
+        )
+        fin_stage = finance_stages.get(key, {})
+        stage_name = clean(fin_stage.get("second_financing_status")).upper()
+        fin_review_date = parsed_date(fin_stage.get("verified_as_of"))
+        stage_fresh = bool(fin_review_date and 0 <= (today - fin_review_date).days <= 7)
+        if (stage_name in {"CLOSED", "FINISHED"} and
+                clean(fin_stage.get("second_financing_audit_status")) == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
+                clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
+                https_source(fin_stage.get("second_financing_source"))):
+            financing_cycle = "RED — FINANCING CLOSED (HISTORICAL)"
+        elif stage_fresh and stage_name in {"RUNNING", "IN_PROGRESS"}:
+            financing_cycle = "YELLOW — FINANCING RUNNING (AS OF REVIEW)"
+        elif stage_fresh and stage_name in {"STARTED", "LAUNCHED"}:
+            financing_cycle = "GREEN — FINANCING STARTED (AS OF REVIEW)"
+        else:
+            financing_cycle = "REVIEW — FINANCING UNVERIFIED"
         green = (current_feed and funding and attested_ready and verified_date and
                  clinical and not conflict and pdufa is not None and days > 7)
         if excluded:
@@ -182,6 +221,7 @@ def build_queue(root, as_of=None):
             "Phase 3 evidence": ("VERIFIED SUCCESS — SOURCE LINKED" if clinical
                                  else "REVIEW — RESULT NOT ADJUDICATED"),
             "Financing #2": clean(funding.get("Historical second closing")) or "REVIEW — NOT DOCUMENTED",
+            "Financing cycle (separate)": financing_cycle,
             "Entry qualification": status,
             "Days to PDUFA": days, "PDUFA date": pdufa.isoformat() if pdufa else "",
             "Planned exit (-7 days)": exit_date.isoformat() if exit_date else "",
