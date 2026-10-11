@@ -103,24 +103,30 @@ def render_combined_overview():
         key = (r["Ticker"], r["NCT ID"])
         matched = post_by_id.get(key)
         pre_match = pre_by_id.get(key)
+        post_conflict = False
+        pre_conflict = False
         if matched and r["Drug"] and matched.get("Drug"):
             if r["Drug"].strip().casefold() != str(matched["Drug"]).strip().casefold():
                 matched = None
+                post_conflict = True
         if pre_match and r["Drug"] and pre_match.get("Drug"):
             if r["Drug"].strip().casefold() != str(pre_match["Drug"]).strip().casefold():
                 pre_match = None
+                pre_conflict = True
         entry = {k: r[k] for k in ("Ticker", "NCT ID", "Drug", "Indication",
                                   "Research phase", "Pipeline stage", "Clinical status",
                                   "Primary completion", "PDUFA date (pipeline)", "Pipeline source")}
-        entry["Post evidence match"] = ("AMBIGUOUS — REVIEW" if key in ambiguous
+        entry["Post evidence match"] = ("DRUG CONFLICT — REVIEW" if post_conflict else
+                                        "AMBIGUOUS — REVIEW" if key in ambiguous
                                         else "EXACT TICKER + NCT" if matched else "NOT LINKED")
-        entry["Pre Phase 3 evidence match"] = ("AMBIGUOUS — REVIEW" if key in ambiguous_pre
+        entry["Pre Phase 3 evidence match"] = ("DRUG CONFLICT — REVIEW" if pre_conflict else
+                                                "AMBIGUOUS — REVIEW" if key in ambiguous_pre
                                                 else "EXACT TICKER + NCT" if pre_match else "NOT LINKED")
         for c in pre_fields:
             entry[c] = pre_match.get(c, "") if pre_match else ""
         for c in cols:
             entry[c] = matched.get(c, "") if matched else ""
-        if key in ambiguous:
+        if key in ambiguous or post_conflict:
             entry["Entry qualification"] = "REVIEW — AMBIGUOUS TRIAL MATCH"
         records.append(entry)
     df = pd.DataFrame(records)
