@@ -315,7 +315,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
             ).sum() == 0,
             "No fabricated pilot score is allowed when source-review ledger is blank",
         )
-        self.assertTrue(any("NEXT 10 SOURCE-REVIEWED CLINICAL SCORING PILOTS" in m.body
+        self.assertTrue(any("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS" in m.body
                             for m in app.markdown))
         source = APP_PATH.read_text(encoding="utf-8")
         self.assertIn('"DOWNLOAD SOURCE-REVIEW SCORING TEMPLATE FOR THESE 10"', source)
