@@ -332,7 +332,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertFalse(list(app.exception))
         clinical = [t.value for t in app.dataframe
                     if {"Linked Phase 2 PRIMARY p", "Pre-readout research score /100",
-                        "NCT ID", "Ticker"}.issubset(set(t.value.columns))]
+                        "NCT ID", "Ticker", "Review priority rank"}.issubset(set(t.value.columns))]
         self.assertTrue(clinical, "PRE PHASE 3 clinical grid must render")
         columns = clinical[0].columns.tolist()
         self.assertEqual(columns[:9], [
