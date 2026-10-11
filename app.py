@@ -7,7 +7,9 @@ from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS a
 from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
 from unified_clinical_trading import render_combined_overview
-from pdufa_display_columns import prepare_pdufa_grid, enrich_exact_trials, finance_style
+from pdufa_display_columns import (prepare_pdufa_grid, enrich_exact_trials,
+                                   finance_style, sort_pdufa_grid,
+                                   DISPLAY_ORDER_OPTIONS)
 from unified_clinical_trading import _load as load_unified_evidence
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
@@ -2807,18 +2809,9 @@ def render_pre_phase3():
                 fields.astype(str).agg(" ".join, axis=1).str.contains(query, case=False, regex=False)
             ]
         sort_order = st.selectbox(
-            "RESEARCH QUEUE ORDER", ["REVIEW PRIORITY", "CLINICAL RESEARCH SCORE", "TICKER / NCT"],
+            "Display order", DISPLAY_ORDER_OPTIONS,
             key="step7_priority_sort",
         )
-        if sort_order == "REVIEW PRIORITY":
-            selected = selected.sort_values("Review priority rank", na_position="last", kind="stable")
-        elif sort_order == "CLINICAL RESEARCH SCORE":
-            selected = selected.sort_values(
-                ["Preliminary clinical score /100", "Pre-readout research score /100"],
-                ascending=False, na_position="last", kind="stable",
-            )
-        else:
-            selected = selected.sort_values(["Ticker", "NCT ID"], kind="stable")
         if cap_only:
             selected = selected.loc[selected["Market cap state"].eq("VERIFIED RECENT")
                                     & selected["Market cap USD"].between(300_000_000, 10_000_000_000)]
@@ -2912,7 +2905,7 @@ def render_pre_phase3():
         )
         st.caption(
             f"{selected['Review priority /100'].notna().sum():,} of {len(selected):,} filtered rows have a review-priority score /100. "
-            "Default order is global review-priority rank. Factors, evidence gaps, next actions and as-of timestamps are included in the CSV export."
+            "Default display is Top Score, with Ticker A–Z available. Review-priority ranks remain in the research evidence; scores from different models are not directly comparable."
         )
         st.caption(
             f"{int(scored.sum())} of {len(selected):,} filtered rows have a fully source-reviewed "
@@ -2927,10 +2920,13 @@ def render_pre_phase3():
             post_links = post_links if post_health.get("feed_current") else []
         except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
             post_links = []
-        pre_grid = prepare_pdufa_grid(
-            enrich_exact_trials(selected[display], post=post_links),
-            view="PRE PHASE 3",
-            as_of=datetime.now(ZoneInfo("America/Los_Angeles")).date(),
+        pre_grid = sort_pdufa_grid(
+            prepare_pdufa_grid(
+                enrich_exact_trials(selected[display], post=post_links),
+                view="PRE PHASE 3",
+                as_of=datetime.now(ZoneInfo("America/Los_Angeles")).date(),
+            ),
+            sort_order,
         )
         st.dataframe(
             finance_style(pre_grid.head(500)), use_container_width=True,
@@ -3216,7 +3212,7 @@ if page == "PDUFA":
             st.session_state["pipeline_stages_v9"] = []
             st.session_state["pipeline_dates_v9"] = []
             st.session_state["pipeline_query_v9"] = ""
-            st.session_state["pipeline_sort_v9"] = "Closest PDUFA first"
+            st.session_state["pipeline_sort_v9"] = DISPLAY_ORDER_OPTIONS[0]
             _clear_pipeline_results_v9()
 
         # Compact widgets: both STAGES and DATES stay in view on desktop and mobile.
@@ -3257,7 +3253,7 @@ if page == "PDUFA":
             ).strip()
         with sort_col:
             sort_mode = st.selectbox(
-                "Sort trials", options=["Closest PDUFA first", "Ticker A–Z"],
+                "Display order", options=DISPLAY_ORDER_OPTIONS,
                 key="pipeline_sort_v9",
                 on_change=_clear_pipeline_results_v9,
             )
@@ -3408,7 +3404,10 @@ if page == "PDUFA":
                 )
             except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
                 pass  # Keep original Pipeline records; missing evidence stays blank.
-            shown = prepare_pdufa_grid(shown, view="PIPELINE", as_of=pipeline_today)
+            shown = sort_pdufa_grid(
+                prepare_pdufa_grid(shown, view="PIPELINE", as_of=pipeline_today),
+                sort_mode,
+            )
             st.metric("Trials / programs displayed", len(shown))
             st.dataframe(
                 finance_style(shown), hide_index=True, use_container_width=True, height=540,
