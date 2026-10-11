@@ -25,11 +25,13 @@ POST_PRIORITY_SCORES = (
     "Review market follow-up /15", "Review identity /5",
 )
 FRONT = (
-    "Ticker", "Score /100", "Score type", *POST_SCORES, *PRE_SCORES,
+    "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+    "Score type", *POST_SCORES, *PRE_SCORES,
     *PRE_PRIORITY_SCORES, *POST_PRIORITY_SCORES,
-    "PDUFA Date", "Days to PDUFA", "Date Classification", "Primary p",
+    "Date Classification", "Primary p",
     "F", "Cash Runway (months)", "Cash Runway As Of",
 )
+DISPLAY_ORDER_OPTIONS = ("Top Score", "Ticker A–Z")
 FINANCING_LABELS = ("F START", "F RUN", "F CLOSED", "F UNKNOWN")
 
 
@@ -245,6 +247,33 @@ def prepare_pdufa_grid(frame, *, view="UNIFIED", as_of=None):
         if col not in out:
             out[col] = None
     return out[list(FRONT) + [col for col in out.columns if col not in FRONT]]
+
+
+def sort_pdufa_grid(frame, order=DISPLAY_ORDER_OPTIONS[0]):
+    """Sort the already-scored display rows, without inventing scores.
+
+    TOP SCORE is a *display sort only*: scores from different research models
+    are not scientifically equivalent; the adjacent Score type stays visible.
+    Missing scores always go last, with ticker/NCT/drug tie-breakers.
+    """
+    if order not in DISPLAY_ORDER_OPTIONS:
+        raise ValueError("Unsupported PDUFA display order")
+    out = frame.copy()
+    for name in ("Ticker", "NCT ID", "Drug"):
+        if name not in out:
+            out[name] = ""
+    if "Score /100" not in out:
+        out["Score /100"] = pd.Series([pd.NA] * len(out), index=out.index, dtype="Float64")
+    if order == "Ticker A–Z":
+        return out.sort_values(["Ticker", "NCT ID", "Drug"],
+                               ascending=True, na_position="last", kind="stable")
+    out["_score_sort"] = pd.to_numeric(out["Score /100"], errors="coerce")
+    result = out.sort_values(
+        ["_score_sort", "Ticker", "NCT ID", "Drug"],
+        ascending=[False, True, True, True],
+        na_position="last", kind="stable",
+    )
+    return result.drop(columns="_score_sort")
 
 
 def finance_style(frame):
