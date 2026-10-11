@@ -249,6 +249,16 @@ def pdufa_dataframe(data, **kwargs):
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
     result = st.dataframe(data, **kwargs)
     render_survey_box(source)
+    if isinstance(data, Styler) and not data.data.empty and "F" in data.data:
+        st.caption(
+            "FINANCE COLOR KEY — F: green = financing started, yellow = running, "
+            "red = closed (stage, not safety). Runway: green ≥12 months; "
+            "yellow 6–11; red <6. Financing score /20: green ≥15; yellow 10–14; "
+            "red <10. Dated runway source: green ≤90 days old; yellow 91–120; "
+            "red >120. Blue = reported amount without a risk judgment; "
+            "gray = unknown. Neither the colors nor a recent source date "
+            "confirm live SEC data."
+        )
     return result
 
 
