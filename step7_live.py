@@ -253,7 +253,8 @@ def build_snapshot(root, now=None):
         status = fin.get("second_financing_audit_status", "") or "UNVERIFIED"
         check = freshness(rec.get("completed_at_utc"), now, 48)
         sec = rec.get("financing_status", "").upper()
-        blocked = ("BLOCKED" in sec or "ERROR" in sec or sec in {"", "NOT_CHECKED", "SOURCE_UNAVAILABLE"})
+        blocked = ("BLOCKED" in sec or "ERROR" in sec or "PARTIAL" in sec
+                   or sec in {"", "NOT_CHECKED", "SOURCE_UNAVAILABLE", "NO_SOURCE"})
         historical = (status == "VERIFIED_SECOND_POST_PHASE3_FINANCING"
                       and fin.get("second_financing_closed", "").upper() == "YES"
                       and as_of_date(fin.get("first_financing_date")) < as_of_date(fin.get("second_financing_date"))
@@ -322,7 +323,10 @@ def build_snapshot(root, now=None):
 
     sec_blocked = sum(1 for r in rechecks if
                       "BLOCKED" in r.get("financing_status", "").upper()
-                      or "ERROR" in r.get("financing_status", "").upper())
+                      or "ERROR" in r.get("financing_status", "").upper()
+                      or "PARTIAL" in r.get("financing_status", "").upper()
+                      or r.get("financing_status", "").upper() in
+                      {"", "NO_SOURCE", "SOURCE_UNAVAILABLE", "NOT_CHECKED"})
     checks = [
         status_check("Clinical trial pipeline", trial_state.get("status"),
                      trial_state.get("finished_at"), now,
