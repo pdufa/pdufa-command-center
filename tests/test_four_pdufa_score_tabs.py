@@ -59,6 +59,14 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                         f"{tab} contains an invalid numeric score",
                     )
                     self.assertTrue(main[0]["Score type"].notna().all())
+                    for score, group in main[0].groupby("Score /100", dropna=False, sort=False):
+                        self.assertTrue(
+                            group["Days to PDUFA"].dropna().is_monotonic_increasing,
+                            f"{tab} equal score {score} must sort days to PDUFA ascending",
+                        )
+                        dated = group["Days to PDUFA"].notna().tolist()
+                        self.assertEqual(dated, sorted(dated, reverse=True),
+                                         f"{tab} missing PDUFA days must follow dated rows")
 
 
 if __name__ == "__main__":

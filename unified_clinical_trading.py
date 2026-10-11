@@ -357,7 +357,8 @@ def render_combined_overview(root="data", *, dashboard=False):
     )
     df = sort_pdufa_grid(df, display_order)
     st.caption(
-        "Top Score shows the highest available numerical score first; the adjacent "
+        "Top Score sorts Score /100 highest to lowest, then Days to PDUFA lowest "
+        "to highest for equal scores, with missing dates last. The adjacent "
         "Score type identifies its model. Pre- and post-readout scores are not "
         "interchangeable performance or approval probabilities."
     )

@@ -52,11 +52,31 @@ class PdufaGridTests(unittest.TestCase):
                 displayed = prepare_pdufa_grid(frame, view=view,
                                                as_of=date(2026, 10, 11))
                 top = sort_pdufa_grid(displayed, "Top Score")
-                self.assertEqual(top["Ticker"].tolist(), ["AAA", "BBB", "ZZZ", "CCC"])
+                self.assertEqual(top["Ticker"].tolist(), ["BBB", "AAA", "ZZZ", "CCC"])
                 name = sort_pdufa_grid(displayed, "Ticker A–Z")
                 self.assertEqual(name["Ticker"].tolist(), ["AAA", "BBB", "CCC", "ZZZ"])
                 self.assertEqual(top.columns[:5].tolist(), list(FRONT[:5]))
                 self.assertTrue(pd.isna(top.iloc[-1]["Score /100"]))
+
+    def test_equal_scores_use_numeric_days_before_ticker_with_missing_days_last(self):
+        frame = pd.DataFrame([
+            {"Ticker": "A_LATER", "Score /100": "90", "Days to PDUFA": "100"},
+            {"Ticker": "Z_SOONER", "Score /100": "90", "Days to PDUFA": "9"},
+            {"Ticker": "HIGHER", "Score /100": "91", "Days to PDUFA": "180"},
+            {"Ticker": "A_UNDATED", "Score /100": "90", "Days to PDUFA": None},
+            {"Ticker": "LOWER", "Score /100": "20", "Days to PDUFA": "1"},
+            {"Ticker": "UNSCORED_DATED", "Score /100": None, "Days to PDUFA": "3"},
+            {"Ticker": "UNSCORED_UNDATED", "Score /100": None, "Days to PDUFA": "unknown"},
+        ])
+        result = sort_pdufa_grid(frame)
+        self.assertEqual(result["Ticker"].tolist(), [
+            "HIGHER", "Z_SOONER", "A_LATER", "A_UNDATED", "LOWER",
+            "UNSCORED_DATED", "UNSCORED_UNDATED",
+        ])
+        # Sorting changes the row order, preserving the original field values.
+        pd.testing.assert_frame_equal(result[frame.columns].sort_index(), frame)
+        self.assertNotIn("_score_sort", result)
+        self.assertNotIn("_days_sort", result)
 
     def test_missing_scores_and_deterministic_ticker_tiebreak(self):
         frame = pd.DataFrame([

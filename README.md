@@ -8,6 +8,9 @@ panels; shared phase, stage, search and sort controls narrow the view. The
 light-green background, white panels with black borders, and stacked mobile
 layout are retained. Expand the detail panels for all score components and
 source evidence; CSV exports include every matching record.
+**Top Score** sorts **Score /100 descending**, then **Days to PDUFA ascending**
+for equal scores. Missing scores come last; missing dates come last within each
+score group. This shared order applies to all four PDUFA subtabs and score blocks.
 Large, faint background numbers match the exact panel titles: **#1-DB**,
 **#2-PIPELINE**, **#3-PRE3**, and **#4-POST3**. PRE3 shows the current validated
 pre-readout feed; POST3 shows current post-readout candidates. The expandable

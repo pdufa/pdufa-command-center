@@ -254,7 +254,9 @@ def sort_pdufa_grid(frame, order=DISPLAY_ORDER_OPTIONS[0]):
 
     TOP SCORE is a *display sort only*: scores from different research models
     are not scientifically equivalent; the adjacent Score type stays visible.
-    Missing scores always go last, with ticker/NCT/drug tie-breakers.
+    Scores descend, then numeric days to PDUFA ascend within each score.
+    Missing scores/days go last within their respective sort level, followed
+    by ticker/NCT/drug tie-breakers.
     """
     if order not in DISPLAY_ORDER_OPTIONS:
         raise ValueError("Unsupported PDUFA display order")
@@ -268,12 +270,16 @@ def sort_pdufa_grid(frame, order=DISPLAY_ORDER_OPTIONS[0]):
         return out.sort_values(["Ticker", "NCT ID", "Drug"],
                                ascending=True, na_position="last", kind="stable")
     out["_score_sort"] = pd.to_numeric(out["Score /100"], errors="coerce")
+    out["_days_sort"] = pd.to_numeric(
+        out.get("Days to PDUFA", pd.Series(pd.NA, index=out.index, dtype="Float64")),
+        errors="coerce",
+    )
     result = out.sort_values(
-        ["_score_sort", "Ticker", "NCT ID", "Drug"],
-        ascending=[False, True, True, True],
+        ["_score_sort", "_days_sort", "Ticker", "NCT ID", "Drug"],
+        ascending=[False, True, True, True, True],
         na_position="last", kind="stable",
     )
-    return result.drop(columns="_score_sort")
+    return result.drop(columns=["_score_sort", "_days_sort"])
 
 
 def finance_style(frame):
