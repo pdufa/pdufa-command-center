@@ -311,15 +311,85 @@ def sort_pdufa_rows(frame):
 
 
 def finance_style(frame):
-    """Small single-cell blocks with black bold text and a black border."""
-    css = {
-        "F START": "background-color:#bbf7d0; color:#000000;",
-        "F RUN": "background-color:#fef08a; color:#000000;",
-        "F CLOSED": "background-color:#fecaca; color:#000000;",
-        "F UNKNOWN": "background-color:#e5e7eb; color:#000000;",
+    """Color financial evidence without altering underlying values or freshness.
+
+    Traffic-light bands are used only for interpretable measurements:
+    cash runway (>=12 / 6–<12 / <6 months), financing rubric points,
+    and the *age* of dated runway evidence (<=90 / 91–120 / >120 days).
+    Raw dollar amounts are neutral blue: a large balance or market cap
+    alone does not imply a strong financial position. Missing/unverified is gray.
+    """
+    palette = {
+        "green": "#bbf7d0",
+        "yellow": "#fef08a",
+        "red": "#fecaca",
+        "neutral": "#dbeafe",
+        "unknown": "#e5e7eb",
     }
-    return frame.style.map(
-        lambda value: css.get(value, css["F UNKNOWN"])
-                      + "font-weight:bold; text-align:center; border:1px solid #111111;",
-        subset=["F"],
-    )
+    def paint(level):
+        return (
+            f"background-color:{palette[level]}; color:#000000;"
+            "font-weight:bold; text-align:center; border:1px solid #111111;"
+        )
+
+    def band_number(value, *, high, middle, inverse=False):
+        try:
+            numeric = float(str(value).strip().replace(",", "").replace("%", ""))
+            if not pd.notna(numeric):
+                return "unknown"
+        except (TypeError, ValueError, OverflowError):
+            return "unknown"
+        if inverse:
+            return "green" if numeric <= high else "yellow" if numeric <= middle else "red"
+        return "green" if numeric >= high else "yellow" if numeric >= middle else "red"
+
+    def source_age(value):
+        if not _present(value):
+            return "unknown"
+        parsed = pd.to_datetime(value, errors="coerce", utc=True)
+        if pd.isna(parsed):
+            return "unknown"
+        today = pd.Timestamp.now(tz="America/Los_Angeles").date()
+        age = (today - parsed.date()).days
+        if age < 0:
+            return "unknown"  # Future-dated evidence cannot be called current.
+        return "green" if age <= 90 else "yellow" if age <= 120 else "red"
+
+    def financing_color(value):
+        return {
+            "F START": "green", "F RUN": "yellow",
+            "F CLOSED": "red", "F UNKNOWN": "unknown",
+        }.get(_financing_block(value), "unknown")
+
+    styled = frame.style
+    if "F" in frame.columns:
+        styled = styled.map(lambda v: paint(financing_color(v)), subset=["F"])
+
+    for col in frame.columns:
+        if col == "F":
+            continue
+        name = str(col).replace("_", " ").casefold()
+        # Mutually exclusive semantic cases are chosen before broad labels.
+        if "cash runway as of" in name or "cash runway verified date" in name:
+            selector = source_age
+        elif "runway" in name and ("month" in name or name == "cash runway"):
+            selector = lambda v: band_number(v, high=12, middle=6)
+        elif "financing evidence /20" in name:
+            selector = lambda v: band_number(v, high=15, middle=10)
+        elif "runway risk index" in name:
+            selector = lambda v: band_number(v, high=33, middle=66, inverse=True)
+        elif "financing cycle" in name:
+            selector = financing_color
+        elif any(label in name for label in (
+            "financing", "offering", "proceeds", "dilution", "atm",
+            "cash", "debt", "revenue", "market cap", "short interest",
+            "shares outstanding", "financial", "runway",
+        )):
+            selector = lambda v: "neutral" if _present(v) and str(v).strip().casefold() not in (
+                "unknown", "not verified", "not available", "not scored",
+                "review", "pending", "unverified", "n/a",
+            ) else "unknown"
+        else:
+            continue
+        styled = styled.map(lambda v, fn=selector: paint(fn(v)), subset=[col])
+    return styled
