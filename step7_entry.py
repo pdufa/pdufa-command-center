@@ -166,15 +166,22 @@ def evaluate_entry(event, evidence, financing, sec_recheck, market, now):
                 "gates":gates,"market_observations":{}}
     expected_ticker = key.split("|",1)[0]
     reg_nct = str(event.get("nct_id") or "").strip().upper()
+    readout = day(attested.get("phase3_readout_date"))
+    release_source_date = day(attested.get("phase3_readout_source_date"))
+    # Phase 3 readouts can precede PDUFA by many months; only the review
+    # must be recent, while the original announcement date must fit the event.
+    readout_provenance = bool(
+        readout and release_source_date and
+        readout <= release_source_date <= min(readout + timedelta(days=30), now)
+        and safe_source(attested.get("phase3_readout_source")))
     identity_ok = (reg_nct and NCT.fullmatch(reg_nct)
                    and reg_nct == str(attested.get("nct_id") or "").upper().strip()
                    and expected_ticker == str(attested.get("ticker") or "").strip().upper()
                    and str(attested.get("drug") or "").strip().casefold() ==
                        str(event.get("drug") or "").strip().casefold()
                    and bool(str(attested.get("reviewer") or "").strip())
-                   and dated_source(attested, "phase3_readout_source", "phase3_readout_source_date", now))
+                   and readout_provenance)
     if identity_ok: gates["trial_identity"] = "PASS — REVIEWER ATTESTED EXACT NCT + DRUG"
-    readout = day(attested.get("phase3_readout_date"))
     reviewed = day(attested.get("reviewed_at"))
     if identity_ok and readout and readout <= now and reviewed and 0 <= (now-reviewed).days <= 30:
         if (str(attested.get("primary_endpoint_status") or "").upper() == "MET"
