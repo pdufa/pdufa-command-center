@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'post_phase3_trade_backtest.py'
+      - 'post_phase3_backfill_queue.py'
+      - 'tests/test_post_phase3_backfill_queue.py'
       - 'scripts/post_phase3_trade_backtest.py'
       - 'tests/test_post_phase3_trade_backtest.py'
       - 'data/post_phase3_historical_trade_events.csv'
@@ -15,6 +17,8 @@ on:
     branches: [main]
     paths:
       - 'post_phase3_trade_backtest.py'
+      - 'post_phase3_backfill_queue.py'
+      - 'tests/test_post_phase3_backfill_queue.py'
       - 'scripts/post_phase3_trade_backtest.py'
       - 'tests/test_post_phase3_trade_backtest.py'
       - 'data/post_phase3_historical_trade_events.csv'
@@ -35,6 +39,8 @@ jobs:
           python-version: '3.12'
       - name: Run lookahead and source-provenance regression tests
         run: python -m unittest discover -s tests -p 'test_post_phase3_trade_backtest.py' -v
+      - name: Audit historical evidence prioritization (never trading signals)
+        run: python -m unittest discover -s tests -p 'test_post_phase3_backfill_queue.py' -v
       - name: Produce audited historical-coverage and scenario output
         run: |
           python scripts/post_phase3_trade_backtest.py --output-dir output/post_phase3_stage3
