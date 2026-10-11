@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from post_phase3_unified import COLUMNS, build_queue
+from post_phase3_lifecycle_ui import render_post_phase3_positions
 
 
 @st.cache_data(ttl=120, show_spinner=False)
@@ -23,6 +24,7 @@ def render_post_phase3_stage1(root="data"):
         "step7_live_status.json", "step7_financing_review.csv",
         "step7_pre_phase3_feed.csv", "pdufa_candidates.csv",
         "post_phase3_discoveries.csv",
+        "second_financing_status.csv",
     )
     signature = tuple(
         (name, (path / name).stat().st_mtime_ns if (path / name).exists() else 0)
@@ -127,3 +129,4 @@ def render_post_phase3_stage1(root="data"):
         "verified PDUFA date pass. It is research eligibility—not an independently "
         "audited conclusion, investment recommendation or position status."
     )
+    render_post_phase3_positions(items, root)
