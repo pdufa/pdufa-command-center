@@ -10,7 +10,8 @@ from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
-from step7_live import build_snapshot as build_step7_snapshot
+from step7_live import build_snapshot as build_step7_snapshot, read_json as step7_read_json
+from pre_phase3_readiness import check_pre_phase3_readiness
 from step7_entry import FIELDS as STEP7_ENTRY_FIELDS, sample_template as step7_entry_template
 from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
@@ -2692,6 +2693,28 @@ def render_pre_phase3():
         )
         return
 
+    readiness = check_pre_phase3_readiness(
+        manifest, trials,
+        step7_read_json(data_root / "pre_readout_intake_status.json"),
+        step7_read_json(data_root / "phase2_p_intake_status.json"),
+    )
+    st.markdown("### PRE PHASE 3 COMPLETION CHECKLIST")
+    if readiness["blocked"]:
+        st.warning(
+            f"NOT COMPLETE — {readiness['passed']}/{readiness['total']} requirements passed. "
+            "Open items are listed below. SEC financing and post-readout ENTRY READY "
+            "are separate workflows and do not determine this pre-readout tab's status."
+        )
+    else:
+        st.info(
+            "PRE PHASE 3 data and scoring gates pass. Final live browser acceptance "
+            "is still required before declaring the tab finished."
+        )
+    st.dataframe(
+        pd.DataFrame(readiness["checks"]), hide_index=True,
+        use_container_width=True, height=370,
+    )
+    st.caption(readiness["note"])
     health = pd.DataFrame(manifest["source_checks"])
     st.markdown("### SOURCE HEALTH / LAST VERIFIED CHECK")
     st.dataframe(
