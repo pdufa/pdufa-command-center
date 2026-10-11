@@ -23,7 +23,7 @@ FIELDS = (
     "ticker", "checked_at_utc", "market_status", "last_session",
     "last_close_usd", "last_volume", "prior20_avg_volume", "relative_volume",
     "trailing_momentum_pct", "sessions_available", "market_source",
-    "last_session_freshness", "note",
+    "last_session_freshness", "note", "price_bars_json",
 )
 
 def load_tickers():
@@ -73,6 +73,7 @@ def collect(tickers, provider=market_check, now=None, pace=0.2):
             "market_source": result.get("source", ""),
             "last_session_freshness": marker,
             "note": result.get("note", ""),
+            "price_bars_json": json.dumps(result.get("price_bars", []), separators=(",",":")),
         })
         if idx < len(tickers)-1 and pace>0:
             time.sleep(pace)
