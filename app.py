@@ -12,6 +12,7 @@ from pre_readout_score import candidate_queue as phase3_pre_readout_queue, asses
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
 from step7_live import build_snapshot as build_step7_snapshot
 from step7_entry import FIELDS as STEP7_ENTRY_FIELDS, sample_template as step7_entry_template
+from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
@@ -2788,6 +2789,19 @@ def render_pre_phase3():
             selected.to_csv(index=False).encode("utf-8-sig"),
             file_name="step7_pre_phase3_research.csv", mime="text/csv",
             key="step7_clinical_export",
+        )
+        p3_for_rubric = selected.loc[selected["Trial phase"].isin(["Phase 3", "Phase 2/3"])]
+        st.download_button(
+            "DOWNLOAD PRE-READOUT CLINICAL SCORING EVIDENCE TEMPLATE",
+            step7_pre_readout_template(p3_for_rubric).to_csv(index=False).encode("utf-8-sig"),
+            file_name="phase3_pre_readout_scoring_template.csv",
+            mime="text/csv", key="step7_pre_readout_rubric_export",
+        )
+        st.caption(
+            "Pre-readout score requires independently reviewed, dated Phase 2 efficacy, "
+            "Phase 3 design, safety, regulatory alignment, and issuer-unreleased evidence. "
+            "Evidence coverage /6 is not clinical strength or probability. "
+            "Return completed and reviewed input fields to data/phase3_pre_readout_evidence.csv."
         )
 
     st.markdown("### POST-READOUT HANDOFF — FINANCING / TRADE REVIEW")
