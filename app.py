@@ -7,7 +7,7 @@ from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELIN
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
-from pdufa_display_columns import (prepare_pdufa_grid, enrich_exact_trials,
+from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid, sort_pdufa_rows,
                                    DISPLAY_ORDER_OPTIONS)
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
@@ -2087,6 +2087,7 @@ def render_merged_table(frame, heading, height_px=690):
     """Group prediction fields while preserving each pane's sortable headers."""
     if frame is None or frame.empty:
         return
+    frame = align_pdufa_finance_columns(frame, add_countdown=True)
     frame = staged_table(frame)
     frame = sort_pdufa_rows(frame)
     attach_survey(frame)
@@ -2649,13 +2650,15 @@ def table_view(frame, return_page="PDUFA"):
     for c in ["ticker","company","drug","indication"]:
         out[c] = out[c].fillna("Not available").astype(str)
 
+    out = align_pdufa_finance_columns(out)
     out = sort_pdufa_rows(out)
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
         "Ticker","STAGE","PDUFA Date","DECISION DATE","Probability of Approval % — Public","Probability of Approval % — All Sources","Direction / FDA Match","I Direction","P Direction","All-Source Direction","Company","Drug","Indication",
         *SPECIAL_PROVISION_LABELS,
-        "Days Left","Market Cap","Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
+        "Days Left","2nd Financing Completed","Cash Runway (months)",
+        "Market Cap","Cap Bucket","Trade Score","Outcome","Signal","Confidence","Application",
         "Financing","Phase","Short %","IV (30d)","Record Source"
     ]]
 
