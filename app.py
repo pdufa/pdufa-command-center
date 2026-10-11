@@ -3951,39 +3951,8 @@ if page == "PDUFA":
             render_pre_phase3()
 
     with intake_tab:
-        st.markdown("## POST PHASE 3 — DAILY RESULTS & INTAKE")
-        if intake_tab.open:
-            render_post_phase3_stage1()
-        st.caption("The former TODAY reports are here: recent result posts, cumulative Phase 3 records, financing, Watchlist management and CSV export. Opening this view does not run collectors.")
-        try:
-            _intake_state = json.loads(Path("data/phase3_intake_status.json").read_text(encoding="utf-8"))
-            st.caption(
-                "Phase 3 registry intake: " + str(_intake_state.get("status", "UNKNOWN"))
-                + " · " + str(_intake_state.get("studies_checked", 0)) + " studies checked"
-                + " · " + str(_intake_state.get("stored_results", 0)) + " cumulative records"
-                + " · " + str(_intake_state.get("finished_at", "not completed"))
-            )
-            if _intake_state.get("status") not in ("COMPLETE", "COMPLETE WITH WARNINGS"):
-                st.warning("Phase 3 intake is incomplete. Counts are partial. Corporate press releases are a separate source.")
-            elif _intake_state.get("status") == "COMPLETE WITH WARNINGS":
-                st.warning("Phase 3 intake finished with source warnings; coverage is not exhaustive.")
-        except (OSError, ValueError, TypeError):
-            st.warning("Phase 3 intake status is unavailable; do not assume completeness.")
-        if st.toggle(
-            "SHOW POST PHASE 3 DAILY REPORT — results, Watchlist and export",
-            key="pipeline_phase3_daily_details_v1",
-            value=False,
-            help="Large tables load on demand so Stage/Date filters stay responsive.",
-        ):
-            try:
-                _phase_today = pd.read_csv("data/phase3_announcements.csv", keep_default_na=False)
-            except (OSError, pd.errors.ParserError):
-                _phase_today = pd.DataFrame()
-            try:
-                _finance_today = pd.read_csv("data/second_financing_status.csv", keep_default_na=False)
-            except (OSError, pd.errors.ParserError):
-                _finance_today = pd.DataFrame()
-            render_today(df, _phase_today, _finance_today)
+        # Intentionally blank at user request. Do not render post-Phase-3 content.
+        pass
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
