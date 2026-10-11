@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
-from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, column_help as pdufa_column_help
+from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, render_countdown_band_key, column_help as pdufa_column_help
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
@@ -25,7 +25,7 @@ from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
-from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color, COUNTDOWN_BANDS
+from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
 import pandas as pd
 import json
 from pathlib import Path
@@ -2052,17 +2052,7 @@ def _sort_header_button(col, col_index):
         f'title="{help_text}" aria-label="{help_text}">?</span>'
         f'</span>'
     )
-    if col not in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa"):
-        return controls
-    bands = "".join(
-        '<span class="pdufa-band-chip" style="background:' + bg +
-        ';color:' + fg + '">' + html.escape(range_label) + '</span>'
-        for range_label, _, bg, fg in COUNTDOWN_BANDS
-    )
-    return ('<span class="countdown-header-block">' + controls +
-            '<span class="countdown-band-row" aria-label="'
-            '+90 dark green, 90–60 green, 59–30 orange, 29–0 red">'
-            + bands + '</span></span>')
+    return controls
 
 
 def _merged_sort_payload(frame, col):
@@ -2299,11 +2289,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
     .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
-    .merged-pdufa-table th.countdown-head{min-width:286px;width:286px;max-width:286px}
-    .countdown-header-block{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%%}
-    .countdown-band-row{display:flex;flex-wrap:nowrap;gap:2px;justify-content:center}
-    .pdufa-band-chip{display:inline-block;border:1px solid #333;border-radius:3px;
-      padding:3px 4px;font-size:10px;line-height:1.2;font-weight:900;white-space:nowrap}
+    .merged-pdufa-table th.countdown-head{min-width:170px;width:170px;max-width:170px}
     .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
@@ -2609,6 +2595,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         "The icon changes to ▲ ascending or ▼ descending; click it again to reverse the order."
     )
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
+    render_countdown_band_key(frame)
     render_survey_box(frame)
 
 
@@ -3818,7 +3805,7 @@ if page == "PDUFA":
                 attach_survey(combined)
                 ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
                 st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
-                st.caption("Countdown colors: +90 days DARK GREEN (91+), 90–60 GREEN, 59–30 ORANGE, 29–0 RED. Past-due or unknown dates remain neutral/gray. Source verification is separate from countdown color.")
+                st.caption("The countdown number is color-coded by its PDUFA window; the compact legend appears below each table. Colors indicate timing, not regulatory certainty.")
                 if "DAYS TO PDUFA" in combined.columns:
                     countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "2nd Financing Completed", "Cash Runway (months)", "PDUFA Horizon") if c in combined.columns]].copy()
                     if not countdown.empty:
@@ -3833,7 +3820,7 @@ if page == "PDUFA":
                                 if section.empty:
                                     st.info(f"No candidates in {label}.")
                                 else:
-                                    styled_section = finance_style(section).apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
+                                    styled_section = finance_style(section)  # Only the countdown cell receives the date-band color.
                                     pdufa_dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
                     else:
                         st.info("No PDUFA candidates available in the loaded events.")
