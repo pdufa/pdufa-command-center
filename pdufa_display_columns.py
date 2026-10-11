@@ -1,0 +1,218 @@
+"""Shared, source-preserving PDUFA grid presentation for the four research tabs.
+
+This module formats saved evidence. It does not infer clinical success, financing
+closure, cash runway or FDA approval probabilities from ticker alone.
+"""
+from datetime import date
+import pandas as pd
+
+POST_SCORES = (
+    "Clinical evidence /30", "Financing evidence /20", "Trading setup /20",
+    "PDUFA evidence /15", "Market activity /10", "Company track record /5",
+)
+PRE_SCORES = (
+    "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
+    "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
+)
+FRONT = (
+    "Ticker", "Score /100", "Score type", *POST_SCORES, *PRE_SCORES,
+    "PDUFA Date", "Days to PDUFA", "Date Classification", "Primary p",
+    "F", "Cash Runway (months)", "Cash Runway As Of",
+)
+FINANCING_LABELS = ("F START", "F RUN", "F CLOSED", "F UNKNOWN")
+
+
+def _present(value):
+    if value is None:
+        return False
+    try:
+        if bool(pd.isna(value)):
+            return False
+    except (ValueError, TypeError):
+        return False
+    return str(value).strip().lower() not in ("", "nan", "nat", "none", "<na>")
+
+
+def _pick(row, *names):
+    for name in names:
+        if name in row and _present(row[name]):
+            return row[name]
+    return None
+
+
+def _identity(row):
+    ticker = _pick(row, "Ticker", "ticker")
+    nct = _pick(row, "NCT ID", "nct_id")
+    return (str(ticker).strip().upper() if ticker is not None else "",
+            str(nct).strip().upper() if nct is not None else "")
+
+
+def _index_unique(records):
+    unique, duplicated = {}, set()
+    for row in records:
+        key = _identity(row)
+        if not all(key):
+            continue
+        if key in unique:
+            duplicated.add(key)
+        else:
+            unique[key] = row
+    for key in duplicated:
+        unique.pop(key, None)
+    return unique
+
+
+def enrich_exact_trials(frame, pre=(), post=()):
+    """Attach only a unique same-ticker/same-NCT, drug-consistent match.
+
+    Pre/post inputs must already have passed their own snapshot freshness tests.
+    The original Pipeline or Pre-Phase-3 columns remain untouched.
+    """
+    result = frame.copy()
+    pre_index, post_index = _index_unique(pre), _index_unique(post)
+    allowed = (
+        *POST_SCORES, *PRE_SCORES, "Evidence score /100",
+        "Pre-readout research score /100", "Preliminary clinical score /100",
+        "Financing cycle (separate)", "PDUFA date", "Phase 3 PRIMARY p",
+        "Primary endpoint p values observed", "Cash Runway (months)",
+        "Cash Runway As Of",
+    )
+    collected = []
+    for row in result.to_dict("records"):
+        key = _identity(row)
+        drug = str(_pick(row, "Drug", "drug") or "").strip().casefold()
+        joined = {}
+        for index in (pre_index, post_index):
+            candidate = index.get(key)
+            if not candidate:
+                continue
+            other = str(_pick(candidate, "Drug", "drug") or "").strip().casefold()
+            if drug and other and drug != other:
+                continue
+            for col in allowed:
+                if not _present(row.get(col)) and _present(candidate.get(col)):
+                    joined[col] = candidate[col]
+        collected.append(joined)
+    for col in allowed:
+        if col not in result.columns:
+            result[col] = None
+        values = [item.get(col) for item in collected]
+        original = result[col].tolist()
+        result[col] = [a if _present(a) else b for a, b in zip(original, values)]
+    return result
+
+
+def _financing_block(value):
+    if not _present(value):
+        return "F UNKNOWN"
+    text = str(value).strip().upper()
+    if text in FINANCING_LABELS:
+        return text
+    if text.startswith("GREEN — FINANCING STARTED"):
+        return "F START"
+    if text.startswith("YELLOW — FINANCING RUNNING"):
+        return "F RUN"
+    if text.startswith("RED — FINANCING CLOSED"):
+        return "F CLOSED"
+    # REVIEW/UNKNOWN or an unsourced 'closed' field cannot prove event closure.
+    return "F UNKNOWN"
+
+
+def _classify(days, dated):
+    if pd.isna(days):
+        return "NO PDUFA VERIFIED" if not dated else "DATE REVIEW"
+    d = int(days)
+    if d < 0:
+        return "PAST / RECHECK"
+    if d == 0:
+        return "DECISION DAY"
+    if d <= 13:
+        return "13–1 DAYS"
+    if d <= 30:
+        return "30–14 DAYS"
+    if d <= 60:
+        return "60–31 DAYS"
+    if d <= 90:
+        return "90–61 DAYS"
+    return "90+ DAYS"
+
+
+def prepare_pdufa_grid(frame, *, view="UNIFIED", as_of=None):
+    """Reorder columns consistently, retaining every original research field."""
+    out = frame.copy()
+    if "Ticker" not in out:
+        out["Ticker"] = out["ticker"] if "ticker" in out else ""
+    date_columns = ("PDUFA Date", "PDUFA Target", "PDUFA date (pipeline)",
+                    "PDUFA date", "Saved PDUFA target", "pdufa_date")
+    dates = pd.Series([_pick(r, *date_columns) for r in out.to_dict("records")],
+                      index=out.index, dtype="object")
+    raw_dates = pd.to_datetime(dates, errors="coerce", format="mixed")
+    out["PDUFA Date"] = raw_dates.dt.strftime("%Y-%m-%d").fillna("")
+    today = as_of if as_of is not None else date.today()
+    if isinstance(today, pd.Timestamp):
+        today = today.date()
+    computed_days = (raw_dates - pd.Timestamp(today)).dt.days.astype("Int64")
+    # Always derive countdown from displayed date to prevent mismatched dates/days.
+    out["Days to PDUFA"] = computed_days
+    out["Date Classification"] = [
+        _classify(d, bool(day)) for d, day in zip(computed_days, out["PDUFA Date"])
+    ]
+    existing_primary = ("Phase 3 PRIMARY p", "Phase 3 primary p",
+                        "Primary endpoint p values observed")
+    out["Primary p"] = [_pick(row, *existing_primary)
+                        for row in out.to_dict("records")]
+    status = "Financing cycle (separate)"
+    out["F"] = [_financing_block(_pick(row, "F", status))
+                for row in out.to_dict("records")]
+    out["Cash Runway (months)"] = [
+        _pick(row, "Cash Runway (months)", "cash_runway_months",
+              "Cash runway months", "Cash Runway")
+        for row in out.to_dict("records")
+    ]
+    out["Cash Runway As Of"] = [
+        _pick(row, "Cash Runway As Of", "Cash runway verified date",
+              "cash_runway_verified_at")
+        for row in out.to_dict("records")
+    ]
+    scores, types = [], []
+    for row in out.to_dict("records"):
+        post = _pick(row, "Evidence score /100")
+        reviewed = _pick(row, "Pre-readout research score /100")
+        provisional = _pick(row, "Preliminary clinical score /100")
+        if view == "POST PHASE 3" and post is not None:
+            score, label = post, "POST: evidence"
+        elif view == "PRE PHASE 3" and reviewed is not None:
+            score, label = reviewed, "PRE: reviewed"
+        elif view == "PRE PHASE 3" and provisional is not None:
+            score, label = provisional, "PRE: provisional"
+        elif post is not None:
+            score, label = post, "POST: evidence"
+        elif reviewed is not None:
+            score, label = reviewed, "PRE: reviewed"
+        elif provisional is not None:
+            score, label = provisional, "PRE: provisional"
+        else:
+            score, label = None, "NOT SCORED"
+        scores.append(score)
+        types.append(label)
+    out["Score /100"] = pd.to_numeric(pd.Series(scores, index=out.index), errors="coerce")
+    out["Score type"] = types
+    for col in POST_SCORES + PRE_SCORES:
+        if col not in out:
+            out[col] = None
+    return out[list(FRONT) + [col for col in out.columns if col not in FRONT]]
+
+
+def finance_style(frame):
+    """Small single-cell blocks with black bold text and a black border."""
+    css = {
+        "F START": "background-color:#bbf7d0; color:#000000;",
+        "F RUN": "background-color:#fef08a; color:#000000;",
+        "F CLOSED": "background-color:#fecaca; color:#000000;",
+        "F UNKNOWN": "background-color:#e5e7eb; color:#000000;",
+    }
+    return frame.style.map(
+        lambda value: css.get(value, css["F UNKNOWN"])
+                      + "font-weight:bold; text-align:center; border:1px solid #111111;",
+        subset=["F"],
+    )
