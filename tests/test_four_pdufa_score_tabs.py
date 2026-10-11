@@ -7,7 +7,8 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-from pdufa_display_columns import FRONT, POST_SCORES, PRE_SCORES
+from pdufa_display_columns import (FRONT, POST_SCORES, PRE_SCORES,
+                                   DISPLAY_ORDER_OPTIONS)
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
 TABS = ("UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3")
@@ -33,7 +34,25 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                 self.assertEqual(main[0].columns[:len(FRONT)].tolist(), list(FRONT))
                 self.assertTrue(set(POST_SCORES).issubset(main[0].columns))
                 self.assertTrue(set(PRE_SCORES).issubset(main[0].columns))
+                self.assertEqual(
+                    main[0].columns[:5].tolist(),
+                    ["Ticker", "Score /100", "PDUFA Date",
+                     "Days to PDUFA", "Score type"],
+                )
+                sort_key = {
+                    "UNIFIED OVERVIEW": "unified_pdufa_display_order",
+                    "PIPELINE": "pipeline_sort_v9",
+                    "PRE PHASE 3": "step7_priority_sort",
+                    "POST PHASE 3": "postphase3_stage1_sort",
+                }[tab]
+                sorter = app.selectbox(key=sort_key)
+                self.assertEqual(list(sorter.options), list(DISPLAY_ORDER_OPTIONS))
+                self.assertEqual(sorter.value, "Top Score")
                 if len(main[0]):
+                    self.assertTrue(
+                        main[0]["Score /100"].dropna().is_monotonic_decreasing,
+                        f"{tab} default display must sort highest score first",
+                    )
                     self.assertTrue(
                         main[0]["Score /100"].dropna().between(0, 100).all(),
                         f"{tab} contains an invalid numeric score",
