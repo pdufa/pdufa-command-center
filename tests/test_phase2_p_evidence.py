@@ -90,11 +90,14 @@ class Phase2PTests(unittest.TestCase):
 
     def test_pre_readout_pipeline_displays_observation_without_scoring_from_it(self):
         from pathlib import Path
-        app=(Path(__file__).resolve().parents[1]/"app.py").read_text(encoding="utf-8")
-        self.assertIn('join_phase2_p(_p3_candidates, _phase2_p, as_of=cutoff)',app)
-        self.assertIn('"data/phase2_primary_p_evidence.csv"',app)
-        self.assertIn("A small p-value",app)
-        self.assertIn("require_protocol=True",app)
+        root=Path(__file__).resolve().parents[1]
+        app=(root/"app.py").read_text(encoding="utf-8")
+        clinical=(root/"clinical_step3.py").read_text(encoding="utf-8")
+        self.assertIn("render_clinical_review()", app)
+        self.assertIn("NOT SCORED — INCOMPLETE OR UNVERIFIED", clinical)
+        self.assertNotIn("attach_phase2_p(", clinical)
+        self.assertTrue((root/"data/phase2_primary_p_evidence.csv").exists())
+
 
 if __name__=="__main__":
     unittest.main()
