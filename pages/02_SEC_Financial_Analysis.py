@@ -109,6 +109,13 @@ frame = pd.DataFrame([
     {"Measurement": "Noncurrent debt (partial coverage)", "Value": fmt_money(report["noncurrent_debt_usd"])},
     {"Measurement": "Shares outstanding", "Value": ("NOT VERIFIED" if report["shares_outstanding"] is None
                                                       else f"{report['shares_outstanding']:,.0f}")},
+    {"Measurement": "Previous shares outstanding", "Value": ("NOT VERIFIED" if report["previous_shares_outstanding"] is None
+                                                               else f"{report['previous_shares_outstanding']:,.0f}")},
+    {"Measurement": "Change in reported shares (not necessarily dilution)", "Value":
+         ("NOT VERIFIED" if report["shares_change_pct"] is None else f"{report['shares_change_pct']:+,.2f}%")},
+    {"Measurement": "Cash-only runway risk index /100 (higher = more risk)", "Value":
+         ("NOT SCORED" if report["runway_risk_index_0_100"] is None
+          else str(report["runway_risk_index_0_100"]))},
     {"Measurement": "Financing closure", "Value": report["financing_closed"]},
     {"Measurement": "ATM activity", "Value": report["active_atm"]},
     {"Measurement": "Financial composite score", "Value": "NOT SCORED"},
@@ -127,7 +134,7 @@ else:
 with st.expander("Source evidence and method"):
     st.json(report["evidence"])
     st.caption(report["method"])
-    st.caption(report["financial_score_note"])
+    st.caption(report["financial_score_note"])\n    st.caption(report["runway_risk_index_note"])\n    st.caption(report["shares_change_note"])
 
 st.markdown("### Historical SEC snapshots")
 cols = ["id", "observed_at_utc", "as_of", "content_sha256"]
