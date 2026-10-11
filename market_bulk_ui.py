@@ -15,7 +15,7 @@ from market_step5 import DEFAULT_DB
 
 MANIFEST_TEMPLATE = (
     "ticker,phase,phase_url,phase_date,readout_date,pdufa_date,pdufa_url,pdufa_source_date\n"
-    "EXAMPLE,PRE_RESULTS,https://clinicaltrials.gov/study/NCT00000000,2026-01-01,,,,\n"
+    ""
 )
 
 
@@ -124,7 +124,6 @@ def render_batch_scanner(registry, analysis_date):
     elif "POST RESULTS" in label:
         shown = current["post_results_ranking"]
     else:
-        shown = current["neutral_ranking"]  # assignment below covers every ticker
         shown = existing
     if shown:
         preferred = ["rank", "ticker", "company", "status", "phase",
@@ -147,6 +146,6 @@ def render_batch_scanner(registry, analysis_date):
         "DOWNLOAD COMPLETE ALL-STOCK SCAN CSV", csv_output(existing),
         file_name="all_biotech_step5_market_scan.csv", mime="text/csv",
         key="bulk_step5_csv_download")
-    st.caption("The CSV includes EVERY ticker attempted, including failures "
-               "and uns cored/unverified phase rows; missing tickers remain in the "
+    st.caption("The CSV includes every ticker attempted, including failures "
+               "and unscored/unverified phase rows; missing tickers remain in the "
                "coverage counter until rescanned.")
