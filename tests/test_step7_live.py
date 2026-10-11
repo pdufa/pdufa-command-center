@@ -87,10 +87,12 @@ class Step7Tests(unittest.TestCase):
         table(self.root, "phase3_primary_pvalues.csv", [
             {"ticker":"ABC", "nct_id":"NCT12345678",
              "source_url":"https://clinicaltrials.gov/study/NCT12345678",
-             "p_value":"0.002","effect_value":"-1.9","ci_lower":"-2.4","ci_upper":"-1.1"},
+             "p_value":"0.002","effect_value":"-1.9","ci_lower":"-2.4","ci_upper":"-1.1",
+             "result_posted_at":"2026-10-09","checked_at":self.recent,"drug":"Drug A"},
             {"ticker":"ABC", "nct_id":"NCT87654321",
              "source_url":"https://clinicaltrials.gov/study/NCT87654321",
-             "p_value":"0.0001","effect_value":"","ci_lower":"","ci_upper":""},
+             "p_value":"0.0001","effect_value":"","ci_lower":"","ci_upper":"",
+             "result_posted_at":"2026-10-09","checked_at":self.recent,"drug":"Drug B"},
         ])
         trials, _, _ = build_snapshot(self.root, NOW)
         a = next(x for x in trials if x["Ticker"] == "ABC")
