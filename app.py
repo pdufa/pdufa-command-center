@@ -3217,16 +3217,26 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-10 · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-10 · PDUFA PIPELINE PRIMARY · MATCH VALIDATION IN PREDICTION ENGINE · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
     st.session_state.detail_open = False
+    if st.session_state.nav == "PDUFA":
+        st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","10. MATCH OPTIMIZER","11. PLAN"]
+nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
+# The primary landing route is PDUFA → PIPELINE, not the historical validator.
+if "pdufa_subtab" not in st.session_state:
+    st.session_state["pdufa_subtab"] = "PIPELINE"
+if st.session_state.nav == "10. MATCH OPTIMIZER":
+    st.session_state.nav = "9. PREDICTION ENGINE"
+    st.session_state["prediction_subtab"] = "HISTORICAL MATCH VALIDATION"
+if st.session_state.detail_return_page == "10. MATCH OPTIMIZER":
+    st.session_state.detail_return_page = "9. PREDICTION ENGINE"
 # Backwards compatibility: old saved sessions used PIPELINE as the page ID.
 if st.session_state.nav == "PRE PHASE 3":
     # Migrate existing sessions to the new PDUFA submenu without losing the selected view.
@@ -3234,16 +3244,23 @@ if st.session_state.nav == "PRE PHASE 3":
     st.session_state["pdufa_subtab"] = "PRE PHASE 3"
 if st.session_state.nav == "PIPELINE":
     st.session_state.nav = "PDUFA"
+    st.session_state["pdufa_subtab"] = "PIPELINE"
 if st.session_state.detail_return_page in ("PIPELINE", "PRE PHASE 3"):
     st.session_state.detail_return_page = "PDUFA"
 if st.session_state.nav not in nav_options:
     st.session_state.nav = "PDUFA"
 if st.session_state.detail_return_page not in nav_options:
     st.session_state.detail_return_page = "PDUFA"
+def _on_main_nav_change():
+    """Every fresh visit to PDUFA lands on the primary PIPELINE workflow."""
+    if st.session_state.get("nav") == "PDUFA":
+        st.session_state["pdufa_subtab"] = "PIPELINE"
+
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
-    st.radio("Navigation", nav_options, horizontal=True, key="nav", label_visibility="collapsed")
+    st.radio("Navigation", nav_options, horizontal=True, key="nav",
+             label_visibility="collapsed", on_change=_on_main_nav_change)
     page = st.session_state.nav
     if len(st.query_params):
         st.query_params.clear()
@@ -4286,655 +4303,662 @@ elif page == "2. PDUFA CALENDAR":
 
 elif page == "9. PREDICTION ENGINE":
     st.markdown("## 9. PREDICTION ENGINE — MODEL VALIDATION")
-    st.caption("Canonical $300M–$10B historical cohort. 2020–2022 are retrospective development history, 2023 is the tuning year, 2024 is the first locked validation year, 2025 is the later holdout, and 2026 is current/model-development history. Missing historical vendor/public probabilities are never fabricated.")
-
-    hist = prediction_history.copy()
-    hist = hist[
-        hist["pdufa_date"].notna() &
-        (hist["pdufa_date"] >= pd.Timestamp("2020-01-01")) &
-        (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
-    ].copy()
-    if "public_approval_probability" not in hist:
-        hist["public_approval_probability"] = pd.NA
-    hist["Probability of Approval % — Public"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
-    hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
-    hist["P%"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
-    hist["SUGGESTION %"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
-    hist["SUGGESTION"] = hist.apply(suggestion_word_display, axis=1)
-    hist["FDA Decision"] = hist.apply(fda_decision_display, axis=1)
-    hist["MATCH %"] = hist.apply(match_percent_display, axis=1)
-    hist["F"] = hist.apply(predicted_fda_direction, axis=1)
-    hist["Match %"] = hist.apply(match_percent_display, axis=1)
-    hist["C"] = hist.apply(combined_probability_direction, axis=1)
-    hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
-    hist["P Direction"] = hist.apply(public_direction_state, axis=1)
-    hist["I+P Direction"] = hist.apply(ip_consensus_direction, axis=1)
-    hist["All-Source Direction"] = hist.apply(all_source_direction_state, axis=1)
-    hist["Direction / FDA Match"] = hist.apply(direction_fda_display, axis=1)
-    hist["Correct / Wrong"] = hist["correct"].astype(str).map(
-        {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
-    ).fillna("NA")
-    hist["Historical Market Cap"] = hist["historical_market_cap_billions"].apply(
-        lambda v: "NA" if pd.isna(v) else f"${float(v):.2f}B"
+    st.caption("Prediction results and historical match validation are separate views; validation never alters frozen FDA predictions.")
+    if st.session_state.get("prediction_subtab") not in ("PREDICTIONS", "HISTORICAL MATCH VALIDATION"):
+        st.session_state["prediction_subtab"] = "PREDICTIONS"
+    prediction_tab, validation_tab = st.tabs(
+        ["PREDICTIONS", "HISTORICAL MATCH VALIDATION"],
+        key="prediction_subtab", on_change="rerun",
     )
+    with prediction_tab:
+        if prediction_tab.open:
+            st.markdown("### FDA PREDICTIONS")
+            st.caption("Canonical $300M–$10B historical cohort. 2020–2022 are retrospective development history, 2023 is the tuning year, 2024 is the first locked validation year, 2025 is the later holdout, and 2026 is current/model-development history. Missing historical vendor/public probabilities are never fabricated.")
 
-    hist["V2 Status"] = hist.apply(prediction_v2_history_status, axis=1)
-    hist["Audit Eligible"] = hist["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")
-    hist["Needs Rescore Bool"] = hist["needs_rescore"].astype(str).str.upper().eq("YES")
-
-    f1,f2,f3,f4,f5 = st.columns([1.1,1.2,1.2,1.4,2.0])
-    with f1:
-        available_pred_years = sorted(hist["pdufa_date"].dropna().dt.year.astype(int).unique().tolist())
-        year_pick = st.selectbox("Year", ["All"] + available_pred_years, key="pred_year")
-    with f2:
-        pred_pick = st.selectbox("Prediction", ["All","APPROVED","CRL"], key="pred_class")
-    with f3:
-        actual_pick = st.selectbox("Actual FDA", ["All","APPROVED","CRL"], key="pred_actual")
-    with f4:
-        bucket_pick = st.selectbox(
-            "Market Cap Bucket", ["All","$300M–$1B","$1B–$3B","$3B–$10B"], key="pred_bucket"
-        )
-    with f5:
-        pred_search = st.text_input("Search ticker or event key", key="pred_search")
-
-    g1,g2 = st.columns([1.5,4])
-    with g1:
-        v2_pick = st.selectbox(
-            "V2 Audit State",
-            ["All","CLEAN / KEEP","CLEAN MODEL MISS","REBUILD / RESCORE","REVIEW"],
-            key="pred_v2_state"
-        )
-    with g2:
-        st.caption("V2 never overwrites legacy predictions. Rows that fail identity/date/leakage checks are blocked from validation until rebuilt.")
-
-    hview = hist.copy()
-    if year_pick != "All":
-        hview = hview[hview["pdufa_date"].dt.year == int(year_pick)]
-    if pred_pick != "All":
-        hview = hview[hview["model_class"] == pred_pick]
-    if actual_pick != "All":
-        hview = hview[hview["actual_outcome"] == actual_pick]
-    if bucket_pick != "All":
-        hview = hview[hview["market_cap_bucket"] == bucket_pick]
-    if v2_pick != "All":
-        hview = hview[hview["V2 Status"] == v2_pick]
-    if pred_search:
-        q = pred_search.lower()
-        hview = hview[
-            hview["ticker"].astype(str).str.lower().str.contains(q, na=False) |
-            hview["event_key"].astype(str).str.lower().str.contains(q, na=False)
-        ]
-
-    render_historical_assessed_decisions(hview["event_key"])
-    st.markdown("### ORIGINAL MODEL AND AUDIT RECORDS")
-    st.caption("The original probability-derived suggestions below are preserved for comparison with the assessed decisions above.")
-
-    # Recalculate every summary box from the CURRENT filtered selection.
-    filtered_correct = hview["Correct / Wrong"].eq("Correct")
-    filtered_avg_i = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
-    filtered_avg_p = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").mean()
-    if pd.notna(filtered_avg_p) and filtered_avg_p <= 1:
-        filtered_avg_p = filtered_avg_p * 100
-    i_scored = pd.to_numeric(hview["p_approval"], errors="coerce").notna().sum()
-    p_scored = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").notna().sum()
-    i_coverage = 0.0 if hview.empty else (i_scored / len(hview)) * 100
-    p_coverage = 0.0 if hview.empty else (p_scored / len(hview)) * 100
-    hview["_all_source_score"] = hview.apply(all_source_probability_value, axis=1)
-    all_scored = pd.to_numeric(hview["_all_source_score"], errors="coerce").notna().sum()
-    all_coverage = 0.0 if hview.empty else (all_scored / len(hview)) * 100
-    filtered_avg_all = pd.to_numeric(hview["_all_source_score"], errors="coerce").mean()
-    audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
-    audited_correct = audited["Correct / Wrong"].eq("Correct")
-
-    # Precision mode: only make an APPROVED call at >=95% I App.
-    # Everything else abstains/reviews. This threshold currently yields 100%
-    # historical called-case accuracy on the clean audited cohort, but low coverage.
-    audited["_i_pct"] = pd.to_numeric(audited["p_approval"], errors="coerce") * 100
-    precision_called = audited[audited["_i_pct"] >= 95].copy()
-    precision_correct = precision_called["actual_outcome"].astype(str).str.upper().eq("APPROVED")
-    precision_accuracy = float("nan") if precision_called.empty else precision_correct.mean() * 100
-    precision_coverage = 0.0 if audited.empty else len(precision_called) / len(audited) * 100
-
-    # Public-evidence precision backtest.
-    audited["_p_public_pct"] = pd.to_numeric(audited.get("public_approval_probability"), errors="coerce") * 100
-    public_called = audited[
-        (audited["_p_public_pct"] >= 90) | (audited["_p_public_pct"] <= 10)
-    ].copy()
-    public_expected = public_called["_p_public_pct"].apply(lambda v: "APPROVED" if v >= 90 else "CRL")
-    public_correct = public_expected.eq(public_called["actual_outcome"].astype(str).str.upper())
-    public_precision_accuracy = float("nan") if public_called.empty else public_correct.mean() * 100
-    public_precision_coverage = 0.0 if audited.empty else len(public_called) / len(audited) * 100
-
-    audited["I Direction"] = audited.apply(internal_direction_state, axis=1)
-    audited["P Direction"] = audited.apply(public_direction_state, axis=1)
-    i_dir_called = audited[audited["I Direction"].isin(["APPROVED","CRL"])].copy()
-    p_dir_called = audited[audited["P Direction"].isin(["APPROVED","CRL"])].copy()
-    i_dir_correct = i_dir_called["I Direction"].eq(i_dir_called["actual_outcome"].astype(str).str.upper())
-    p_dir_correct = p_dir_called["P Direction"].eq(p_dir_called["actual_outcome"].astype(str).str.upper())
-    i_direction_accuracy = float("nan") if i_dir_called.empty else i_dir_correct.mean() * 100
-    p_direction_accuracy = float("nan") if p_dir_called.empty else p_dir_correct.mean() * 100
-    i_direction_coverage = 0.0 if audited.empty else len(i_dir_called) / len(audited) * 100
-    p_direction_coverage = 0.0 if audited.empty else len(p_dir_called) / len(audited) * 100
-
-    excluded_count = int((hview["count_in_audited_accuracy"].astype(str).str.upper() == "NO").sum())
-    rescore_count = int((hview["needs_rescore"].astype(str).str.upper() == "YES").sum())
-    clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
-    clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
-
-    st.markdown("### PREDICTION SUMMARY")
-    pred_dirs = hview.apply(predicted_fda_direction, axis=1) if not hview.empty else pd.Series(dtype="object")
-    pred_a = int((pred_dirs == "APPROVED").sum())
-    pred_c = int((pred_dirs == "CRL").sum())
-    pred_r = int((pred_dirs == "REVIEW").sum())
-    pred_displayed_p = hview.apply(displayed_probability_value, axis=1) if not hview.empty else pd.Series(dtype="float64")
-    pred_displayed_avg = pd.to_numeric(pred_displayed_p, errors="coerce").mean()
-    pred_p = "" if pd.isna(pred_displayed_avg) else f"{pred_displayed_avg:.1f}%"
-    pred_f = f"A {pred_a} · C {pred_c} · R {pred_r}"
-    pred_match_values = hview.apply(match_percent_display, axis=1) if not hview.empty else pd.Series(dtype="object")
-    pred_decided_matches = pred_match_values[pred_match_values.isin(["100%","0%"])]
-    pred_match = "" if pred_decided_matches.empty else f"{(pred_decided_matches == '100%').mean()*100:.1f}%"
-    pred_combined = f"{pred_p} · {pred_f}"
-    p1,p2,p3,p4 = st.columns(4)
-    p1.metric("P%", pred_p, help="Average all-sources Probability of Approval for the filtered Prediction Engine cases")
-    p2.metric("F", pred_f, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
-    p3.metric("Match %", pred_match, help="Direction-pick accuracy on historical cases with final FDA outcomes in the current filtered selection")
-    p4.metric("C", pred_combined, help="Combined P% + FDA direction")
-
-    q1,q2,q3,q4 = st.columns(4)
-    q1.metric("Clean Cases", clean_keep_count)
-    q2.metric("Clean Model Misses", clean_miss_count)
-    q3.metric("Rebuild / Rescore Queue", max(excluded_count, rescore_count))
-    q4.metric("Audit Reviewed", f"{len(hview)}/{len(hview)}")
-
-    st.caption(
-        f"Filtered selection: {len(hview)} of {len(hist)} cases. "
-        "The table and all summary boxes recalculate from the same selected rows."
-    )
-
-    hview = hview.sort_values(["pdufa_date","ticker"]).copy()
-    hview["Ticker"] = hview.apply(
-        lambda r: stock_chart_url(r.get("ticker")), axis=1
-    )
-    hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
-    hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
-    hview = add_second_financing_columns(hview)
-    hview = add_application_columns(hview)
-    hview = add_special_provision_columns(hview)
-    hdisplay = hview[[
-        "Ticker","PDUFA Date","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C",
-        *SPECIAL_PROVISION_LABELS,
-        "Probability of Approval % — Public","I Direction","P Direction",
-        "model_class",
-        "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
-        "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
-        "count_in_audited_accuracy","source_url","validation_period","independence_status"
-    ]].rename(columns={
-        "model_class":"Model Prediction",
-        "market_cap_bucket":"Market Cap Bucket",
-        "audit_status":"Audit Status",
-        "failure_reason":"Failure Reason",
-        "canonical_pdufa_date":"Canonical PDUFA",
-        "audit_action":"Audit Action",
-        "needs_rescore":"Needs Rescore",
-        "count_in_audited_accuracy":"Count in Adjusted Accuracy",
-        "source_url":"Audit Source",
-        "validation_period":"Validation Period",
-        "independence_status":"Validation Role"
-    })
-
-    st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
-    render_merged_table(hdisplay, "PREDICTION ENGINE TABLE", height_px=690)
-
-    st.info(
-        "Clean-as-is Accuracy is NOT the final model accuracy. It uses only rows that survived the first-pass audit without requiring reconstruction. "
-        "Rows in the Rebuild / Rescore Queue must be corrected to the canonical event and rescored with a strictly pre-decision cutoff before final validation metrics are calculated."
-    )
-
-    with st.expander("REBUILD / RESCORE WORK QUEUE", expanded=False):
-        queue = prediction_rescore_queue.copy()
-        if queue.empty:
-            st.info("Rescore queue is not available.")
-        else:
-            work = queue[queue["queue_class"] != "KEEP_AS_IS"].copy()
-            rescore = work[
-                work["queue_class"].isin([
-                    "REBUILD_CANONICAL_EVENT",
-                    "REBUILD_DECISION_SAFE_CUTOFF",
-                    "VERIFY_THEN_RESCORE",
-                    "REBUILD_REVIEW",
-                ])
+            hist = prediction_history.copy()
+            hist = hist[
+                hist["pdufa_date"].notna() &
+                (hist["pdufa_date"] >= pd.Timestamp("2020-01-01")) &
+                (hist["pdufa_date"] <= pd.Timestamp("2026-09-30"))
             ].copy()
-            remove_only = work[work["queue_class"] == "REMOVE_ONLY"].copy()
-
-            r1,r2,r3,r4 = st.columns(4)
-            r1.metric("Historical Rows", len(queue))
-            r2.metric("Remove Only", len(remove_only))
-            r3.metric("True Rescore Cases", len(rescore))
-            r4.metric(
-                "Existing Artifacts",
-                int((rescore["artifact_status"] == "EXISTING_LEVEL8_LEVEL9_MATCH").sum())
+            if "public_approval_probability" not in hist:
+                hist["public_approval_probability"] = pd.NA
+            hist["Probability of Approval % — Public"] = hist["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+            hist["Probability of Approval % — All Sources"] = hist.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
+            hist["P%"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+            hist["SUGGESTION %"] = hist.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+            hist["SUGGESTION"] = hist.apply(suggestion_word_display, axis=1)
+            hist["FDA Decision"] = hist.apply(fda_decision_display, axis=1)
+            hist["MATCH %"] = hist.apply(match_percent_display, axis=1)
+            hist["F"] = hist.apply(predicted_fda_direction, axis=1)
+            hist["Match %"] = hist.apply(match_percent_display, axis=1)
+            hist["C"] = hist.apply(combined_probability_direction, axis=1)
+            hist["I Direction"] = hist.apply(internal_direction_state, axis=1)
+            hist["P Direction"] = hist.apply(public_direction_state, axis=1)
+            hist["I+P Direction"] = hist.apply(ip_consensus_direction, axis=1)
+            hist["All-Source Direction"] = hist.apply(all_source_direction_state, axis=1)
+            hist["Direction / FDA Match"] = hist.apply(direction_fda_display, axis=1)
+            hist["Correct / Wrong"] = hist["correct"].astype(str).map(
+                {"True":"Correct","False":"Wrong","true":"Correct","false":"Wrong"}
+            ).fillna("NA")
+            hist["Historical Market Cap"] = hist["historical_market_cap_billions"].apply(
+                lambda v: "NA" if pd.isna(v) else f"${float(v):.2f}B"
             )
+
+            hist["V2 Status"] = hist.apply(prediction_v2_history_status, axis=1)
+            hist["Audit Eligible"] = hist["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")
+            hist["Needs Rescore Bool"] = hist["needs_rescore"].astype(str).str.upper().eq("YES")
+
+            f1,f2,f3,f4,f5 = st.columns([1.1,1.2,1.2,1.4,2.0])
+            with f1:
+                available_pred_years = sorted(hist["pdufa_date"].dropna().dt.year.astype(int).unique().tolist())
+                year_pick = st.selectbox("Year", ["All"] + available_pred_years, key="pred_year")
+            with f2:
+                pred_pick = st.selectbox("Prediction", ["All","APPROVED","CRL"], key="pred_class")
+            with f3:
+                actual_pick = st.selectbox("Actual FDA", ["All","APPROVED","CRL"], key="pred_actual")
+            with f4:
+                bucket_pick = st.selectbox(
+                    "Market Cap Bucket", ["All","$300M–$1B","$1B–$3B","$3B–$10B"], key="pred_bucket"
+                )
+            with f5:
+                pred_search = st.text_input("Search ticker or event key", key="pred_search")
+
+            g1,g2 = st.columns([1.5,4])
+            with g1:
+                v2_pick = st.selectbox(
+                    "V2 Audit State",
+                    ["All","CLEAN / KEEP","CLEAN MODEL MISS","REBUILD / RESCORE","REVIEW"],
+                    key="pred_v2_state"
+                )
+            with g2:
+                st.caption("V2 never overwrites legacy predictions. Rows that fail identity/date/leakage checks are blocked from validation until rebuilt.")
+
+            hview = hist.copy()
+            if year_pick != "All":
+                hview = hview[hview["pdufa_date"].dt.year == int(year_pick)]
+            if pred_pick != "All":
+                hview = hview[hview["model_class"] == pred_pick]
+            if actual_pick != "All":
+                hview = hview[hview["actual_outcome"] == actual_pick]
+            if bucket_pick != "All":
+                hview = hview[hview["market_cap_bucket"] == bucket_pick]
+            if v2_pick != "All":
+                hview = hview[hview["V2 Status"] == v2_pick]
+            if pred_search:
+                q = pred_search.lower()
+                hview = hview[
+                    hview["ticker"].astype(str).str.lower().str.contains(q, na=False) |
+                    hview["event_key"].astype(str).str.lower().str.contains(q, na=False)
+                ]
+
+            render_historical_assessed_decisions(hview["event_key"])
+            st.markdown("### ORIGINAL MODEL AND AUDIT RECORDS")
+            st.caption("The original probability-derived suggestions below are preserved for comparison with the assessed decisions above.")
+
+            # Recalculate every summary box from the CURRENT filtered selection.
+            filtered_correct = hview["Correct / Wrong"].eq("Correct")
+            filtered_avg_i = hview["p_approval"].mean() * 100 if not hview.empty else float("nan")
+            filtered_avg_p = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").mean()
+            if pd.notna(filtered_avg_p) and filtered_avg_p <= 1:
+                filtered_avg_p = filtered_avg_p * 100
+            i_scored = pd.to_numeric(hview["p_approval"], errors="coerce").notna().sum()
+            p_scored = pd.to_numeric(hview.get("public_approval_probability"), errors="coerce").notna().sum()
+            i_coverage = 0.0 if hview.empty else (i_scored / len(hview)) * 100
+            p_coverage = 0.0 if hview.empty else (p_scored / len(hview)) * 100
+            hview["_all_source_score"] = hview.apply(all_source_probability_value, axis=1)
+            all_scored = pd.to_numeric(hview["_all_source_score"], errors="coerce").notna().sum()
+            all_coverage = 0.0 if hview.empty else (all_scored / len(hview)) * 100
+            filtered_avg_all = pd.to_numeric(hview["_all_source_score"], errors="coerce").mean()
+            audited = hview[hview["count_in_audited_accuracy"].astype(str).str.upper().eq("YES")].copy()
+            audited_correct = audited["Correct / Wrong"].eq("Correct")
+
+            # Precision mode: only make an APPROVED call at >=95% I App.
+            # Everything else abstains/reviews. This threshold currently yields 100%
+            # historical called-case accuracy on the clean audited cohort, but low coverage.
+            audited["_i_pct"] = pd.to_numeric(audited["p_approval"], errors="coerce") * 100
+            precision_called = audited[audited["_i_pct"] >= 95].copy()
+            precision_correct = precision_called["actual_outcome"].astype(str).str.upper().eq("APPROVED")
+            precision_accuracy = float("nan") if precision_called.empty else precision_correct.mean() * 100
+            precision_coverage = 0.0 if audited.empty else len(precision_called) / len(audited) * 100
+
+            # Public-evidence precision backtest.
+            audited["_p_public_pct"] = pd.to_numeric(audited.get("public_approval_probability"), errors="coerce") * 100
+            public_called = audited[
+                (audited["_p_public_pct"] >= 90) | (audited["_p_public_pct"] <= 10)
+            ].copy()
+            public_expected = public_called["_p_public_pct"].apply(lambda v: "APPROVED" if v >= 90 else "CRL")
+            public_correct = public_expected.eq(public_called["actual_outcome"].astype(str).str.upper())
+            public_precision_accuracy = float("nan") if public_called.empty else public_correct.mean() * 100
+            public_precision_coverage = 0.0 if audited.empty else len(public_called) / len(audited) * 100
+
+            audited["I Direction"] = audited.apply(internal_direction_state, axis=1)
+            audited["P Direction"] = audited.apply(public_direction_state, axis=1)
+            i_dir_called = audited[audited["I Direction"].isin(["APPROVED","CRL"])].copy()
+            p_dir_called = audited[audited["P Direction"].isin(["APPROVED","CRL"])].copy()
+            i_dir_correct = i_dir_called["I Direction"].eq(i_dir_called["actual_outcome"].astype(str).str.upper())
+            p_dir_correct = p_dir_called["P Direction"].eq(p_dir_called["actual_outcome"].astype(str).str.upper())
+            i_direction_accuracy = float("nan") if i_dir_called.empty else i_dir_correct.mean() * 100
+            p_direction_accuracy = float("nan") if p_dir_called.empty else p_dir_correct.mean() * 100
+            i_direction_coverage = 0.0 if audited.empty else len(i_dir_called) / len(audited) * 100
+            p_direction_coverage = 0.0 if audited.empty else len(p_dir_called) / len(audited) * 100
+
+            excluded_count = int((hview["count_in_audited_accuracy"].astype(str).str.upper() == "NO").sum())
+            rescore_count = int((hview["needs_rescore"].astype(str).str.upper() == "YES").sum())
+            clean_keep_count = int(hview["V2 Status"].isin(["CLEAN / KEEP","CLEAN MODEL MISS"]).sum())
+            clean_miss_count = int((hview["V2 Status"] == "CLEAN MODEL MISS").sum())
+
+            st.markdown("### PREDICTION SUMMARY")
+            pred_dirs = hview.apply(predicted_fda_direction, axis=1) if not hview.empty else pd.Series(dtype="object")
+            pred_a = int((pred_dirs == "APPROVED").sum())
+            pred_c = int((pred_dirs == "CRL").sum())
+            pred_r = int((pred_dirs == "REVIEW").sum())
+            pred_displayed_p = hview.apply(displayed_probability_value, axis=1) if not hview.empty else pd.Series(dtype="float64")
+            pred_displayed_avg = pd.to_numeric(pred_displayed_p, errors="coerce").mean()
+            pred_p = "" if pd.isna(pred_displayed_avg) else f"{pred_displayed_avg:.1f}%"
+            pred_f = f"A {pred_a} · C {pred_c} · R {pred_r}"
+            pred_match_values = hview.apply(match_percent_display, axis=1) if not hview.empty else pd.Series(dtype="object")
+            pred_decided_matches = pred_match_values[pred_match_values.isin(["100%","0%"])]
+            pred_match = "" if pred_decided_matches.empty else f"{(pred_decided_matches == '100%').mean()*100:.1f}%"
+            pred_combined = f"{pred_p} · {pred_f}"
+            p1,p2,p3,p4 = st.columns(4)
+            p1.metric("P%", pred_p, help="Average all-sources Probability of Approval for the filtered Prediction Engine cases")
+            p2.metric("F", pred_f, help="FDA direction counts: A=APPROVED, C=CRL, R=REVIEW")
+            p3.metric("Match %", pred_match, help="Direction-pick accuracy on historical cases with final FDA outcomes in the current filtered selection")
+            p4.metric("C", pred_combined, help="Combined P% + FDA direction")
+
+            q1,q2,q3,q4 = st.columns(4)
+            q1.metric("Clean Cases", clean_keep_count)
+            q2.metric("Clean Model Misses", clean_miss_count)
+            q3.metric("Rebuild / Rescore Queue", max(excluded_count, rescore_count))
+            q4.metric("Audit Reviewed", f"{len(hview)}/{len(hview)}")
 
             st.caption(
-                "Remove-only rows are duplicates, wrong identities, post-outcome rows, or out-of-period events. "
-                "They are not rescored. Only the True Rescore Cases require a new canonical prediction."
+                f"Filtered selection: {len(hview)} of {len(hist)} cases. "
+                "The table and all summary boxes recalculate from the same selected rows."
             )
 
-            queue_filter = st.radio(
-                "Work queue view",
-                ["True Rescore Cases","Remove Only","All Blocked Rows"],
-                horizontal=True,
-                key="prediction_rescore_view"
+            hview = hview.sort_values(["pdufa_date","ticker"]).copy()
+            hview["Ticker"] = hview.apply(
+                lambda r: stock_chart_url(r.get("ticker")), axis=1
             )
-            if queue_filter == "True Rescore Cases":
-                qview = rescore
-            elif queue_filter == "Remove Only":
-                qview = remove_only
-            else:
-                qview = work
-
-            qdisplay = qview[[
-                "ticker","canonical_pdufa_date","original_event_key","queue_class",
-                "cutoff_rule","artifact_status","audit_status","audit_action",
-                "failure_reason","source_url"
+            hview["PDUFA Date"] = hview["pdufa_date"].dt.strftime("%Y-%m-%d")
+            hview["P"] = hview["reported_p_values"].apply(lambda v: safe_text(v, ""))
+            hview = add_second_financing_columns(hview)
+            hview = add_application_columns(hview)
+            hview = add_special_provision_columns(hview)
+            hdisplay = hview[[
+                "Ticker","PDUFA Date","SUGGESTION %","SUGGESTION","FDA Decision","MATCH %","P",*SECOND_FINANCING_COLUMNS,*APPLICATION_COLUMNS,"F","C",
+                *SPECIAL_PROVISION_LABELS,
+                "Probability of Approval % — Public","I Direction","P Direction",
+                "model_class",
+                "Historical Market Cap","market_cap_bucket","Correct / Wrong","V2 Status",
+                "audit_status","failure_reason","canonical_pdufa_date","audit_action","needs_rescore",
+                "count_in_audited_accuracy","source_url","validation_period","independence_status"
             ]].rename(columns={
-                "ticker":"Ticker",
-                "original_event_key":"Original Event",
-                "canonical_pdufa_date":"Canonical PDUFA",
-                "queue_class":"Queue Class",
-                "cutoff_rule":"Cutoff Rule",
-                "artifact_status":"Artifact Status",
+                "model_class":"Model Prediction",
+                "market_cap_bucket":"Market Cap Bucket",
                 "audit_status":"Audit Status",
-                "audit_action":"Required Action",
-                "failure_reason":"Reason",
-                "source_url":"Source"
+                "failure_reason":"Failure Reason",
+                "canonical_pdufa_date":"Canonical PDUFA",
+                "audit_action":"Audit Action",
+                "needs_rescore":"Needs Rescore",
+                "count_in_audited_accuracy":"Count in Adjusted Accuracy",
+                "source_url":"Audit Source",
+                "validation_period":"Validation Period",
+                "independence_status":"Validation Role"
             })
 
-            grouped_dataframe(
-                qdisplay,
-                use_container_width=True,
-                hide_index=True,
-                height=min(700, 120 + 32*len(qdisplay)),
-                column_config={
-                    "Source": st.column_config.LinkColumn("Source", display_text="Source")
-                }
+            st.caption(f"Showing {len(hdisplay)} of {len(hist)} historical model cases.")
+            render_merged_table(hdisplay, "PREDICTION ENGINE TABLE", height_px=690)
+
+            st.info(
+                "Clean-as-is Accuracy is NOT the final model accuracy. It uses only rows that survived the first-pass audit without requiring reconstruction. "
+                "Rows in the Rebuild / Rescore Queue must be corrected to the canonical event and rescored with a strictly pre-decision cutoff before final validation metrics are calculated."
             )
 
-    st.divider()
-    st.markdown("### FDA Decision Engine V3 — Prospective Regulatory Layer")
-    st.caption(
-        "FDA V3 is regulatory-only and conservative by design. It separates clinical/statistical/safety/CMC/inspection/regulatory review "
-        "from the Trading Engine. Market cap, price, momentum, short interest, IV, financing and ownership do not enter the FDA probability."
-    )
+            with st.expander("REBUILD / RESCORE WORK QUEUE", expanded=False):
+                queue = prediction_rescore_queue.copy()
+                if queue.empty:
+                    st.info("Rescore queue is not available.")
+                else:
+                    work = queue[queue["queue_class"] != "KEEP_AS_IS"].copy()
+                    rescore = work[
+                        work["queue_class"].isin([
+                            "REBUILD_CANONICAL_EVENT",
+                            "REBUILD_DECISION_SAFE_CUTOFF",
+                            "VERIFY_THEN_RESCORE",
+                            "REBUILD_REVIEW",
+                        ])
+                    ].copy()
+                    remove_only = work[work["queue_class"] == "REMOVE_ONLY"].copy()
 
-    live_v2 = future.copy()
-    if live_v2.empty:
-        st.info("No future PDUFA rows are currently available for the V2 gate.")
-    else:
-        gate_results = live_v2.apply(prospective_gate_state, axis=1)
-        live_v2["V2 Call"] = [x[0] for x in gate_results]
-        live_v2["V2 Confidence"] = [x[1] for x in gate_results]
-        live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
-        live_v2["FDA Model %"] = live_v2.get("fda_probability", pd.Series(index=live_v2.index, dtype="object")).apply(
-            lambda v: "" if safe_text(v, "") == "" else fmt_app_pct(v, 1)
-        )
-        live_v2["FDA Gate"] = live_v2.get("fda_hard_gate", pd.Series(index=live_v2.index, dtype="object")).apply(
-            lambda v: safe_text(v, "REVIEW")
-        )
-        live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
-        live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
-        live_v2["P%"] = live_v2.apply(lambda r: displayed_probability_text(r, 1), axis=1)
-        live_v2["F"] = live_v2.apply(predicted_fda_direction, axis=1)
-        live_v2["Match %"] = live_v2.apply(match_percent_display, axis=1)
-        live_v2["C"] = live_v2.apply(combined_probability_direction, axis=1)
-        live_v2["All-Source Direction"] = live_v2["F"]
-        live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
-        live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
-        live_v2["Ticker"] = live_v2.apply(
-            lambda r: stock_chart_url(r.get("ticker")), axis=1
-        )
+                    r1,r2,r3,r4 = st.columns(4)
+                    r1.metric("Historical Rows", len(queue))
+                    r2.metric("Remove Only", len(remove_only))
+                    r3.metric("True Rescore Cases", len(rescore))
+                    r4.metric(
+                        "Existing Artifacts",
+                        int((rescore["artifact_status"] == "EXISTING_LEVEL8_LEVEL9_MATCH").sum())
+                    )
 
-        actionable = live_v2[live_v2["V2 Call"].isin(["APPROVED","CRL"])]
-        review = live_v2[~live_v2["V2 Call"].isin(["APPROVED","CRL"])]
+                    st.caption(
+                        "Remove-only rows are duplicates, wrong identities, post-outcome rows, or out-of-period events. "
+                        "They are not rescored. Only the True Rescore Cases require a new canonical prediction."
+                    )
 
-        z1,z2,z3,z4 = st.columns(4)
-        z1.metric("Future Candidates", len(live_v2))
-        z2.metric("High-Confidence Calls", len(actionable))
-        z3.metric("Review / Abstain", len(review))
-        z4.metric(
-            "Actionable Coverage",
-            "0.0%" if live_v2.empty else f"{len(actionable)/len(live_v2)*100:.1f}%"
-        )
+                    queue_filter = st.radio(
+                        "Work queue view",
+                        ["True Rescore Cases","Remove Only","All Blocked Rows"],
+                        horizontal=True,
+                        key="prediction_rescore_view"
+                    )
+                    if queue_filter == "True Rescore Cases":
+                        qview = rescore
+                    elif queue_filter == "Remove Only":
+                        qview = remove_only
+                    else:
+                        qview = work
 
-        v2display = live_v2[[
-            "Ticker","PDUFA Date","FDA Model %","V2 Call","FDA Gate","V2 Confidence","V2 Gate Reason",
-            "P%","F","Match %","C","Probability of Approval % — Public","drug","indication",
-            "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
-        ]].rename(columns={
-            "drug":"Drug",
-            "indication":"Indication",
-            "pdufa_confirmation":"PDUFA Verification",
-            "phase3_status":"Phase 3",
-            "monitor_eligibility":"Eligibility",
-            "conflict_flag":"Conflict"
-        })
+                    qdisplay = qview[[
+                        "ticker","canonical_pdufa_date","original_event_key","queue_class",
+                        "cutoff_rule","artifact_status","audit_status","audit_action",
+                        "failure_reason","source_url"
+                    ]].rename(columns={
+                        "ticker":"Ticker",
+                        "original_event_key":"Original Event",
+                        "canonical_pdufa_date":"Canonical PDUFA",
+                        "queue_class":"Queue Class",
+                        "cutoff_rule":"Cutoff Rule",
+                        "artifact_status":"Artifact Status",
+                        "audit_status":"Audit Status",
+                        "audit_action":"Required Action",
+                        "failure_reason":"Reason",
+                        "source_url":"Source"
+                    })
 
-        grouped_dataframe(
-            v2display,
-            use_container_width=True,
-            hide_index=True,
-            height=min(650, 120 + 34*len(v2display)),
-            column_config={
-                "Ticker": st.column_config.LinkColumn(
-                    "Ticker",
-                    display_text=r"ticker=([^&]+)",
-                    help="Open this ticker stock chart"
-                )
-            }
-        )
-        st.caption(
-            "A high-confidence V2 call requires verified event identity, adequate pivotal evidence, no unresolved conflict, "
-            "and complete clinical/regulatory/safety/CMC component scores. Otherwise the engine deliberately returns REVIEW."
-        )
+                    grouped_dataframe(
+                        qdisplay,
+                        use_container_width=True,
+                        hide_index=True,
+                        height=min(700, 120 + 32*len(qdisplay)),
+                        column_config={
+                            "Source": st.column_config.LinkColumn("Source", display_text="Source")
+                        }
+                    )
 
+            st.divider()
+            st.markdown("### FDA Decision Engine V3 — Prospective Regulatory Layer")
+            st.caption(
+                "FDA V3 is regulatory-only and conservative by design. It separates clinical/statistical/safety/CMC/inspection/regulatory review "
+                "from the Trading Engine. Market cap, price, momentum, short interest, IV, financing and ownership do not enter the FDA probability."
+            )
 
-
-elif page == "10. MATCH OPTIMIZER":
-    st.markdown("## 10. MATCH OPTIMIZER — MODEL IMPROVEMENT")
-    st.caption(
-        "Goal: maximize called-case direction accuracy without pretending uncertain cases are certain. "
-        "REVIEW is an abstention and is excluded from Match %, while Coverage % shows how often the gate actually makes a call."
-    )
-
-    opt = prediction_history.copy()
-    opt["pdufa_date"] = pd.to_datetime(opt.get("pdufa_date"), errors="coerce")
-    opt["Year"] = opt["pdufa_date"].dt.year
-    opt["P Value"] = opt.apply(displayed_probability_value, axis=1)
-    opt["Actual FDA"] = opt.apply(
-        lambda r: normalize_fda_direction(r.get("actual_outcome", r.get("outcome"))), axis=1
-    )
-
-    if "count_in_audited_accuracy" in opt:
-        audited_ok = opt["count_in_audited_accuracy"].fillna("YES").astype(str).str.upper().eq("YES")
-    else:
-        audited_ok = pd.Series(True, index=opt.index)
-
-    if "needs_rescore" in opt:
-        rescore_ok = ~opt["needs_rescore"].fillna("NO").astype(str).str.upper().eq("YES")
-    else:
-        rescore_ok = pd.Series(True, index=opt.index)
-
-    opt["Eligible"] = (
-        audited_ok &
-        rescore_ok &
-        opt["P Value"].notna() &
-        opt["Actual FDA"].isin(["APPROVED","CRL"]) &
-        opt["Year"].notna()
-    )
-
-    years = sorted([int(y) for y in opt.loc[opt["Eligible"], "Year"].dropna().unique().tolist()])
-
-    st.markdown("### FDA-V3 decision-safe benchmark")
-    if fda_v3_hist_summary:
-        strict_summary = load_100_on_100_summary()
-        v31,v32,v33,v34,v35,v36,v37 = st.columns(7)
-        v31.metric("Review Complete", f"{float(fda_v3_hist_summary.get('review_completion_pct', 0)):.1f}%")
-        v32.metric("Strict Match", f"{float(strict_summary.get('historical_accuracy_pct', 0)):.1f}%")
-        v33.metric("Strict Coverage", f"{float(strict_summary.get('historical_coverage_pct', 0)):.1f}%")
-        v34.metric("Strict Correct Calls", f"{int(strict_summary.get('historical_matches', 0))}/{int(strict_summary.get('historical_qualified', 0))}")
-        v35.metric("Strict REVIEW — Analyzed", int(strict_summary.get("historical_review_no_call_analyzed", 0)))
-        v36.metric("Broad Decisions Recorded", int(strict_summary.get("historical_broad_assessed", 0)))
-        v37.metric("Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
-        st.caption(
-            "Strict qualification includes documented evidence promotions. Every strict REVIEW case has a separate broad PASS/CRL "
-            "assessment in Prediction Engine. Strict Match % applies only to the qualified subset. "
-            "Retrospective reconstructions are not independent blind predictions."
-        )
-        with st.expander("FDA-V3 historical backfill queue", expanded=False):
-            if fda_v3_hist_queue.empty:
-                st.info("No historical V3 backfill queue is loaded.")
+            live_v2 = future.copy()
+            if live_v2.empty:
+                st.info("No future PDUFA rows are currently available for the V2 gate.")
             else:
-                qcols = [c for c in [
-                    "ticker","pdufa_date","actual_outcome","validation_period",
-                    "independence_status","v3_backfill_priority","diagnostic_miss_class"
-                ] if c in fda_v3_hist_queue.columns]
+                gate_results = live_v2.apply(prospective_gate_state, axis=1)
+                live_v2["V2 Call"] = [x[0] for x in gate_results]
+                live_v2["V2 Confidence"] = [x[1] for x in gate_results]
+                live_v2["V2 Gate Reason"] = [x[2] for x in gate_results]
+                live_v2["FDA Model %"] = live_v2.get("fda_probability", pd.Series(index=live_v2.index, dtype="object")).apply(
+                    lambda v: "" if safe_text(v, "") == "" else fmt_app_pct(v, 1)
+                )
+                live_v2["FDA Gate"] = live_v2.get("fda_hard_gate", pd.Series(index=live_v2.index, dtype="object")).apply(
+                    lambda v: safe_text(v, "REVIEW")
+                )
+                live_v2["Probability of Approval % — Public"] = live_v2["public_approval_probability"].apply(lambda v: fmt_app_pct(v, 1))
+                live_v2["Probability of Approval % — All Sources"] = live_v2.apply(lambda r: fmt_app_pct(all_source_probability_value(r), 1), axis=1)
+                live_v2["P%"] = live_v2.apply(lambda r: displayed_probability_text(r, 1), axis=1)
+                live_v2["F"] = live_v2.apply(predicted_fda_direction, axis=1)
+                live_v2["Match %"] = live_v2.apply(match_percent_display, axis=1)
+                live_v2["C"] = live_v2.apply(combined_probability_direction, axis=1)
+                live_v2["All-Source Direction"] = live_v2["F"]
+                live_v2["Direction / FDA Match"] = live_v2.apply(direction_fda_display, axis=1)
+                live_v2["PDUFA Date"] = live_v2["pdufa_date"].dt.strftime("%Y-%m-%d")
+                live_v2["Ticker"] = live_v2.apply(
+                    lambda r: stock_chart_url(r.get("ticker")), axis=1
+                )
+
+                actionable = live_v2[live_v2["V2 Call"].isin(["APPROVED","CRL"])]
+                review = live_v2[~live_v2["V2 Call"].isin(["APPROVED","CRL"])]
+
+                z1,z2,z3,z4 = st.columns(4)
+                z1.metric("Future Candidates", len(live_v2))
+                z2.metric("High-Confidence Calls", len(actionable))
+                z3.metric("Review / Abstain", len(review))
+                z4.metric(
+                    "Actionable Coverage",
+                    "0.0%" if live_v2.empty else f"{len(actionable)/len(live_v2)*100:.1f}%"
+                )
+
+                v2display = live_v2[[
+                    "Ticker","PDUFA Date","FDA Model %","V2 Call","FDA Gate","V2 Confidence","V2 Gate Reason",
+                    "P%","F","Match %","C","Probability of Approval % — Public","drug","indication",
+                    "pdufa_confirmation","phase3_status","monitor_eligibility","conflict_flag"
+                ]].rename(columns={
+                    "drug":"Drug",
+                    "indication":"Indication",
+                    "pdufa_confirmation":"PDUFA Verification",
+                    "phase3_status":"Phase 3",
+                    "monitor_eligibility":"Eligibility",
+                    "conflict_flag":"Conflict"
+                })
+
                 grouped_dataframe(
-                    fda_v3_hist_queue[qcols].rename(columns={
-                        "ticker":"Ticker","pdufa_date":"PDUFA Date","actual_outcome":"Actual FDA",
-                        "validation_period":"Validation Period","independence_status":"Validation Role",
-                        "v3_backfill_priority":"Priority","diagnostic_miss_class":"Diagnostic Miss Class"
-                    }),
+                    v2display,
                     use_container_width=True,
                     hide_index=True,
-                    height=420,
-                )
-    else:
-        st.info("FDA-V3 historical benchmark has not been generated yet.")
-
-    st.markdown("### 100% Directional Layer — full-coverage benchmark")
-    if fda_directional_summary:
-        dc1,dc2,dc3,dc4,dc5,dc6,dc7 = st.columns(7)
-        dc1.metric("Historical Coverage", f"{float(fda_directional_summary.get('historical_coverage_pct', 0)):.1f}%")
-        hist_acc = fda_directional_summary.get("historical_accuracy_pct")
-        dc2.metric("V1.9 Retro Fit", "Pending" if hist_acc is None else f"{float(hist_acc):.2f}%")
-        locked_val = fda_directional_summary.get("locked_validation_2024_2026_accuracy_pct")
-        dc3.metric("Locked V1.2 Validation", "Pending" if locked_val is None else f"{float(locked_val):.2f}%")
-        dc4.metric(
-            "Historical Matches",
-            f"{int(fda_directional_summary.get('historical_matches', 0))}/{int(fda_directional_summary.get('historical_directional_calls', 0))}"
-        )
-        dc5.metric("Live Coverage", f"{float(fda_directional_summary.get('live_coverage_pct', 0)):.1f}%")
-        dc6.metric("Open Prospective Calls", int(fda_directional_summary.get("open_prospective_counted_calls", 0)))
-        pros_acc = fda_directional_summary.get("prospective_accuracy_pct")
-        dc7.metric("V1.9 Prospective", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
-        st.caption(
-            "This layer always issues APPROVED or CRL for every eligible FDA review cycle. "
-            "V1.9 Retro Fit is development-only because later historical misses informed the new event-risk rules. "
-            "Locked V1.2 Validation remains the last historical holdout result. V1.9 prospective accuracy is scored "
-            "only from calls frozen before the FDA outcome is known."
-        )
-        with st.expander("Residual public-information surprise audit", expanded=False):
-            if fda_directional_residual.empty:
-                st.info("No residual miss audit is loaded.")
-            else:
-                ra = fda_directional_residual.copy()
-                show_cols = [c for c in [
-                    "ticker","pdufa_date","forced_direction","actual_outcome","residual_category",
-                    "recoverability","predecision_public_signal","why_not_promoted",
-                    "predecision_source","postdecision_audit_source"
-                ] if c in ra.columns]
-                grouped_dataframe(
-                    ra[show_cols].rename(columns={
-                        "ticker":"Ticker","pdufa_date":"PDUFA Date","forced_direction":"Forced Direction",
-                        "actual_outcome":"Actual FDA","residual_category":"Residual Category",
-                        "recoverability":"Public Recoverability","predecision_public_signal":"Predecision Public Signal",
-                        "why_not_promoted":"Why Rule Was Not Promoted",
-                        "predecision_source":"Predecision Source","postdecision_audit_source":"Postdecision Audit Source"
-                    }),
-                    use_container_width=True,
-                    hide_index=True,
-                    height=360,
+                    height=min(650, 120 + 34*len(v2display)),
                     column_config={
-                        "Predecision Source": st.column_config.LinkColumn("Predecision Source", display_text="Open"),
-                        "Postdecision Audit Source": st.column_config.LinkColumn("Postdecision Audit Source", display_text="Open"),
-                    },
+                        "Ticker": st.column_config.LinkColumn(
+                            "Ticker",
+                            display_text=r"ticker=([^&]+)",
+                            help="Open this ticker stock chart"
+                        )
+                    }
                 )
                 st.caption(
-                    "These are the historical misses still left after V1.9. LOW/VERY_LOW means the decisive blocker "
-                    "was not sufficiently explicit in public pre-PDUFA evidence to justify another rule without hindsight."
+                    "A high-confidence V2 call requires verified event identity, adequate pivotal evidence, no unresolved conflict, "
+                    "and complete clinical/regulatory/safety/CMC component scores. Otherwise the engine deliberately returns REVIEW."
                 )
-    else:
-        st.info("100% directional benchmark has not been generated yet.")
-
-    st.markdown("### STEP 1 — Historical cohorts")
-    if years:
-        cohort_rows = []
-        for yy in years:
-            yr_all = opt[opt["Year"] == yy]
-            yr_el = yr_all[yr_all["Eligible"]]
-            cohort_rows.append({
-                "Year": yy,
-                "Historical rows": len(yr_all),
-                "Optimizer eligible": len(yr_el),
-                "Approvals": int((yr_el["Actual FDA"] == "APPROVED").sum()),
-                "CRLs": int((yr_el["Actual FDA"] == "CRL").sum()),
-            })
-        grouped_dataframe(pd.DataFrame(cohort_rows), use_container_width=True, hide_index=True)
-    else:
-        st.error("No audited historical rows currently have both a probability score and final FDA outcome.")
-
-    if 2023 not in years:
-        st.warning(
-            "2023 is not loaded into the historical prediction dataset yet. "
-            "Preferred validation is: tune on 2023 → lock rules → validate on 2024 → confirm again on 2025."
-        )
-
-    if len(years) >= 2:
-        default_tune = 2023 if 2023 in years else years[0]
-        later_years = [y for y in years if y > default_tune]
-        default_holdout = 2024 if default_tune == 2023 and 2024 in years else (later_years[0] if later_years else years[-1])
-    elif len(years) == 1:
-        default_tune = years[0]
-        default_holdout = years[0]
-    else:
-        default_tune = None
-        default_holdout = None
-
-    ctl1,ctl2,ctl3,ctl4 = st.columns(4)
-    with ctl1:
-        tune_year = st.selectbox(
-            "Tune year",
-            years if years else [date.today().year],
-            index=(years.index(default_tune) if years and default_tune in years else 0),
-            key="match_opt_tune_year",
-        )
-    with ctl2:
-        holdout_choices = [y for y in years if y != tune_year] or years or [date.today().year]
-        holdout_index = holdout_choices.index(default_holdout) if default_holdout in holdout_choices else 0
-        holdout_year = st.selectbox(
-            "Holdout year",
-            holdout_choices,
-            index=holdout_index,
-            key="match_opt_holdout_year",
-        )
-    with ctl3:
-        minimum_coverage = st.slider(
-            "Minimum coverage",
-            min_value=5,
-            max_value=90,
-            value=30,
-            step=5,
-            format="%d%%",
-            key="match_opt_min_coverage",
-        )
-    with ctl4:
-        max_calls = int(opt[opt["Year"] == tune_year]["Eligible"].sum()) if tune_year is not None else 0
-        safe_max_calls = max(1, max_calls)
-        minimum_calls = st.number_input(
-            "Minimum calls",
-            min_value=1,
-            max_value=safe_max_calls,
-            value=min(5, safe_max_calls),
-            step=1,
-            key="match_opt_min_calls",
-        )
-
-    st.markdown("### STEP 2 — Decision-safe eligibility gate")
-    tune = opt[(opt["Year"] == tune_year) & opt["Eligible"]].copy() if tune_year is not None else pd.DataFrame()
-    holdout = opt[(opt["Year"] == holdout_year) & opt["Eligible"]].copy() if holdout_year is not None else pd.DataFrame()
-    e1,e2,e3,e4 = st.columns(4)
-    e1.metric("Tune Eligible", len(tune))
-    e2.metric("Holdout Eligible", len(holdout))
-    e3.metric("Excluded / Rescore", int((~opt["Eligible"]).sum()))
-    e4.metric("Leakage Rule", "PRE-DECISION ONLY")
-    st.caption(
-        "Rows requiring rescore or lacking a valid final FDA outcome/probability are excluded from optimization. "
-        "Thresholds are selected from the tune year only."
-    )
-
-    st.markdown("### STEP 3 — Tune the high-confidence F gate")
-    best = optimize_match_gate(tune, minimum_coverage_pct=float(minimum_coverage), minimum_calls=int(minimum_calls))
-    if best is None:
-        st.warning(
-            "No threshold pair meets the current minimum coverage/call requirements. "
-            "Lower Minimum coverage or Minimum calls, or add more audited historical cases."
-        )
-    else:
-        bm = best["metrics"]
-        t1,t2,t3,t4,t5 = st.columns(5)
-        t1.metric("Approve ≥", f"{best['approve_min']}%")
-        t2.metric("CRL ≤", f"{best['crl_max']}%")
-        t3.metric("Tune Match %", f"{bm['match_pct']:.1f}%")
-        t4.metric("Tune Coverage %", f"{bm['coverage_pct']:.1f}%")
-        t5.metric("Tune Calls", f"{bm['calls']}/{bm['eligible']}")
-
-        st.markdown("### STEP 4 — Analyze every tune-year miss")
-        tune_cases = optimizer_case_table(tune, best["approve_min"], best["crl_max"])
-        tune_misses = tune_cases[tune_cases["Match %"] == "0%"].copy()
-        if tune_misses.empty:
-            st.success("No wrong actionable calls under this tune-year gate.")
-        else:
-            miss_cols = [x for x in [
-                "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA",
-                "failure_reason","audit_status","source_url"
-            ] if x in tune_misses.columns]
-            grouped_dataframe(
-                tune_misses[miss_cols].rename(columns={
-                    "ticker":"Ticker","pdufa_date":"PDUFA Date",
-                    "failure_reason":"Miss / Audit Reason","audit_status":"Audit Status",
-                    "source_url":"Audit Source"
-                }),
-                use_container_width=True,
-                hide_index=True,
-            )
-
-        st.markdown("### STEP 5 — Lock thresholds and test the untouched holdout")
-        hm = optimizer_metrics(holdout, best["approve_min"], best["crl_max"])
-        h1,h2,h3,h4 = st.columns(4)
-        h1.metric("Holdout Match %", "" if pd.isna(hm["match_pct"]) else f"{hm['match_pct']:.1f}%")
-        h2.metric("Holdout Coverage %", "" if pd.isna(hm["coverage_pct"]) else f"{hm['coverage_pct']:.1f}%")
-        h3.metric("Correct Calls", hm["correct"])
-        h4.metric("Total Calls", f"{hm['calls']}/{hm['eligible']}")
-
-        if int(holdout_year) == int(date.today().year):
-            st.warning(
-                f"{holdout_year} is still an in-progress year, so this is a provisional holdout result, not a final full-year validation."
-            )
-
-        holdout_cases = optimizer_case_table(holdout, best["approve_min"], best["crl_max"])
-        if not holdout_cases.empty:
-            holdout_show = holdout_cases[holdout_cases["Optimized F"].isin(["APPROVED","CRL"])].copy()
-            show_cols = [x for x in [
-                "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA","Match %"
-            ] if x in holdout_show.columns]
-            grouped_dataframe(
-                holdout_show[show_cols].rename(columns={"ticker":"Ticker","pdufa_date":"PDUFA Date"}),
-                use_container_width=True,
-                hide_index=True,
-            )
-
-        st.markdown("### STEP 6 — Recommended prospective F gate")
-        r1,r2,r3 = st.columns(3)
-        r1.metric("APPROVED Gate", f"P% ≥ {best['approve_min']}%")
-        r2.metric("CRL Gate", f"P% ≤ {best['crl_max']}%")
-        r3.metric("Middle Zone", "REVIEW")
-        st.info(
-            "Recommended rule: preserve the underlying direction only when its P% clears the locked high-confidence threshold. "
-            "Everything between the CRL and APPROVED thresholds becomes REVIEW. "
-            "Do not claim 100% prospective accuracy unless the locked rule achieves it on untouched holdout data and continues to do so prospectively."
-        )
-
-        if not pd.isna(hm["match_pct"]) and float(hm["match_pct"]) == 100.0:
-            st.success(
-                f"The locked gate achieved 100% called-case Match on the available {holdout_year} holdout "
-                f"at {hm['coverage_pct']:.1f}% coverage ({hm['calls']} calls). This is historical evidence, not a guarantee of future FDA decisions."
-            )
-        elif not pd.isna(hm["match_pct"]):
+    with validation_tab:
+        if validation_tab.open:
+            st.markdown("### HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT")
             st.caption(
-                f"Current locked holdout result: {hm['match_pct']:.1f}% Match at {hm['coverage_pct']:.1f}% Coverage. "
-                "Use the year controls to validate the locked gate sequentially: 2023 tune → 2024 validation → 2025 later holdout. Do not retune after viewing a holdout."
+                "Goal: maximize called-case direction accuracy without pretending uncertain cases are certain. "
+                "REVIEW is an abstention and is excluded from Match %, while Coverage % shows how often the gate actually makes a call."
             )
 
+            opt = prediction_history.copy()
+            opt["pdufa_date"] = pd.to_datetime(opt.get("pdufa_date"), errors="coerce")
+            opt["Year"] = opt["pdufa_date"].dt.year
+            opt["P Value"] = opt.apply(displayed_probability_value, axis=1)
+            opt["Actual FDA"] = opt.apply(
+                lambda r: normalize_fda_direction(r.get("actual_outcome", r.get("outcome"))), axis=1
+            )
+
+            if "count_in_audited_accuracy" in opt:
+                audited_ok = opt["count_in_audited_accuracy"].fillna("YES").astype(str).str.upper().eq("YES")
+            else:
+                audited_ok = pd.Series(True, index=opt.index)
+
+            if "needs_rescore" in opt:
+                rescore_ok = ~opt["needs_rescore"].fillna("NO").astype(str).str.upper().eq("YES")
+            else:
+                rescore_ok = pd.Series(True, index=opt.index)
+
+            opt["Eligible"] = (
+                audited_ok &
+                rescore_ok &
+                opt["P Value"].notna() &
+                opt["Actual FDA"].isin(["APPROVED","CRL"]) &
+                opt["Year"].notna()
+            )
+
+            years = sorted([int(y) for y in opt.loc[opt["Eligible"], "Year"].dropna().unique().tolist()])
+
+            st.markdown("### FDA-V3 decision-safe benchmark")
+            if fda_v3_hist_summary:
+                strict_summary = load_100_on_100_summary()
+                v31,v32,v33,v34,v35,v36,v37 = st.columns(7)
+                v31.metric("Review Complete", f"{float(fda_v3_hist_summary.get('review_completion_pct', 0)):.1f}%")
+                v32.metric("Strict Match", f"{float(strict_summary.get('historical_accuracy_pct', 0)):.1f}%")
+                v33.metric("Strict Coverage", f"{float(strict_summary.get('historical_coverage_pct', 0)):.1f}%")
+                v34.metric("Strict Correct Calls", f"{int(strict_summary.get('historical_matches', 0))}/{int(strict_summary.get('historical_qualified', 0))}")
+                v35.metric("Strict REVIEW — Analyzed", int(strict_summary.get("historical_review_no_call_analyzed", 0)))
+                v36.metric("Broad Decisions Recorded", int(strict_summary.get("historical_broad_assessed", 0)))
+                v37.metric("Backfill Remaining", int(fda_v3_hist_summary.get("historical_v3_backfill_remaining", 0)))
+                st.caption(
+                    "Strict qualification includes documented evidence promotions. Every strict REVIEW case has a separate broad PASS/CRL "
+                    "assessment in Prediction Engine. Strict Match % applies only to the qualified subset. "
+                    "Retrospective reconstructions are not independent blind predictions."
+                )
+                with st.expander("FDA-V3 historical backfill queue", expanded=False):
+                    if fda_v3_hist_queue.empty:
+                        st.info("No historical V3 backfill queue is loaded.")
+                    else:
+                        qcols = [c for c in [
+                            "ticker","pdufa_date","actual_outcome","validation_period",
+                            "independence_status","v3_backfill_priority","diagnostic_miss_class"
+                        ] if c in fda_v3_hist_queue.columns]
+                        grouped_dataframe(
+                            fda_v3_hist_queue[qcols].rename(columns={
+                                "ticker":"Ticker","pdufa_date":"PDUFA Date","actual_outcome":"Actual FDA",
+                                "validation_period":"Validation Period","independence_status":"Validation Role",
+                                "v3_backfill_priority":"Priority","diagnostic_miss_class":"Diagnostic Miss Class"
+                            }),
+                            use_container_width=True,
+                            hide_index=True,
+                            height=420,
+                        )
+            else:
+                st.info("FDA-V3 historical benchmark has not been generated yet.")
+
+            st.markdown("### 100% Directional Layer — full-coverage benchmark")
+            if fda_directional_summary:
+                dc1,dc2,dc3,dc4,dc5,dc6,dc7 = st.columns(7)
+                dc1.metric("Historical Coverage", f"{float(fda_directional_summary.get('historical_coverage_pct', 0)):.1f}%")
+                hist_acc = fda_directional_summary.get("historical_accuracy_pct")
+                dc2.metric("V1.9 Retro Fit", "Pending" if hist_acc is None else f"{float(hist_acc):.2f}%")
+                locked_val = fda_directional_summary.get("locked_validation_2024_2026_accuracy_pct")
+                dc3.metric("Locked V1.2 Validation", "Pending" if locked_val is None else f"{float(locked_val):.2f}%")
+                dc4.metric(
+                    "Historical Matches",
+                    f"{int(fda_directional_summary.get('historical_matches', 0))}/{int(fda_directional_summary.get('historical_directional_calls', 0))}"
+                )
+                dc5.metric("Live Coverage", f"{float(fda_directional_summary.get('live_coverage_pct', 0)):.1f}%")
+                dc6.metric("Open Prospective Calls", int(fda_directional_summary.get("open_prospective_counted_calls", 0)))
+                pros_acc = fda_directional_summary.get("prospective_accuracy_pct")
+                dc7.metric("V1.9 Prospective", "Pending" if pros_acc is None else f"{float(pros_acc):.2f}%")
+                st.caption(
+                    "This layer always issues APPROVED or CRL for every eligible FDA review cycle. "
+                    "V1.9 Retro Fit is development-only because later historical misses informed the new event-risk rules. "
+                    "Locked V1.2 Validation remains the last historical holdout result. V1.9 prospective accuracy is scored "
+                    "only from calls frozen before the FDA outcome is known."
+                )
+                with st.expander("Residual public-information surprise audit", expanded=False):
+                    if fda_directional_residual.empty:
+                        st.info("No residual miss audit is loaded.")
+                    else:
+                        ra = fda_directional_residual.copy()
+                        show_cols = [c for c in [
+                            "ticker","pdufa_date","forced_direction","actual_outcome","residual_category",
+                            "recoverability","predecision_public_signal","why_not_promoted",
+                            "predecision_source","postdecision_audit_source"
+                        ] if c in ra.columns]
+                        grouped_dataframe(
+                            ra[show_cols].rename(columns={
+                                "ticker":"Ticker","pdufa_date":"PDUFA Date","forced_direction":"Forced Direction",
+                                "actual_outcome":"Actual FDA","residual_category":"Residual Category",
+                                "recoverability":"Public Recoverability","predecision_public_signal":"Predecision Public Signal",
+                                "why_not_promoted":"Why Rule Was Not Promoted",
+                                "predecision_source":"Predecision Source","postdecision_audit_source":"Postdecision Audit Source"
+                            }),
+                            use_container_width=True,
+                            hide_index=True,
+                            height=360,
+                            column_config={
+                                "Predecision Source": st.column_config.LinkColumn("Predecision Source", display_text="Open"),
+                                "Postdecision Audit Source": st.column_config.LinkColumn("Postdecision Audit Source", display_text="Open"),
+                            },
+                        )
+                        st.caption(
+                            "These are the historical misses still left after V1.9. LOW/VERY_LOW means the decisive blocker "
+                            "was not sufficiently explicit in public pre-PDUFA evidence to justify another rule without hindsight."
+                        )
+            else:
+                st.info("100% directional benchmark has not been generated yet.")
+
+            st.markdown("### STEP 1 — Historical cohorts")
+            if years:
+                cohort_rows = []
+                for yy in years:
+                    yr_all = opt[opt["Year"] == yy]
+                    yr_el = yr_all[yr_all["Eligible"]]
+                    cohort_rows.append({
+                        "Year": yy,
+                        "Historical rows": len(yr_all),
+                        "Optimizer eligible": len(yr_el),
+                        "Approvals": int((yr_el["Actual FDA"] == "APPROVED").sum()),
+                        "CRLs": int((yr_el["Actual FDA"] == "CRL").sum()),
+                    })
+                grouped_dataframe(pd.DataFrame(cohort_rows), use_container_width=True, hide_index=True)
+            else:
+                st.error("No audited historical rows currently have both a probability score and final FDA outcome.")
+
+            if 2023 not in years:
+                st.warning(
+                    "2023 is not loaded into the historical prediction dataset yet. "
+                    "Preferred validation is: tune on 2023 → lock rules → validate on 2024 → confirm again on 2025."
+                )
+
+            if len(years) >= 2:
+                default_tune = 2023 if 2023 in years else years[0]
+                later_years = [y for y in years if y > default_tune]
+                default_holdout = 2024 if default_tune == 2023 and 2024 in years else (later_years[0] if later_years else years[-1])
+            elif len(years) == 1:
+                default_tune = years[0]
+                default_holdout = years[0]
+            else:
+                default_tune = None
+                default_holdout = None
+
+            ctl1,ctl2,ctl3,ctl4 = st.columns(4)
+            with ctl1:
+                tune_year = st.selectbox(
+                    "Tune year",
+                    years if years else [date.today().year],
+                    index=(years.index(default_tune) if years and default_tune in years else 0),
+                    key="match_opt_tune_year",
+                )
+            with ctl2:
+                holdout_choices = [y for y in years if y != tune_year] or years or [date.today().year]
+                holdout_index = holdout_choices.index(default_holdout) if default_holdout in holdout_choices else 0
+                holdout_year = st.selectbox(
+                    "Holdout year",
+                    holdout_choices,
+                    index=holdout_index,
+                    key="match_opt_holdout_year",
+                )
+            with ctl3:
+                minimum_coverage = st.slider(
+                    "Minimum coverage",
+                    min_value=5,
+                    max_value=90,
+                    value=30,
+                    step=5,
+                    format="%d%%",
+                    key="match_opt_min_coverage",
+                )
+            with ctl4:
+                max_calls = int(opt[opt["Year"] == tune_year]["Eligible"].sum()) if tune_year is not None else 0
+                safe_max_calls = max(1, max_calls)
+                minimum_calls = st.number_input(
+                    "Minimum calls",
+                    min_value=1,
+                    max_value=safe_max_calls,
+                    value=min(5, safe_max_calls),
+                    step=1,
+                    key="match_opt_min_calls",
+                )
+
+            st.markdown("### STEP 2 — Decision-safe eligibility gate")
+            tune = opt[(opt["Year"] == tune_year) & opt["Eligible"]].copy() if tune_year is not None else pd.DataFrame()
+            holdout = opt[(opt["Year"] == holdout_year) & opt["Eligible"]].copy() if holdout_year is not None else pd.DataFrame()
+            e1,e2,e3,e4 = st.columns(4)
+            e1.metric("Tune Eligible", len(tune))
+            e2.metric("Holdout Eligible", len(holdout))
+            e3.metric("Excluded / Rescore", int((~opt["Eligible"]).sum()))
+            e4.metric("Leakage Rule", "PRE-DECISION ONLY")
+            st.caption(
+                "Rows requiring rescore or lacking a valid final FDA outcome/probability are excluded from optimization. "
+                "Thresholds are selected from the tune year only."
+            )
+
+            st.markdown("### STEP 3 — Tune the high-confidence F gate")
+            best = optimize_match_gate(tune, minimum_coverage_pct=float(minimum_coverage), minimum_calls=int(minimum_calls))
+            if best is None:
+                st.warning(
+                    "No threshold pair meets the current minimum coverage/call requirements. "
+                    "Lower Minimum coverage or Minimum calls, or add more audited historical cases."
+                )
+            else:
+                bm = best["metrics"]
+                t1,t2,t3,t4,t5 = st.columns(5)
+                t1.metric("Approve ≥", f"{best['approve_min']}%")
+                t2.metric("CRL ≤", f"{best['crl_max']}%")
+                t3.metric("Tune Match %", f"{bm['match_pct']:.1f}%")
+                t4.metric("Tune Coverage %", f"{bm['coverage_pct']:.1f}%")
+                t5.metric("Tune Calls", f"{bm['calls']}/{bm['eligible']}")
+
+                st.markdown("### STEP 4 — Analyze every tune-year miss")
+                tune_cases = optimizer_case_table(tune, best["approve_min"], best["crl_max"])
+                tune_misses = tune_cases[tune_cases["Match %"] == "0%"].copy()
+                if tune_misses.empty:
+                    st.success("No wrong actionable calls under this tune-year gate.")
+                else:
+                    miss_cols = [x for x in [
+                        "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA",
+                        "failure_reason","audit_status","source_url"
+                    ] if x in tune_misses.columns]
+                    grouped_dataframe(
+                        tune_misses[miss_cols].rename(columns={
+                            "ticker":"Ticker","pdufa_date":"PDUFA Date",
+                            "failure_reason":"Miss / Audit Reason","audit_status":"Audit Status",
+                            "source_url":"Audit Source"
+                        }),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+
+                st.markdown("### STEP 5 — Lock thresholds and test the untouched holdout")
+                hm = optimizer_metrics(holdout, best["approve_min"], best["crl_max"])
+                h1,h2,h3,h4 = st.columns(4)
+                h1.metric("Holdout Match %", "" if pd.isna(hm["match_pct"]) else f"{hm['match_pct']:.1f}%")
+                h2.metric("Holdout Coverage %", "" if pd.isna(hm["coverage_pct"]) else f"{hm['coverage_pct']:.1f}%")
+                h3.metric("Correct Calls", hm["correct"])
+                h4.metric("Total Calls", f"{hm['calls']}/{hm['eligible']}")
+
+                if int(holdout_year) == int(date.today().year):
+                    st.warning(
+                        f"{holdout_year} is still an in-progress year, so this is a provisional holdout result, not a final full-year validation."
+                    )
+
+                holdout_cases = optimizer_case_table(holdout, best["approve_min"], best["crl_max"])
+                if not holdout_cases.empty:
+                    holdout_show = holdout_cases[holdout_cases["Optimized F"].isin(["APPROVED","CRL"])].copy()
+                    show_cols = [x for x in [
+                        "ticker","pdufa_date","P%","Original F","Optimized F","Actual FDA","Match %"
+                    ] if x in holdout_show.columns]
+                    grouped_dataframe(
+                        holdout_show[show_cols].rename(columns={"ticker":"Ticker","pdufa_date":"PDUFA Date"}),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+
+                st.markdown("### STEP 6 — Recommended prospective F gate")
+                r1,r2,r3 = st.columns(3)
+                r1.metric("APPROVED Gate", f"P% ≥ {best['approve_min']}%")
+                r2.metric("CRL Gate", f"P% ≤ {best['crl_max']}%")
+                r3.metric("Middle Zone", "REVIEW")
+                st.info(
+                    "Recommended rule: preserve the underlying direction only when its P% clears the locked high-confidence threshold. "
+                    "Everything between the CRL and APPROVED thresholds becomes REVIEW. "
+                    "Do not claim 100% prospective accuracy unless the locked rule achieves it on untouched holdout data and continues to do so prospectively."
+                )
+
+                if not pd.isna(hm["match_pct"]) and float(hm["match_pct"]) == 100.0:
+                    st.success(
+                        f"The locked gate achieved 100% called-case Match on the available {holdout_year} holdout "
+                        f"at {hm['coverage_pct']:.1f}% coverage ({hm['calls']} calls). This is historical evidence, not a guarantee of future FDA decisions."
+                    )
+                elif not pd.isna(hm["match_pct"]):
+                    st.caption(
+                        f"Current locked holdout result: {hm['match_pct']:.1f}% Match at {hm['coverage_pct']:.1f}% Coverage. "
+                        "Use the year controls to validate the locked gate sequentially: 2023 tune → 2024 validation → 2025 later holdout. Do not retune after viewing a holdout."
+                    )
 
 elif page == "5. SCANS":
     st.markdown("## 5. SCANS — FIND CHANGES & NEW EVIDENCE")
