@@ -2661,7 +2661,7 @@ def render_pre_phase3():
     data_root = Path("data")
     source_files = [
         "phase_pipeline.csv", "phase_pipeline_state.json",
-        "phase3_intake_status.json", "phase3_announcements.csv",
+        "phase3_intake_status.json", "phase3_announcements.csv", "phase3_primary_pvalues.csv",
         "pre_readout_protocols.csv", "pre_readout_intake_status.json",
         "phase_pipeline_market_caps.csv", "second_financing_status.csv",
         "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
@@ -2773,7 +2773,9 @@ def render_pre_phase3():
         display = [
             "Ticker", "Drug", "Indication", "Trial phase", "Registry status",
             "NCT ID", "Research category", "Registry primary completion",
-            "Registry results posted", "Company/program identity",
+            "Registry results posted", "Primary endpoint p values observed",
+            "Primary effect size and CI recorded", "Phase 3 result interpretation",
+            "Registry primary result source", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
             "Protocol check", "Design inputs present /6", "Design coverage meaning",
             "Pre-readout research score /100", "Score status", "Missing pre-readout evidence",
