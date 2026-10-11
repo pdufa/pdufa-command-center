@@ -5,7 +5,7 @@ independent attestations. They never satisfy the strict verified-score gate.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from urllib.parse import urlparse
 import re
 
@@ -38,6 +38,8 @@ SCORE_FIELDS = (
     *FIELD_MAP.values(),
     "Score Evidence",
     "Clinical Caveats",
+    "Clinical score as of",
+    "Clinical rationale",
 )
 
 
@@ -77,6 +79,9 @@ def review_index(ledger, as_of):
             if not (re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker)
                     and NCT.fullmatch(nct) and NCT.fullmatch(p2_nct)
                     and nct != p2_nct and day and day <= cutoff
+                    and str(record.get("drug") or "").strip()
+                    and str(record.get("registry_drug") or "").strip()
+                    and str(record.get("indication") or "").strip()
                     and record.get("trial_type") == "PIVOTAL_EFFICACY"
                     and record.get("review_status") ==
                     "PRELIMINARY SOURCE-BASED ASSESSMENT — NOT INDEPENDENTLY ATTESTED"
@@ -97,6 +102,28 @@ def review_index(ledger, as_of):
         except (KeyError, TypeError, ValueError, AttributeError):
             continue
     return {key:value for key,value in matched.items() if value is not None}
+
+
+def reviewed_phase2_link(row, review, as_of):
+    """Use a dated exact-study source to resolve a recorded dose-name alias.
+
+    This does not change registry drug names, program verification, scores,
+    issuer readout status or entry eligibility. Never join by ticker alone.
+    """
+    cutoff = _day(as_of)
+    if not review or not cutoff:
+        return "", ""
+    for field, target in (("ticker", "ticker"), ("nct_id", "nct_id"),
+                          ("drug", "registry_drug"), ("indication", "indication")):
+        if str(row.get(field) or "").strip().casefold() != str(review.get(target) or "").strip().casefold():
+            return "", ""
+    link_source = review.get("phase2_link_source")
+    if not _valid_source(link_source, cutoff):
+        return "", ""
+    p2 = str(review.get("phase2_nct_id") or "")
+    if not NCT.fullmatch(p2):
+        return "", ""
+    return p2, link_source["url"]
 
 
 def classify_phase3_protocol(protocol, nct):
@@ -128,6 +155,7 @@ def attach_preliminary_scores(trials, protocols, ledger, as_of):
     Note: the existing strict verified score and its status are untouched.
     """
     index = review_index(ledger, as_of)
+    cutoff = _day(as_of)
     by_nct = {str(p.get("nct_id") or "").upper():p
               for p in (protocols or []) if isinstance(p,dict)}
     records = []
@@ -148,10 +176,16 @@ def attach_preliminary_scores(trials, protocols, ledger, as_of):
                 and src == "https://clinicaltrials.gov/study/" + key[1]
                 and str(protocol.get("source_url") or "") == src
                 and design_type == "PIVOTAL EFFICACY DESIGN — SOURCE CHECKED"
-                and str(row.get("Drug") or "").lower().find(
-                    str(record.get("drug") or "").lower()) >= 0
-                and str(row.get("Indication") or "").lower().find(
-                    str(record.get("indication") or "").lower()) >= 0):
+                and row.get("Registry check") == "RECENT"
+                and row.get("Protocol check") == "RECENT"
+                and _day(str(protocol.get("checked_at") or "")[:10]) is not None
+                and cutoff - timedelta(days=2) <= _day(str(protocol.get("checked_at"))[:10]) <= cutoff
+                and _day(protocol.get("source_updated")) is not None
+                and _day(protocol.get("source_updated")) <= cutoff
+                and str(row.get("Drug") or "").strip().casefold() ==
+                    str(record.get("registry_drug") or "").strip().casefold()
+                and str(row.get("Indication") or "").strip().casefold() ==
+                    str(record.get("indication") or "").strip().casefold()):
             records.append(row)
             continue
         points = record["domain_points"]
@@ -165,6 +199,11 @@ def attach_preliminary_scores(trials, protocols, ledger, as_of):
             record["domain_sources"][k]["url"] for k in RUBRIC
         )
         row["Clinical Caveats"] = record.get("clinical_caveats", "")
+        row["Clinical score as of"] = record["assessment_cutoff"]
+        row["Clinical rationale"] = " | ".join(
+            f"{FIELD_MAP[k]}: {points[k]}. {record['domain_sources'][k]['assessment']}"
+            for k in RUBRIC
+        )
         if str(row.get("Company/program identity") or "") != "VERIFIED":
             row["Clinical Caveats"] += " Program identity remains flagged REVIEW in automated ledger."
         records.append(row)

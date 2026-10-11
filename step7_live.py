@@ -16,7 +16,8 @@ from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
 from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
-from pre_phase3_pilot_scores import attach_preliminary_scores, classify_phase3_protocol
+from pre_phase3_pilot_scores import (attach_preliminary_scores, classify_phase3_protocol,
+                                    review_index, reviewed_phase2_link)
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -120,6 +121,8 @@ def build_snapshot(root, now=None):
     local_today = now.astimezone(ZoneInfo("America/Los_Angeles")).date()
 
     trial_rows = read_csv(root / "phase_pipeline.csv")
+    pilot_reviews = read_json(root / "pre_phase3_pilot_clinical_reviews.json")
+    reviewed_programs = review_index(pilot_reviews, local_today)
     primary_results = read_csv(root / "phase3_primary_pvalues.csv")
     phase2_primary = read_csv(root / "phase2_primary_p_evidence.csv")
     phase2_index = primary_evidence_index(phase2_primary, now)
@@ -228,7 +231,13 @@ def build_snapshot(root, now=None):
         # Do not turn a registry milestone into positive efficacy or an issuer readout.
         trial_check = freshness(row.get("checked_at"), now, 48)
         completion = row.get("primary_completion", "")
-        phase2_summary = phase2_linked_summary(phase2_index, ticker, row.get("phase2_nct_ids", ""))
+        phase2_links = row.get("phase2_nct_ids", "")
+        reviewed_link, phase2_link_source = reviewed_phase2_link(
+            row, reviewed_programs.get((ticker, nct)), local_today
+        )
+        if reviewed_link:
+            phase2_links = " | ".join(sorted(set(re.findall(r"NCT\d{8}", phase2_links)) | {reviewed_link}))
+        phase2_summary = phase2_linked_summary(phase2_index, ticker, phase2_links)
         candidate = {
             "Ticker": ticker, "Company": row.get("company", ""),
             "Drug": row.get("drug", ""), "Indication": row.get("indication", ""),
@@ -256,6 +265,7 @@ def build_snapshot(root, now=None):
             "Market source": cap.get("market_cap_source", "") if cap_ok else "",
             "Market cap as of UTC": cap.get("market_cap_checked_at", ""),
             **phase2_summary,
+            "Phase 2 link review source": phase2_link_source,
             "NCT source": row.get("source_url", ""),
             "Last trial check UTC": row.get("checked_at", ""),
             "ENTRY READY": "NO — mandatory clinical, financing and market gates unverified",
@@ -274,7 +284,7 @@ def build_snapshot(root, now=None):
     # Curated, source-dated analytical pilot scores are separate from strictly
     # attested 100-point pre-readout assessments and NEVER clear ENTRY READY.
     trials = attach_preliminary_scores(
-        trials, protocols, read_json(root / "pre_phase3_pilot_clinical_reviews.json"), local_today
+        trials, protocols, pilot_reviews, local_today
     )
 
     events = []

@@ -222,9 +222,10 @@ async function audit(){
     for(const [name, expectedHeading] of pages){
       const entry={name, expectedHeading};
       try{
-        // Streamlit hides the native radio input; click its visible label.
-        const choice=appFrame.getByText(name,{exact:true}).first();
-        await choice.click({timeout:15000});
+        // PLAN content can repeat navigation names. Select the actual radio
+        // rather than a same-text paragraph elsewhere on the page.
+        const choice=appFrame.getByRole("radio",{name,exact:true});
+        await choice.check({force:true,timeout:15000});
         for(let n=0;n<45;n++){
           const titles=await appFrame.locator("h1,h2,h3").allInnerTexts();
           entry.headings=titles.slice(0,8);

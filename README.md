@@ -103,3 +103,13 @@ and effect size/CI, safety, ordered second financing closure, dilution clearance
 and normalized volume verification.
 
 The older PRE PHASE 3 descriptions above predate the active Step 7 view.
+
+The Step 7 clinical table shows source-cited provisional six-domain research
+assessments first: TRVI OCEAN-1 **80/100** and LBRX NOVA-2 **72/100**, assessed
+as of October 10, 2026. Each includes its domain points, dated evidence,
+reasoning and caveats in the table and CSV. Exact-study issuer and publication
+evidence resolves NOVA-2's dose-name alias to NOVA-1 NCT06179108 for displaying
+the original registry primary p-values. NOVA-3 remains a separate safety trial
+with no efficacy score. Stale or future protocol snapshots suppress pilot
+scores. These assessments never satisfy the independently reviewed score or
+trading entry gates; the completion checklist retains any remaining blockers.

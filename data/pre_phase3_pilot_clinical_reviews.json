@@ -6,9 +6,15 @@
       "ticker": "TRVI",
       "nct_id": "NCT07671911",
       "drug": "NAL ER",
+      "registry_drug": "NAL ER",
       "indication": "Idiopathic Pulmonary Fibrosis",
       "trial_type": "PIVOTAL_EFFICACY",
       "phase2_nct_id": "NCT05964335",
+      "phase2_link_source": {
+        "url": "https://ir.trevitherapeutics.com/news-releases/news-release-details/trevi-therapeutics-reports-second-quarter-2026-financial-results",
+        "published": "2026-08-06",
+        "assessment": "Issuer identifies OCEAN-1 as the IPF cough trial of oral nalbuphine ER; the CORAL publication identifies Phase 2 NCT05964335 for that intervention and indication."
+      },
       "assessment_cutoff": "2026-10-10",
       "review_status": "PRELIMINARY SOURCE-BASED ASSESSMENT — NOT INDEPENDENTLY ATTESTED",
       "domain_points": {
@@ -23,7 +29,7 @@
         "phase2_efficacy": {
           "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186",
           "published": "2026-01-22",
-          "assessment": "CORAL n=165, objective 24-hour cough frequency reduction at 54 mg BID vs placebo, registry p near 0, published trial notes assumptions about missing data and only six weeks treatment."
+          "assessment": "CORAL randomized 165 patients. At 54 mg BID, objective cough frequency fell 53.4% versus 16.9% with placebo; primary P<0.001. Six-week exposure and missing-at-random assumptions limit extrapolation."
         },
         "phase3_design": {
           "url": "https://clinicaltrials.gov/study/NCT07671911",
@@ -57,9 +63,15 @@
       "ticker": "LBRX",
       "nct_id": "NCT07363577",
       "drug": "LB-102",
+      "registry_drug": "LB-102 (100 mg tablet) | LB-102 (50 mg tablet)",
       "indication": "Schizophrenia",
       "trial_type": "PIVOTAL_EFFICACY",
       "phase2_nct_id": "NCT06179108",
+      "phase2_link_source": {
+        "url": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
+        "published": "2026-03-25",
+        "assessment": "Issuer identifies NOVA-2 NCT07363577 as the 50/100 mg LB-102 pivotal trial following NOVA-1. The Phase 2 publication identifies NOVA-1 as NCT06179108."
+      },
       "assessment_cutoff": "2026-10-10",
       "review_status": "PRELIMINARY SOURCE-BASED ASSESSMENT — NOT INDEPENDENTLY ATTESTED",
       "domain_points": {
@@ -74,7 +86,7 @@
         "phase2_efficacy": {
           "url": "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043",
           "published": "2026-04-22",
-          "assessment": "NOVA-1 randomized n=359 met Week 4 PANSS primary, 50/75 mg placebo-adjusted ~5.0/~4.7 points; significant p values, but moderate magnitude and limited 4-week observation."
+          "assessment": "NOVA-1 randomized 359 patients. Week-4 PANSS differences versus placebo were -5.0 (95% CI -8.0 to -2.1) at 50 mg and -4.7 (-7.7 to -1.7) at 75 mg; P<0.001/P=0.002 with multiplicity control. The 100 mg analysis was nominal, with 36 patients."
         },
         "phase3_design": {
           "url": "https://clinicaltrials.gov/study/NCT07363577",
@@ -84,7 +96,7 @@
         "safety": {
           "url": "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043",
           "published": "2026-04-22",
-          "assessment": "Treatment-emergent events including weight gain and psychiatric adverse events in short-term NOVA-1; long-term exposure continues in separate open-label safety study NOVA-3."
+          "assessment": "Short-term weight and prolactin increases warrant follow-up: mean weight gain 4.3/3.3/2.9 kg at 50/75/100 mg versus 2.0 kg with placebo. Four-week exposure cannot establish long-term safety; NOVA-3 is a separate safety study."
         },
         "regulatory_alignment": {
           "url": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
@@ -92,9 +104,9 @@
           "assessment": "Issuer calls NOVA-2 pivotal and uses registrational PANSS endpoint, but no directly reviewed FDA meeting minutes or explicit protocol concurrence verified."
         },
         "execution": {
-          "url": "https://www.globenewswire.com/news-release/2026/07/22/3331267/0/en/LB-Pharmaceuticals-Announces-Accelerated-Timing-of-Topline-Results-from-the-Phase-3-NOVA-2-Trial-of-LB-102-in-Schizophrenia.html",
-          "published": "2026-07-22",
-          "assessment": "Ongoing 25-site pivotal study and accelerated issuer topline expectation to H1 2027; trial completion and execution remain uncertain."
+          "url": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-to-host-in-person-and-virtual-rd-day-on-october-27-2026-advancing-lb-102-with-a-focus-on-schizophrenia-treatment/",
+          "published": "2026-10-06",
+          "assessment": "Issuer describes NOVA-2 as ongoing and expects topline in the first half of 2027; enrollment, completion and timing remain uncertain."
         },
         "evidence_quality": {
           "url": "https://jamanetwork.com/journals/jamapsychiatry/fullarticle/2848043",
