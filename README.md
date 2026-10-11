@@ -30,6 +30,13 @@ To populate the templates, research issuer press releases and relevant SEC filin
 
 ## POST PHASE 3 — three-stage trading workspace (reinstalled October 11, 2026)
 
+### Combined GREEN gate + highest-to-lowest evidence rating
+
+The **POST PHASE 3 → 1 · Discover & qualify** view now merges two formerly separate decision dimensions into a single ranked row: hard **Entry qualification** (GREEN / REVIEW / RED / EXCLUDED) and a separate ordinal **Evidence rank** with **Evidence score /100**. The default order places eligible GREEN programs ahead of REVIEW cases and uses descending evidence points within each group. Users may switch to overall highest-score or soonest-PDUFA order. Scores do **not** override mandatory financing/clinical/market hard gates.
+
+This is an **incomplete, evidence-support research rubric**, **not** an independently validated FDA approval probability, expected return, or certified company quality score. Weights are clinical evidence 30, current SEC second-financing/dilution evidence 20, source-linked technical setup 20, verified PDUFA evidence 15, recent provider-labeled price/volume/momentum observations 10, and company track record 5. The last five points stay unawarded until a separately sourced product/revenue/track record audit is available; the market component does not yet independently score short interest/float. Score components require fresh and attributed inputs; stale snapshots and unmatched leads show **NOT RATED** (no invented numeric score). The research rank excludes RED-window and resolved events but can rank REVIEW rows above a GREEN row numerically; **eligibility status remains the controlling entry gate**.
+
+
 The user subsequently requested reinstatement of POST PHASE 3 after the prior clear. Go to **PDUFA → POST PHASE 3** and choose among three stages from one selector: **1 · Discover & qualify** (Phase 3 readout and second-financing source checks, entry gates, PDUFA countdown, research leads, export), **2 · Monitor & exit** (download/upload a private CSV of user-reported positions, YELLOW hold, RED cutoff due/recorded exit), and **3 · Historical backtest** (historical research worklist, data templates, four entry methods and 30/14/7-day exit scenarios, matched-program comparisons, downloadable audit summaries). Nothing trades automatically. Statuses remain REVIEW when evidence is incomplete; the older FDA-decision scorecard cannot substitute for historical prices. A financing closure and a GREEN clinical/market entry are distinct from the financing-cycle traffic-light colors.
 
 The previous standalone daily report is still not reinstated; the earlier saved collector files and research modules remain in the repository. PIPELINE and PRE PHASE 3 were not modified.
