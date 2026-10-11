@@ -61,7 +61,7 @@ def _checked_local_days(values):
     raw = values.fillna("").astype(str).str.strip()
     literal = _dates(raw).dt.date
     aware = raw.str.contains(
-        r"T\\d{2}:\\d{2}.*(?:Z|[+-]\\d{2}:\\d{2})$",
+        r"T\d{2}:\d{2}.*(?:Z|[+-]\d{2}:\d{2})$",
         regex=True, case=False, na=False,
     )
     utc = pd.to_datetime(raw.where(aware), errors="coerce", utc=True, format="mixed")
