@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from post_phase3_unified import COLUMNS, build_queue
+from pdufa_display_columns import prepare_pdufa_grid, finance_style
 from post_phase3_lifecycle_ui import render_post_phase3_positions
 
 
@@ -157,8 +158,9 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         "The separate Stage 2 panel below evaluates only positions you report."
     )
     st.markdown("#### ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
+    display_df = prepare_pdufa_grid(df, view="POST PHASE 3", as_of=today)
     st.dataframe(
-        df.head(250), use_container_width=True, hide_index=True,
+        finance_style(display_df.head(250)), use_container_width=True, hide_index=True,
         column_config={
             "Research priority /100": st.column_config.NumberColumn("Research priority /100", format="%d"),
             "Evidence score /100": st.column_config.NumberColumn("Evidence /100", format="%d"),
@@ -172,13 +174,14 @@ def render_post_phase3_stage1(root="data", include_positions=True):
             "Phase 3 source": st.column_config.LinkColumn("Phase 3 source"),
             "Financing source": st.column_config.LinkColumn("Financing source"),
             "PDUFA source": st.column_config.LinkColumn("PDUFA source"),
+            "F": st.column_config.TextColumn("F", width="small"),
         },
     )
     if len(df) > 250:
         st.caption("Showing first 250 rows for responsiveness. CSV includes every filtered row.")
     st.download_button(
         "EXPORT UNIFIED POST PHASE 3 RESEARCH QUEUE",
-        df.to_csv(index=False).encode("utf-8"),
+        display_df.to_csv(index=False).encode("utf-8"),
         file_name=f"post_phase3_trade_research_{today:%Y%m%d}.csv",
         mime="text/csv",
         key="postphase3_stage1_csv",
