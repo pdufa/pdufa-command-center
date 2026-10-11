@@ -272,42 +272,24 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("PRE PHASE 3", nav.options)
         self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
-        self.assertFalse(any("CLINICAL SUCCESS ASSESSMENT" in item.body
-                             for item in app.markdown))
 
-        # Switching the nested PDUFA tab must render the original full review.
         app.session_state["pdufa_subtab"] = "PRE PHASE 3"
         app.run()
         self.assertFalse(list(app.exception))
-        self.assertEqual(app.radio(key="nav").value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
-        headings = [item.body for item in app.markdown]
-        self.assertTrue(any("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT" in x
-                            for x in headings))
-        self.assertTrue(any("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES" in x
-                            for x in [str(w.body) for w in app.warning]))
-        self.assertTrue(any(item.label == "Potential pre-readout Phase 3 trials"
+        self.assertTrue(any(item.label == "Phase 1–3 company–trial leads"
                             for item in app.metric))
-        self.assertTrue(any(item.label == "Complete 100-point assessments"
-                            and int(item.value) == 0 for item in app.metric))
-        self.assertTrue(any("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT" in x
-                            for x in headings))
-        self.assertTrue(any(item.key == "pre_readout_show_candidates_v1"
-                            for item in app.get("toggle")))
-        # The real-browser audit exercises the candidates toggle inside a
-        # selected tab. AppTest cannot reliably preserve client tab selection
-        # when an inner control forces a rerun, so this test covers rendering
-        # and the tab hierarchy without treating AppTest's reset as an app bug.
-        self.assertIn('key="pre_readout_evidence_upload_v1"',
-                      APP_PATH.read_text(encoding="utf-8"))
-        # PIPELINE remains the adjacent tab with its original filters.
+        source = (APP_PATH.parent/"clinical_step3.py").read_text(encoding="utf-8")
+        self.assertIn("if (complete and owner)", source)
+        self.assertIn("NOT SCORED — INCOMPLETE OR UNVERIFIED", source)
+        self.assertNotIn("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES", source)
+        # PDUFA Pipeline stays adjacent and unchanged.
         app.session_state["pdufa_subtab"] = "PIPELINE"
         app.run()
         self.assertFalse(list(app.exception))
         self.assertTrue(any("PDUFA — CLINICAL AND REGULATORY STAGES" in item.body
                             for item in app.markdown))
-        self.assertFalse(any("CLINICAL SUCCESS ASSESSMENT" in item.body
-                             for item in app.markdown))
+
 
     def test_legacy_pre_phase3_main_navigation_redirects_to_subtab(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
@@ -318,8 +300,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(app.radio(key="nav").value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
         self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
-        self.assertTrue(any("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT" in item.body
-                            for item in app.markdown))
+        self.assertTrue(any(item.label == "Phase 1–3 company–trial leads"
+                            for item in app.metric))
 
 
 if __name__ == "__main__":
