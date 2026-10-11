@@ -150,6 +150,19 @@ def render_combined_overview():
         ])
         st.dataframe(audit, use_container_width=True, hide_index=True)
         st.caption("Counts use the full Pipeline universe before the user filters. Scores are not approval probabilities. Missing trial links do not establish failed clinical or financing gates.")
+    with st.expander("UNMATCHED TRIAL RECONCILIATION"):
+        missing = df.loc[
+            df["Pre Phase 3 evidence match"].ne("EXACT TICKER + NCT")
+            | df["Post evidence match"].ne("EXACT TICKER + NCT")
+        ].copy()
+        st.caption("Missing source links are research gaps, not clinical failures.")
+        st.dataframe(missing[["Ticker", "NCT ID", "Drug",
+            "Pre Phase 3 evidence match", "Post evidence match"]].head(250),
+            hide_index=True, use_container_width=True)
+        st.download_button("EXPORT UNMATCHED RECORDS",
+            missing.to_csv(index=False).encode("utf-8"),
+            file_name="unmatched_trial_records.csv", mime="text/csv",
+            key="unified_missing_export")
     f1, f2, f3 = st.columns([1, 1, 2])
     with f1:
         phase = st.selectbox("Research phase", ["All", "PRE PHASE 3", "POST PHASE 3 / REGULATORY", "OTHER / REVIEW"], key="unified_phase")
