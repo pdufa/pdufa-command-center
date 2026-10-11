@@ -1,5 +1,7 @@
 """Shared help headers for PDUFA tables; source field names never change."""
 import re
+import html
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 from pandas.io.formats.style import Styler
@@ -177,11 +179,82 @@ def header_config(data, config=None):
     return result
 
 
+def survey_summary(data):
+    """Use saved check times only; never use render time or file modification time."""
+    frame = data.data if isinstance(data, Styler) else data
+    if not hasattr(frame, "columns"):
+        frame = pd.DataFrame(frame)
+    stamps, dates = [], []
+    for column in frame.columns:
+        name = _name(column)
+        if not ("checked" in name or re.search(r"last .*check", name) or
+                name in ("protocol as of utc", "market cap as of utc", "last surveyed")):
+            continue
+        values = frame[column].astype("string").str.strip()
+        # Accept explicit offsets/Z, or naive times in a field explicitly labeled UTC.
+        timed = values.str.match(r"^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}", na=False)
+        zoned = values.str.contains(r"(?:Z|[+-]\d{2}:?\d{2})$", case=False, na=False)
+        valid = timed & (zoned | ("utc" in name))
+        parsed = pd.to_datetime(values.loc[valid], errors="coerce", utc=True, format="mixed").dropna()
+        parsed = parsed.loc[parsed.le(pd.Timestamp.now(tz="UTC"))]
+        if not parsed.empty:
+            stamps.extend((parsed.min(), parsed.max()))
+        date_only = values.str.fullmatch(r"\d{4}-\d{2}-\d{2}", na=False)
+        dated = pd.to_datetime(values.loc[date_only], errors="coerce", format="%Y-%m-%d").dropna()
+        if not dated.empty:
+            dates.append(dated.max().strftime("%Y-%m-%d"))
+    if stamps:
+        return {"latest": max(stamps).isoformat(), "oldest": min(stamps).isoformat()}
+    saved = frame.attrs.get("pdufa_survey", {})
+    if saved:
+        return dict(saved)
+    return {"date_only": max(dates)} if dates else {}
+
+
+def attach_survey(frame, source=None):
+    """Keep survey metadata when a display selects only a few source columns."""
+    frame.attrs["pdufa_survey"] = survey_summary(frame if source is None else source)
+    return frame
+
+
+def render_survey_box(data):
+    survey = survey_summary(data)
+    latest = survey.get("latest", "")
+    def local_time(value):
+        return pd.Timestamp(value).tz_convert(ZoneInfo("America/Los_Angeles")).strftime("%b %d, %Y · %I:%M:%S %p %Z")
+    if latest:
+        label = local_time(latest)
+        detail = "Latest saved source check."
+        oldest = survey.get("oldest", latest)
+        if oldest != latest:
+            detail += " Earliest included check: " + local_time(oldest) + "."
+    elif survey.get("date_only"):
+        label = survey["date_only"] + " — time not recorded"
+        detail = "Only the source's survey date is available."
+    else:
+        label = "Not recorded"
+        detail = "No survey timestamp is stored for this table."
+    st.markdown(
+        '<div class="pdufa-survey-box" data-pdufa-survey="true" '
+        'style="background:#fff;color:#111;border:2px solid #000;border-radius:10px;'
+        'padding:9px 12px;margin:6px 0 14px;font-size:14px;">'
+        '<strong>Last surveyed:</strong> ' + html.escape(label) +
+        '<div style="font-size:12px;margin-top:3px;">' + html.escape(detail) + '</div></div>',
+        unsafe_allow_html=True,
+    )
+
+
 def pdufa_dataframe(data, **kwargs):
+    source = kwargs.pop("survey_source", data)
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
-    return st.dataframe(data, **kwargs)
+    result = st.dataframe(data, **kwargs)
+    render_survey_box(source)
+    return result
 
 
 def pdufa_editor(data, **kwargs):
+    source = kwargs.pop("survey_source", data)
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
-    return st.data_editor(data, **kwargs)
+    result = st.data_editor(data, **kwargs)
+    render_survey_box(source)
+    return result

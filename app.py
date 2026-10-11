@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
-from pdufa_table_headers import pdufa_dataframe, column_help as pdufa_column_help
+from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, column_help as pdufa_column_help
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
@@ -2089,6 +2089,7 @@ def render_merged_table(frame, heading, height_px=690):
         return
     frame = staged_table(frame)
     frame = sort_pdufa_rows(frame)
+    attach_survey(frame)
     st.markdown(f"### {heading}")
     # The merged HTML table renders the STAGE checkbox filter inside its own
     # column header; do not place a separate Streamlit filter above it.
@@ -2580,6 +2581,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         "The icon changes to ▲ ascending or ▼ descending; click it again to reverse the order."
     )
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
+    render_survey_box(frame)
 
 
 def table_view(frame, return_page="PDUFA"):
@@ -2729,7 +2731,7 @@ def render_pre_phase3():
         )
     pdufa_dataframe(
         pd.DataFrame(readiness["checks"]), hide_index=True,
-        use_container_width=True, height=370,
+        use_container_width=True, height=370, survey_source=pd.DataFrame(manifest["source_checks"]),
     )
     st.caption(readiness["note"])
     health = pd.DataFrame(manifest["source_checks"])
@@ -3391,7 +3393,8 @@ if page == "PDUFA":
         if not applied:
             st.metric("Trials / programs displayed", 0)
             pdufa_dataframe(
-                finance_style(empty_chart), hide_index=True, use_container_width=True, height=220
+                finance_style(empty_chart), hide_index=True, use_container_width=True, height=220,
+                survey_source=prepared,
             )
             if not selected_stages or not selected_dates:
                 st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
@@ -3448,14 +3451,14 @@ if page == "PDUFA":
                          for stage in PIPELINE_STAGES]
                         + [{"Stage": "TOTAL", "Count": len(shown)}]
                     )
-                    pdufa_dataframe(stage_table, hide_index=True, use_container_width=True, height=250)
+                    pdufa_dataframe(stage_table, hide_index=True, use_container_width=True, height=250, survey_source=filtered)
                 with col_b:
                     date_table = pd.DataFrame(
                         [{"DATES": band, "Count": int(date_counts.get(band, 0))}
                          for band in PIPELINE_DATE_BANDS]
                         + [{"DATES": "TOTAL", "Count": len(shown)}]
                     )
-                    pdufa_dataframe(date_table, hide_index=True, use_container_width=True, height=250)
+                    pdufa_dataframe(date_table, hide_index=True, use_container_width=True, height=250, survey_source=filtered)
                 if sum(stage_counts.values()) != len(shown) or sum(date_counts.values()) != len(shown):
                     st.error("COUNT MISMATCH: displayed count and audit disagree.")
                 else:
@@ -3748,6 +3751,7 @@ if page == "PDUFA":
             watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
             combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
             combined = sort_pdufa_rows(combined)
+            attach_survey(combined)
             ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
             st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
             st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")

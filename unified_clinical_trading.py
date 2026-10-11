@@ -3,7 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import pandas as pd
 import streamlit as st
-from pdufa_table_headers import pdufa_dataframe
+from pdufa_table_headers import pdufa_dataframe, attach_survey
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
@@ -131,6 +131,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
             timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
             timeline = sort_pdufa_grid(timeline, display_order)
+            attach_survey(timeline, df)
             a, b, c = st.columns(3)
             days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
             a.metric("Dated programs", len(timeline))
@@ -249,6 +250,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         entry = {k: r[k] for k in ("Ticker", "NCT ID", "Drug", "Indication",
                                   "Research phase", "Pipeline stage", "Clinical status",
                                   "Primary completion", "PDUFA date (pipeline)", "Pipeline source")}
+        entry["Pipeline Last Checked"] = r.get("checked_at", "")
         entry["Post evidence match"] = ("DRUG CONFLICT — REVIEW" if post_conflict else
                                         "AMBIGUOUS — REVIEW" if key in ambiguous
                                         else "EXACT TICKER + NCT" if matched else "NOT LINKED")
@@ -315,7 +317,7 @@ def render_combined_overview(root="data", *, dashboard=False):
             {"Check": "Numeric pre-readout scores", "Count": pre_score_count},
             {"Check": "Numeric post-readout evidence scores", "Count": post_score_count},
         ])
-        pdufa_dataframe(audit, use_container_width=True, hide_index=True)
+        pdufa_dataframe(audit, use_container_width=True, hide_index=True, survey_source=src)
         st.caption("Counts use the full Pipeline universe before the user filters. Scores are not approval probabilities. Missing trial links do not establish failed clinical or financing gates.")
     with st.expander("UNMATCHED TRIAL RECONCILIATION"):
         missing = df.loc[
@@ -325,7 +327,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         st.caption("Missing source links are research gaps, not clinical failures.")
         pdufa_dataframe(missing[["Ticker", "NCT ID", "Drug",
             "Pre Phase 3 evidence match", "Post evidence match"]].head(250),
-            hide_index=True, use_container_width=True)
+            hide_index=True, use_container_width=True, survey_source=missing)
         st.download_button("EXPORT UNMATCHED RECORDS",
             missing.to_csv(index=False).encode("utf-8"),
             file_name="unmatched_trial_records.csv", mime="text/csv",

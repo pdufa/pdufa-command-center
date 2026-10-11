@@ -398,7 +398,8 @@ def grouped_dataframe(data, **kwargs):
         panel_key = key if first else f"{key}_{token}"
         first = False
         renderer = pdufa_dataframe if st.session_state.get("nav") == "PDUFA" else st.dataframe
-        return renderer(data[fields], key=panel_key, column_config=_compact_config(fields, config), **kwargs)
+        survey_options = {"survey_source": data} if renderer is pdufa_dataframe else {}
+        return renderer(data[fields], key=panel_key, column_config=_compact_config(fields, config), **survey_options, **kwargs)
 
     results = render_column_tabs(data, key, render)
     return next((result for result in results if getattr(getattr(result, "selection", None), "rows", [])), results[0])
@@ -476,11 +477,12 @@ def grouped_editor(data, **kwargs):
         if pane_dynamic:
             pane_config.update({c: None for c in data.columns if c not in fields})
         renderer = pdufa_editor if st.session_state.get("nav") == "PDUFA" else st.data_editor
+        survey_options = {"survey_source": data} if renderer is pdufa_editor else {}
         edited = renderer(
             pane_input, key=widget_key, column_order=fields, column_config=pane_config,
             disabled=[c for c in pane_input.columns if c not in allowed],
             num_rows="dynamic" if pane_dynamic else "fixed", on_change=_commit_pane,
-            args=(state_key, widget_key, snapshot, allowed, pane_dynamic), **kwargs,
+            args=(state_key, widget_key, snapshot, allowed, pane_dynamic), **survey_options, **kwargs,
         )
         # Also consume the returned value for programmatic edit events and tests.
         if not edited.equals(pane_input):
