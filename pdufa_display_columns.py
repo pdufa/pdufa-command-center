@@ -254,7 +254,7 @@ def sort_pdufa_grid(frame, order=DISPLAY_ORDER_OPTIONS[0]):
 
     TOP SCORE is a *display sort only*: scores from different research models
     are not scientifically equivalent; the adjacent Score type stays visible.
-    Scores descend, then numeric days to PDUFA ascend within each score.
+    Scores descend, then numeric days to PDUFA descend within each score.
     Missing scores/days go last within their respective sort level, followed
     by ticker/NCT/drug tie-breakers.
     """
@@ -276,10 +276,38 @@ def sort_pdufa_grid(frame, order=DISPLAY_ORDER_OPTIONS[0]):
     )
     result = out.sort_values(
         ["_score_sort", "_days_sort", "Ticker", "NCT ID", "Drug"],
-        ascending=[False, True, True, True, True],
+        ascending=[False, False, True, True, True],
         na_position="last", kind="stable",
     )
     return result.drop(columns=["_score_sort", "_days_sort"])
+
+
+def sort_pdufa_rows(frame):
+    """Sort legacy PDUFA tables by existing score and countdown, both descending.
+
+    Preserve all source columns and values. Without a score, sort only the
+    countdown. Missing scores and countdowns remain last at each sort level.
+    """
+    aliases = {
+        "Days to PDUFA": ("Days to PDUFA", "DAYS TO PDUFA", "days_to_pdufa", "Days Left"),
+        "Score /100": ("Score /100", "Our Trade/PDUFA Score", "Trade Score", "trade_score",
+                       "Evidence score /100", "Pre-readout research score /100",
+                       "Preliminary clinical score /100", "Review priority /100",
+                       "Research priority /100"),
+        "Ticker": ("Ticker", "ticker"),
+        "NCT ID": ("NCT ID", "NCT", "nct_id"),
+        "Drug": ("Drug", "drug"),
+    }
+    if frame.empty or not any(c in frame for c in aliases["Days to PDUFA"]):
+        return frame.copy()
+    keys = pd.DataFrame(index=range(len(frame)))
+    for name, choices in aliases.items():
+        column = next((c for c in choices if c in frame), None)
+        if column is not None:
+            keys[name] = frame[column].to_numpy()
+    keys["_position"] = range(len(frame))
+    positions = sort_pdufa_grid(keys)["_position"].tolist()
+    return frame.iloc[positions].copy()
 
 
 def finance_style(frame):

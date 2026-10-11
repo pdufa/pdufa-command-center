@@ -61,8 +61,8 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                     self.assertTrue(main[0]["Score type"].notna().all())
                     for score, group in main[0].groupby("Score /100", dropna=False, sort=False):
                         self.assertTrue(
-                            group["Days to PDUFA"].dropna().is_monotonic_increasing,
-                            f"{tab} equal score {score} must sort days to PDUFA ascending",
+                            group["Days to PDUFA"].dropna().is_monotonic_decreasing,
+                            f"{tab} equal score {score} must sort days to PDUFA descending",
                         )
                         dated = group["Days to PDUFA"].notna().tolist()
                         self.assertEqual(dated, sorted(dated, reverse=True),

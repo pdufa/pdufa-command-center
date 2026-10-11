@@ -341,7 +341,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         overview = next(item for item in overview_app.get("tab")
                         if item.label == "UNIFIED OVERVIEW")
         focused = [item.value for item in overview.get("dataframe")
-                   if {"Ticker", "Score /100", "Score type"}
+                   if {"Ticker", "Score /100", "Score type", "F"}
                    .issubset(item.value.columns)]
         self.assertEqual(len(focused), 6)
         self.assertGreaterEqual(sum(not frame.empty for frame in focused), 4)
@@ -349,9 +349,11 @@ class PipelinePageSmokeTests(unittest.TestCase):
             self.assertTrue(frame["Ticker"].eq(ticker).all())
         timeline = next(item.value for item in overview.get("dataframe")
                         if {"Date Classification", "PDUFA source"}.issubset(item.value.columns)
-                        and "Score /100" not in item.value.columns)
+                        and "F" not in item.value.columns)
         self.assertTrue(timeline["Ticker"].eq(ticker).all())
-        self.assertTrue(timeline["PDUFA Date"].is_monotonic_increasing)
+        self.assertTrue(timeline["Score /100"].dropna().is_monotonic_decreasing)
+        for _, group in timeline.groupby("Score /100", dropna=False, sort=False):
+            self.assertTrue(group["Days to PDUFA"].dropna().is_monotonic_decreasing)
         overview_app.text_input(key="overview_query").set_value("__NO_MATCH__").run()
         self.assertFalse(list(overview_app.exception))
         overview = next(item for item in overview_app.get("tab")

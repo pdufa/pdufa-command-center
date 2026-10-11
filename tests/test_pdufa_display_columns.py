@@ -6,7 +6,7 @@ import pandas as pd
 
 from pdufa_display_columns import (
     FRONT, DISPLAY_ORDER_OPTIONS, enrich_exact_trials, finance_style,
-    prepare_pdufa_grid, sort_pdufa_grid,
+    prepare_pdufa_grid, sort_pdufa_grid, sort_pdufa_rows,
 )
 
 
@@ -52,7 +52,7 @@ class PdufaGridTests(unittest.TestCase):
                 displayed = prepare_pdufa_grid(frame, view=view,
                                                as_of=date(2026, 10, 11))
                 top = sort_pdufa_grid(displayed, "Top Score")
-                self.assertEqual(top["Ticker"].tolist(), ["BBB", "AAA", "ZZZ", "CCC"])
+                self.assertEqual(top["Ticker"].tolist(), ["AAA", "BBB", "ZZZ", "CCC"])
                 name = sort_pdufa_grid(displayed, "Ticker A–Z")
                 self.assertEqual(name["Ticker"].tolist(), ["AAA", "BBB", "CCC", "ZZZ"])
                 self.assertEqual(top.columns[:5].tolist(), list(FRONT[:5]))
@@ -70,7 +70,7 @@ class PdufaGridTests(unittest.TestCase):
         ])
         result = sort_pdufa_grid(frame)
         self.assertEqual(result["Ticker"].tolist(), [
-            "HIGHER", "Z_SOONER", "A_LATER", "A_UNDATED", "LOWER",
+            "HIGHER", "A_LATER", "Z_SOONER", "A_UNDATED", "LOWER",
             "UNSCORED_DATED", "UNSCORED_UNDATED",
         ])
         # Sorting changes the row order, preserving the original field values.
@@ -90,6 +90,26 @@ class PdufaGridTests(unittest.TestCase):
         self.assertEqual(sorted_frame["Ticker"].tolist(), ["XYZ", "ABC", "ABC"])
         with self.assertRaises(ValueError):
             sort_pdufa_grid(frame, "Lowest Score")
+
+    def test_legacy_countdown_names_share_score_and_days_descending_order(self):
+        for days_column in ("Days to PDUFA", "DAYS TO PDUFA", "days_to_pdufa", "Days Left"):
+            with self.subTest(days_column=days_column):
+                frame = pd.DataFrame([
+                    {"Ticker": "SOON", "Trade Score": "90", days_column: "9"},
+                    {"Ticker": "LATER", "Trade Score": "90", days_column: "100"},
+                    {"Ticker": "BEST", "Trade Score": "91", days_column: "1"},
+                    {"Ticker": "UNDATED", "Trade Score": "90", days_column: None},
+                    {"Ticker": "UNSCORED", "Trade Score": None, days_column: "200"},
+                ], index=[0, 0, 1, 1, 2])
+                result = sort_pdufa_rows(frame)
+                self.assertEqual(result["Ticker"].tolist(),
+                                 ["BEST", "LATER", "SOON", "UNDATED", "UNSCORED"])
+                pd.testing.assert_frame_equal(result, frame.iloc[[2, 1, 0, 3, 4]])
+
+    def test_unscored_countdown_uses_descending_days_and_missing_last(self):
+        frame = pd.DataFrame({"Ticker": ["A", "B", "C"],
+                              "DAYS TO PDUFA": [9, None, 100]})
+        self.assertEqual(sort_pdufa_rows(frame)["Ticker"].tolist(), ["C", "A", "B"])
 
     def test_missing_data_does_not_become_a_zero_or_financing_close(self):
         source = pd.DataFrame([{

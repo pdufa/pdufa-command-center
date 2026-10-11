@@ -9,6 +9,7 @@ import streamlit as st
 from stages import StageIndex, STAGE_HELP, DAYS_HELP, add_stage_column
 from financing_stage import FINANCING_OPTIONS, FINANCING_HELP, add_financing_column
 from stage_header_overlay import position_stage_filter
+from pdufa_display_columns import sort_pdufa_rows
 
 
 MAX_COLUMNS = 7
@@ -187,7 +188,9 @@ def _filter_stage_rows(staged, selected, order, priority=None):
     result = staged.loc[stages.isin(selected)].copy()
     if result.empty:
         return result
-    if order == "Selected stages: chosen order":
+    if order == "Top Score":
+        result = sort_pdufa_rows(result)
+    elif order == "Selected stages: chosen order":
         custom = [stage for stage in (priority or []) if stage in selected]
         order_list = custom + [stage for stage in selected if stage not in custom]
         ranks = {stage: i for i, stage in enumerate(order_list)}
@@ -262,7 +265,7 @@ def stage_filter_panel(data, key, source=None, expanded=False):
                 ]
             order = st.selectbox(
                 "Sort rows by",
-                ("Workflow: early to late", "Workflow: late to early",
+                ("Top Score", "Workflow: early to late", "Workflow: late to early",
                  "Selected stages: chosen order", "Stage: A to Z", "Stage: Z to A",
                  "Days to PDUFA: soonest first", "Days to PDUFA: latest first"),
                 key=key + "_stage_order",

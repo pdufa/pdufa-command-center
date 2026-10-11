@@ -81,6 +81,12 @@ class StageMenuSortTests(unittest.TestCase):
         countdown = _filter_stage_rows(self.frame, self.options, "Days to PDUFA: soonest first")
         self.assertEqual(countdown["Ticker"].tolist(), ["FDA", "FIN", "P3", "P2"])
 
+    def test_top_score_defaults_to_score_then_days_both_descending(self):
+        self.frame["Trade Score"] = [None, 90, 91, 90]
+        result = _filter_stage_rows(self.frame, self.options, "Top Score")
+        self.assertEqual(result["Ticker"].tolist(), ["FDA", "P3", "FIN", "P2"])
+        self.assertEqual(result.index.tolist(), [93, 51, 4, 18])
+
     def test_clear_all_shows_no_rows_without_editing_data(self):
         empty = _filter_stage_rows(self.frame, [], "Stage: A to Z")
         self.assertTrue(empty.empty)

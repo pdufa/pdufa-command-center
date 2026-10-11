@@ -127,13 +127,13 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                            key="overview_trading_export")
         with st.expander("PDUFA TIMELINE", expanded=True):
             st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
-            fields = ["Ticker", "PDUFA Date", "Days to PDUFA", "Date Classification",
+            fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "Date Classification",
                       "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
             timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
                                   post3.reindex(columns=fields)], ignore_index=True)
             timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
             timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
-            timeline = timeline.sort_values(["PDUFA Date", "Ticker", "Drug"], kind="mergesort")
+            timeline = sort_pdufa_grid(timeline, display_order)
             a, b, c = st.columns(3)
             days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
             a.metric("Dated programs", len(timeline))
@@ -357,8 +357,8 @@ def render_combined_overview(root="data", *, dashboard=False):
     )
     df = sort_pdufa_grid(df, display_order)
     st.caption(
-        "Top Score sorts Score /100 highest to lowest, then Days to PDUFA lowest "
-        "to highest for equal scores, with missing dates last. The adjacent "
+        "Top Score sorts Score /100 highest to lowest, then Days to PDUFA highest "
+        "to lowest for equal scores, with missing dates last. The adjacent "
         "Score type identifies its model. Pre- and post-readout scores are not "
         "interchangeable performance or approval probabilities."
     )

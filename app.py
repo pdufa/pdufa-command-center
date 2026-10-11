@@ -7,7 +7,7 @@ from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS a
 from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
 from pdufa_display_columns import (prepare_pdufa_grid, enrich_exact_trials,
-                                   finance_style, sort_pdufa_grid,
+                                   finance_style, sort_pdufa_grid, sort_pdufa_rows,
                                    DISPLAY_ORDER_OPTIONS)
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from phase2_pre_readout_p import attach_phase2_p
@@ -2087,6 +2087,7 @@ def render_merged_table(frame, heading, height_px=690):
     if frame is None or frame.empty:
         return
     frame = staged_table(frame)
+    frame = sort_pdufa_rows(frame)
     st.markdown(f"### {heading}")
     # The merged HTML table renders the STAGE checkbox filter inside its own
     # column header; do not place a separate Streamlit filter above it.
@@ -2137,6 +2138,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
                 for label in stage_labels) +
         '</div><label class="stage-order-label">Sort STAGE rows: '
         '<select class="stage-sort-order">'
+        '<option value="score-down">Score ↓, days to PDUFA ↓</option>'
         '<option value="workflow-up">Phase 2 → FDA</option>'
         '<option value="workflow-down">FDA → Phase 2</option>'
         '<option value="alpha-up">STAGE A → Z</option>'
@@ -2390,6 +2392,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
           const daysIndex = daysHeader ? Number(daysHeader.dataset.colIndex) : -1;
           const rows = Array.from(tbody.querySelectorAll('tr'));
           rows.sort((a,b) => {
+            if (mode === 'score-down') return Number(a.dataset.originalIndex) - Number(b.dataset.originalIndex);
             const sa = a.dataset.stage || '';
             const sb = b.dataset.stage || '';
             let result = 0;
@@ -2643,6 +2646,7 @@ def table_view(frame, return_page="PDUFA"):
     for c in ["ticker","company","drug","indication"]:
         out[c] = out[c].fillna("Not available").astype(str)
 
+    out = sort_pdufa_rows(out)
     return out.rename(columns={
         "company":"Company","drug":"Drug","indication":"Indication","Ticker Link":"Ticker"
     })[[
@@ -2954,7 +2958,7 @@ def render_pre_phase3():
         )
         st.download_button(
             "EXPORT ALL FILTERED CLINICAL RECORDS (CSV)",
-            selected.to_csv(index=False).encode("utf-8-sig"),
+            pre_grid.to_csv(index=False).encode("utf-8-sig"),
             file_name="step7_pre_phase3_research.csv", mime="text/csv",
             key="step7_clinical_export",
         )
@@ -3742,6 +3746,8 @@ if page == "PDUFA":
             ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
             watch_values = {str(x).upper().strip() for x in st.session_state["watchlist"]}
             combined.insert(0, "Watchlist", ticker_values.isin(watch_values))
+            combined = sort_pdufa_rows(combined)
+            ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
             st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
             st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")
             if "DAYS TO PDUFA" in combined.columns:
@@ -3749,7 +3755,7 @@ if page == "PDUFA":
                 if not countdown.empty:
                     countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
                     countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
-                    countdown = countdown.sort_values("DAYS TO PDUFA", kind="stable", na_position="last")
+                    # Keep the master score-descending, countdown-descending order.
                     tab_labels = ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
                     category_tabs = st.tabs([f"{label} ({len(countdown) if label == 'ALL' else int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
                     for label, category_tab in zip(tab_labels, category_tabs):
