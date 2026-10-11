@@ -10,7 +10,7 @@ from __future__ import annotations
 import csv
 import json
 import re
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -116,6 +116,8 @@ def build_snapshot(root, now=None):
     protocols = read_csv(root / "pre_readout_protocols.csv")
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
     financing = read_csv(root / "second_financing_status.csv")
+    regulatory = read_csv(root / "pdufa_candidates.csv")
+    candidate_by_event = {r.get("event_key"):r for r in regulatory if r.get("event_key")}
     rechecks = read_csv(root / "recheck_status.csv")
     market_rows = read_csv(root / "step7_market_status.csv")
     market_state = read_json(root / "step7_market_status.json")
@@ -208,6 +210,16 @@ def build_snapshot(root, now=None):
         if not key:
             continue
         rec = recheck_by_event.get(key, {})
+        reg = candidate_by_event.get(key, {})
+        target = as_of_date(reg.get("pdufa_date"))
+        outcome = reg.get("outcome", "").upper()
+        decision = bool(outcome in {"APPROVED","CRL","REJECTED","WITHDRAWN"}
+                        or reg.get("check_status", "").upper().startswith("RESOLVED_"))
+        try:
+            decision_day_passed = bool(target and date.fromisoformat(target) < now.date())
+        except ValueError:
+            decision_day_passed = False
+        excluded = decision or decision_day_passed or reg.get("monitor_eligibility", "").upper() == "EXCLUDED"
         status = fin.get("second_financing_audit_status", "") or "UNVERIFIED"
         check = freshness(rec.get("completed_at_utc"), now, 48)
         sec = rec.get("financing_status", "").upper()
@@ -220,8 +232,26 @@ def build_snapshot(root, now=None):
         quote = market_by_ticker.get(key.split("|", 1)[0].upper(), {})
         quote_fresh = (quote.get("last_session_freshness") == "RECENT EOD"
                        and quote.get("market_status") == "MARKET_UPDATED")
+        gate_notes=[]
+        if decision: gate_notes.append("FDA decision already recorded")
+        elif decision_day_passed: gate_notes.append("saved PDUFA date passed; recheck decision")
+        if not reg: gate_notes.append("exact regulatory event mapping unavailable")
+        if reg and reg.get("phase3_status", "").upper() not in {"VERIFIED_SUCCESS", "PRIMARY_MET_VERIFIED"}:
+            gate_notes.append("successful Phase 3 primary endpoint and clinical relevance not independently established")
+        if reg and reg.get("new_dilution_flag", "").upper() != "NO":
+            gate_notes.append("unresolved/new dilution requires source review")
+        if blocked or check != "RECENT": gate_notes.append("current SEC recheck blocked or stale")
+        if not historical: gate_notes.append("second post-readout financing sequence not proven in this ledger")
+        if not quote_fresh: gate_notes.append("fresh EOD quote missing")
+        gate_notes.extend(("clinical benefit/CI and safety manual review required",
+                           "post-readout stable price base and normalized volume not verified"))
+        gate_label = "EXCLUDED — past / resolved / out of scope" if excluded else "REVIEW — ENTRY GATES NOT CLEARED"
         events.append({
             "Ticker": key.split("|", 1)[0],
+            "Proposed trade status": gate_label,
+            "Gate reasons": " | ".join(gate_notes),
+            "Recorded FDA outcome": outcome,
+            "Saved PDUFA target": target,
             "Price last session": quote.get("last_session", "") if quote_fresh else "",
             "Last EOD close USD": quote.get("last_close_usd", "") if quote_fresh else "",
             "Relative volume": quote.get("relative_volume", "") if quote_fresh else "",
@@ -236,7 +266,7 @@ def build_snapshot(root, now=None):
             "First source": fin.get("first_financing_source", ""),
             "Second source": fin.get("second_financing_source", ""),
             "Audit status": status,
-            "Current gate": "REVIEW — historical financing is not live entry clearance",
+            "Current gate": gate_label,
             "Why blocked": ("SEC recheck blocked or missing; historical sources retained"
                             if blocked else "Fresh full clinical, safety, dilution, price and volume gates not verified"),
         })
