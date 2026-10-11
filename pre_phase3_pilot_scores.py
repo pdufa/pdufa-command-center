@@ -99,6 +99,29 @@ def review_index(ledger, as_of):
     return {key:value for key,value in matched.items() if value is not None}
 
 
+def classify_phase3_protocol(protocol, nct):
+    """Classify pivotal *design* only; not issuer outcome or registration success."""
+    proto = protocol or {}
+    source = "https://clinicaltrials.gov/study/" + str(nct or "")
+    endpoint = str(proto.get("primary_endpoint") or "").strip().lower()
+    status = str(proto.get("registry_overall_status") or "").strip().upper()
+    allocation = str(proto.get("allocation") or "").strip().upper()
+    comparator = str(proto.get("comparator") or "").strip()
+    posted = str(proto.get("registry_results_first_posted") or "").strip()
+    if proto.get("source_url") != source:
+        return "REVIEW — EXACT NCT PROTOCOL MISSING"
+    if posted:
+        return "RESULT POSTED — NOT PRE-READOUT"
+    if any(term in endpoint for term in BLOCKED_PRIMARY_TERMS) or (
+            not comparator and "SINGLE_GROUP" in str(proto.get("intervention_model") or "").upper()):
+        return "NON-PIVOTAL EFFICACY — SAFETY / OPEN LABEL"
+    if status not in ACTIVE:
+        return "REVIEW — PROTOCOL STATUS UNVERIFIED"
+    if (allocation == "RANDOMIZED" and comparator and endpoint):
+        return "PIVOTAL EFFICACY DESIGN — SOURCE CHECKED"
+    return "REVIEW — EFFICACY DESIGN NOT VERIFIED"
+
+
 def attach_preliminary_scores(trials, protocols, ledger, as_of):
     """Add numbers only to exact prospective pivotal efficacy trials.
 
@@ -115,9 +138,8 @@ def attach_preliminary_scores(trials, protocols, ledger, as_of):
         key = (str(row.get("Ticker") or "").upper(), str(row.get("NCT ID") or "").upper())
         record = index.get(key)
         protocol = by_nct.get(key[1], {})
-        primary = str(protocol.get("primary_endpoint") or "").strip().lower()
-        comparator = str(protocol.get("comparator") or "").strip()
         status = str(row.get("Registry status") or "").upper()
+        design_type = classify_phase3_protocol(protocol, key[1])
         src = str(row.get("NCT source") or "").strip()
         if not (record
                 and row.get("Trial phase") == "Phase 3"
@@ -125,8 +147,7 @@ def attach_preliminary_scores(trials, protocols, ledger, as_of):
                 and not str(row.get("Registry results posted") or "").strip()
                 and src == "https://clinicaltrials.gov/study/" + key[1]
                 and str(protocol.get("source_url") or "") == src
-                and primary and comparator
-                and not any(term in primary for term in BLOCKED_PRIMARY_TERMS)
+                and design_type == "PIVOTAL EFFICACY DESIGN — SOURCE CHECKED"
                 and str(row.get("Drug") or "").lower().find(
                     str(record.get("drug") or "").lower()) >= 0
                 and str(row.get("Indication") or "").lower().find(
