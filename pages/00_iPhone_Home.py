@@ -23,13 +23,13 @@ st.markdown("""<div class="mobile-hero"><h2 style="margin:0">🧬 PDUFA Command 
 
 base = "/"
 items = [
+    ("🧬 PDUFA PIPELINE", base),
     ("🎯 Decision", base),
     ("📋 All PDUFA", base),
     ("💰 Market Cap", base),
     ("📅 Calendar", base),
     ("🧠 Prediction Engine", base),
     ("🔎 Scans", base),
-    ("🎯 Match Optimizer", base),
     ("🔄 Recheck", base),
     ("🏛️ FDA Engine", base),
     ("📝 Plan", base),
