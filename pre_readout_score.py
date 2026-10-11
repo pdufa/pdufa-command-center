@@ -217,7 +217,13 @@ def assess(queue, evidence, as_of):
         raise ValueError("Invalid cutoff date")
     if "nct_id" not in evidence:
         return out
-    lookup = evidence.copy().drop_duplicates("nct_id", keep="last").set_index("nct_id")
+    lookup = evidence.copy()
+    if "assessment_cutoff_date" in lookup:
+        # A later daily review must not replace the saved assessment for an
+        # earlier cutoff. Retain the existing date gate when no exact day exists.
+        same_day = lookup["assessment_cutoff_date"].map(_iso_day).eq(cutoff)
+        lookup = pd.concat([lookup, lookup.loc[same_day]], ignore_index=True)
+    lookup = lookup.drop_duplicates("nct_id", keep="last").set_index("nct_id")
     for i, row in out.iterrows():
         nct = str(row["NCT ID"])
         if nct not in lookup.index:

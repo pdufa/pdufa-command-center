@@ -30,9 +30,29 @@ def research_queue():
 
 class FirstStrictResearchPilotTests(unittest.TestCase):
     def setUp(self):
-        self.review=pd.read_csv(EVIDENCE).fillna("")
+        self.history=pd.read_csv(EVIDENCE).fillna("")
+        self.review=self.history.loc[self.history["assessment_cutoff_date"].eq("2026-10-10")].copy()
         self.assertEqual(len(self.review),2,"Only the two dated, independently sourced pilot reviews belong in this ledger")
         self.assertEqual(set(self.review["nct_id"]), {"NCT07671911", "NCT07363577"})
+
+    def test_daily_issuer_refresh_preserves_each_exact_cutoff_and_expires(self):
+        first_two_days=self.history.loc[self.history["assessment_cutoff_date"].isin(
+            ["2026-10-10","2026-10-11"])]
+        for ticker,expected in (("TRVI",80),("LBRX",72)):
+            with self.subTest(ticker=ticker):
+                reference=self.review.loc[self.review["ticker"].eq(ticker)].iloc[0]
+                queue=research_queue()
+                for source,target in (("ticker","Ticker"),("drug","Drug"),
+                                      ("indication","Indication"),("nct_id","NCT ID"),
+                                      ("phase2_nct_id","Phase 2 NCT Links")):
+                    queue.loc[0,target]=reference[source]
+                queue.loc[0,"Source"]="https://clinicaltrials.gov/study/"+reference["nct_id"]
+                for cutoff in (date(2026,10,10),date(2026,10,11)):
+                    out=assess(queue,self.history,cutoff).iloc[0]
+                    self.assertEqual(out["Pre-Readout Evidence Points"],expected)
+                    self.assertTrue(pd.isna(out["Phase 3 Success Probability %"]))
+                expired=assess(queue,first_two_days,date(2026,10,12)).iloc[0]
+                self.assertTrue(pd.isna(expired["Pre-Readout Evidence Points"]))
 
     def test_review_has_exact_study_dates_sources_and_issuer_check(self):
         record=self.review.loc[self.review["nct_id"].eq("NCT07671911")].iloc[0]
