@@ -11,6 +11,7 @@ def trial(**changes):
         "Drug": "Example therapy",
         "Indication": "Cough",
         "Trial phase": "Phase 3",
+        "Phase 3 trial type": "PIVOTAL EFFICACY DESIGN — SOURCE CHECKED",
         "Registry status": "RECRUITING",
         "Registry results posted": "",
         "NCT source": "https://clinicaltrials.gov/study/NCT07671911",
@@ -45,6 +46,12 @@ class ScoreReviewQueueTests(unittest.TestCase):
         self.assertIsNone(found[0]["Pre-readout research score /100"])
         self.assertIn("Issuer topline status",found[0]["Needed before clinical score"])
         self.assertGreater(found[0]["Review priority"],found[1]["Review priority"])
+
+    def test_open_label_safety_phase3_not_selected_for_pivotal_scoring(self):
+        unsafe = trial(**{"Phase 3 trial type": "NON-PIVOTAL EFFICACY — SAFETY / OPEN LABEL"})
+        self.assertEqual(scoring_review_queue([unsafe]), [])
+        unverified = trial(**{"Phase 3 trial type": "REVIEW — PROTOCOL STATUS UNVERIFIED"})
+        self.assertEqual(scoring_review_queue([unverified]), [])
 
     def test_inactive_posted_and_wrong_provenance_excluded(self):
         for change in (
