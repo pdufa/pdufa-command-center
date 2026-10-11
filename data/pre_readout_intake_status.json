@@ -1,12 +1,12 @@
 {
-  "as_of": "2026-10-10T16:54:04.110107+00:00",
+  "as_of": "2026-10-11T18:27:57.696389+00:00",
   "market_cap_range_usd": [
     300000000,
     10000000000
   ],
   "active_registry_unposted_phase3_trials": 210,
   "protocol_records_stored": 210,
-  "fetched_this_run": 0,
+  "fetched_this_run": 210,
   "failed_fetches": 0,
   "uncollected_trials": 0,
   "errors": {},
