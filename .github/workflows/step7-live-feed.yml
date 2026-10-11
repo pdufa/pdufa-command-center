@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths:
       - step7_live.py
+      - step7_entry.py
+      - data/step7_entry_evidence.csv
+      - tests/test_step7_entry.py
       - scripts/step7_refresh.py
       - tests/test_step7_live.py
       - .github/workflows/step7-live-feed.yml
@@ -32,8 +35,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Test evidence boundaries and source timestamps
-        run: python -m unittest discover -s tests -p 'test_step7_live.py' -v
+      - name: Install source-dated scoring dependency
+        run: python -m pip install "pandas>=2.0,<3.0"
+      - name: Test entry gates and source timestamp boundaries
+        run: |
+          python -m unittest discover -s tests -p 'test_step7_live.py' -v
+          python -m unittest discover -s tests -p 'test_step7_entry.py' -v
       - name: Build current trial/market/financing display feed
         run: python scripts/step7_refresh.py
       - name: Save auditable feed files
