@@ -13,22 +13,25 @@ from pathlib import Path
 def _load(day):
     pipeline = load_universe("data", today=day)
     post, health = build_queue("data", as_of=day)
+    snapshot = None
     try:
         snapshot = load_current_snapshot(Path("data"), datetime.now(timezone.utc))
         pre = snapshot[0] if snapshot is not None else []
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         pre = []
-    return pipeline, post, health, pre
+    return pipeline, post, health, pre, snapshot is not None
 
 def render_combined_overview():
     st.markdown("## UNIFIED CLINICAL → TRADING OVERVIEW")
     st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:
-        pipeline, post, health, pre = _load(today)
+        pipeline, post, health, pre, pre_current = _load(today)
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         st.error("Saved source data could not be loaded. No eligibility has been verified.")
         return
+    if not pre_current:
+        st.warning("Pre–Phase 3 validated snapshot unavailable or expired. Pre-readout scores are left blank.")
     if not health.get("feed_current"):
         st.warning("Post–Phase 3 verification snapshot is stale. No entry-ready qualification is inferred.")
     if not isinstance(pipeline, pd.DataFrame) or pipeline.empty:
@@ -91,7 +94,7 @@ def render_combined_overview():
     for key in ambiguous_pre:
         pre_by_id.pop(key, None)
     pre_fields = (
-        "PRE PHASE 3 Score /100", "Pre-readout research score /100",
+        "Pre-readout research score /100",
         "Preliminary clinical score /100", "Score status",
         "Clinical score as of", "Linked Phase 2 PRIMARY p",
     )
@@ -115,11 +118,38 @@ def render_combined_overview():
             entry["Entry qualification"] = "REVIEW — AMBIGUOUS TRIAL MATCH"
         records.append(entry)
     df = pd.DataFrame(records)
+    # Coverage audit is computed before filtering, without hiding missing evidence.
+    total = len(df)
+    pre_exact = int(df["Pre Phase 3 evidence match"].eq("EXACT TICKER + NCT").sum())
+    post_exact = int(df["Post evidence match"].eq("EXACT TICKER + NCT").sum())
+    both = int((df["Pre Phase 3 evidence match"].eq("EXACT TICKER + NCT")
+               & df["Post evidence match"].eq("EXACT TICKER + NCT")).sum())
+    pre_ambiguous = int(df["Pre Phase 3 evidence match"].eq("AMBIGUOUS — REVIEW").sum())
+    post_ambiguous = int(df["Post evidence match"].eq("AMBIGUOUS — REVIEW").sum())
+    pre_score_count = int(pd.to_numeric(df["Pre-readout research score /100"],
+                                       errors="coerce").notna().sum())
+    post_score_count = int(pd.to_numeric(df["Evidence score /100"],
+                                        errors="coerce").notna().sum())
     a, b, c, d = st.columns(4)
     a.metric("Pipeline records", len(df))
     b.metric("Exact post evidence matches", int(df["Post evidence match"].eq("EXACT TICKER + NCT").sum()))
     c.metric("Pre clinical matches", int(df["Pre Phase 3 evidence match"].eq("EXACT TICKER + NCT").sum()))
     d.metric("Post evidence REVIEW", health.get("review_count", 0))
+    with st.expander("SOURCE MATCH & SCORE COVERAGE AUDIT", expanded=False):
+        audit = pd.DataFrame([
+            {"Check": "Pipeline records", "Count": total},
+            {"Check": "Exact pre-readout matches", "Count": pre_exact},
+            {"Check": "Exact post-readout matches", "Count": post_exact},
+            {"Check": "Matched in both feeds", "Count": both},
+            {"Check": "Pre-readout ambiguous trial IDs", "Count": pre_ambiguous},
+            {"Check": "Post-readout ambiguous trial IDs", "Count": post_ambiguous},
+            {"Check": "Missing pre-readout match", "Count": total - pre_exact - pre_ambiguous},
+            {"Check": "Missing post-readout match", "Count": total - post_exact - post_ambiguous},
+            {"Check": "Numeric pre-readout scores", "Count": pre_score_count},
+            {"Check": "Numeric post-readout evidence scores", "Count": post_score_count},
+        ])
+        st.dataframe(audit, use_container_width=True, hide_index=True)
+        st.caption("Counts use the full Pipeline universe before the user filters. Scores are not approval probabilities. Missing trial links do not establish failed clinical or financing gates.")
     f1, f2, f3 = st.columns([1, 1, 2])
     with f1:
         phase = st.selectbox("Research phase", ["All", "PRE PHASE 3", "POST PHASE 3 / REGULATORY", "OTHER / REVIEW"], key="unified_phase")
