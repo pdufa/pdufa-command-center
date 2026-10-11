@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
 from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
-from pre_phase3_pilot_scores import attach_preliminary_scores
+from pre_phase3_pilot_scores import attach_preliminary_scores, classify_phase3_protocol
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -233,6 +233,7 @@ def build_snapshot(root, now=None):
             "Ticker": ticker, "Company": row.get("company", ""),
             "Drug": row.get("drug", ""), "Indication": row.get("indication", ""),
             "NCT ID": nct, "Trial phase": label, "Registry status": row.get("trial_status", ""),
+            "Phase 3 trial type": classify_phase3_protocol(p, nct) if "PHASE3" in phases else "NOT PHASE 3",
             "Registry primary completion": completion,
             "Registry results posted": row.get("results_first_posted", ""),
             "Issuer Phase 3 readout": "NOT VERIFIED HERE",
