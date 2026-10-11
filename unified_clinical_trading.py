@@ -34,7 +34,8 @@ def render_combined_overview():
     if not pre_current:
         st.warning("Pre–Phase 3 validated snapshot unavailable or expired. Pre-readout scores are left blank.")
     if not health.get("feed_current"):
-        st.warning("Post–Phase 3 verification snapshot is stale. No entry-ready qualification is inferred.")
+        st.warning("Post–Phase 3 verification snapshot is stale. Post-readout scores, financing stages and entry-ready labels are withheld until refreshed.")
+        post = []  # Fail closed: stale research records cannot populate current status cells.
     if not isinstance(pipeline, pd.DataFrame) or pipeline.empty:
         st.info("The saved Pipeline feed is empty.")
         return
