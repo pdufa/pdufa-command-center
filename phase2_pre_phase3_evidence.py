@@ -80,13 +80,18 @@ def phase2_linked_summary(index, ticker, phase2_links):
     evidence = [item for nct in linked for item in index.get((ticker, nct), ())]
     if not evidence:
         return {
+            "Phase 2 p": "NOT VERIFIED",
             "Linked Phase 2 PRIMARY p": "NOT VERIFIED — NO ELIGIBLE LINKED PRIMARY ANALYSIS",
             "Phase 2 PRIMARY evidence count": 0,
             "Phase 2 PRIMARY first observed UTC": "",
             "Phase 2 PRIMARY registry sources": "",
         }
     summaries = [f"{v['nct_id']} p{v['modifier']}{v['p_value']} ({v['comparison']})" for v in evidence]
+    compact = " | ".join(f"p{v['modifier']}{v['p_value']}" for v in evidence[:6])
+    if len(evidence) > 6:
+        compact += f" | +{len(evidence)-6} more"
     return {
+        "Phase 2 p": compact,
         "Linked Phase 2 PRIMARY p": " | ".join(summaries[:6]) +
             (f" | +{len(evidence)-6} more" if len(evidence)>6 else ""),
         "Phase 2 PRIMARY evidence count": len(evidence),
