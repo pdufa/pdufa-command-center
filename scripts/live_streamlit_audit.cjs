@@ -119,45 +119,23 @@ async function audit(){
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
     if(result.checks.threePdufaTabs){
       await appFrame.getByRole("tab",{name:"POST PHASE 3"}).click({timeout:15000});
-      try{
-        const ready=await waitForRender(page,appFrame,text=>text.includes("SHOW POST PHASE 3 DAILY REPORT"));
-        appFrame=ready.frame;
-        result.checks.dailyReportToggle=true;
-        // Stage 2 must render an empty journal safely, without inventing
-        // holdings or showing GREEN research rows as actual positions.
-        result.checks.positionMonitorVisible=ready.text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
-          && ready.text.includes("DOWNLOAD BLANK POSITION JOURNAL CSV");
-        result.checks.noPhantomPositions=ready.text.includes("No actual positions have been supplied.");
-        if(!result.checks.positionMonitorVisible || !result.checks.noPhantomPositions)
-          result.errors.push("POST PHASE 3 position monitor missing or asserts nonexistent holdings.");
-      }catch(err){
-        result.checks.dailyReportToggle=false;
-        const dailyText=await appFrame.locator("body").innerText({timeout:9000});
-        result.notes.push("POST PHASE 3 toggle missing after wait: "+dailyText.slice(-650));
-      }
-      await page.screenshot({path:path.join(outDir,"streamlit-phase3-before-toggle.png"),fullPage:false});
-      if(result.checks.dailyReportToggle){
-        const toggle=appFrame.getByText("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).first();
-        await toggle.click({timeout:15000});
-        try{
-          const ready=await waitForRender(page,appFrame,text=>text.includes("Yesterday: source-linked posts"));
-          appFrame=ready.frame;
-          result.checks.dailyReportLoads=true;
-        }catch(err){
-          result.checks.dailyReportLoads=false;
-          result.notes.push("Daily report did not show result metrics: "+String(err.message).slice(0,170));
-        }
-        await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
-        // Verify the report, then close its optional large tables before
-        // testing other tabs so they are not rebuilt in every PDUFA rerun.
-        await appFrame.getByText("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).first()
-          .click({timeout:15000});
-        const reportClosed=await waitForRender(page,appFrame,async(text,frame)=>
-          text.includes("SHOW POST PHASE 3 DAILY REPORT")
-          && !await frame.getByRole("switch",{name:"SHOW POST PHASE 3 DAILY REPORT — results, Watchlist and export",exact:true}).isChecked()
-          && !text.includes("Yesterday: source-linked posts"));
-        appFrame=reportClosed.frame;
-      }
+      const emptyTab=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"POST PHASE 3",exact:true}).getAttribute("aria-selected")==="true"
+        && !text.includes("STAGE 1 — PHASE 3 → FINANCING #2 → GREEN ENTRY")
+        && !text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
+        && !text.includes("SHOW POST PHASE 3 DAILY REPORT")
+        && !text.includes("DAILY PHASE 3 RESULT REPORT"));
+      appFrame=emptyTab.frame;
+      result.checks.postPhase3Cleared=await appFrame.getByRole("tab",{name:"POST PHASE 3",exact:true}).getAttribute("aria-selected")==="true"
+        && !emptyTab.text.includes("STAGE 1 — PHASE 3")
+        && !emptyTab.text.includes("STAGE 2 — GREEN ENTRY")
+        && !emptyTab.text.includes("SHOW POST PHASE 3 DAILY REPORT")
+        && !emptyTab.text.includes("DOWNLOAD BLANK POSITION JOURNAL CSV")
+        && !emptyTab.text.includes("EXPORT UNIFIED POST PHASE 3 RESEARCH QUEUE")
+        && !emptyTab.text.includes("DAILY PHASE 3 RESULT REPORT");
+      if(!result.checks.postPhase3Cleared)
+        result.errors.push("POST PHASE 3 still displays content after user requested clearing it.");
+      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-cleared.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       const preReady=await waitForRender(page,appFrame,(text,frame)=>
         frame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")
