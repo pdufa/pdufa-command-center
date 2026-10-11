@@ -82,7 +82,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                 st.info("No pipeline programs match these filters.")
             pdufa_dataframe(finance_style(df.head(150)), hide_index=True,
                          use_container_width=True, height=310,
-                         column_order=["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                         column_order=["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)",
                                        "Score type", "Pipeline stage", "F", "Drug", "NCT ID"])
             st.caption("Expand ALL FIELDS below for every clinical field, score component and source link.")
         with right, st.container(border=True, key="overview_pre3_panel"):
@@ -94,7 +94,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             pdufa_dataframe(finance_style(pre3.head(150)), hide_index=True,
                          use_container_width=True, height=310,
                          column_order=[c for c in (
-                             "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                             "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)",
                              "Score type", "Score status", "F", "Drug", "NCT ID",
                          ) if c in pre3])
             with st.expander("ALL PRE3 FIELDS & EVIDENCE"):
@@ -113,7 +113,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         pdufa_dataframe(finance_style(post3.head(150)), hide_index=True,
                      use_container_width=True, height=310,
                      column_order=[c for c in (
-                         "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                         "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)",
                          "Score type", "Entry qualification", "F", "Drug", "NCT ID",
                      ) if c in post3])
         with st.expander("ALL TRADING FIELDS & EVIDENCE"):
@@ -124,7 +124,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                            key="overview_trading_export")
         with st.expander("PDUFA TIMELINE", expanded=True):
             st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
-            fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "Date Classification",
+            fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Date Classification",
                       "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
             timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
                                   post3.reindex(columns=fields)], ignore_index=True)
@@ -204,6 +204,7 @@ def render_combined_overview(root="data", *, dashboard=False):
     for identity in ambiguous:
         post_by_id.pop(identity, None)
     cols = ("Entry qualification", "Phase 3 evidence", "Financing #2",
+            "2nd Financing Completed", "Cash Runway (months)",
             "Financing cycle (separate)", "Evidence score /100",
             "Research priority /100", "Days to PDUFA", "Planned exit (-7 days)",
             "Blockers", "Next action", "Phase 3 source", "Financing source",
