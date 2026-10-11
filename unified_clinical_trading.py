@@ -127,7 +127,8 @@ def render_combined_overview():
         for c in cols:
             entry[c] = matched.get(c, "") if matched else ""
         if key in ambiguous or post_conflict:
-            entry["Entry qualification"] = "REVIEW — AMBIGUOUS TRIAL MATCH"
+            entry["Entry qualification"] = ("REVIEW — DRUG IDENTITY CONFLICT" if post_conflict
+                                              else "REVIEW — AMBIGUOUS TRIAL MATCH")
         records.append(entry)
     df = pd.DataFrame(records)
     # Coverage audit is computed before filtering, without hiding missing evidence.
@@ -137,7 +138,9 @@ def render_combined_overview():
     both = int((df["Pre Phase 3 evidence match"].eq("EXACT TICKER + NCT")
                & df["Post evidence match"].eq("EXACT TICKER + NCT")).sum())
     pre_ambiguous = int(df["Pre Phase 3 evidence match"].eq("AMBIGUOUS — REVIEW").sum())
+    pre_conflicts = int(df["Pre Phase 3 evidence match"].eq("DRUG CONFLICT — REVIEW").sum())
     post_ambiguous = int(df["Post evidence match"].eq("AMBIGUOUS — REVIEW").sum())
+    post_conflicts = int(df["Post evidence match"].eq("DRUG CONFLICT — REVIEW").sum())
     pre_score_count = int(pd.to_numeric(df["Pre-readout research score /100"],
                                        errors="coerce").notna().sum())
     post_score_count = int(pd.to_numeric(df["Evidence score /100"],
@@ -153,12 +156,12 @@ def render_combined_overview():
             {"Check": "Exact pre-readout matches", "Count": pre_exact},
             {"Check": "Exact post-readout matches", "Count": post_exact},
             {"Check": "Matched in both feeds", "Count": both},
-            {"Check": "Pre drug-name conflicts", "Count": int(df["Pre Phase 3 evidence match"].eq("DRUG CONFLICT — REVIEW").sum())},
-            {"Check": "Post drug-name conflicts", "Count": int(df["Post evidence match"].eq("DRUG CONFLICT — REVIEW").sum())},
+            {"Check": "Pre drug-name conflicts", "Count": pre_conflicts},
+            {"Check": "Post drug-name conflicts", "Count": post_conflicts},
             {"Check": "Pre-readout ambiguous trial IDs", "Count": pre_ambiguous},
             {"Check": "Post-readout ambiguous trial IDs", "Count": post_ambiguous},
-            {"Check": "Missing pre-readout match", "Count": total - pre_exact - pre_ambiguous},
-            {"Check": "Missing post-readout match", "Count": total - post_exact - post_ambiguous},
+            {"Check": "Missing pre-readout match", "Count": total - pre_exact - pre_ambiguous - pre_conflicts},
+            {"Check": "Missing post-readout match", "Count": total - post_exact - post_ambiguous - post_conflicts},
             {"Check": "Numeric pre-readout scores", "Count": pre_score_count},
             {"Check": "Numeric post-readout evidence scores", "Count": post_score_count},
         ])
