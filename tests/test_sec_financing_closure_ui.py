@@ -35,7 +35,8 @@ class FinancingClosureUIIntegrationTests(unittest.TestCase):
     def test_core_pre_phase3_remains_blank(self):
         app = (ROOT / "app.py").read_text(encoding="utf-8")
         pre = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn("pass", pre)
+        self.assertIn("POST-READOUT HANDOFF", pre)
+        self.assertIn("ENTRY READY", pre)
         self.assertNotIn("sec_financing_closure", pre)
         self.assertNotIn("render_clinical_review()", pre)
         self.assertNotIn("render_financing_closure(", pre)
