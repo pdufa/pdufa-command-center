@@ -26,10 +26,11 @@ POST_PRIORITY_SCORES = (
 )
 FRONT = (
     "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+    "2nd Financing Completed", "Cash Runway (months)",
     "Score type", *POST_SCORES, *PRE_SCORES,
     *PRE_PRIORITY_SCORES, *POST_PRIORITY_SCORES,
     "Date Classification", "Primary p",
-    "F", "Cash Runway (months)", "Cash Runway As Of",
+    "F", "Cash Runway As Of",
 )
 DISPLAY_ORDER_OPTIONS = ("Top Score", "Ticker A–Z")
 FINANCING_LABELS = ("F START", "F RUN", "F CLOSED", "F UNKNOWN")
@@ -90,8 +91,8 @@ def enrich_exact_trials(frame, pre=(), post=()):
         "Review priority status", "Review priority rubric",
         "Pre-readout research score /100", "Preliminary clinical score /100",
         "Financing cycle (separate)", "PDUFA date", "Phase 3 PRIMARY p",
-        "Primary endpoint p values observed", "Cash Runway (months)",
-        "Cash Runway As Of",
+        "Primary endpoint p values observed", "2nd Financing Completed",
+        "Cash Runway (months)", "Cash Runway As Of",
     )
     collected = []
     for row in result.to_dict("records"):
@@ -132,6 +133,25 @@ def _financing_block(value):
         return "F CLOSED"
     # REVIEW/UNKNOWN or an unsourced 'closed' field cannot prove event closure.
     return "F UNKNOWN"
+
+
+def _second_financing_completed(row):
+    """Only the separately audited second close can mark this field verified.
+
+    A closed financing cycle alone must NOT prove the second post-Phase-3
+    offering, and the absence of a record must NOT be interpreted as NO.
+    """
+    audit = str(_pick(row, "second_financing_audit_status") or "").strip().upper()
+    closed = str(_pick(row, "second_financing_closed") or "").strip().upper()
+    source = str(_pick(row, "second_financing_source") or "").strip()
+    event = _pick(row, "event_key", "Exact event")
+    if (audit == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
+            closed == "YES" and event and source.startswith("https://")):
+        return "YES — VERIFIED (HISTORICAL)"
+    if str(_pick(row, "2nd Financing Completed") or "").strip().upper() == "YES — VERIFIED (HISTORICAL)":
+        # Only sourced, audited POST3 queue rows create this exact display label.
+        return "YES — VERIFIED (HISTORICAL)"
+    return "NOT VERIFIED"
 
 
 def _classify(days, dated):
@@ -177,6 +197,9 @@ def prepare_pdufa_grid(frame, *, view="UNIFIED", as_of=None):
                         "Primary endpoint p values observed")
     out["Primary p"] = [_pick(row, *existing_primary)
                         for row in out.to_dict("records")]
+    out["2nd Financing Completed"] = [
+        _second_financing_completed(row) for row in out.to_dict("records")
+    ]
     status = "Financing cycle (separate)"
     out["F"] = [_financing_block(_pick(row, "F", status))
                 for row in out.to_dict("records")]
@@ -370,7 +393,10 @@ def finance_style(frame):
             continue
         name = str(col).replace("_", " ").casefold()
         # Mutually exclusive semantic cases are chosen before broad labels.
-        if "cash runway as of" in name or "cash runway verified date" in name:
+        if name == "2nd financing completed":
+            selector = lambda v: ("green" if str(v).upper().startswith("YES — VERIFIED")
+                                  else "unknown")
+        elif "cash runway as of" in name or "cash runway verified date" in name:
             selector = source_age
         elif "runway" in name and ("month" in name or name == "cash runway"):
             selector = lambda v: band_number(v, high=12, middle=6)
