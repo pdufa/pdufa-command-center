@@ -42,14 +42,16 @@ async function verify(){
     // Retry one navigation after the warm-up window; keep failure fail-closed.
     for(let n=0;n<130;n++){
       const observed=await findFrame(page);
-      lastFrameTexts=[];
-      for(const frame of page.frames()){
-        try{
-          lastFrameTexts.push({
-            url:frame.url(),
-            text:(await frame.locator("body").innerText({timeout:1500})).slice(0,450),
-          });
-        }catch(_){lastFrameTexts.push({url:frame.url(),text:"FRAME UNAVAILABLE"});}
+      if(n%10===0 || n===129){
+        lastFrameTexts=[];
+        for(const frame of page.frames()){
+          try{
+            lastFrameTexts.push({
+              url:frame.url(),
+              text:(await frame.locator("body").innerText({timeout:1500})).slice(0,450),
+            });
+          }catch(_){lastFrameTexts.push({url:frame.url(),text:"FRAME UNAVAILABLE"});}
+        }
       }
       if(observed&&observed.text.includes("PIPELINE")&&observed.text.includes("PRE PHASE 3")){
         match=observed;
