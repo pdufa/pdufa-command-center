@@ -30,7 +30,8 @@ class BulkUiTests(unittest.TestCase):
     def test_prephase_3_not_rendered_and_workflow_is_manual(self):
         app = (ROOT / "app.py").read_text(encoding="utf-8")
         pre = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn("pass", pre)
+        self.assertIn('st.markdown("## PRE PHASE 3 — LIVE SOURCE MONITOR")', pre)
+        self.assertIn("_step7_snapshot(signature)", pre)
         self.assertNotIn("market_bulk", pre)
         self.assertNotIn("render_clinical_review()", pre)
         workflow = (ROOT / ".github" / "workflows" / "full-market-scan.yml").read_text(encoding="utf-8")
