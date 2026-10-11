@@ -6,7 +6,6 @@ efficacy, a Phase 3 forecast or an automatically assigned score.
 """
 from __future__ import annotations
 
-from datetime import date
 import re
 
 ACTIVE = {"RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION",
@@ -39,6 +38,9 @@ def scoring_review_queue(trials, limit=10):
             continue
         ticker = str(item.get("Ticker") or "").strip().upper()
         nct = str(item.get("NCT ID") or "").strip().upper()
+        if str(item.get("Score status") or "") == "100-POINT RESEARCH SCORE — UNCALIBRATED":
+            # Completed scoring belongs in the normal table, not the to-do list.
+            continue
         if (item.get("Trial phase") not in ("Phase 3", "Phase 2/3")
                 or str(item.get("Registry status") or "").upper() not in ACTIVE
                 or str(item.get("Registry results posted") or "").strip()
