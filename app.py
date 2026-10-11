@@ -25,7 +25,7 @@ from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
-from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color
+from pdufa_date_gradient import segment as pdufa_segment, date_color as pdufa_date_color, COUNTDOWN_BANDS
 import pandas as pd
 import json
 from pathlib import Path
@@ -2039,7 +2039,7 @@ def _sort_header_button(col, col_index):
     label = html.escape(str(col))
     help_text = html.escape(_column_help_text(col), quote=True)
     sort_title = html.escape(f"Sort {col}", quote=True)
-    return (
+    controls = (
         f'<span class="header-controls">'
         f'<button type="button" class="sort-head" data-col-index="{int(col_index)}" '
         f'title="{sort_title}">'
@@ -2050,6 +2050,17 @@ def _sort_header_button(col, col_index):
         f'title="{help_text}" aria-label="{help_text}">?</span>'
         f'</span>'
     )
+    if col not in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa"):
+        return controls
+    bands = "".join(
+        '<span class="pdufa-band-chip" style="background:' + bg +
+        ';color:' + fg + '">' + html.escape(range_label) + '</span>'
+        for range_label, _, bg, fg in COUNTDOWN_BANDS
+    )
+    return ('<span class="countdown-header-block">' + controls +
+            '<span class="countdown-band-row" aria-label="'
+            '+90 dark green, 90–60 green, 59–30 orange, 29–0 red">'
+            + bands + '</span></span>')
 
 
 def _merged_sort_payload(frame, col):
@@ -2195,6 +2206,8 @@ def _render_merged_table_panel(frame, heading, height_px=690):
                 header_top.append(f'<th class="angle-head" rowspan="2"><span>{sort_button}</span></th>')
             else:
                 extra = ' ticker-head' if col == "Ticker" else ''
+                if col in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa"):
+                    extra += ' countdown-head'
                 if col in {"P%", "P"}:
                     extra += ' compact-p'
                 header_top.append(f'<th class="normal-head{extra}" rowspan="2">{sort_button}</th>')
@@ -2249,8 +2262,13 @@ def _render_merged_table_panel(frame, heading, height_px=690):
                         extra_cls += " second-fin-verified"
                 if col in APPLICATION_COLUMNS:
                     extra_cls += " application-cell"
+                color_style = (
+                    ' style="' + html.escape(pdufa_date_color(raw), quote=True) + '"'
+                    if col in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa")
+                    and pdufa_date_color(raw) else ""
+                )
                 cells.append(
-                    f'<td class="{(cls + extra_cls).strip()}"{sort_attrs}>'
+                    f'<td class="{(cls + extra_cls).strip()}"{sort_attrs}{color_style}>'
                     f'{html.escape(val)}</td>'
                 )
         stage_value = row.get("STAGE", "STAGE UNKNOWN — REVIEW")
@@ -2277,6 +2295,11 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
     .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
+    .merged-pdufa-table th.countdown-head{min-width:286px;width:286px;max-width:286px}
+    .countdown-header-block{display:flex;flex-direction:column;align-items:center;gap:7px;width:100%%}
+    .countdown-band-row{display:flex;flex-wrap:nowrap;gap:2px;justify-content:center}
+    .pdufa-band-chip{display:inline-block;border:1px solid #333;border-radius:3px;
+      padding:3px 4px;font-size:10px;line-height:1.2;font-weight:900;white-space:nowrap}
     .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
@@ -3791,14 +3814,14 @@ if page == "PDUFA":
                 attach_survey(combined)
                 ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
                 st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
-                st.caption("Five categories: 0–30 red · 31–60 orange · 61–90 yellow · 90+ green · NO PDUFA YET gray. Darker shading means a nearer FDA target date within its segment. Past-due dates are separate.")
+                st.caption("Countdown colors: +90 days DARK GREEN (91+), 90–60 GREEN, 59–30 ORANGE, 29–0 RED. Past-due or unknown dates remain neutral/gray. Source verification is separate from countdown color.")
                 if "DAYS TO PDUFA" in combined.columns:
                     countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "2nd Financing Completed", "Cash Runway (months)", "PDUFA Horizon") if c in combined.columns]].copy()
                     if not countdown.empty:
                         countdown["PDUFA Horizon"] = countdown["DAYS TO PDUFA"].map(lambda d: "NO PDUFA YET" if pd.isna(d) else pdufa_segment(d))
                         countdown["PDUFA Date"] = countdown["PDUFA Date"].where(countdown["DAYS TO PDUFA"].notna(), "Not verified")
                         # Keep the master score-descending, countdown-descending order.
-                        tab_labels = ["ALL", "0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "90+ DAYS", "NO PDUFA YET"]
+                        tab_labels = ["ALL", "29–0 DAYS", "59–30 DAYS", "90–60 DAYS", "90+ DAYS", "NO PDUFA YET"]
                         category_tabs = st.tabs([f"{label} ({len(countdown) if label == 'ALL' else int((countdown['PDUFA Horizon'] == label).sum())})" for label in tab_labels])
                         for label, category_tab in zip(tab_labels, category_tabs):
                             with category_tab:
