@@ -69,8 +69,12 @@ def scan(mode, max_pages, data_dir=DATA):
             sponsors.setdefault(key, []).append(company)
     path = data_dir / "phase3_announcements.csv"
     existing = rows(path)
-    by_nct = {r.get("nct_id"): r for r in existing if r.get("nct_id")}
-    old_without_nct = [r for r in existing if not r.get("nct_id")]
+    # Corporate disclosure and registry posting are independent events. A
+    # later registry refresh must not overwrite the earlier issuer evidence.
+    issuer_rows = [r for r in existing if r.get("source_type") == "ISSUER_TOPLINE_RELEASE"]
+    registry_rows = [r for r in existing if r.get("source_type") != "ISSUER_TOPLINE_RELEASE"]
+    by_nct = {r.get("nct_id"): r for r in registry_rows if r.get("nct_id")}
+    old_without_nct = [r for r in registry_rows if not r.get("nct_id")]
     now = datetime.now(timezone.utc).isoformat()
     params = {"query.term": "AREA[Phase]PHASE3 AND AREA[StudyType]INTERVENTIONAL",
               "pageSize": 1000, "format": "json", "sort": "LastUpdatePostDate:desc"}
@@ -135,7 +139,7 @@ def scan(mode, max_pages, data_dir=DATA):
             print("page", state["pages"], "studies", state["studies_checked"], flush=True)
     except Exception as exc:
         state["errors"].append(type(exc).__name__ + ": " + str(exc))
-    merged = old_without_nct + list(by_nct.values())
+    merged = issuer_rows + old_without_nct + list(by_nct.values())
     merged.sort(key=lambda r: (r.get("phase3_results_posted_at", ""), r.get("ticker", ""), r.get("nct_id", "")), reverse=True)
     # Existing evidence is never removed when an upstream request fails.
     write(path, merged)

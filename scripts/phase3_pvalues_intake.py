@@ -49,7 +49,10 @@ def text(value):
 def run(mode, data_dir):
     data_dir.mkdir(parents=True, exist_ok=True)
     source = load(data_dir / "phase3_announcements.csv")
-    trials = {r["nct_id"]: r for r in source if r.get("nct_id", "").startswith("NCT")}
+    # Only a registry posting establishes eligibility for this registry-only
+    # p-value collector. Never relabel an issuer topline date as registry data.
+    trials = {r["nct_id"]: r for r in source if r.get("nct_id", "").startswith("NCT")
+              and r.get("source_type") != "ISSUER_TOPLINE_RELEASE"}
     output = data_dir / "phase3_primary_pvalues.csv"
     prior = load(output)
     existing = {}

@@ -19,6 +19,7 @@ from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_sum
 from pre_phase3_pilot_scores import (attach_preliminary_scores, classify_phase3_protocol,
                                     review_index, reviewed_phase2_link, reviewed_program_identity)
 from listing_exclusions import validated_listing_exclusions, resolved_pipeline_status
+from phase3_issuer_readouts import ANNOUNCED, identity, issuer_readout_index
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -122,6 +123,8 @@ def build_snapshot(root, now=None):
     local_today = now.astimezone(ZoneInfo("America/Los_Angeles")).date()
 
     trial_rows = read_csv(root / "phase_pipeline.csv")
+    announcements = read_csv(root / "phase3_announcements.csv")
+    issuer_released = issuer_readout_index(announcements, now)
     pilot_reviews = read_json(root / "pre_phase3_pilot_clinical_reviews.json")
     reviewed_programs = review_index(pilot_reviews, local_today)
     primary_results = read_csv(root / "phase3_primary_pvalues.csv")
@@ -166,7 +169,7 @@ def build_snapshot(root, now=None):
         from pre_readout_score import candidate_queue, assess
         raw_queue = candidate_queue(
             pd.DataFrame(scoring_rows),
-            pd.DataFrame(read_csv(root / "phase3_announcements.csv")),
+            pd.DataFrame(announcements),
             pd.DataFrame(caps), local_today,
             protocols=pd.DataFrame(protocols), require_protocol=True,
         )
@@ -246,6 +249,7 @@ def build_snapshot(root, now=None):
         if listing:
             cap_state = "NOT LISTED — MERGER CLOSED"
         p = protocol_by_nct.get(nct, {})
+        issuer_readout = issuer_released.get(identity(row), {})
         design_checks = [bool(p.get("primary_endpoint")), bool(p.get("primary_timeframe")),
                          bool(p.get("allocation")), bool(p.get("masking")),
                          bool(p.get("comparator")), str(p.get("enrollment","")).isdigit()]
@@ -274,15 +278,19 @@ def build_snapshot(root, now=None):
             "Ticker": ticker, "Company": row.get("company", ""),
             "Drug": row.get("drug", ""), "Indication": row.get("indication", ""),
             "NCT ID": nct, "Trial phase": label, "Registry status": row.get("trial_status", ""),
-            "Phase 3 trial type": classify_phase3_protocol(p, nct) if "PHASE3" in phases else "NOT PHASE 3",
+            "Phase 3 trial type": ("ISSUER RESULT ANNOUNCED — NOT PRE-READOUT" if issuer_readout else
+                                   classify_phase3_protocol(p, nct) if "PHASE3" in phases else "NOT PHASE 3"),
             "Registry primary completion": completion,
             "Registry results posted": row.get("results_first_posted", ""),
-            "Issuer Phase 3 readout": "NOT VERIFIED HERE",
+            "Issuer Phase 3 readout": ANNOUNCED if issuer_readout else "NOT VERIFIED HERE",
+            "Issuer readout publication date": issuer_readout.get("phase3_results_posted_at", ""),
+            "Issuer readout source": issuer_readout.get("phase3_results_source", ""),
             "Primary endpoint p values observed": " | ".join(p_values[:5]),
             "Primary effect size and CI recorded": "YES — ANALYST INTERPRETATION REQUIRED" if documented_effect else "NOT COMPLETE IN SOURCE SNAPSHOT",
             "Phase 3 result interpretation": "REVIEW — reported primary p is not proof of meaningful Phase 3 success",
             "Registry primary result source": "https://clinicaltrials.gov/study/" + nct if registry_primary else "",
-            "Research category": ("RESULT POSTED — CLINICAL REVIEW" if registry_results
+            "Research category": ("ISSUER READOUT ANNOUNCED — CLINICAL REVIEW" if issuer_readout else
+                                  "RESULT POSTED — CLINICAL REVIEW" if registry_results
                                   else "PHASE 3 RESEARCH" if "PHASE3" in phases else "PRE PHASE 3 WATCH"),
             "Company/program identity": ("VERIFIED" if (ticker, nct) in identity_sources
                                           else row.get("program_identity_status", "") or "REVIEW"),
@@ -292,7 +300,8 @@ def build_snapshot(root, now=None):
             "Design inputs present /6": coverage_count,
             "Design coverage meaning": "RECORDED FIELDS ONLY — NOT A TRIAL DESIGN QUALITY SCORE",
             "Pre-readout research score /100": verified_score.get("score"),
-            "Score status": verified_score.get("status", "NOT SCORED — EVIDENCE INCOMPLETE"),
+            "Score status": ("NOT PRE-READOUT — ISSUER TOPLINE ANNOUNCED" if issuer_readout else
+                             verified_score.get("status", "NOT SCORED — EVIDENCE INCOMPLETE")),
             "Missing pre-readout evidence": verified_score.get("missing", ""),
             "Market cap USD": cap_number if cap_ok else None,
             "Market cap state": cap_state,

@@ -237,16 +237,23 @@ async function audit(){
       try{
         // PLAN content can repeat navigation names. Select the actual radio
         // rather than a same-text paragraph elsewhere on the page.
-        const choice=appFrame.getByRole("radio",{name,exact:true});
-        await choice.check({force:true,timeout:15000});
+        // React Aria clips the native input inside a 1px span. Force-checking
+        // that input can hit another radio and silently leave the old page.
+        // Click the visible label within the actual navigation group instead.
+        const navGroup=appFrame.locator('[data-testid="stRadio"]').filter({has:
+          appFrame.getByRole("radio",{name:"PDUFA",exact:true})});
+        const choice=navGroup.getByText(name,{exact:true});
+        await choice.click({timeout:15000});
         for(let n=0;n<45;n++){
           const titles=await appFrame.locator("h1,h2,h3").allInnerTexts();
           entry.headings=titles.slice(0,8);
-          if(titles.some(t=>t.includes(expectedHeading)))break;
+          const selected=await appFrame.getByRole("radio",{name,exact:true}).isChecked();
+          if(selected && titles.some(t=>t.includes(expectedHeading)))break;
           await sleep(1000);
         }
         const visible=await appFrame.locator("body").innerText({timeout:9000});
-        entry.headingFound=(entry.headings||[]).some(t=>t.includes(expectedHeading));
+        entry.navigationSelected=await appFrame.getByRole("radio",{name,exact:true}).isChecked();
+        entry.headingFound=entry.navigationSelected && (entry.headings||[]).some(t=>t.includes(expectedHeading));
         entry.noVisibleException=!visible.includes("This app has encountered an error")
           && !visible.includes("Traceback (most recent call last)");
         entry.passed=entry.headingFound&&entry.noVisibleException;

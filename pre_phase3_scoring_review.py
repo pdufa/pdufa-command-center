@@ -7,6 +7,7 @@ efficacy, a Phase 3 forecast or an automatically assigned score.
 from __future__ import annotations
 
 import re
+from phase3_issuer_readouts import ANNOUNCED
 
 ACTIVE = {"RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION",
           "NOT_YET_RECRUITING"}
@@ -38,6 +39,8 @@ def scoring_review_queue(trials, limit=10):
             continue
         ticker = str(item.get("Ticker") or "").strip().upper()
         nct = str(item.get("NCT ID") or "").strip().upper()
+        if item.get("Issuer Phase 3 readout") == ANNOUNCED:
+            continue
         if item.get("Phase 3 trial type") != "PIVOTAL EFFICACY DESIGN — SOURCE CHECKED":
             continue
         if str(item.get("Score status") or "") == "100-POINT RESEARCH SCORE — UNCALIBRATED":
