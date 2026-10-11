@@ -6,6 +6,7 @@ import streamlit as st
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
+from pdufa_display_columns import POST_SCORES, PRE_SCORES, prepare_pdufa_grid, finance_style
 from datetime import timezone
 from pathlib import Path
 
@@ -77,7 +78,7 @@ def render_combined_overview():
             "Financing cycle (separate)", "Evidence score /100",
             "Research priority /100", "Days to PDUFA", "Planned exit (-7 days)",
             "Blockers", "Next action", "Phase 3 source", "Financing source",
-            "PDUFA source")
+            "PDUFA source", "PDUFA date", *POST_SCORES)
     # Exact ticker + NCT match only; ambiguous records are withheld.
     pre_by_id = {}
     ambiguous_pre = set()
@@ -97,6 +98,7 @@ def render_combined_overview():
         "Pre-readout research score /100",
         "Preliminary clinical score /100", "Score status",
         "Clinical score as of", "Linked Phase 2 PRIMARY p",
+        "Primary endpoint p values observed", *PRE_SCORES,
     )
     records = []
     for r in src.to_dict("records"):
@@ -130,7 +132,7 @@ def render_combined_overview():
             entry["Entry qualification"] = ("REVIEW — DRUG IDENTITY CONFLICT" if post_conflict
                                               else "REVIEW — AMBIGUOUS TRIAL MATCH")
         records.append(entry)
-    df = pd.DataFrame(records)
+    df = prepare_pdufa_grid(pd.DataFrame(records), view="UNIFIED", as_of=today)
     # Coverage audit is computed before filtering, without hiding missing evidence.
     total = len(df)
     pre_exact = int(df["Pre Phase 3 evidence match"].eq("EXACT TICKER + NCT").sum())
@@ -195,12 +197,13 @@ def render_combined_overview():
         hay = df[["Ticker", "Drug", "Indication", "NCT ID"]].fillna("").astype(str).agg(" ".join, axis=1)
         df = df.loc[hay.str.contains(search, case=False, regex=False)]
     df = df.sort_values(["Ticker", "NCT ID", "Drug"], kind="stable")
-    st.dataframe(df.head(350), hide_index=True, use_container_width=True,
+    st.dataframe(finance_style(df.head(350)), hide_index=True, use_container_width=True,
                  column_config={
                      "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
                      "Phase 3 source": st.column_config.LinkColumn("Phase 3 source"),
                      "Financing source": st.column_config.LinkColumn("Financing source"),
                      "PDUFA source": st.column_config.LinkColumn("PDUFA source"),
+                     "F": st.column_config.TextColumn("F", width="small"),
                  })
     if len(df) > 350:
         st.caption("Showing 350 rows; export contains all matching records.")
