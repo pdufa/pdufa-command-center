@@ -47,15 +47,18 @@ jobs:
         run: |
           git config user.name "pdufa-step7-bot"
           git config user.email "pdufa-step7-bot@users.noreply.github.com"
-          git add data/step7_pre_phase3_feed.csv data/step7_financing_review.csv data/step7_live_status.json
-          if git diff --cached --quiet; then
-            echo "Feed contents unchanged."
-            exit 0
-          fi
-          git commit -m "Refresh Step 7 PRE PHASE 3 source-dated feed"
+          # Retain generated files in the working tree while aligning HEAD
+          # with the newest remote commit. Avoid rebasing a generated data
+          # commit against another generated data commit.
           for attempt in 1 2 3 4 5; do
             git fetch origin main
-            git rebase origin/main
+            git reset --mixed origin/main
+            git add data/step7_pre_phase3_feed.csv data/step7_financing_review.csv data/step7_live_status.json
+            if git diff --cached --quiet; then
+              echo "Feed matches current remote snapshot."
+              exit 0
+            fi
+            git commit -m "Refresh Step 7 PRE PHASE 3 source-dated feed"
             if git push origin HEAD:main; then
               echo "Persisted Step 7 live-source snapshot."
               exit 0
@@ -63,5 +66,5 @@ jobs:
             echo "Concurrent update prevented push (attempt $attempt/5)." >&2
             sleep $((attempt * 3))
           done
-          echo "::error::Could not persist the Step 7 feed after retries"
+          echo "::error::Could not persist Step 7 after retrying current main"
           exit 1
