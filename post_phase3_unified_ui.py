@@ -24,7 +24,7 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         "step7_live_status.json", "step7_financing_review.csv",
         "step7_pre_phase3_feed.csv", "pdufa_candidates.csv",
         "post_phase3_discoveries.csv",
-        "second_financing_status.csv",
+        "second_financing_status.csv", "step7_market_status.csv",
     )
     signature = tuple(
         (name, (path / name).stat().st_mtime_ns if (path / name).exists() else 0)
@@ -96,13 +96,27 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         st.warning("No valid Stage 1 rows loaded; check the saved feeds.")
         return
     df = pd.DataFrame(items).reindex(columns=COLUMNS)
-    left, right = st.columns([1, 2])
+    st.caption(
+        "One combined candidate table: eligibility (GREEN / REVIEW / RED), "
+        "independent research-evidence priority rank, and weighted evidence points /100. "
+        "This is NOT FDA approval probability, expected stock appreciation, or a buy signal. "
+        "Unverified program records display NOT RATED rather than an invented zero."
+    )
+    left, middle, right = st.columns([1.1, 1.4, 2])
     with left:
         selector = st.selectbox(
             "Candidate view",
             ["Active research", "All including exited/resolved",
              "GREEN only", "Financing event records", "New clinical readouts"],
             key="postphase3_stage1_view",
+        )
+    with middle:
+        sorting = st.selectbox(
+            "Sort combined table",
+            ["Eligibility first, highest score within group",
+             "Highest evidence score overall (all statuses)",
+             "Soonest PDUFA"],
+            key="postphase3_stage1_sort",
         )
     with right:
         query = st.text_input(
@@ -126,6 +140,29 @@ def render_post_phase3_stage1(root="data", include_positions=True):
             .any(axis=1)
         )
         df = df.loc[mask]
+    # Rank, gate and score stay on the same row. Missing scores always sort last;
+    # neither score order nor a numeric rank changes the hard gate.
+    df = df.copy()
+    df["_rank_gate"] = df["Entry qualification"].map({
+        "GREEN — GATES ATTESTED": 0,
+        "REVIEW — ENTRY BLOCKED": 1,
+        "REVIEW — SOURCE SNAPSHOT STALE": 2,
+        "REVIEW — RESEARCH LEAD": 3,
+        "RED WINDOW — NO NEW ENTRY": 4,
+        "EXCLUDED — FDA DECIDED / DATE PASSED": 5,
+    }).fillna(3)
+    df["_score_sort"] = pd.to_numeric(df["Evidence score /100"], errors="coerce").fillna(-1)
+    df["_pdufa_sort"] = pd.to_numeric(df["Days to PDUFA"], errors="coerce").fillna(99999)
+    if sorting.startswith("Highest evidence"):
+        df = df.sort_values(["_score_sort", "_rank_gate", "_pdufa_sort", "Ticker", "NCT ID"],
+                            ascending=[False, True, True, True, True], kind="stable")
+    elif sorting.startswith("Soonest"):
+        df = df.sort_values(["_pdufa_sort", "_rank_gate", "_score_sort", "Ticker", "NCT ID"],
+                            ascending=[True, True, False, True, True], kind="stable")
+    else:
+        df = df.sort_values(["_rank_gate", "_score_sort", "_pdufa_sort", "Ticker", "NCT ID"],
+                            ascending=[True, False, True, True, True], kind="stable")
+    df = df.drop(columns=["_rank_gate", "_score_sort", "_pdufa_sort"])
     st.caption(
         f"{len(df)} candidates match. RED WINDOW means do not start a new trade "
         "inside the final seven calendar days; it is not an executed sale. "
@@ -134,6 +171,14 @@ def render_post_phase3_stage1(root="data", include_positions=True):
     st.dataframe(
         df.head(250), use_container_width=True, hide_index=True,
         column_config={
+            "Evidence rank": st.column_config.NumberColumn("Research rank", format="%d"),
+            "Evidence score /100": st.column_config.NumberColumn("Evidence /100", format="%d"),
+            "Clinical evidence /30": st.column_config.NumberColumn("Clinical /30", format="%d"),
+            "Financing evidence /20": st.column_config.NumberColumn("Financing /20", format="%d"),
+            "Trading setup /20": st.column_config.NumberColumn("Setup /20", format="%d"),
+            "PDUFA evidence /15": st.column_config.NumberColumn("PDUFA /15", format="%d"),
+            "Market activity /10": st.column_config.NumberColumn("Market /10", format="%d"),
+            "Company track record /5": st.column_config.NumberColumn("History /5", format="%d"),
             "Registry source": st.column_config.LinkColumn("Registry source"),
             "Phase 3 source": st.column_config.LinkColumn("Phase 3 source"),
             "Financing source": st.column_config.LinkColumn("Financing source"),
@@ -148,6 +193,12 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         file_name=f"post_phase3_trade_research_{today:%Y%m%d}.csv",
         mime="text/csv",
         key="postphase3_stage1_csv",
+    )
+    st.caption(
+        "Evidence points reward source-supported, attested requirements; 5 points "
+        "for company history remain unavailable pending a sourced audit. "
+        "Market points reflect recent price, volume and momentum; short interest/float "
+        "are NOT independently scored yet. Partial points do not authorize trading."
     )
     st.caption(
         "GREEN means all saved attested gates plus source-linked Phase 3 success and "

@@ -263,6 +263,12 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(any(
             "STAGE 1 — PHASE 3" in item.body for item in app.markdown
         ))
+        sorting = app.selectbox(key="postphase3_stage1_sort")
+        self.assertEqual(list(sorting.options), [
+            "Eligibility first, highest score within group",
+            "Highest evidence score overall (all statuses)",
+            "Soonest PDUFA",
+        ])
         self.assertFalse(any(
             "STAGE 2 — GREEN ENTRY" in item.body for item in app.markdown
         ))

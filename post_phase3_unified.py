@@ -16,15 +16,18 @@ from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from step7_entry import GATES, safe_source
+from post_phase3_priority import WEIGHTS, score_candidate, assign_priority_ranks
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 NCT = re.compile(r"^NCT\d{8}$")
 TICKER = re.compile(r"^[A-Z0-9.-]{1,15}$")
 RESOLVED = {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}
 COLUMNS = (
-    "Source lane", "Ticker", "Drug", "Indication", "NCT ID",
+    "Evidence rank", "Ticker", "Drug", "Indication", "NCT ID",
+    "Entry qualification", "Evidence score /100", "Rating status", "Rating coverage",
+    *WEIGHTS.keys(), "Rating limitations", "Source lane",
     "Exact event", "Phase 3 evidence", "Financing #2", "Financing cycle (separate)",
-    "Entry qualification", "PDUFA verification", "Days to PDUFA", "PDUFA date",
+    "PDUFA verification", "Days to PDUFA", "PDUFA date",
     "Planned exit (-7 days)", "Next action", "Blockers",
     "Registry source", "Phase 3 source", "Financing source",
     "PDUFA source", "As of Pacific",
@@ -76,6 +79,11 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "Financing #2": "REVIEW — EXACT EVENT NOT VERIFIED",
         "Financing cycle (separate)": "REVIEW — FINANCING UNVERIFIED",
         "Entry qualification": "REVIEW — RESEARCH LEAD",
+        "Evidence rank": None, "Evidence score /100": None,
+        "Rating status": "NOT RATED — UNMATCHED RESEARCH LEAD",
+        "Rating coverage": "0/6 — research lead",
+        "Rating limitations": "Exact program and qualifying evidence must be reviewed",
+        **dict.fromkeys(WEIGHTS, 0),
         "PDUFA verification": "REVIEW — SOURCE MISSING",
         "Days to PDUFA": None, "PDUFA date": "",
         "Planned exit (-7 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
@@ -100,6 +108,17 @@ def build_queue(root, as_of=None):
     financing_rows = read_rows(root / "step7_financing_review.csv")
     trials = read_rows(root / "step7_pre_phase3_feed.csv")
     external = read_rows(root / "post_phase3_discoveries.csv")
+    market_rows = read_rows(root / "step7_market_status.csv")
+    market_by_ticker = {}
+    duplicate_market = set()
+    for record in market_rows:
+        price_ticker = clean(record.get("ticker")).upper()
+        if price_ticker in market_by_ticker:
+            duplicate_market.add(price_ticker)
+        elif price_ticker:
+            market_by_ticker[price_ticker] = record
+    for price_ticker in duplicate_market:
+        market_by_ticker.pop(price_ticker, None)
     finance_stages = {}
     stage_duplicates = set()
     for fin in read_rows(root / "second_financing_status.csv"):
@@ -235,6 +254,8 @@ def build_queue(root, as_of=None):
             "Financing source": clean(funding.get("Second source")),
             "PDUFA source": clean(event.get("pdufa_evidence_url")),
         })
+        item.update(score_candidate(event, funding, market_by_ticker.get(ticker), today,
+                                    snapshot_current=current_feed))
         rows.append(item)
         if NCT.fullmatch(nct):
             mapped.add((ticker, nct, drug.casefold(), indication.casefold()))
@@ -285,11 +306,14 @@ def build_queue(root, as_of=None):
         })
         rows.append(item)
 
-    # No ticker-only upgrade: multiple drug/indication programs remain separate.
+    # Ordinal is an evidence-priority rank, never a gate override.
+    assign_priority_ranks(rows)
+    # No ticker-only financing upgrade: each program keeps its own exact event identity.
     rank = {"GREEN — GATES ATTESTED": 0, "REVIEW — ENTRY BLOCKED": 1,
             "REVIEW — SOURCE SNAPSHOT STALE": 2, "REVIEW — RESEARCH LEAD": 3,
             "RED WINDOW — NO NEW ENTRY": 4, "EXCLUDED — FDA DECIDED / DATE PASSED": 5}
     rows.sort(key=lambda r: (rank.get(r["Entry qualification"], 3),
+                             -(r["Evidence score /100"] if r["Evidence score /100"] is not None else -1),
                              r["Days to PDUFA"] if r["Days to PDUFA"] is not None else 99999,
                              r["Ticker"], r["NCT ID"], r["Exact event"]))
     return rows, {
