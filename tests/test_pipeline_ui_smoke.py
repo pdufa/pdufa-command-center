@@ -349,6 +349,18 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(len(nova2), 1)
         self.assertEqual(float(nova2.iloc[0]["Preliminary clinical score /100"]), 72.0)
         self.assertIn("NCT06179108 p=0.0009", nova2.iloc[0]["Linked Phase 2 PRIMARY p"])
+        self.assertEqual(nova2.iloc[0]["Company/program identity"],"VERIFIED")
+        self.assertIn("nova-2",nova2.iloc[0]["Company identity review source"])
+        from datetime import datetime, date
+        from zoneinfo import ZoneInfo
+        if datetime.now(ZoneInfo("America/Los_Angeles")).date() == date(2026,10,10):
+            self.assertEqual(float(nova2.iloc[0]["Pre-readout research score /100"]),72)
+            self.assertEqual(nova2.iloc[0]["Score status"],
+                             "100-POINT RESEARCH SCORE — UNCALIBRATED")
+        else:
+            self.assertTrue(pd.isna(nova2.iloc[0]["Pre-readout research score /100"]))
+            self.assertNotEqual(nova2.iloc[0]["Score status"],
+                                "100-POINT RESEARCH SCORE — UNCALIBRATED")
         self.assertEqual(nova2.iloc[0]["Phase 2 PRIMARY evidence count"], 3)
         self.assertTrue(nova2.iloc[0]["Phase 2 link review source"].startswith("https://ir.lbpharma.us/"))
         self.assertEqual(len(nova3), 1)
