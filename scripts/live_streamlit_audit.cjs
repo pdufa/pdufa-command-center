@@ -122,7 +122,21 @@ async function audit(){
           || prePhaseScreen.includes("Traceback (most recent call last)"))break;
         await sleep(1500);
       }
+      // Confirm the new scoring workflow is actually visible on the deployed
+      // PRE PHASE 3 tab, not merely present in the Python source files.
+      for(let n=0;n<40;n++){
+        prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
+        if(prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
+          && prePhaseScreen.includes("filtered rows have a fully source-reviewed"))break;
+        if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(prePhaseScreen))break;
+        await sleep(1500);
+      }
       const prePhaseTabSelected=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
+      result.checks.prePhase3ScoringWorkflowVisible=prePhaseTabSelected==="true"
+        && prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
+        && prePhaseScreen.includes("filtered rows have a fully source-reviewed");
+      if(!result.checks.prePhase3ScoringWorkflowVisible)
+        result.errors.push("Deployed PRE PHASE 3 is missing the score-count caption or the ten-candidate clinical scoring review worklist.");
       result.prePhaseDiagnostic={
         tabSelected:prePhaseTabSelected,
         hasNewHeading:prePhaseScreen.includes("PRE PHASE 3 — LIVE SOURCE MONITOR"),
@@ -263,7 +277,7 @@ async function audit(){
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
                    "prePhase3Visible",
-                   "workbenchSubtabRemoved"]){
+                   "workbenchSubtabRemoved","prePhase3ScoringWorkflowVisible"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
   if(!result.checks.scriptError)result.errors.push("Live app displays an exception.");
