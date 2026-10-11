@@ -160,10 +160,8 @@ def _quarter_duration(facts, tags, as_of):
     candidates = _facts(facts, "us-gaap", tags, ("USD",), as_of)
     with_starts = [x for x in candidates if x["start"] and x["start"] <= x["end"]]
     direct = [x for x in with_starts if 60 <= (x["end"] - x["start"]).days <= 124]
-    if direct:
-        row = max(direct, key=lambda v: (v["end"], v["filed"], -v["priority"]))
-        return {**row, "basis": "DIRECT QUARTER", "months": 3}
     recent = sorted(with_starts, key=lambda v: (v["end"], v["filed"]), reverse=True)
+    derived = []
     for current in recent:
         span = (current["end"] - current["start"]).days
         if not 125 <= span <= 370:
@@ -174,10 +172,15 @@ def _quarter_duration(facts, tags, as_of):
                     and 65 <= (current["end"] - x["end"]).days <= 115]
         if previous:
             prior = max(previous, key=lambda v: (v["end"], v["filed"]))
-            return {**current, "value": current["value"] - prior["value"],
-                    "basis": "YTD LESS PRIOR YTD", "prior_accn": prior["accn"],
-                    "prior_end": prior["end"], "months": 3}
-    return None
+            derived.append({**current, "value": current["value"] - prior["value"],
+                            "basis": "YTD LESS PRIOR YTD", "prior_accn": prior["accn"],
+                            "prior_end": prior["end"], "months": 3})
+    direct_rows = [{**row, "basis": "DIRECT QUARTER", "months": 3} for row in direct]
+    eligible = direct_rows + derived
+    if not eligible:
+        return None
+    return max(eligible, key=lambda v: (v["end"], v["filed"],
+                                       v["basis"] == "DIRECT QUARTER", -v["priority"]))
 
 
 def _annual_duration(facts, tags, as_of):
@@ -213,7 +216,7 @@ def _sec_files(submissions, cik, as_of, limit=50):
             continue
         if (as_of - filed_at).days > 540:
             continue
-        if not re.fullmatch(r"\\d{10}-\\d{2}-\\d{6}", str(accn)):
+        if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", str(accn)):
             continue
         if "/" in str(document) or "\\" in str(document) or not str(document).strip():
             continue
