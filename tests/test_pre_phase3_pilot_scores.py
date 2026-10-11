@@ -4,7 +4,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-from pre_phase3_pilot_scores import RUBRIC, attach_preliminary_scores, review_index
+from pre_phase3_pilot_scores import RUBRIC, attach_preliminary_scores, review_index, reviewed_phase2_link
 
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = json.loads((ROOT / "data/pre_phase3_pilot_clinical_reviews.json").read_text(encoding="utf-8"))
@@ -17,6 +17,7 @@ def trial(ticker="TRVI", nct="NCT07671911", **updates):
         "Trial phase": "Phase 3", "Registry status": "RECRUITING",
         "Registry results posted": "",
         "NCT source": f"https://clinicaltrials.gov/study/{nct}",
+        "Registry check": "RECENT", "Protocol check": "RECENT",
         "Company/program identity": "VERIFIED",
         "Pre-readout research score /100": None,
         "Score status": "NOT SCORED — EVIDENCE INCOMPLETE",
@@ -34,6 +35,8 @@ def protocol(nct="NCT07671911", **updates):
         "comparator": "Placebo",
         "registry_overall_status": "RECRUITING",
         "allocation": "RANDOMIZED",
+        "checked_at": "2026-10-10T16:50:00+00:00",
+        "source_updated": "2026-09-14",
     }
     r.update(updates)
     return r
@@ -79,9 +82,33 @@ class PilotClinicalScoreTests(unittest.TestCase):
             {"Trial phase":"Phase 2"},
             {"Registry results posted":"2026-10-01"},
             {"NCT source":"https://example.com/study/NCT07671911"},
+            {"Registry check":"STALE"},
+            {"Protocol check":"STALE"},
+            {"Drug":"NAL ER plus another drug"},
+            {"Indication":"Other disease | Idiopathic Pulmonary Fibrosis"},
         ):
             row=attach_preliminary_scores([trial(**changes)], [protocol()], LEDGER, date(2026,10,10))[0]
             self.assertIsNone(row["Preliminary clinical score /100"],changes)
+
+    def test_missing_stale_and_future_protocol_dates_do_not_score(self):
+        for changes in ({"checked_at":""}, {"checked_at":"2026-10-01"},
+                        {"checked_at":"2026-10-11"}, {"source_updated":"2027-01-01"}):
+            row=attach_preliminary_scores([trial()], [protocol(**changes)], LEDGER, date(2026,10,10))[0]
+            self.assertIsNone(row["Preliminary clinical score /100"])
+
+    def test_phase2_alias_link_requires_exact_trial_drug_and_dated_source(self):
+        review=review_index(LEDGER,"2026-10-10")[("LBRX","NCT07363577")]
+        row={"ticker":"LBRX","nct_id":"NCT07363577", "drug":review["registry_drug"],
+             "indication":"Schizophrenia"}
+        link, source=reviewed_phase2_link(row,review,"2026-10-10")
+        self.assertEqual(link,"NCT06179108")
+        self.assertTrue(source.startswith("https://ir.lbpharma.us/"))
+        for updates in ({"ticker":"OTHER"},{"nct_id":"NCT07369154"},
+                        {"drug":"LB-102 plus another drug"},{"indication":"Other disease"}):
+            self.assertEqual(reviewed_phase2_link(row | updates,review,"2026-10-10"),("",""))
+        wrong_source=json.loads(json.dumps(review))
+        wrong_source["phase2_link_source"]["published"]="2027-01-01"
+        self.assertEqual(reviewed_phase2_link(row,wrong_source,"2026-10-10"),("",""))
 
     def test_untrusted_and_future_dated_sources_fail_closed(self):
         for field,value in (

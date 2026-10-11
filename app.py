@@ -2776,6 +2776,12 @@ def render_pre_phase3():
             selected = selected.loc[
                 fields.astype(str).agg(" ".join, axis=1).str.contains(query, case=False, regex=False)
             ]
+        # Keep the reviewed pilot numbers visible in the initial 500-row view.
+        # This orders research assessments; it does not rank trading entries.
+        selected = selected.sort_values(
+            ["Preliminary clinical score /100", "Pre-readout research score /100"],
+            ascending=False, na_position="last", kind="stable",
+        )
         if cap_only:
             selected = selected.loc[selected["Market cap state"].eq("VERIFIED RECENT")
                                     & selected["Market cap USD"].between(300_000_000, 10_000_000_000)]
@@ -2804,13 +2810,14 @@ def render_pre_phase3():
             "Registry primary completion", "Registry results posted",
             "Primary endpoint p values observed", "Phase 2 PRIMARY evidence count",
             "Phase 2 PRIMARY first observed UTC", "Phase 2 PRIMARY registry sources",
+            "Phase 2 link review source", "Clinical score as of",
             "Primary effect size and CI recorded", "Phase 3 result interpretation",
             "Registry primary result source", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
             "Protocol check", "Design inputs present /6", "Design coverage meaning",
             "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
             "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
-            "Score Evidence", "Clinical Caveats",
+            "Score Evidence", "Clinical rationale", "Clinical Caveats",
             "Missing pre-readout evidence", "Issuer Phase 3 readout", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
         ]
@@ -2822,6 +2829,7 @@ def render_pre_phase3():
             "these are analyst assessments, not independently audited clinical scores, "
             "approval probabilities, or entry signals."
         )
+        st.caption("Scored research rows appear first. The assessment date and six domain explanations are included in the table and CSV export.")
         st.caption(
             f"{int(scored.sum())} of {len(selected):,} filtered rows have a fully source-reviewed "
             "PRE PHASE 3 score /100. An empty score means NOT SCORED; it is not zero "
@@ -2830,6 +2838,20 @@ def render_pre_phase3():
         st.dataframe(
             selected[display].head(500), use_container_width=True,
             hide_index=True, height=530,
+            column_config={
+                "Ticker": st.column_config.TextColumn(width="small"),
+                "Preliminary clinical score /100": st.column_config.NumberColumn(
+                    "Clinical /100", width="small", format="%d",
+                    help="Provisional source-cited six-domain research assessment; not an approval probability.",
+                ),
+                "Preliminary score status": st.column_config.TextColumn("Assessment", width="medium"),
+                "Pre-readout research score /100": st.column_config.NumberColumn(
+                    "Reviewed /100", width="small", format="%d",
+                    help="Requires the full dated clinical evidence and issuer readout review. Blank means not scored.",
+                ),
+                "Score status": st.column_config.TextColumn("Review gate", width="medium"),
+                "Linked Phase 2 PRIMARY p": st.column_config.TextColumn("p (Phase 2 PRIMARY)", width="large"),
+            },
         )
         st.download_button(
             "EXPORT ALL FILTERED CLINICAL RECORDS (CSV)",
