@@ -358,7 +358,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
             self.assertIn("nova-2",identity_source)
             from datetime import datetime, date
             from zoneinfo import ZoneInfo
-            if datetime.now(ZoneInfo("America/Los_Angeles")).date() == date(2026,10,10):
+            if datetime.now(ZoneInfo("America/Los_Angeles")).date() in {date(2026,10,10), date(2026,10,11)}:
                 self.assertEqual(float(nova2.iloc[0]["Pre-readout research score /100"]),72)
                 self.assertEqual(nova2.iloc[0]["Score status"],
                                  "100-POINT RESEARCH SCORE — UNCALIBRATED")
@@ -371,12 +371,12 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(nova2.iloc[0]["Phase 2 link review source"].startswith("https://ir.lbpharma.us/"))
         self.assertEqual(len(nova3), 1)
         self.assertTrue(pd.isna(nova3.iloc[0]["Preliminary clinical score /100"]))
-        # The issuer newsroom verification is explicitly dated 2026-10-10.
+        # The issuer newsroom checks are explicitly dated Oct 10 and Oct 11.
         # Do not let yesterday's reviewed research score silently pass as current.
         from datetime import datetime, date
         from zoneinfo import ZoneInfo
         local_day = datetime.now(ZoneInfo("America/Los_Angeles")).date()
-        if local_day == date(2026, 10, 10):
+        if local_day in {date(2026,10,10), date(2026,10,11)}:
             app.text_input(key="step7_trial_search").set_value("TRVI")
             app.session_state["pdufa_subtab"] = "PRE PHASE 3"
             app.run()
