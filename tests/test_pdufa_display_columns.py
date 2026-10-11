@@ -37,7 +37,7 @@ class PdufaGridTests(unittest.TestCase):
         self.assertEqual(segment(-1), "PAST DUE")
         self.assertIn("#e5e7eb", date_color(-1))
         self.assertEqual(segment(pd.NA), "DATE UNKNOWN")
-        self.assertEqual(date_color(pd.NA), "")
+        self.assertIn("#e5e7eb", date_color(pd.NA))
 
     def test_every_native_day_header_gets_second_line_legend(self):
         for name in ("Days to PDUFA", "DAYS TO PDUFA",
