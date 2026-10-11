@@ -2856,6 +2856,11 @@ def render_pre_phase3():
             "Missing pre-readout evidence", "Issuer Phase 3 readout", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
         ]
+        # Old saved feeds can briefly coexist with a just-deployed app before
+        # the Step 7 Actions collector regenerates the new provenance column.
+        # Never invent an identity source or imply that its review passed.
+        if "Company identity review source" not in selected.columns:
+            selected["Company identity review source"] = ""
         scored = selected["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
         scored &= pd.to_numeric(selected["Pre-readout research score /100"], errors="coerce").between(0, 100)
         preliminary = pd.to_numeric(selected["Preliminary clinical score /100"], errors="coerce").notna()
