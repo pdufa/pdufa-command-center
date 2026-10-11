@@ -37,12 +37,32 @@ async function verify(){
     checked.http=response?.status()??null;
     if(checked.http!==200)throw Error("Dashboard HTTP status "+checked.http);
     let match=null;
-    for(let n=0;n<65;n++){
-      match=await findFrame(page);
-      if(match&&match.text.includes("PIPELINE")&&match.text.includes("PRE PHASE 3"))break;
+    let lastFrameTexts=[];
+    // Cloud may be waking or redeploying when multiple validation jobs start.
+    // Retry one navigation after the warm-up window; keep failure fail-closed.
+    for(let n=0;n<130;n++){
+      const observed=await findFrame(page);
+      lastFrameTexts=[];
+      for(const frame of page.frames()){
+        try{
+          lastFrameTexts.push({
+            url:frame.url(),
+            text:(await frame.locator("body").innerText({timeout:1500})).slice(0,450),
+          });
+        }catch(_){lastFrameTexts.push({url:frame.url(),text:"FRAME UNAVAILABLE"});}
+      }
+      if(observed&&observed.text.includes("PIPELINE")&&observed.text.includes("PRE PHASE 3")){
+        match=observed;
+        break;
+      }
+      if(n===65){
+        checked.notes.push("Cloud app not ready on first load; retrying navigation.");
+        await page.reload({waitUntil:"domcontentloaded",timeout:60000});
+      }
       await sleep(1400);
     }
-    if(!match)throw Error("Live application frame did not load");
+    checked.frameDiagnostics=lastFrameTexts;
+    if(!match)throw Error("Live application still unavailable after navigation retry; see frameDiagnostics");
     const tab=match.frame.getByRole("tab",{name:"PRE PHASE 3",exact:true});
     await tab.click({timeout:20000});
     let body="";
