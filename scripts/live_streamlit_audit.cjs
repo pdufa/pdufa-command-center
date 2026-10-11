@@ -147,7 +147,7 @@ async function audit(){
           .click({timeout:15000});
         const reportClosed=await waitForRender(page,appFrame,async(text,frame)=>
           text.includes("SHOW POST PHASE 3 DAILY REPORT")
-          && !await frame.getByLabel("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).isChecked()
+          && !await frame.getByRole("switch",{name:"SHOW POST PHASE 3 DAILY REPORT — results, Watchlist and export",exact:true}).isChecked()
           && !text.includes("Yesterday: source-linked posts"));
         appFrame=reportClosed.frame;
       }
