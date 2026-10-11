@@ -53,9 +53,7 @@ def segment(days):
 def date_color(days):
     """CSS for a countdown cell using the four exact user-selected ranges."""
     value = _days(days)
-    if value is None:
-        return ""
-    if value < 0:
+    if value is None or value < 0:
         return "background-color:#e5e7eb;color:#111111"
     _, _, background, foreground = COUNTDOWN_BANDS[band_index(value)]
     return f"background-color:{background};color:{foreground};font-weight:700"
