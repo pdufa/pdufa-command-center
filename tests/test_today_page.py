@@ -77,6 +77,8 @@ class TodayTabTests(unittest.TestCase):
         self.assertNotIn("pipeline_phase3_daily_details_v1", empty_tab)
         self.assertNotIn("render_post_phase3_stage1(", empty_tab)
         self.assertNotIn("render_today(", empty_tab)
+        self.assertNotIn("from today_page import render_today", app)
+        self.assertNotIn("from post_phase3_unified_ui import render_post_phase3_stage1", app)
         # The source file and automated collection survive the UI removal.
         self.assertIn("EXPORT PHASE 3 DAILY CSV", source)
         self.assertIn("phase3_daily_", source)
