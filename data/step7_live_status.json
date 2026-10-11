@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-11T03:39:10+00:00",
+  "generated_at_utc": "2026-10-11T03:50:55+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -51,7 +51,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-11T03:36:33.128227+00:00",
+      "Last checked UTC": "2026-10-11T03:49:14.672274+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
     }
