@@ -1,6 +1,13 @@
 # PDUFA Command Center
 
-## Unified display inside POST PHASE 3 (October 11, 2026)
+## Unified Overview dashboard and Post Phase 3 workspace (October 11, 2026)
+
+**PDUFA → UNIFIED OVERVIEW** displays the linked **Trading**, **Pipeline** and
+**PDUFA Timeline** dashboard. One **Focus ticker** selection updates all three
+panels; shared phase, stage, search and sort controls narrow the view. The
+light-green background, white panels with black borders, and stacked mobile
+layout are retained. Expand the detail panels for all score components and
+source evidence; CSV exports include every matching record.
 
 **PDUFA → POST PHASE 3** contains the combined clinical/pipeline display and
 all three trading sections: discovery/qualification, reported-position
@@ -11,9 +18,7 @@ The existing columns, source audits, score models, financing colors, sort
 controls and CSV exports are retained. Portfolio totals and exit alerts still
 cover the complete uploaded journal when its displayed rows are ticker-filtered.
 
-**UNIFIED OVERVIEW** remains in the submenu but has no content. Its former
-display and exports are now available inside POST PHASE 3. PIPELINE and
-PRE PHASE 3 retain their existing separate workflows.
+PIPELINE and PRE PHASE 3 retain their existing separate workflows.
 
 ## Stage 3 historical evidence backfill worklist
 

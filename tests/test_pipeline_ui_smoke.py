@@ -319,14 +319,43 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.selectbox(key="postphase3_shared_ticker").set_value("All tickers").run()
         self.assertFalse(list(app.exception))
 
-        # Returning to the retained Overview tab shows no hidden widgets,
-        # data tables, exports or relocated clinical content.
-        app.session_state["pdufa_subtab"] = "UNIFIED OVERVIEW"
-        app.run()
-        self.assertFalse(list(app.exception))
-        overview = next(item for item in app.get("tab")
+        # AppTest does not send frontend tab-selection events. Use a fresh
+        # Overview session for widget interactions; the live browser audit
+        # checks switching between the actual tabs.
+        overview_app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        overview_app.session_state["nav"] = "PDUFA"
+        overview_app.session_state["pdufa_subtab"] = "UNIFIED OVERVIEW"
+        overview_app.run()
+        self.assertFalse(list(overview_app.exception))
+        overview = next(item for item in overview_app.get("tab")
                         if item.label == "UNIFIED OVERVIEW")
-        self.assertEqual([item for item in overview if item.type != "tab"], [])
+        headings = [item.body for item in overview.get("markdown")]
+        for title in ("UNIFIED OVERVIEW — TRADING COMMAND CENTER",
+                      "### TRADING", "### PIPELINE", "### PDUFA TIMELINE"):
+            self.assertTrue(any(title in heading for heading in headings), title)
+        self.assertTrue(any(item.key == "overview_export"
+                            for item in overview.get("download_button")))
+        overview_app.selectbox(key="overview_shared_ticker").set_value(ticker).run()
+        self.assertFalse(list(overview_app.exception))
+        self.assertEqual(overview_app.session_state["pdufa_subtab"], "UNIFIED OVERVIEW")
+        overview = next(item for item in overview_app.get("tab")
+                        if item.label == "UNIFIED OVERVIEW")
+        focused = [item.value for item in overview.get("dataframe")
+                   if {"Ticker", "Score /100", "Score type"}
+                   .issubset(item.value.columns)]
+        self.assertEqual(len(focused), 4)
+        for frame in focused:
+            self.assertGreater(len(frame), 0)
+            self.assertTrue(frame["Ticker"].eq(ticker).all())
+        timeline = next(item.value for item in overview.get("dataframe")
+                        if {"Date Classification", "PDUFA source"}.issubset(item.value.columns)
+                        and "Score /100" not in item.value.columns)
+        self.assertTrue(timeline["Ticker"].eq(ticker).all())
+        self.assertTrue(timeline["PDUFA Date"].is_monotonic_increasing)
+        overview_app.selectbox(key="overview_shared_ticker").set_value("All tickers").run()
+        self.assertFalse(list(overview_app.exception))
+        self.assertTrue(any("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body
+                            for item in app.markdown))
 
     def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)

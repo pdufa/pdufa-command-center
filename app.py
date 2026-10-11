@@ -9,7 +9,7 @@ from post_phase3_workspace import render_post_phase3_workspace
 from pdufa_display_columns import (prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid,
                                    DISPLAY_ORDER_OPTIONS)
-from unified_clinical_trading import _load as load_unified_evidence
+from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -3196,9 +3196,8 @@ if page == "PDUFA":
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
-        # The unified display now lives inside POST PHASE 3. Keep this tab
-        # empty as requested, including for existing saved tab selections.
-        pass
+        if unified_tab.open:
+            render_combined_overview(dashboard=True)
     with pipeline_tab:
         st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
         st.caption(
