@@ -11,6 +11,7 @@ Typical runtime: under 5 seconds for the current repository data.
 """
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
