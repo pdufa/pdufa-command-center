@@ -15,6 +15,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
+from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -118,6 +119,8 @@ def build_snapshot(root, now=None):
 
     trial_rows = read_csv(root / "phase_pipeline.csv")
     primary_results = read_csv(root / "phase3_primary_pvalues.csv")
+    phase2_primary = read_csv(root / "phase2_primary_p_evidence.csv")
+    phase2_index = primary_evidence_index(phase2_primary, now)
     protocols = read_csv(root / "pre_readout_protocols.csv")
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
     financing = read_csv(root / "second_financing_status.csv")
@@ -222,6 +225,7 @@ def build_snapshot(root, now=None):
         # Do not turn a registry milestone into positive efficacy or an issuer readout.
         trial_check = freshness(row.get("checked_at"), now, 48)
         completion = row.get("primary_completion", "")
+        phase2_summary = phase2_linked_summary(phase2_index, ticker, row.get("phase2_nct_ids", ""))
         candidate = {
             "Ticker": ticker, "Company": row.get("company", ""),
             "Drug": row.get("drug", ""), "Indication": row.get("indication", ""),
@@ -247,6 +251,7 @@ def build_snapshot(root, now=None):
             "Market cap state": cap_state,
             "Market source": cap.get("market_cap_source", "") if cap_ok else "",
             "Market cap as of UTC": cap.get("market_cap_checked_at", ""),
+            **phase2_summary,
             "NCT source": row.get("source_url", ""),
             "Last trial check UTC": row.get("checked_at", ""),
             "ENTRY READY": "NO — mandatory clinical, financing and market gates unverified",
