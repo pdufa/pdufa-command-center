@@ -2028,6 +2028,8 @@ COLUMN_HELP = {
 }
 
 def _column_help_text(col):
+    if col in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa"):
+        return pdufa_column_help(col)
     if col in COLUMN_HELP:
         return COLUMN_HELP[col]
     if col in SPECIAL_PROVISION_LABELS:
