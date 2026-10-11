@@ -126,6 +126,44 @@ def reviewed_phase2_link(row, review, as_of):
     return p2, link_source["url"]
 
 
+def reviewed_program_identity(row, review, as_of):
+    """Validate source-dated exact pivotal trial identity, not ticker aliases.
+
+    The issuer source must explicitly connect the exact trial identifier and
+    program. This does not assert trial efficacy, FDA agreement, or eligibility
+    to trade. Other Phase 3 studies for the same ticker stay unchanged.
+    """
+    cutoff = _day(as_of)
+    if not review or not cutoff or not isinstance(row, dict):
+        return ""
+    link, _ = reviewed_phase2_link(row, review, as_of)
+    evidence = review.get("program_identity_review")
+    if not link or not isinstance(evidence, dict):
+        return ""
+    try:
+        source = evidence.get("source_url", "")
+        source_date = _day(evidence.get("source_date"))
+        parsed = urlparse(source)
+        same_trial = (
+            str(row.get("nct_id") or "").strip() == str(review.get("nct_id") or "").strip()
+            and str(row.get("source_url") or "").strip() == evidence.get("registry_url")
+            and str(row.get("sponsor") or "").strip().casefold()
+                == str(evidence.get("sponsor") or "").strip().casefold()
+            and str(row.get("drug") or "").strip().casefold()
+                == str(review.get("registry_drug") or "").strip().casefold()
+        )
+        if (evidence.get("status") == "EXACT_NCT_REVIEWED"
+                and same_trial
+                and parsed.scheme == "https"
+                and parsed.hostname == "ir.lbpharma.us"
+                and "nova-2" in parsed.path
+                and source_date and source_date < cutoff):
+            return source
+    except (TypeError, ValueError):
+        pass
+    return ""
+
+
 def classify_phase3_protocol(protocol, nct):
     """Classify pivotal *design* only; not issuer outcome or registration success."""
     proto = protocol or {}
