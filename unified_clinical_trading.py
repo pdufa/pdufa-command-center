@@ -7,7 +7,8 @@ from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
 from pdufa_display_columns import (POST_SCORES, PRE_SCORES, PRE_PRIORITY_SCORES,
-                                  POST_PRIORITY_SCORES, prepare_pdufa_grid, finance_style)
+                                  POST_PRIORITY_SCORES, prepare_pdufa_grid, sort_pdufa_grid,
+                                  DISPLAY_ORDER_OPTIONS, finance_style)
 from datetime import timezone
 from pathlib import Path
 
@@ -201,7 +202,15 @@ def render_combined_overview():
     if search:
         hay = df[["Ticker", "Drug", "Indication", "NCT ID"]].fillna("").astype(str).agg(" ".join, axis=1)
         df = df.loc[hay.str.contains(search, case=False, regex=False)]
-    df = df.sort_values(["Ticker", "NCT ID", "Drug"], kind="stable")
+    display_order = st.selectbox(
+        "Display order", DISPLAY_ORDER_OPTIONS, key="unified_pdufa_display_order",
+    )
+    df = sort_pdufa_grid(df, display_order)
+    st.caption(
+        "Top Score shows the highest available numerical score first; the adjacent "
+        "Score type identifies its model. Pre- and post-readout scores are not "
+        "interchangeable performance or approval probabilities."
+    )
     st.dataframe(finance_style(df.head(350)), hide_index=True, use_container_width=True,
                  column_config={
                      "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
