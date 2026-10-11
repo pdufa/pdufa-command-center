@@ -1,5 +1,20 @@
 # PDUFA Command Center
 
+## Unified display inside POST PHASE 3 (October 11, 2026)
+
+**PDUFA → POST PHASE 3** contains the combined clinical/pipeline display and
+all three trading sections: discovery/qualification, reported-position
+monitoring, and historical entry/exit research. **Focus ticker** links the
+clinical table, PDUFA timing, candidate queue, position table and historical
+research. The default **All tickers** keeps the full workspace available.
+The existing columns, source audits, score models, financing colors, sort
+controls and CSV exports are retained. Portfolio totals and exit alerts still
+cover the complete uploaded journal when its displayed rows are ticker-filtered.
+
+**UNIFIED OVERVIEW** remains in the submenu but has no content. Its former
+display and exports are now available inside POST PHASE 3. PIPELINE and
+PRE PHASE 3 retain their existing separate workflows.
+
 ## Stage 3 historical evidence backfill worklist
 
 The Stage 3 workflow now produces `historical_source_backfill_queue.csv` by reviewing the saved `pdufa_candidates.csv`, `second_financing_status.csv` and `company_registry.csv`. It matches exact event keys and issuer SEC CIKs and sorts existing historic financing references into three research priorities: potential two-close funding evidence, incomplete funding evidence and clinical-program discovery. Each row lists outstanding clinical readout/benefit/safety, *first-public* SEC filing dates, original PDUFA date history and historical split-adjusted OHLCV.

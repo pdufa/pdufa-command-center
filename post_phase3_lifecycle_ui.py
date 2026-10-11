@@ -21,7 +21,7 @@ from post_phase3_unified import read_rows
 PACIFIC = ZoneInfo("America/Los_Angeles")
 
 
-def render_post_phase3_positions(candidates, root="data"):
+def render_post_phase3_positions(candidates, root="data", ticker=None):
     root = Path(root)
     today = datetime.now(PACIFIC).date()
     st.markdown("### STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
@@ -89,6 +89,14 @@ def render_post_phase3_positions(candidates, root="data"):
         "be verified from today's eligibility alone."
     )
     frame = pd.DataFrame(results).reindex(columns=DISPLAY_FIELDS)
+    if ticker:
+        frame = frame.loc[
+            frame["Ticker"].fillna("").astype(str).str.strip().str.upper().eq(ticker)
+        ]
+        st.caption(
+            f"Table focus: {ticker}. Portfolio totals and exit alerts above still "
+            "cover every reported position in your journal."
+        )
     filter_choice = st.selectbox(
         "Position monitor view",
         ["All positions", "Action required (RED or REVIEW)", "Open YELLOW", "Exited"],

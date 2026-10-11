@@ -1,4 +1,4 @@
-"""Real Streamlit regression: all four PDUFA subtabs have the score contract.
+"""Real Streamlit regression: active PDUFA views keep the score contract.
 
 Values remain NOT SCORED if no independently supported score exists.
 """
@@ -11,7 +11,7 @@ from pdufa_display_columns import (FRONT, POST_SCORES, PRE_SCORES,
                                    DISPLAY_ORDER_OPTIONS)
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
-TABS = ("UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3")
+TABS = ("PIPELINE", "PRE PHASE 3", "POST PHASE 3")
 
 
 class FourPdufaScoreTabTests(unittest.TestCase):
@@ -25,8 +25,9 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                 app.session_state["pdufa_subtab"] = tab
                 app.run()
                 self.assertFalse(list(app.exception), tab)
+                panel = next(item for item in app.get("tab") if item.label == tab)
                 main = [
-                    item.value for item in app.dataframe
+                    item.value for item in panel.get("dataframe")
                     if {"Ticker", "Score /100", "Score type",
                         "PDUFA Date", "Days to PDUFA", "F"}.issubset(item.value.columns)
                 ]
@@ -40,10 +41,9 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                      "Days to PDUFA", "Score type"],
                 )
                 sort_key = {
-                    "UNIFIED OVERVIEW": "unified_pdufa_display_order",
                     "PIPELINE": "pipeline_sort_v9",
                     "PRE PHASE 3": "step7_priority_sort",
-                    "POST PHASE 3": "postphase3_stage1_sort",
+                    "POST PHASE 3": "unified_pdufa_display_order",
                 }[tab]
                 sorter = app.selectbox(key=sort_key)
                 self.assertEqual(list(sorter.options), list(DISPLAY_ORDER_OPTIONS))

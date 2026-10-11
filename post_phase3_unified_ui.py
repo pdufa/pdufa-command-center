@@ -20,7 +20,7 @@ def _queue(root, signature, as_of_date):
     return build_queue(root, as_of_date)
 
 
-def render_post_phase3_stage1(root="data", include_positions=True):
+def render_post_phase3_stage1(root="data", include_positions=True, ticker=None):
     path = Path(root)
     filenames = (
         "step7_live_status.json", "step7_financing_review.csv",
@@ -99,6 +99,8 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         st.warning("No valid Stage 1 rows loaded; check the saved feeds.")
         return
     df = pd.DataFrame(items).reindex(columns=COLUMNS)
+    if ticker:
+        df = df.loc[df["Ticker"].fillna("").astype(str).str.strip().str.upper().eq(ticker)]
     st.caption(
         "One combined candidate table: exact trial and program identity, eligibility "
         "(GREEN / REVIEW / RED), financing milestones, PDUFA timing, and source-linked "
@@ -195,4 +197,4 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         "audited conclusion, investment recommendation or position status."
     )
     if include_positions:
-        render_post_phase3_positions(items, root)
+        render_post_phase3_positions(items, root, ticker=ticker)

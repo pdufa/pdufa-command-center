@@ -16,6 +16,7 @@ from post_phase3_unified_ui import render_post_phase3_stage1
 from post_phase3_unified import build_queue, read_rows
 from post_phase3_lifecycle_ui import render_post_phase3_positions
 from post_phase3_backfill_queue import build_backfill_queue
+from unified_clinical_trading import render_combined_overview
 from post_phase3_trade_backtest import (
     ENTRY_METHODS, EXIT_DAYS, SUMMARY_FIELDS, day, paired_comparison,
     run_backtest,
@@ -31,18 +32,24 @@ STAGES = (
 
 
 @st.cache_data(ttl=120, show_spinner=False)
-def _research_backtest(signature):
+def _research_backtest(signature, root="data", ticker=None):
     """Hash of file metadata invalidates cached audited evidence preview."""
-    root = ROOT / "data"
+    root = Path(root)
     events = read_rows(root / "post_phase3_historical_trade_events.csv")
     bars = read_rows(root / "post_phase3_historical_adjusted_ohlcv.csv")
     queue, queue_meta = build_backfill_queue(root)
+    if ticker:
+        def matches(item):
+            return str(item.get("ticker") or "").strip().upper() == ticker
+        events = [item for item in events if matches(item)]
+        bars = [item for item in bars if matches(item)]
+        queue = [item for item in queue if matches(item)]
     scenarios, summary, audit = run_backtest(events, bars)
     matched = paired_comparison(scenarios)
     return queue, queue_meta, scenarios, summary, matched, audit
 
 
-def _stage3():
+def _stage3(root="data", ticker=None):
     st.markdown("### STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH")
     st.caption(
         "Four entry methods × exits 30, 14, or 7 calendar days before PDUFA. "
@@ -50,7 +57,7 @@ def _stage3():
         "can generate simulated returns. No FDA approval-prediction score is "
         "misrepresented as a stock-return backtest."
     )
-    root = ROOT / "data"
+    root = Path(root)
     files = ("post_phase3_historical_trade_events.csv",
              "post_phase3_historical_adjusted_ohlcv.csv",
              "pdufa_candidates.csv", "second_financing_status.csv",
@@ -60,7 +67,9 @@ def _stage3():
         for name in files
     )
     try:
-        queue, meta, scenarios, summary, matched, audit = _research_backtest(signature)
+        queue, meta, scenarios, summary, matched, audit = _research_backtest(
+            signature, str(root), ticker,
+        )
     except (ValueError, KeyError, TypeError, OSError, ZeroDivisionError):
         st.error("Historical evidence audit failed. No trading returns have been verified.")
         return
@@ -159,9 +168,11 @@ def render_post_phase3_workspace(root="data"):
         "reported holdings (YELLOW) → exit by PDUFA −7 days (RED). "
         "Status is evidence-based research, never a buy/sell order."
     )
+    ticker = render_combined_overview(root=root)
+    st.divider()
     # A single continuous workspace: all three research and monitoring panels
     # are rendered together. No stage switch can hide positions or backtests.
-    render_post_phase3_stage1(root=root, include_positions=False)
+    render_post_phase3_stage1(root=root, include_positions=False, ticker=ticker)
 
     st.divider()
     st.caption(
@@ -179,11 +190,11 @@ def render_post_phase3_workspace(root="data"):
     except (OSError, ValueError, TypeError, KeyError):
         candidates = []
         st.warning("Candidate records unavailable; reported trades cannot be matched.")
-    render_post_phase3_positions(candidates, root=root)
+    render_post_phase3_positions(candidates, root=root, ticker=ticker)
 
     st.divider()
     st.caption(
         "HISTORICAL RESEARCH — strategy comparisons require point-in-time "
         "verified events and adjusted prices; never assume a historical win."
     )
-    _stage3()
+    _stage3(root=root, ticker=ticker)

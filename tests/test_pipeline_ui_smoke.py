@@ -248,6 +248,15 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.session_state["pdufa_subtab"] = "POST PHASE 3"
         app.run()
         self.assertFalse(list(app.exception))
+        overview = next(item for item in app.get("tab")
+                        if item.label == "UNIFIED OVERVIEW")
+        self.assertEqual([item for item in overview if item.type != "tab"], [])
+        post = next(item for item in app.get("tab")
+                    if item.label == "POST PHASE 3")
+        self.assertTrue(any("UNIFIED CLINICAL → TRADING DISPLAY" in item.body
+                            for item in post.get("markdown")))
+        self.assertTrue(any(item.key == "unified_export"
+                            for item in post.get("download_button")))
         labels = [item.label for item in app.get("tab")]
         self.assertIn("POST PHASE 3", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
@@ -279,6 +288,45 @@ class PipelinePageSmokeTests(unittest.TestCase):
             "No actual positions have been supplied" in item.body
             for item in app.info
         ))
+
+        # One ticker focus must update the relocated clinical view and the
+        # existing candidate queue without losing either display or its scores.
+        score_tables = [item.value for item in post.get("dataframe")
+                        if {"Ticker", "Score /100", "Score type"}
+                        .issubset(item.value.columns)]
+        self.assertEqual(len(score_tables), 2)
+        shared = set(score_tables[0]["Ticker"]) & set(score_tables[1]["Ticker"])
+        self.assertTrue(shared, "Saved feeds need a shared ticker to verify linked focus")
+        ticker = sorted(shared)[0]
+        app.selectbox(key="postphase3_shared_ticker").set_value(ticker).run()
+        self.assertFalse(list(app.exception))
+        post = next(item for item in app.get("tab")
+                    if item.label == "POST PHASE 3")
+        focused = [item.value for item in post.get("dataframe")
+                   if {"Ticker", "Score /100", "Score type"}
+                   .issubset(item.value.columns)]
+        self.assertEqual(len(focused), 2)
+        for frame in focused:
+            self.assertGreater(len(frame), 0)
+            self.assertTrue(frame["Ticker"].eq(ticker).all())
+        from post_phase3_backfill_queue import build_backfill_queue
+        queue, _ = build_backfill_queue(APP_PATH.parent / "data")
+        expected = sum(str(row.get("ticker") or "").upper() == ticker
+                       for row in queue)
+        count = next(item for item in post.get("metric")
+                     if item.label == "Historical research leads")
+        self.assertEqual(int(count.value), expected)
+        app.selectbox(key="postphase3_shared_ticker").set_value("All tickers").run()
+        self.assertFalse(list(app.exception))
+
+        # Returning to the retained Overview tab shows no hidden widgets,
+        # data tables, exports or relocated clinical content.
+        app.session_state["pdufa_subtab"] = "UNIFIED OVERVIEW"
+        app.run()
+        self.assertFalse(list(app.exception))
+        overview = next(item for item in app.get("tab")
+                        if item.label == "UNIFIED OVERVIEW")
+        self.assertEqual([item for item in overview if item.type != "tab"], [])
 
     def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)

@@ -13,23 +13,24 @@ from datetime import timezone
 from pathlib import Path
 
 @st.cache_data(ttl=120, show_spinner=False)
-def _load(day):
-    pipeline = load_universe("data", today=day)
-    post, health = build_queue("data", as_of=day)
+def _load(day, root="data"):
+    pipeline = load_universe(root, today=day)
+    post, health = build_queue(root, as_of=day)
     snapshot = None
     try:
-        snapshot = load_current_snapshot(Path("data"), datetime.now(timezone.utc))
+        snapshot = load_current_snapshot(Path(root), datetime.now(timezone.utc))
         pre = snapshot[0] if snapshot is not None else []
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         pre = []
     return pipeline, post, health, pre, snapshot is not None
 
-def render_combined_overview():
-    st.markdown("## UNIFIED CLINICAL → TRADING OVERVIEW")
+def render_combined_overview(root="data"):
+    """Render linked clinical context and return the shared ticker focus."""
+    st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
     st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:
-        pipeline, post, health, pre, pre_current = _load(today)
+        pipeline, post, health, pre, pre_current = _load(today, root)
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         st.error("Saved source data could not be loaded. No eligibility has been verified.")
         return
@@ -153,6 +154,22 @@ def render_combined_overview():
                                        errors="coerce").notna().sum())
     post_score_count = int(pd.to_numeric(df["Evidence score /100"],
                                         errors="coerce").notna().sum())
+    tickers = sorted({str(value).strip().upper()
+                      for value in df["Ticker"].tolist()
+                      + [item.get("Ticker", "") for item in post]
+                      if str(value).strip()})
+    focus_options = ["All tickers", *tickers]
+    focus_key = "postphase3_shared_ticker"
+    if st.session_state.get(focus_key, "All tickers") not in focus_options:
+        st.session_state[focus_key] = "All tickers"
+    focus = st.selectbox("Focus ticker", focus_options, key=focus_key)
+    ticker = None if focus == "All tickers" else focus
+    st.caption(
+        "This ticker selection links the clinical/pipeline display, PDUFA dates, "
+        "candidate qualification, reported positions, and historical research below."
+    )
+    if ticker:
+        df = df.loc[df["Ticker"].eq(ticker)]
     a, b, c, d = st.columns(4)
     a.metric("Pipeline records", len(df))
     b.metric("Exact post evidence matches", int(df["Post evidence match"].eq("EXACT TICKER + NCT").sum()))
@@ -225,3 +242,4 @@ def render_combined_overview():
                        file_name="pdufa_unified_trial_view.csv", mime="text/csv",
                        key="unified_export")
     st.caption("Missing pre-readout scores remain blank. An exact ticker/NCT match is an identity link only, not independent clinical or SEC verification. Multiple post evidence rows for the same pair are intentionally withheld from automatic matching. Unlinked fields remain blank, not zero.")
+    return ticker

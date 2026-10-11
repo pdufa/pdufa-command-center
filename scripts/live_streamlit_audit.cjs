@@ -135,6 +135,12 @@ async function audit(){
         && !text.includes("No active research candidates match this view"));
       appFrame=phase3Ready.frame;
       result.checks.postPhase3Installed=true;
+      result.checks.unifiedDisplayInsidePostPhase3=
+        phase3Ready.text.includes("UNIFIED CLINICAL → TRADING DISPLAY")
+        && phase3Ready.text.includes("Focus ticker")
+        && phase3Ready.text.includes("EXPORT COMBINED TRIAL VIEW");
+      if(!result.checks.unifiedDisplayInsidePostPhase3)
+        result.errors.push("The unified clinical display and ticker focus must live inside POST PHASE 3.");
       result.checks.postPhase3CombinedRatingVisible=phase3Ready.text.includes("One combined candidate table")
         && phase3Ready.text.includes("Display order");
       result.checks.postPhase3EvidenceTableVisible=phase3Ready.text.includes("ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
@@ -155,6 +161,16 @@ async function audit(){
       if(!result.checks.noInventedTradeReturns)
         result.errors.push("POST PHASE 3 Stage 3 falsely reports trade returns without evidence.");
       await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-unified-workspace.png"),fullPage:false});
+      await appFrame.getByRole("tab",{name:"UNIFIED OVERVIEW",exact:true}).click({timeout:15000});
+      const emptyOverview=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"UNIFIED OVERVIEW",exact:true}).getAttribute("aria-selected")==="true"
+        && !text.includes("UNIFIED CLINICAL → TRADING DISPLAY"));
+      appFrame=emptyOverview.frame;
+      const activeOverview=appFrame.locator('[role="tabpanel"]:visible');
+      result.checks.unifiedOverviewEmpty=(await activeOverview.innerText()).trim()===""
+        && await activeOverview.locator('[data-testid="stDataFrame"],button,input,[data-testid="stSelectbox"]').count()===0;
+      if(!result.checks.unifiedOverviewEmpty)
+        result.errors.push("UNIFIED OVERVIEW must have no displayed content or controls.");
       // The merged POST PHASE 3 now renders three full panels in one session.
       // Restart the UI session before inspecting PRE PHASE 3, so a pending
       // expensive rerun or a detached Streamlit iframe does not block unrelated

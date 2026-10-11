@@ -6,7 +6,6 @@ from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELIN
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
-from unified_clinical_trading import render_combined_overview
 from pdufa_display_columns import (prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid,
                                    DISPLAY_ORDER_OPTIONS)
@@ -3197,7 +3196,9 @@ if page == "PDUFA":
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
-        render_combined_overview()
+        # The unified display now lives inside POST PHASE 3. Keep this tab
+        # empty as requested, including for existing saved tab selections.
+        pass
     with pipeline_tab:
         st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
         st.caption(
