@@ -6,6 +6,7 @@ from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELIN
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from today_page import render_today
+from post_phase3_unified_ui import render_post_phase3_stage1
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -3951,6 +3952,8 @@ if page == "PDUFA":
 
     with intake_tab:
         st.markdown("## POST PHASE 3 — DAILY RESULTS & INTAKE")
+        if intake_tab.open:
+            render_post_phase3_stage1()
         st.caption("The former TODAY reports are here: recent result posts, cumulative Phase 3 records, financing, Watchlist management and CSV export. Opening this view does not run collectors.")
         try:
             _intake_state = json.loads(Path("data/phase3_intake_status.json").read_text(encoding="utf-8"))
