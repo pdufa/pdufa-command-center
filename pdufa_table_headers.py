@@ -32,6 +32,7 @@ FIELD_HELP = {
     "trial status": "Registry recruitment or study status. Completion alone does not confirm a corporate topline readout.",
     "f": "Separate financing cycle: F START = started, F RUN = running, F CLOSED = source-supported closure, F UNKNOWN = not verified. This is not the trade lifecycle.",
     "primary p": "Reported p-value for a primary trial endpoint. Read with the exact trial, endpoint, effect size and statistical plan; it is not FDA approval probability.",
+    "2nd financing completed": "YES — VERIFIED (HISTORICAL) requires an audited, source-linked second post-Phase-3 financing event. NOT VERIFIED does not mean the company definitely has not closed an offering; check SEC evidence and verification date.",
     "cash runway (months)": "Source-reported or reviewed estimate of months of cash coverage. Check Cash Runway As Of; blank means unavailable.",
     "cash runway as of": "Date associated with the cash-runway estimate, which may differ from the current date.",
     "market cap": "Saved company market capitalization, rather than a live quote.",
