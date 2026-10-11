@@ -440,7 +440,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(app.selectbox(key="step7_priority_sort").value, "Top Score")
         self.assertTrue(clinical[0]["Score /100"].dropna().is_monotonic_decreasing)
         self.assertEqual(columns[:5], ["Ticker", "Score /100", "PDUFA Date",
-                                        "Days to PDUFA", "Score type"])
+                                        "Days to PDUFA", "2nd Financing Completed"])
         self.assertTrue(any("filtered rows have a review-priority score /100" in c.value for c in app.get("caption")))
         self.assertTrue(any("ALL-TRIAL REVIEW PRIORITY" in m.body for m in app.markdown))
         app.selectbox(key="step7_priority_sort").set_value("Top Score")
@@ -449,7 +449,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         ordered = next(t.value for t in app.dataframe if "Review priority factors" in t.value.columns)
         self.assertTrue(ordered["Score /100"].dropna().is_monotonic_decreasing)
         self.assertEqual(ordered.columns[:5].tolist(), [
-            "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "Score type",
+            "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed",
         ])
         app.selectbox(key="step7_priority_sort").set_value("Ticker A–Z")
         self.assertTrue(any("DATED CLINICAL RESEARCH PILOT SCORES" in m.body
