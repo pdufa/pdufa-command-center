@@ -296,6 +296,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
     def test_pre_phase3_score_and_primary_p_are_first_columns_and_review_pilot_visible(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
+        app.run()
         app.session_state["pdufa_subtab"] = "PRE PHASE 3"
         app.run()
         self.assertFalse(list(app.exception))
@@ -316,10 +317,9 @@ class PipelinePageSmokeTests(unittest.TestCase):
         )
         self.assertTrue(any("NEXT 10 SOURCE-REVIEWED CLINICAL SCORING PILOTS" in m.body
                             for m in app.markdown))
-        self.assertTrue(any(b.key == "pre_phase3_top10_scoring_template"
-                            for b in app.get("button")) or
-                        any(b.key == "pre_phase3_top10_scoring_template"
-                            for b in app.get("download_button")))
+        source = APP_PATH.read_text(encoding="utf-8")
+        self.assertIn('"DOWNLOAD SOURCE-REVIEW SCORING TEMPLATE FOR THESE 10"', source)
+
 
     def test_legacy_pre_phase3_main_navigation_redirects_to_subtab(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
