@@ -37,6 +37,12 @@ class First10AuditTests(unittest.TestCase):
         self.assertEqual(closing_context(text, '2026-10-05'), '')
         self.assertEqual(closing_context('The offering is expected to close on October 3, 2026.', '2026-10-03'), '')
 
+    def test_filing_signature_date_is_not_proof_of_closing(self):
+        text = ('On May 6, 2026, the Company entered an underwriting agreement '
+                'for a public offering, subject to customary conditions to closing. '
+                'SIGNATURE Date: May 8, 2026')
+        self.assertEqual(closing_context(text, '2026-05-08'), '')
+
     def test_no_automated_closed_or_entry_ready(self):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp)
