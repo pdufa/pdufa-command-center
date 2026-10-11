@@ -69,11 +69,15 @@ class TradingResearchQueueTests(unittest.TestCase):
         self.assertEqual(q["Ticker"].nunique(), 1)
 
     def test_invalid_nct_and_missing_completion_are_excluded(self):
+        # ALL dates means an unknown completion is still a research lead,
+        # but an invalid NCT identifier must always be rejected.
         q = trading_research_queue(pd.DataFrame([
             row(**{"NCT ID": "NOT_NCT"}),
             row(**{"Primary Completion": ""}),
         ]), self.day)
-        self.assertTrue(q.empty)
+        self.assertEqual(len(q), 1)
+        self.assertEqual(q.iloc[0]["Registry Milestone State"], "DATE NOT VERIFIED")
+
 
     def test_missing_queue_and_unsupported_window_are_safe(self):
         self.assertTrue(trading_research_queue(pd.DataFrame(), self.day).empty)
@@ -220,28 +224,17 @@ class TradingResearchQueueTests(unittest.TestCase):
 
     def test_source_app_exposes_candidates_without_hidden_toggle(self):
         from pathlib import Path
-        src = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
-        section = src.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
-        self.assertIn("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH", section)
-        self.assertIn("trading_research_queue(", section)
-        self.assertIn("top_trials_container = st.container()", section)
-        self.assertIn("with top_trials_container:", section)
-        self.assertLess(section.index("top_trials_container = st.container()"),
-                        section.index("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT"))
-        self.assertLess(section.index("with top_trials_container:"),
-                        section.index("PRE PHASE 3 — TRIALS"))
-        self.assertIn('["ALL", 90, 180, 365], index=0', section)
-        self.assertIn("research_discovery_pool(", section)
-        self.assertIn("PRE PHASE 3 TRIALS DISPLAYED:", section)
-        self.assertIn("PRE PHASE 3 — TRIALS", section)
-        self.assertIn("PRE PHASE 3 SCORE /100", section)
-        self.assertLess(section.index("_input_rows, _input_counts = audit_pre_readout_inputs("),
-                        section.index("_trade_shortlist = trading_research_queue("))
-        self.assertIn("pre_phase3_trade_research_table_v1", section)
-        self.assertIn("pre_phase3_add_watchlist_v1", section)
-        self.assertIn("DOWNLOAD PRE PHASE 3 RESEARCH WATCHLIST", section)
-        self.assertLess(section.index("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH"),
-                        section.index("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT"))
+        root = Path(__file__).resolve().parents[1]
+        app = (root / "app.py").read_text(encoding="utf-8")
+        section = app.split("def render_pre_phase3():", 1)[1].split("query_event =", 1)[0]
+        clinical = (root / "clinical_step3.py").read_text(encoding="utf-8")
+        self.assertIn("render_clinical_review()", section)
+        self.assertIn("Phase 1–3 company–trial leads", clinical)
+        self.assertIn("SAVE NEW AUDIT REVISION", clinical)
+        self.assertIn("Versioned assessment history", clinical)
+        self.assertNotIn("top_trials_container = st.container()", section)
+        self.assertNotIn('["ALL", 90, 180, 365], index=0', section)
+
 
 if __name__ == "__main__":
     unittest.main()
