@@ -19,6 +19,37 @@ def table(root, name, rows):
 
 
 class Step7Tests(unittest.TestCase):
+    def test_closed_merger_resolves_only_its_quote_warning_without_faking_cap(self):
+        source = "https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2026-668"
+        issuer = {"ticker": "TBPH", "company": "Theravance Biopharma, Inc.", "cik10": "0001583107"}
+        with (self.root / "phase_pipeline.csv").open() as handle:
+            rows = list(csv.DictReader(handle))
+        rows[0].update(ticker="TBPH", company=issuer["company"])
+        table(self.root, "phase_pipeline.csv", rows)
+        table(self.root, "company_registry.csv", [issuer])
+        with (self.root / "phase_pipeline_market_caps.csv").open() as handle:
+            caps = list(csv.DictReader(handle))
+        caps[0].update(ticker="TBPH", market_cap_status="REVIEW")
+        table(self.root, "phase_pipeline_market_caps.csv", caps)
+        original = {"status":"COMPLETE WITH WARNINGS", "finished_at":self.recent,
+                    "complete":True, "errors":[], "market_cap_source_unavailable":1}
+        (self.root / "phase_pipeline_state.json").write_text(json.dumps(original))
+        (self.root / "phase_pipeline_listing_exclusions.json").write_text(json.dumps({"records": [
+            {**issuer, "status":"SUSPENDED — MERGER CLOSED", "effective_date":"2026-09-24",
+             "source_date":"2026-09-23", "source_url":source, "checked_at":self.recent}]}))
+        trials, _, manifest = build_snapshot(self.root, NOW)
+        retired = next(row for row in trials if row["Ticker"] == "TBPH")
+        self.assertIsNone(retired["Market cap USD"])
+        self.assertEqual(retired["Market cap state"], "NOT LISTED — MERGER CLOSED")
+        self.assertEqual(retired["Listing status source"], source)
+        self.assertTrue(retired["ENTRY READY"].startswith("NO"))
+        health = manifest["source_checks"][0]
+        self.assertEqual(health["Health"], "RECENT")
+        self.assertEqual(health["Last checked UTC"], self.recent)
+        self.assertIn("COMPLETE WITH WARNINGS", health["Collector status"])
+        self.assertIn(source, health["Details"])
+        self.assertEqual(json.loads((self.root / "phase_pipeline_state.json").read_text()), original)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

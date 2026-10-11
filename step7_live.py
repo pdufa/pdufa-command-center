@@ -18,6 +18,7 @@ from step7_entry import read_evidence, evaluate_entry
 from phase2_pre_phase3_evidence import primary_evidence_index, phase2_linked_summary
 from pre_phase3_pilot_scores import (attach_preliminary_scores, classify_phase3_protocol,
                                     review_index, reviewed_phase2_link)
+from listing_exclusions import validated_listing_exclusions, resolved_pipeline_status
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -128,6 +129,9 @@ def build_snapshot(root, now=None):
     phase2_index = primary_evidence_index(phase2_primary, now)
     protocols = read_csv(root / "pre_readout_protocols.csv")
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
+    listing_exclusions = validated_listing_exclusions(
+        read_json(root / "phase_pipeline_listing_exclusions.json"),
+        read_csv(root / "company_registry.csv"), now)
     financing = read_csv(root / "second_financing_status.csv")
     regulatory = read_csv(root / "pdufa_candidates.csv")
     manual_entry = read_evidence(root / "step7_entry_evidence.csv")
@@ -208,11 +212,16 @@ def build_snapshot(root, now=None):
             pass
         cap_ok = (cap.get("market_cap_status", "").upper() == "VERIFIED"
                   and cap_fresh == "RECENT" and cap_number is not None and cap_number > 0)
+        listing = listing_exclusions.get(ticker, {})
+        if listing:
+            cap_ok = False
         cap_state = ("VERIFIED RECENT" if cap_ok else
                      "STALE" if cap_number is not None and cap_fresh == "STALE"
                      else "UNVERIFIED")
         if cap_ok and not (300_000_000 <= cap_number <= 10_000_000_000):
             cap_state = "OUTSIDE $300M–$10B"
+        if listing:
+            cap_state = "NOT LISTED — MERGER CLOSED"
         p = protocol_by_nct.get(nct, {})
         design_checks = [bool(p.get("primary_endpoint")), bool(p.get("primary_timeframe")),
                          bool(p.get("allocation")), bool(p.get("masking")),
@@ -262,6 +271,8 @@ def build_snapshot(root, now=None):
             "Missing pre-readout evidence": verified_score.get("missing", ""),
             "Market cap USD": cap_number if cap_ok else None,
             "Market cap state": cap_state,
+            "Listing status": listing.get("status", "NOT REVIEWED HERE"),
+            "Listing status source": listing.get("source_url", ""),
             "Market source": cap.get("market_cap_source", "") if cap_ok else "",
             "Market cap as of UTC": cap.get("market_cap_checked_at", ""),
             **phase2_summary,
@@ -380,10 +391,14 @@ def build_snapshot(root, now=None):
                       or "PARTIAL" in r.get("financing_status", "").upper()
                       or r.get("financing_status", "").upper() in
                       {"", "NO_SOURCE", "SOURCE_UNAVAILABLE", "NOT_CHECKED"})
+    pipeline_status, resolved_quotes = resolved_pipeline_status(trial_state, caps, listing_exclusions)
+    listing_note = (f"; {resolved_quotes} quote warning(s) resolved by dated exchange listing review: "
+                    + " | ".join(f"{ticker}: {record['source_url']}" for ticker, record in listing_exclusions.items())
+                    if resolved_quotes else "")
     checks = [
-        status_check("Clinical trial pipeline", trial_state.get("status"),
+        status_check("Clinical trial pipeline", pipeline_status,
                      trial_state.get("finished_at"), now,
-                     extra=f"{len(trials)} exact ticker+NCT records; scope is not exhaustive"),
+                     extra=f"{len(trials)} exact ticker+NCT records; scope is not exhaustive{listing_note}"),
         status_check("Phase 3 result intake", p3_state.get("status"),
                      p3_state.get("finished_at"), now,
                      extra=f"{p3_state.get('stored_results', '?')} saved registry records; not independently adjudicated readouts"),
@@ -408,11 +423,14 @@ def build_snapshot(root, now=None):
                      extra=f"{market_state.get('fresh_eod', 0)}/{market_state.get('expected', 0)} recent session quotes; not a stability certification",
                      blocked=market_state.get("unavailable_or_stale", 0)),
     ]
+    if resolved_quotes:
+        checks[0]["Collector status"] = trial_state["status"] + " — LISTING REVIEW RESOLVED"
     return trials, events, {
         "generated_at_utc": now.isoformat(timespec="seconds"),
         "source_checks": checks,
         "trial_rows": len(trials), "financing_events": len(events),
         "market_eod_rows": len(market_rows),
+        "listing_exclusions": list(listing_exclusions.values()),
         "entry_ready_count": sum(x["Proposed trade status"].startswith("ENTRY READY") for x in events),
         "entry_gate_note": "NO is intentional until independent source-verified Phase 3 success, clinically meaningful benefit, safety, current second financing closure, stable base, normalized volume and dilution conditions can all be confirmed.",
         "scope_note": "Saved scheduled-collector snapshots, not tick-by-tick market data. SEC failures are not masked.",

@@ -13,6 +13,11 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+import sys
+
+if str(Path(__file__).resolve().parents[1]) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from listing_exclusions import validated_listing_exclusions
 
 ROOT = Path(__file__).resolve().parents[1]
 API = "https://clinicaltrials.gov/api/v2/studies"
@@ -155,6 +160,8 @@ def phase3_gate(row, today=None, max_source_age=180):
 
 def universe_gate(row, today=None):
     today = today or date.today()
+    if row.get("market_cap_status") == "NOT_LISTED":
+        return "FAIL", "Exchange listing suspended after a closed merger; historical trial retained."
     checked = complete_date(clean(row.get("market_cap_checked_at"))[:10])
     source = "https://api.nasdaq.com/api/quote/" + clean(row.get("ticker")).upper() + "/summary?assetclass=stocks"
     try:
@@ -373,6 +380,11 @@ def scan(data_dir, lookback_days=730, page_limit=60, max_source_age=180):
     identities = registry_index(registry)
     now = datetime.now(timezone.utc)
     today = now.date()
+    try:
+        listing_ledger = json.loads((data_dir / "phase_pipeline_listing_exclusions.json").read_text())
+    except (OSError, ValueError):
+        listing_ledger = {}
+    listing_exclusions = validated_listing_exclusions(listing_ledger, registry, now)
     cutoff = today - timedelta(days=lookback_days)
     state = {
         "started_at": now.isoformat(), "status": "RUNNING", "registry_companies": len(registry),
@@ -427,13 +439,17 @@ def scan(data_dir, lookback_days=730, page_limit=60, max_source_age=180):
         session.close()
     tickers = {r.get("ticker") for r in [*previous, *incoming.values()] if clean(r.get("ticker"))}
     print(f"Checking market caps for {len(tickers)} registry tickers", flush=True)
-    cap_rows = fetch_market_caps(tickers)
+    cap_rows = fetch_market_caps(tickers - listing_exclusions.keys())
+    for ticker in sorted(tickers & listing_exclusions.keys()):
+        listing = listing_exclusions[ticker]
+        cap_rows.append({"ticker": ticker, "market_cap": "", "market_cap_source": listing["source_url"],
+                         "market_cap_checked_at": listing["checked_at"], "market_cap_status": "NOT_LISTED"})
     old_caps = {r["ticker"]: r for r in read_rows(data_dir / "phase_pipeline_market_caps.csv")}
-    unavailable = sum(r["market_cap_status"] != "VERIFIED" for r in cap_rows)
+    unavailable = sum(r["market_cap_status"] not in {"VERIFIED", "NOT_LISTED"} for r in cap_rows)
     cached = 0
     for index, cap in enumerate(cap_rows):
         old = old_caps.get(cap["ticker"])
-        if cap["market_cap_status"] != "VERIFIED" and old and universe_gate(old, today)[0] in {"PASS", "FAIL"}:
+        if cap["market_cap_status"] == "REVIEW" and old and universe_gate(old, today)[0] in {"PASS", "FAIL"}:
             # Preserve the original timestamp; a failed request never refreshes evidence.
             cap_rows[index] = old
             cached += 1
@@ -467,6 +483,7 @@ def scan(data_dir, lookback_days=730, page_limit=60, max_source_age=180):
         "master_programs": len({r["program_key"] for r in records if r.get("destination") == "MASTER TABLE" and r.get("universe_gate") == "PASS"}),
         "review_trials": sum(r.get("destination") == "REVIEW" or r.get("universe_gate") == "REVIEW" for r in records),
         "market_cap_verified_tickers": sum(r["market_cap_status"] == "VERIFIED" for r in cap_rows),
+        "market_cap_listing_excluded_tickers": sum(r["market_cap_status"] == "NOT_LISTED" for r in cap_rows),
         "market_cap_source_unavailable": unavailable, "market_cap_recent_cache_retained": cached,
         "new_master_programs": [{"ticker": r["ticker"], "drug": r["drug"], "nct_id": r["nct_id"]} for r in newly_promoted.values()],
     })
