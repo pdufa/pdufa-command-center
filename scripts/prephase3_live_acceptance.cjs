@@ -94,7 +94,7 @@ async function verify(){
     // Separate rendering/contract failures from missing source-reviewed
     // clinical evidence. A truthful NOT COMPLETE state must not be changed to
     // PASS or counted as a broken web application.
-    const pending=body.match(/NOT COMPLETE — ([\\d,]+)\\/([\\d,]+) requirements passed/);
+    const pending=body.match(/NOT COMPLETE — ([\d,]+)\/([\d,]+) requirements passed/);
     const dataReady=body.includes("PRE PHASE 3 data and scoring gates pass");
     const completed=pending?Number(pending[1].replace(/,/g,"")):null;
     const total=pending?Number(pending[2].replace(/,/g,"")):null;
