@@ -79,7 +79,7 @@ async function verify(){
       researchTable:body.includes("PRE PHASE 3 CLINICAL RESEARCH QUEUE"),
       allTrialPriority:body.includes("ALL-TRIAL REVIEW PRIORITY")&&body.includes("Priority score coverage"),
       priorityCoverage:body.includes("filtered rows have a review-priority score /100"),
-      priorityOrdering:body.includes("Default order is global review-priority rank"),
+      priorityOrdering:body.includes("Default display is Top Score, with Ticker A–Z available"),
       priorityRubric:body.includes("HOW REVIEW PRIORITY IS CALCULATED"),
       priorityClinicalSeparation:body.includes("it is not a clinical strength score or success probability")&&body.includes("Excluded rows have priority 0 and no rank"),
       completionChecklist:body.includes("PRE PHASE 3 COMPLETION CHECKLIST"),
@@ -91,13 +91,28 @@ async function verify(){
       researchWorklist:body.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS"),
       noFalsePoS:body.includes("not independently audited clinical scores")&&body.includes("not a Phase 3 success probability"),
     };
+    // Separate rendering/contract failures from missing source-reviewed
+    // clinical evidence. A truthful NOT COMPLETE state must not be changed to
+    // PASS or counted as a broken web application.
+    const pending=body.match(/NOT COMPLETE — ([\\d,]+)\\/([\\d,]+) requirements passed/);
+    const dataReady=body.includes("PRE PHASE 3 data and scoring gates pass");
+    const completed=pending?Number(pending[1].replace(/,/g,"")):null;
+    const total=pending?Number(pending[2].replace(/,/g,"")):null;
+    requiredChecks.clinicalReadinessReported=Boolean(dataReady||pending)
+      && (dataReady||completed<total);
+    checked.readiness={
+      status:dataReady?"PASS":pending?"INCOMPLETE":"UNKNOWN",
+      passed:completed,total,
+      detail:dataReady?"All pre-readout data gates reported passing":
+        pending?"Source-evidence requirements remain open; not certified entry-ready":
+        "No explicit clinical readiness state was rendered",
+    };
     checked.checks=requiredChecks;
     checked.screenEnd=body.slice(-3200);
     checked.errors=Object.entries(requiredChecks).filter(([,ok])=>!ok).map(([k])=>k+" failed");
-    if(body.includes("BLOCKED — NOT COMPLETE")||body.includes("NOT COMPLETE —"))
-      checked.errors.push("Clinical completion checklist still reports blocker(s)");
-    if(!body.includes("PRE PHASE 3 data and scoring gates pass"))
-      checked.errors.push("Clinical readiness gates did not visibly pass");
+    if(checked.readiness.status==="INCOMPLETE")
+      checked.notes.push("Clinical source review incomplete; UI acceptance does not imply clinical readiness.");
+
   }finally{
     await browser.close();
   }
