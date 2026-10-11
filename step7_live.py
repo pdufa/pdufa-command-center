@@ -114,6 +114,7 @@ def build_snapshot(root, now=None):
         raise ValueError("now must be timezone-aware")
 
     trial_rows = read_csv(root / "phase_pipeline.csv")
+    primary_results = read_csv(root / "phase3_primary_pvalues.csv")
     protocols = read_csv(root / "pre_readout_protocols.csv")
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
     financing = read_csv(root / "second_financing_status.csv")
@@ -145,6 +146,15 @@ def build_snapshot(root, now=None):
         pre_scored = {}
     p3_state = read_json(root / "phase3_intake_status.json")
     protocol_state = read_json(root / "pre_readout_intake_status.json")
+
+    observed_primary = {}
+    for result in primary_results:
+        observed_nct = result.get("nct_id","").upper()
+        observed_ticker = result.get("ticker","").upper()
+        if (not NCT.fullmatch(observed_nct) or not observed_ticker
+                or result.get("source_url") != "https://clinicaltrials.gov/study/" + observed_nct):
+            continue
+        observed_primary.setdefault((observed_ticker,observed_nct), []).append(result)
 
     cap_by_ticker = {}
     for row in caps:
@@ -194,6 +204,9 @@ def build_snapshot(root, now=None):
         verified_score = pre_scored.get((ticker,nct), {})
         p_fresh = freshness(p.get("checked_at"), now, 72)
         registry_results = bool(row.get("results_first_posted"))
+        registry_primary = observed_primary.get((ticker,nct),[])
+        p_values = list(dict.fromkeys(x.get("p_value","") for x in registry_primary if x.get("p_value","")))
+        documented_effect = any(x.get("effect_value") and x.get("ci_lower") and x.get("ci_upper") for x in registry_primary)
         # Do not turn a registry milestone into positive efficacy or an issuer readout.
         trial_check = freshness(row.get("checked_at"), now, 48)
         completion = row.get("primary_completion", "")
@@ -204,6 +217,10 @@ def build_snapshot(root, now=None):
             "Registry primary completion": completion,
             "Registry results posted": row.get("results_first_posted", ""),
             "Issuer Phase 3 readout": "NOT VERIFIED HERE",
+            "Primary endpoint p values observed": " | ".join(p_values[:5]),
+            "Primary effect size and CI recorded": "YES — ANALYST INTERPRETATION REQUIRED" if documented_effect else "NOT COMPLETE IN SOURCE SNAPSHOT",
+            "Phase 3 result interpretation": "REVIEW — reported primary p is not proof of meaningful Phase 3 success",
+            "Registry primary result source": "https://clinicaltrials.gov/study/" + nct if registry_primary else "",
             "Research category": ("RESULT POSTED — CLINICAL REVIEW" if registry_results
                                   else "PHASE 3 RESEARCH" if "PHASE3" in phases else "PRE PHASE 3 WATCH"),
             "Company/program identity": row.get("program_identity_status", "") or "REVIEW",
