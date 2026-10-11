@@ -93,7 +93,8 @@ class Phase2PTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]
         app=(root/"app.py").read_text(encoding="utf-8")
         clinical=(root/"clinical_step3.py").read_text(encoding="utf-8")
-        self.assertIn("render_clinical_review()", app)
+        self.assertNotIn("render_clinical_review()", app)
+        self.assertIn("pass\n\nquery_event =", app)
         self.assertIn("NOT SCORED — INCOMPLETE OR UNVERIFIED", clinical)
         self.assertNotIn("attach_phase2_p(", clinical)
         self.assertTrue((root/"data/phase2_primary_p_evidence.csv").exists())
