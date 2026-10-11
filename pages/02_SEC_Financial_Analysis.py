@@ -134,7 +134,9 @@ else:
 with st.expander("Source evidence and method"):
     st.json(report["evidence"])
     st.caption(report["method"])
-    st.caption(report["financial_score_note"])\n    st.caption(report["runway_risk_index_note"])\n    st.caption(report["shares_change_note"])
+    st.caption(report["financial_score_note"])
+    st.caption(report["runway_risk_index_note"])
+    st.caption(report["shares_change_note"])
 
 st.markdown("### Historical SEC snapshots")
 cols = ["id", "observed_at_utc", "as_of", "content_sha256"]
