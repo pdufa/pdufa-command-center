@@ -103,6 +103,12 @@ def render_combined_overview():
         key = (r["Ticker"], r["NCT ID"])
         matched = post_by_id.get(key)
         pre_match = pre_by_id.get(key)
+        if matched and r["Drug"] and matched.get("Drug"):
+            if r["Drug"].strip().casefold() != str(matched["Drug"]).strip().casefold():
+                matched = None
+        if pre_match and r["Drug"] and pre_match.get("Drug"):
+            if r["Drug"].strip().casefold() != str(pre_match["Drug"]).strip().casefold():
+                pre_match = None
         entry = {k: r[k] for k in ("Ticker", "NCT ID", "Drug", "Indication",
                                   "Research phase", "Pipeline stage", "Clinical status",
                                   "Primary completion", "PDUFA date (pipeline)", "Pipeline source")}
