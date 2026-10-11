@@ -196,6 +196,7 @@ def monitor_positions(journal, candidates, market_rows, as_of=None):
                 invalid.append("Exit date/price must both be valid, chronological and nonfuture")
         if not event:
             alerts.append("Exact program event missing or duplicated in saved candidate queue")
+            invalid.append("Missing or ambiguous exact regulatory event")
         elif ticker != clean(event.get("Ticker")).upper() or not event_nct or nct != event_nct:
             alerts.append("Program/NCT identity mismatch or unverified")
             invalid.append("Event-to-NCT mapping is not verified")
@@ -244,6 +245,12 @@ def monitor_positions(journal, candidates, market_rows, as_of=None):
             action = "Monitor price, filings, regulatory news and exit countdown"
             counts["open"] += 1
 
+        if quote and entry and quote["session"] < entry and not exit_date:
+            alerts.append("Latest EOD session predates reported entry; mark unavailable")
+            quote = None
+            if lifecycle.startswith("YELLOW"):
+                lifecycle = "YELLOW — OPEN / QUOTE RECHECK"
+                action = "Get a quote dated on or after the actual entry; monitor filings"
         pnl_price = exit_price if exit_date else (quote["close"] if quote else None)
         if invalid or not pnl_price or not price or not shares:
             percent = cash = None
