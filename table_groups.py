@@ -9,11 +9,11 @@ import streamlit as st
 from stages import StageIndex, STAGE_HELP, DAYS_HELP, add_stage_column
 from financing_stage import FINANCING_OPTIONS, FINANCING_HELP, add_financing_column
 from stage_header_overlay import position_stage_filter
-from pdufa_display_columns import sort_pdufa_rows
+from pdufa_display_columns import sort_pdufa_rows, align_pdufa_finance_columns, FINANCE_NEIGHBORS
 from pdufa_table_headers import pdufa_dataframe, pdufa_editor
 
 
-MAX_COLUMNS = 7
+MAX_COLUMNS = 10
 CONTROL_COLUMNS = {"watchlist", "add to analysis", "add to invest", "move to master table", "in master table"}
 GROUP_ORDER = ("Overview", "Clinical", "FDA", "Financing", "Market", "Trading", "Evidence", "Tasks", "Schedule", "Actions")
 TOPIC_ORDER = {
@@ -113,13 +113,26 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
             if ticker:
                 columns.remove("STAGE")
                 columns.insert(columns.index(ticker) + 1, "STAGE")
-                if "DAYS TO PDUFA" in columns:
-                    columns.remove("DAYS TO PDUFA")
-                    columns.insert(columns.index("STAGE") + 1, "DAYS TO PDUFA")
-                if "FINANCING" in columns:
-                    columns.remove("FINANCING")
-                    pivot = "DAYS TO PDUFA" if "DAYS TO PDUFA" in columns else "STAGE"
-                    columns.insert(columns.index(pivot) + 1, "FINANCING")
+        days = next((c for c in columns if _name(c) in ("days to pdufa", "days left")), None)
+        if days:
+            columns.remove(days)
+            pivot = "STAGE" if "STAGE" in columns else next(
+                (c for c in columns if _name(c) == "ticker"), None
+            )
+            if pivot:
+                columns.insert(columns.index(pivot) + 1, days)
+            else:
+                columns.insert(0, days)
+            # The finance columns are not allowed to disappear into Finance panes.
+            for finance in FINANCE_NEIGHBORS:
+                if finance in columns:
+                    columns.remove(finance)
+                    columns.insert(columns.index(days) + 1 +
+                                   list(FINANCE_NEIGHBORS).index(finance), finance)
+            if "FINANCING" in columns:
+                columns.remove("FINANCING")
+                anchor = next((c for c in reversed(FINANCE_NEIGHBORS) if c in columns), days)
+                columns.insert(columns.index(anchor) + 1, "FINANCING")
         return OrderedDict([("Overview", [("Overview", columns)])])
     named = {_name(c): c for c in columns}
     # Keep the audited FINANCING stage as the pinned column even when a
@@ -127,7 +140,10 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
     if "FINANCING" in columns:
         named["financing"] = "FINANCING"
     controls = [c for c in columns if _name(c) in CONTROL_COLUMNS]
-    identity = [named[n] for n in ("ticker", "stage", "days to pdufa", "financing", "drug") if n in named]
+    countdown = "days to pdufa" if "days to pdufa" in named else "days left"
+    pin_names = ("ticker", "stage", countdown, "2nd financing completed",
+                 "cash runway months", "financing", "drug")
+    identity = [named[n] for n in pin_names if n in named]
     if not identity:
         identity = [named[n] for n in ("order", "task") if n in named]
     if not identity:
@@ -385,6 +401,10 @@ def _compact_config(fields, config):
 
 def grouped_dataframe(data, **kwargs):
     data = data if isinstance(data, pd.DataFrame) else pd.DataFrame(data)
+    data = align_pdufa_finance_columns(
+        data,
+        add_countdown=st.session_state.get("nav") == "PDUFA" and "PDUFA Date" in data,
+    )
     data = staged_table(data, kwargs.pop("stage_source", None))
     key = _table_key(data, kwargs.pop("key", None))
     if kwargs.pop("stage_controls", True):
@@ -439,6 +459,10 @@ def _commit_pane(state_key, widget_key, snapshot, editable, dynamic):
 
 def grouped_editor(data, **kwargs):
     """One shared draft makes edits survive switching tabs and adding rows."""
+    data = align_pdufa_finance_columns(
+        data,
+        add_countdown=st.session_state.get("nav") == "PDUFA" and "PDUFA Date" in data,
+    )
     data = staged_table(data, kwargs.pop("stage_source", None))
     key = _table_key(data, kwargs.pop("key", None))
     if kwargs.pop("stage_controls", True):
@@ -457,7 +481,7 @@ def grouped_editor(data, **kwargs):
     groups = column_groups(data.columns)
     shared = set.intersection(*(set(fields) for panes in groups.values() for _, fields in panes))
     blocked = set(data.columns) if disabled is True else set(disabled or [])
-    blocked.update(c for c in ("STAGE", "DAYS TO PDUFA", "FINANCING") if c in data)
+    blocked.update(c for c in ("STAGE", "DAYS TO PDUFA", "FINANCING", *FINANCE_NEIGHBORS) if c in data)
     controls = {c for c in data.columns if _name(c) in CONTROL_COLUMNS}
     first = True
 
