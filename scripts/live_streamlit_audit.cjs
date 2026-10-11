@@ -326,11 +326,16 @@ async function audit(){
               thresholdOrReview:eligibleThreshold,
               lastText:validatorText.slice(-900),
             };
+            // These controls establish that the former Match Optimizer is installed.
+            // A pending optimization result is a separate data/compute state, not
+            // evidence that the controls have been removed from the UI.
             result.checks.historicalOptimizerPreserved=result.optimizerDiagnostic.benchmark
               && result.optimizerDiagnostic.tuneGate
               && result.optimizerDiagnostic.tuneYear
-              && result.optimizerDiagnostic.holdoutYear
-              && result.optimizerDiagnostic.thresholdOrReview;
+              && result.optimizerDiagnostic.holdoutYear;
+            result.checks.optimizerOutcomeResolved=result.optimizerDiagnostic.thresholdOrReview;
+            if(result.checks.historicalOptimizerPreserved&&!result.checks.optimizerOutcomeResolved)
+              result.notes.push("Prediction Engine historical controls are visible; a final tuned threshold or no-valid-threshold message was not observed during this audit.");
           }catch(err){
             result.checks.historicalOptimizerPreserved=false;
             result.notes.push("Prediction Engine historical validation not accessible: "+String(err.message).slice(0,180));
