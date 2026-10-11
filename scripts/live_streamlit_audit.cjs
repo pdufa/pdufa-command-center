@@ -135,6 +135,33 @@ async function audit(){
         && !/This app has encountered an error|Traceback \(most recent call last\)/i.test(prePhaseScreen);
       if(!result.checks.prePhase3Visible)
         result.errors.push("PRE PHASE 3 Step 7 source-health and clinical research tables must be visible.");
+      // Previous audit only checked the tab title; it could pass even if the
+      // actual Phase 2 p-value field was missing. Verify the rendered values
+      // from real saved exact-linked Phase 2 NCT evidence, not just code.
+      let phase2View="";
+      for(let attempt=0;attempt<85;attempt++){
+        phase2View=await appFrame.locator("body").innerText({timeout:9000});
+        if(phase2View.includes("PHASE 2 PRIMARY p — LINKED TO PHASE 3")
+          && phase2View.includes("p=0.0028")
+          && phase2View.includes("p=0.0009")
+          && phase2View.includes("PRE PHASE 3 CLINICAL RESEARCH QUEUE"))break;
+        if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(phase2View))break;
+        await sleep(1500);
+      }
+      result.checks.prePhase3Phase2PVisible=phase2View.includes("PHASE 2 PRIMARY p — LINKED TO PHASE 3")
+        && phase2View.includes("p=0.0028")
+        && phase2View.includes("p=0.0009")
+        && phase2View.includes("TRVI") && phase2View.includes("LBRX");
+      result.prePhasePDiagnostic={
+        headingPresent:phase2View.includes("PHASE 2 PRIMARY p — LINKED TO PHASE 3"),
+        trviObserved:phase2View.includes("p=0.0028"),
+        lbrxObserved:phase2View.includes("p=0.0009"),
+        queuePresent:phase2View.includes("PRE PHASE 3 CLINICAL RESEARCH QUEUE"),
+        textNearPreview:phase2View.slice(Math.max(0,phase2View.indexOf("PHASE 2 PRIMARY p — LINKED TO PHASE 3")),Math.max(0,phase2View.indexOf("PHASE 2 PRIMARY p — LINKED TO PHASE 3"))+1200),
+      };
+      if(!result.checks.prePhase3Phase2PVisible)
+        result.errors.push("PRE PHASE 3 did not render exact-linked Phase 2 p-values for TRVI and LBRX in the live browser.");
+      await page.screenshot({path:path.join(outDir,"streamlit-pre-phase3-phase2-p.png"),fullPage:false});
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
       await sleep(1500);
@@ -262,7 +289,7 @@ async function audit(){
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
-                   "prePhase3Visible",
+                   "prePhase3Visible","prePhase3Phase2PVisible",
                    "workbenchSubtabRemoved"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
