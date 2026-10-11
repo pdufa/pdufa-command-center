@@ -2658,8 +2658,8 @@ def render_pre_phase3():
         for name in PIPELINE_SOURCE_FILES if (root / name).exists()
     )
     try:
-        universe = load_pipeline_universe_data(signature, today)
-    except (OSError, ValueError, KeyError, pd.errors.ParserError) as exc:
+        universe = load_pipeline_universe_data(signature, today.date())
+    except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError) as exc:
         st.error(f"Cannot read the trial source: {type(exc).__name__}. Check data/phase_pipeline.csv and data/all_phase_trials.csv.")
         universe = pd.DataFrame()
 
