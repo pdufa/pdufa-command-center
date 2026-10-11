@@ -141,7 +141,7 @@ def render_financing_closure(ticker, identity, snapshot, user_agent, sec_ready):
             placeholder="Match exact recorded financing deal identifier")
         check = st.form_submit_button("CHECK REQUIRED FINANCING CLOSURE GATE")
     if check:
-        gate = financing_gate(ticker, required, as_of=snapshot["as_of"])
+        gate = financing_gate(ticker, required, as_of=snapshot["as_of"], cik=identity["cik"])
         if gate["closure_verified"]:
             st.success(gate["status"] + " · Closed: " + gate["closing_date"])
             st.warning("NOT ENTRY READY: closing evidence alone does not establish "
