@@ -267,6 +267,13 @@ def analyze_companyfacts(ticker, cik, company, companyfacts, submissions, as_of=
     current_debt = _recent_instant(companyfacts, "us-gaap", DEBT_CURRENT, ("USD",), today)
     long_debt = _recent_instant(companyfacts, "us-gaap", DEBT_NONCURRENT, ("USD",), today)
     shares = _recent_instant(companyfacts, "dei", SHARES, ("shares",), today)
+    prior_share_candidates = [x for x in _facts(companyfacts, "dei", SHARES, ("shares",), today)
+                              if x["start"] is None and shares and x["end"] < shares["end"]
+                              and x["value"] > 0]
+    prior_shares = (max(prior_share_candidates, key=lambda x: (x["end"], x["filed"]))
+                    if prior_share_candidates else None)
+    share_change_pct = (round(100.0 * (shares["value"] / prior_shares["value"] - 1), 2)
+                        if shares and prior_shares else None)
     notes = _confidence_note(cash, operating, today)
     burn = None
     burn_basis = operating["basis"] if operating else "UNAVAILABLE"
@@ -287,6 +294,9 @@ def analyze_companyfacts(ticker, cik, company, companyfacts, submissions, as_of=
                    "ELEVATED — 6 TO UNDER 12 MONTHS" if runway < 12 else
                    "WATCH — 12 TO UNDER 18 MONTHS" if runway < 18 else
                    "LOWER CASH RUNWAY RISK — 18+ MONTHS")
+    runway_risk_index = (None if runway is None else
+                         100 if runway < 3 else 85 if runway < 6 else
+                         65 if runway < 12 else 40 if runway < 18 else 15)
     if cash and cash["tag"] != CASH_TAGS[0] and "Only cash+restricted cash reported; spendable balance unverified" not in notes:
         notes.append("Cash includes restricted balance; do not assume unrestricted liquidity")
     recent_filings = _sec_files(submissions, cik, today)
@@ -306,6 +316,11 @@ def analyze_companyfacts(ticker, cik, company, companyfacts, submissions, as_of=
         "current_debt_usd": _reported_num(current_debt),
         "noncurrent_debt_usd": _reported_num(long_debt),
         "shares_outstanding": _reported_num(shares),
+        "previous_shares_outstanding": _reported_num(prior_shares),
+        "shares_change_pct": share_change_pct,
+        "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+        "runway_risk_index_0_100": runway_risk_index,
+        "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
         "financing_closed": "NOT VERIFIED — document-level review required",
         "active_atm": "NOT VERIFIED — 8-K/prospectus metadata cannot prove active sales",
         "filing_review_queue": recent_filings,
@@ -314,6 +329,7 @@ def analyze_companyfacts(ticker, cik, company, companyfacts, submissions, as_of=
             "operating_cash_flow": _usable_source(operating), "revenue": _usable_source(revenue),
             "current_debt": _usable_source(current_debt),
             "noncurrent_debt": _usable_source(long_debt), "shares": _usable_source(shares),
+            "prior_shares": _usable_source(prior_shares),
             "companyfacts_url": f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json",
             "submissions_url": f"https://data.sec.gov/submissions/CIK{cik}.json",
         },
