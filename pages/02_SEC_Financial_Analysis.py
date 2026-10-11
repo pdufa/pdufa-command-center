@@ -131,6 +131,9 @@ if report.get("filing_review_queue"):
 else:
     st.caption("No matching filing metadata in the retrieved recent SEC index. This does not establish that financing did not occur.")
 
+from sec_financing_closure_ui import render_financing_closure
+render_financing_closure(ticker, identity, report, user_agent, ready)
+
 with st.expander("Source evidence and method"):
     st.json(report["evidence"])
     st.caption(report["method"])
