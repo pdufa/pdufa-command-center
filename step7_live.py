@@ -286,7 +286,9 @@ def build_snapshot(root, now=None):
                       decision_report["verdict"] if reg else "REVIEW — ENTRY GATES NOT CLEARED")
         reviewed_gates = decision_report.get("gates", {})
         if reviewed_gates:
-            gate_notes = list(decision_report.get("missing", []))
+            gate_notes = (["FDA decision already recorded"] if decision else
+                          ["saved PDUFA date passed; recheck decision"] if decision_day_passed else [])
+            gate_notes.extend(decision_report.get("missing", []))
         events.append({
             "Ticker": key.split("|", 1)[0],
             "Proposed trade status": gate_label,
