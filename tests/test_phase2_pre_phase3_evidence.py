@@ -40,6 +40,10 @@ class Phase2EvidenceTests(unittest.TestCase):
             {"source_url": "https://clinicaltrials.gov/study/NCT33334444"},
             {"primary_endpoint": ""},
             {"p_value": ""},
+            {"p_value": "1.1"},
+            {"p_value": "not-p"},
+            {"p_value_modifier": "approx"},
+            {"results_first_posted": "2026-10-11"},
             {"nct_id": "INVALID"},
             {"ticker": ""},
         ):
@@ -50,6 +54,11 @@ class Phase2EvidenceTests(unittest.TestCase):
         other = observation(observation_id="second-comparison", comparison="active vs treatment", p_value="0.0000")
         result = primary_evidence_index([same, same, other], NOW)
         self.assertEqual(phase2_linked_summary(result, "TEST", "NCT11112222")["Phase 2 PRIMARY evidence count"], 2)
+
+    def test_p_less_than_qualifier_is_preserved(self):
+        idx = primary_evidence_index([observation(p_value_modifier="<", p_value="0.001")], NOW)
+        summary = phase2_linked_summary(idx, "TEST", "NCT11112222")
+        self.assertIn("p<0.001", summary["Linked Phase 2 PRIMARY p"])
 
     def test_missing_evidence_is_explicit_and_non_diagnostic(self):
         empty = phase2_linked_summary({}, "TEST", "NCT11112222")
