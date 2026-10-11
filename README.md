@@ -1,5 +1,10 @@
 # PDUFA Command Center
 
+## POST PHASE 3 tab — intentionally cleared
+
+At the user's request on October 11, 2026, **PDUFA → POST PHASE 3 is empty**. No scanner, result report, financing review, trade journal, controls, or tables are rendered in this tab. The tab label remains for future reuse. The previously built research/position-monitoring modules and all saved data are preserved in the repository but are **not available from that tab**. PRE PHASE 3, PIPELINE, and the rest of the app are unchanged. To restore a feature later, make a separate explicit UI change; never treat retained backend code as a currently visible screen.
+
+
 ## Stage 2: reported positions and exit monitoring (no trading API)
 
 Under PDUFA → POST PHASE 3, below the unified Stage 1 discovery scanner, download the blank POSITION JOURNAL CSV. Add actual user-reported trade fills (trade_id, exact event_key, ticker, NCT ID, entry date/price/shares, PDUFA date observed at entry). Optional exit date/price/reason must represent an actual completed fill. Upload the CSV in the app for a read-only session report; **the upload is not saved to this public repository**, no brokerage API or trading order is connected, and a Streamlit restart may clear the upload. Do not put private positions into a GitHub issue, commit or PR. Download the monitored CSV and store it privately. Partial lot exits are not supported by this simple journal; use distinct complete trade lots.
