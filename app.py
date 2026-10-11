@@ -2800,7 +2800,7 @@ def render_pre_phase3():
             "Ticker", "Preliminary clinical score /100", "Preliminary score status",
             "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p", "Drug", "Indication", "Trial phase",
-            "Registry status", "NCT ID", "Research category",
+            "Registry status", "NCT ID", "Phase 3 trial type", "Research category",
             "Registry primary completion", "Registry results posted",
             "Primary endpoint p values observed", "Phase 2 PRIMARY evidence count",
             "Phase 2 PRIMARY first observed UTC", "Phase 2 PRIMARY registry sources",
