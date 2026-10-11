@@ -27,7 +27,7 @@ SEC_BASE = "https://www.sec.gov/Archives/edgar/data/"
 TYPES = ("PUBLIC_OFFERING", "REGISTERED_DIRECT", "PRIVATE_PLACEMENT", "OTHER_EQUITY")
 AMOUNT_RX = re.compile(
     r"\b(gross|net)\s+proceeds\s+(?:of|were|was|totaled|totaling)\s+"
-    r"(?:approximately|about|an?\s+estimated\s+)?"
+    r"(?:(?:approximately|about|an?\s+estimated)\s+)?"
     r"\$\s*([\d,]+(?:\.\d+)?)\s*(billion|million|thousand|bn|mm|m)?\b",
     re.I)
 FINANCING_RX = re.compile(
@@ -183,7 +183,7 @@ def _closing_date_in_text(segment, closing_date):
         if observed == d:
             return True
     for token in MONTH_RX.findall(segment):
-        cleaned = re.sub(r"\bSept\.?", "Sep", token, flags=re.I).replace(".", "")
+        cleaned = re.sub(r"\bSept\.?\b", "Sep", token, flags=re.I).replace(".", "")
         for fmt in ("%B %d, %Y", "%B %d %Y", "%b %d, %Y", "%b %d %Y"):
             try:
                 if datetime.strptime(cleaned, fmt).date() == d:
