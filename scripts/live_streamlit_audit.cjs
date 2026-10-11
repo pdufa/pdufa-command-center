@@ -137,7 +137,12 @@ async function audit(){
           prePhaseScreen=await appFrame.locator("body").innerText({timeout:8500});
           if(prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
             && prePhaseScreen.includes("filtered rows have a fully source-reviewed")
-            && prePhaseScreen.includes("provisional, source-cited clinical research score(s) /100"))break;
+            && prePhaseScreen.includes("provisional, source-cited clinical research score(s) /100")
+            && prePhaseScreen.includes("DATED CLINICAL RESEARCH PILOT SCORES")
+            && prePhaseScreen.includes("TRVI · NCT07671911")
+            && prePhaseScreen.includes("LBRX · NCT07363577")
+            && prePhaseScreen.includes("80/100")
+            && prePhaseScreen.includes("72/100"))break;
           if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(prePhaseScreen))break;
         }catch(err){
           if(/detached|Target closed|Execution context was destroyed/i.test(String(err))){
@@ -148,6 +153,14 @@ async function audit(){
         }
         await sleep(1400);
       }
+      result.checks.prePhase3PilotScoresVisible=
+        prePhaseScreen.includes("DATED CLINICAL RESEARCH PILOT SCORES")
+        && prePhaseScreen.includes("TRVI · NCT07671911")
+        && prePhaseScreen.includes("LBRX · NCT07363577")
+        && prePhaseScreen.includes("80/100")
+        && prePhaseScreen.includes("72/100");
+      if(!result.checks.prePhase3PilotScoresVisible)
+        result.errors.push("Live PRE PHASE 3 must display exact TRVI OCEAN-1 and LBRX NOVA-2 numeric scorecards.");
       const prePhaseTabSelected=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
       result.checks.prePhase3ScoringWorkflowVisible=prePhaseTabSelected==="true"
         && prePhaseScreen.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
@@ -296,7 +309,7 @@ async function audit(){
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
                    "prePhase3Visible",
-                   "workbenchSubtabRemoved","prePhase3ScoringWorkflowVisible"]){
+                   "workbenchSubtabRemoved","prePhase3ScoringWorkflowVisible","prePhase3PilotScoresVisible"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
   if(!result.checks.scriptError)result.errors.push("Live app displays an exception.");

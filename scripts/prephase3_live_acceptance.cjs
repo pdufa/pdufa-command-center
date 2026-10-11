@@ -1,0 +1,101 @@
+// Focused browser acceptance for PRE PHASE 3 only.
+// No POST PHASE 3 report, finance drilldowns or other heavy navigation pages.
+const {chromium}=require("playwright-core");
+const fs=require("fs");
+const path=require("path");
+const URL="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/";
+const out=path.join(process.cwd(),"prephase3-acceptance-artifacts");
+fs.mkdirSync(out,{recursive:true});
+const sleep=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+const checked={
+  asOfUTC:new Date().toISOString(),
+  url:URL,
+  checks:{},errors:[],notes:[],screenEnd:"",
+};
+
+async function findFrame(page){
+  for(const frame of page.frames()){
+    try{
+      const text=await frame.locator("body").innerText({timeout:2500});
+      if(text.includes("BIO PDUFA COMMAND CENTER"))
+        return {frame,text};
+    }catch(err){
+      if(!/detached|Execution context was destroyed|closed/i.test(String(err)))throw err;
+    }
+  }
+  return null;
+}
+
+async function verify(){
+  const browser=await chromium.launch({
+    executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",
+    headless:true,args:["--no-sandbox","--disable-dev-shm-usage"],
+  });
+  try{
+    const page=await browser.newPage({viewport:{width:1440,height:950}});
+    const response=await page.goto(URL,{waitUntil:"domcontentloaded",timeout:60000});
+    checked.http=response?.status()??null;
+    if(checked.http!==200)throw Error("Dashboard HTTP status "+checked.http);
+    let match=null;
+    for(let n=0;n<65;n++){
+      match=await findFrame(page);
+      if(match&&match.text.includes("PIPELINE")&&match.text.includes("PRE PHASE 3"))break;
+      await sleep(1400);
+    }
+    if(!match)throw Error("Live application frame did not load");
+    const tab=match.frame.getByRole("tab",{name:"PRE PHASE 3",exact:true});
+    await tab.click({timeout:20000});
+    let body="";
+    let lastFrame=match.frame;
+    // Streamlit may replace the app frame while rerunning the Python script.
+    for(let n=0;n<125;n++){
+      const current=await findFrame(page);
+      if(current){lastFrame=current.frame;body=current.text;}
+      if(body.includes("This app has encountered an error")||
+         body.includes("Traceback (most recent call last)"))
+        throw Error("Deployed Streamlit shows application exception");
+      const required=[
+        "PRE PHASE 3 — LIVE SOURCE MONITOR",
+        "PRE PHASE 3 COMPLETION CHECKLIST",
+        "SOURCE HEALTH / LAST VERIFIED CHECK",
+        "PRE PHASE 3 CLINICAL RESEARCH QUEUE",
+        "DATED CLINICAL RESEARCH PILOT SCORES",
+        "TRVI · NCT07671911",
+        "LBRX · NCT07363577",
+        "80/100", "72/100",
+        "NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS",
+        "provisional, source-cited clinical research score(s) /100",
+      ];
+      if(required.every(str=>body.includes(str)))break;
+      await sleep(1800);
+    }
+    await page.screenshot({path:path.join(out,"prephase3-live-scorecards.png"),fullPage:false});
+    const requiredChecks={
+      tabSelected:await lastFrame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")==="true",
+      sourceHealth:body.includes("SOURCE HEALTH / LAST VERIFIED CHECK"),
+      researchTable:body.includes("PRE PHASE 3 CLINICAL RESEARCH QUEUE"),
+      completionChecklist:body.includes("PRE PHASE 3 COMPLETION CHECKLIST"),
+      sourceReviewedPilot:body.includes("fully source-reviewed PRE PHASE 3 score /100"),
+      twoProvisionalPilots:body.includes("2 provisional, source-cited clinical research score(s) /100"),
+      scorecardHeading:body.includes("DATED CLINICAL RESEARCH PILOT SCORES"),
+      trvi80:body.includes("TRVI · NCT07671911")&&body.includes("80/100"),
+      lbrx72:body.includes("LBRX · NCT07363577")&&body.includes("72/100"),
+      researchWorklist:body.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS"),
+      noFalsePoS:body.includes("not independently audited clinical scores")&&body.includes("not a Phase 3 success probability"),
+    };
+    checked.checks=requiredChecks;
+    checked.screenEnd=body.slice(-3200);
+    checked.errors=Object.entries(requiredChecks).filter(([,ok])=>!ok).map(([k])=>k+" failed");
+    if(body.includes("BLOCKED — NOT COMPLETE")||body.includes("NOT COMPLETE —"))
+      checked.errors.push("Clinical completion checklist still reports blocker(s)");
+    if(!body.includes("PRE PHASE 3 data and scoring gates pass"))
+      checked.errors.push("Clinical readiness gates did not visibly pass");
+  }finally{
+    await browser.close();
+  }
+}
+verify().catch(e=>checked.errors.push(String(e.stack||e).slice(0,1400))).finally(()=>{
+  fs.writeFileSync(path.join(out,"prephase3-acceptance.json"),JSON.stringify(checked,null,2));
+  process.stdout.write("PRE PHASE 3 BROWSER ACCEPTANCE\n"+JSON.stringify(checked,null,2)+"\n");
+  process.exitCode=checked.errors.length?1:0;
+});

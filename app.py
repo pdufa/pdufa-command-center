@@ -2797,6 +2797,41 @@ def render_pre_phase3():
                 selected = selected.loc[completions.between(present, present + pd.Timedelta(days=180))]
             else:
                 selected = selected.loc[completions.lt(present)]
+        # Visible exact-trial scorecards: do not require horizontal scrolling
+        # through the 3,000+ row table to find clinical pilot scores.
+        scored_pilots = selected.loc[
+            pd.to_numeric(selected["Preliminary clinical score /100"], errors="coerce").between(0, 100)
+        ].head(3)
+        if not scored_pilots.empty:
+            st.markdown("### DATED CLINICAL RESEARCH PILOT SCORES")
+            st.caption(
+                "Research judgments only; NOT Phase 3 success probabilities, "
+                "FDA approval probabilities, or ENTRY READY signals. "
+                "Reviewed evidence is time-bound; provisional evidence is not independently audited."
+            )
+            columns = st.columns(len(scored_pilots))
+            for col, (_, pilot) in zip(columns, scored_pilots.iterrows()):
+                reviewed_value = pd.to_numeric(
+                    pd.Series([pilot.get("Pre-readout research score /100")]),
+                    errors="coerce",
+                ).iloc[0]
+                reviewed = (
+                    pd.notna(reviewed_value)
+                    and pilot.get("Score status") == "100-POINT RESEARCH SCORE — UNCALIBRATED"
+                )
+                value = float(reviewed_value) if reviewed else float(pilot["Preliminary clinical score /100"])
+                category = "REVIEWED RESEARCH" if reviewed else "PROVISIONAL RESEARCH"
+                col.metric(
+                    f"{pilot['Ticker']} · {pilot['NCT ID']} · {category} /100",
+                    f"{value:.0f}/100",
+                )
+                col.caption(
+                    f"Phase 2 primary p: {pilot.get('Linked Phase 2 PRIMARY p') or 'NOT VERIFIED'}"
+                )
+                col.caption(
+                    f"Score as-of: {pilot.get('Clinical score as of') or 'NOT VERIFIED'}; "
+                    "source details and risk caveats in the research grid."
+                )
         st.caption(
             f"Showing {min(len(selected), 500):,} of {len(selected):,} filtered exact ticker/NCT rows. "
             "Month-only registry dates are approximated to the first of the month for date filtering, "
