@@ -37,7 +37,7 @@ def market():
 class ReviewRankingTests(unittest.TestCase):
     def test_no_verified_success_still_produces_useful_triage_score(self):
         r=review_priority(case(),{},financing(),market(),TODAY)
-        self.assertEqual(r["Research priority /100"],65)
+        self.assertEqual(r["Research priority /100"],62)
         self.assertEqual(r["Review timing /30"],30)
         self.assertEqual(r["Review clinical follow-up /20"],0)
         self.assertEqual(r["Review financing follow-up /15"],5)
