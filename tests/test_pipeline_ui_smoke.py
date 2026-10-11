@@ -277,7 +277,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
             for item in app.markdown
         ))
         self.assertTrue(any(
-            "No actual positions have been supplied" in item.message
+            "No actual positions have been supplied" in item.body
             for item in app.info
         ))
 
