@@ -11,6 +11,7 @@ from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
 from step7_live import build_snapshot as build_step7_snapshot
+from step7_entry import FIELDS as STEP7_ENTRY_FIELDS, sample_template as step7_entry_template
 from phase2_p_evidence import join_phase2_p
 from pre_readout import load_scorecard as load_pre_readout_design_coverage
 from pre_readout_input_audit import audit_inputs as audit_pre_readout_inputs, CHECK_KEYS as PRE_READOUT_CHECK_KEYS
@@ -2663,6 +2664,7 @@ def render_pre_phase3():
         "pre_readout_protocols.csv", "pre_readout_intake_status.json",
         "phase_pipeline_market_caps.csv", "second_financing_status.csv",
         "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
+        "step7_entry_evidence.csv", "phase3_pre_readout_evidence.csv", "pdufa_candidates.csv",
     ]
     signature = tuple(
         (file, (data_root / file).stat().st_mtime_ns if (data_root / file).exists() else 0)
@@ -2715,7 +2717,7 @@ def render_pre_phase3():
     t0.metric("Clinical trial leads", f"{len(trials):,}")
     t1.metric("Phase 3 research", f"{sum(x['Trial phase'] == 'Phase 3' for x in trials):,}")
     t2.metric("Financing event reviews", f"{len(finance):,}")
-    t3.metric("ENTRY READY", "0 — NOT VERIFIED")
+    t3.metric("ENTRY READY", f"{manifest.get('entry_ready_count', 0)} — ATTESTED" if manifest.get("entry_ready_count") else "0 — NOT VERIFIED")
     st.markdown("### PRE PHASE 3 CLINICAL RESEARCH QUEUE")
     if not trials:
         st.info("No available trial rows. Check the Phase 2–3 collector in GitHub Actions.")
@@ -2772,7 +2774,9 @@ def render_pre_phase3():
             "NCT ID", "Research category", "Registry primary completion",
             "Registry results posted", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
-            "Protocol check", "Issuer Phase 3 readout", "ENTRY READY",
+            "Protocol check", "Design inputs present /6", "Design coverage meaning",
+            "Pre-readout research score /100", "Score status", "Missing pre-readout evidence",
+            "Issuer Phase 3 readout", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
         ]
         st.dataframe(
@@ -2793,11 +2797,11 @@ def render_pre_phase3():
     )
     if finance:
         full_financing_view = pd.DataFrame(finance)
-        active_count = int(full_financing_view["Proposed trade status"].str.startswith("REVIEW").sum())
-        excluded_count = len(full_financing_view) - active_count
+        active_count = int(full_financing_view["Proposed trade status"].str.startswith(("REVIEW", "ENTRY READY")).sum())
+        excluded_count = int(full_financing_view["Proposed trade status"].str.startswith("EXCLUDED").sum())
         st.caption(
             f"{active_count} unresolved research candidates; {excluded_count} already-decided/past/out-of-scope events. "
-            "No candidate is verified ENTRY READY."
+            f"{manifest.get('entry_ready_count', 0)} entry evidence sets qualified by source-review gates (not independently audited)."
         )
         status_filter = st.selectbox(
             "POST-READOUT RESEARCH FILTER",
@@ -2805,7 +2809,7 @@ def render_pre_phase3():
             key="step7_trade_filter",
         )
         financing_view = (
-            full_financing_view[full_financing_view["Proposed trade status"].str.startswith("REVIEW")]
+            full_financing_view[full_financing_view["Proposed trade status"].str.startswith(("REVIEW","ENTRY READY"))]
             if status_filter == "ACTIVE REVIEWS ONLY" else
             full_financing_view[full_financing_view["Proposed trade status"].str.startswith("EXCLUDED")]
             if status_filter == "EXCLUDED / PAST" else full_financing_view
@@ -2813,6 +2817,13 @@ def render_pre_phase3():
         st.dataframe(
             financing_view, use_container_width=True, hide_index=True, height=390,
         )
+        st.download_button(
+            "DOWNLOAD BLANK 8-GATE EVIDENCE REVIEW TEMPLATE",
+            pd.DataFrame(step7_entry_template(finance), columns=list(STEP7_ENTRY_FIELDS)).to_csv(index=False).encode("utf-8-sig"),
+            file_name="step7_entry_evidence_review_template.csv", mime="text/csv",
+            key="step7_evidence_template",
+        )
+        st.caption("The downloaded template contains empty review fields. Validate each exact event, Phase 3 trial, primary-result document, two SEC closings, active dilution status and market chart. To persist an attestation, review and update data/step7_entry_evidence.csv in the repository. Do not mark PASS from ticker-level or registry-only evidence.")
         st.download_button(
             "EXPORT FINANCING EVENT REVIEW (CSV)",
             financing_view.to_csv(index=False).encode("utf-8-sig"),
