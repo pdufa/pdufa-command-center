@@ -1,5 +1,13 @@
 # PDUFA Command Center
 
+## Review priority across every saved trial
+
+**PDUFA → PRE PHASE 3 → ALL-TRIAL REVIEW PRIORITY** assigns every exact ticker/NCT row a **Review priority /100**. Active review candidates receive a global rank, sorted first by default. Filters preserve those global ranks. The order selector also supports clinical research score or ticker/NCT order; the CSV export includes every filtered row, all point components, source timestamps, evidence gaps and the next review action.
+
+`pre_phase3_priority.py` defines `REVIEW-PRIORITY-V1`: stage /30, saved program identity /15, registry freshness /10, exact-NCT protocol field coverage /15, presence of source-dated linked Phase 2 PRIMARY evidence /15, registry completion timing /10 and recent $300M–$10B market-cap fit /5. A smaller p-value or more analyses adds no extra points. Monthly completion dates use their full month interval. Future, missing or stale timestamps earn no freshness points. These weights rank research work and are not calibrated clinical strength, success or approval probabilities.
+
+Completed/inactive studies, registry-posted results, exact-program issuer-announced readouts, known inactive listings, invalid provenance and known non-pivotal safety/open-label studies receive **priority 0 and no active rank**, with an explicit exclusion reason. Zero is a scope classification, not a clinical failure. Missing data earns no readiness points and generates review actions. Registry activity alone does not confirm issuer-unreleased status. The separate clinical scores remain blank until their existing source-review requirements pass. The next-ten manual scoring worklist uses the same priority score and global rank.
+
 ## Phase 2 p-values → Phase 3 pre-readout evidence (not calibrated PoS)
 
 Open **PDUFA → PRE PHASE 3** for the $300M–$10B active standalone Phase 3 candidate screen. The view now lists Phase 2 **PRIMARY** p-value analyses only when the Phase 2 NCT is explicitly linked to that Phase 3 program, the ticker matches, and the p was actually observed no later than the assessment cutoff. It shows the original Phase 2 registry result-posted date, the **first date the system verified that p-value**, days elapsed since that verification, and the original ClinicalTrials.gov study source. The verified-observation date—not the possibly earlier registry post date—is the safe historical cutoff.

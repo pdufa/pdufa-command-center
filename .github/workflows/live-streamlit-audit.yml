@@ -10,6 +10,8 @@ on:
       - "app.py"
       - "pre_readout.py"
       - "pre_readout_score.py"
+      - "pre_phase3_priority.py"
+      - "step7_live.py"
       - "data/pre_readout_intake_status.json"
 
 permissions:

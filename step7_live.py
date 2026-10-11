@@ -20,6 +20,7 @@ from pre_phase3_pilot_scores import (attach_preliminary_scores, classify_phase3_
                                     review_index, reviewed_phase2_link, reviewed_program_identity)
 from listing_exclusions import validated_listing_exclusions, resolved_pipeline_status
 from phase3_issuer_readouts import ANNOUNCED, identity, issuer_readout_index
+from pre_phase3_priority import attach_review_priorities, RUBRIC_VERSION
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -297,6 +298,8 @@ def build_snapshot(root, now=None):
             "Company identity review source": identity_sources.get((ticker, nct), ""),
             "Registry check": trial_check,
             "Protocol check": p_fresh if "PHASE3" in phases else "NOT REQUIRED FOR PHASE 2 WATCH",
+            "Protocol as of UTC": p.get("checked_at", ""),
+            "Protocol source": p.get("source_url", ""),
             "Design inputs present /6": coverage_count,
             "Design coverage meaning": "RECORDED FIELDS ONLY — NOT A TRIAL DESIGN QUALITY SCORE",
             "Pre-readout research score /100": verified_score.get("score"),
@@ -331,6 +334,7 @@ def build_snapshot(root, now=None):
     trials = attach_preliminary_scores(
         trials, protocols, pilot_reviews, local_today
     )
+    trials = attach_review_priorities(trials, now)
 
     events = []
     for fin in financing:
@@ -463,6 +467,10 @@ def build_snapshot(root, now=None):
         "generated_at_utc": now.isoformat(timespec="seconds"),
         "source_checks": checks,
         "trial_rows": len(trials), "financing_events": len(events),
+        "review_priority_rows": len(trials),
+        "review_priority_ranked": sum(r["Review priority rank"] is not None for r in trials),
+        "review_priority_excluded": sum(r["Review priority rank"] is None for r in trials),
+        "review_priority_rubric": RUBRIC_VERSION,
         "market_eod_rows": len(market_rows),
         "listing_exclusions": list(listing_exclusions.values()),
         "entry_ready_count": sum(x["Proposed trade status"].startswith("ENTRY READY") for x in events),
