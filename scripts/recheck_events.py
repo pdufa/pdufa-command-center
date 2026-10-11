@@ -171,7 +171,8 @@ def financing_check(r,files):
     items += [x for x in files if x["form"] in {"8-K","424B5","424B3","S-3","S-3ASR","10-Q","10-K"}][:8]
     pats=[r"(?i)closing of (?:the )?.{0,40}offering",
           r"(?i)(?:offering|financing) (?:was )?completed",
-          r"(?i)(?:we|company) closed .{0,40}(?:offering|financing)"]
+          r"(?i)(?:we|company) closed .{0,40}(?:offering|financing)",
+          r"(?i)(?:we|company) (?:has )?completed (?:its |the )?(?:financing|offering)"]
     checked=0; failures=[]
     for f in items:
         try:
