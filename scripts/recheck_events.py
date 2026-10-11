@@ -168,7 +168,7 @@ def financing_check(r,files):
         for p in pats:
             m=re.search(p,z)
             if m:
-                return {"status":"CLOSURE_EVIDENCE_FOUND","note":note(z[max(0,m.start()-100):m.end()+220]),"source":f["url"],"closed":True}
+                return {"status":"CLOSURE_CLAUSE_FOR_REVIEW","note":note(z[max(0,m.start()-100):m.end()+220]),"source":f["url"],"closed":False}
     return {"status":"CHECKED_NO_NEW_CLOSURE" if items else "NO_SOURCE","note":"Financing sources checked; no new closure safely confirmed." if items else "No financing source available.","source":u or (items[0]["url"] if items else "")}
 
 def latest_fact(o,names):
@@ -280,8 +280,9 @@ def main():
             if pv and not s(r.get("reported_p_values")): ch+=setv(c,i,"reported_p_values",pv)
         if "financing" in cats:
             res["financing"]={"status":"SOURCE_BLOCKED_RETAINED","note":"SEC submissions endpoint unavailable from worker; retained existing event financing data. "+secerr,"source":s(r.get("financing_evidence_url"))} if secerr and not s(r.get("financing_evidence_url")) else financing_check(r,files)
-            if res["financing"].get("closed") and s(r.get("financing_status")).upper() in {"","UNKNOWN","NOT AVAILABLE","RUNNING","ANNOUNCED"}:
-                ch+=setv(c,i,"financing_status","CLOSED"); ch+=setv(c,i,"financing_evidence_url",res["financing"].get("source"))
+            # Never update financing_status=CLOSED from keyword matching.
+            # Step 4 human-reviewed, SEC-exhibit evidence must establish
+            # actual closing, date, identity and exact financing transaction.
         if "cash_runway" in cats:
             res["cash_runway"]=cash_check(cik); ch+=setv(c,i,"cash",res["cash_runway"].get("cash")); ch+=setv(c,i,"cash_runway_months",res["cash_runway"].get("runway"))
         if "market_data" in cats:
@@ -290,9 +291,13 @@ def main():
             res["ownership_insiders"]={"status":"SOURCE_BLOCKED_RETAINED","note":"SEC submissions endpoint unavailable from worker; no ownership/insider inference made. "+secerr,"source":""} if secerr else ownership_check(files,sub)
         for cat,x in res.items():
             st.at[j,cat+"_status"]=s(x.get("status")); st.at[j,cat+"_note"]=s(x.get("note")); st.at[j,cat+"_source"]=s(x.get("source"))
-            if "ERROR" in s(x.get("status")).upper():er+=1
+            source_status=s(x.get("status")).upper()
+            if ("ERROR" in source_status or "BLOCKED" in source_status
+                    or source_status in {"SOURCE_UNAVAILABLE", "NO_CIK", "NO_SOURCE", "NOT_CHECKED"}):
+                er+=1
         done=now(); st.at[j,"completed_at_utc"]=done; st.at[j,"change_count"]=str(ch); st.at[j,"error_count"]=str(er)
         st.at[j,"run_status"]="COMPLETED_WITH_ERRORS" if er else "COMPLETED"
+        # A source-blocked category cannot count as a successful full recheck.
         if not er: st.at[j,"last_successful_recheck_utc"]=done
         c.at[i,"last_checked"]=done; total+=ch
         if not a.no_sleep and n<len(ids):time.sleep(.15)
