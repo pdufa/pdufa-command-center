@@ -118,15 +118,13 @@ async function audit(){
       await sleep(3500);
       const prePhaseTabSelected=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
       const prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
-      result.checks.prePhase3Blank=(prePhaseTabSelected==="true")
-        && !prePhaseScreen.includes("PRE PHASE 3 — Clinical Trial Evaluation")
-        && !prePhaseScreen.includes("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT")
-        && !prePhaseScreen.includes("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH")
-        && !prePhaseScreen.includes("SAVE NEW AUDIT REVISION")
-        && !prePhaseScreen.includes("Phase 1–3 company–trial leads")
-        && !prePhaseScreen.includes("PDUFA — CLINICAL AND REGULATORY STAGES");
-      if(!result.checks.prePhase3Blank)
-        result.errors.push("PRE PHASE 3 must remain empty with no clinical research UI.");
+      result.checks.prePhase3Visible=(prePhaseTabSelected==="true")
+        && prePhaseScreen.includes("PRE PHASE 3 — LIVE SOURCE MONITOR")
+        && prePhaseScreen.includes("SOURCE HEALTH / LAST VERIFIED CHECK")
+        && prePhaseScreen.includes("CLINICAL RESEARCH QUEUE")
+        && !/This app has encountered an error|Traceback \(most recent call last\)/i.test(prePhaseScreen);
+      if(!result.checks.prePhase3Visible)
+        result.errors.push("PRE PHASE 3 Step 7 source-health and clinical research tables must be visible.");
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
       await sleep(1500);
@@ -234,7 +232,7 @@ async function audit(){
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
-                   "prePhase3Blank",
+                   "prePhase3Visible",
                    "workbenchSubtabRemoved"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
