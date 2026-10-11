@@ -435,7 +435,7 @@ def build_snapshot(root, now=None):
                      extra=f"{len(trials)} exact ticker+NCT records; scope is not exhaustive{listing_note}"),
         status_check("Phase 3 result intake", p3_state.get("status"),
                      p3_state.get("finished_at"), now,
-                     extra=f"{p3_state.get('stored_results', '?')} saved registry records; not independently adjudicated readouts"),
+                     extra=f"{p3_state.get('stored_results', '?')} saved result observations; registry postings and issuer releases are separate; outcomes require clinical review"),
         status_check("Phase 3 primary statistics", p3_stats_state.get("status"),
                      p3_stats_state.get("finished_at"), now,
                      extra=f"{len(primary_results)} exact-NCT result analysis rows; not adjudicated efficacy"),
