@@ -113,7 +113,7 @@ def column_groups(columns, max_columns=MAX_COLUMNS):
             if ticker:
                 columns.remove("STAGE")
                 columns.insert(columns.index(ticker) + 1, "STAGE")
-        days = next((c for c in columns if _name(c) in ("days to pdufa", "days left")), None)
+        days = next((c for c in ("Days to PDUFA", "DAYS TO PDUFA", "days_to_pdufa", "Days Left") if c in columns), None)
         if days:
             columns.remove(days)
             pivot = "STAGE" if "STAGE" in columns else next(
