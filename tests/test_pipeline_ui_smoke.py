@@ -241,27 +241,33 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("POST PHASE 3", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
 
-    def test_post_phase3_report_remains_under_pdufa(self):
+    def test_post_phase3_tab_is_empty_but_preserved(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.run()
         self.assertFalse(list(app.exception))
-        nav = next(item for item in app.radio if item.key == "nav")
-        self.assertNotIn("TODAY", nav.options)
-        self.assertTrue(any("POST PHASE 3 — DAILY RESULTS & INTAKE" in item.body for item in app.markdown))
-        details = app.get("toggle")
-        self.assertTrue(any(item.key == "pipeline_phase3_daily_details_v1" for item in details))
-        table_count_before = len(app.dataframe)
-        next(item for item in app.get("toggle") if item.key == "pipeline_phase3_daily_details_v1").set_value(True).run()
-        self.assertFalse(list(app.exception), "Migrated Phase 3 Daily report must render")
-        self.assertTrue(any(item.label == "Yesterday: source-linked posts" for item in app.metric))
-        self.assertTrue(any(item.label == "Recorded Phase 3 result rows" for item in app.metric))
-        self.assertTrue(app.selectbox(key="today_watchlist_ticker_v2").options)
-        self.assertGreater(len(app.dataframe), table_count_before)
-        daily_source = (APP_PATH.parent / "today_page.py").read_text(encoding="utf-8")
-        self.assertIn("TOP — Phase 3 results posted yesterday", daily_source)
-        self.assertIn("BOTTOM — Cumulative Phase 3 result records", daily_source)
-
+        labels = [item.label for item in app.get("tab")]
+        self.assertIn("POST PHASE 3", labels)
+        self.assertNotIn("PHASE 3 DAILY", labels)
+        self.assertFalse(any(
+            "POST PHASE 3 — DAILY RESULTS & INTAKE" in item.body
+            or "STAGE 1 — PHASE 3" in item.body
+            or "STAGE 2 — GREEN ENTRY" in item.body
+            for item in app.markdown
+        ))
+        self.assertFalse(any(
+            item.key == "pipeline_phase3_daily_details_v1"
+            for item in app.get("toggle")
+        ))
+        source = APP_PATH.read_text(encoding="utf-8")
+        scoped = source.split("    with intake_tab:", 1)[1].split(
+            '\nelif page == "DISEASE & MARKET HORIZON":', 1
+        )[0]
+        self.assertIn("pass", scoped)
+        self.assertNotIn("st.markdown(", scoped)
+        self.assertNotIn("st.caption(", scoped)
+        self.assertNotIn("render_today(", scoped)
+        self.assertNotIn("render_post_phase3_stage1(", scoped)
 
 
     def test_pre_phase3_subtab_never_fabricates_success_probability(self):
