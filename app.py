@@ -10,7 +10,8 @@ from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
 from pre_phase3_trading import trading_research_queue, research_discovery_pool
-from step7_live import build_snapshot as build_step7_snapshot, read_json as step7_read_json
+from step7_live import read_json as step7_read_json
+from step7_cached_snapshot import load_current_snapshot
 from pre_phase3_readiness import check_pre_phase3_readiness
 from pre_phase3_scoring_review import scoring_review_queue, COLUMNS as SCORING_REVIEW_COLUMNS
 from pre_phase3_priority import RUBRIC_ROWS as PRIORITY_RUBRIC_ROWS, POINT_COLUMNS as PRIORITY_POINT_COLUMNS
@@ -2649,8 +2650,11 @@ def table_view(frame, return_page="PDUFA"):
 
 @st.cache_data(ttl=180, show_spinner=False)
 def _step7_snapshot(signature):
-    """Read existing scheduled-collector outputs; never fetch sources in a UI render."""
-    return build_step7_snapshot(Path("data"), datetime.now(timezone.utc))
+    """Display GitHub-built, source-dated and validated scores without rescanning 3,105 trials."""
+    saved = load_current_snapshot(Path("data"), datetime.now(timezone.utc))
+    if saved is None:
+        raise ValueError("Step 7 saved feed is missing, inconsistent or past its Pacific-day cutoff")
+    return saved
 
 
 def render_pre_phase3():
@@ -2671,6 +2675,7 @@ def render_pre_phase3():
         "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
         "step7_entry_evidence.csv", "phase3_pre_readout_evidence.csv",
         "pre_phase3_pilot_clinical_reviews.json", "pdufa_candidates.csv",
+        "step7_pre_phase3_feed.csv", "step7_financing_review.csv", "step7_live_status.json",
     ]
     signature = tuple(
         (file, (data_root / file).stat().st_mtime_ns if (data_root / file).exists() else 0)

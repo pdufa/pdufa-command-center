@@ -36,7 +36,7 @@ class Step4UiSourceTests(unittest.TestCase):
         app = (ROOT / "app.py").read_text(encoding="utf-8")
         self.assertNotIn("render_pre_phase3(", src)
         self.assertNotIn("render_clinical_review()", app)
-        self.assertIn("from step7_live import build_snapshot as build_step7_snapshot", app)
+        self.assertIn("from step7_cached_snapshot import load_current_snapshot", app)
         self.assertIn('with st.form("sec_step4_retrieve"):', src)
         self.assertIn("if pressed:", src)
         self.assertNotIn("scan_one(ticker, registry=registry, user_agent=user_agent)\n", src.split("if pressed:", 1)[0])
