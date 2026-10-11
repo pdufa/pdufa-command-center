@@ -2834,7 +2834,7 @@ def render_pre_phase3():
             mime="text/csv", key="step7_pre_readout_rubric_export",
         )
         review_items = scoring_review_queue(selected.to_dict("records"), limit=10)
-        st.markdown("### NEXT 10 SOURCE-REVIEWED CLINICAL SCORING PILOTS")
+        st.markdown("### NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
         st.caption(
             "Prioritized research worklist, not a top ten trading recommendation. "
             "Registry status does not confirm that issuer topline remains unreleased. "
