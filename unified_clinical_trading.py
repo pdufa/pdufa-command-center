@@ -153,6 +153,8 @@ def render_combined_overview():
             {"Check": "Exact pre-readout matches", "Count": pre_exact},
             {"Check": "Exact post-readout matches", "Count": post_exact},
             {"Check": "Matched in both feeds", "Count": both},
+            {"Check": "Pre drug-name conflicts", "Count": int(df["Pre Phase 3 evidence match"].eq("DRUG CONFLICT — REVIEW").sum())},
+            {"Check": "Post drug-name conflicts", "Count": int(df["Post evidence match"].eq("DRUG CONFLICT — REVIEW").sum())},
             {"Check": "Pre-readout ambiguous trial IDs", "Count": pre_ambiguous},
             {"Check": "Post-readout ambiguous trial IDs", "Count": post_ambiguous},
             {"Check": "Missing pre-readout match", "Count": total - pre_exact - pre_ambiguous},
