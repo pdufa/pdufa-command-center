@@ -113,3 +113,13 @@ the original registry primary p-values. NOVA-3 remains a separate safety trial
 with no efficacy score. Stale or future protocol snapshots suppress pilot
 scores. These assessments never satisfy the independently reviewed score or
 trading entry gates; the completion checklist retains any remaining blockers.
+
+`data/phase_pipeline_listing_exclusions.json` records dated exchange notices
+for retired listings, matched to the exact registry company and CIK. Nasdaq's
+September 23 merger-closure notice for TBPH makes its September 24 suspension
+explicit. The active quote collector excludes that listing, retains the
+historical trial and leaves market cap blank. The dashboard can resolve only
+a complete scan's fully accounted-for quote warning; registry errors, unknown
+missing quotes and original collector timestamps are preserved. Listing status
+and the exchange source appear in the research table and CSV. This clears the
+TBPH quote-coverage blocker without granting a clinical score or trading entry.

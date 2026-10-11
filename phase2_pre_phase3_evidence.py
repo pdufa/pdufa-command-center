@@ -85,7 +85,14 @@ def phase2_linked_summary(index, ticker, phase2_links):
             "Phase 2 PRIMARY first observed UTC": "",
             "Phase 2 PRIMARY registry sources": "",
         }
-    summaries = [f"{v['nct_id']} p{v['modifier']}{v['p_value']} ({v['comparison']})" for v in evidence]
+    summaries = []
+    for value in evidence:
+        p_text = f"p{value['modifier']}{value['p_value']}"
+        if value["modifier"] == "=" and float(value["p_value"]) == 0:
+            # Preserve the source's displayed precision without asserting an
+            # exact zero or inventing a bound that the registry did not report.
+            p_text = f"p reported as {value['p_value']} (exact p unavailable)"
+        summaries.append(f"{value['nct_id']} {p_text} ({value['comparison']})")
     return {
         "Linked Phase 2 PRIMARY p": " | ".join(summaries[:6]) +
             (f" | +{len(evidence)-6} more" if len(evidence)>6 else ""),
