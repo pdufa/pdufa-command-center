@@ -214,9 +214,13 @@ async function audit(){
             await appFrame.getByText("HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT",{exact:false})
               .first().waitFor({timeout:65000});
             const validatorText=await appFrame.locator("body").innerText({timeout:9000});
+            const eligibleThreshold=validatorText.includes("STEP 5 — Lock thresholds and test the untouched holdout")
+              || validatorText.includes("No threshold pair meets the current minimum coverage/call requirements.");
             result.checks.historicalOptimizerPreserved=validatorText.includes("FDA-V3 decision-safe benchmark")
               && validatorText.includes("STEP 3 — Tune the high-confidence F gate")
-              && validatorText.includes("STEP 5 — Lock thresholds and test the untouched holdout");
+              && validatorText.includes("Tune year")
+              && validatorText.includes("Holdout year")
+              && eligibleThreshold;
           }catch(err){
             result.checks.historicalOptimizerPreserved=false;
             result.notes.push("Prediction Engine historical validation not accessible: "+String(err.message).slice(0,180));
