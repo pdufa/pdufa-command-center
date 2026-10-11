@@ -157,19 +157,45 @@ def p3_check(r):
     return {"status":"NO_TRIAL_ID","note":"No event-specific NCT ID or trial source available.","source":""}
 
 def financing_check(r,files):
+    """Collect possible closing clauses but NEVER certify financing completion.
+
+    All SEC access failures remain visible; an attempted URL is not a checked
+    filing. Only the independent human-reviewed Step 4 closure ledger can
+    establish a closing with company, date and transaction match.
+    """
     items=[]
     u=s(r.get("financing_evidence_url"))
     if u: items.append({"form":"saved","url":u})
     items += [x for x in files if x["form"] in {"8-K","424B5","424B3","S-3","S-3ASR","10-Q","10-K"}][:8]
-    pats=[r"(?i)closing of (?:the )?.{0,40}offering",r"(?i)(?:offering|financing) (?:was )?completed",r"(?i)(?:we|company) closed .{0,40}(?:offering|financing)"]
+    pats=[r"(?i)closing of (?:the )?.{0,40}offering",
+          r"(?i)(?:offering|financing) (?:was )?completed",
+          r"(?i)(?:we|company) closed .{0,40}(?:offering|financing)"]
+    checked=0; failures=[]
     for f in items:
-        try: z=text(get(f["url"]))
-        except Exception: continue
+        try:
+            z=text(get(f["url"]))
+            checked+=1
+        except Exception as exc:
+            failures.append(f"{type(exc).__name__}: {str(exc)[:110]}")
+            continue
         for p in pats:
             m=re.search(p,z)
             if m:
-                return {"status":"CLOSURE_CLAUSE_FOR_REVIEW","note":note(z[max(0,m.start()-100):m.end()+220]),"source":f["url"],"closed":False}
-    return {"status":"CHECKED_NO_NEW_CLOSURE" if items else "NO_SOURCE","note":"Financing sources checked; no new closure safely confirmed." if items else "No financing source available.","source":u or (items[0]["url"] if items else "")}
+                return {"status":"CLOSURE_CLAUSE_FOR_REVIEW",
+                        "note":note(z[max(0,m.start()-100):m.end()+220]),
+                        "source":f["url"],"closed":False}
+    if not checked and items:
+        return {"status":"SOURCE_BLOCKED_RETAINED",
+                "note":note("Could not inspect any financing source. "+
+                            "; ".join(failures[:3])),
+                "source":u or items[0]["url"],"closed":False}
+    if failures:
+        return {"status":"PARTIAL_SOURCE_REVIEW",
+                "note":note(f"Inspected {checked} of {len(items)} sources; some SEC requests failed. No financing closure proven."),
+                "source":u or items[0]["url"],"closed":False}
+    return {"status":"CHECKED_NO_NEW_CLOSURE" if items else "NO_SOURCE",
+            "note":"Available financing sources checked; no verified closing." if items else "No financing source available.",
+            "source":u or (items[0]["url"] if items else ""),"closed":False}
 
 def latest_fact(o,names):
     facts=(o.get("facts") or {}).get("us-gaap") or {}; rows=[]
@@ -299,7 +325,7 @@ def main():
             st.at[j,cat+"_status"]=s(x.get("status")); st.at[j,cat+"_note"]=s(x.get("note")); st.at[j,cat+"_source"]=s(x.get("source"))
             source_status=s(x.get("status")).upper()
             if ("ERROR" in source_status or "BLOCKED" in source_status
-                    or source_status in {"SOURCE_UNAVAILABLE", "NO_CIK", "NO_SOURCE", "NOT_CHECKED"}):
+                    or source_status in {"SOURCE_UNAVAILABLE", "NO_CIK", "NO_SOURCE", "NOT_CHECKED", "PARTIAL_SOURCE_REVIEW"}):
                 er+=1
         done=now(); st.at[j,"completed_at_utc"]=done; st.at[j,"change_count"]=str(ch); st.at[j,"error_count"]=str(er)
         st.at[j,"run_status"]="COMPLETED_WITH_ERRORS" if er else "COMPLETED"
