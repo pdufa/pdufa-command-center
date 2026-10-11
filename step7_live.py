@@ -155,8 +155,12 @@ def build_snapshot(root, now=None):
     for result in primary_results:
         observed_nct = result.get("nct_id","").upper()
         observed_ticker = result.get("ticker","").upper()
+        posted = as_of_date(result.get("result_posted_at"))
+        checked_at = timestamp(result.get("checked_at"))
         if (not NCT.fullmatch(observed_nct) or not observed_ticker
-                or result.get("source_url") != "https://clinicaltrials.gov/study/" + observed_nct):
+                or result.get("source_url") != "https://clinicaltrials.gov/study/" + observed_nct
+                or not posted or posted > local_today.isoformat()
+                or checked_at is None or checked_at > now):
             continue
         observed_primary.setdefault((observed_ticker,observed_nct), []).append(result)
 
@@ -208,7 +212,11 @@ def build_snapshot(root, now=None):
         verified_score = pre_scored.get((ticker,nct), {})
         p_fresh = freshness(p.get("checked_at"), now, 72)
         registry_results = bool(row.get("results_first_posted"))
-        registry_primary = observed_primary.get((ticker,nct),[])
+        registry_primary = [
+            x for x in observed_primary.get((ticker,nct),[])
+            if not x.get("drug") or not row.get("drug")
+            or x.get("drug","").strip().casefold() == row.get("drug","").strip().casefold()
+        ]
         p_values = list(dict.fromkeys(x.get("p_value","") for x in registry_primary if x.get("p_value","")))
         documented_effect = any(x.get("effect_value") and x.get("ci_lower") and x.get("ci_upper") for x in registry_primary)
         # Do not turn a registry milestone into positive efficacy or an issuer readout.
