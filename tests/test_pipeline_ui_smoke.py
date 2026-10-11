@@ -241,34 +241,50 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("POST PHASE 3", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
 
-    def test_post_phase3_tab_is_empty_but_preserved(self):
+    def test_post_phase3_workspace_installed_with_three_stages(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
+        app.session_state["pdufa_subtab"] = "POST PHASE 3"
         app.run()
         self.assertFalse(list(app.exception))
         labels = [item.label for item in app.get("tab")]
         self.assertIn("POST PHASE 3", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
-        self.assertFalse(any(
-            "POST PHASE 3 — DAILY RESULTS & INTAKE" in item.body
-            or "STAGE 1 — PHASE 3" in item.body
-            or "STAGE 2 — GREEN ENTRY" in item.body
+        self.assertTrue(any(
+            "POST PHASE 3 — TRADING WORKSPACE" in item.body
             for item in app.markdown
         ))
-        self.assertFalse(any(
-            item.key == "pipeline_phase3_daily_details_v1"
-            for item in app.get("toggle")
+        stages = app.radio(key="post_phase3_workspace_stage_v1")
+        self.assertEqual(list(stages.options), [
+            "1 · Discover & qualify",
+            "2 · Monitor & exit",
+            "3 · Historical backtest",
+        ])
+        self.assertTrue(any(
+            "STAGE 1 — PHASE 3" in item.body for item in app.markdown
         ))
-        source = APP_PATH.read_text(encoding="utf-8")
-        scoped = source.split("    with intake_tab:", 1)[1].split(
-            '\nelif page == "DISEASE & MARKET HORIZON":', 1
-        )[0]
-        self.assertIn("pass", scoped)
-        self.assertNotIn("st.markdown(", scoped)
-        self.assertNotIn("st.caption(", scoped)
-        self.assertNotIn("render_today(", scoped)
-        self.assertNotIn("render_post_phase3_stage1(", scoped)
+        self.assertFalse(any(
+            "STAGE 2 — GREEN ENTRY" in item.body for item in app.markdown
+        ))
 
+    def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
+        app = AppTest.from_file(str(APP_PATH), default_timeout=120)
+        app.session_state["nav"] = "PDUFA"
+        app.session_state["pdufa_subtab"] = "POST PHASE 3"
+        app.session_state["post_phase3_workspace_stage_v1"] = "3 · Historical backtest"
+        app.run()
+        self.assertFalse(list(app.exception))
+        self.assertTrue(any(
+            "STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body
+            for item in app.markdown
+        ))
+        metrics = {item.label: item.value for item in app.metric}
+        self.assertEqual(metrics.get("Verified event timelines"), "0")
+        self.assertEqual(metrics.get("Historical OHLCV rows"), "0")
+        self.assertEqual(metrics.get("Simulated trade scenarios"), "0")
+        self.assertTrue(any(
+            "BACKTEST NOT READY" in item.body for item in app.warning
+        ))
 
     def test_pre_phase3_subtab_never_fabricates_success_probability(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)

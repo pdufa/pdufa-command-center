@@ -119,23 +119,36 @@ async function audit(){
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
     if(result.checks.threePdufaTabs){
       await appFrame.getByRole("tab",{name:"POST PHASE 3"}).click({timeout:15000});
-      const emptyTab=await waitForRender(page,appFrame,async(text,frame)=>
+      const phase3Ready=await waitForRender(page,appFrame,async(text,frame)=>
         await frame.getByRole("tab",{name:"POST PHASE 3",exact:true}).getAttribute("aria-selected")==="true"
-        && !text.includes("STAGE 1 — PHASE 3 → FINANCING #2 → GREEN ENTRY")
-        && !text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
-        && !text.includes("SHOW POST PHASE 3 DAILY REPORT")
-        && !text.includes("DAILY PHASE 3 RESULT REPORT"));
-      appFrame=emptyTab.frame;
-      result.checks.postPhase3Cleared=await appFrame.getByRole("tab",{name:"POST PHASE 3",exact:true}).getAttribute("aria-selected")==="true"
-        && !emptyTab.text.includes("STAGE 1 — PHASE 3")
-        && !emptyTab.text.includes("STAGE 2 — GREEN ENTRY")
-        && !emptyTab.text.includes("SHOW POST PHASE 3 DAILY REPORT")
-        && !emptyTab.text.includes("DOWNLOAD BLANK POSITION JOURNAL CSV")
-        && !emptyTab.text.includes("EXPORT UNIFIED POST PHASE 3 RESEARCH QUEUE")
-        && !emptyTab.text.includes("DAILY PHASE 3 RESULT REPORT");
-      if(!result.checks.postPhase3Cleared)
-        result.errors.push("POST PHASE 3 still displays content after user requested clearing it.");
-      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-cleared.png"),fullPage:false});
+        && text.includes("POST PHASE 3 — TRADING WORKSPACE")
+        && text.includes("STAGE 1 — PHASE 3 → FINANCING #2 → GREEN ENTRY")
+        && text.includes("1 · Discover & qualify")
+        && text.includes("2 · Monitor & exit")
+        && text.includes("3 · Historical backtest"));
+      appFrame=phase3Ready.frame;
+      result.checks.postPhase3Installed=true;
+      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-qualification.png"),fullPage:false});
+      await appFrame.getByText("2 · Monitor & exit",{exact:true}).first().click({timeout:15000});
+      const phase3Hold=await waitForRender(page,appFrame,
+        text=>text.includes("STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH")
+          && text.includes("No actual positions have been supplied."));
+      appFrame=phase3Hold.frame;
+      result.checks.postPhase3Stage2Visible=true;
+      result.checks.noPhantomPositions=true;
+      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-positions.png"),fullPage:false});
+      await appFrame.getByText("3 · Historical backtest",{exact:true}).first().click({timeout:15000});
+      const phase3History=await waitForRender(page,appFrame,
+        text=>text.includes("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH")
+          && text.includes("Historical research leads")
+          && text.includes("BACKTEST NOT READY"));
+      appFrame=phase3History.frame;
+      result.checks.postPhase3Stage3Visible=true;
+      result.checks.noInventedTradeReturns=phase3History.text.includes("Simulated trade scenarios")
+        && phase3History.text.includes("BACKTEST NOT READY");
+      if(!result.checks.noInventedTradeReturns)
+        result.errors.push("POST PHASE 3 Stage 3 falsely reports trade returns without evidence.");
+      await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-backtesting.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       const preReady=await waitForRender(page,appFrame,(text,frame)=>
         frame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")

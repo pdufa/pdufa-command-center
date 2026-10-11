@@ -56,7 +56,7 @@ class TodayTabTests(unittest.TestCase):
                   "today_page.py").read_text(encoding="utf-8")
         self.assertIn("a source link is not proof of a positive primary endpoint", source)
 
-    def test_standalone_today_removed_post_phase3_tab_cleared(self):
+    def test_standalone_today_removed_and_post_phase3_workspace_installed(self):
         root = Path(__file__).resolve().parents[1]
         app = (root / "app.py").read_text(encoding="utf-8")
         source = (root / "today_page.py").read_text(encoding="utf-8")
@@ -71,15 +71,14 @@ class TodayTabTests(unittest.TestCase):
         self.assertIn('["PIPELINE", "PRE PHASE 3", "POST PHASE 3"]', pipeline)
         self.assertNotIn('"PDUFA WORKBENCH"', pipeline)
         self.assertIn("with intake_tab:", pipeline)
-        empty_tab = pipeline.split("with intake_tab:", 1)[1]
-        self.assertIn("pass", empty_tab)
-        self.assertNotIn("POST PHASE 3 — DAILY RESULTS & INTAKE", empty_tab)
-        self.assertNotIn("pipeline_phase3_daily_details_v1", empty_tab)
-        self.assertNotIn("render_post_phase3_stage1(", empty_tab)
-        self.assertNotIn("render_today(", empty_tab)
+        post = pipeline.split("with intake_tab:", 1)[1]
+        self.assertIn("if intake_tab.open:", post)
+        self.assertIn("render_post_phase3_workspace()", post)
+        self.assertNotIn("pipeline_phase3_daily_details_v1", post)
+        self.assertNotIn("render_today(", post)
+        self.assertIn("from post_phase3_workspace import render_post_phase3_workspace", app)
         self.assertNotIn("from today_page import render_today", app)
-        self.assertNotIn("from post_phase3_unified_ui import render_post_phase3_stage1", app)
-        # The source file and automated collection survive the UI removal.
+        # The original data collector and report source remain available.
         self.assertIn("EXPORT PHASE 3 DAILY CSV", source)
         self.assertIn("phase3_daily_", source)
         self.assertIn('st.subheader("DAILY PHASE 3 RESULT REPORT")', source)

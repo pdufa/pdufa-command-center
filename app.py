@@ -5,6 +5,7 @@ from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
+from post_phase3_workspace import render_post_phase3_workspace
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -3176,7 +3177,7 @@ if page == "PDUFA":
     # Preserve existing Streamlit sessions after renaming the daily tab.
     if st.session_state.get("pdufa_subtab") == "PHASE 3 DAILY":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
-    # Preserve PIPELINE and PRE PHASE 3; keep POST PHASE 3 intentionally blank.
+    # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
     pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(
         ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"],
@@ -3949,8 +3950,8 @@ if page == "PDUFA":
             render_pre_phase3()
 
     with intake_tab:
-        # Intentionally blank at user request. Do not render post-Phase-3 content.
-        pass
+        if intake_tab.open:
+            render_post_phase3_workspace()
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
