@@ -51,6 +51,24 @@ def _dates(values):
     return pd.to_datetime(values.astype(str).str.slice(0, 10), errors="coerce")
 
 
+def _checked_local_days(values):
+    """Interpret offset-aware UTC collector timestamps in the dashboard timezone.
+
+    Registry source_updated / posted dates are literal publication dates, not
+    collector UTC observations. Bare YYYY-MM-DD check values also remain
+    literal dates: converting midnight UTC would falsely move them back a day.
+    """
+    raw = values.fillna("").astype(str).str.strip()
+    literal = _dates(raw).dt.date
+    aware = raw.str.contains(
+        r"T\d{2}:\d{2}.*(?:Z|[+-]\d{2}:\d{2})$",
+        regex=True, case=False, na=False,
+    )
+    utc = pd.to_datetime(raw.where(aware), errors="coerce", utc=True, format="mixed")
+    observed_local = utc.dt.tz_convert("America/Los_Angeles").dt.date
+    return literal.where(~aware, observed_local)
+
+
 def _iso_day(value):
     try:
         parsed = date.fromisoformat(str(value or "").strip()[:10])
@@ -90,9 +108,9 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *
     # A current mutable registry record is never a valid historical snapshot
     # for a cutoff preceding its actual retrieval OR posted protocol revision.
     # Prevent "pre-readout" backtests from seeing later registry design fields.
-    checked = _dates(_cols(x, "checked_at"))
+    checked = _checked_local_days(_cols(x, "checked_at"))
     updated = _dates(_cols(x, "source_updated"))
-    cutoff_safe = checked.dt.date.le(as_of).fillna(False)
+    cutoff_safe = checked.le(as_of).fillna(False)
     cutoff_safe &= (updated.isna() | updated.dt.date.le(as_of))
     if announcements is not None and not announcements.empty:
         published = _dates(_cols(announcements, "phase3_results_posted_at"))
@@ -115,11 +133,11 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *
         p = protocols.copy()
         protocol_nct = _cols(p, "nct_id").str.upper()
         source = _cols(p, "source_url")
-        checked_proto = _dates(_cols(p, "checked_at"))
+        checked_proto = _checked_local_days(_cols(p, "checked_at"))
         valid_proto = (
             protocol_nct.str.fullmatch(r"NCT\d{8}").fillna(False)
             & source.eq("https://clinicaltrials.gov/study/" + protocol_nct)
-            & checked_proto.dt.date.le(as_of).fillna(False)
+            & checked_proto.le(as_of).fillna(False)
         )
         # Fail closed on refreshed registry records with missing/unknown trial
         # status or existing published results. An unresolved NCT is not safe
@@ -132,7 +150,7 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *
         protocol_revision = _dates(_cols(p, "source_updated")).dt.date
         # Do not call a trial presently unreleased based on a stale protocol:
         # its registry results or status might have changed since that fetch.
-        checked_day = checked_proto.dt.date
+        checked_day = checked_proto
         recent_proto = checked_day.ge(as_of - pd.Timedelta(days=2)).fillna(False)
         latest_active = set(protocol_nct.loc[
             valid_proto & ~published_proto & ~not_active_proto
@@ -145,8 +163,8 @@ def candidate_queue(pipeline, announcements, cap_cache, as_of, protocols=None, *
     caps = pd.to_numeric(_cols(c, "market_cap"), errors="coerce")
     verified = _cols(c, "market_cap_status").str.upper().eq("VERIFIED")
     # Market caps must have been verified no later than the cutoff date.
-    cap_dates = _dates(_cols(c, "market_cap_checked_at"))
-    valid_date = cap_dates.dt.date.le(as_of).fillna(False)
+    cap_dates = _checked_local_days(_cols(c, "market_cap_checked_at"))
+    valid_date = cap_dates.le(as_of).fillna(False)
     valid_caps = c.loc[verified & valid_date & caps.between(300e6, 10e9)]
     allowed = set(_cols(valid_caps, "ticker").str.upper())
     chosen = x.loc[phase & active & valid & cutoff_safe & not_posted & ticker.isin(allowed)].copy()

@@ -164,6 +164,45 @@ class PreReadoutTests(unittest.TestCase):
         self.assertEqual(frame.iloc[0]["issuer_readout_status"], "")
 
 
+    def test_utc_midnight_observations_follow_pacific_cutoff_not_utc_day(self):
+        # 05:15 UTC Oct 11 is 22:15 PDT Oct 10, so no look-ahead occurred.
+        boundary="2026-10-11T05:15:22+00:00"
+        base=pd.DataFrame([trial(checked_at=boundary)])
+        caps=market()
+        caps.loc[0, "market_cap_checked_at"]=boundary
+        protocol=pd.DataFrame([{
+            "nct_id":"NCT12345678",
+            "source_url":"https://clinicaltrials.gov/study/NCT12345678",
+            "checked_at":boundary, "source_updated":"2026-10-09",
+            "registry_overall_status":"RECRUITING",
+            "registry_results_first_posted":"",
+        }])
+        eligible=candidate_queue(base,pd.DataFrame(),caps,self.as_of,
+                                 protocols=protocol,require_protocol=True)
+        self.assertEqual(len(eligible),1)
+        # At 08:15 UTC Oct 11 it is already Oct 11 in Los Angeles.
+        future="2026-10-11T08:15:22+00:00"
+        self.assertTrue(candidate_queue(
+            pd.DataFrame([trial(checked_at=future)]),pd.DataFrame(),
+            caps,self.as_of,protocols=protocol,require_protocol=True).empty)
+        later_caps=caps.copy()
+        later_caps.loc[0,"market_cap_checked_at"]=future
+        self.assertTrue(candidate_queue(
+            base,pd.DataFrame(),later_caps,self.as_of,
+            protocols=protocol,require_protocol=True).empty)
+        later_proto=protocol.copy()
+        later_proto.loc[0,"checked_at"]=future
+        self.assertTrue(candidate_queue(
+            base,pd.DataFrame(),caps,self.as_of,
+            protocols=later_proto,require_protocol=True).empty)
+        # Bare publication/check dates remain literal local calendar dates.
+        self.assertTrue(candidate_queue(
+            pd.DataFrame([trial(checked_at="2026-10-11")]),
+            pd.DataFrame(),caps,self.as_of).empty)
+        self.assertTrue(candidate_queue(
+            pd.DataFrame([trial(checked_at=boundary,source_updated="2026-10-11")]),
+            pd.DataFrame(),caps,self.as_of).empty)
+
     def test_future_trial_snapshot_cannot_be_backcast(self):
         old_caps = market()
         old_caps.loc[0, "market_cap_checked_at"] = "2026-10-01T10:00:00Z"
