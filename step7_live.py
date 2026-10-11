@@ -230,8 +230,14 @@ def build_snapshot(root, now=None):
                       and is_valid_source(fin.get("first_financing_source"))
                       and is_valid_source(fin.get("second_financing_source")))
         quote = market_by_ticker.get(key.split("|", 1)[0].upper(), {})
+        try:
+            session_age = (now.date() - date.fromisoformat(quote.get("last_session", ""))).days
+        except ValueError:
+            session_age = None
         quote_fresh = (quote.get("last_session_freshness") == "RECENT EOD"
-                       and quote.get("market_status") == "MARKET_UPDATED")
+                       and quote.get("market_status") == "MARKET_UPDATED"
+                       and freshness(quote.get("checked_at_utc"), now, 72) == "RECENT"
+                       and session_age is not None and 0 <= session_age <= 5)
         gate_notes=[]
         if decision: gate_notes.append("FDA decision already recorded")
         elif decision_day_passed: gate_notes.append("saved PDUFA date passed; recheck decision")
@@ -255,7 +261,8 @@ def build_snapshot(root, now=None):
             "Price last session": quote.get("last_session", "") if quote_fresh else "",
             "Last EOD close USD": quote.get("last_close_usd", "") if quote_fresh else "",
             "Relative volume": quote.get("relative_volume", "") if quote_fresh else "",
-            "Price feed quality": quote.get("last_session_freshness", "NOT CHECKED") or "NOT CHECKED",
+            "Price feed quality": ("RECENT EOD — PROVIDER REPORTED" if quote_fresh
+                                   else "RECHECK REQUIRED — PRICE STALE OR UNAVAILABLE"),
             "Price source": quote.get("market_source", "") if quote_fresh else "",
             "Exact financing event": key,
             "Historical second closing": "DOCUMENTED — RECHECK REQUIRED" if historical else "NOT VERIFIED",
