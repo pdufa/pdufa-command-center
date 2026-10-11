@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import sys
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -21,6 +22,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))  # allow repository-root modules when invoked as a script
 REGISTRY = ROOT / 'data/company_registry.csv'
 LEDGER = ROOT / 'data/second_financing_status.csv'
 ARCHIVE = re.compile(r'^/Archives/edgar/data/(\d{1,10})/(\d{18})/([A-Za-z0-9_.-]+)$')
