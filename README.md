@@ -82,3 +82,24 @@ Run `python scripts/fda_100_on_100_gate.py` to reproduce the fixed manifest thro
 The new calls are model inferences: PRVB's original 2021 teplizumab cycle failed the prespecified commercial-versus-trial PK AUC comparability range ([April 27 sponsor SEC exhibit](https://www.sec.gov/Archives/edgar/data/1695357/000149315221009858/ex99-1.htm)); AKBA's original 2022 vadadustat application included non-dialysis patients, whose PRO2TECT primary safety MACE endpoint failed ([September 3, 2020 sponsor results](https://ir.akebia.com/news-releases/news-release-details/akebia-therapeutics-announces-top-line-results-its-pro2tect), [original application population](https://www.sec.gov/Archives/edgar/data/1517022/000119312521177692/d190142dex991.htm)). The failure is not transferred to the later dialysis-only cycle.
 
 This is a full-cohort source screen and engine run, not 126 exhaustively verified regulatory dossiers. The 124 REVIEW results still need verified evidence; retrieved URLs, positive clinical headlines, unspecified deficiency letters, and inspection completion cannot establish affirmative CMC/facility clearance. No scores or passes were invented. Historical matches are retrospective development results. Tests verify exact coverage, outcome independence, date/identity rejection and separation of review cycles; CI measures misses rather than forbidding them.
+
+## Step 7 — PRE PHASE 3 source-dated live integration (current)
+
+The active PRE PHASE 3 screen in app.py uses step7_live.build_snapshot on saved outputs of scheduled collectors.
+It shows a source-health table, exact ticker/NCT Phase 1–3 research records, provider market-cap timestamps,
+and separate exact-event financing review. The RELOAD button reloads saved files, not live SEC requests.
+
+GitHub Actions workflow .github/workflows/step7-live-feed.yml runs daily and supports manual launch.
+It validates source boundaries and writes data/step7_pre_phase3_feed.csv, data/step7_financing_review.csv
+and data/step7_live_status.json. Scanner completion does not establish complete source verification.
+
+Provider-labeled market caps are not independently certified price/volume data. SEC 403 access failures
+are explicit blockers. Historical financing status alone does not grant ENTRY READY. Registry primary
+completion dates and results-posted dates do not establish a successful corporate Phase 3 readout.
+The FDA approval prediction model remains independent of the trading/financing research.
+
+Live-source coverage is PARTIAL. ENTRY READY remains NO pending fresh source-dated Phase 3 efficacy
+and effect size/CI, safety, ordered second financing closure, dilution clearance, stable trading base,
+and normalized volume verification.
+
+The older PRE PHASE 3 descriptions above predate the active Step 7 view.
