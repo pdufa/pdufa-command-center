@@ -116,7 +116,7 @@ frame = pd.DataFrame([
     {"Measurement": "Cash-only runway risk index /100 (higher = more risk)", "Value":
          ("NOT SCORED" if report["runway_risk_index_0_100"] is None
           else str(report["runway_risk_index_0_100"]))},
-    {"Measurement": "Financing closure", "Value": report["financing_closed"]},
+    {"Measurement": "Financing closure from SEC filing metadata (before document review)", "Value": report["financing_closed"]},
     {"Measurement": "ATM activity", "Value": report["active_atm"]},
     {"Measurement": "Financial composite score", "Value": "NOT SCORED"},
 ])
