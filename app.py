@@ -2838,6 +2838,20 @@ def render_pre_phase3():
         st.dataframe(
             selected[display].head(500), use_container_width=True,
             hide_index=True, height=530,
+            column_config={
+                "Ticker": st.column_config.TextColumn(width="small"),
+                "Preliminary clinical score /100": st.column_config.NumberColumn(
+                    "Clinical /100", width="small", format="%d",
+                    help="Provisional source-cited six-domain research assessment; not an approval probability.",
+                ),
+                "Preliminary score status": st.column_config.TextColumn("Assessment", width="medium"),
+                "Pre-readout research score /100": st.column_config.NumberColumn(
+                    "Reviewed /100", width="small", format="%d",
+                    help="Requires the full dated clinical evidence and issuer readout review. Blank means not scored.",
+                ),
+                "Score status": st.column_config.TextColumn("Review gate", width="medium"),
+                "Linked Phase 2 PRIMARY p": st.column_config.TextColumn("p (Phase 2 PRIMARY)", width="large"),
+            },
         )
         st.download_button(
             "EXPORT ALL FILTERED CLINICAL RECORDS (CSV)",
