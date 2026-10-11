@@ -12,6 +12,7 @@ import json
 import re
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from urllib.parse import urlparse
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -95,7 +96,12 @@ def status_check(name, state, completed, now, extra="", blocked=0):
 
 
 def is_valid_source(url):
-    return str(url or "").startswith("https://")
+    try:
+        parsed = urlparse(str(url or "").strip())
+        host = (parsed.hostname or "").lower()
+        return parsed.scheme == "https" and (host == "sec.gov" or host.endswith(".sec.gov"))
+    except ValueError:
+        return False
 
 
 def build_snapshot(root, now=None):
@@ -129,7 +135,7 @@ def build_snapshot(root, now=None):
     recheck_by_event = {r.get("event_key", ""): r for r in rechecks if r.get("event_key")}
     seen = set()
     trials = []
-    for row in trial_rows:
+    for row in sorted(trial_rows, key=lambda r: r.get("checked_at", ""), reverse=True):
         ticker, nct = row.get("ticker", "").upper(), row.get("nct_id", "").upper()
         if not ticker or not NCT.fullmatch(nct) or (ticker, nct) in seen:
             continue
@@ -259,6 +265,7 @@ def write_csv(path, rows):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     if not rows:
+        path.write_text("NO_RECORDS\n", encoding="utf-8")
         return
     with path.open("w", encoding="utf-8", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=list(rows[0]))
