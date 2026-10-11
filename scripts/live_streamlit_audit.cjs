@@ -57,7 +57,7 @@ async function audit(){
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
-  result.checks.newBuildLabel=initial.includes("PRE PHASE 3 TRIALS FIRST V4") && initial.includes("NAVIGATION V19");
+  result.checks.newBuildLabel=initial.includes("PDUFA PIPELINE PRIMARY") && initial.includes("MATCH VALIDATION IN PREDICTION ENGINE");
   result.checks.loginRequired=/Sign in to Streamlit|Continue with Google/i.test(initial);
   result.checks.scriptError=!/This app has encountered an error|Traceback \(most recent call last\)/i.test(initial);
   await page.screenshot({path:path.join(outDir,"streamlit-home.png"),fullPage:false});
@@ -76,10 +76,15 @@ async function audit(){
     result.checks.noTodayNavigation=!result.navigation.includes("TODAY");
     result.checks.pdufaNavigation=result.navigation.includes("PDUFA");
     result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
+    result.checks.matchOptimizerNavigationRemoved=!result.navigation.includes("10. MATCH OPTIMIZER");
+    result.checks.pdufaMainNavigationFirst=result.navigation[0]==="PDUFA";
     result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
     result.checks.threePdufaTabs=["PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
+    result.checks.pipelineDefaultActive=await appFrame.getByRole("tab",{name:"PIPELINE"}).getAttribute("aria-selected")==="true";
+    if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
+      result.errors.push("PDUFA must open with PIPELINE primary; Match Optimizer must not be a main navigation item.");
     result.checks.researchInsidePipeline=await appFrame.getByText("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS",{exact:false}).count()>0;
     result.checks.stageAndDateControls=await appFrame.getByText("STAGES",{exact:true}).count()>0 &&
       await appFrame.getByText("DATES",{exact:true}).count()>0;
@@ -223,7 +228,6 @@ async function audit(){
       ["5. SCANS","5. SCANS — FIND CHANGES"],
       ["6. RECHECK","6. RECHECK — VERIFY"],
       ["9. PREDICTION ENGINE","9. PREDICTION ENGINE"],
-      ["10. MATCH OPTIMIZER","10. MATCH OPTIMIZER"],
       ["11. PLAN","11. PLAN — SYSTEM RULES"],
     ];
     result.pages=[];
@@ -244,6 +248,26 @@ async function audit(){
         entry.noVisibleException=!visible.includes("This app has encountered an error")
           && !visible.includes("Traceback (most recent call last)");
         entry.passed=entry.headingFound&&entry.noVisibleException;
+        if(name==="9. PREDICTION ENGINE" && entry.passed){
+          const tabs=await appFrame.getByRole("tab").allInnerTexts();
+          result.checks.predictionContainsBothViews=["PREDICTIONS","HISTORICAL MATCH VALIDATION"]
+            .every(label=>tabs.includes(label));
+          const validationTab=appFrame.getByRole("tab",{name:"HISTORICAL MATCH VALIDATION"});
+          await validationTab.click({timeout:15000});
+          try{
+            await appFrame.getByText("HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT",{exact:false})
+              .first().waitFor({timeout:65000});
+            const validatorText=await appFrame.locator("body").innerText({timeout:9000});
+            result.checks.historicalOptimizerPreserved=validatorText.includes("FDA-V3 decision-safe benchmark")
+              && validatorText.includes("STEP 3 — Tune the high-confidence F gate")
+              && validatorText.includes("STEP 5 — Lock thresholds and test the untouched holdout");
+          }catch(err){
+            result.checks.historicalOptimizerPreserved=false;
+            result.notes.push("Prediction Engine historical validation not accessible: "+String(err.message).slice(0,180));
+          }
+          if(!result.checks.predictionContainsBothViews || !result.checks.historicalOptimizerPreserved)
+            result.errors.push("Prediction Engine is missing former Match Optimizer controls.");
+        }
         if(!entry.passed)result.errors.push("Navigation page failed live audit: "+name);
         if(!entry.passed)await page.screenshot({path:path.join(outDir,
           "page-error-"+name.replace(/[^a-z0-9]+/gi,"-")+".png"),fullPage:false});
