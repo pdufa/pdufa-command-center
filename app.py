@@ -2642,9 +2642,12 @@ def table_view(frame, return_page="PDUFA"):
     ]]
 
 def render_pre_phase3():
-    """Dedicated Step 3 clinical review; do not modify PDUFA/FDA engines."""
-    from clinical_step3 import render_pre_phase3 as render_clinical_review
-    render_clinical_review()
+    """PRE PHASE 3 is intentionally blank by user request.
+
+    Step 3 clinical scoring remains implemented in clinical_step3.py,
+    but is not rendered on this page.
+    """
+    pass
 
 
 query_event = st.query_params.get("event")
