@@ -116,68 +116,21 @@ async function audit(){
       }
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       try{
-        await appFrame.getByText("Potential pre-readout Phase 3 trials").first().waitFor({timeout:90000});
-        result.checks.preReadoutMetrics=true;
-        await appFrame.getByText("PRE PHASE 3 — STOCK CANDIDATES TO RESEARCH",{exact:false})
-          .first().waitFor({state:"visible",timeout:60000});
-        result.checks.prePhase3TradeResearchVisible=true;
-        const tradeText=await appFrame.locator("body").innerText({timeout:9000});
-        result.checks.prePhase3TradeResearchGate=tradeText.includes("Candidate discovery is not a BUY list")
-          && tradeText.includes("NOT verified company topline/readout dates");
-        const displayedMatch=tradeText.match(/PRE PHASE 3 TRIALS DISPLAYED:\s*([0-9,]+) records/);
-        result.prePhase3DisplayedTrials=displayedMatch?Number(displayedMatch[1].replace(/,/g,"")):null;
-        result.checks.prePhase3NonemptyTrials=Number.isInteger(result.prePhase3DisplayedTrials)
-          && result.prePhase3DisplayedTrials>0 && tradeText.includes("ALL TRIALS");
-        result.checks.prePhase3TrialsFirst=tradeText.indexOf("PRE PHASE 3 — TRIALS")>=0
-          && tradeText.indexOf("PRE PHASE 3 — TRIALS")<
-             tradeText.indexOf("PRE PHASE 3 — CLINICAL SUCCESS ASSESSMENT");
-        if(!result.checks.prePhase3TrialsFirst)
-          result.errors.push("PRE PHASE 3 trials should appear before the long clinical assessment.");
-        if(!result.checks.prePhase3NonemptyTrials)
-          result.errors.push("PRE PHASE 3 trial table rendered zero records or did not expose the ALL TRIALS screen.");
-        result.checks.prePhase3ScoreVisible=tradeText.includes("PRE PHASE 3 SCORE /100")
-          && tradeText.includes("NOT SCORED means clinical evidence is incomplete")
-          && tradeText.includes("NOT a chance of trial success");
-        if(!result.checks.prePhase3ScoreVisible)
-          result.errors.push("PRE PHASE 3 research candidates lack clinical score/status or data-coverage disclosure.");
-        result.checks.prePhase3TradeWatchlistVisible=await appFrame.getByText(
-          "ADD SELECTED TO PRE PHASE 3 WATCHLIST",{exact:true}).count()>0;
-        if(!result.checks.prePhase3TradeResearchGate || !result.checks.prePhase3TradeWatchlistVisible)
-          result.errors.push("PRE PHASE 3 stock research screen lacks verification gate or watchlist.");
-        await appFrame.getByText("INPUT AVAILABILITY — BEFORE THE PHASE 3 READOUT",{exact:false}).first().waitFor({state:"visible",timeout:60000});
-        result.checks.preReadoutMissingInputsVisible=true;
-        await appFrame.getByText("NOT READY FOR PHASE 3 SUCCESS PROBABILITIES",{exact:false}).first().waitFor({state:"visible",timeout:60000});
-        result.checks.preReadoutProbabilityNotInvented=true;
-        await appFrame.getByText("Phase 2 primary p evidence:",{exact:false}).first().waitFor({state:"visible",timeout:60000});
-        result.checks.phase2PCollectionShown=true;
-        const showQueue=appFrame.getByText("SHOW CANDIDATES & MISSING INPUTS",{exact:false}).first();
-        await showQueue.waitFor({state:"visible",timeout:15000});
-        result.checks.preReadoutCandidateToggle=true;
-        const beforeCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
-        await showQueue.click({timeout:15000});
-        // The keyed PDUFA subtab triggers a complete Streamlit rerun, including
-        // Pipeline source preparation. Two seconds was insufficient on Cloud.
-        // Inspect the selected tab and wait for the actual extra dataframe.
-        result.checks.preReadoutCandidatesShown=false;
-        let afterCount=beforeCount;
-        let activeTab="unknown";
-        for(let attempt=0;attempt<60;attempt++){
-          await sleep(1000);
-          afterCount=await appFrame.locator('[data-testid="stDataFrame"]').count();
-          activeTab=await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).getAttribute("aria-selected");
-          if(afterCount>beforeCount && activeTab==="true"){
-            result.checks.preReadoutCandidatesShown=true;
-            break;
-          }
-        }
-        if(!result.checks.preReadoutCandidatesShown){
-          result.notes.push("Candidate table after toggle: before="+beforeCount
-            +", after="+afterCount+", prephase tab aria-selected="+activeTab
-            +", toggle visible="+await showQueue.count());
-        }
+        await appFrame.getByText("PRE PHASE 3 — Clinical Trial Evaluation",{exact:false}).first()
+          .waitFor({state:"visible",timeout:90000});
+        result.checks.step3ClinicalReviewVisible=true;
+        const assessment=await appFrame.locator("body").innerText({timeout:10000});
+        result.checks.step3EvidenceGate=assessment.includes("NOT SCORED")
+          && assessment.includes("NCT–ticker pairing")
+          && assessment.includes("Phase 1–3");
+        result.checks.step3ReviewAction=assessment.includes("SAVE NEW AUDIT REVISION");
+        result.checks.step3AuditHistory=assessment.includes("Versioned assessment history");
+        if(!result.checks.step3EvidenceGate || !result.checks.step3ReviewAction
+            || !result.checks.step3AuditHistory)
+          result.errors.push("PRE PHASE 3 Step 3 review/evidence/history controls not fully visible.");
       }catch(err){
-        result.checks.preReadoutMetrics=false;
-        result.notes.push("Pre-readout assessment check failed: "+String(err.message).slice(0,190));
+        result.checks.step3ClinicalReviewVisible=false;
+        result.notes.push("Step 3 PRE PHASE 3 check failed: "+String(err.message).slice(0,190));
       }
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
@@ -286,8 +239,8 @@ async function audit(){
   if(result.checks.pdufaHeader&&!result.checks.newBuildLabel) result.errors.push("Live app is an outdated or different build.");
   for(const k of ["noTodayNavigation","pdufaNavigation","oldPipelineNavigationAbsent","prePhase3MainNavAbsent","threePdufaTabs","workbenchSubtabRemoved","researchInsidePipeline","watchlistInsidePipeline","stageAndDateControls",
                    "stageCountChart","dateCountChart","dailyReportToggle","dailyReportLoads",
-                   "preReadoutMetrics","prePhase3NonemptyTrials","preReadoutMissingInputsVisible",
-                   "preReadoutProbabilityNotInvented","phase2PCollectionShown","preReadoutCandidateToggle","preReadoutCandidatesShown",
+                   "step3ClinicalReviewVisible","step3EvidenceGate","step3ReviewAction",
+                   "step3AuditHistory",
                    "workbenchSubtabRemoved"]){
     if(result.checks.pdufaHeader&&result.checks[k]===false) result.errors.push("Live UI check failed: "+k);
   }
