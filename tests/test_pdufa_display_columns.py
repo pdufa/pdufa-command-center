@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import pandas as pd
 
 from pdufa_date_gradient import date_color, segment, COUNTDOWN_BANDS
-from pdufa_table_headers import header_config, style_countdown_cells
+from pdufa_table_headers import header_config, style_countdown_cells, render_countdown_band_key
 from pdufa_display_columns import (
     FRONT, DISPLAY_ORDER_OPTIONS, enrich_exact_trials, finance_style,
     prepare_pdufa_grid, sort_pdufa_grid, sort_pdufa_rows,
@@ -39,17 +39,30 @@ class PdufaGridTests(unittest.TestCase):
         self.assertEqual(segment(pd.NA), "DATE UNKNOWN")
         self.assertIn("#e5e7eb", date_color(pd.NA))
 
-    def test_every_native_day_header_gets_second_line_legend(self):
+    def test_every_native_day_header_is_compact_and_legend_is_separate(self):
         for name in ("Days to PDUFA", "DAYS TO PDUFA",
                      "days_to_pdufa", "Days Left"):
             with self.subTest(name=name):
                 sample = pd.DataFrame({name: [90], "Ticker": ["XYZ"]})
                 header = header_config(sample)[name]
-                self.assertIn("\n", header["label"])
+                self.assertNotIn("\n", header["label"])
                 for band in ("+90", "90–60", "59–30", "29–0"):
-                    self.assertIn(band, header["label"])
-                self.assertEqual(header["width"], "large")
+                    self.assertNotIn(band, header["label"])
+                self.assertEqual(header["width"], "small")
                 self.assertIn("past", header["help"].lower())
+
+    def test_compact_legend_is_only_rendered_with_a_countdown(self):
+        from unittest.mock import patch
+        with patch("pdufa_table_headers.st.markdown") as show:
+            render_countdown_band_key(pd.DataFrame({"Ticker": ["ABC"]}))
+            show.assert_not_called()
+            render_countdown_band_key(pd.DataFrame({"Ticker": ["ABC"], "Days Left": [90]}))
+            show.assert_called_once()
+            legend_html = show.call_args.args[0]
+            self.assertIn('data-pdufa-countdown-key="true"', legend_html)
+            for color in ("#166534", "#86efac", "#fb923c", "#f87171"):
+                self.assertIn(color, legend_html)
+            self.assertIn("Gray = past / unknown", legend_html)
 
     def test_days_column_coloring_preserves_original_values_and_finance_style(self):
         frame = pd.DataFrame({
