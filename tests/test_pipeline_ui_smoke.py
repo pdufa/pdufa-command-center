@@ -310,8 +310,28 @@ class PipelinePageSmokeTests(unittest.TestCase):
             "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p",
         ])
-        self.assertTrue(any("provisional, source-cited clinical research score(s) /100" in m.body
-                            for m in app.markdown))
+        # st.caption is not exposed as app.markdown by all Streamlit AppTest
+        # releases. Check the rendered grid, and separately validate the
+        # caption source text rather than asserting a nonexistent Markdown node.
+        source = APP_PATH.read_text(encoding="utf-8")
+        self.assertIn("provisional, source-cited clinical research score(s) /100", source)
+        app.text_input(key="step7_trial_search").set_value("TRVI").run()
+        self.assertFalse(list(app.exception))
+        trvi_grid = next(t.value for t in app.dataframe
+                         if {"NCT ID", "Preliminary clinical score /100"}.issubset(t.value.columns))
+        trvi = trvi_grid.loc[trvi_grid["NCT ID"].eq("NCT07671911")]
+        self.assertEqual(len(trvi), 1)
+        self.assertEqual(float(trvi.iloc[0]["Preliminary clinical score /100"]), 80.0)
+        app.text_input(key="step7_trial_search").set_value("LBRX").run()
+        self.assertFalse(list(app.exception))
+        lbrx_grid = next(t.value for t in app.dataframe
+                         if {"NCT ID", "Preliminary clinical score /100"}.issubset(t.value.columns))
+        nova2 = lbrx_grid.loc[lbrx_grid["NCT ID"].eq("NCT07363577")]
+        nova3 = lbrx_grid.loc[lbrx_grid["NCT ID"].eq("NCT07369154")]
+        self.assertEqual(len(nova2), 1)
+        self.assertEqual(float(nova2.iloc[0]["Preliminary clinical score /100"]), 72.0)
+        self.assertEqual(len(nova3), 1)
+        self.assertTrue(nova3.iloc[0]["Preliminary clinical score /100"] != 80)
         self.assertTrue(
             (clinical[0]["Pre-readout research score /100"].notna()
              & clinical[0]["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
