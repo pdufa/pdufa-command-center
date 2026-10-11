@@ -86,6 +86,8 @@ class SecStep4Tests(unittest.TestCase):
         self.assertEqual(out["monthly_operating_burn_usd"], 8_000_000)
         self.assertEqual(out["runway_months_cash_only"], 11.25)
         self.assertEqual(out["cash_runway_risk"], "ELEVATED — 6 TO UNDER 12 MONTHS")
+        self.assertEqual(out["runway_risk_index_0_100"], 65)
+        self.assertIsNone(out["shares_change_pct"])
         self.assertEqual(out["evidence"]["operating_cash_flow"]["basis"], "YTD LESS PRIOR YTD")
         self.assertIsNone(out["product_revenue_usd"])
         self.assertIsNone(out["financial_score_0_100"])
@@ -144,6 +146,15 @@ class SecStep4Tests(unittest.TestCase):
         self.assertIn("NOT VERIFIED", out["financing_closed"])
         future = report(as_of="2026-07-01")
         self.assertEqual(len(future["filing_review_queue"]), 1)
+
+    def test_shares_growth_is_reported_without_attributing_to_financing(self):
+        obj = factset()
+        obj["facts"]["dei"]["CommonStockSharesOutstanding"]["units"]["shares"].append(
+            entry(45_000_000, "2026-03-31", "2026-05-07"))
+        out = report(obj)
+        self.assertAlmostEqual(out["shares_change_pct"], 11.11)
+        self.assertIn("not proof", out["shares_change_note"])
+        self.assertIn("NOT VERIFIED", out["financing_closed"])
 
     def test_cik_mismatch_blocks_cross_issuer_contamination(self):
         x = factset()
