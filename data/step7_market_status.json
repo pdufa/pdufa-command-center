@@ -1,0 +1,9 @@
+{
+  "completed_at_utc": "2026-10-11T03:35:22.976286+00:00",
+  "ticker_scope": "Unique tickers from saved exact-event financing reviews",
+  "expected": 34,
+  "fresh_eod": 34,
+  "unavailable_or_stale": 0,
+  "status": "COMPLETE",
+  "note": "Quotes are delayed/provider-reported. Price issuer mapping, corporate actions, post-readout stabilization and independently verified volume normalization remain review."
+}
