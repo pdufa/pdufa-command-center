@@ -18,7 +18,7 @@ def _queue(root, signature, as_of_date):
     return build_queue(root, as_of_date)
 
 
-def render_post_phase3_stage1(root="data"):
+def render_post_phase3_stage1(root="data", include_positions=True):
     path = Path(root)
     filenames = (
         "step7_live_status.json", "step7_financing_review.csv",
@@ -154,4 +154,5 @@ def render_post_phase3_stage1(root="data"):
         "verified PDUFA date pass. It is research eligibility—not an independently "
         "audited conclusion, investment recommendation or position status."
     )
-    render_post_phase3_positions(items, root)
+    if include_positions:
+        render_post_phase3_positions(items, root)
