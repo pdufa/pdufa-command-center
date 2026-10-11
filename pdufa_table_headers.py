@@ -7,6 +7,7 @@ import pandas as pd
 from pandas.io.formats.style import Styler
 import streamlit as st
 from pdufa_display_columns import align_pdufa_finance_columns, PDUFA_DAY_COLUMNS, FINANCE_NEIGHBORS
+from pdufa_date_gradient import COUNTDOWN_BANDS, COUNTDOWN_HEADER_SUBLINE, date_color
 
 
 HELP_ICON = "?\u20dd"
@@ -21,8 +22,8 @@ FIELD_HELP = {
     "score type": "Identifies the clinical, evidence or research-priority model behind Score /100. Scores from different models are not interchangeable.",
     "pdufa date": "Saved FDA target decision date for this exact application. Check the adjacent source and verification status.",
     "pdufa target": "Saved FDA target decision date for this exact application. A reported target must be verified against its source.",
-    "days to pdufa": "Calendar days from today to the displayed PDUFA date. Negative means past due; blank means no usable date. Equal scores sort by this value highest first.",
-    "days left": "Calendar days from today to the PDUFA target date. Negative means the date has passed; blank means no usable date.",
+    "days to pdufa": "Calendar days to the FDA target. +90 (91 or more) dark green, 90–60 green, 59–30 orange, 29–0 red. Past dates are gray; unverified dates remain blank. Equal scores sort by countdown descending.",
+    "days left": "Calendar days to the PDUFA target. +90 (91 or more) dark green; 90–60 green; 59–30 orange; 29–0 red. Past dates gray and unknown blank.",
     "date classification": "Countdown band for the displayed PDUFA date: 90+, 90–61, 60–31, 30–14, 13–1, decision day, or past/recheck.",
     "dates": "PDUFA countdown category assigned to this program. NO PDUFA YET means there is no linked target date.",
     "stage": "Saved stage for the exact clinical program or regulatory application; a trial phase alone does not confirm a successful readout.",
@@ -172,6 +173,11 @@ def header_config(data, config=None):
         entry = dict(original) if isinstance(original, dict) else {"label": original}
         label = str(entry.get("label") or column)
         label = label.replace(HELP_ICON, "").replace("ⓘ", "").strip()
+        if column in PDUFA_DAY_COLUMNS:
+            # Native Streamlit headers permit a text second line, while the
+            # separate swatch strip below is a fallback when header text clips.
+            label = f"{label.split(chr(10))[0]}\n{COUNTDOWN_HEADER_SUBLINE}"
+            entry["width"] = "large"
         entry["label"] = f"{HELP_ICON} {label}"
         help_text = entry.get("help")
         if (not help_text or help_text == str(column) or
@@ -246,6 +252,43 @@ def render_survey_box(data):
     )
 
 
+def render_countdown_band_key(data):
+    """Visible second-line color strip shared by native dataframe/editor grids."""
+    frame = data.data if isinstance(data, Styler) else data
+    if not hasattr(frame, "columns") or not any(c in frame.columns for c in PDUFA_DAY_COLUMNS):
+        return
+    cells = "".join(
+        '<span style="background:' + bg + ';color:' + fg +
+        ';border:1px solid #333;border-radius:4px;padding:2px 7px;'
+        'font-weight:800;font-size:11px;white-space:nowrap;">' +
+        html.escape(label) + '</span>'
+        for label, _, bg, fg in COUNTDOWN_BANDS
+    )
+    st.markdown(
+        '<div data-pdufa-countdown-key="true" '
+        'style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;'
+        'padding:3px 1px 6px;font-size:12px;">'
+        '<strong>DAYS TO PDUFA</strong> ' + cells +
+        '<span style="color:#555;font-size:11px;">(past/unknown: gray)</span>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def style_countdown_cells(data):
+    """Color only the countdown value, preserving existing finance/clinical Styler."""
+    frame = data.data if isinstance(data, Styler) else data
+    if not hasattr(frame, "columns"):
+        return data
+    days = [c for c in PDUFA_DAY_COLUMNS if c in frame.columns]
+    if not days:
+        return data
+    styled = data if isinstance(data, Styler) else data.style
+    for col in days:
+        styled = styled.map(date_color, subset=[col])
+    return styled
+
+
 def pdufa_dataframe(data, **kwargs):
     source = kwargs.pop("survey_source", data)
     if isinstance(data, pd.DataFrame):
@@ -260,6 +303,8 @@ def pdufa_dataframe(data, **kwargs):
                 ordered[insertion:insertion] = [c for c in FINANCE_NEIGHBORS if c in data]
                 kwargs["column_order"] = ordered
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
+    render_countdown_band_key(data)
+    data = style_countdown_cells(data)
     result = st.dataframe(data, **kwargs)
     render_survey_box(source)
     if isinstance(data, Styler) and not data.data.empty and "F" in data.data:
@@ -277,6 +322,7 @@ def pdufa_dataframe(data, **kwargs):
 
 def pdufa_editor(data, **kwargs):
     source = kwargs.pop("survey_source", data)
+    render_countdown_band_key(data)
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
     result = st.data_editor(data, **kwargs)
     render_survey_box(source)
