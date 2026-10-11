@@ -7,7 +7,7 @@ import pandas as pd
 from pandas.io.formats.style import Styler
 import streamlit as st
 from pdufa_display_columns import align_pdufa_finance_columns, PDUFA_DAY_COLUMNS, FINANCE_NEIGHBORS
-from pdufa_date_gradient import COUNTDOWN_BANDS, COUNTDOWN_HEADER_SUBLINE, date_color
+from pdufa_date_gradient import COUNTDOWN_BANDS, date_color
 
 
 HELP_ICON = "?\u20dd"
@@ -173,11 +173,11 @@ def header_config(data, config=None):
         entry = dict(original) if isinstance(original, dict) else {"label": original}
         label = str(entry.get("label") or column)
         label = label.replace(HELP_ICON, "").replace("ⓘ", "").strip()
+        # Keep the countdown header compact: display the legend once
+        # underneath the table, not inside every countdown column heading.
         if column in PDUFA_DAY_COLUMNS:
-            # Native Streamlit headers permit a text second line, while the
-            # separate swatch strip below is a fallback when header text clips.
-            label = f"{label.split(chr(10))[0]}\n{COUNTDOWN_HEADER_SUBLINE}"
-            entry["width"] = "large"
+            label = label.split(chr(10))[0]
+            entry["width"] = "small"
         entry["label"] = f"{HELP_ICON} {label}"
         help_text = entry.get("help")
         if (not help_text or help_text == str(column) or
@@ -267,9 +267,9 @@ def render_countdown_band_key(data):
     st.markdown(
         '<div data-pdufa-countdown-key="true" '
         'style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;'
-        'padding:3px 1px 6px;font-size:12px;">'
-        '<strong>DAYS TO PDUFA</strong> ' + cells +
-        '<span style="color:#555;font-size:11px;">(past/unknown: gray)</span>'
+        'padding:4px 1px 2px;font-size:11px;">'
+        '<strong>Days to PDUFA:</strong> ' + cells +
+        '<span style="color:#555;font-size:10px;">Gray = past / unknown</span>'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -303,9 +303,9 @@ def pdufa_dataframe(data, **kwargs):
                 ordered[insertion:insertion] = [c for c in FINANCE_NEIGHBORS if c in data]
                 kwargs["column_order"] = ordered
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
-    render_countdown_band_key(data)
     data = style_countdown_cells(data)
     result = st.dataframe(data, **kwargs)
+    render_countdown_band_key(data)
     render_survey_box(source)
     if isinstance(data, Styler) and not data.data.empty and "F" in data.data:
         st.caption(
@@ -322,8 +322,12 @@ def pdufa_dataframe(data, **kwargs):
 
 def pdufa_editor(data, **kwargs):
     source = kwargs.pop("survey_source", data)
-    render_countdown_band_key(data)
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
+    # Streamlit Styler colors non-editable countdown cells, not finance fields.
+    # Dynamic editors keep a DataFrame to preserve add/remove row behavior.
+    if kwargs.get("num_rows") != "dynamic":
+        data = style_countdown_cells(data)
     result = st.data_editor(data, **kwargs)
+    render_countdown_band_key(data)
     render_survey_box(source)
     return result
