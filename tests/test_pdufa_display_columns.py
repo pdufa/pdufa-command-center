@@ -5,7 +5,8 @@ from datetime import date
 import pandas as pd
 
 from pdufa_display_columns import (
-    FRONT, enrich_exact_trials, finance_style, prepare_pdufa_grid,
+    FRONT, DISPLAY_ORDER_OPTIONS, enrich_exact_trials, finance_style,
+    prepare_pdufa_grid, sort_pdufa_grid,
 )
 
 
@@ -29,6 +30,46 @@ class PdufaGridTests(unittest.TestCase):
         self.assertEqual(view.loc[0, "F"], "F CLOSED")
         self.assertEqual(view.loc[0, "Cash Runway (months)"], 18)
         self.assertEqual(view.loc[0, "Cash Runway As Of"], "2026-10-01")
+
+    def test_front_column_order_and_score_first_sort_with_no_score_last(self):
+        self.assertEqual(
+            list(FRONT[:5]),
+            ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "Score type"],
+        )
+        self.assertEqual(DISPLAY_ORDER_OPTIONS, ("Top Score", "Ticker A–Z"))
+        frame = pd.DataFrame([
+            {"Ticker": "ZZZ", "NCT ID": "NCT00000001",
+             "Evidence score /100": 20, "PDUFA Date": "2026-12-01"},
+            {"Ticker": "BBB", "NCT ID": "NCT00000002",
+             "Evidence score /100": 90, "PDUFA Date": "2026-12-20"},
+            {"Ticker": "AAA", "NCT ID": "NCT00000003",
+             "Evidence score /100": 90, "PDUFA Date": "2026-12-21"},
+            {"Ticker": "CCC", "NCT ID": "NCT00000004",
+             "PDUFA Date": ""},
+        ])
+        for view in ("UNIFIED", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"):
+            with self.subTest(view=view):
+                displayed = prepare_pdufa_grid(frame, view=view,
+                                               as_of=date(2026, 10, 11))
+                top = sort_pdufa_grid(displayed, "Top Score")
+                self.assertEqual(top["Ticker"].tolist(), ["AAA", "BBB", "ZZZ", "CCC"])
+                name = sort_pdufa_grid(displayed, "Ticker A–Z")
+                self.assertEqual(name["Ticker"].tolist(), ["AAA", "BBB", "CCC", "ZZZ"])
+                self.assertEqual(top.columns[:5].tolist(), list(FRONT[:5]))
+                self.assertTrue(pd.isna(top.iloc[-1]["Score /100"]))
+
+    def test_missing_scores_and_deterministic_ticker_tiebreak(self):
+        frame = pd.DataFrame([
+            {"Ticker": "ABC", "NCT ID": "NCT00000002", "Score /100": None},
+            {"Ticker": "ABC", "NCT ID": "NCT00000001", "Score /100": None},
+            {"Ticker": "XYZ", "NCT ID": "NCT00000001", "Score /100": 10},
+        ])
+        sorted_frame = sort_pdufa_grid(frame)
+        self.assertEqual(sorted_frame["NCT ID"].tolist(),
+                         ["NCT00000001", "NCT00000001", "NCT00000002"])
+        self.assertEqual(sorted_frame["Ticker"].tolist(), ["XYZ", "ABC", "ABC"])
+        with self.assertRaises(ValueError):
+            sort_pdufa_grid(frame, "Lowest Score")
 
     def test_missing_data_does_not_become_a_zero_or_financing_close(self):
         source = pd.DataFrame([{
