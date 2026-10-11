@@ -4,6 +4,9 @@ This module formats saved evidence. It does not infer clinical success, financin
 closure, cash runway or FDA approval probabilities from ticker alone.
 """
 from datetime import date
+from functools import lru_cache
+from pathlib import Path
+from urllib.parse import urlparse
 import pandas as pd
 
 POST_SCORES = (
@@ -270,6 +273,104 @@ def prepare_pdufa_grid(frame, *, view="UNIFIED", as_of=None):
         if col not in out:
             out[col] = None
     return out[list(FRONT) + [col for col in out.columns if col not in FRONT]]
+
+
+
+PDUFA_DAY_COLUMNS = ("Days to PDUFA", "DAYS TO PDUFA", "days_to_pdufa", "Days Left")
+FINANCE_NEIGHBORS = ("2nd Financing Completed", "Cash Runway (months)")
+
+
+@lru_cache(maxsize=16)
+def _audited_second_financing_keys(path, mtime_ns, size):
+    """Read a source-dated exact-event ledger; never infer second-close from F."""
+    try:
+        audit = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except (OSError, ValueError, pd.errors.ParserError, UnicodeError):
+        return frozenset()
+    required = {
+        "event_key", "second_financing_status", "second_financing_audit_status",
+        "second_financing_closed", "second_financing_source",
+    }
+    if not required.issubset(audit.columns):
+        return frozenset()
+    keys = audit["event_key"].astype(str).str.strip()
+    unique = keys.ne("") & ~keys.duplicated(keep=False)
+    def valid_url(value):
+        try:
+            link = urlparse(str(value))
+            return (link.scheme == "https" and bool(link.hostname) and
+                    not link.username and not link.password)
+        except ValueError:
+            return False
+    allowed = (
+        unique
+        & audit["second_financing_status"].str.strip().str.upper().isin(("CLOSED", "FINISHED"))
+        & audit["second_financing_audit_status"].str.strip().eq("VERIFIED_SECOND_POST_PHASE3_FINANCING")
+        & audit["second_financing_closed"].str.strip().str.upper().eq("YES")
+        & audit["second_financing_source"].map(valid_url)
+    )
+    return frozenset(keys.loc[allowed])
+
+
+def align_pdufa_finance_columns(frame, *, audit_path="data/second_financing_status.csv",
+                                add_countdown=False):
+    """Place both finance measures after the countdown in every PDUFA event grid.
+
+    This works for modern and legacy countdown labels. Missing cash runway is
+    blank and second-finance is NOT VERIFIED. An event-key-only, duplicate-free,
+    SEC/source-linked audit can upgrade a completion label; ticker-only and
+    generic F CLOSED matches are never sufficient.
+    """
+    if not isinstance(frame, pd.DataFrame):
+        return frame
+    days = next((col for col in PDUFA_DAY_COLUMNS if col in frame), None)
+    if days is None and not (add_countdown and "PDUFA Date" in frame):
+        return frame
+    out = frame.copy()
+    if days is None:
+        date_values = pd.to_datetime(out["PDUFA Date"], errors="coerce")
+        from zoneinfo import ZoneInfo
+        today = pd.Timestamp.now(tz=ZoneInfo("America/Los_Angeles")).date()
+        out["Days to PDUFA"] = (date_values - pd.Timestamp(today)).dt.days.astype("Int64")
+        days = "Days to PDUFA"
+
+    if "Cash Runway (months)" not in out:
+        runway = next((c for c in ("cash_runway_months", "Cash runway months", "Cash Runway")
+                       if c in out), None)
+        out["Cash Runway (months)"] = out[runway] if runway else None
+    if "2nd Financing Completed" not in out:
+        out["2nd Financing Completed"] = "NOT VERIFIED"
+    else:
+        out["2nd Financing Completed"] = out["2nd Financing Completed"].fillna(
+            "NOT VERIFIED").replace("", "NOT VERIFIED")
+
+    if "event_key" in out or "Exact event" in out:
+        event_col = "event_key" if "event_key" in out else "Exact event"
+        path = Path(audit_path)
+        try:
+            stat = path.stat()
+            verified = _audited_second_financing_keys(str(path), stat.st_mtime_ns, stat.st_size)
+        except OSError:
+            verified = frozenset()
+        if verified:
+            events = out[event_col].fillna("").astype(str).str.strip()
+            valid = events.isin(verified)
+            if "Ticker" in out:
+                tickers = out["Ticker"].fillna("").astype(str).str.strip().str.upper()
+                valid &= events.str.split("|", regex=False).str[0].str.upper().eq(tickers)
+            elif "ticker" in out:
+                tickers = out["ticker"].fillna("").astype(str).str.strip().str.upper()
+                valid &= events.str.split("|", regex=False).str[0].str.upper().eq(tickers)
+            out.loc[valid, "2nd Financing Completed"] = "YES — VERIFIED (HISTORICAL)"
+
+    # Do not let a stored review-stage flag stand in for the verified second close.
+    old = list(out.columns)
+    cols = [c for c in old if c not in FINANCE_NEIGHBORS]
+    offset = cols.index(days) + 1
+    cols[offset:offset] = list(FINANCE_NEIGHBORS)
+    result = out.loc[:, cols].copy()
+    result.attrs.update(frame.attrs)
+    return result
 
 
 def sort_pdufa_grid(frame, order=DISPLAY_ORDER_OPTIONS[0]):
