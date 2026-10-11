@@ -83,6 +83,23 @@ class Step7Tests(unittest.TestCase):
         self.assertTrue(any(r["Source"] == "SEC financing recheck" and r["Health"] == "BLOCKED / PARTIAL"
                             for r in state["source_checks"]))
 
+    def test_phase3_registry_primary_p_is_displayed_but_not_success(self):
+        table(self.root, "phase3_primary_pvalues.csv", [
+            {"ticker":"ABC", "nct_id":"NCT12345678",
+             "source_url":"https://clinicaltrials.gov/study/NCT12345678",
+             "p_value":"0.002","effect_value":"-1.9","ci_lower":"-2.4","ci_upper":"-1.1"},
+            {"ticker":"ABC", "nct_id":"NCT87654321",
+             "source_url":"https://clinicaltrials.gov/study/NCT87654321",
+             "p_value":"0.0001","effect_value":"","ci_lower":"","ci_upper":""},
+        ])
+        trials, _, _ = build_snapshot(self.root, NOW)
+        a = next(x for x in trials if x["Ticker"] == "ABC")
+        b = next(x for x in trials if x["Ticker"] == "XYZ")
+        self.assertEqual(a["Primary endpoint p values observed"], "0.002")
+        self.assertEqual(b["Primary endpoint p values observed"], "")
+        self.assertIn("REVIEW", a["Phase 3 result interpretation"])
+        self.assertTrue(a["ENTRY READY"].startswith("NO"))
+
     def test_no_ticker_only_protocol_or_market_match(self):
         trials, _, _ = build_snapshot(self.root, NOW)
         r = next(r for r in trials if r["NCT ID"] == "NCT87654321")
