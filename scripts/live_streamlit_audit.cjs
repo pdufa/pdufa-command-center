@@ -213,14 +213,30 @@ async function audit(){
           try{
             await appFrame.getByText("HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT",{exact:false})
               .first().waitFor({timeout:65000});
-            const validatorText=await appFrame.locator("body").innerText({timeout:9000});
+            let validatorText="";
+            for(let n=0;n<45;n++){
+              validatorText=await appFrame.locator("body").innerText({timeout:9000});
+              if(validatorText.includes("STEP 3 — Tune the high-confidence F gate")
+                && (validatorText.includes("STEP 5 — Lock thresholds and test the untouched holdout")
+                  || validatorText.includes("No threshold pair meets the current minimum coverage/call requirements.")))break;
+              if(validatorText.includes("This app has encountered an error"))break;
+              await sleep(1200);
+            }
             const eligibleThreshold=validatorText.includes("STEP 5 — Lock thresholds and test the untouched holdout")
               || validatorText.includes("No threshold pair meets the current minimum coverage/call requirements.");
-            result.checks.historicalOptimizerPreserved=validatorText.includes("FDA-V3 decision-safe benchmark")
-              && validatorText.includes("STEP 3 — Tune the high-confidence F gate")
-              && validatorText.includes("Tune year")
-              && validatorText.includes("Holdout year")
-              && eligibleThreshold;
+            result.optimizerDiagnostic={
+              benchmark:validatorText.includes("FDA-V3 decision-safe benchmark"),
+              tuneGate:validatorText.includes("STEP 3 — Tune the high-confidence F gate"),
+              tuneYear:validatorText.includes("Tune year"),
+              holdoutYear:validatorText.includes("Holdout year"),
+              thresholdOrReview:eligibleThreshold,
+              lastText:validatorText.slice(-900),
+            };
+            result.checks.historicalOptimizerPreserved=result.optimizerDiagnostic.benchmark
+              && result.optimizerDiagnostic.tuneGate
+              && result.optimizerDiagnostic.tuneYear
+              && result.optimizerDiagnostic.holdoutYear
+              && result.optimizerDiagnostic.thresholdOrReview;
           }catch(err){
             result.checks.historicalOptimizerPreserved=false;
             result.notes.push("Prediction Engine historical validation not accessible: "+String(err.message).slice(0,180));
