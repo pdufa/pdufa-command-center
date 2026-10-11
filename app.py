@@ -2814,16 +2814,15 @@ def render_pre_phase3():
             "announcement, financing/dilution, liquidity/volume, price stabilization "
             "and safety/effect-size evidence before any entry review."
         )
-        _window_days = st.radio(
-            "PRE PHASE 3 TRIALS (registry milestone window, not readout date)",
-            ["ALL", 90, 180, 365], index=0, horizontal=True,
-            format_func=lambda days: (
-                "ALL TRIALS" if days == "ALL" else f"Next {days} days"
-            ),
-            key="pre_phase3_trade_lookahead_v1",
-        )
+        # PRE PHASE 3 is an unrestricted discovery pool, not a date-window scan.
+        # Registry milestone dates remain visible as metadata.
         _trade_shortlist = trading_research_queue(
-            _p3_research_pool, cutoff, lookahead_days=_window_days
+            _p3_research_pool, cutoff, lookahead_days="ALL"
+        )
+        st.caption(
+            "All available prospective trial research leads are displayed "
+            "regardless of registry completion date. Registry milestone dates "
+            "are informational, not filters or confirmed readout dates."
         )
         _candidate_tickers = sorted(set(_trade_shortlist["Ticker"])) if not _trade_shortlist.empty else []
         st.caption(
@@ -2850,7 +2849,7 @@ def render_pre_phase3():
         st.caption(
             f"{len(_p3_research_pool):,} prospective registry research leads; "
             f"{len(_trade_shortlist):,} trial records / {len(_candidate_tickers):,} unique tickers "
-            f"shown in the selected window ({_window_days}). "
+            "shown without date-window restrictions. "
             "These are unconfirmed trading-research leads; none passes the trading entry gate."
         )
         if not _trade_shortlist.empty:
@@ -2918,7 +2917,7 @@ def render_pre_phase3():
             )
         else:
             st.warning(
-                "No trial records matched this view. Check ALL TRIALS and source "
+                "No trial records are available. Check source "
                 "ingestion status; a missing or stale ledger does not prove "
                 "that publicly traded companies have no Phase 3 trials."
             )
