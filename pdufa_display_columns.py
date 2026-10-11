@@ -26,6 +26,7 @@ POST_PRIORITY_SCORES = (
 )
 FRONT = (
     "Ticker", "Score /100", "Score type", *POST_SCORES, *PRE_SCORES,
+    *PRE_PRIORITY_SCORES, *POST_PRIORITY_SCORES,
     "PDUFA Date", "Days to PDUFA", "Date Classification", "Primary p",
     "F", "Cash Runway (months)", "Cash Runway As Of",
 )
