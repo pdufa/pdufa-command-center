@@ -127,13 +127,13 @@ async function audit(){
         && text.includes("2 · Monitor & exit")
         && text.includes("3 · Historical backtest")
         && text.includes("One combined candidate table")
-        && text.includes("Sort combined table")
+        && text.includes("Display order (not a ranking)")
         && text.includes("ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
         && !text.includes("No active research candidates match this view"));
       appFrame=phase3Ready.frame;
       result.checks.postPhase3Installed=true;
       result.checks.postPhase3CombinedRatingVisible=phase3Ready.text.includes("One combined candidate table")
-        && phase3Ready.text.includes("Sort combined table");
+        && phase3Ready.text.includes("Display order (not a ranking)");
       result.checks.postPhase3EvidenceTableVisible=phase3Ready.text.includes("ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")
         && !phase3Ready.text.includes("No active research candidates match this view");
       if(!result.checks.postPhase3CombinedRatingVisible)
