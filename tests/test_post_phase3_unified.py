@@ -87,6 +87,26 @@ def test_unrated_lead_cannot_jump_a_verified_event(tmp_path):
     assert status["green_count"]==1
 
 
+def test_second_financing_completed_requires_audited_exact_event(tmp_path):
+    fixture(tmp_path)
+    rows, _ = build_queue(tmp_path, TODAY)
+    assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
+    closed = {
+        "event_key": EVENT,
+        "second_financing_status": "CLOSED",
+        "second_financing_closed": "YES",
+        "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+        "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
+        "verified_as_of": TODAY.isoformat(),
+    }
+    write_csv(tmp_path, "second_financing_status.csv", [closed])
+    rows, _ = build_queue(tmp_path, TODAY)
+    assert rows[0]["2nd Financing Completed"] == "YES — VERIFIED (HISTORICAL)"
+    write_csv(tmp_path, "second_financing_status.csv", [{**closed, "event_key": "ACME|OTHER"}])
+    rows, _ = build_queue(tmp_path, TODAY)
+    assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
+
+
 def test_stale_sources_remove_rating_without_reclassifying_as_green(tmp_path):
     fixture(tmp_path)
     rows,status=build_queue(tmp_path,TODAY + timedelta(days=1))
@@ -256,6 +276,7 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_green_only_with_current_verified_event,
             test_unified_gate_and_score_columns_in_one_row,
             test_unrated_lead_cannot_jump_a_verified_event,
+            test_second_financing_completed_requires_audited_exact_event,
             test_stale_sources_remove_rating_without_reclassifying_as_green,
             test_ranks_exist_for_review_candidates_with_no_strict_evidence,
             test_unverified_external_readout_lead_gets_research_rank_not_trade_green,
