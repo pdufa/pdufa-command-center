@@ -6,7 +6,8 @@ import streamlit as st
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
-from pdufa_display_columns import POST_SCORES, PRE_SCORES, prepare_pdufa_grid, finance_style
+from pdufa_display_columns import (POST_SCORES, PRE_SCORES, PRE_PRIORITY_SCORES,
+                                  POST_PRIORITY_SCORES, prepare_pdufa_grid, finance_style)
 from datetime import timezone
 from pathlib import Path
 
@@ -79,7 +80,8 @@ def render_combined_overview():
             "Financing cycle (separate)", "Evidence score /100",
             "Research priority /100", "Days to PDUFA", "Planned exit (-7 days)",
             "Blockers", "Next action", "Phase 3 source", "Financing source",
-            "PDUFA source", "PDUFA date", *POST_SCORES)
+            "PDUFA source", "PDUFA date", *POST_SCORES,
+            "Research priority status", *POST_PRIORITY_SCORES)
     # Exact ticker + NCT match only; ambiguous records are withheld.
     pre_by_id = {}
     ambiguous_pre = set()
@@ -100,6 +102,8 @@ def render_combined_overview():
         "Preliminary clinical score /100", "Score status",
         "Clinical score as of", "Linked Phase 2 PRIMARY p",
         "Primary endpoint p values observed", *PRE_SCORES,
+        "Review priority /100", "Review priority status",
+        "Review priority rubric", *PRE_PRIORITY_SCORES,
     )
     records = []
     for r in src.to_dict("records"):
