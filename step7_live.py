@@ -19,6 +19,7 @@ NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
     "Clinical trial pipeline": 48,
     "Phase 3 result intake": 48,
+    "Phase 3 primary statistics": 72,
     "Pre-readout protocol": 72,
     "Market capitalization": 72,
     "SEC financing recheck": 48,
@@ -145,6 +146,7 @@ def build_snapshot(root, now=None):
     except (ValueError, KeyError, TypeError, ImportError, AttributeError):
         pre_scored = {}
     p3_state = read_json(root / "phase3_intake_status.json")
+    p3_stats_state = read_json(root / "phase3_pvalues_status.json")
     protocol_state = read_json(root / "pre_readout_intake_status.json")
 
     observed_primary = {}
@@ -351,6 +353,9 @@ def build_snapshot(root, now=None):
         status_check("Phase 3 result intake", p3_state.get("status"),
                      p3_state.get("finished_at"), now,
                      extra=f"{p3_state.get('stored_results', '?')} saved registry records; not independently adjudicated readouts"),
+        status_check("Phase 3 primary statistics", p3_stats_state.get("status"),
+                     p3_stats_state.get("finished_at"), now,
+                     extra=f"{len(primary_results)} exact-NCT result analysis rows; not adjudicated efficacy"),
         status_check("Pre-readout protocol", protocol_state.get("status"),
                      protocol_state.get("as_of"), now,
                      extra=f"{len(protocols)} exact NCT protocol records; issuer readout remains unchecked"),
