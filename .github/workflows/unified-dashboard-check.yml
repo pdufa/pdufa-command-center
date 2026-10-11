@@ -1,0 +1,28 @@
+name: Unified Dashboard Smoke Check
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'unified_clinical_trading.py'
+      - 'pipeline_universe.py'
+      - 'post_phase3_unified.py'
+      - 'step7_cached_snapshot.py'
+      - 'app.py'
+      - 'requirements.txt'
+      - '.github/workflows/unified-dashboard-check.yml'
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install runtime dependencies
+        run: pip install -r requirements.txt
+      - name: Syntax validation
+        run: python -m py_compile unified_clinical_trading.py pipeline_universe.py post_phase3_unified.py step7_cached_snapshot.py app.py
+      - name: Unified module import
+        run: python -c "import unified_clinical_trading; print('Unified module import OK')"
