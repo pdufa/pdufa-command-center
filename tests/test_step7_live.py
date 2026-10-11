@@ -101,6 +101,32 @@ class Step7Tests(unittest.TestCase):
         self.assertEqual(b["Issuer Phase 3 readout"], "NOT VERIFIED HERE")
         self.assertTrue(b["ENTRY READY"].startswith("NO"))
 
+    def test_resolved_fda_event_excluded_from_proposed_trades(self):
+        table(self.root, "pdufa_candidates.csv", [
+            {"event_key":"ABC|DRUGA_20261231", "pdufa_date":"2026-12-31",
+             "outcome":"APPROVED", "check_status":"RESOLVED_APPROVED",
+             "monitor_eligibility":"EXCLUDED", "phase3_status":"RESULTS_REVIEW",
+             "new_dilution_flag":"UNKNOWN"}
+        ])
+        _, finance, state = build_snapshot(self.root, NOW)
+        self.assertTrue(finance[0]["Proposed trade status"].startswith("EXCLUDED"))
+        self.assertIn("FDA decision already recorded", finance[0]["Gate reasons"])
+        self.assertEqual(state["entry_ready_count"], 0)
+
+    def test_quote_becomes_stale_after_session_and_collector_age(self):
+        table(self.root, "step7_market_status.csv", [
+            {"ticker":"ABC","checked_at_utc":self.recent,
+             "last_session":"2026-10-09","last_close_usd":"25",
+             "last_session_freshness":"RECENT EOD",
+             "market_status":"MARKET_UPDATED","relative_volume":"1.1",
+             "market_source":"https://query1.finance.yahoo.com/v8/finance/chart/ABC"}
+        ])
+        _, finance, _ = build_snapshot(self.root, NOW)
+        self.assertEqual(finance[0]["Last EOD close USD"], "25")
+        _, late, _ = build_snapshot(self.root, NOW + timedelta(days=8))
+        self.assertEqual(late[0]["Last EOD close USD"], "")
+        self.assertIn("RECHECK REQUIRED", late[0]["Price feed quality"])
+
     def test_invalid_closure_evidence_never_promotes_trade(self):
         table(self.root, "second_financing_status.csv", [
             {"event_key":"ABC|DRUGA_20261231", "second_financing_closed":"YES",
