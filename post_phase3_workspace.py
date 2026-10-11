@@ -159,26 +159,31 @@ def render_post_phase3_workspace(root="data"):
         "reported holdings (YELLOW) → exit by PDUFA −7 days (RED). "
         "Status is evidence-based research, never a buy/sell order."
     )
-    choice = st.radio(
-        "Post Phase 3 stage",
-        STAGES,
-        horizontal=True,
-        key="post_phase3_workspace_stage_v1",
+    # A single continuous workspace: all three research and monitoring panels
+    # are rendered together. No stage switch can hide positions or backtests.
+    render_post_phase3_stage1(root=root, include_positions=False)
+
+    st.divider()
+    st.caption(
+        "POSITION MONITOR — reported holdings only; no brokerage sync or order "
+        "placement. Financing stage colors are separate from trade lifecycle colors."
     )
-    if choice == STAGES[0]:
-        render_post_phase3_stage1(root=root, include_positions=False)
-    elif choice == STAGES[1]:
-        st.caption(
-            "Positions are user-reported CSV entries, not broker-confirmed. "
-            "The same exact-event research queue is used as Stage 1."
-        )
-        try:
-            candidates, status = build_queue(root)
-            if not status.get("feed_current"):
-                st.warning("Research evidence snapshot is stale; eligibility is unverified.")
-        except (OSError, ValueError, TypeError, KeyError):
-            candidates = []
-            st.warning("Candidate records unavailable; reported trades cannot be matched.")
-        render_post_phase3_positions(candidates, root=root)
-    else:
-        _stage3()
+    try:
+        candidates, status = build_queue(root)
+        if not status.get("feed_current"):
+            st.warning(
+                "Research evidence snapshot is stale. Current entry eligibility "
+                "cannot be verified from these records."
+            )
+            candidates = []  # Fail closed for current position-to-event matching.
+    except (OSError, ValueError, TypeError, KeyError):
+        candidates = []
+        st.warning("Candidate records unavailable; reported trades cannot be matched.")
+    render_post_phase3_positions(candidates, root=root)
+
+    st.divider()
+    st.caption(
+        "HISTORICAL RESEARCH — strategy comparisons require point-in-time "
+        "verified events and adjusted prices; never assume a historical win."
+    )
+    _stage3()
