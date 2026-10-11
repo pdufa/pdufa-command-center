@@ -1,5 +1,11 @@
 # PDUFA Command Center
 
+## Stage 3 historical evidence backfill worklist
+
+The Stage 3 workflow now produces `historical_source_backfill_queue.csv` by reviewing the saved `pdufa_candidates.csv`, `second_financing_status.csv` and `company_registry.csv`. It matches exact event keys and issuer SEC CIKs and sorts existing historic financing references into three research priorities: potential two-close funding evidence, incomplete funding evidence and clinical-program discovery. Each row lists outstanding clinical readout/benefit/safety, *first-public* SEC filing dates, original PDUFA date history and historical split-adjusted OHLCV.
+
+This queue is **NOT** new verified trading data. Even a record marked VERIFIED_SECOND_POST_PHASE3_FINANCING in the older *retrospective* financing ledger is only a research candidate: the actual date the filings became publicly available must be independently recorded before historical simulation. All queue entries explicitly have `eligible_for_historical_trade_backtest = NO — RESEARCH QUEUE ONLY`. Phase 3 evidence and FDA outcome remain separate. PDUFA → POST PHASE 3 remains deliberately blank; use GitHub Actions artifacts to retrieve the research queue.
+
 ## Stage 3 — offline post-Phase-3 stock-trading backtest
 
 This stage **does not render anything in PDUFA → POST PHASE 3**. The tab must remain blank as requested. Stage 3 is an independent Python research engine, not the existing retrospective FDA-approval prediction scorecard.
