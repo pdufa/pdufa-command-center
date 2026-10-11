@@ -1,0 +1,56 @@
+name: Step 7 Market EOD Updates
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/step7_market_refresh.py
+      - .github/workflows/step7-market-eod.yml
+  schedule:
+    - cron: "30 2 * * 2-6"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: step7-market-eod
+  cancel-in-progress: false
+
+jobs:
+  market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install public market scanner dependency
+        run: pip install pandas
+      - name: Refresh price and relative volume snapshots
+        run: python scripts/step7_market_refresh.py
+      - name: Test Step 7 market freshness and trade gates
+        run: python -m unittest discover -s tests -p 'test_step7_market.py' -v
+      - name: Save market evidence and status
+        if: always()
+        run: |
+          git config user.name "pdufa-step7-market-bot"
+          git config user.email "pdufa-step7-market-bot@users.noreply.github.com"
+          git add data/step7_market_status.csv data/step7_market_status.json
+          if git diff --cached --quiet; then
+            echo "No new market data"; exit 0
+          fi
+          git commit -m "Refresh Step 7 EOD market source observations"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 3))
+          done
+          echo "::error::Could not persist market observations"
+          exit 1
