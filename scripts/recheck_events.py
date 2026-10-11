@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, csv, html, json, re, time, urllib.parse, urllib.request
+import argparse, csv, html, json, os, re, time, urllib.parse, urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
@@ -9,7 +9,9 @@ DATA=ROOT/"data"
 CAND=DATA/"pdufa_candidates.csv"
 REG=DATA/"company_registry.csv"
 STATUS=DATA/"recheck_status.csv"
-UA="PDUFACommandCenter/1.0 pdufa-command-center@users.noreply.github.com"
+# If available, set a genuine app-and-contact SEC user agent via GitHub Secrets.
+# No user contact is embedded in the repository.
+UA=os.environ.get("SEC_USER_AGENT", "").strip() or "PDUFACommandCenter/1.0 pdufa-command-center@users.noreply.github.com"
 CATS=["pdufa_date","phase3","financing","cash_runway","market_data","ownership_insiders"]
 BASE=["event_key","ticker","company","drug","pdufa_date","run_status","requested_scope","started_at_utc","completed_at_utc","last_successful_recheck_utc","change_count","error_count"]
 COLS=BASE+sum(([c+"_status",c+"_note",c+"_source"] for c in CATS),[])
