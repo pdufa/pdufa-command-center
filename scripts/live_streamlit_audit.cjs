@@ -116,7 +116,7 @@ async function audit(){
     result.checks.pipelineDefaultActive=await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true";
     if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
       result.errors.push("PDUFA must open with PIPELINE and preserve the main navigation.");
-    const pipelineReady=ready;
+    const pipelineReady={frame:appFrame,text:initial};
     result.checks.pipelineTabLoads=true;
     result.checks.researchInsidePipeline=await appFrame.getByText("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS",{exact:false}).count()>0;
     result.checks.stageAndDateControls=(await appFrame.locator('[data-testid="stMultiSelect"]').count())>=2;
