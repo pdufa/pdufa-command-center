@@ -6,6 +6,7 @@ from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELIN
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
 from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
+from unified_clinical_trading import render_combined_overview
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -3179,10 +3180,12 @@ if page == "PDUFA":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
     # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
-    pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(
-        ["PIPELINE", "PRE PHASE 3", "POST PHASE 3"],
+    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(
+        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"],
         key="pdufa_subtab", on_change="rerun",
     )
+    with unified_tab:
+        render_combined_overview()
     with pipeline_tab:
         st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
         st.caption(
