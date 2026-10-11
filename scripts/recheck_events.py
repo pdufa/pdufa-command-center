@@ -213,7 +213,10 @@ def market_check(ticker):
                 g=g[-35:]; last=g[-1]; vv=[x[2] for x in g[-20:] if x[2]>0]; av=sum(vv)/len(vv) if vv else None
                 ret=(last[1]/g[0][1]-1)*100 if len(g)>1 and g[0][1] else None
                 d=datetime.fromtimestamp(last[0],timezone.utc).date().isoformat()
-                return {"status":"MARKET_UPDATED","note":"Latest public close USD "+format(last[1],".2f")+" on "+d+".","source":u,"price":last[1],"volume":av,"return30":ret}
+                prior=[v[2] for v in g[-21:-1] if v[2]>0]
+                baseline=sum(prior)/len(prior) if len(prior)>=15 else None
+                ratio=last[2]/baseline if baseline and last[2]>0 else None
+                return {"status":"MARKET_UPDATED","note":"Latest public close USD "+format(last[1],".2f")+" on "+d+".","source":u,"price":last[1],"volume":av,"return30":ret,"last_session":d,"last_volume":last[2],"prior20_volume":baseline,"relative_volume":ratio,"sessions_available":len(g)}
     except Exception as e:
         yahoo_error=str(e)
     stooq="https://stooq.com/q/d/l/?s="+urllib.parse.quote(s(ticker).lower()+".us")+"&i=d"
@@ -225,7 +228,10 @@ def market_check(ticker):
         if g:
             g=g[-35:]; last=g[-1]; vv=[x[2] for x in g[-20:] if x[2]>0]; av=sum(vv)/len(vv) if vv else None
             ret=(last[1]/g[0][1]-1)*100 if len(g)>1 and g[0][1] else None
-            return {"status":"MARKET_UPDATED","note":"Latest public close USD "+format(last[1],".2f")+" on "+last[0]+".","source":stooq,"price":last[1],"volume":av,"return30":ret}
+            prior=[v[2] for v in g[-21:-1] if v[2]>0]
+            baseline=sum(prior)/len(prior) if len(prior)>=15 else None
+            ratio=last[2]/baseline if baseline and last[2]>0 else None
+            return {"status":"MARKET_UPDATED","note":"Latest public close USD "+format(last[1],".2f")+" on "+last[0]+".","source":stooq,"price":last[1],"volume":av,"return30":ret,"last_session":last[0],"last_volume":last[2],"prior20_volume":baseline,"relative_volume":ratio,"sessions_available":len(g)}
     except Exception as e:
         stooq_error=str(e)
     return {"status":"SOURCE_UNAVAILABLE","note":"Public market sources returned no usable data; retained stored market values. Yahoo: "+locals().get("yahoo_error","no rows")+"; Stooq: "+locals().get("stooq_error","no rows"),"source":u}
