@@ -17,14 +17,17 @@ from zoneinfo import ZoneInfo
 
 from step7_entry import GATES, safe_source
 from post_phase3_priority import WEIGHTS, score_candidate, assign_priority_ranks
+from post_phase3_review_priority import REVIEW_COMPONENTS, review_priority, assign_review_ranks
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 NCT = re.compile(r"^NCT\d{8}$")
 TICKER = re.compile(r"^[A-Z0-9.-]{1,15}$")
 RESOLVED = {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}
 COLUMNS = (
-    "Evidence rank", "Ticker", "Drug", "Indication", "NCT ID",
-    "Entry qualification", "Evidence score /100", "Rating status", "Rating coverage",
+    "Research rank", "Ticker", "Research priority /100", "Entry qualification",
+    "Evidence rank", "Evidence score /100", "Drug", "Indication", "NCT ID",
+    "Research priority status", "Research priority limitations",
+    "Rating status", "Rating coverage", *REVIEW_COMPONENTS,
     *WEIGHTS.keys(), "Rating limitations", "Source lane",
     "Exact event", "Phase 3 evidence", "Financing #2", "Financing cycle (separate)",
     "PDUFA verification", "Days to PDUFA", "PDUFA date",
@@ -79,6 +82,10 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "Financing #2": "REVIEW — EXACT EVENT NOT VERIFIED",
         "Financing cycle (separate)": "REVIEW — FINANCING UNVERIFIED",
         "Entry qualification": "REVIEW — RESEARCH LEAD",
+        "Research rank": None, "Research priority /100": 0,
+        "Research priority status": "RESEARCH TRIAGE ONLY — NOT TRADE READY",
+        "Research priority limitations": "Unmatched program; prioritize document collection",
+        **dict.fromkeys(REVIEW_COMPONENTS, 0),
         "Evidence rank": None, "Evidence score /100": None,
         "Rating status": "NOT RATED — UNMATCHED RESEARCH LEAD",
         "Rating coverage": "0/6 — research lead",
@@ -306,13 +313,23 @@ def build_queue(root, as_of=None):
         })
         rows.append(item)
 
-    # Ordinal is an evidence-priority rank, never a gate override.
+    # Research queue ranks can exist WITHOUT any certified clinical/financing
+    # success. All exact-event funding links remain source-conservative.
+    for row in rows:
+        event_key = clean(row.get("Exact event"))
+        item_event = regulatory.get(event_key) if event_key else None
+        item_funding = financing.get(event_key) if event_key else None
+        item_market = market_by_ticker.get(clean(row.get("Ticker")).upper())
+        row.update(review_priority(row, item_event, item_funding, item_market,
+                                   today, snapshot_current=current_feed))
+    assign_review_ranks(rows)
     assign_priority_ranks(rows)
     # No ticker-only financing upgrade: each program keeps its own exact event identity.
     rank = {"GREEN — GATES ATTESTED": 0, "REVIEW — ENTRY BLOCKED": 1,
             "REVIEW — SOURCE SNAPSHOT STALE": 2, "REVIEW — RESEARCH LEAD": 3,
             "RED WINDOW — NO NEW ENTRY": 4, "EXCLUDED — FDA DECIDED / DATE PASSED": 5}
     rows.sort(key=lambda r: (rank.get(r["Entry qualification"], 3),
+                             -r["Research priority /100"],
                              -(r["Evidence score /100"] if r["Evidence score /100"] is not None else -1),
                              r["Days to PDUFA"] if r["Days to PDUFA"] is not None else 99999,
                              r["Ticker"], r["NCT ID"], r["Exact event"]))
@@ -324,4 +341,6 @@ def build_queue(root, as_of=None):
         "review_count": sum(r["Entry qualification"].startswith("REVIEW") for r in rows),
         "research_leads": sum(r["Source lane"] != "SAVED REGULATORY PIPELINE" for r in rows),
         "count": len(rows),
+        "research_ranked": sum(row["Research rank"] is not None for row in rows),
+        "strict_evidence_rated": sum(row["Evidence score /100"] is not None for row in rows),
     }
