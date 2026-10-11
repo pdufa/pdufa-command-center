@@ -242,7 +242,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("POST PHASE 3", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
 
-    def test_post_phase3_workspace_installed_with_three_stages(self):
+    def test_post_phase3_three_sections_merged_into_one_page(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "POST PHASE 3"
@@ -255,12 +255,9 @@ class PipelinePageSmokeTests(unittest.TestCase):
             "POST PHASE 3 — TRADING WORKSPACE" in item.body
             for item in app.markdown
         ))
-        stages = app.radio(key="post_phase3_workspace_stage_v1")
-        self.assertEqual(list(stages.options), [
-            "1 · Discover & qualify",
-            "2 · Monitor & exit",
-            "3 · Historical backtest",
-        ])
+        self.assertFalse(any(
+            item.key == "post_phase3_workspace_stage_v1" for item in app.radio
+        ), "Merged POST PHASE 3 must not require another stage selector")
         self.assertTrue(any(
             "STAGE 1 — PHASE 3" in item.body for item in app.markdown
         ))
@@ -271,15 +268,23 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertFalse(any(
             "TOP 10 — RESEARCH PRIORITY" in item.body for item in app.markdown
         ))
-        self.assertFalse(any(
-            "STAGE 2 — GREEN ENTRY" in item.body for item in app.markdown
+        self.assertTrue(any(
+            "STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH" in item.body
+            for item in app.markdown
+        ))
+        self.assertTrue(any(
+            "STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body
+            for item in app.markdown
+        ))
+        self.assertTrue(any(
+            "No actual positions have been supplied" in item.message
+            for item in app.info
         ))
 
     def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "POST PHASE 3"
-        app.session_state["post_phase3_workspace_stage_v1"] = "3 · Historical backtest"
         app.run()
         self.assertFalse(list(app.exception))
         self.assertTrue(any(
