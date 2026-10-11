@@ -2700,6 +2700,15 @@ def render_pre_phase3():
             "Some inputs are stale, partial, blocked, or recently collected with warnings. "
             "In particular, SEC financing errors are NOT evidence of a completed offering."
         )
+    if not health.loc[health["Source"].eq("SEC financing recheck"), "Blocked records"].eq(0).all():
+        st.info(
+            "SEC ACCESS ACTION: The hosted scanner has encountered HTTP 403. "
+            "Provide a genuine SEC_USER_AGENT in GitHub Actions repository secrets "
+            "(application name + contact email), then run the PDUFA Surveillance workflow. "
+            "If SEC still blocks the runner, inspect the filings in SEC Financial Analysis "
+            "or your browser and record reviewed source evidence. "
+            "Never treat an unopenable filing as a verified financing close."
+        )
     st.caption("Data status is computed from the saved collector timestamps. Reload does not start a scan or contact SEC.")
 
     t0, t1, t2, t3 = st.columns(4)
