@@ -277,8 +277,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception))
         self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
-        self.assertTrue(any(item.label == "Phase 1–3 company–trial leads"
-                            for item in app.metric))
+        self.assertFalse(any(item.label == "Phase 1–3 company–trial leads"
+                             for item in app.metric))
+        self.assertFalse(any("PRE PHASE 3 — Clinical Trial Evaluation" in item.body
+                             for item in app.markdown))
         source = (APP_PATH.parent/"clinical_step3.py").read_text(encoding="utf-8")
         self.assertIn("if (complete and owner)", source)
         self.assertIn("NOT SCORED — INCOMPLETE OR UNVERIFIED", source)
@@ -300,8 +302,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(app.radio(key="nav").value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
         self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
-        self.assertTrue(any(item.label == "Phase 1–3 company–trial leads"
-                            for item in app.metric))
+        self.assertFalse(any(item.label == "Phase 1–3 company–trial leads"
+                             for item in app.metric))
+        self.assertFalse(any("PRE PHASE 3 — Clinical Trial Evaluation" in item.body
+                             for item in app.markdown))
 
 
 if __name__ == "__main__":
