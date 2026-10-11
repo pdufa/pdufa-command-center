@@ -28,13 +28,14 @@ class PdufaGridTests(unittest.TestCase):
         self.assertEqual(view.loc[0, "Date Classification"], "90–61 DAYS")
         self.assertEqual(view.loc[0, "Primary p"], "0.001")
         self.assertEqual(view.loc[0, "F"], "F CLOSED")
+        self.assertEqual(view.loc[0, "2nd Financing Completed"], "NOT VERIFIED")
         self.assertEqual(view.loc[0, "Cash Runway (months)"], 18)
         self.assertEqual(view.loc[0, "Cash Runway As Of"], "2026-10-01")
 
     def test_front_column_order_and_score_first_sort_with_no_score_last(self):
         self.assertEqual(
             list(FRONT[:5]),
-            ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "Score type"],
+            ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed"],
         )
         self.assertEqual(DISPLAY_ORDER_OPTIONS, ("Top Score", "Ticker A–Z"))
         frame = pd.DataFrame([
@@ -57,6 +58,53 @@ class PdufaGridTests(unittest.TestCase):
                 self.assertEqual(name["Ticker"].tolist(), ["AAA", "BBB", "CCC", "ZZZ"])
                 self.assertEqual(top.columns[:5].tolist(), list(FRONT[:5]))
                 self.assertTrue(pd.isna(top.iloc[-1]["Score /100"]))
+
+    def test_two_finance_columns_are_adjacent_to_countdown_in_all_four_views(self):
+        for view in ("UNIFIED", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"):
+            with self.subTest(view=view):
+                result = prepare_pdufa_grid(pd.DataFrame([{
+                    "Ticker": "TEST", "Cash Runway (months)": 14,
+                    "2nd Financing Completed": "NOT VERIFIED",
+                }]), view=view)
+                columns = result.columns.tolist()
+                idx = columns.index("Days to PDUFA")
+                self.assertEqual(columns[idx+1:idx+3], [
+                    "2nd Financing Completed", "Cash Runway (months)",
+                ])
+                self.assertEqual(result.loc[0, "2nd Financing Completed"], "NOT VERIFIED")
+                self.assertEqual(result.loc[0, "Cash Runway (months)"], 14)
+
+    def test_weak_closed_stage_never_proves_second_financing_closed(self):
+        record = {"Ticker": "TEST", "NCT ID": "NCT00000001",
+                  "Financing cycle (separate)": "RED — FINANCING CLOSED (HISTORICAL)",
+                  "second_financing_closed": "YES"}
+        unverified = prepare_pdufa_grid(pd.DataFrame([record]))
+        self.assertEqual(unverified.loc[0, "2nd Financing Completed"], "NOT VERIFIED")
+        verified = prepare_pdufa_grid(pd.DataFrame([{**record,
+            "event_key": "TEST|EXACT_PROGRAM",
+            "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+            "second_financing_source": "https://www.sec.gov/Archives/example",
+        }]))
+        self.assertEqual(verified.loc[0, "2nd Financing Completed"],
+                         "YES — VERIFIED (HISTORICAL)")
+        src = pd.DataFrame([{**record,
+            "event_key": "TEST|EXACT_PROGRAM",
+            "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+            "second_financing_source": "not a verified link",
+        }])
+        self.assertEqual(prepare_pdufa_grid(src).loc[0, "2nd Financing Completed"],
+                         "NOT VERIFIED")
+
+    def test_verified_close_joins_only_the_same_exact_trial(self):
+        source = pd.DataFrame([
+            {"Ticker": "TEST", "NCT ID": "NCT00000001", "Drug": "Alpha"},
+            {"Ticker": "TEST", "NCT ID": "NCT00000002", "Drug": "Beta"},
+        ])
+        post = [{"Ticker": "TEST", "NCT ID": "NCT00000001", "Drug": "Alpha",
+                 "2nd Financing Completed": "YES — VERIFIED (HISTORICAL)"}]
+        linked = prepare_pdufa_grid(enrich_exact_trials(source, post=post))
+        self.assertEqual(linked.loc[0, "2nd Financing Completed"], "YES — VERIFIED (HISTORICAL)")
+        self.assertEqual(linked.loc[1, "2nd Financing Completed"], "NOT VERIFIED")
 
     def test_equal_scores_use_numeric_days_before_ticker_with_missing_days_last(self):
         frame = pd.DataFrame([
