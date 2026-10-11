@@ -6,6 +6,13 @@ on:
     branches: [main]
     paths:
       - step7_live.py
+      - pre_readout_score.py
+      - pre_phase3_pilot_scores.py
+      - pre_phase3_readiness.py
+      - data/phase3_pre_readout_evidence.csv
+      - data/pre_phase3_pilot_clinical_reviews.json
+      - tests/test_first_strict_pre_readout_pilot.py
+      - tests/test_pre_readout_score.py
       - step7_entry.py
       - data/step7_entry_evidence.csv
       - tests/test_step7_entry.py
