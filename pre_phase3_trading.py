@@ -97,7 +97,7 @@ def research_discovery_pool(broad, strict, protocols, as_of):
         columns=[*broad.columns, "Verification Status", "Protocol Last Checked"]
     )
 
-def trading_research_queue(candidates, as_of, lookahead_days=180):
+def trading_research_queue(candidates, as_of, lookahead_days="ALL"):
     """Screen possible future registry completion windows, never issuer readouts.
 
     This is a discovery shortlist. No publication, pre-readout or entry
