@@ -61,10 +61,10 @@ class ReviewedIdentityTests(unittest.TestCase):
         self.assertFalse(safety["Company identity review source"])
         self.assertIsNone(safety["Pre-readout research score /100"])
         self.assertIsNone(safety["Preliminary clinical score /100"])
-        later,_,_=build_snapshot(ROOT/"data",now=datetime(2026,10,11,8,30,tzinfo=timezone.utc))
+        later,_,_=build_snapshot(ROOT/"data",now=datetime(2026,10,12,8,30,tzinfo=timezone.utc))
         pivotal_later=next(x for x in later if x["Ticker"]=="LBRX" and x["NCT ID"]=="NCT07363577")
         self.assertIsNone(pivotal_later["Pre-readout research score /100"],
-                          "Issuer review from Oct 10 must expire in Pacific on Oct 11")
+                          "Issuer review from Oct 11 must expire in Pacific on Oct 12")
 
 
 if __name__=="__main__":
