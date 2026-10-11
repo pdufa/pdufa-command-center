@@ -114,7 +114,14 @@
           "assessment": "Peer-reviewed Phase 2 randomized results with documented NCT06179108 and NCT07363577 pivotal registry protocol; issuer-sponsored data and uncalibrated future risk."
         }
       },
-      "clinical_caveats": "Not NOVA-3 (NCT07369154), which is open-label long-term safety; distinct NCT is essential. Primary research score requires issuer release check and independent attestation."
+      "clinical_caveats": "Not NOVA-3 (NCT07369154), which is open-label long-term safety; distinct NCT is essential. Primary research score requires issuer release check and independent attestation.",
+      "program_identity_review": {
+        "status": "EXACT_NCT_REVIEWED",
+        "sponsor": "LB Pharmaceuticals Inc.",
+        "registry_url": "https://clinicaltrials.gov/study/NCT07363577",
+        "source_url": "https://ir.lbpharma.us/press_releases/lb-pharmaceuticals-initiates-pivotal-phase-3-trial-nova-2-for-lb-102-in-patients-with-schizophrenia/",
+        "source_date": "2026-03-25"
+      }
     }
   ]
 }
