@@ -42,6 +42,11 @@ TRADE_FIELDS = (
     "max_close_drawdown_pct", "holding_sessions", "entry_prior20_dollar_volume",
     "pdufa_date", "early_fda_action_date", "selection_caveat",
 )
+PAIRED_FIELDS = (
+    "entry_method", "exit_days_before_pdufa", "matched_event_count",
+    "median_method_return_pct", "median_second_financing_return_pct",
+    "median_delta_vs_second_financing_pct_points", "status",
+)
 SUMMARY_FIELDS = (
     "entry_method", "exit_days_before_pdufa", "events_attempted",
     "trades_completed", "early_action_censored", "other_blocked",
@@ -383,3 +388,38 @@ def run_backtest(events, bars, *, exit_days=EXIT_DAYS,
         ],
     }
     return results, summary, audit
+
+
+def paired_comparison(scenarios, *, exit_days=EXIT_DAYS):
+    """Compare methods strictly on common completed exact events, never
+    across unequal samples. Company-correlated programs remain a caveat."""
+    grouped = defaultdict(dict)
+    for row in scenarios:
+        if row.get("status") != "COMPLETED":
+            continue
+        key = (row["event_key"], row["exit_days_before_pdufa"])
+        grouped[key][row["entry_method"]] = row
+    comparable = {
+        key:methods for key,methods in grouped.items()
+        if len(methods) == len(ENTRY_METHODS)
+        and all(method in methods for method in ENTRY_METHODS)
+    }
+    output = []
+    for window in exit_days:
+        entries = [methods for (key, day_window),methods in comparable.items()
+                   if day_window == window]
+        for method in ENTRY_METHODS:
+            meth_returns = [r[method]["net_return_pct"] for r in entries]
+            second_returns = [r["SECOND_FINANCING"]["net_return_pct"] for r in entries]
+            delta = [x-y for x,y in zip(meth_returns,second_returns)]
+            output.append({
+                "entry_method":method, "exit_days_before_pdufa":window,
+                "matched_event_count":len(entries),
+                "median_method_return_pct":round(median(meth_returns),3) if entries else "",
+                "median_second_financing_return_pct":round(median(second_returns),3) if entries else "",
+                "median_delta_vs_second_financing_pct_points":round(median(delta),3) if entries else "",
+                "status":("NO_MATCHED_TRADES" if not entries else
+                          "EXPLORATORY_FEWER_THAN_30_MATCHED" if len(entries)<30
+                          else "DESCRIPTIVE_ONLY_NOT_VALIDATED"),
+            })
+    return output
