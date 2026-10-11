@@ -30,3 +30,14 @@ The Streamlit **RELOAD SAVED SOURCE FILES** button reloads repository-managed da
 For SEC 403: configure a genuine `SEC_USER_AGENT` in **GitHub → Settings → Secrets and variables → Actions**, such as `ResearchApp your-real-contact@example.com` with the actual contact details (not the literal example). The surveillance and recheck workflows pass this secret to the SEC client. Retry the relevant GitHub Actions recheck. Some cloud-hosted runner IP addresses remain blocked by SEC regardless of user agent; in that case, source access must be resolved or the documents manually inspected in the SEC Financial Analysis page. A human reading a document is an evidence-review path, not an automated SEC verification.
 
 Always read the `SOURCE HEALTH` panel; any stale, blocked or unresolved source gate must remain REVIEW. The FDA/PoA prediction engine stays independent from these trading gates.
+
+
+## PRE PHASE 3 completion verification (separate from ENTRY READY)
+
+The **PRE PHASE 3 COMPLETION CHECKLIST** at the top of the tab is intentionally independent of the post-readout SEC financing gate. It checks six fresh research feeds (clinical universe, Phase 3 results, Phase 3 primary statistics, Phase 2 primary p intake, protocol design, and market capitalization), active Phase 3 protocol coverage, Phase 2 linked-NCT collector coverage, whether exact-linked Phase 2 PRIMARY observations display in the table, and whether at least one real source-reviewed pre-readout clinical scoring pilot is complete.
+
+The new columns **Linked Phase 2 PRIMARY p**, **Phase 2 PRIMARY evidence count**, **Phase 2 PRIMARY first observed UTC**, and **Phase 2 PRIMARY registry sources** are joined only through the same ticker and an explicitly linked Phase 2 NCT. The source must be exactly the ClinicalTrials.gov study URL; observations and registry publications must predate the research as-of time. No primary p-value being published is **not** a Phase 2 trial failure. A `p=0.0000` is reproduced from source precision and should not be interpreted as a mathematical zero; `p<0.001` retains the published inequality.
+
+A 100-point pre-readout research rubric is **not** a calibrated Phase 3 probability of success. Manual, source-dated issuer status / trial-design / benefit / safety review is still needed. `READY FOR FINAL BROWSER ACCEPTANCE` is a technical checklist milestone, not a declaration that the tab is finished. Only passing real-browser regression checks, zero unresolved source blockers and a separately confirmed completion acceptance review can justify a completion notification.
+
+**Known outstanding issue:** live SEC document access requires the `SEC_USER_AGENT` repository secret; this affects the separate post-readout financing review, not the clinical PRE PHASE 3 completion count.
