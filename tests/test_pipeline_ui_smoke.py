@@ -356,8 +356,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.session_state["pdufa_subtab"] = "PRE PHASE 3"
         app.run()
         ordered = next(t.value for t in app.dataframe if "Review priority factors" in t.value.columns)
-        self.assertEqual(ordered.iloc[:2]["Ticker"].tolist(), ["TRVI", "LBRX"])
-        self.assertEqual(ordered.iloc[:2]["Preliminary clinical score /100"].tolist(), [80,72])
+        self.assertTrue(ordered["Score /100"].dropna().is_monotonic_decreasing)
+        self.assertEqual(ordered.columns[:5].tolist(), [
+            "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "Score type",
+        ])
         app.selectbox(key="step7_priority_sort").set_value("Ticker A–Z")
         self.assertTrue(any("DATED CLINICAL RESEARCH PILOT SCORES" in m.body
                             for m in app.markdown))
