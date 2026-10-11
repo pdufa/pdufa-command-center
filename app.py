@@ -2668,7 +2668,8 @@ def render_pre_phase3():
         "pre_readout_protocols.csv", "pre_readout_intake_status.json",
         "phase_pipeline_market_caps.csv", "second_financing_status.csv",
         "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
-        "step7_entry_evidence.csv", "phase3_pre_readout_evidence.csv", "pdufa_candidates.csv",
+        "step7_entry_evidence.csv", "phase3_pre_readout_evidence.csv",
+        "pre_phase3_pilot_clinical_reviews.json", "pdufa_candidates.csv",
     ]
     signature = tuple(
         (file, (data_root / file).stat().st_mtime_ns if (data_root / file).exists() else 0)
@@ -2796,7 +2797,8 @@ def render_pre_phase3():
             "not treated as a confirmed corporate readout day."
         )
         display = [
-            "Ticker", "Pre-readout research score /100", "Score status",
+            "Ticker", "Preliminary clinical score /100", "Preliminary score status",
+            "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p", "Drug", "Indication", "Trial phase",
             "Registry status", "NCT ID", "Research category",
             "Registry primary completion", "Registry results posted",
@@ -2806,11 +2808,20 @@ def render_pre_phase3():
             "Registry primary result source", "Company/program identity",
             "Market cap USD", "Market cap state", "Registry check",
             "Protocol check", "Design inputs present /6", "Design coverage meaning",
+            "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
+            "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
+            "Score Evidence", "Clinical Caveats",
             "Missing pre-readout evidence", "Issuer Phase 3 readout", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
         ]
         scored = selected["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
         scored &= pd.to_numeric(selected["Pre-readout research score /100"], errors="coerce").between(0, 100)
+        preliminary = pd.to_numeric(selected["Preliminary clinical score /100"], errors="coerce").notna()
+        st.caption(
+            f"{int(preliminary.sum())} provisional, source-cited clinical research score(s) /100; "
+            "these are analyst assessments, not independently audited clinical scores, "
+            "approval probabilities, or entry signals."
+        )
         st.caption(
             f"{int(scored.sum())} of {len(selected):,} filtered rows have a fully source-reviewed "
             "PRE PHASE 3 score /100. An empty score means NOT SCORED; it is not zero "
