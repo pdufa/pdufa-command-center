@@ -157,3 +157,29 @@ def test_duplicate_regulatory_identity_cannot_be_approved(tmp_path):
     rows, status = build_queue(tmp_path, TODAY)
     assert status["green_count"] == 0
     assert rows == []
+
+# GitHub Actions uses unittest discovery, not pytest; explicitly execute
+# each fixture-based scenario inside its own temporary directory.
+import tempfile
+import unittest
+from pathlib import Path
+
+
+class TestUnifiedPostPhase3Stage1(unittest.TestCase):
+    def test_source_and_stage_regressions(self):
+        scenarios = (
+            test_green_only_with_current_verified_event,
+            test_one_missing_gate_cannot_be_green,
+            test_blocked_sec_does_not_allow_green,
+            test_stale_snapshot_invalidates_green,
+            test_last_week_never_starts_position,
+            test_resolved_event_is_not_eligible,
+            test_missing_exact_financing_event_is_not_ticker_matched,
+            test_trial_registry_posting_is_never_called_phase3_success,
+            test_external_lead_must_be_sourced_and_never_promoted,
+            test_duplicate_regulatory_identity_cannot_be_approved,
+        )
+        for scenario in scenarios:
+            with self.subTest(scenario=scenario.__name__):
+                with tempfile.TemporaryDirectory() as directory:
+                    scenario(Path(directory))
