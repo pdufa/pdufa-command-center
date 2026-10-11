@@ -44,11 +44,12 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         "independently sourced research leads. Exact event financing joins only. "
         "Research leads do NOT demonstrate successful Phase 3 or closed financing."
     )
-    m1, m2, m3, m4 = st.columns(4)
+    m1, m2, m3, m4, m5 = st.columns(5)
     m1.metric("Candidate records", status["count"])
-    m2.metric("GREEN — attested gates", status["green_count"])
-    m3.metric("Need source review", status["review_count"])
-    m4.metric("Research leads", status["research_leads"])
+    m2.metric("Ranked for research", status["research_ranked"])
+    m3.metric("GREEN — attested gates", status["green_count"])
+    m4.metric("Need source review", status["review_count"])
+    m5.metric("Research leads", status["research_leads"])
     st.caption(
         f"Saved source date (Pacific): {status['as_of']} · "
         f"Financing review rows: {status['financing_events']} · "
@@ -98,9 +99,10 @@ def render_post_phase3_stage1(root="data", include_positions=True):
     df = pd.DataFrame(items).reindex(columns=COLUMNS)
     st.caption(
         "One combined candidate table: eligibility (GREEN / REVIEW / RED), "
-        "independent research-evidence priority rank, and weighted evidence points /100. "
-        "This is NOT FDA approval probability, expected stock appreciation, or a buy signal. "
-        "Unverified program records display NOT RATED rather than an invented zero."
+        "research rank and research-priority /100 for source review, alongside the "
+        "separate strict evidence score /100. The research rank DOES NOT prove Phase 3 "
+        "success, financing closure, FDA approval or investment return. "
+        "Strict clinical/financing evidence may remain NOT RATED."
     )
     left, middle, right = st.columns([1.1, 1.4, 2])
     with left:
@@ -113,8 +115,9 @@ def render_post_phase3_stage1(root="data", include_positions=True):
     with middle:
         sorting = st.selectbox(
             "Sort combined table",
-            ["Eligibility first, highest score within group",
-             "Highest evidence score overall (all statuses)",
+            ["Eligibility first, highest research priority",
+             "Highest research priority overall",
+             "Highest verified evidence score",
              "Soonest PDUFA"],
             key="postphase3_stage1_sort",
         )
@@ -152,26 +155,48 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         "EXCLUDED — FDA DECIDED / DATE PASSED": 5,
     }).fillna(3)
     df["_score_sort"] = pd.to_numeric(df["Evidence score /100"], errors="coerce").fillna(-1)
+    df["_review_sort"] = pd.to_numeric(df["Research priority /100"], errors="coerce").fillna(-1)
     df["_pdufa_sort"] = pd.to_numeric(df["Days to PDUFA"], errors="coerce").fillna(99999)
-    if sorting.startswith("Highest evidence"):
-        df = df.sort_values(["_score_sort", "_rank_gate", "_pdufa_sort", "Ticker", "NCT ID"],
+    if sorting == "Highest research priority overall":
+        df = df.sort_values(["_review_sort", "_rank_gate", "_pdufa_sort", "Ticker", "NCT ID"],
                             ascending=[False, True, True, True, True], kind="stable")
+    elif sorting == "Highest verified evidence score":
+        df = df.sort_values(["_score_sort", "_rank_gate", "_review_sort", "Ticker", "NCT ID"],
+                            ascending=[False, True, False, True, True], kind="stable")
     elif sorting.startswith("Soonest"):
-        df = df.sort_values(["_pdufa_sort", "_rank_gate", "_score_sort", "Ticker", "NCT ID"],
+        df = df.sort_values(["_pdufa_sort", "_rank_gate", "_review_sort", "Ticker", "NCT ID"],
                             ascending=[True, True, False, True, True], kind="stable")
     else:
-        df = df.sort_values(["_rank_gate", "_score_sort", "_pdufa_sort", "Ticker", "NCT ID"],
-                            ascending=[True, False, True, True, True], kind="stable")
-    df = df.drop(columns=["_rank_gate", "_score_sort", "_pdufa_sort"])
+        df = df.sort_values(["_rank_gate", "_review_sort", "_score_sort", "Ticker", "NCT ID"],
+                            ascending=[True, False, False, True, True], kind="stable")
+    df = df.drop(columns=["_rank_gate", "_score_sort", "_review_sort", "_pdufa_sort"])
     st.caption(
         f"{len(df)} candidates match. RED WINDOW means do not start a new trade "
         "inside the final seven calendar days; it is not an executed sale. "
         "The separate Stage 2 panel below evaluates only positions you report."
     )
+    ranked = df.loc[df["Research rank"].notna()].head(10)
+    st.markdown("#### TOP 10 — RESEARCH PRIORITY (NOT ENTRY SIGNALS)")
+    if not ranked.empty:
+        st.dataframe(
+            ranked[["Research rank", "Ticker", "Drug", "Research priority /100",
+                    "Entry qualification", "Evidence score /100", "Days to PDUFA"]],
+            use_container_width=True, hide_index=True,
+            column_config={
+                "Research rank": st.column_config.NumberColumn("Rank", format="%d"),
+                "Research priority /100": st.column_config.NumberColumn("Research /100", format="%d"),
+                "Evidence score /100": st.column_config.NumberColumn("Strict evidence /100", format="%d"),
+            },
+        )
+    else:
+        st.info("No active research candidates match this view. Try Active research.")
+    st.markdown("#### ALL CANDIDATES — STATUS + RANKINGS + EVIDENCE GAPS")
     st.dataframe(
         df.head(250), use_container_width=True, hide_index=True,
         column_config={
-            "Evidence rank": st.column_config.NumberColumn("Research rank", format="%d"),
+            "Research rank": st.column_config.NumberColumn("Rank", format="%d"),
+            "Research priority /100": st.column_config.NumberColumn("Research priority /100", format="%d"),
+            "Evidence rank": st.column_config.NumberColumn("Strict evidence rank", format="%d"),
             "Evidence score /100": st.column_config.NumberColumn("Evidence /100", format="%d"),
             "Clinical evidence /30": st.column_config.NumberColumn("Clinical /30", format="%d"),
             "Financing evidence /20": st.column_config.NumberColumn("Financing /20", format="%d"),
@@ -193,6 +218,12 @@ def render_post_phase3_stage1(root="data", include_positions=True):
         file_name=f"post_phase3_trade_research_{today:%Y%m%d}.csv",
         mime="text/csv",
         key="postphase3_stage1_csv",
+    )
+    st.caption(
+        "Research priority ranks incomplete candidate research based on disclosed horizon, "
+        "reported/verified milestones, exact-event funding review, and recent market observations. "
+        "It is a RESEARCH TRIAGE score, not a measure of drug quality or trading probability. "
+        "GREEN hard gates remain separately mandatory; a high priority never means buy."
     )
     st.caption(
         "Evidence points reward source-supported, attested requirements; 5 points "
