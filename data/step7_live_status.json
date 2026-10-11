@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-11T13:24:40+00:00",
+  "generated_at_utc": "2026-10-11T14:13:50+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -76,6 +76,10 @@
   ],
   "trial_rows": 3105,
   "financing_events": 38,
+  "review_priority_rows": 3105,
+  "review_priority_ranked": 1819,
+  "review_priority_excluded": 1286,
+  "review_priority_rubric": "REVIEW-PRIORITY-V1",
   "market_eod_rows": 34,
   "listing_exclusions": [
     {
