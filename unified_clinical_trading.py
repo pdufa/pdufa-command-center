@@ -3,6 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import pandas as pd
 import streamlit as st
+from pdufa_table_headers import pdufa_dataframe
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
@@ -79,7 +80,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.metric("Matching programs", len(df))
             if df.empty:
                 st.info("No pipeline programs match these filters.")
-            st.dataframe(finance_style(df.head(150)), hide_index=True,
+            pdufa_dataframe(finance_style(df.head(150)), hide_index=True,
                          use_container_width=True, height=310,
                          column_order=["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
                                        "Score type", "Pipeline stage", "F", "Drug", "NCT ID"])
@@ -90,14 +91,14 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.metric("Matching pre-readout programs", len(pre3))
             if pre3.empty:
                 st.info("No current pre-readout programs match these filters.")
-            st.dataframe(finance_style(pre3.head(150)), hide_index=True,
+            pdufa_dataframe(finance_style(pre3.head(150)), hide_index=True,
                          use_container_width=True, height=310,
                          column_order=[c for c in (
                              "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
                              "Score type", "Score status", "F", "Drug", "NCT ID",
                          ) if c in pre3])
             with st.expander("ALL PRE3 FIELDS & EVIDENCE"):
-                st.dataframe(finance_style(pre3.head(350)), hide_index=True,
+                pdufa_dataframe(finance_style(pre3.head(350)), hide_index=True,
                              use_container_width=True)
             st.download_button("EXPORT PRE3 PROGRAMS", pre3.to_csv(index=False).encode(),
                                file_name="unified_pre3_programs.csv", mime="text/csv",
@@ -109,14 +110,14 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         st.metric("Matching candidates", len(post3))
         if post3.empty:
             st.info("No current trading candidates match these filters.")
-        st.dataframe(finance_style(post3.head(150)), hide_index=True,
+        pdufa_dataframe(finance_style(post3.head(150)), hide_index=True,
                      use_container_width=True, height=310,
                      column_order=[c for c in (
                          "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
                          "Score type", "Entry qualification", "F", "Drug", "NCT ID",
                      ) if c in post3])
         with st.expander("ALL TRADING FIELDS & EVIDENCE"):
-            st.dataframe(finance_style(post3.head(350)), hide_index=True,
+            pdufa_dataframe(finance_style(post3.head(350)), hide_index=True,
                          use_container_width=True)
         st.download_button("EXPORT TRADING CANDIDATES", post3.to_csv(index=False).encode(),
                            file_name="unified_trading_candidates.csv", mime="text/csv",
@@ -137,7 +138,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             c.metric("Past dates to recheck", int(days.lt(0).sum()))
             if timeline.empty:
                 st.info("No dated PDUFA programs match these filters. Undated programs remain in their source panels.")
-            st.dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
+            pdufa_dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
                          column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
                                         "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
             st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
@@ -314,7 +315,7 @@ def render_combined_overview(root="data", *, dashboard=False):
             {"Check": "Numeric pre-readout scores", "Count": pre_score_count},
             {"Check": "Numeric post-readout evidence scores", "Count": post_score_count},
         ])
-        st.dataframe(audit, use_container_width=True, hide_index=True)
+        pdufa_dataframe(audit, use_container_width=True, hide_index=True)
         st.caption("Counts use the full Pipeline universe before the user filters. Scores are not approval probabilities. Missing trial links do not establish failed clinical or financing gates.")
     with st.expander("UNMATCHED TRIAL RECONCILIATION"):
         missing = df.loc[
@@ -322,7 +323,7 @@ def render_combined_overview(root="data", *, dashboard=False):
             | df["Post evidence match"].ne("EXACT TICKER + NCT")
         ].copy()
         st.caption("Missing source links are research gaps, not clinical failures.")
-        st.dataframe(missing[["Ticker", "NCT ID", "Drug",
+        pdufa_dataframe(missing[["Ticker", "NCT ID", "Drug",
             "Pre Phase 3 evidence match", "Post evidence match"]].head(250),
             hide_index=True, use_container_width=True)
         st.download_button("EXPORT UNMATCHED RECORDS",
@@ -361,7 +362,7 @@ def render_combined_overview(root="data", *, dashboard=False):
                                phase=phase, stage=stage, search=search, display_order=display_order)
     full_view = st.expander("ALL FIELDS — CLINICAL, SCORES & SOURCE EVIDENCE") if dashboard else st.container()
     with full_view:
-        st.dataframe(finance_style(df.head(350)), hide_index=True, use_container_width=True,
+        pdufa_dataframe(finance_style(df.head(350)), hide_index=True, use_container_width=True,
                  column_config={
                      "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
                      "Phase 3 source": st.column_config.LinkColumn("Phase 3 source"),

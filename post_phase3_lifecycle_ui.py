@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
+from pdufa_table_headers import pdufa_dataframe
 
 from post_phase3_lifecycle import (
     DISPLAY_FIELDS, monitor_positions, parse_journal, template_csv,
@@ -112,7 +113,7 @@ def render_post_phase3_positions(candidates, root="data", ticker=None):
         frame = frame.loc[frame["Trade lifecycle"].str.startswith("YELLOW")]
     elif filter_choice == "Exited":
         frame = frame.loc[frame["Trade lifecycle"].str.contains("EXIT RECORDED")]
-    st.dataframe(
+    pdufa_dataframe(
         frame, use_container_width=True, hide_index=True,
         column_config={"Market quote source": st.column_config.LinkColumn("Market quote source")},
     )

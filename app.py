@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
+from pdufa_table_headers import pdufa_dataframe, column_help as pdufa_column_help
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
@@ -2031,7 +2032,7 @@ def _column_help_text(col):
         return COLUMN_HELP[col]
     if col in SPECIAL_PROVISION_LABELS:
         return f"{col}: FDA special regulatory provision/designation. A check means verified for this exact drug/indication/application."
-    return f"{col}: field shown for this PDUFA event."
+    return pdufa_column_help(col)
 
 def _sort_header_button(col, col_index):
     """Render separate sort and help controls for a merged-table header."""
@@ -2726,14 +2727,14 @@ def render_pre_phase3():
             "PRE PHASE 3 data and scoring gates pass. Final live browser acceptance "
             "is still required before declaring the tab finished."
         )
-    st.dataframe(
+    pdufa_dataframe(
         pd.DataFrame(readiness["checks"]), hide_index=True,
         use_container_width=True, height=370,
     )
     st.caption(readiness["note"])
     health = pd.DataFrame(manifest["source_checks"])
     st.markdown("### SOURCE HEALTH / LAST VERIFIED CHECK")
-    st.dataframe(
+    pdufa_dataframe(
         health[["Source", "Health", "Collector status", "Last checked UTC",
                 "Blocked records", "Details"]],
         use_container_width=True, hide_index=True, height=260,
@@ -2775,7 +2776,7 @@ def render_pre_phase3():
             "Excluded rows have priority 0 and no rank; their clinical scores stay separate."
         )
         with st.expander("HOW REVIEW PRIORITY IS CALCULATED"):
-            st.dataframe(pd.DataFrame(PRIORITY_RUBRIC_ROWS, columns=["Factor", "Maximum points", "Rule"]),
+            pdufa_dataframe(pd.DataFrame(PRIORITY_RUBRIC_ROWS, columns=["Factor", "Maximum points", "Rule"]),
                          hide_index=True, use_container_width=True)
             st.caption(
                 "Workflow weights are uncalibrated. Missing evidence earns no readiness points, "
@@ -2931,7 +2932,7 @@ def render_pre_phase3():
             ),
             sort_order,
         )
-        st.dataframe(
+        pdufa_dataframe(
             finance_style(pre_grid.head(500)), use_container_width=True,
             hide_index=True, height=530,
             column_config={
@@ -2980,7 +2981,7 @@ def render_pre_phase3():
         )
         if review_items:
             worklist = pd.DataFrame(review_items, columns=SCORING_REVIEW_COLUMNS)
-            st.dataframe(worklist, hide_index=True, use_container_width=True, height=355)
+            pdufa_dataframe(worklist, hide_index=True, use_container_width=True, height=355)
             st.download_button(
                 "DOWNLOAD 10-CANDIDATE SCORING REVIEW WORKLIST",
                 worklist.to_csv(index=False).encode("utf-8-sig"),
@@ -3031,7 +3032,7 @@ def render_pre_phase3():
             full_financing_view[full_financing_view["Proposed trade status"].str.startswith("EXCLUDED")]
             if status_filter == "EXCLUDED / PAST" else full_financing_view
         )
-        st.dataframe(
+        pdufa_dataframe(
             financing_view, use_container_width=True, hide_index=True, height=390,
         )
         st.download_button(
@@ -3389,7 +3390,7 @@ if page == "PDUFA":
         )
         if not applied:
             st.metric("Trials / programs displayed", 0)
-            st.dataframe(
+            pdufa_dataframe(
                 finance_style(empty_chart), hide_index=True, use_container_width=True, height=220
             )
             if not selected_stages or not selected_dates:
@@ -3413,7 +3414,7 @@ if page == "PDUFA":
                 sort_mode,
             )
             st.metric("Trials / programs displayed", len(shown))
-            st.dataframe(
+            pdufa_dataframe(
                 finance_style(shown), hide_index=True, use_container_width=True, height=540,
                 column_config={
                     "Source": st.column_config.LinkColumn("Source"),
@@ -3447,14 +3448,14 @@ if page == "PDUFA":
                          for stage in PIPELINE_STAGES]
                         + [{"Stage": "TOTAL", "Count": len(shown)}]
                     )
-                    st.dataframe(stage_table, hide_index=True, use_container_width=True, height=250)
+                    pdufa_dataframe(stage_table, hide_index=True, use_container_width=True, height=250)
                 with col_b:
                     date_table = pd.DataFrame(
                         [{"DATES": band, "Count": int(date_counts.get(band, 0))}
                          for band in PIPELINE_DATE_BANDS]
                         + [{"DATES": "TOTAL", "Count": len(shown)}]
                     )
-                    st.dataframe(date_table, hide_index=True, use_container_width=True, height=250)
+                    pdufa_dataframe(date_table, hide_index=True, use_container_width=True, height=250)
                 if sum(stage_counts.values()) != len(shown) or sum(date_counts.values()) != len(shown):
                     st.error("COUNT MISMATCH: displayed count and audit disagree.")
                 else:
@@ -3765,7 +3766,7 @@ if page == "PDUFA":
                                 st.info(f"No candidates in {label}.")
                             else:
                                 styled_section = section.style.apply(lambda row: [pdufa_date_color(row["DAYS TO PDUFA"]) if col in ("PDUFA Date", "DAYS TO PDUFA", "PDUFA Horizon") else "" for col in section.columns], axis=1)
-                                st.dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
+                                pdufa_dataframe(styled_section, use_container_width=True, hide_index=True, height=min(460, 80 + 35 * len(section)))
                 else:
                     st.info("No PDUFA candidates available in the loaded events.")
             # Keep the enriched master frame for downstream tabs, but do not

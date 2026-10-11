@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from pdufa_table_headers import pdufa_dataframe
 
 from post_phase3_unified import COLUMNS, build_queue
 from pdufa_display_columns import (prepare_pdufa_grid, sort_pdufa_grid,
@@ -158,7 +159,7 @@ def render_post_phase3_stage1(root="data", include_positions=True, ticker=None):
         "research-triage fallback scores separately. Higher scores are not "
         "FDA approval probabilities or automatic entry signals."
     )
-    st.dataframe(
+    pdufa_dataframe(
         finance_style(display_df.head(250)), use_container_width=True, hide_index=True,
         column_config={
             "Research priority /100": st.column_config.NumberColumn("Research priority /100", format="%d"),

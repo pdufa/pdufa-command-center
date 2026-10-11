@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
+from pdufa_table_headers import pdufa_dataframe
 
 from post_phase3_unified_ui import render_post_phase3_stage1
 from post_phase3_unified import build_queue, read_rows
@@ -105,7 +106,7 @@ def _stage3(root="data", ticker=None):
     )
     if view == "Scenario summary":
         df = pd.DataFrame(summary).reindex(columns=SUMMARY_FIELDS)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        pdufa_dataframe(df, use_container_width=True, hide_index=True)
         st.download_button(
             "EXPORT SCENARIO SUMMARY",
             df.to_csv(index=False).encode("utf-8"),
@@ -114,7 +115,7 @@ def _stage3(root="data", ticker=None):
         )
     elif view == "Matched-program comparison":
         df = pd.DataFrame(matched)
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        pdufa_dataframe(df, use_container_width=True, hide_index=True)
         st.caption("Only identical verified programs appear in the matched-method comparison.")
     else:
         st.caption(
@@ -127,7 +128,7 @@ def _stage3(root="data", ticker=None):
             "next_research_step",
         )
         df = pd.DataFrame(queue).reindex(columns=columns)
-        st.dataframe(df, use_container_width=True, hide_index=True, height=380)
+        pdufa_dataframe(df, use_container_width=True, hide_index=True, height=380)
     queue_frame = pd.DataFrame(queue)
     st.download_button(
         "EXPORT ALL HISTORICAL EVIDENCE RESEARCH ITEMS",

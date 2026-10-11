@@ -10,6 +10,7 @@ from stages import StageIndex, STAGE_HELP, DAYS_HELP, add_stage_column
 from financing_stage import FINANCING_OPTIONS, FINANCING_HELP, add_financing_column
 from stage_header_overlay import position_stage_filter
 from pdufa_display_columns import sort_pdufa_rows
+from pdufa_table_headers import pdufa_dataframe, pdufa_editor
 
 
 MAX_COLUMNS = 7
@@ -396,7 +397,8 @@ def grouped_dataframe(data, **kwargs):
         nonlocal first
         panel_key = key if first else f"{key}_{token}"
         first = False
-        return st.dataframe(data[fields], key=panel_key, column_config=_compact_config(fields, config), **kwargs)
+        renderer = pdufa_dataframe if st.session_state.get("nav") == "PDUFA" else st.dataframe
+        return renderer(data[fields], key=panel_key, column_config=_compact_config(fields, config), **kwargs)
 
     results = render_column_tabs(data, key, render)
     return next((result for result in results if getattr(getattr(result, "selection", None), "rows", [])), results[0])
@@ -473,7 +475,8 @@ def grouped_editor(data, **kwargs):
         pane_input = snapshot if pane_dynamic else snapshot[fields]
         if pane_dynamic:
             pane_config.update({c: None for c in data.columns if c not in fields})
-        edited = st.data_editor(
+        renderer = pdufa_editor if st.session_state.get("nav") == "PDUFA" else st.data_editor
+        edited = renderer(
             pane_input, key=widget_key, column_order=fields, column_config=pane_config,
             disabled=[c for c in pane_input.columns if c not in allowed],
             num_rows="dynamic" if pane_dynamic else "fixed", on_change=_commit_pane,
