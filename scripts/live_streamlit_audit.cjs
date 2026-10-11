@@ -170,18 +170,19 @@ async function audit(){
       await appFrame.getByRole("tab",{name:"UNIFIED OVERVIEW",exact:true}).click({timeout:15000});
       const overviewReady=await waitForRender(page,appFrame,async(text,frame)=>
         await frame.getByRole("tab",{name:"UNIFIED OVERVIEW",exact:true}).getAttribute("aria-selected")==="true"
-        && text.includes("#1-DB")
+        && text.includes("#2-PIPELINE")
         && text.includes("PDUFA TIMELINE")
         && text.includes("EXPORT TRADING CANDIDATES")
         && text.includes("EXPORT PDUFA TIMELINE"));
       appFrame=overviewReady.frame;
       const activeOverview=appFrame.locator('[role="tabpanel"]:visible');
       const overviewText=await activeOverview.innerText();
-      result.checks.unifiedOverviewDashboard=["#1-DB","#2-PIPELINE","#3-PRE3","#4-POST3","Focus ticker"]
+      result.checks.unifiedOverviewDashboard=["#2-PIPELINE","#3-PRE3","#4-POST3","Focus ticker"]
         .every(label=>overviewText.includes(label))
+        && !overviewText.includes("#1-DB")
         && await activeOverview.locator('[data-testid="stDataFrame"]').count()>=3;
       if(!result.checks.unifiedOverviewDashboard)
-        result.errors.push("UNIFIED OVERVIEW must show #1-DB, #2-PIPELINE, #3-PRE3 and #4-POST3 with linked ticker focus.");
+        result.errors.push("UNIFIED OVERVIEW must show #2-PIPELINE, #3-PRE3 and #4-POST3 with linked ticker focus, without #1-DB.");
       await page.screenshot({path:path.join(outDir,"streamlit-unified-overview-dashboard.png"),fullPage:false});
       // The merged POST PHASE 3 now renders three full panels in one session.
       // Restart the UI session before inspecting PRE PHASE 3, so a pending

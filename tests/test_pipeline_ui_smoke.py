@@ -330,7 +330,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         overview = next(item for item in overview_app.get("tab")
                         if item.label == "UNIFIED OVERVIEW")
         headings = [item.body for item in overview.get("markdown")]
-        for title in ("## #1-DB", "### #2-PIPELINE",
+        self.assertFalse(any("#1-DB" in heading for heading in headings))
+        for title in ("### #2-PIPELINE",
                       "### #3-PRE3", "### #4-POST3"):
             self.assertTrue(any(title in heading for heading in headings), title)
         self.assertTrue(any(item.key == "overview_export"

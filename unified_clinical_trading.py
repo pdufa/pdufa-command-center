@@ -46,14 +46,12 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     post3 = filtered_feed(post, "POST PHASE 3")
     st.markdown("""
     <style>
-    .st-key-overview_dashboard_panel,
     .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
     .st-key-overview_post3_panel {
       background:#ffffff; border:2px solid #000000 !important;
       border-radius:14px; padding:14px; color:#111111;
       position:relative; isolation:isolate;
     }
-    .st-key-overview_dashboard_panel::before,
     .st-key-overview_pipeline_panel::before,
     .st-key-overview_pre3_panel::before,
     .st-key-overview_post3_panel::before {
@@ -61,12 +59,10 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
       font-size:120px; font-weight:900; line-height:1;
       color:rgba(17,17,17,.10); pointer-events:none; user-select:none;
     }
-    .st-key-overview_dashboard_panel::before {content:"1";}
     .st-key-overview_pipeline_panel::before {content:"2";}
     .st-key-overview_pre3_panel::before {content:"3";}
     .st-key-overview_post3_panel::before {content:"4";}
     @media (max-width:768px) {
-      .st-key-overview_dashboard_panel::before,
       .st-key-overview_pipeline_panel::before,
       .st-key-overview_pre3_panel::before,
       .st-key-overview_post3_panel::before {font-size:100px; right:12px;}
@@ -151,10 +147,8 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 
 def render_combined_overview(root="data", *, dashboard=False):
     """Render linked clinical context and return the shared ticker focus."""
-    heading_panel = st.container(border=True, key="overview_dashboard_panel") if dashboard else st.container()
-    with heading_panel:
-        st.markdown("## #1-DB" if dashboard
-                    else "### UNIFIED CLINICAL → TRADING DISPLAY")
+    if not dashboard:
+        st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
         st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:

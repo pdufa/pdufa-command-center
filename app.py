@@ -3304,7 +3304,7 @@ if page == "PDUFA":
             prepared = pd.DataFrame()
             count_records = pd.DataFrame()
 
-        def _render_pipeline_counts(slot, title, field, categories):
+        def _render_pipeline_counts(slot, title, field, categories, total_label):
             counts = (count_records[field].value_counts().to_dict()
                       if field in count_records else {})
             maximum = max((int(counts.get(category, 0)) for category in categories), default=0)
@@ -3375,11 +3375,11 @@ if page == "PDUFA":
             )
             with slot:
                 st.markdown("#### " + title)
+                st.metric(total_label, f"{len(count_records):,}")
                 st.markdown(chart_html, unsafe_allow_html=True)
-                st.caption(f"TOTAL: {len(count_records):,} trials / programs")
 
-        _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES)
-        _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS)
+        _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES, "PHASE TOTAL")
+        _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS, "DATE TOTAL")
 
         st.markdown("### PDUFA TRIALS / PROGRAMS")
         st.caption("Displayed count always equals the exact number of table rows.")
