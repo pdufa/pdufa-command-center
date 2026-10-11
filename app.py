@@ -2783,7 +2783,24 @@ def render_pre_phase3():
         "Saved historical financing closes are not proof of a new, current, dilution-free trading setup."
     )
     if finance:
-        financing_view = pd.DataFrame(finance)
+        full_financing_view = pd.DataFrame(finance)
+        active_count = int(full_financing_view["Proposed trade status"].str.startswith("REVIEW").sum())
+        excluded_count = len(full_financing_view) - active_count
+        st.caption(
+            f"{active_count} unresolved research candidates; {excluded_count} already-decided/past/out-of-scope events. "
+            "No candidate is verified ENTRY READY."
+        )
+        status_filter = st.selectbox(
+            "POST-READOUT RESEARCH FILTER",
+            ["ACTIVE REVIEWS ONLY", "ALL HISTORICAL EVENTS", "EXCLUDED / PAST"],
+            key="step7_trade_filter",
+        )
+        financing_view = (
+            full_financing_view[full_financing_view["Proposed trade status"].str.startswith("REVIEW")]
+            if status_filter == "ACTIVE REVIEWS ONLY" else
+            full_financing_view[full_financing_view["Proposed trade status"].str.startswith("EXCLUDED")]
+            if status_filter == "EXCLUDED / PAST" else full_financing_view
+        )
         st.dataframe(
             financing_view, use_container_width=True, hide_index=True, height=390,
         )
