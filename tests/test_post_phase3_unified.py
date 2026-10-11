@@ -95,6 +95,43 @@ def test_stale_sources_remove_rating_without_reclassifying_as_green(tmp_path):
     assert "STALE" in rows[0]["Rating status"]
 
 
+def test_ranks_exist_for_review_candidates_with_no_strict_evidence(tmp_path):
+    fixture(tmp_path)
+    write_csv(tmp_path, "step7_financing_review.csv", [{
+        "Exact financing event": EVENT,
+        "Current gate": "REVIEW — ENTRY BLOCKED",
+        "Source scan": "SOURCE_BLOCKED_RETAINED",
+        "Recheck freshness": "STALE",
+        "Historical second closing": "NOT VERIFIED",
+    }])
+    events, status = build_queue(tmp_path, TODAY)
+    row = events[0]
+    assert row["Entry qualification"].startswith("REVIEW")
+    assert row["Evidence score /100"] is None
+    assert row["Evidence rank"] is None
+    assert row["Research rank"] == 1
+    assert row["Research priority /100"] > 0
+    assert "RESEARCH TRIAGE ONLY" in row["Research priority status"]
+    assert status["green_count"] == 0
+    assert status["research_ranked"] == 1
+
+
+def test_unverified_external_readout_lead_gets_research_rank_not_trade_green(tmp_path):
+    fixture(tmp_path)
+    write_csv(tmp_path, "post_phase3_discoveries.csv", [{
+        "ticker":"NEW", "drug":"Drug B", "indication":"Disease B",
+        "nct_id":"NCT11112222", "readout_date":"2026-09-01",
+        "source_url":"https://issuer.example/readout",
+    }])
+    rows, status = build_queue(tmp_path, TODAY)
+    lead = next(row for row in rows if row["Ticker"] == "NEW")
+    assert lead["Evidence score /100"] is None
+    assert lead["Entry qualification"] == "REVIEW — RESEARCH LEAD"
+    assert lead["Research rank"] is not None
+    assert lead["Research priority /100"] > 0
+    assert status["research_ranked"] == 2
+
+
 def test_one_missing_gate_cannot_be_green(tmp_path):
     fixture(tmp_path)
     funding = [{
@@ -209,6 +246,8 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_unified_gate_and_score_columns_in_one_row,
             test_unrated_lead_cannot_jump_a_verified_event,
             test_stale_sources_remove_rating_without_reclassifying_as_green,
+            test_ranks_exist_for_review_candidates_with_no_strict_evidence,
+            test_unverified_external_readout_lead_gets_research_rank_not_trade_green,
             test_one_missing_gate_cannot_be_green,
             test_blocked_sec_does_not_allow_green,
             test_stale_snapshot_invalidates_green,
