@@ -125,9 +125,17 @@ async function audit(){
         && text.includes("STAGE 1 — PHASE 3 → FINANCING #2 → GREEN ENTRY")
         && text.includes("1 · Discover & qualify")
         && text.includes("2 · Monitor & exit")
-        && text.includes("3 · Historical backtest"));
+        && text.includes("3 · Historical backtest")
+        && text.includes("One combined candidate table")
+        && text.includes("Sort combined table")
+        && text.includes("Eligibility first, highest score within group"));
       appFrame=phase3Ready.frame;
       result.checks.postPhase3Installed=true;
+      result.checks.postPhase3CombinedRatingVisible=phase3Ready.text.includes("One combined candidate table")
+        && phase3Ready.text.includes("Sort combined table")
+        && phase3Ready.text.includes("Eligibility first, highest score within group");
+      if(!result.checks.postPhase3CombinedRatingVisible)
+        result.errors.push("POST PHASE 3 combined eligibility and rating sorter is missing.");
       await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-qualification.png"),fullPage:false});
       await appFrame.getByText("2 · Monitor & exit",{exact:true}).first().click({timeout:15000});
       const phase3Hold=await waitForRender(page,appFrame,
