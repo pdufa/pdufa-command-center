@@ -1,0 +1,45 @@
+"""Real Streamlit regression: all four PDUFA subtabs have the score contract.
+
+Values remain NOT SCORED if no independently supported score exists.
+"""
+import unittest
+from pathlib import Path
+
+from streamlit.testing.v1 import AppTest
+
+from pdufa_display_columns import FRONT, POST_SCORES, PRE_SCORES
+
+APP = Path(__file__).resolve().parents[1] / "app.py"
+TABS = ("UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3")
+
+
+class FourPdufaScoreTabTests(unittest.TestCase):
+    def test_every_subtab_exposes_same_scoring_columns(self):
+        app = AppTest.from_file(str(APP), default_timeout=120)
+        app.session_state["nav"] = "PDUFA"
+        app.run()
+        self.assertFalse(list(app.exception), "PDUFA startup failed")
+        for tab in TABS:
+            with self.subTest(tab=tab):
+                app.session_state["pdufa_subtab"] = tab
+                app.run()
+                self.assertFalse(list(app.exception), tab)
+                main = [
+                    item.value for item in app.dataframe
+                    if {"Ticker", "Score /100", "Score type",
+                        "PDUFA Date", "Days to PDUFA", "F"}.issubset(item.value.columns)
+                ]
+                self.assertTrue(main, f"{tab} is missing its PDUFA score table")
+                self.assertEqual(main[0].columns[:len(FRONT)].tolist(), list(FRONT))
+                self.assertTrue(set(POST_SCORES).issubset(main[0].columns))
+                self.assertTrue(set(PRE_SCORES).issubset(main[0].columns))
+                if len(main[0]):
+                    self.assertTrue(
+                        main[0]["Score /100"].dropna().between(0, 100).all(),
+                        f"{tab} contains an invalid numeric score",
+                    )
+                    self.assertTrue(main[0]["Score type"].notna().all())
+
+
+if __name__ == "__main__":
+    unittest.main()
