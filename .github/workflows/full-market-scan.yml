@@ -1,0 +1,53 @@
+name: Full Biotech Market Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      as_of:
+        description: 'Analysis date YYYY-MM-DD; blank means today (UTC)'
+        required: false
+        type: string
+      pace_seconds:
+        description: 'Seconds between Stooq requests across workers'
+        required: false
+        default: '1.0'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: biotech-full-market-scan
+  cancel-in-progress: false
+
+jobs:
+  scan-all:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run entire ticker universe; save every result
+        env:
+          AS_OF: ${{ inputs.as_of }}
+          PACE_SECONDS: ${{ inputs.pace_seconds }}
+        run: |
+          mkdir -p reports
+          if [ -n "$AS_OF" ]; then
+            python market_bulk_scan.py --as-of "$AS_OF" --max-workers 3 --min-interval "$PACE_SECONDS" --db reports/market_bulk.sqlite3 --output reports/all_biotech_market_scan.csv
+          else
+            python market_bulk_scan.py --max-workers 3 --min-interval "$PACE_SECONDS" --db reports/market_bulk.sqlite3 --output reports/all_biotech_market_scan.csv
+          fi
+      - name: Upload full results even when some stocks fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-biotech-market-scan
+          path: |
+            reports/*.csv
+            reports/*.json
+            reports/*.sqlite3
+          if-no-files-found: warn
+          retention-days: 30
