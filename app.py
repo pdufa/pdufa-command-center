@@ -2662,7 +2662,7 @@ def render_pre_phase3():
         "phase3_intake_status.json", "phase3_announcements.csv",
         "pre_readout_protocols.csv", "pre_readout_intake_status.json",
         "phase_pipeline_market_caps.csv", "second_financing_status.csv",
-        "recheck_status.csv",
+        "recheck_status.csv", "step7_market_status.csv", "step7_market_status.json",
     ]
     signature = tuple(
         (file, (data_root / file).stat().st_mtime_ns if (data_root / file).exists() else 0)
