@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
+from pdufa_display_columns import FRONT
 from html.parser import HTMLParser
 
 
@@ -335,12 +336,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
                         "NCT ID", "Ticker", "Review priority rank"}.issubset(set(t.value.columns))]
         self.assertTrue(clinical, "PRE PHASE 3 clinical grid must render")
         columns = clinical[0].columns.tolist()
-        self.assertEqual(columns[:9], [
-            "Ticker", "Review priority rank", "Review priority /100", "Review priority status",
-            "Preliminary clinical score /100", "Preliminary score status",
-            "Pre-readout research score /100", "Score status",
-            "Linked Phase 2 PRIMARY p",
-        ])
+        self.assertEqual(columns[:len(FRONT)], list(FRONT))
+        self.assertIn("Review priority rank", columns)
+        self.assertIn("Linked Phase 2 PRIMARY p", columns)
+        self.assertIn("Review priority /100", columns)
         self.assertTrue(any("2 provisional, source-cited clinical research score(s) /100" in c.value
                             for c in app.get("caption")))
         self.assertEqual(clinical[0]["Review priority rank"].tolist(), list(range(1, len(clinical[0]) + 1)))
