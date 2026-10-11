@@ -14,6 +14,16 @@ PRE_SCORES = (
     "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
     "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
 )
+PRE_PRIORITY_SCORES = (
+    "Priority stage /30", "Priority identity /15", "Priority registry /10",
+    "Priority protocol /15", "Priority Phase 2 evidence /15",
+    "Priority timing /10", "Priority market cap /5",
+)
+POST_PRIORITY_SCORES = (
+    "Review timing /30", "Review clinical follow-up /20",
+    "Review financing follow-up /15", "Review regulatory follow-up /15",
+    "Review market follow-up /15", "Review identity /5",
+)
 FRONT = (
     "Ticker", "Score /100", "Score type", *POST_SCORES, *PRE_SCORES,
     "PDUFA Date", "Days to PDUFA", "Date Classification", "Primary p",
@@ -71,7 +81,10 @@ def enrich_exact_trials(frame, pre=(), post=()):
     result = frame.copy()
     pre_index, post_index = _index_unique(pre), _index_unique(post)
     allowed = (
-        *POST_SCORES, *PRE_SCORES, "Evidence score /100",
+        *POST_SCORES, *PRE_SCORES, *PRE_PRIORITY_SCORES, *POST_PRIORITY_SCORES,
+        "Evidence score /100", "Research priority /100",
+        "Research priority status", "Review priority /100",
+        "Review priority status", "Review priority rubric",
         "Pre-readout research score /100", "Preliminary clinical score /100",
         "Financing cycle (separate)", "PDUFA date", "Phase 3 PRIMARY p",
         "Primary endpoint p values observed", "Cash Runway (months)",
@@ -174,30 +187,60 @@ def prepare_pdufa_grid(frame, *, view="UNIFIED", as_of=None):
               "cash_runway_verified_at")
         for row in out.to_dict("records")
     ]
+    # All four tabs expose a score, but the models are intentionally NOT
+    # interchangeable. Clinical review and research-triage scores do not become
+    # estimates of approval probability or permission to trade.
     scores, types = [], []
     for row in out.to_dict("records"):
         post = _pick(row, "Evidence score /100")
         reviewed = _pick(row, "Pre-readout research score /100")
         provisional = _pick(row, "Preliminary clinical score /100")
-        if view == "POST PHASE 3" and post is not None:
-            score, label = post, "POST: evidence"
-        elif view == "PRE PHASE 3" and reviewed is not None:
-            score, label = reviewed, "PRE: reviewed"
-        elif view == "PRE PHASE 3" and provisional is not None:
-            score, label = provisional, "PRE: provisional"
-        elif post is not None:
-            score, label = post, "POST: evidence"
-        elif reviewed is not None:
-            score, label = reviewed, "PRE: reviewed"
-        elif provisional is not None:
-            score, label = provisional, "PRE: provisional"
+        pre_priority = _pick(row, "Review priority /100")
+        post_priority = _pick(row, "Research priority /100")
+        if str(row.get("Review priority status") or "").startswith("EXCLUDED"):
+            pre_priority = None
+
+        if view == "POST PHASE 3":
+            candidates = (
+                (post, "POST: evidence"),
+                (post_priority, "POST: research triage"),
+            )
+        elif view == "PRE PHASE 3":
+            candidates = (
+                (reviewed, "PRE: reviewed clinical"),
+                (provisional, "PRE: provisional clinical"),
+                (pre_priority, "PRE: review priority"),
+            )
+        elif view == "PIPELINE":
+            candidates = (
+                (reviewed, "PRE: reviewed clinical"),
+                (provisional, "PRE: provisional clinical"),
+                (post, "POST: evidence"),
+                (pre_priority, "PRE: review priority"),
+                (post_priority, "POST: research triage"),
+            )
         else:
-            score, label = None, "NOT SCORED"
-        scores.append(score)
+            candidates = (
+                (post, "POST: evidence"),
+                (reviewed, "PRE: reviewed clinical"),
+                (provisional, "PRE: provisional clinical"),
+                (pre_priority, "PRE: review priority"),
+                (post_priority, "POST: research triage"),
+            )
+        value, label = None, "NOT SCORED"
+        for candidate, kind in candidates:
+            try:
+                numeric = float(candidate)
+            except (TypeError, ValueError, OverflowError):
+                continue
+            if pd.notna(numeric) and 0 <= numeric <= 100:
+                value, label = numeric, kind
+                break
+        scores.append(value)
         types.append(label)
-    out["Score /100"] = pd.to_numeric(pd.Series(scores, index=out.index), errors="coerce")
+    out["Score /100"] = pd.Series(scores, index=out.index, dtype="Float64")
     out["Score type"] = types
-    for col in POST_SCORES + PRE_SCORES:
+    for col in POST_SCORES + PRE_SCORES + PRE_PRIORITY_SCORES + POST_PRIORITY_SCORES:
         if col not in out:
             out[col] = None
     return out[list(FRONT) + [col for col in out.columns if col not in FRONT]]
