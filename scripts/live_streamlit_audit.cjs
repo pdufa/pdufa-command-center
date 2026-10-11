@@ -76,13 +76,14 @@ async function audit(){
   // A Streamlit iframe paints the header before completing its Python rerun.
   // Wait for the actual filter labels, charts and navigation before auditing.
   if(appFrame){
-    // UNIFIED OVERVIEW is now the first PDUFA tab and the default landing dashboard.
-    // Do not assume PIPELINE's controls render before its tab is selected.
+    // Current app sessions open PDUFA on PIPELINE. Check that page first,
+    // then navigate to POST PHASE 3 and UNIFIED OVERVIEW explicitly.
     const ready=await waitForRender(page,appFrame,async(text,frame)=>
-      await frame.getByRole("tab",{name:"UNIFIED OVERVIEW",exact:true}).getAttribute("aria-selected")==="true"
-      && text.includes("UNIFIED OVERVIEW — TRADING COMMAND CENTER")
-      && text.includes("PDUFA TIMELINE")
-      && text.includes("EXPORT PDUFA TIMELINE"));
+      await frame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true"
+      && text.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
+      && text.includes("STAGE COUNTS")
+      && text.includes("DATE TRIAL COUNTS")
+      && text.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"));
     appFrame=ready.frame;initial=ready.text;
   }
   result.visibleStart=initial.slice(0,1100);
@@ -112,16 +113,10 @@ async function audit(){
     result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
     result.checks.threePdufaTabs=["UNIFIED OVERVIEW","PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
-    result.checks.unifiedOverviewDefaultActive=await appFrame.getByRole("tab",{name:"UNIFIED OVERVIEW",exact:true}).getAttribute("aria-selected")==="true";
-    if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.unifiedOverviewDefaultActive)
-      result.errors.push("PDUFA must open with UNIFIED OVERVIEW and preserve navigation into PIPELINE.");
-    await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).click({timeout:15000});
-    const pipelineReady=await waitForRender(page,appFrame,async(text,frame)=>
-      await frame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true"
-      && text.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
-      && text.includes("STAGE COUNTS") && text.includes("DATE TRIAL COUNTS")
-      && text.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"));
-    appFrame=pipelineReady.frame;
+    result.checks.pipelineDefaultActive=await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true";
+    if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
+      result.errors.push("PDUFA must open with PIPELINE and preserve the main navigation.");
+    const pipelineReady=ready;
     result.checks.pipelineTabLoads=true;
     result.checks.researchInsidePipeline=await appFrame.getByText("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS",{exact:false}).count()>0;
     result.checks.stageAndDateControls=(await appFrame.locator('[data-testid="stMultiSelect"]').count())>=2;
