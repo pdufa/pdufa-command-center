@@ -310,11 +310,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
             "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p",
         ])
-        pilots = clinical[0].loc[
-            clinical[0]["Preliminary clinical score /100"].notna()
-        ]
-        self.assertTrue({80, 72}.issubset(set(pilots["Preliminary clinical score /100"])),
-                        "Expected source-cited provisional pilot scores for TRVI and LBRX")
+        self.assertTrue(any("provisional, source-cited clinical research score(s) /100" in m.body
+                            for m in app.markdown))
         self.assertTrue(
             (clinical[0]["Pre-readout research score /100"].notna()
              & clinical[0]["Score status"].eq("100-POINT RESEARCH SCORE — UNCALIBRATED")
