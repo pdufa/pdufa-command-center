@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-11T03:28:56+00:00",
+  "generated_at_utc": "2026-10-11T03:35:19+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -45,10 +45,20 @@
       "Last checked UTC": "2026-10-05T14:37:07Z",
       "Details": "38 historical event records; SEC access may be blocked",
       "Blocked records": 38
+    },
+    {
+      "Source": "Market EOD price / volume",
+      "Collector status": "UNKNOWN",
+      "Freshness": "NO TIMESTAMP",
+      "Health": "PARTIAL / UNKNOWN",
+      "Last checked UTC": "",
+      "Details": "0/0 recent session quotes; not a stability certification",
+      "Blocked records": 0
     }
   ],
   "trial_rows": 3105,
   "financing_events": 38,
+  "market_eod_rows": 0,
   "entry_ready_count": 0,
   "entry_gate_note": "NO is intentional until independent source-verified Phase 3 success, clinically meaningful benefit, safety, current second financing closure, stable base, normalized volume and dilution conditions can all be confirmed.",
   "scope_note": "Saved scheduled-collector snapshots, not tick-by-tick market data. SEC failures are not masked."
