@@ -58,6 +58,43 @@ def test_green_only_with_current_verified_event(tmp_path):
     assert rows[0]["Planned exit (-7 days)"] == (TODAY + timedelta(days=33)).isoformat()
 
 
+def test_unified_gate_and_score_columns_in_one_row(tmp_path):
+    rows, status = build_queue(fixture(tmp_path), TODAY)
+    row = rows[0]
+    assert row["Entry qualification"] == "GREEN — GATES ATTESTED"
+    assert row["Evidence score /100"] == 65
+    assert row["Clinical evidence /30"] == 30
+    assert row["Financing evidence /20"] == 20
+    assert row["Trading setup /20"] == 0
+    assert row["PDUFA evidence /15"] == 15
+    assert row["Evidence rank"] == 1
+    assert row["Rating status"].startswith("PARTIAL")
+    assert status["green_count"] == 1
+
+
+def test_unrated_lead_cannot_jump_a_verified_event(tmp_path):
+    fixture(tmp_path)
+    write_csv(tmp_path, "post_phase3_discoveries.csv", [{
+        "ticker":"NEW", "drug":"Drug B", "indication":"Disease B",
+        "nct_id":"NCT11112222", "readout_date":"2026-09-01",
+        "source_url":"https://issuer.example/clinical",
+    }])
+    rows, status=build_queue(tmp_path,TODAY)
+    lead=next(x for x in rows if x["Ticker"]=="NEW")
+    assert lead["Entry qualification"].startswith("REVIEW")
+    assert lead["Evidence score /100"] is None
+    assert lead["Evidence rank"] is None
+    assert status["green_count"]==1
+
+
+def test_stale_sources_remove_rating_without_reclassifying_as_green(tmp_path):
+    fixture(tmp_path)
+    rows,status=build_queue(tmp_path,TODAY + timedelta(days=1))
+    assert status["green_count"]==0
+    assert rows[0]["Evidence score /100"] is None
+    assert "STALE" in rows[0]["Rating status"]
+
+
 def test_one_missing_gate_cannot_be_green(tmp_path):
     fixture(tmp_path)
     funding = [{
@@ -169,6 +206,9 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
     def test_source_and_stage_regressions(self):
         scenarios = (
             test_green_only_with_current_verified_event,
+            test_unified_gate_and_score_columns_in_one_row,
+            test_unrated_lead_cannot_jump_a_verified_event,
+            test_stale_sources_remove_rating_without_reclassifying_as_green,
             test_one_missing_gate_cannot_be_green,
             test_blocked_sec_does_not_allow_green,
             test_stale_snapshot_invalidates_green,
