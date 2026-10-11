@@ -29,7 +29,8 @@ COLUMNS = (
     "Research priority status", "Research priority limitations",
     "Rating status", "Rating coverage", *REVIEW_COMPONENTS,
     *WEIGHTS.keys(), "Rating limitations", "Source lane",
-    "Exact event", "Phase 3 evidence", "Financing #2", "Financing cycle (separate)",
+    "Exact event", "Phase 3 evidence", "Financing #2", "2nd Financing Completed",
+    "Financing cycle (separate)",
     "PDUFA verification", "Days to PDUFA", "PDUFA date",
     "Planned exit (-7 days)", "Next action", "Blockers",
     "Registry source", "Phase 3 source", "Financing source",
@@ -80,6 +81,7 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "Indication": indication, "NCT ID": nct,
         "Exact event": "", "Phase 3 evidence": "REVIEW — RESULT NOT ADJUDICATED",
         "Financing #2": "REVIEW — EXACT EVENT NOT VERIFIED",
+        "2nd Financing Completed": "NOT VERIFIED",
         "Financing cycle (separate)": "REVIEW — FINANCING UNVERIFIED",
         "Entry qualification": "REVIEW — RESEARCH LEAD",
         "Research rank": None, "Research priority /100": 0,
@@ -209,10 +211,11 @@ def build_queue(root, as_of=None):
         stage_name = clean(fin_stage.get("second_financing_status")).upper()
         fin_review_date = parsed_date(fin_stage.get("verified_as_of"))
         stage_fresh = bool(fin_review_date and 0 <= (today - fin_review_date).days <= 7)
-        if (stage_name in {"CLOSED", "FINISHED"} and
+        second_financing_verified = (stage_name in {"CLOSED", "FINISHED"} and
                 clean(fin_stage.get("second_financing_audit_status")) == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
                 clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
-                https_source(fin_stage.get("second_financing_source"))):
+                https_source(fin_stage.get("second_financing_source")))
+        if second_financing_verified:
             financing_cycle = "RED — FINANCING CLOSED (HISTORICAL)"
         elif stage_fresh and stage_name in {"RUNNING", "IN_PROGRESS"}:
             financing_cycle = "YELLOW — FINANCING RUNNING (AS OF REVIEW)"
@@ -248,6 +251,7 @@ def build_queue(root, as_of=None):
             "Phase 3 evidence": ("VERIFIED SUCCESS — SOURCE LINKED" if clinical
                                  else "REVIEW — RESULT NOT ADJUDICATED"),
             "Financing #2": clean(funding.get("Historical second closing")) or "REVIEW — NOT DOCUMENTED",
+            "2nd Financing Completed": ("YES — VERIFIED (HISTORICAL)" if second_financing_verified else "NOT VERIFIED"),
             "Financing cycle (separate)": financing_cycle,
             "Entry qualification": status,
             "PDUFA verification": ("VERIFIED — SOURCE LINKED" if verified_date else "REVIEW — NOT VERIFIED"),
