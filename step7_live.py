@@ -13,6 +13,7 @@ import re
 from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
 from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
 from step7_entry import read_evidence, evaluate_entry
 
 NCT = re.compile(r"^NCT\d{8}$")
@@ -113,6 +114,7 @@ def build_snapshot(root, now=None):
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ValueError("now must be timezone-aware")
+    local_today = now.astimezone(ZoneInfo("America/Los_Angeles")).date()
 
     trial_rows = read_csv(root / "phase_pipeline.csv")
     primary_results = read_csv(root / "phase3_primary_pvalues.csv")
@@ -132,10 +134,10 @@ def build_snapshot(root, now=None):
         import pandas as pd
         from pre_readout_score import candidate_queue, assess
         raw_queue = candidate_queue(pd.DataFrame(trial_rows), pd.DataFrame(read_csv(root / "phase3_announcements.csv")),
-                                    pd.DataFrame(caps), now.date())
+                                    pd.DataFrame(caps), local_today)
         manual = pd.DataFrame(read_csv(root / "phase3_pre_readout_evidence.csv"))
         if not raw_queue.empty and not manual.empty:
-            raw_queue = assess(raw_queue, manual, now.date())
+            raw_queue = assess(raw_queue, manual, local_today)
         for _, scored in raw_queue.iterrows():
             score = scored.get("Pre-Readout Evidence Points")
             pre_scored[(str(scored["Ticker"]).upper(),str(scored["NCT ID"]).upper())] = {
@@ -265,7 +267,7 @@ def build_snapshot(root, now=None):
         decision = bool(outcome in {"APPROVED","CRL","REJECTED","WITHDRAWN"}
                         or reg.get("check_status", "").upper().startswith("RESOLVED_"))
         try:
-            decision_day_passed = bool(target and date.fromisoformat(target) < now.date())
+            decision_day_passed = bool(target and date.fromisoformat(target) < local_today)
         except ValueError:
             decision_day_passed = False
         excluded = decision or decision_day_passed or reg.get("monitor_eligibility", "").upper() == "EXCLUDED"
@@ -281,14 +283,14 @@ def build_snapshot(root, now=None):
                       and is_valid_source(fin.get("second_financing_source")))
         quote = market_by_ticker.get(key.split("|", 1)[0].upper(), {})
         try:
-            session_age = (now.date() - date.fromisoformat(quote.get("last_session", ""))).days
+            session_age = (local_today - date.fromisoformat(quote.get("last_session", ""))).days
         except ValueError:
             session_age = None
         quote_fresh = (quote.get("last_session_freshness") == "RECENT EOD"
                        and quote.get("market_status") == "MARKET_UPDATED"
                        and freshness(quote.get("checked_at_utc"), now, 72) == "RECENT"
                        and session_age is not None and 0 <= session_age <= 5)
-        decision_report = evaluate_entry(reg or {"event_key":key}, manual_entry.get(key), fin, rec, quote, now)
+        decision_report = evaluate_entry(reg or {"event_key":key}, manual_entry.get(key), fin, rec, quote, local_today)
         gate_notes=[]
         if decision: gate_notes.append("FDA decision already recorded")
         elif decision_day_passed: gate_notes.append("saved PDUFA date passed; recheck decision")
