@@ -46,8 +46,22 @@ def _render_command_center(df, post, *, today, ticker, phase, stage, search, dis
     .st-key-overview_timeline_panel {
       background:#ffffff; border:2px solid #000000 !important;
       border-radius:14px; padding:14px; color:#111111;
+      position:relative; isolation:isolate;
     }
+    .st-key-overview_trading_panel::before,
+    .st-key-overview_pipeline_panel::before,
+    .st-key-overview_timeline_panel::before {
+      position:absolute; top:2px; right:16px; z-index:-1;
+      font-size:120px; font-weight:900; line-height:1;
+      color:rgba(17,17,17,.10); pointer-events:none; user-select:none;
+    }
+    .st-key-overview_trading_panel::before {content:"2";}
+    .st-key-overview_pipeline_panel::before {content:"3";}
+    .st-key-overview_timeline_panel::before {content:"4";}
     @media (max-width:768px) {
+      .st-key-overview_trading_panel::before,
+      .st-key-overview_pipeline_panel::before,
+      .st-key-overview_timeline_panel::before {font-size:100px; right:12px;}
       .st-key-overview_panels [data-testid="stHorizontalBlock"] {flex-wrap:wrap;}
       .st-key-overview_panels [data-testid="stColumn"] {width:100% !important; flex:1 1 100% !important; min-width:0 !important;}
     }

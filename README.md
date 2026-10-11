@@ -8,6 +8,8 @@ panels; shared phase, stage, search and sort controls narrow the view. The
 light-green background, white panels with black borders, and stacked mobile
 layout are retained. Expand the detail panels for all score components and
 source evidence; CSV exports include every matching record.
+Large, faint background numbers identify the panels: **2 — Trading**,
+**3 — Pipeline**, and **4 — PDUFA Timeline**.
 
 **PDUFA → POST PHASE 3** contains the combined clinical/pipeline display and
 all three trading sections: discovery/qualification, reported-position
