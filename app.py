@@ -2222,6 +2222,8 @@ def _render_merged_table_panel(frame, heading, height_px=690):
                 header_cells.append(f'<th class="angle-head"><span>{sort_button}</span></th>')
             else:
                 extra = ' ticker-head' if col == "Ticker" else ''
+                if col in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa"):
+                    extra += ' countdown-head'
                 if col in {"P%", "P"}:
                     extra += ' compact-p'
                 header_cells.append(f'<th class="normal-head{extra}">{sort_button}</th>')
