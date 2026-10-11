@@ -154,6 +154,23 @@ async function audit(){
       if(!result.checks.noInventedTradeReturns)
         result.errors.push("POST PHASE 3 Stage 3 falsely reports trade returns without evidence.");
       await page.screenshot({path:path.join(outDir,"streamlit-post-phase3-unified-workspace.png"),fullPage:false});
+      // The merged POST PHASE 3 now renders three full panels in one session.
+      // Restart the UI session before inspecting PRE PHASE 3, so a pending
+      // expensive rerun or a detached Streamlit iframe does not block unrelated
+      // tabs. This is a fresh real browser check, not a skipped assertion.
+      await page.reload({waitUntil:"domcontentloaded",timeout:60000});
+      appFrame=null;
+      for(let attempt=0;attempt<80;attempt++){
+        const frames=await inspectFrames(page);
+        const found=frames.find(x=>x.text.includes("BIO PDUFA COMMAND CENTER"));
+        if(found){appFrame=found.frame;break;}
+        await sleep(1500);
+      }
+      if(!appFrame)throw Error("Unable to reacquire Streamlit app after merged POST PHASE 3 audit");
+      const refreshed=await waitForRender(page,appFrame,
+        text=>text.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
+          && text.includes("STAGE COUNTS") && text.includes("DATE TRIAL COUNTS"));
+      appFrame=refreshed.frame;
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
       const preReady=await waitForRender(page,appFrame,(text,frame)=>
         frame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")
