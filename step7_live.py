@@ -13,6 +13,7 @@ import re
 from datetime import datetime, timezone, timedelta, date
 from pathlib import Path
 from urllib.parse import urlparse
+from step7_entry import read_evidence, evaluate_entry
 
 NCT = re.compile(r"^NCT\d{8}$")
 FRESH_HOURS = {
@@ -117,12 +118,31 @@ def build_snapshot(root, now=None):
     caps = read_csv(root / "phase_pipeline_market_caps.csv")
     financing = read_csv(root / "second_financing_status.csv")
     regulatory = read_csv(root / "pdufa_candidates.csv")
+    manual_entry = read_evidence(root / "step7_entry_evidence.csv")
     candidate_by_event = {r.get("event_key"):r for r in regulatory if r.get("event_key")}
     rechecks = read_csv(root / "recheck_status.csv")
     market_rows = read_csv(root / "step7_market_status.csv")
     market_state = read_json(root / "step7_market_status.json")
     market_by_ticker = {r.get("ticker", "").upper(): r for r in market_rows if r.get("ticker")}
     trial_state = read_json(root / "phase_pipeline_state.json")
+    pre_scored = {}
+    try:
+        import pandas as pd
+        from pre_readout_score import candidate_queue, assess
+        raw_queue = candidate_queue(pd.DataFrame(trial_rows), pd.DataFrame(read_csv(root / "phase3_announcements.csv")),
+                                    pd.DataFrame(caps), now.date())
+        manual = pd.DataFrame(read_csv(root / "phase3_pre_readout_evidence.csv"))
+        if not raw_queue.empty and not manual.empty:
+            raw_queue = assess(raw_queue, manual, now.date())
+        for _, scored in raw_queue.iterrows():
+            score = scored.get("Pre-Readout Evidence Points")
+            pre_scored[(str(scored["Ticker"]).upper(),str(scored["NCT ID"]).upper())] = {
+                "score": float(score) if pd.notna(score) else None,
+                "status": scored.get("Assessment Status", "NOT SCORED"),
+                "missing": scored.get("Missing Evidence", ""),
+            }
+    except (ValueError, KeyError, TypeError, ImportError, AttributeError):
+        pre_scored = {}
     p3_state = read_json(root / "phase3_intake_status.json")
     protocol_state = read_json(root / "pre_readout_intake_status.json")
 
@@ -167,6 +187,11 @@ def build_snapshot(root, now=None):
         if cap_ok and not (300_000_000 <= cap_number <= 10_000_000_000):
             cap_state = "OUTSIDE $300M–$10B"
         p = protocol_by_nct.get(nct, {})
+        design_checks = [bool(p.get("primary_endpoint")), bool(p.get("primary_timeframe")),
+                         bool(p.get("allocation")), bool(p.get("masking")),
+                         bool(p.get("comparator")), str(p.get("enrollment","")).isdigit()]
+        coverage_count = sum(design_checks) if freshness(p.get("checked_at"), now, 72) == "RECENT" else 0
+        verified_score = pre_scored.get((ticker,nct), {})
         p_fresh = freshness(p.get("checked_at"), now, 72)
         registry_results = bool(row.get("results_first_posted"))
         # Do not turn a registry milestone into positive efficacy or an issuer readout.
@@ -184,6 +209,11 @@ def build_snapshot(root, now=None):
             "Company/program identity": row.get("program_identity_status", "") or "REVIEW",
             "Registry check": trial_check,
             "Protocol check": p_fresh if "PHASE3" in phases else "NOT REQUIRED FOR PHASE 2 WATCH",
+            "Design inputs present /6": coverage_count,
+            "Design coverage meaning": "RECORDED FIELDS ONLY — NOT A TRIAL DESIGN QUALITY SCORE",
+            "Pre-readout research score /100": verified_score.get("score"),
+            "Score status": verified_score.get("status", "NOT SCORED — EVIDENCE INCOMPLETE"),
+            "Missing pre-readout evidence": verified_score.get("missing", ""),
             "Market cap USD": cap_number if cap_ok else None,
             "Market cap state": cap_state,
             "Market source": cap.get("market_cap_source", "") if cap_ok else "",
@@ -238,6 +268,7 @@ def build_snapshot(root, now=None):
                        and quote.get("market_status") == "MARKET_UPDATED"
                        and freshness(quote.get("checked_at_utc"), now, 72) == "RECENT"
                        and session_age is not None and 0 <= session_age <= 5)
+        decision_report = evaluate_entry(reg or {"event_key":key}, manual_entry.get(key), fin, rec, quote, now)
         gate_notes=[]
         if decision: gate_notes.append("FDA decision already recorded")
         elif decision_day_passed: gate_notes.append("saved PDUFA date passed; recheck decision")
@@ -251,11 +282,19 @@ def build_snapshot(root, now=None):
         if not quote_fresh: gate_notes.append("fresh EOD quote missing")
         gate_notes.extend(("clinical benefit/CI and safety manual review required",
                            "post-readout stable price base and normalized volume not verified"))
-        gate_label = "EXCLUDED — past / resolved / out of scope" if excluded else "REVIEW — ENTRY GATES NOT CLEARED"
+        gate_label = ("EXCLUDED — past / resolved / out of scope" if excluded else
+                      decision_report["verdict"] if reg else "REVIEW — ENTRY GATES NOT CLEARED")
+        reviewed_gates = decision_report.get("gates", {})
+        if reviewed_gates:
+            gate_notes = list(decision_report.get("missing", []))
         events.append({
             "Ticker": key.split("|", 1)[0],
             "Proposed trade status": gate_label,
             "Gate reasons": " | ".join(gate_notes),
+            "Audited gate details": " | ".join(k+": "+v for k,v in reviewed_gates.items()),
+            "Post-readout base range %": decision_report.get("market_observations", {}).get("range10_pct"),
+            "5-vs-20 day volume ratio": decision_report.get("market_observations", {}).get("volume5_vs_prior20"),
+            "Clinical success attestation": decision_report.get("clinical_verification", "NOT VERIFIED"),
             "Recorded FDA outcome": outcome,
             "Saved PDUFA target": target,
             "Price last session": quote.get("last_session", "") if quote_fresh else "",
@@ -309,7 +348,7 @@ def build_snapshot(root, now=None):
         "source_checks": checks,
         "trial_rows": len(trials), "financing_events": len(events),
         "market_eod_rows": len(market_rows),
-        "entry_ready_count": 0,
+        "entry_ready_count": sum(x["Proposed trade status"].startswith("ENTRY READY") for x in events),
         "entry_gate_note": "NO is intentional until independent source-verified Phase 3 success, clinically meaningful benefit, safety, current second financing closure, stable base, normalized volume and dilution conditions can all be confirmed.",
         "scope_note": "Saved scheduled-collector snapshots, not tick-by-tick market data. SEC failures are not masked.",
     }
