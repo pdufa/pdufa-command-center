@@ -359,13 +359,19 @@ def read_reviews(ticker=None, db_path=DEFAULT_DB):
         return [{**dict(r), "event": json.loads(r["payload_json"])} for r in rows]
 
 
-def financing_gate(ticker, required_deal_label=None, as_of=None, db_path=DEFAULT_DB):
+def financing_gate(ticker, required_deal_label=None, as_of=None, db_path=DEFAULT_DB, cik=None):
     """Step 6-ready conservative gate. Only named matching deal closes qualify."""
     cutoff = _date(as_of) if as_of is not None else datetime.now(timezone.utc).date()
     if cutoff is None:
         raise ValueError("Invalid as-of date")
+    if cik is None:
+        return {"status": "REVIEW — CURRENT ISSUER CIK REQUIRED",
+                "closure_verified": False, "entry_ready": False,
+                "reviewed_events": 0}
+    verified_cik = cik10(cik)
     rows = read_reviews(ticker, db_path)
     eligible = [r["event"] for r in rows if
+                r["event"].get("cik") == verified_cik and
                 _date(r["event"].get("source_filed")) and
                 _date(r["event"]["source_filed"]) <= cutoff and
                 _date(r["event"].get("closing_date")) and
