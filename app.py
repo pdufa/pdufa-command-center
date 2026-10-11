@@ -2848,7 +2848,7 @@ def render_pre_phase3():
             "Phase 2 link review source", "Clinical score as of",
             "Primary effect size and CI recorded", "Phase 3 result interpretation",
             "Registry primary result source", "Company/program identity",
-            "Market cap USD", "Market cap state", "Listing status", "Listing status source", "Registry check",
+            "Company identity review source", "Market cap USD", "Market cap state", "Listing status", "Listing status source", "Registry check",
             "Protocol check", "Design inputs present /6", "Design coverage meaning",
             "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
             "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
