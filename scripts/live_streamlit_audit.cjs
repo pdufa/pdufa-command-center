@@ -18,6 +18,38 @@ async function inspectFrames(page) {
   }
   return frames;
 }
+function navigationChoice(frame,name){
+  return frame.locator('[data-testid="stRadio"]').filter({has:
+    frame.getByRole("radio",{name:"PDUFA",exact:true})}).getByText(name,{exact:true});
+}
+async function waitForRender(page,frame,accepts,timeout=180000){
+  const deadline=Date.now()+timeout;
+  let text="",stableSince=null;
+  while(Date.now()<deadline){
+    try{
+      if(frame.isDetached()){
+        const current=(await inspectFrames(page)).find(x=>x.text.includes("BIO PDUFA COMMAND CENTER"));
+        if(current)frame=current.frame;
+        else{await sleep(1000);continue;}
+      }
+      text=await frame.locator("body").innerText({timeout:9000});
+      if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(text))
+        throw Error("Streamlit displays an application exception: "+text.slice(-650));
+      const running=await frame.getByRole("button",{name:"Stop",exact:true}).isVisible();
+      if(await accepts(text,frame) && !running){
+        stableSince??=Date.now();
+        // The selected tab changes before the Python rerun starts. Require
+        // a stable completed screen, not a momentary gap before Running.
+        if(Date.now()-stableSince>=1200)return {frame,text};
+      }else stableSince=null;
+    }catch(err){
+      if(!/detached|Execution context was destroyed/i.test(String(err)))throw err;
+      stableSince=null;
+    }
+    await sleep(700);
+  }
+  throw Error("Streamlit render did not complete: "+text.slice(-900));
+}
 async function audit(){
   browser = await chromium.launch({executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",
     headless:true,args:["--no-sandbox","--disable-dev-shm-usage"]});
@@ -44,16 +76,11 @@ async function audit(){
   // A Streamlit iframe paints the header before completing its Python rerun.
   // Wait for the actual filter labels, charts and navigation before auditing.
   if(appFrame){
-    for(let readyAttempt=0;readyAttempt<80;readyAttempt++){
-      try{
-        const updated=await appFrame.locator("body").innerText({timeout:5000});
-        initial=updated;
-        if(updated.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
-          && updated.includes("STAGE COUNTS") && updated.includes("DATE TRIAL COUNTS")
-          && updated.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"))break;
-      }catch(_){}
-      await sleep(2000);
-    }
+    const ready=await waitForRender(page,appFrame,text=>
+      text.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
+      && text.includes("STAGE COUNTS") && text.includes("DATE TRIAL COUNTS")
+      && text.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"));
+    appFrame=ready.frame;initial=ready.text;
   }
   result.visibleStart=initial.slice(0,1100);
   result.checks.pdufaHeader=initial.includes("BIO PDUFA COMMAND CENTER");
@@ -92,9 +119,9 @@ async function audit(){
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(initial);
     if(result.checks.threePdufaTabs){
       await appFrame.getByRole("tab",{name:"POST PHASE 3"}).click({timeout:15000});
-      const toggle=appFrame.getByText("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).first();
       try{
-        await toggle.waitFor({state:"visible",timeout:65000});
+        const ready=await waitForRender(page,appFrame,text=>text.includes("SHOW POST PHASE 3 DAILY REPORT"));
+        appFrame=ready.frame;
         result.checks.dailyReportToggle=true;
       }catch(err){
         result.checks.dailyReportToggle=false;
@@ -103,9 +130,11 @@ async function audit(){
       }
       await page.screenshot({path:path.join(outDir,"streamlit-phase3-before-toggle.png"),fullPage:false});
       if(result.checks.dailyReportToggle){
+        const toggle=appFrame.getByText("SHOW POST PHASE 3 DAILY REPORT",{exact:false}).first();
         await toggle.click({timeout:15000});
         try{
-          await appFrame.getByText("Yesterday: source-linked posts").first().waitFor({timeout:110000});
+          const ready=await waitForRender(page,appFrame,text=>text.includes("Yesterday: source-linked posts"));
+          appFrame=ready.frame;
           result.checks.dailyReportLoads=true;
         }catch(err){
           result.checks.dailyReportLoads=false;
@@ -114,14 +143,13 @@ async function audit(){
         await page.screenshot({path:path.join(outDir,"streamlit-phase3-daily.png"),fullPage:false});
       }
       await appFrame.getByRole("tab",{name:"PRE PHASE 3"}).click({timeout:15000});
-      let prePhaseScreen="";
-      for(let n=0;n<55;n++){
-        prePhaseScreen=await appFrame.locator("body").innerText({timeout:9000});
-        if(prePhaseScreen.includes("SOURCE HEALTH / LAST VERIFIED CHECK")
-          || prePhaseScreen.includes("This app has encountered an error")
-          || prePhaseScreen.includes("Traceback (most recent call last)"))break;
-        await sleep(1500);
-      }
+      const preReady=await waitForRender(page,appFrame,(text,frame)=>
+        frame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")
+          .then(selected=>selected==="true"
+            && text.includes("SOURCE HEALTH / LAST VERIFIED CHECK")
+            && text.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")));
+      appFrame=preReady.frame;
+      let prePhaseScreen=preReady.text;
       // Confirm the new scoring workflow is actually visible on the deployed
       // PRE PHASE 3 tab, not merely present in the Python source files.
       for(let n=0;n<50;n++){
@@ -182,21 +210,25 @@ async function audit(){
         result.errors.push("PRE PHASE 3 Step 7 source-health and clinical research tables must be visible.");
       await page.screenshot({path:path.join(outDir,"streamlit-pre-readout.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PIPELINE"}).click({timeout:15000});
-      await sleep(1500);
+      const pipelineReady=await waitForRender(page,appFrame,text=>text.includes("WATCHLIST MANAGEMENT"));
+      appFrame=pipelineReady.frame;
       result.checks.watchlistInsidePipeline=await appFrame.getByText("WATCHLIST MANAGEMENT",{exact:true}).count()>0;
       await page.screenshot({path:path.join(outDir,"streamlit-pipeline-with-research.png"),fullPage:false});
       await page.setViewportSize({width:390,height:844});
       await sleep(1500);
       await page.screenshot({path:path.join(outDir,"streamlit-iphone-width.png"),fullPage:false});
       // A real phone must reach PLAN without a horizontally hidden navigation option.
-      const mobilePlanChoice=appFrame.getByText("11. PLAN",{exact:true}).first();
+      const mobilePlanChoice=navigationChoice(appFrame,"11. PLAN");
       result.checks.mobilePlanNavigationVisible=await mobilePlanChoice.evaluate(el=>{
         const bounds=el.getBoundingClientRect();
         return bounds.width>0 && bounds.left>=0 && bounds.right<=window.innerWidth;
       });
       await mobilePlanChoice.click({timeout:15000});
-      await appFrame.getByText("11. PLAN — SYSTEM RULES & OPERATING RHYTHM",{exact:false})
-        .first().waitFor({timeout:60000});
+      const planReady=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("radio",{name:"11. PLAN",exact:true}).isChecked()
+        && text.includes("11. PLAN — SYSTEM RULES & OPERATING RHYTHM")
+        && text.includes("SAVE PLAN CHANGES") && text.includes("DOWNLOAD PLAN BACKUP"));
+      appFrame=planReady.frame;
       // Streamlit may paint the PLAN title before its editor/action widgets.
       // Wait for the actual controls, not only the heading, at iPhone width.
       let mobilePlanText="";
@@ -240,10 +272,12 @@ async function audit(){
         // React Aria clips the native input inside a 1px span. Force-checking
         // that input can hit another radio and silently leave the old page.
         // Click the visible label within the actual navigation group instead.
-        const navGroup=appFrame.locator('[data-testid="stRadio"]').filter({has:
-          appFrame.getByRole("radio",{name:"PDUFA",exact:true})});
-        const choice=navGroup.getByText(name,{exact:true});
+        const choice=navigationChoice(appFrame,name);
         await choice.click({timeout:15000});
+        const ready=await waitForRender(page,appFrame,async(text,frame)=>
+          await frame.getByRole("radio",{name,exact:true}).isChecked()
+          && text.includes(expectedHeading));
+        appFrame=ready.frame;
         for(let n=0;n<45;n++){
           const titles=await appFrame.locator("h1,h2,h3").allInnerTexts();
           entry.headings=titles.slice(0,8);
