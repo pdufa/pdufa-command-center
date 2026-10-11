@@ -7,6 +7,7 @@ the closing day; first/second public dates must be researched separately.
 from __future__ import annotations
 
 from collections import Counter
+from pathlib import Path
 from post_phase3_trade_backtest import day, https, read_csv, KEY, NCT
 
 FIELDS = (
@@ -23,7 +24,7 @@ FIELDS = (
 
 
 def build_backfill_queue(root):
-    root = __import__("pathlib").Path(root)
+    root = Path(root)
     reg = read_csv(root/"pdufa_candidates.csv")
     funding = read_csv(root/"second_financing_status.csv")
     companies = read_csv(root/"company_registry.csv")
@@ -51,6 +52,8 @@ def build_backfill_queue(root):
         fund_links = (https(finance.get("first_financing_source"), sec=True, cik=cik)
                       and https(finance.get("second_financing_source"), sec=True, cik=cik)) if cik and cikcounts[ticker] == 1 else False
         historical_funding_candidate = (
+            KEY.fullmatch(key) and key.split("|")[0] == ticker and
+            counts[key] == 1 and fundcounts[key] == 1 and
             date_ok and fund_links and
             finance.get("second_financing_audit_status") ==
                 "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
