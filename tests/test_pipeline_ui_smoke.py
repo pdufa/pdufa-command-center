@@ -294,7 +294,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for item in app.markdown))
 
 
-    def test_pre_phase3_score_and_primary_p_are_first_columns_and_review_pilot_visible(self):
+    def test_pre_phase3_full_priority_order_and_separate_clinical_pilots(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.run()
@@ -306,15 +306,25 @@ class PipelinePageSmokeTests(unittest.TestCase):
                         "NCT ID", "Ticker"}.issubset(set(t.value.columns))]
         self.assertTrue(clinical, "PRE PHASE 3 clinical grid must render")
         columns = clinical[0].columns.tolist()
-        self.assertEqual(columns[:6], [
-            "Ticker", "Preliminary clinical score /100", "Preliminary score status",
+        self.assertEqual(columns[:9], [
+            "Ticker", "Review priority rank", "Review priority /100", "Review priority status",
+            "Preliminary clinical score /100", "Preliminary score status",
             "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p",
         ])
         self.assertTrue(any("2 provisional, source-cited clinical research score(s) /100" in c.value
                             for c in app.get("caption")))
-        self.assertEqual(clinical[0].iloc[:2]["Ticker"].tolist(), ["TRVI", "LBRX"])
-        self.assertEqual(clinical[0].iloc[:2]["Preliminary clinical score /100"].tolist(), [80,72])
+        self.assertEqual(clinical[0]["Review priority rank"].tolist(), list(range(1, len(clinical[0]) + 1)))
+        self.assertTrue(clinical[0]["Review priority /100"].is_monotonic_decreasing)
+        self.assertTrue(any("filtered rows have a review-priority score /100" in c.value for c in app.get("caption")))
+        self.assertTrue(any("ALL-TRIAL REVIEW PRIORITY" in m.body for m in app.markdown))
+        app.selectbox(key="step7_priority_sort").set_value("CLINICAL RESEARCH SCORE")
+        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.run()
+        ordered = next(t.value for t in app.dataframe if "Review priority factors" in t.value.columns)
+        self.assertEqual(ordered.iloc[:2]["Ticker"].tolist(), ["TRVI", "LBRX"])
+        self.assertEqual(ordered.iloc[:2]["Preliminary clinical score /100"].tolist(), [80,72])
+        app.selectbox(key="step7_priority_sort").set_value("REVIEW PRIORITY")
         self.assertTrue(any("DATED CLINICAL RESEARCH PILOT SCORES" in m.body
                             for m in app.markdown))
         pilot_cards = {m.label: m.value for m in app.metric

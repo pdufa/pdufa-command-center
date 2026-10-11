@@ -10,6 +10,8 @@ on:
       - data/phase3_announcements.csv
       - pre_readout_score.py
       - pre_phase3_pilot_scores.py
+      - pre_phase3_priority.py
+      - tests/test_pre_phase3_priority.py
       - pre_phase3_readiness.py
       - data/phase3_pre_readout_evidence.csv
       - data/pre_phase3_pilot_clinical_reviews.json
@@ -50,6 +52,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_step7_live.py' -v
           python -m unittest discover -s tests -p 'test_step7_entry.py' -v
+          python -m unittest discover -s tests -p 'test_pre_phase3_priority.py' -v
       - name: Build current trial/market/financing display feed
         run: python scripts/step7_refresh.py
       - name: Save auditable feed files

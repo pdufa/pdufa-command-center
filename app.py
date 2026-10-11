@@ -13,6 +13,7 @@ from pre_phase3_trading import trading_research_queue, research_discovery_pool
 from step7_live import build_snapshot as build_step7_snapshot, read_json as step7_read_json
 from pre_phase3_readiness import check_pre_phase3_readiness
 from pre_phase3_scoring_review import scoring_review_queue, COLUMNS as SCORING_REVIEW_COLUMNS
+from pre_phase3_priority import RUBRIC_ROWS as PRIORITY_RUBRIC_ROWS, POINT_COLUMNS as PRIORITY_POINT_COLUMNS
 from step7_entry import FIELDS as STEP7_ENTRY_FIELDS, sample_template as step7_entry_template
 from pre_readout_score import evidence_template as step7_pre_readout_template
 from phase2_p_evidence import join_phase2_p
@@ -2750,6 +2751,27 @@ def render_pre_phase3():
         st.info("No available trial rows. Check the Phase 2–3 collector in GitHub Actions.")
     else:
         tab = pd.DataFrame(trials)
+        st.markdown("### ALL-TRIAL REVIEW PRIORITY")
+        p0, p1, p2 = st.columns(3)
+        p0.metric("Priority score coverage", f"{manifest['review_priority_rows']:,} / {len(trials):,}")
+        p1.metric("Ranked active review candidates", f"{manifest['review_priority_ranked']:,}")
+        p2.metric("Excluded from active queue", f"{manifest['review_priority_excluded']:,}")
+        st.caption(
+            "Every saved trial has a review-priority score /100. This ranks research work; "
+            "it is not a clinical strength score or success probability. "
+            "Excluded rows have priority 0 and no rank; their clinical scores stay separate."
+        )
+        with st.expander("HOW REVIEW PRIORITY IS CALCULATED"):
+            st.dataframe(pd.DataFrame(PRIORITY_RUBRIC_ROWS, columns=["Factor", "Maximum points", "Rule"]),
+                         hide_index=True, use_container_width=True)
+            st.caption(
+                "Workflow weights are uncalibrated. Missing evidence earns no readiness points, "
+                "not a negative clinical verdict. Active registry status does not verify issuer-unreleased status. "
+                "Completed/inactive, posted-result, announced-readout, inactive-listing and known non-pivotal "
+                "safety/open-label rows are excluded from the active review queue. "
+                "Ties use ticker then NCT; ranks refer to the full snapshot. "
+                "Month-only completion dates use the full month interval for scoring."
+            )
         phase_options = ["Phase 1", "Phase 2", "Phase 2/3", "Phase 3"]
         phases = st.multiselect(
             "TRIAL STAGES", phase_options, default=phase_options,
@@ -2776,12 +2798,19 @@ def render_pre_phase3():
             selected = selected.loc[
                 fields.astype(str).agg(" ".join, axis=1).str.contains(query, case=False, regex=False)
             ]
-        # Keep the reviewed pilot numbers visible in the initial 500-row view.
-        # This orders research assessments; it does not rank trading entries.
-        selected = selected.sort_values(
-            ["Preliminary clinical score /100", "Pre-readout research score /100"],
-            ascending=False, na_position="last", kind="stable",
+        sort_order = st.selectbox(
+            "RESEARCH QUEUE ORDER", ["REVIEW PRIORITY", "CLINICAL RESEARCH SCORE", "TICKER / NCT"],
+            key="step7_priority_sort",
         )
+        if sort_order == "REVIEW PRIORITY":
+            selected = selected.sort_values("Review priority rank", na_position="last", kind="stable")
+        elif sort_order == "CLINICAL RESEARCH SCORE":
+            selected = selected.sort_values(
+                ["Preliminary clinical score /100", "Pre-readout research score /100"],
+                ascending=False, na_position="last", kind="stable",
+            )
+        else:
+            selected = selected.sort_values(["Ticker", "NCT ID"], kind="stable")
         if cap_only:
             selected = selected.loc[selected["Market cap state"].eq("VERIFIED RECENT")
                                     & selected["Market cap USD"].between(300_000_000, 10_000_000_000)]
@@ -2801,7 +2830,7 @@ def render_pre_phase3():
         # through the 3,000+ row table to find clinical pilot scores.
         scored_pilots = selected.loc[
             pd.to_numeric(selected["Preliminary clinical score /100"], errors="coerce").between(0, 100)
-        ].head(3)
+        ].sort_values("Preliminary clinical score /100", ascending=False).head(3)
         if not scored_pilots.empty:
             st.markdown("### DATED CLINICAL RESEARCH PILOT SCORES")
             st.caption(
@@ -2838,7 +2867,8 @@ def render_pre_phase3():
             "not treated as a confirmed corporate readout day."
         )
         display = [
-            "Ticker", "Preliminary clinical score /100", "Preliminary score status",
+            "Ticker", "Review priority rank", "Review priority /100", "Review priority status",
+            "Preliminary clinical score /100", "Preliminary score status",
             "Pre-readout research score /100", "Score status",
             "Linked Phase 2 PRIMARY p", "Drug", "Indication", "Trial phase",
             "Registry status", "NCT ID", "Phase 3 trial type", "Research category",
@@ -2850,12 +2880,14 @@ def render_pre_phase3():
             "Primary effect size and CI recorded", "Phase 3 result interpretation",
             "Registry primary result source", "Company/program identity",
             "Company identity review source", "Market cap USD", "Market cap state", "Listing status", "Listing status source", "Registry check",
-            "Protocol check", "Design inputs present /6", "Design coverage meaning",
+            "Protocol check", "Protocol as of UTC", "Protocol source", "Design inputs present /6", "Design coverage meaning",
             "Phase 2 Efficacy /25", "Phase 3 Design /30", "Safety /15",
             "Regulatory Alignment /15", "Execution /10", "Evidence Quality /5",
             "Score Evidence", "Clinical rationale", "Clinical Caveats",
             "Missing pre-readout evidence", "ENTRY READY",
             "NCT source", "Market source", "Last trial check UTC",
+            "Review priority factors", "Review priority gaps", "Review priority next action",
+            "Review priority as of", "Review priority rubric", *PRIORITY_POINT_COLUMNS,
         ]
         # Old saved feeds can briefly coexist with a just-deployed app before
         # the Step 7 Actions collector regenerates the new provenance column.
@@ -2870,7 +2902,10 @@ def render_pre_phase3():
             "these are analyst assessments, not independently audited clinical scores, "
             "approval probabilities, or entry signals."
         )
-        st.caption("Scored research rows appear first. The assessment date and six domain explanations are included in the table and CSV export.")
+        st.caption(
+            f"{selected['Review priority /100'].notna().sum():,} of {len(selected):,} filtered rows have a review-priority score /100. "
+            "Default order is global review-priority rank. Factors, evidence gaps, next actions and as-of timestamps are included in the CSV export."
+        )
         st.caption(
             f"{int(scored.sum())} of {len(selected):,} filtered rows have a fully source-reviewed "
             "PRE PHASE 3 score /100. An empty score means NOT SCORED; it is not zero "
@@ -2881,6 +2916,12 @@ def render_pre_phase3():
             hide_index=True, height=530,
             column_config={
                 "Ticker": st.column_config.TextColumn(width="small"),
+                "Review priority rank": st.column_config.NumberColumn("Rank", width="small", format="%d"),
+                "Review priority /100": st.column_config.NumberColumn(
+                    "Priority /100", width="small", format="%d",
+                    help="Research review order from saved inputs; not clinical strength or success probability.",
+                ),
+                "Review priority status": st.column_config.TextColumn("Priority status", width="medium"),
                 "Preliminary clinical score /100": st.column_config.NumberColumn(
                     "Clinical /100", width="small", format="%d",
                     help="Provisional source-cited six-domain research assessment; not an approval probability.",
@@ -2911,6 +2952,7 @@ def render_pre_phase3():
         st.markdown("### NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS")
         st.caption(
             "Prioritized research worklist, not a top ten trading recommendation. "
+            "Uses the same global review-priority score and rank as the full table. "
             "Registry status does not confirm that issuer topline remains unreleased. "
             "Every candidate still needs independently dated issuer, efficacy, safety "
             "and protocol evidence before its 100-point research score can be computed."
@@ -3078,7 +3120,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-11 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · MATCH VALIDATION IN PREDICTION ENGINE · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-11 · ALL-TRIAL REVIEW PRIORITY V1 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · MATCH VALIDATION IN PREDICTION ENGINE · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar, decisions, scans and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 

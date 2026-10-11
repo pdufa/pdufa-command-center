@@ -7,23 +7,27 @@ efficacy, a Phase 3 forecast or an automatically assigned score.
 from __future__ import annotations
 
 import re
+from datetime import datetime, timezone
 from phase3_issuer_readouts import ANNOUNCED
+from pre_phase3_priority import attach_review_priorities, RUBRIC_VERSION
 
 ACTIVE = {"RECRUITING", "ACTIVE_NOT_RECRUITING", "ENROLLING_BY_INVITATION",
           "NOT_YET_RECRUITING"}
 NCT = re.compile(r"^NCT\d{8}$")
 COLUMNS = (
-    "Ticker", "NCT ID", "Drug", "Indication",
+    "Ticker", "Review priority rank", "Review priority /100", "Review priority status",
+    "NCT ID", "Drug", "Indication",
     "Linked Phase 2 PRIMARY p", "Phase 2 PRIMARY evidence count",
     "Phase 2 PRIMARY registry sources", "NCT source",
     "Registry status", "Registry check", "Protocol check",
     "Company/program identity", "Market cap state",
     "Pre-readout research score /100", "Score status",
-    "Needed before clinical score", "Review priority",
+    "Needed before clinical score", "Review priority factors", "Review priority gaps",
+    "Review priority as of", "Review priority rubric",
 )
 
 
-def scoring_review_queue(trials, limit=10):
+def scoring_review_queue(trials, limit=10, now=None):
     """Shortlist source-verified inputs for analyst review, never assert success.
 
     PRE PHASE 3 trials must be active Phase 3 studies with no posted registry
@@ -33,9 +37,12 @@ def scoring_review_queue(trials, limit=10):
     """
     if not isinstance(limit, int) or not 1 <= limit <= 100:
         raise ValueError("limit must be 1–100")
+    rows = [r for r in trials or [] if isinstance(r, dict)]
+    if not all(r.get("Review priority rubric") == RUBRIC_VERSION for r in rows):
+        rows = attach_review_priorities(rows, now or datetime.now(timezone.utc))
     out = []
-    for item in trials or []:
-        if not isinstance(item, dict):
+    for item in rows:
+        if str(item.get("Review priority status") or "").startswith("EXCLUDED"):
             continue
         ticker = str(item.get("Ticker") or "").strip().upper()
         nct = str(item.get("NCT ID") or "").strip().upper()
@@ -77,20 +84,16 @@ def scoring_review_queue(trials, limit=10):
         if not eligible_cap:
             steps.append("Check current market cap and research-range eligibility")
 
-        # Ranking determines *research order*, not a trading signal.
-        priority = (int(has_p) * 4 + int(fresh_protocol) * 2
-                    + int(fresh_registry) + int(verified_program)
-                    + int(eligible_cap))
         record = {k: item.get(k, "") for k in COLUMNS}
         record.update({
             "Needed before clinical score": "; ".join(steps),
-            "Review priority": priority,
             "Phase 2 PRIMARY evidence count": evidence_count,
             # The actual score stays unset until existing strict rubric passes.
             "Pre-readout research score /100": item.get("Pre-readout research score /100"),
         })
         out.append(record)
-    out.sort(key=lambda r: (-r["Review priority"], r["Ticker"], r["NCT ID"]))
+    out.sort(key=lambda r: (-r["Review priority /100"],
+                            r["Review priority rank"] or 10**9, r["Ticker"], r["NCT ID"]))
     # Avoid selecting a duplicate exact ticker/NCT trial snapshot.
     seen = set()
     unique = []

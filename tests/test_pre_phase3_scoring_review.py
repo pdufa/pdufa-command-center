@@ -1,10 +1,12 @@
 """Pre-readout score REVIEW worklist must not invent clinical numbers."""
 import unittest
+from datetime import datetime, timezone
 
 from pre_phase3_scoring_review import COLUMNS, scoring_review_queue
 
 
 def trial(**changes):
+    recent = datetime.now(timezone.utc).isoformat()
     base = {
         "Ticker": "TRVI",
         "NCT ID": "NCT07671911",
@@ -16,10 +18,15 @@ def trial(**changes):
         "Registry results posted": "",
         "NCT source": "https://clinicaltrials.gov/study/NCT07671911",
         "Registry check": "RECENT",
+        "Last trial check UTC": recent,
         "Protocol check": "RECENT",
+        "Protocol as of UTC": recent,
+        "Protocol source": "https://clinicaltrials.gov/study/NCT07671911",
+        "Design inputs present /6": 6,
         "Company/program identity": "VERIFIED",
         "Market cap state": "VERIFIED RECENT",
         "Phase 2 PRIMARY evidence count": 3,
+        "Phase 2 PRIMARY first observed UTC": recent,
         "Linked Phase 2 PRIMARY p": "NCT05964335 p=0.0028",
         "Phase 2 PRIMARY registry sources": "https://clinicaltrials.gov/study/NCT05964335",
         "Pre-readout research score /100": None,
@@ -45,7 +52,7 @@ class ScoreReviewQueueTests(unittest.TestCase):
         self.assertEqual(found[0]["Ticker"], "TRVI")
         self.assertIsNone(found[0]["Pre-readout research score /100"])
         self.assertIn("Issuer topline status",found[0]["Needed before clinical score"])
-        self.assertGreater(found[0]["Review priority"],found[1]["Review priority"])
+        self.assertGreater(found[0]["Review priority /100"],found[1]["Review priority /100"])
 
     def test_open_label_safety_phase3_not_selected_for_pivotal_scoring(self):
         unsafe = trial(**{"Phase 3 trial type": "NON-PIVOTAL EFFICACY — SAFETY / OPEN LABEL"})
