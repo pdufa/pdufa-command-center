@@ -298,6 +298,7 @@ def run_bulk(as_of, identities=None, phase_manifest=None, db_path=DEFAULT_DB,
         todo = todo[:max_new]
     provider = getter or fetch_stooq_daily
     pacer = RatePacer(min_interval)
+    processed_this_run = 0
     with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="step5-eod") as pool:
         futures = {pool.submit(_fetch_one, ticker, registry[ticker], cutoff,
                                phases.get(ticker, {}), provider, pacer): ticker
@@ -314,11 +315,12 @@ def run_bulk(as_of, identities=None, phase_manifest=None, db_path=DEFAULT_DB,
                 row = _failure(ticker, registry[ticker], cutoff, exc)
             _save_bulk_result(db_path, run_key, row)
             prior[ticker] = row
+            processed_this_run += 1
             if on_progress:
                 on_progress({"run_key": run_key, "ticker": ticker, "status": row["status"],
                              "attempted": len(prior), "total": len(tickers),
                              "remaining": max(0, len(tickers) - len(prior)),
-                             "newly_processed": len(prior) - (len(tickers) - len(todo))})
+                             "newly_processed": processed_this_run})
     rows = [prior[ticker] for ticker in tickers if ticker in prior]
     return {"run_key": run_key, "as_of": cutoff.isoformat(), **summarize(rows, len(tickers)),
             "rows": rows}
@@ -356,6 +358,9 @@ def main(argv=None):
     print(json.dumps({"roster": result["roster"], "scanned": result["completed_attempts"],
                       "remaining": result["remaining"], "status_counts": result["status_counts"],
                       "csv": str(args.output), "summary": str(summary_path)}, indent=2))
+    if not result["neutral_ranking"] and result["remaining"] == 0:
+        print("No usable price/volume observations: provider availability may be blocked.")
+        return 1
     return 0 if result["remaining"] == 0 else 2
 
 
