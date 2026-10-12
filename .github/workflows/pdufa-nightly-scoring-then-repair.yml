@@ -1,9 +1,8 @@
 name: PDUFA Nightly Scoring Then Error Check And Safe Repair
-# Both nightly scan streams feed this ordered, post-completion sequence.
+# Runs only after the full source chain completes: clinical, publisher, five source families, reconciliation.
 on:
   workflow_run:
     workflows:
-      - PDUFA Nightly Scan Report Publisher
       - PDUFA Nightly FDA SEC Financial Market Issuer Sources
     types: [completed]
     branches: [main]

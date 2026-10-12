@@ -1,0 +1,59 @@
+name: PDUFA Nightly 8:30 PM Pacific Start
+
+# GitHub cron is UTC, not Pacific. Run both candidate UTC slots, then
+# dispatch exactly the one matching the current Los Angeles UTC offset.
+# GitHub may start scheduled jobs late; the cron/offset gate avoids a
+# second nightly dispatch during daylight/standard time transitions.
+on:
+  schedule:
+    - cron: '30 3 * * *'  # 8:30 PM PDT
+    - cron: '30 4 * * *'  # 8:30 PM PST
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: pdufa-nightly-pacific-start
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Start one serial nightly scan chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Accept only matching 8:30 PM Pacific cron slot
+        id: pacific
+        shell: bash
+        env:
+          SCHEDULE_CRON: ${{ github.event.schedule }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Authorized manual start"
+            exit 0
+          fi
+          offset="$(TZ=America/Los_Angeles date +%z)"
+          if { [ "$SCHEDULE_CRON" = '30 3 * * *' ] && [ "$offset" = -0700 ]; } ||
+             { [ "$SCHEDULE_CRON" = '30 4 * * *' ] && [ "$offset" = -0800 ]; }; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Correct Pacific-night slot; offset $offset"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skip non-matching UTC slot; offset $offset"
+          fi
+      - name: Dispatch clinical scan to start serial chain
+        if: steps.pacific.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/dispatches" \
+            -f ref=main -f 'inputs[scan]=ALL'
+          echo "Requested nightly clinical 2 -> 3 -> 4; report -> FDA -> SEC -> FINANCIAL -> MARKET -> ISSUER -> reconcile -> scoring -> error check -> repair."
+          echo "Dispatch acceptance is not scan completion; check the actual downstream runs."
