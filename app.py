@@ -2341,26 +2341,25 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111;outline:none}
     .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
 
-    /* Content controls column widths; headers may wrap and rows remain readable. */
+    /* Natural max-content sizing: no capped widths or clipped headings. */
     .merged-pdufa-table{width:max-content;table-layout:auto}
     .merged-pdufa-table th,.merged-pdufa-table td{
-      box-sizing:border-box;padding:6px 8px}
+      box-sizing:border-box;padding:6px 8px;white-space:nowrap !important;
+      word-break:normal !important;overflow-wrap:normal !important}
     .merged-pdufa-table th{
-      height:auto !important;vertical-align:top !important;white-space:normal !important;
-      overflow:visible !important;text-overflow:clip !important;
-      overflow-wrap:anywhere;line-height:1.2}
+      height:auto !important;vertical-align:top !important;
+      overflow:visible !important;text-overflow:clip !important;line-height:1.2}
     .merged-pdufa-table td{
-      white-space:nowrap;overflow:visible;text-overflow:clip}
+      white-space:nowrap !important;overflow:visible;text-overflow:clip}
     .merged-pdufa-table th.angle-head>span{
-      position:static;display:inline-block;transform:none;
-      white-space:normal;overflow-wrap:anywhere}
+      position:static;display:inline-block;transform:none;white-space:nowrap !important}
     .merged-pdufa-table .header-controls{
-      display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+      display:inline-flex;flex-direction:row;align-items:center;gap:5px;width:auto}
     .merged-pdufa-table .sort-head{
-      display:inline-flex;flex-direction:column;align-items:center;gap:3px;
-      padding:2px 3px;white-space:normal;overflow-wrap:anywhere}
+      display:inline-flex;flex-direction:row;align-items:center;gap:4px;
+      padding:2px 3px;white-space:nowrap !important;width:auto}
     .merged-pdufa-table .sort-label{
-      white-space:normal;overflow-wrap:anywhere}
+      white-space:nowrap !important;word-break:normal !important}
     .merged-pdufa-table .sort-icon{margin:0}
     a{color:#111}
     </style>
