@@ -50,8 +50,8 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
             safe = html.escape(symbol, quote=True)
             contents = (
                 '<span class="ticker-inline-controls">'
-                f'<button type="button" class="ticker-inline-toggle" data-category="watch" data-ticker="{safe}">+</button>'
-                f'<button type="button" class="ticker-inline-toggle" data-category="trade" data-ticker="{safe}">+</button>'
+                f'<button type="button" class="ticker-inline-toggle" data-category="watch" data-ticker="{safe}">W</button>'
+                f'<button type="button" class="ticker-inline-toggle" data-category="trade" data-ticker="{safe}">T</button>'
                 f'<strong class="ticker-inline-symbol">{safe}</strong>'
                 '</span>'
             )
@@ -179,6 +179,7 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
         <script>
         (() => {
           const storageKey = 'pdufa_watch_trading_v1';
+          const startsKey = 'pdufa_watch_trading_since_v1';
           const buttons = [...document.querySelectorAll('.ticker-inline-toggle')];
           const initial = __INITIAL__;
           const clean = x => [...new Set((Array.isArray(x) ? x : [])
@@ -190,10 +191,25 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
             catch (e) { return initial; }
           }
           let state = read();
+          function readStarts() {
+            try {
+              const value = JSON.parse(localStorage.getItem(startsKey));
+              return value && typeof value === 'object'
+                ? {watch:{...(value.watch || {})},trade:{...(value.trade || {})}}
+                : {watch:{},trade:{}};
+            } catch (e) { return {watch:{},trade:{}}; }
+          }
+          function saveStart(kind,symbol,enabled) {
+            const all = readStarts();
+            if (!all[kind] || typeof all[kind] !== 'object') all[kind]={};
+            if (enabled) all[kind][symbol] = new Date().toISOString();
+            else delete all[kind][symbol];
+            try {localStorage.setItem(startsKey,JSON.stringify(all));} catch (e) {}
+          }
           function paint() {
             for (const b of buttons) {
               const on = state[b.dataset.category].includes(b.dataset.ticker);
-              b.textContent = on ? '−' : '+';
+              b.textContent = b.dataset.category === 'watch' ? 'W' : 'T';
               b.dataset.active = String(on);
               b.setAttribute('aria-pressed', String(on));
               b.setAttribute('aria-label', (on ? 'Remove ' : 'Add ') + b.dataset.ticker +
@@ -214,7 +230,10 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
             const kind = b.dataset.category, symbol = b.dataset.ticker;
             if (!['watch','trade'].includes(kind)) return;
             const members = new Set(state[kind]);
-            if (members.has(symbol)) members.delete(symbol); else members.add(symbol);
+            let added = false;
+            if (members.has(symbol)) members.delete(symbol);
+            else {members.add(symbol);added=true;}
+            saveStart(kind,symbol,added);
             state[kind] = [...members].sort();
             paint();
             try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (e) {}
