@@ -12,13 +12,14 @@ import pandas as pd
 import streamlit as st
 
 STORAGE_KEY = "pdufa_watch_trading_v1"
-STORAGE_READ_KEY = "pdufa_watch_trading_read_v1"
 ROWS_PER_PAGE = 7
 TICKER_PATTERN = re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
 
 
 def clean_ticker(value):
-    ticker = str(value or "").strip().upper()
+    if value is None or value is pd.NA or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    ticker = str(value).strip().upper()
     return ticker if TICKER_PATTERN.fullmatch(ticker) else ""
 
 
@@ -89,11 +90,11 @@ def _init_browser_selection():
     try:
         from streamlit_local_storage import LocalStorage
         if "_ticker_local_storage" not in st.session_state:
-            st.session_state["_ticker_local_storage"] = LocalStorage()
+            st.session_state["_ticker_local_storage"] = LocalStorage(key="pdufa_ticker_storage_initial_v1")
         storage = st.session_state["_ticker_local_storage"]
         if st.session_state.get("_ticker_selections_dirty"):
             st.session_state["_ticker_selections_hydrated"] = True
-        raw = storage.getItem(STORAGE_KEY, key=STORAGE_READ_KEY)
+        raw = storage.getItem(STORAGE_KEY)
         if not st.session_state.get("_ticker_selections_hydrated"):
             parsed = parse_saved(raw)
             if parsed is not None:
