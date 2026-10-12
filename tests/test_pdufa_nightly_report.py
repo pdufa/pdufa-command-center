@@ -1,0 +1,78 @@
+"""Offline contract tests for the GitHub-published clinical scan report."""
+import io
+import json
+import unittest
+import zipfile
+from unittest.mock import patch
+
+from scripts import pdufa_scan_audit as audit
+
+
+def sample_zip(scan="2", *, errors=None, report_status="PARTIAL"):
+    errors = errors if errors is not None else []
+    report = {
+        "scan": scan,
+        "scan_kind": "CLINICAL_SOURCE_COLLECTION_ONLY",
+        "full_coverage_verified": False,
+        "collector_status": "COMPLETE",
+        "collector_exit_code": 0,
+        "status": report_status,
+        "errors_count": len(errors),
+        "created_at_utc": "2026-10-12T09:00:00+00:00",
+        "studies_checked": 10,
+    }
+    state = {"status": "COMPLETE", "errors": errors}
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, mode="w") as z:
+        z.writestr("reports/nightly-clinical-" + scan + ".json", json.dumps(report))
+        z.writestr("data/" + audit.SCANS[scan][1], json.dumps(state))
+    return buf.getvalue()
+
+
+class NightlyScanAuditTests(unittest.TestCase):
+    def test_valid_clinical_report_remains_partial(self):
+        with patch.object(audit, "github", return_value=sample_zip()):
+            row = audit.inspect_artifact("2", {"archive_download_url": "https://example.test"}, "fake")
+        self.assertEqual(row["status"], "PARTIAL")
+        self.assertEqual(row["artifact_integrity"], "PASS")
+        self.assertEqual(row["metrics"]["studies_checked"], 10)
+        self.assertIsNone(row["new_records"])
+
+    def test_absent_archive_is_never_verified(self):
+        with patch.object(audit, "github", side_effect=OSError("unavailable")):
+            row = audit.inspect_artifact("4", {"archive_download_url": "https://example.test"}, "fake")
+        self.assertEqual(row["status"], "UNVERIFIED")
+        self.assertEqual(row["artifact_integrity"], "FAILED")
+
+    def test_reported_errors_are_checked_against_source(self):
+        with patch.object(audit, "github", return_value=sample_zip(errors=["source down"])):
+            row = audit.inspect_artifact("2", {"archive_download_url": "https://example.test"}, "fake")
+        self.assertEqual(row["errors_count"], 1)
+        self.assertEqual(row["artifact_integrity"], "PASS")
+
+    def test_unknown_totals_do_not_turn_into_zero(self):
+        self.assertIsNone(audit.verified_total(
+            [{"new_records": None}, {"new_records": 0}], "new_records"))
+        self.assertEqual(audit.verified_total(
+            [{"new_records": 0}, {"new_records": 5}], "new_records"), 5)
+
+    def test_successful_collector_does_not_certify_full_sources(self):
+        result_run = {"conclusion": "success", "html_url": "https://github.com/example/actions/runs/8"}
+        def mocked_api(path, token):
+            if path.endswith("/artifacts?per_page=100"):
+                return {"artifacts": [
+                    {"name": "nightly-clinical-2-8", "archive_download_url": "https://example.test"}
+                ]}
+            return result_run
+        with patch.object(audit, "api", side_effect=mocked_api), \
+             patch.object(audit, "github", return_value=sample_zip()):
+            result = audit.gather(8, "fake")
+        self.assertEqual(result["scope"], "CLINICAL_SCANS_2_3_4_ONLY")
+        self.assertEqual(result["verification"]["all_source_coverage"], "NOT_VERIFIED")
+        self.assertNotEqual(result["status"], "COMPLETE")
+        self.assertEqual(len(result["scans"]), 3)
+        self.assertIsNone(result["metrics"]["new_records"])
+
+
+if __name__ == "__main__":
+    unittest.main()
