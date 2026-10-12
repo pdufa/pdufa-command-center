@@ -95,7 +95,7 @@ def run_scan(*, scan: str, mode: str, command: list[str],
         audit["start_provider_message_id"] = start_result.get("provider_message_id")
         if audit["start_sms"] != "submitted_not_delivered":
             raise SMSSendError("SMS sender did not acknowledge the start text")
-    except (SMSSendError, OSError, ValueError, KeyError) as exc:
+    except Exception as exc:
         audit["start_sms"] = "FAILED_OR_UNKNOWN"
         audit["end_sms"] = "NOT_SENT_SCAN_NOT_STARTED"
         audit["configuration_or_delivery_error"] = type(exc).__name__
@@ -133,7 +133,7 @@ def run_scan(*, scan: str, mode: str, command: list[str],
             audit["end_provider_message_id"] = final.get("provider_message_id")
             if audit["end_sms"] != "submitted_not_delivered":
                 audit["end_sms"] = "FAILED_OR_UNKNOWN"
-        except (SMSSendError, OSError, ValueError, KeyError) as exc:
+        except Exception as exc:
             audit["end_sms"] = "FAILED_OR_UNKNOWN"
             audit["end_sms_error"] = type(exc).__name__
         _save_audit(audit_dir, run_id, audit)
