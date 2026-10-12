@@ -114,6 +114,39 @@ async function audit(){
     result.checks.threePdufaTabs=["UNIFIED OVERVIEW","PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
     result.checks.pipelineDefaultActive=await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true";
+    result.checks.scoringTestsTabPresent=result.tabs.at(-1)==="SCORING TESTS";
+    if(!result.checks.scoringTestsTabPresent)
+      result.errors.push("SCORING TESTS must be the final PDUFA subtab.");
+    else {
+      await appFrame.getByRole("tab",{name:"SCORING TESTS",exact:true}).click({timeout:15000});
+      const scoringReady=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"SCORING TESTS",exact:true}).getAttribute("aria-selected")==="true"
+        && text.includes("SCORING INPUTS & OVERLAP")
+        && text.includes("Automatic input tests")
+        && text.includes("Score-to-input column map")
+        && text.includes("Overlap / double-counting inspector")
+        && text.includes("Ticker input inspector")
+        && text.includes("EXPORT INPUT TEST RESULTS"));
+      appFrame=scoringReady.frame;
+      result.checks.scoringTestsContentVisible=true;
+      result.scoringTestsDiagnostic={
+        tabSelected:await appFrame.getByRole("tab",{name:"SCORING TESTS",exact:true}).getAttribute("aria-selected"),
+        bodyContainsModelInputMapping:scoringReady.text.includes("Contributing columns"),
+        bodyContainsOverlapDetails:scoringReady.text.includes("Shared evidence"),
+        bodyContainsTickerSelector:scoringReady.text.includes("Ticker (inspect stored fields only)")
+      };
+      result.checks.scoringTestsInputsVisible=
+        Object.values(result.scoringTestsDiagnostic).every(Boolean)
+        && result.scoringTestsDiagnostic.tabSelected==="true";
+      if(!result.checks.scoringTestsInputsVisible)
+        result.errors.push("SCORING TESTS is missing model inputs, overlap details, or ticker inspection controls.");
+      await page.screenshot({path:path.join(outDir,"streamlit-scoring-tests.png"),fullPage:false});
+      await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).click({timeout:15000});
+      const backToPipeline=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true"
+        && text.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"));
+      appFrame=backToPipeline.frame;
+    }
     if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
       result.errors.push("PDUFA must open with PIPELINE and preserve the main navigation.");
     const pipelineReady={frame:appFrame,text:initial};
