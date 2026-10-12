@@ -95,6 +95,17 @@ periodic full reconciliation to catch missed source updates.
 **No overnight scan schedule is currently re-enabled by this plan.**
 Existing scanner Python files and historical CSVs are preserved.
 
+## Preflight command already available
+
+`python scripts/scan_234_preflight.py`
+
+This performs a read-only count/checksum inventory of all locally saved source
+files needed for each view and writes `reports/scan_234_preflight.json`.
+It does **not** contact external sources. Its success means only that inputs are
+present; it always marks the full baseline unverified and nightly automation
+disabled. The next implementation task is wiring the actual source-fetching
+orchestrator with resumable checkpoints and a complete per-identity ledger.
+
 ## Capacity guidance (planning, not a run promise)
 
 The 717-company registry's prior clinical-only collector finished quickly,
