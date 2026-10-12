@@ -5,7 +5,7 @@ import html
 import pandas as pd
 import streamlit as st
 from pdufa_table_headers import pdufa_dataframe, attach_survey
-from ticker_toggle_panel import render_ticker_toggle_panel
+from ticker_toggle_panel import render_ticker_toggle_panel, _init_browser_selection
 from pdufa_circled_help_grid import render_dashboard_sheet
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
@@ -100,6 +100,9 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 
     pre3 = filtered_feed(pre, "PRE PHASE 3")
     post3 = filtered_feed(post, "POST PHASE 3")
+    # Synchronize browser-stored inline ticker choices with the remaining
+    # native Watchlist / Trading views on every Streamlit rerun.
+    _init_browser_selection("overview_inline")
     st.markdown("""
     <style>
     .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
