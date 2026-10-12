@@ -1,0 +1,95 @@
+name: PDUFA Nightly Clinical Scans
+
+# Creating this workflow triggers the initial scan immediately on main.
+# Subsequent nights use a UTC cron; this is clinical-only, not full FDA/SEC.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-nightly-clinical.yml'
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-nightly-clinical-collectors
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: 'PDUFA #${{ matrix.scan }} ${{ matrix.label }} — notified scan'
+    runs-on: ubuntu-latest
+    timeout-minutes: 125
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scan: '2'
+            label: PIPELINE
+            status_file: all_phase_scan_state.json
+          - scan: '3'
+            label: PRE3
+            status_file: phase_pipeline_state.json
+          - scan: '4'
+            label: POST3
+            status_file: phase3_intake_status.json
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - name: Checkout saved clinical source snapshots
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ClinicalTrials.gov collector dependency
+        run: python -m pip install requests
+      - name: Verify email settings exist before any scanning
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing required GitHub Actions secret ${key}; scan will not start."
+              exit 1
+            fi
+          done
+      - name: Submit START email, scan evidence, submit END email
+        id: scan
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "${{ matrix.scan }}" --mode DELTA \
+            --status-file "reports/nightly-clinical-${{ matrix.scan }}.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7100 -- \
+            python scripts/nightly_clinical_collection.py \
+              --scan "${{ matrix.scan }}" \
+              --report "reports/nightly-clinical-${{ matrix.scan }}.json"
+          exit_code=$?
+          echo "Notification/scanner exit code: $exit_code"
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Clinical collector completed, all-source PDUFA baseline remains PARTIAL."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Archive scan results, source status and notification audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-clinical-${{ matrix.scan }}-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            reports/nightly-clinical-${{ matrix.scan }}.json
+            reports/scan_notifications/
+            data/${{ matrix.status_file }}
+            data/all_phase_trials.csv
+            data/phase_pipeline.csv
+            data/phase_pipeline_market_caps.csv
+            data/phase3_announcements.csv
