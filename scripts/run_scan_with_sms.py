@@ -105,6 +105,22 @@ def run_scan(*, scan: str, mode: str, command: list[str],
         _save_audit(audit_dir, run_id, audit)
         return 4, audit
 
+    # Durable checkpoint before the collector starts: a watchdog can later
+    # identify a hard-killed scan with a START text but no END text.
+    try:
+        _save_audit(audit_dir, run_id, audit)
+    except OSError:
+        audit["scan_executed"] = False
+        audit["coverage_status"] = "FAILED"
+        audit["summary"] = "Notification audit unavailable; scan not started"
+        try:
+            final = sender(settings, finish_text(scan, mode, run_id, "FAILED",
+                                                 audit["summary"], 0))
+            audit["end_sms"] = final["status"]
+        except Exception:
+            audit["end_sms"] = "FAILED_OR_UNKNOWN"
+        return 4, audit
+
     exit_code = 1
     exception_type = None
     try:
