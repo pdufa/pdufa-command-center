@@ -296,8 +296,14 @@ class Verifier:
                 if application and not re.search(r"(?<!\d)" + re.escape(application) + r"(?!\d)", plain):
                     continue
                 if claim == "PDUFA_TARGET":
-                    passages = [p for p in re.split(r"(?<=[.!?])\s+(?=[A-Z])", plain)
-                                if re.search(r"(?i)\bPDUFA\b|\btarget action date\b", p)]
+                    sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z])", plain)
+                    passages = []
+                    for i, passage in enumerate(sentences):
+                        if not re.search(r"(?i)\bPDUFA\b|\btarget action date\b", passage):
+                            continue
+                        context = " ".join(sentences[max(0, i-1):i+2])
+                        if drug_matches(event, context) and indication_matches(event, context):
+                            passages.append(passage)
                     observed = set().union(*(dates(p) for p in passages)) if passages else set()
                     if not expected or not observed:
                         continue

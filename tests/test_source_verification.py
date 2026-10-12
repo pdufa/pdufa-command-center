@@ -122,6 +122,11 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(v.regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
         self.assertEqual(v.cache, {})
 
+    def test_other_program_target_in_same_filing_cannot_verify_event(self):
+        event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
+        body = b"TestDrug is being studied in lung cancer. The trial is ongoing. We have a separate pipeline. OtherDrug is for skin infections. The PDUFA target date is November 1, 2026."
+        self.assertEqual(self.verifier(body).regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
+
     def test_past_target_is_unresolved_even_if_original_date_matches(self):
         event = {**EVENT, "pdufa_date": "2026-09-01", "pdufa_evidence_url": SEC_DOC}
         self.assertEqual(self.verifier(b"TestDrug lung cancer. PDUFA September 1, 2026.").regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
