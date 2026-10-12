@@ -143,6 +143,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.markdown("### #3-PRE3")
             st.caption("Pre-readout Phase 3 programs · clinical evidence, scores and review priority")
             st.metric("Matching pre-readout programs", len(pre3))
+            st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if pre3.empty:
                 st.info("No current pre-readout programs match these filters.")
             pdufa_dataframe(finance_style(pre3.head(150)), hide_index=True,
@@ -162,6 +163,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         st.markdown("### #4-POST3")
         st.caption("Post-readout candidates · qualification, scores and financing evidence")
         st.metric("Matching candidates", len(post3))
+        st.markdown(_timing_legend_html(), unsafe_allow_html=True)
         if post3.empty:
             st.info("No current trading candidates match these filters.")
         pdufa_dataframe(finance_style(post3.head(150)), hide_index=True,
