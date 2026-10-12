@@ -27,7 +27,7 @@ MISSING_FAMILIES = [
     "issuer/program identity and complete source coverage audit",
 ]
 MAX_ZIP = 100 * 1024 * 1024
-MAX_JSON = 1024 * 1024
+MAX_JSON = 8 * 1024 * 1024  # #2 PIPELINE source state may exceed 1.8 MiB
 
 
 def now():
