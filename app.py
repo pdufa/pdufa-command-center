@@ -12,6 +12,7 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
                                    DISPLAY_ORDER_OPTIONS)
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from ticker_toggle_panel import render_ticker_toggle_panel
+from watch_trade_dashboard import render_watch_trade_dashboard
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -3236,8 +3237,8 @@ if page == "PDUFA":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
     # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
-    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab = st.tabs(
-        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"],
+    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, watch_trade_tab = st.tabs(
+        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "WATCHLIST / TRADING"],
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
@@ -4071,6 +4072,10 @@ if page == "PDUFA":
     with intake_tab:
         if intake_tab.open:
             render_post_phase3_workspace()
+
+    with watch_trade_tab:
+        if watch_trade_tab.open:
+            render_watch_trade_dashboard()
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
