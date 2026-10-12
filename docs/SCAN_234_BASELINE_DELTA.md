@@ -106,6 +106,67 @@ present; it always marks the full baseline unverified and nightly automation
 disabled. The next implementation task is wiring the actual source-fetching
 orchestrator with resumable checkpoints and a complete per-identity ledger.
 
+## Mandatory two SMS texts per scan (CRITICAL)
+
+**Contract:** Every individually executed scan, including #2 PIPELINE,
+#3 PRE3, #4 POST3, source collectors, deep reviews, reconciliations and
+nightly deltas, submits **exactly one START text before collecting data and
+one END text with an actual results summary when execution ends**. When three
+individual tabs are scanned, that means **six SMS messages total**. These
+are scan-level notifications, not per-ticker texts.
+
+* START contains scan name, baseline/delta/deep mode, Pacific start time and
+  run ID. It must be acknowledged by the SMS provider BEFORE scanning starts.
+* END contains completion status, verified checked/due count, new/changed
+  records, warnings/errors when supplied by a *newly updated scan ledger*,
+  run duration and run ID. If there is no fresh verified ledger, text
+  **UNVERIFIED** instead of fabricated counts.
+* END is attempted after success, partial coverage, nonzero exit or caught
+  scanner failure. If the final SMS fails, retain the job failure in a JSON
+  notification audit; never silently claim that the user received it.
+* The SMS transport sends **one ASCII single-segment message**, with no
+  automatic retry after an ambiguous carrier/provider outcome (avoids duplicate
+  SMS). The provider accepting a message does **not** prove iPhone delivery.
+* **Critical precondition:** if provider secrets are not configured, or the
+  START text isn't acknowledged, do not run the scanner. It is safer to delay
+  scans than to silently violate the notification requirement.
+* The notifier runs through a generic command wrapper so a newly added scan
+  must opt into the same enforced contract, rather than implementing its own
+  untested notification rules.
+
+Implementation: `scripts/scan_sms.py` (Twilio REST API via Python stdlib),
+`scripts/run_scan_with_sms.py` (scan command wrapper + audit log), and
+`tests/test_scan_sms_notifications.py` (success/failure/duplicate guards).
+For production, store the following **only as repository Actions secrets or
+runner environment variables**, not in Git or logs:
+
+```text
+TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN
+TWILIO_FROM_NUMBER
+PDUFA_SMS_TO_NUMBER
+```
+
+The sender must be an SMS-capable number provided by Twilio and the recipient
+must be a validated E.164 mobile number. The generic invocation is:
+
+```bash
+python scripts/run_scan_with_sms.py --scan 2 --mode BASELINE \
+  --status-file data/all_phase_scan_state.json -- \
+  python scripts/all_phase_scan.py
+```
+
+**This example runs only the existing clinical inventory collector, not a
+certified all-source baseline.** All future workflows must call the wrapper for
+*every separately executed scan* rather than bypassing it. The wrapper writes
+`reports/scan_notifications/<run_id>.json` for auditing. Retain those audit
+records in a protected log/artifact; they do not include Twilio credentials.
+
+Current state: **SMS credentials are not configured or verified; no texts have
+been sent from this code, and no nightly scanning workflows were re-enabled.**
+The earlier ChatGPT push-notification test is distinct from SMS and cannot
+be used by a GitHub worker as a substitute for these two texts.
+
 ## Capacity guidance (planning, not a run promise)
 
 The 717-company registry's prior clinical-only collector finished quickly,
