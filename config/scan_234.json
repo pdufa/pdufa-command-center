@@ -204,13 +204,31 @@
       "PDUFA_ALERT_EMAIL"
     ],
     "recipient_email": "Configured in PDUFA_ALERT_EMAIL; never hardcoded into code",
-    "email_setup_state": "REQUIRES_ACTIONS_SECRETS_AND_DELIVERY_TEST",
+    "email_setup_state": "GITHUB_GMAIL_TEST_RECEIVED_2026-10-11_21_28_PDT",
     "notifications_active": false,
     "nightly_schedules_restored": false,
-    "note": "Gmail connected to ChatGPT does not grant GitHub Actions SMTP credentials. Use a Gmail app password in Actions Secrets, and confirm real delivery before enabling scans. RingCentral is not required.",
+    "note": "GitHub Gmail SMTP test was received; automated #2/#3/#4 clinical-only nightly START emails confirmed at 21:34 PDT October 11. Full-source scans remain unimplemented; clinical results are PARTIAL baseline only.",
     "independent_completion_workflow": ".github/workflows/pdufa-clinical-scan-end-email.yml",
     "completion_notifier": "scripts/notify_completed_clinical_run.py",
     "test_completion_notifier": "tests/test_pdufa_completion_emails.py",
-    "manual_historical_run_id": "38195214610"
+    "manual_historical_run_id": "38195214610",
+    "clinical_nightly_notifications_active": true
+  },
+  "clinical_source_schedule": {
+    "enabled": true,
+    "workflow": ".github/workflows/pdufa-nightly-clinical.yml",
+    "cron_utc": "0 9 * * *",
+    "pacific_daylight_time": "02:00",
+    "pacific_standard_time": "01:00",
+    "first_start_confirmation": "2026-10-11 21:34 PDT: START emails for scans 2, 3, 4 received",
+    "scan_ids": [
+      "2",
+      "3",
+      "4"
+    ],
+    "source_scope": "ClinicalTrials.gov collectors and limited Phase 2/3 market capitalization only",
+    "output_delivery": "Gmail START/END plus 30-day GitHub Actions artifacts",
+    "production_dashboard_updates_automatic": false,
+    "limitations": "Full-source baseline (FDA, SEC, issuer, cash, market, identity audit) remains unverified; do not set automation_enabled=true until that distinct baseline is actually implemented and verified."
   }
 }
