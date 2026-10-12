@@ -61,6 +61,15 @@ class PdufaGridTests(unittest.TestCase):
                 self.assertNotIn("render_countdown_band_key", code)
                 self.assertNotIn("COUNTDOWN_HEADER_SUBLINE", code)
 
+    def test_custom_pdufa_chart_has_no_wide_legend_and_only_colors_day_cells(self):
+        source = (Path(__file__).resolve().parents[1] / "app.py").read_text(encoding="utf-8")
+        self.assertNotIn("render_countdown_band_key", source)
+        self.assertNotIn("pdufa-band-chip", source)
+        self.assertNotIn("countdown-band-row", source)
+        self.assertIn("min-width:132px;width:132px;max-width:132px", source)
+        self.assertIn("pdufa_date_color(raw)", source)
+        self.assertIn("label = html.escape(\\\"Days to PDUFA\\\"", source)
+
     def test_days_column_coloring_preserves_original_values_and_finance_style(self):
         frame = pd.DataFrame({
             "Days to PDUFA": [100, 75, 40, 10, -2, pd.NA],
