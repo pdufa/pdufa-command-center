@@ -148,6 +148,16 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
       flex:1 1 auto !important;
       height:100% !important;
     }
+    /* Streamlit's bordered st.container adds another wrapper inside each
+       column. Stretch that wrapper too, or the visible black outlines may
+       stop at different vertical positions despite equal grid-row heights. */
+    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"]
+    [data-testid="stVerticalBlockBorderWrapper"]:has(.st-key-overview_pipeline_panel, .st-key-overview_pre3_panel, .st-key-overview_post3_panel) {
+      display:flex !important;
+      flex-direction:column !important;
+      flex:1 1 auto !important;
+      height:100% !important;
+    }
     .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
     .st-key-overview_post3_panel {
       box-sizing:border-box;
