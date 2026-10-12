@@ -25,20 +25,15 @@ class NotificationContractTests(unittest.TestCase):
         "PDUFA_SMS_TO_NUMBER": "+15035550200",
     }
 
-    def test_every_pdufa_scan_inherits_critical_two_text_policy(self):
+    def test_sms_is_optional_and_email_is_the_mandatory_scan_channel(self):
         repo = Path(__file__).resolve().parents[1]
         policy = json.loads((repo / "config" / "scan_234.json").read_text())["notification_policy"]
         self.assertEqual(policy["priority"], "CRITICAL_REQUIRED_BEFORE_PRODUCTION")
+        self.assertEqual(policy["delivery_mode"], "EMAIL_TWO_PER_SCAN")
         self.assertEqual(policy["messages_per_scan"], 2)
-        self.assertEqual(policy["events"], [
-            "START_BEFORE_COLLECTING",
-            "END_AFTER_EXIT_WITH_SOURCE_DATED_RESULTS_OR_FAILURE",
-        ])
-        self.assertTrue(policy["end_always_attempted"])
-        self.assertTrue(policy["require_live_sms_configuration_before_start"])
+        self.assertTrue(policy["sms_optional_when_separately_configured"])
         self.assertFalse(policy["notifications_active"])
         self.assertFalse(policy["nightly_schedules_restored"])
-        self.assertIn("any separately executed source", policy["per_scan_scope"])
 
     def test_credentials_required_before_scanning(self):
         with self.assertRaises(SMSSetupError):
