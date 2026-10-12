@@ -1,11 +1,6 @@
 name: PDUFA Nightly Scan Report Publisher
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/pdufa-nightly-report.yml'
-      - 'scripts/pdufa_scan_audit.py'
   workflow_run:
     workflows: ["PDUFA Nightly Clinical Scans"]
     types: [completed]
@@ -29,7 +24,7 @@ jobs:
   publish:
     name: Verify archive integrity and publish report
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository }}
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.head_branch == 'main') }}
     steps:
       - name: Checkout current dashboard
         uses: actions/checkout@v4
