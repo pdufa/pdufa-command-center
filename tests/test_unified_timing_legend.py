@@ -29,20 +29,17 @@ class TimelineLegendTests(unittest.TestCase):
     def test_legend_sits_below_each_matching_count_before_table(self):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
-        for metric, dataframe in (
-            ('st.metric("Matching programs", len(df))',
-             'pdufa_dataframe(finance_style(df.head(150))'),
-            ('st.metric("Matching pre-readout programs", len(pre3))',
-             'pdufa_dataframe(finance_style(pre3.head(150))'),
-            ('st.metric("Matching candidates", len(post3))',
-             'pdufa_dataframe(finance_style(post3.head(150))'),
+        for metric in (
+            'st.metric("Matching programs", len(df))',
+            'st.metric("Matching pre-readout programs", len(pre3))',
+            'st.metric("Matching candidates", len(post3))',
         ):
             with self.subTest(metric=metric):
                 pos = source.index(metric)
                 legend = source.index(
                     'st.markdown(_timing_legend_html(), unsafe_allow_html=True)', pos
                 )
-                table = source.index(dataframe, pos)
+                table = source.index("render_dashboard_sheet(", pos)
                 self.assertLess(pos, legend)
                 self.assertLess(legend, table)
         self.assertEqual(
