@@ -121,9 +121,15 @@ are scan-level notifications, not per-ticker texts.
   records, warnings/errors when supplied by a *newly updated scan ledger*,
   run duration and run ID. If there is no fresh verified ledger, text
   **UNVERIFIED** instead of fabricated counts.
-* END is attempted after success, partial coverage, nonzero exit or caught
-  scanner failure. If the final SMS fails, retain the job failure in a JSON
-  notification audit; never silently claim that the user received it.
+* END is attempted after success, partial coverage, nonzero exit,
+  caught scanner failure, and configured child-process timeouts. If the final
+  SMS fails, retain the job failure in a JSON notification audit; never silently
+  claim that the user received it. A host crash or forced shutdown can prevent
+  the second text; a future independent watchdog must reconcile abandoned runs.
+* A #2/#3/#4 or combined run may say **COMPLETE** only when its new result
+  ledger explicitly has `full_coverage_verified=true`. A clinical-only
+  collector's local COMPLETE is not a complete PDUFA scan. Otherwise the text
+  says UNVERIFIED with the available counts.
 * The SMS transport sends **one ASCII single-segment message**, with no
   automatic retry after an ambiguous carrier/provider outcome (avoids duplicate
   SMS). The provider accepting a message does **not** prove iPhone delivery.
@@ -157,7 +163,8 @@ python scripts/run_scan_with_sms.py --scan 2 --mode BASELINE \
 ```
 
 **This example runs only the existing clinical inventory collector, not a
-certified all-source baseline.** All future workflows must call the wrapper for
+certified all-source baseline.** Its end text must therefore say UNVERIFIED
+unless the eventual full-source orchestrator attests to complete coverage. All future workflows must call the wrapper for
 *every separately executed scan* rather than bypassing it. The wrapper writes
 `reports/scan_notifications/<run_id>.json` for auditing. Retain those audit
 records in a protected log/artifact; they do not include Twilio credentials.
