@@ -2787,12 +2787,14 @@ def render_pre_phase3():
         )
     if not health.loc[health["Source"].eq("SEC financing recheck"), "Blocked records"].eq(0).all():
         st.info(
-            "SEC ACCESS ACTION: The hosted scanner has encountered HTTP 403. "
-            "Provide a genuine SEC_USER_AGENT in GitHub Actions repository secrets "
-            "(application name + contact email), then run the PDUFA Surveillance workflow. "
-            "If SEC still blocks the runner, inspect the filings in SEC Financial Analysis "
-            "or your browser and record reviewed source evidence. "
-            "Never treat an unopenable filing as a verified financing close."
+            "SEC FINANCING EVIDENCE RECHECK REQUIRED: The saved PRE PHASE 3 event-level "
+            "financing recheck is blocked or out of date. A newer independent SEC "
+            "company-registry scan does not verify post-Phase-3 financing closures "
+            "for each exact event. Review the latest dated SEC filings and independently "
+            "record issuer CIK, accession, funding-close evidence and public disclosure date. "
+            "If the recheck encounters HTTP 403, configure a genuine SEC_USER_AGENT "
+            "in GitHub Actions secrets and retry. Unavailable filings never qualify "
+            "as verified second-financing closes."
         )
     st.caption("Data status is computed from the saved collector timestamps. Reload does not start a scan or contact SEC.")
 
