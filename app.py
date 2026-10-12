@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
-from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, render_countdown_band_key, column_help as pdufa_column_help
+from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, column_help as pdufa_column_help
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
@@ -2038,7 +2038,7 @@ def _column_help_text(col):
 
 def _sort_header_button(col, col_index):
     """Render separate sort and help controls for a merged-table header."""
-    label = html.escape(str(col))
+    label = html.escape("Days to PDUFA" if col in ("Days to PDUFA", "DAYS TO PDUFA", "Days Left", "days_to_pdufa") else str(col))
     help_text = html.escape(_column_help_text(col), quote=True)
     sort_title = html.escape(f"Sort {col}", quote=True)
     controls = (
@@ -2289,7 +2289,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
     .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
-    .merged-pdufa-table th.countdown-head{min-width:170px;width:170px;max-width:170px}
+    .merged-pdufa-table th.countdown-head{min-width:132px;width:132px;max-width:132px}
     .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
@@ -2404,7 +2404,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         const sortStageRows = () => {
           const mode = stageSort.value;
           const headers = Array.from(table.querySelectorAll('.sort-head'));
-          const daysHeader = headers.find(h => h.querySelector('.sort-label')?.textContent.trim() === 'DAYS TO PDUFA');
+          const daysHeader = headers.find(h => h.querySelector('.sort-label')?.textContent.trim().toUpperCase() === 'DAYS TO PDUFA');
           const daysIndex = daysHeader ? Number(daysHeader.dataset.colIndex) : -1;
           const rows = Array.from(tbody.querySelectorAll('tr'));
           rows.sort((a,b) => {
@@ -2595,7 +2595,6 @@ def _render_merged_table_panel(frame, heading, height_px=690):
         "The icon changes to ▲ ascending or ▼ descending; click it again to reverse the order."
     )
     components.html(table_html, height=int(height_px) + 25, scrolling=False)
-    render_countdown_band_key(frame)
     render_survey_box(frame)
 
 
@@ -3805,7 +3804,7 @@ if page == "PDUFA":
                 attach_survey(combined)
                 ticker_values = combined["Ticker"].fillna("").astype(str).str.upper().str.strip()
                 st.markdown("### PDUFA COUNTDOWN — DATE GRADIENT")
-                st.caption("The countdown number is color-coded by its PDUFA window; the compact legend appears below each table. Colors indicate timing, not regulatory certainty.")
+                st.caption("Only the Days to PDUFA number is color-coded by its time window. Color indicates timing, not FDA approval probability.")
                 if "DAYS TO PDUFA" in combined.columns:
                     countdown = combined.loc[combined["DAYS TO PDUFA"].isna() | (combined["DAYS TO PDUFA"] >= 0), [c for c in ("Ticker", "Drug", "Indication", "PDUFA Date", "DAYS TO PDUFA", "2nd Financing Completed", "Cash Runway (months)", "PDUFA Horizon") if c in combined.columns]].copy()
                     if not countdown.empty:
