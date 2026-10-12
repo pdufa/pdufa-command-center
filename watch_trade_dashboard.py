@@ -264,6 +264,14 @@ button.active{background:#22863a;color:white}
       }
       bucket.replaceChildren(replacement);
       document.getElementById(kind+'-count').textContent = list.length+' ticker'+(list.length===1?'':'s');
+      // Start the newest chart immediately even if it is below the fold.
+      const newest = [...list].sort((a,b) => Date.parse(started[kind][b]||0)
+        - Date.parse(started[kind][a]||0))[0];
+      if (newest) {
+        const key = kind+'|'+newest+'|'+(started[kind][newest]||'');
+        const latestRow = createdRows.get(key);
+        if (latestRow) mountChart(latestRow.lastElementChild);
+      }
     }
     document.getElementById('sync-status').textContent = 'Watch '+selected.watch.length+' · Trade '+selected.trade.length;
   }
@@ -328,6 +336,12 @@ button.active{background:#22863a;color:white}
     save(START_KEY,started);
     save(KEY,selected);
     render();
+    // Trade promotion or Watch addition mounts the new chart right away.
+    if (list.has(ticker)) {
+      const key = kind+'|'+ticker+'|'+started[kind][ticker];
+      const row = createdRows.get(key);
+      if (row) mountChart(row.lastElementChild);
+    }
     if (channel) channel.postMessage(selected);
   }
   document.getElementById('refresh').addEventListener('click',()=>{
