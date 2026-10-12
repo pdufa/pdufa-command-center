@@ -1,0 +1,37 @@
+name: PDUFA SMS Delivery Test
+
+# Deliberately manual only. Never schedule or trigger clinical/market scans.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send-one-test:
+    name: Submit one Twilio SMS test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+      PDUFA_SMS_TO_NUMBER: ${{ secrets.PDUFA_SMS_TO_NUMBER }}
+    steps:
+      - name: Checkout SMS utility
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm configuration exists
+        shell: bash
+        run: |
+          for name in TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER PDUFA_SMS_TO_NUMBER; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing GitHub Actions secret ${name}. No SMS attempted."
+              exit 1
+            fi
+          done
+      - name: Submit one PDUFA SMS test
+        run: python -m scripts.sms_delivery_test
