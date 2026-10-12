@@ -6,14 +6,13 @@ Strict boundaries: >90 dark green, 60-90 green, 30-59 orange,
 import pandas as pd
 
 SEGMENTS = ("29–0 DAYS", "59–30 DAYS", "90–60 DAYS", "90+ DAYS")
-# Labels match the user-facing second line below DAYS TO PDUFA.
+# Shared band thresholds: colors apply to numeric countdown cells only.
 COUNTDOWN_BANDS = (
     ("+90", "dark-green", "#166534", "#ffffff"),
     ("90–60", "green", "#86efac", "#111111"),
     ("59–30", "orange", "#fb923c", "#111111"),
     ("29–0", "red", "#f87171", "#111111"),
 )
-COUNTDOWN_HEADER_SUBLINE = "🟩 +90   🟢 90–60   🟠 59–30   🔴 29–0"
 
 
 def _days(value):
