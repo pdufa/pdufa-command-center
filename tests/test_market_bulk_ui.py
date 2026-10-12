@@ -34,11 +34,10 @@ class BulkUiTests(unittest.TestCase):
         self.assertIn("_step7_snapshot(signature)", pre)
         self.assertNotIn("market_bulk", pre)
         self.assertNotIn("render_clinical_review()", pre)
-        workflow = (ROOT / ".github" / "workflows" / "full-market-scan.yml").read_text(encoding="utf-8")
-        self.assertIn("workflow_dispatch:", workflow)
-        self.assertNotIn("schedule:", workflow)
-        self.assertIn("python market_bulk_scan.py", workflow)
-        self.assertIn("upload-artifact@v4", workflow)
+        # Prior scanner GitHub workflows were intentionally removed at the
+        # user's request. The market scanner and its on-screen manual UI remain.
+        self.assertFalse((ROOT / ".github" / "workflows" / "full-market-scan.yml").exists())
+        self.assertTrue((ROOT / "market_bulk_scan.py").is_file())
 
 
 if __name__ == "__main__":
