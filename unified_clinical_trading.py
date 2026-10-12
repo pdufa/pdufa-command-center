@@ -117,18 +117,43 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     .st-key-overview_pipeline_panel::before {content:"2";}
     .st-key-overview_pre3_panel::before {content:"3";}
     .st-key-overview_post3_panel::before {content:"4";}
-    @media (max-width:768px) {
+    /* Scope the responsive grid to the three overview cards. Nested metric
+       columns inside the POST3 timeline retain their own layout. */
+    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
+      display:grid !important;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:1rem;
+      align-items:start;
+    }
+    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] {
+      flex:none !important;
+      width:100% !important;
+      min-width:0 !important;
+    }
+    .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
+    .st-key-overview_post3_panel {
+      box-sizing:border-box;
+      min-width:0;
+      width:100%;
+    }
+    @media (max-width:1250px) {
+      .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+    @media (max-width:800px) {
+      .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
+        grid-template-columns:minmax(0,1fr);
+      }
       .st-key-overview_pipeline_panel::before,
       .st-key-overview_pre3_panel::before,
       .st-key-overview_post3_panel::before {font-size:100px; right:12px;}
-      .st-key-overview_panels [data-testid="stHorizontalBlock"] {flex-wrap:wrap;}
-      .st-key-overview_panels [data-testid="stColumn"] {width:100% !important; flex:1 1 100% !important; min-width:0 !important;}
     }
     </style>
     """, unsafe_allow_html=True)
     with st.container(key="overview_panels"):
-        left, right = st.columns(2, gap="medium")
-        with left, st.container(border=True, key="overview_pipeline_panel"):
+        pipeline_col, pre3_col, post3_col = st.columns(3, gap="small")
+        with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
             st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
             st.metric("Matching programs", len(df))
@@ -143,7 +168,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                 height=310,
             )
             st.caption("Expand ALL FIELDS below for every clinical field, score component and source link.")
-        with right, st.container(border=True, key="overview_pre3_panel"):
+        with pre3_col, st.container(border=True, key="overview_pre3_panel"):
             st.markdown("### #3-PRE3")
             st.caption("Pre-readout Phase 3 programs · clinical evidence, scores and review priority")
             st.metric("Matching pre-readout programs", len(pre3))
@@ -164,49 +189,49 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                                file_name="unified_pre3_programs.csv", mime="text/csv",
                                key="overview_pre3_export")
 
-    with st.container(border=True, key="overview_post3_panel"):
-        st.markdown("### #4-POST3")
-        st.caption("Post-readout candidates · qualification, scores and financing evidence")
-        st.metric("Matching candidates", len(post3))
-        st.markdown(_timing_legend_html(), unsafe_allow_html=True)
-        if post3.empty:
-            st.info("No current trading candidates match these filters.")
-        render_dashboard_sheet(
-            post3.head(150),
-            ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
-             "2nd Financing Completed", "Cash Runway (months)",
-             "Score type", "Entry qualification", "F", "Drug", "NCT ID"],
-            height=310,
-        )
-        with st.expander("ALL TRADING FIELDS & EVIDENCE"):
-            pdufa_dataframe(finance_style(post3.head(350)), hide_index=True,
-                         use_container_width=True)
-        st.download_button("EXPORT TRADING CANDIDATES", post3.to_csv(index=False).encode(),
-                           file_name="unified_trading_candidates.csv", mime="text/csv",
-                           key="overview_trading_export")
-        with st.expander("PDUFA TIMELINE", expanded=True):
-            st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
-            fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Date Classification",
-                      "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
-            timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
-                                  post3.reindex(columns=fields)], ignore_index=True)
-            timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
-            timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
-            timeline = sort_pdufa_grid(timeline, display_order)
-            attach_survey(timeline, df)
-            a, b, c = st.columns(3)
-            days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
-            a.metric("Dated programs", len(timeline))
-            b.metric("PDUFA within 30 days", int(days.between(0, 30).sum()))
-            c.metric("Past dates to recheck", int(days.lt(0).sum()))
-            if timeline.empty:
-                st.info("No dated PDUFA programs match these filters. Undated programs remain in their source panels.")
-            pdufa_dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
-                         column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
-                                        "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
-            st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
-                               file_name="unified_pdufa_timeline.csv", mime="text/csv",
-                               key="overview_timeline_export")
+        with post3_col, st.container(border=True, key="overview_post3_panel"):
+            st.markdown("### #4-POST3")
+            st.caption("Post-readout candidates · qualification, scores and financing evidence")
+            st.metric("Matching candidates", len(post3))
+            st.markdown(_timing_legend_html(), unsafe_allow_html=True)
+            if post3.empty:
+                st.info("No current trading candidates match these filters.")
+            render_dashboard_sheet(
+                post3.head(150),
+                ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                 "2nd Financing Completed", "Cash Runway (months)",
+                 "Score type", "Entry qualification", "F", "Drug", "NCT ID"],
+                height=310,
+            )
+            with st.expander("ALL TRADING FIELDS & EVIDENCE"):
+                pdufa_dataframe(finance_style(post3.head(350)), hide_index=True,
+                             use_container_width=True)
+            st.download_button("EXPORT TRADING CANDIDATES", post3.to_csv(index=False).encode(),
+                               file_name="unified_trading_candidates.csv", mime="text/csv",
+                               key="overview_trading_export")
+            with st.expander("PDUFA TIMELINE", expanded=True):
+                st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
+                fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Date Classification",
+                          "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
+                timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
+                                      post3.reindex(columns=fields)], ignore_index=True)
+                timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
+                timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
+                timeline = sort_pdufa_grid(timeline, display_order)
+                attach_survey(timeline, df)
+                a, b, c = st.columns(3)
+                days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
+                a.metric("Dated programs", len(timeline))
+                b.metric("PDUFA within 30 days", int(days.between(0, 30).sum()))
+                c.metric("Past dates to recheck", int(days.lt(0).sum()))
+                if timeline.empty:
+                    st.info("No dated PDUFA programs match these filters. Undated programs remain in their source panels.")
+                pdufa_dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
+                             column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
+                                            "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
+                st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
+                                   file_name="unified_pdufa_timeline.csv", mime="text/csv",
+                                   key="overview_timeline_export")
 
 
 def render_combined_overview(root="data", *, dashboard=False):
