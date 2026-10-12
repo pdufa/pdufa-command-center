@@ -119,16 +119,23 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     .st-key-overview_post3_panel::before {content:"4";}
     /* Scope the responsive grid to the three overview cards. Nested metric
        columns inside the POST3 timeline retain their own layout. */
+    /* #2, #3 and #4 occupy precisely one third of the same 100%-wide row.
+       Internal column padding supplies gutters without stealing grid width. */
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
       display:grid !important;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:1rem;
+      width:100% !important;
+      max-width:100% !important;
+      grid-template-columns:repeat(3,minmax(0,33.333333%));
+      gap:0 !important;
       align-items:start;
     }
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] {
+      box-sizing:border-box !important;
       flex:none !important;
       width:100% !important;
       min-width:0 !important;
+      max-width:100% !important;
+      padding-inline:0.375rem !important;
     }
     .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
     .st-key-overview_post3_panel {
@@ -138,12 +145,12 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     }
     @media (max-width:1250px) {
       .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
-        grid-template-columns:repeat(2,minmax(0,1fr));
+        grid-template-columns:repeat(2,minmax(0,50%));
       }
     }
     @media (max-width:800px) {
       .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
-        grid-template-columns:minmax(0,1fr);
+        grid-template-columns:minmax(0,100%);
       }
       .st-key-overview_pipeline_panel::before,
       .st-key-overview_pre3_panel::before,
@@ -152,7 +159,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     </style>
     """, unsafe_allow_html=True)
     with st.container(key="overview_panels"):
-        pipeline_col, pre3_col, post3_col = st.columns(3, gap="small")
+        pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1], gap="small")
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
             st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
