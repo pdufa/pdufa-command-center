@@ -70,6 +70,8 @@ class TimelineLegendTests(unittest.TestCase):
         self.assertIn("flex:1 1 auto", source)
         self.assertIn("height:100%", source)
         self.assertIn("display:flex !important", source)
+        self.assertIn('[data-testid="stVerticalBlockBorderWrapper"]:has(', source)
+        self.assertIn("flex-direction:column !important", source)
         # The expanded all-program timeline must be below the equal-height
         # cards; otherwise #4 would make all three unreasonably tall.
         self.assertIn('    with st.expander("PDUFA TIMELINE", expanded=True):', source)
