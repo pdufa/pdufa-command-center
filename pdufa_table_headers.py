@@ -160,8 +160,37 @@ def column_help(column):
     return f"{label}: source-supplied field for this company, trial or FDA event. Read with its source and as-of date; blank means unavailable."
 
 
+def _text_pixel_width(value):
+    """Approximate the actual displayed text width, without an arbitrary cap."""
+    if value is None:
+        return 0
+    shown = str(value)
+    if shown in ("", "nan", "NaN", "NaT", "None", "<NA>"):
+        return 0
+    # Account for wide Unicode glyphs and narrower punctuation. Streamlit's
+    # grid font varies by platform, so include spacing in column_width_for.
+    import unicodedata
+    def character_pixels(ch):
+        if unicodedata.east_asian_width(ch) in ("W", "F"):
+            return 16
+        if ch in " ilI.,:;!'|":
+            return 4.5
+        if ch in "MW@#%&":
+            return 11
+        return 8.5
+    return max((sum(character_pixels(ch) for ch in line)
+                for line in shown.splitlines()), default=0)
+
+
+def column_width_for(label, values):
+    """Fit the entire header and longest displayed value; no maximum width."""
+    header_pixels = _text_pixel_width(label) + 48  # circled help + sort affordance
+    cell_pixels = max((_text_pixel_width(value) for value in values), default=0) + 28
+    return int(max(48, header_pixels, cell_pixels) + 0.999)
+
+
 def header_config(data, config=None):
-    """Decorate visible labels and supply tooltips without changing column keys."""
+    """Decorate visible labels and size every column to its contents."""
     frame = data.data if isinstance(data, Styler) else data
     if not hasattr(frame, "columns"):
         frame = pd.DataFrame(frame)
@@ -176,8 +205,9 @@ def header_config(data, config=None):
         # All PDUFA tables use one short header; the color is on each day cell.
         if column in PDUFA_DAY_COLUMNS:
             label = "Days to PDUFA"
-        # Use intrinsic content-based sizing, including for preconfigured columns.
-        entry.pop("width", None)
+        # Native Streamlit grids otherwise compress or ellipsize even with
+        # width="content". Assign a measured size per field, with NO ceiling.
+        entry["width"] = column_width_for(label, frame[column])
         entry["label"] = f"{HELP_ICON} {label}"
         help_text = entry.get("help")
         if (not help_text or help_text == str(column) or
@@ -280,7 +310,7 @@ def pdufa_dataframe(data, **kwargs):
                 ordered[insertion:insertion] = [c for c in FINANCE_NEIGHBORS if c in data]
                 kwargs["column_order"] = ordered
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
-    # Keep the grid at its natural content width rather than stretching columns.
+    # Fit to all measured column widths rather than distributing space equally.
     kwargs.pop("use_container_width", None)
     kwargs["width"] = "content"
     data = style_countdown_cells(data)
