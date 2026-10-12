@@ -47,10 +47,17 @@ class PdufaGridTests(unittest.TestCase):
                 header = header_config(sample)[name]
                 self.assertEqual(header["label"].split(" ", 1)[1], "Days to PDUFA")
                 self.assertNotIn("\\n", header["label"])
-                self.assertEqual(header["width"], "small")
+                self.assertEqual(header["width"], 20)
                 for band in ("+90", "90–60", "59–30", "29–0"):
                     self.assertNotIn(band, header["label"])
                 self.assertIn("past", header["help"].lower())
+
+    def test_all_pdufa_columns_20_px(self):
+        sample = pd.DataFrame({"Ticker": ["ABC"], "Drug": ["Drug"], "Indication": ["Disease"],
+                               "DAYS TO PDUFA": [75], "Cash Runway (months)": [18]})
+        configured = header_config(sample)
+        self.assertEqual({c: configured[c]["width"] for c in sample.columns},
+                         {c: 20 for c in sample.columns})
 
     def test_no_pdufa_color_swatch_legend_rendered(self):
         from inspect import getsource
@@ -66,8 +73,11 @@ class PdufaGridTests(unittest.TestCase):
         self.assertNotIn("render_countdown_band_key", source)
         self.assertNotIn("pdufa-band-chip", source)
         self.assertNotIn("countdown-band-row", source)
-        self.assertIn("min-width:132px;width:132px;max-width:132px", source)
-        self.assertIn("th.countdown-head{min-width:132px;width:132px;max-width:132px;background:#fff !important;background-image:none !important;color:#111 !important}", source)
+        self.assertIn("min-width:20px;width:20px;max-width:20px", source)
+        self.assertIn("th.countdown-head{min-width:20px;width:20px;max-width:20px;background:#fff !important;background-image:none !important;color:#111 !important}", source)
+        self.assertIn('style="width:{PDUFA_COLUMN_WIDTH_PX}px"', source)
+        self.assertIn("overflow-wrap:anywhere !important", source)
+        self.assertIn("height:auto !important", source)
         self.assertIn("pdufa_date_color(raw)", source)
         self.assertIn('label = html.escape("Days to PDUFA"', source)
 
