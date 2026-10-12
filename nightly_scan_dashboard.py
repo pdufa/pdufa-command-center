@@ -145,49 +145,63 @@ def latest_adhoc_check_run():
 
 
 def render_adhoc_error_check_controls():
-    """One-click Gmail/GitHub health check using existing server-side secrets."""
+    """Protected direct dispatch when configured; otherwise honest GitHub fallback."""
     st.markdown("### AD HOC — GMAIL + GITHUB ERROR CHECK")
     st.caption(
-        "Run the same independent error audit on demand. Checks current GitHub "
-        "workflow failures and recent Gmail alert headers; does not rescan "
-        "clinical/FDA/SEC data, change trading evidence, or send duplicate mail."
+        "Check GitHub workflow failures and recent Gmail alert headers immediately. "
+        "The audit does not rescan clinical/FDA/SEC data, change evidence, "
+        "send emails, or change your automatic schedule."
     )
     token = dashboard_secret("PDUFA_GITHUB_TOKEN")
     pin = dashboard_secret("PDUFA_SCAN_CONTROL_PIN")
-    supplied = st.text_input(
-        "Ad hoc check PIN", type="password", key="pdufa_adhoc_check_pin",
-        help="Uses the existing scan-control PIN; it is never written to the run log.",
-    )
-    authorized = bool(token and pin and hmac.compare_digest(supplied, pin))
-    if st.button(
-        "▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK",
-        key="pdufa_adhoc_error_check_button",
-        use_container_width=True,
-        disabled=not authorized,
-    ):
-        try:
-            dispatch_adhoc_error_check(token)
-            latest_adhoc_check_run.clear()
-            st.success(
-                "GitHub accepted the ad hoc audit request. This is queued, not "
-                "a completed or passing audit. Open the run below for results."
-            )
-        except urllib.error.HTTPError as exc:
-            st.error(
-                "GitHub rejected the ad hoc request (HTTP " + str(exc.code) +
-                "). Check Actions write permission for the configured token."
-            )
-        except (OSError, RuntimeError, ValueError, urllib.error.URLError) as exc:
-            st.error("Could not start ad hoc audit: " + type(exc).__name__)
+
     if not token or not pin:
         st.warning(
-            "Direct one-click dispatch is locked until PDUFA_GITHUB_TOKEN and "
-            "PDUFA_SCAN_CONTROL_PIN are set in Streamlit secrets. "
-            "You can run the workflow manually from GitHub below."
+            "One-click dispatch is not configured in Streamlit yet: "
+            "PDUFA_GITHUB_TOKEN or PDUFA_SCAN_CONTROL_PIN is missing. "
+            "Use the GitHub Actions manual-run option below."
         )
-    elif not authorized:
-        st.caption("Enter your scan-control PIN to enable the on-demand check.")
-    st.link_button("OPEN AD HOC ERROR CHECK / RESULTS IN GITHUB", ADHOC_URL)
+        st.link_button(
+            "▶ RUN AD HOC CHECK IN GITHUB",
+            ADHOC_URL,
+            use_container_width=True,
+        )
+        st.caption(
+            "In GitHub Actions, select **Run workflow → main → Run workflow**. "
+            "To enable this page's direct one-click control, add both named "
+            "secrets in Streamlit Community Cloud app settings. "
+            "Do not paste a token or PIN into the public dashboard."
+        )
+    else:
+        supplied = st.text_input(
+            "Ad hoc check PIN", type="password", key="pdufa_adhoc_check_pin",
+            help="Uses your existing scan-control PIN; never written to GitHub logs.",
+        )
+        authorized = bool(supplied and hmac.compare_digest(supplied, pin))
+        if st.button(
+            "▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK",
+            key="pdufa_adhoc_error_check_button",
+            use_container_width=True,
+            disabled=not authorized,
+        ):
+            try:
+                dispatch_adhoc_error_check(token)
+                latest_adhoc_check_run.clear()
+                st.success(
+                    "GitHub accepted the read-only audit request. "
+                    "A queued request is not a completed check; open the run for results."
+                )
+            except urllib.error.HTTPError as exc:
+                st.error(
+                    "GitHub rejected the request (HTTP " + str(exc.code) +
+                    "). Check Actions write permission for the configured token."
+                )
+            except (OSError, RuntimeError, ValueError) as exc:
+                st.error("Could not start ad hoc audit: " + type(exc).__name__)
+        if not authorized:
+            st.caption("Enter your scan-control PIN to enable direct dispatch.")
+        st.link_button("OPEN AD HOC ERROR CHECK / RESULTS IN GITHUB", ADHOC_URL)
+
     last = latest_adhoc_check_run()
     if last:
         st.caption(
@@ -200,9 +214,8 @@ def render_adhoc_error_check_controls():
         if isinstance(url, str) and url.startswith("https://github.com/"):
             st.link_button("VIEW LAST AD HOC CHECK RUN", url)
     st.caption(
-        "GitHub results and a JSON report are saved in the workflow artifacts. "
-        "Gmail access requires working IMAP/app-password credentials; failures "
-        "are reported as UNAVAILABLE, never silently marked clean."
+        "The run archives a JSON report. Gmail uses GitHub's existing "
+        "app-password credentials; unavailable checks remain UNAVAILABLE."
     )
 
 def _number(v):
