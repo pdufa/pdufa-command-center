@@ -37,7 +37,7 @@ async function appFrame(page){
     }
     if(!frame)throw Error("Streamlit app navigation did not render");
     await frame.getByText("5. SCANS",{exact:true}).click({timeout:10000});
-    let scanBody = "", buttons = 0, links=0, pin=0;
+    let scanBody = "", buttons = 0, links=0, pin=0, fallback=0;
     while(Date.now()<deadline){
       frame=await appFrame(page);
       if(!frame){await sleep(1000);continue;}
@@ -46,23 +46,25 @@ async function appFrame(page){
         throw Error("Streamlit application exception: "+scanBody.slice(-650));
       buttons=await frame.getByRole("button",{name:"▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK",exact:true}).count();
       links=await frame.getByText("OPEN AD HOC ERROR CHECK / RESULTS IN GITHUB",{exact:true}).count();
+      fallback=await frame.getByText("▶ RUN AD HOC CHECK IN GITHUB",{exact:true}).count();
       pin=await frame.getByText("Ad hoc check PIN",{exact:false}).count();
-      if(buttons && links && pin)break;
+      if((buttons && links && pin) || (fallback && scanBody.includes("One-click dispatch is not configured")))break;
       await sleep(1250);
     }
-    result.setup = scanBody.includes("Direct one-click dispatch is locked until")
-      ? "STREAMLIT_TOKEN_OR_PIN_MISSING"
-      : scanBody.includes("Enter your scan-control PIN to enable the on-demand check.")
-        ? "READY_PIN_REQUIRED"
-        : "CREDENTIAL_STATUS_UNKNOWN";
-    if(result.setup === "STREAMLIT_TOKEN_OR_PIN_MISSING")
-      result.errors.push("Streamlit lacks the required GitHub token or scan PIN");
+    result.mode = buttons === 1 && links > 0 && pin > 0
+      ? "DIRECT_PIN_GATED"
+      : fallback === 1 && scanBody.includes("One-click dispatch is not configured")
+        ? "GITHUB_MANUAL_RUN_FALLBACK"
+        : "NOT_AVAILABLE";
     result.checks.scansPage = scanBody.includes("5. SCANS — FIND CHANGES & NEW EVIDENCE");
-    result.checks.adhocButton = buttons===1;
-    result.checks.adhocPin = pin>0;
-    result.checks.githubResultLink = links>0;
+    result.checks.safeRunPathVisible = result.mode !== "NOT_AVAILABLE";
     result.checks.noApplicationException = !/This app has encountered an error|Traceback \(most recent call last\)/i.test(scanBody);
-    if(buttons===1)result.checks.lockedBeforePin = await frame.getByRole("button",{name:"▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK"}).isDisabled();
+    result.checks.pinProtected = result.mode==="DIRECT_PIN_GATED"
+      ? await frame.getByRole("button",{name:"▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK"}).isDisabled()
+      : buttons===0 && fallback===1;
+    result.directDispatchReady = result.mode === "DIRECT_PIN_GATED";
+    if(!result.directDispatchReady)
+      result.notes = ["GitHub manual-run fallback works; set the Streamlit GitHub token and PIN to enable direct dispatch."];
     await page.screenshot({path:path.join(outDir,"scans-adhoc-button.png"),fullPage:false});
     for(const [check,passed] of Object.entries(result.checks))
       if(!passed)result.errors.push(check+" did not pass");
