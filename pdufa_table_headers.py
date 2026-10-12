@@ -208,7 +208,8 @@ def header_config(data, config=None):
         # Native Streamlit grids otherwise compress or ellipsize even with
         # width="content". Assign a measured size per field, with NO ceiling.
         entry["width"] = column_width_for(label, frame[column])
-        entry["label"] = f"{HELP_ICON} {label}"
+        # Keep the circled question mark immediately AFTER the title, inline.
+        entry["label"] = f"{label} {HELP_ICON}"
         help_text = entry.get("help")
         if (not help_text or help_text == str(column) or
                 str(help_text).startswith(("Watchlist event field:", "Analysis event field:"))):
