@@ -193,7 +193,7 @@ jobs:
       - name: Request one retry on independently verified transient failures
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/post_scan_repair.py
+        run: python -m scripts.post_scan_repair
       - name: Archive repair decision, including skipped unsafe fixes
         if: always()
         uses: actions/upload-artifact@v4
