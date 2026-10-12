@@ -83,12 +83,13 @@ class TodayTabTests(unittest.TestCase):
         self.assertIn("phase3_daily_", source)
         self.assertIn('st.subheader("DAILY PHASE 3 RESULT REPORT")', source)
 
-    def test_automated_phase3_intake_not_removed_with_display_page(self):
+    def test_phase3_collector_and_data_preserved_but_old_schedule_removed(self):
         root = Path(__file__).resolve().parents[1]
-        workflow = (root / ".github/workflows/phase3-results-intake.yml").read_text(encoding="utf-8")
-        self.assertIn("python scripts/phase3_results_intake.py", workflow)
-        self.assertIn("Reconcile candidate drug identities", workflow)
+        # Scanner code and historical evidence survive, but the workflow
+        # schedule was removed by explicit request and must not be restarted.
+        self.assertFalse((root / ".github/workflows/phase3-results-intake.yml").exists())
         self.assertTrue((root / "scripts/phase3_results_intake.py").exists())
+        self.assertTrue((root / "scripts/phase3_drug_identity.py").exists())
         self.assertTrue((root / "data/phase3_announcements.csv").exists())
         self.assertTrue((root / "data/second_financing_status.csv").exists())
 
