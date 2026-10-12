@@ -1,0 +1,204 @@
+name: PDUFA Nightly Scoring Then Error Check And Safe Repair
+# Both nightly scan streams feed this ordered, post-completion sequence.
+on:
+  workflow_run:
+    workflows:
+      - PDUFA Nightly Scan Report Publisher
+      - PDUFA Nightly FDA SEC Financial Market Issuer Sources
+    types: [completed]
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pdufa-nightly-scoring-then-repair.yml
+      - scripts/nightly_scoring_audit.py
+      - scripts/post_scan_repair.py
+      - tests/test_nightly_scoring_audit.py
+      - tests/test_post_scan_repair.py
+
+permissions:
+  actions: write
+  contents: write
+
+concurrency:
+  group: pdufa-postscan-scoring-alert-repair-${{ github.event_name == 'workflow_run' && 'nightly' || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  workflow-tests:
+    if: github.event_name == 'push'
+    name: Verify orchestrator without scans or repairs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pytest
+        run: python -m pip install pytest
+      - name: Test nightly audit and safe repair contracts
+        run: python -m pytest -q tests/test_nightly_scoring_audit.py tests/test_post_scan_repair.py tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py
+
+  scoring:
+    name: 1 — Audit scoring inputs after completed nightly scan
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      source_run_id: ${{ steps.source.outputs.source_run_id }}
+      source_workflow: ${{ steps.source.outputs.source_workflow }}
+      source_conclusion: ${{ steps.source.outputs.source_conclusion }}
+    steps:
+      - name: Checkout trusted main and saved score snapshots
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify completed nightly source run
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_ID: ${{ github.event.workflow_run.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_ID" > "$RUNNER_TEMP/nightly-source.json"
+          python - "$RUNNER_TEMP/nightly-source.json" "$GITHUB_OUTPUT" <<'PY'
+          import json, os, sys
+          with open(sys.argv[1], encoding="utf-8") as f:
+              run = json.load(f)
+          approved = {"PDUFA Nightly Scan Report Publisher",
+                      "PDUFA Nightly FDA SEC Financial Market Issuer Sources"}
+          if (run.get("name") not in approved or
+              run.get("head_branch") != "main" or
+              (run.get("head_repository") or {}).get("full_name") != os.environ["GITHUB_REPOSITORY"] or
+              run.get("status") != "completed" or
+              run.get("conclusion") not in ("success", "failure", "timed_out", "cancelled", "skipped")):
+              raise SystemExit("Unverified or unexpected completed nightly source")
+          with open(sys.argv[2], "a", encoding="utf-8") as out:
+              print("source_run_id=" + str(run["id"]), file=out)
+              print("source_workflow=" + run["name"], file=out)
+              print("source_conclusion=" + run["conclusion"], file=out)
+          print("Verified completed source #" + str(run["id"]) + ": " + run["name"])
+          PY
+      - name: Install scoring test runner
+        run: python -m pip install pytest
+      - name: Test score lineage, overlap and missing-input rules
+        id: scoring_tests
+        continue-on-error: true
+        run: python -m pytest -q tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py tests/test_nightly_scoring_audit.py
+      - name: Generate dated nightly scoring report
+        env:
+          SOURCE_ID: ${{ steps.source.outputs.source_run_id }}
+          SOURCE_NAME: ${{ steps.source.outputs.source_workflow }}
+          SOURCE_CONCLUSION: ${{ steps.source.outputs.source_conclusion }}
+        run: |
+          python -m scripts.nightly_scoring_audit \
+            --source-run-id "$SOURCE_ID" \
+            --source-workflow "$SOURCE_NAME" \
+            --source-conclusion "$SOURCE_CONCLUSION" \
+            --out data/nightly_scoring_audit.json
+      - name: Publish latest scoring-input findings on dashboard
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/nightly_scoring_audit.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish nightly scoring input audit"
+            for attempt in 1 2 3; do
+              if git pull --rebase origin main && git push origin HEAD:main; then
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "::error::Unable to publish nightly scoring audit"
+            exit 1
+          fi
+      - name: Archive scoring report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-nightly-scoring-${{ github.run_id }}
+          path: data/nightly_scoring_audit.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Signal unverified scoring tests
+        if: steps.scoring_tests.outcome == 'failure'
+        run: |
+          echo "::error::Scoring regression failure; do not infer score quality."
+          exit 1
+
+  error-check:
+    name: 2 — Check Gmail and GitHub after scoring
+    needs: scoring
+    if: >-
+      always() && github.event_name == 'workflow_run' &&
+      needs.scoring.outputs.source_run_id != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read-only Gmail and GitHub error audit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PDUFA_SOURCE_RUN_ID: ${{ needs.scoring.outputs.source_run_id }}
+          PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+          PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+        run: python scripts/adhoc_alert_check.py
+      - name: Archive error check even on incomplete credentials or API errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-nightly-error-check-${{ github.run_id }}
+          path: reports/adhoc_alert_check.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  safe-repair:
+    name: 3 — Guarded GitHub repair after scoring and error checks
+    needs: [scoring, error-check]
+    if: >-
+      always() && github.event_name == 'workflow_run' &&
+      needs.scoring.outputs.source_run_id != '' &&
+      needs.error-check.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve completed Gmail/GitHub error report
+        uses: actions/download-artifact@v4
+        with:
+          name: pdufa-nightly-error-check-${{ github.run_id }}
+          path: reports/
+      - name: Request one retry on independently verified transient failures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/post_scan_repair.py
+      - name: Archive repair decision, including skipped unsafe fixes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-nightly-safe-repair-${{ github.run_id }}
+          path: reports/post_scan_repair.json
+          if-no-files-found: warn
+          retention-days: 30
