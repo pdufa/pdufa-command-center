@@ -67,6 +67,7 @@ class PdufaGridTests(unittest.TestCase):
         self.assertNotIn("pdufa-band-chip", source)
         self.assertNotIn("countdown-band-row", source)
         self.assertIn("min-width:132px;width:132px;max-width:132px", source)
+        self.assertIn("th.countdown-head{min-width:132px;width:132px;max-width:132px;background:#fff !important;background-image:none !important;color:#111 !important}", source)
         self.assertIn("pdufa_date_color(raw)", source)
         self.assertIn('label = html.escape("Days to PDUFA"', source)
 
