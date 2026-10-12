@@ -1,6 +1,13 @@
 name: PDUFA Scan Report Controls
 
+# Updates to this control workflow smoke-test VERIFY_ALL once on push.
+# Manual scans and rescan requests still require workflow_dispatch.
+
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-scan-control.yml'
   workflow_dispatch:
     inputs:
       action:
@@ -64,7 +71,7 @@ jobs:
           print("Newly completed collectors publish a refreshed verified report.")
           PY
       - name: Reverify all archived clinical scan reports
-        if: ${{ inputs.action == 'VERIFY_ALL' }}
+        if: ${{ inputs.action == 'VERIFY_ALL' || github.event_name == 'push' }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
@@ -82,7 +89,7 @@ jobs:
                           "--verify-only"], check=True)
           PY
       - name: Publish reverified audit
-        if: ${{ inputs.action == 'VERIFY_ALL' }}
+        if: ${{ inputs.action == 'VERIFY_ALL' || github.event_name == 'push' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
