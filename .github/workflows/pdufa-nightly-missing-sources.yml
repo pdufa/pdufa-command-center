@@ -1,0 +1,153 @@
+name: PDUFA Nightly FDA SEC Financial Market Issuer Sources
+
+# This initial file creation on main starts all five LIVE source jobs now.
+# Every subsequent night, jobs recheck saved event identities and SEC registry.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-nightly-missing-sources.yml'
+  schedule:
+    - cron: '30 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-nightly-extended-evidence
+  cancel-in-progress: false
+
+jobs:
+  live-sources:
+    name: 'Live PDUFA ${{ matrix.source }} source check'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - source: FDA
+            slug: fda
+          - source: SEC
+            slug: sec
+          - source: FINANCIAL
+            slug: financial
+          - source: MARKET
+            slug: market
+          - source: ISSUER
+            slug: issuer
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - name: Checkout repository research evidence
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install event recheck dependency
+        run: python -m pip install pandas
+      - name: Verify email credentials before any external collection
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email secret ${key}; no unnotified scan allowed."
+              exit 1
+            fi
+          done
+      - name: Send START, collect live evidence, send END
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "${{ matrix.source }}" --mode DELTA \
+            --status-file "reports/missing_sources/${{ matrix.slug }}_scan_report.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python scripts/nightly_missing_sources.py \
+              --source "${{ matrix.source }}" \
+              --report "reports/missing_sources/${{ matrix.slug }}_scan_report.json"
+          exit_code=$?
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Source scanned; full source/identity verification remains PARTIAL."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Save per-source manifest for reconciliation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-manifest-${{ matrix.slug }}-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: reports/missing_sources/
+      - name: Archive source ledger and Gmail submission audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-ledger-${{ matrix.slug }}-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            data/recheck_status.csv
+            data/pdufa_candidates.csv
+            reports/scan_notifications/
+
+  reconcile:
+    name: 'Combined coverage / missing source audit'
+    needs: live-sources
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - name: Checkout baseline for scope audit
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download available source manifests (missing jobs stay missing)
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: source-manifest-*-${{ github.run_id }}
+          path: reports/missing_sources/
+          merge-multiple: true
+      - name: Send START, verify source coverage, send END
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan AUDIT --mode RECONCILE \
+            --status-file reports/missing_sources/audit_scan_report.json \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 360 -- \
+            python scripts/nightly_missing_sources.py \
+              --source AUDIT \
+              --report reports/missing_sources/audit_scan_report.json
+          exit_code=$?
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Some required source families are unverified."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Archive combined run source coverage and email audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-combined-coverage-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            reports/missing_sources/
+            reports/scan_notifications/
