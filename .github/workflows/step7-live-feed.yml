@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/step7-live-feed.yml'
+      - 'scripts/publish_step7_feed.py'
   schedule:
     - cron: '0 12 * * *'
   workflow_dispatch:
