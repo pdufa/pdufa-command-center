@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "plan": "PDUFA #2 PIPELINE #3 PRE3 #4 POST3 baseline then delta",
+  "status": "PREFLIGHT_ONLY",
+  "baseline_state": "NOT_VERIFIED",
+  "automation_enabled": false,
+  "universe_sources": [
+    "data/company_registry.csv",
+    "data/all_phase_trials.csv",
+    "data/phase_pipeline.csv",
+    "data/pdufa_candidates.csv",
+    "data/phase3_announcements.csv",
+    "data/phase3_primary_pvalues.csv"
+  ],
+  "identity_requirements": [
+    "ticker",
+    "nct_id_or_exact_fda_event_key",
+    "drug",
+    "indication",
+    "source_url",
+    "as_of_date"
+  ],
+  "shared_source_families": [
+    {
+      "name": "clinicaltrials",
+      "required": true,
+      "checks": [
+        "all tracked NCTs",
+        "all phases",
+        "transitions",
+        "design",
+        "results",
+        "primary p"
+      ]
+    },
+    {
+      "name": "fda",
+      "required": true,
+      "checks": [
+        "applications",
+        "accepted submissions",
+        "PDUFA dates/extensions",
+        "CRLs",
+        "approvals"
+      ]
+    },
+    {
+      "name": "issuer_releases",
+      "required": true,
+      "checks": [
+        "Phase 3 readouts",
+        "financing announcement and closure",
+        "partnerships",
+        "commercial pipeline"
+      ]
+    },
+    {
+      "name": "sec",
+      "required": true,
+      "checks": [
+        "new filings",
+        "offerings and ATMs",
+        "financing closure",
+        "cash/runway",
+        "insiders/ownership if reported"
+      ]
+    },
+    {
+      "name": "market",
+      "required": true,
+      "checks": [
+        "price/volume",
+        "market cap",
+        "short/IV/borrow where obtainable"
+      ]
+    }
+  ],
+  "tabs": [
+    {
+      "id": 2,
+      "name": "PIPELINE",
+      "full_initial_scope": "all tracked programs and all phases",
+      "source_files": [
+        "company_registry.csv",
+        "all_phase_trials.csv",
+        "phase_pipeline.csv",
+        "phase3_announcements.csv",
+        "pdufa_candidates.csv",
+        "fda_review_engine.csv",
+        "drug_metadata.csv",
+        "prediction_engine_history.csv"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "PRE3",
+      "full_initial_scope": "all pre-readout programs plus unknown/review records",
+      "source_files": [
+        "phase_pipeline.csv",
+        "step7_pre_phase3_feed.csv",
+        "pre_readout_protocols.csv",
+        "phase2_primary_pvalues.csv",
+        "phase3_pre_readout_evidence.csv",
+        "phase3_announcements.csv",
+        "step7_financing_review.csv"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "POST3",
+      "full_initial_scope": "all post-readout FDA and trading events plus review records",
+      "source_files": [
+        "phase3_announcements.csv",
+        "phase3_primary_pvalues.csv",
+        "pdufa_candidates.csv",
+        "fda_review_engine.csv",
+        "second_financing_status.csv",
+        "step7_financing_review.csv",
+        "step7_market_status.csv",
+        "post_phase3_discoveries.csv"
+      ]
+    }
+  ],
+  "baseline_order": [
+    2,
+    3,
+    4
+  ],
+  "delta_rules": {
+    "check_every_tracked_identity": true,
+    "deep_scan_when": [
+      "new",
+      "updated",
+      "conflicting",
+      "stale",
+      "near_catalyst",
+      "previously_failed"
+    ],
+    "preserve_prior_verified_values_on_error": true,
+    "rescore_on_evidence_change": true,
+    "allow_nightly_activation_only_after_verified_baseline": true
+  },
+  "coverage_statuses": [
+    "COMPLETE",
+    "COMPLETE WITH WARNINGS",
+    "PARTIAL",
+    "FAILED"
+  ],
+  "readiness_blockers": [
+    "SEC 403 or unavailable source",
+    "missing exact identity",
+    "missing required source family",
+    "unverified full-program ledger"
+  ],
+  "documentation": "docs/SCAN_234_BASELINE_DELTA.md"
+}
