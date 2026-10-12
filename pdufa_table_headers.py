@@ -282,6 +282,9 @@ def pdufa_dataframe(data, **kwargs):
                 ordered[insertion:insertion] = [c for c in FINANCE_NEIGHBORS if c in data]
                 kwargs["column_order"] = ordered
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
+    # Stretching would redistribute spare pixels and undo the 20px columns.
+    kwargs.pop("use_container_width", None)
+    kwargs["width"] = "content"
     data = style_countdown_cells(data)
     result = st.dataframe(data, **kwargs)
     render_survey_box(source)
@@ -301,6 +304,8 @@ def pdufa_dataframe(data, **kwargs):
 def pdufa_editor(data, **kwargs):
     source = kwargs.pop("survey_source", data)
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
+    kwargs.pop("use_container_width", None)
+    kwargs["width"] = "content"
     # Streamlit Styler colors non-editable countdown cells, not finance fields.
     # Dynamic editors keep a DataFrame to preserve add/remove row behavior.
     if kwargs.get("num_rows") != "dynamic":
