@@ -1,33 +1,41 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-12T15:37:40.352586+00:00",
+  "updated_at_utc": "2026-10-12T15:37:50.142Z",
   "latest_run_id": 38269493384,
   "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384",
   "latest_run_started_at_utc": "2026-10-12T15:20:20Z",
   "latest_run_conclusion": "success",
   "scope": "CLINICAL_SCANS_2_3_4_ONLY",
-  "status": "UNVERIFIED",
+  "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-10-12T15:37:40.352603+00:00",
-    "artifact_integrity": "ISSUES",
+    "checked_at_utc": "2026-10-12T15:37:50.142Z",
+    "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
-    "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
+    "description": "Each of the three original GitHub Actions ZIP artifacts was downloaded and independently checked against its matching collector source-state JSON. This validates the clinical source archives only; full FDA, SEC, issuer and market verification remains pending."
   },
   "scans": [
     {
       "scan": "2",
       "label": "PIPELINE",
-      "status": "UNVERIFIED",
-      "artifact_integrity": "FAILED",
+      "status": "PARTIAL",
+      "artifact_integrity": "PASS",
       "run_id": 38269493384,
       "new_records": null,
-      "changed_trials_this_execution": null,
-      "errors_count": null,
-      "issues": [
-        "Cannot validate archived artifact: ValueError"
-      ],
-      "metrics": {},
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384"
+      "changed_trials_this_execution": 0,
+      "errors_count": 0,
+      "issues": [],
+      "metrics": {
+        "companies_checked": 717,
+        "companies_due": 717,
+        "tracked_trials_checked": 9742,
+        "tracked_trials_total": 9742,
+        "registry_companies": 717,
+        "companies_with_warnings": 0,
+        "tracked_trials_with_warnings": 0
+      },
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384",
+      "collector_status": "COMPLETE",
+      "collected_at_utc": "2026-10-12T15:24:17.000590+00:00"
     },
     {
       "scan": "3",
@@ -74,7 +82,7 @@
   "metrics": {
     "new_records": null,
     "changed_trials": null,
-    "errors": null
+    "errors": 0
   },
   "missing_required_source_families": [
     "FDA regulatory decision/date verification",
@@ -90,10 +98,10 @@
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384",
       "started_at_utc": "2026-10-12T15:20:20Z",
       "run_conclusion": "success",
-      "status": "UNVERIFIED",
+      "status": "PARTIAL",
       "new_records": null,
       "changed_trials": null,
-      "errors": null
+      "errors": 0
     }
   ]
 }
