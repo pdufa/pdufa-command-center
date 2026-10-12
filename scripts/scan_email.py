@@ -111,6 +111,13 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         ("matched_posted_results", "Phase 3 posted results matched"),
         ("market_cap_source_unavailable", "Market cap sources unavailable"),
         ("errors_count", "Errors"),
+        ("source_observations", "Source observations"),
+        ("source_issue_count", "Sources needing review"),
+        ("feeds_checked", "Issuer feeds checked"),
+        ("issuer_news_candidates", "News items discovered (unverified)"),
+        ("issuer_press_releases_verified", "Issuer releases verified"),
+        ("sources_passed", "Source families complete"),
+        ("sources_due", "Source families due"),
     ):
         v = report.get(key)
         if isinstance(v, int) and not isinstance(v, bool):
