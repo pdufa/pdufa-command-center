@@ -2289,7 +2289,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
     .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
-    .merged-pdufa-table th.countdown-head{min-width:132px;width:132px;max-width:132px}
+    .merged-pdufa-table th.countdown-head{min-width:132px;width:132px;max-width:132px;background:#fff !important;background-image:none !important;color:#111 !important}
     .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
