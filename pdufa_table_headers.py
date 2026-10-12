@@ -10,7 +10,7 @@ from pdufa_display_columns import align_pdufa_finance_columns, PDUFA_DAY_COLUMNS
 from pdufa_date_gradient import date_color
 
 
-HELP_ICON = "?\u20dd"
+HELP_ICON = "(?)"  # Reliable text fallback; main dashboard tables draw a real CSS circle.
 FIELD_HELP = {
     "ticker": "Stock-market ticker identifying the company. Trial and FDA evidence must still match the exact drug and event.",
     "company": "Company associated with this trial or FDA application.",
@@ -201,7 +201,7 @@ def header_config(data, config=None):
             continue  # Deliberately hidden editor/source field.
         entry = dict(original) if isinstance(original, dict) else {"label": original}
         label = str(entry.get("label") or column)
-        label = label.replace(HELP_ICON, "").replace("ⓘ", "").strip()
+        label = label.replace(HELP_ICON, "").replace("?\u20dd", "").replace("ⓘ", "").strip()
         # All PDUFA tables use one short header; the color is on each day cell.
         if column in PDUFA_DAY_COLUMNS:
             label = "Days to PDUFA"
