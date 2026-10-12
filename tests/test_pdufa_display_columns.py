@@ -68,7 +68,7 @@ class PdufaGridTests(unittest.TestCase):
         self.assertNotIn("countdown-band-row", source)
         self.assertIn("min-width:132px;width:132px;max-width:132px", source)
         self.assertIn("pdufa_date_color(raw)", source)
-        self.assertIn("label = html.escape(\\\"Days to PDUFA\\\"", source)
+        self.assertIn('label = html.escape("Days to PDUFA"', source)
 
     def test_days_column_coloring_preserves_original_values_and_finance_style(self):
         frame = pd.DataFrame({
