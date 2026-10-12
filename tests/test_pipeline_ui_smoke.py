@@ -344,8 +344,11 @@ class PipelinePageSmokeTests(unittest.TestCase):
         focused = [item.value for item in overview.get("dataframe")
                    if {"Ticker", "Score /100", "Score type", "F"}
                    .issubset(item.value.columns)]
-        self.assertEqual(len(focused), 6)
-        self.assertGreaterEqual(sum(not frame.empty for frame in focused), 4)
+        # The three headline PIPELINE/PRE3/POST3 sheets now use HTML tables
+        # (real circled help icons) rather than native Streamlit dataframes.
+        # AppTest can inspect the three remaining native evidence/timeline grids.
+        self.assertEqual(len(focused), 3)
+        self.assertGreaterEqual(sum(not frame.empty for frame in focused), 2)
         for frame in focused:
             self.assertTrue(frame["Ticker"].eq(ticker).all())
         timeline = next(item.value for item in overview.get("dataframe")
