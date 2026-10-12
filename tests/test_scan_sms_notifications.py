@@ -124,6 +124,7 @@ class NotificationContractTests(unittest.TestCase):
                 self.assertFalse(check)
                 status_path.write_text(json.dumps({
                     "status": "COMPLETE",
+                    "full_coverage_verified": True,
                     "companies_checked": 717,
                     "companies_due": 717,
                     "new_records": 3,
@@ -177,6 +178,31 @@ class NotificationContractTests(unittest.TestCase):
             self.assertIn("END: PARTIAL", texts[1])
             self.assertIn("trials 208/3105", texts[1])
             self.assertEqual(audit["coverage_status"], "PARTIAL")
+
+    def test_clinical_only_complete_cannot_claim_all_source_complete(self):
+        settings = SMSSettings.from_env(self.ENV)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            status = root / "status.json"
+            messages = []
+            def executor(*_, **__):
+                status.write_text(json.dumps({
+                    "status": "COMPLETE",
+                    "companies_checked": 717,
+                    "companies_due": 717,
+                    "scope": "ClinicalTrials.gov only",
+                }))
+                return SimpleNamespace(returncode=0)
+            code, audit = run_scan(
+                scan="2", mode="BASELINE", command=["mock"],
+                status_file=status, audit_dir=root / "audit",
+                settings=settings, executor=executor,
+                sender=lambda _, message: (messages.append(message) or {
+                    "status": "submitted_not_delivered"}))
+            self.assertEqual(code, 3)
+            self.assertEqual(len(messages), 2)
+            self.assertIn("END: UNVERIFIED", messages[1])
+            self.assertIn("full-source coverage unverified", audit["summary"])
 
     def test_stale_prior_report_cannot_claim_fresh_completion(self):
         settings = SMSSettings.from_env(self.ENV)
