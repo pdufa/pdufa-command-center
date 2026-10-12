@@ -204,9 +204,13 @@
       "PDUFA_ALERT_EMAIL"
     ],
     "recipient_email": "Configured in PDUFA_ALERT_EMAIL; never hardcoded into code",
-    "email_setup_state": "NOT_CONFIGURED",
+    "email_setup_state": "REQUIRES_ACTIONS_SECRETS_AND_DELIVERY_TEST",
     "notifications_active": false,
     "nightly_schedules_restored": false,
-    "note": "Gmail connected to ChatGPT does not grant GitHub Actions SMTP credentials. Use a Gmail app password in Actions Secrets, and confirm real delivery before enabling scans. RingCentral is not required."
+    "note": "Gmail connected to ChatGPT does not grant GitHub Actions SMTP credentials. Use a Gmail app password in Actions Secrets, and confirm real delivery before enabling scans. RingCentral is not required.",
+    "independent_completion_workflow": ".github/workflows/pdufa-clinical-scan-end-email.yml",
+    "completion_notifier": "scripts/notify_completed_clinical_run.py",
+    "test_completion_notifier": "tests/test_pdufa_completion_emails.py",
+    "manual_historical_run_id": "38195214610"
   }
 }
