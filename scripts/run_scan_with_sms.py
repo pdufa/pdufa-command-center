@@ -65,13 +65,16 @@ def run_scan(*, scan: str, mode: str, command: list[str],
              sender: Callable = submit_sms,
              executor: Callable = subprocess.run,
              now: Callable = stamp, monotonic: Callable = time.monotonic,
-             cwd: Path | None = None) -> tuple[int, dict]:
+             cwd: Path | None = None,
+             timeout_seconds: int | None = None) -> tuple[int, dict]:
     if not re.fullmatch(r"[A-Za-z0-9 _-]{1,40}", scan):
         raise ValueError("Invalid scan ID")
     if mode not in {"BASELINE", "DELTA", "DEEP", "RECONCILE", "MANUAL"}:
         raise ValueError("Invalid scan mode")
     if not command or command[0] == "--":
         raise ValueError("An executable command is required")
+    if timeout_seconds is not None and timeout_seconds < 1:
+        raise ValueError("timeout_seconds must be positive")
     # No work begins if this is absent; alerts are mandatory, not best effort.
     settings = settings if settings is not None else SMSSettings.from_env()
     run_id = str(uuid.uuid4())
@@ -106,7 +109,10 @@ def run_scan(*, scan: str, mode: str, command: list[str],
     exception_type = None
     try:
         audit["scan_executed"] = True
-        completed = executor(command, cwd=cwd, check=False)
+        kwargs = {"cwd": cwd, "check": False}
+        if timeout_seconds is not None:
+            kwargs["timeout"] = timeout_seconds
+        completed = executor(command, **kwargs)
         exit_code = int(completed.returncode)
     except (Exception, KeyboardInterrupt) as exc:
         exception_type = type(exc).__name__
@@ -155,6 +161,8 @@ def main():
     p.add_argument("--audit-dir", type=Path,
                    default=Path("reports") / "scan_notifications")
     p.add_argument("--cwd", type=Path, default=Path.cwd())
+    p.add_argument("--timeout-seconds", type=int, default=None,
+                   help="Stop the child before the hosting job's hard timeout, then SMS failure")
     p.add_argument("command", nargs=argparse.REMAINDER,
                    help="Scanner command following --, e.g. -- python script.py")
     options = p.parse_args()
@@ -165,7 +173,8 @@ def main():
         result_code, audit = run_scan(
             scan=options.scan, mode=options.mode,
             command=command, status_file=options.status_file,
-            audit_dir=options.audit_dir, cwd=options.cwd)
+            audit_dir=options.audit_dir, cwd=options.cwd,
+            timeout_seconds=options.timeout_seconds)
     except (SMSSetupError, ValueError) as exc:
         print(f"Scan blocked before launch: {exc}", file=sys.stderr)
         return 2
