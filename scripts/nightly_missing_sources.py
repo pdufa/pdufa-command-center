@@ -202,19 +202,41 @@ def recheck(source, data_dir, out):
     scope = [r for r in rows if r.get("event_key") in keys and
              r.get("requested_scope") == "ALL"]
     counts = Counter()
+    issues = Counter()
+    true_failures = Counter()
+    examples = []
     for row in scope:
         for cat in STATUS_MAP[source]:
-            counts[row.get(cat + "_status") or "NOT_CHECKED"] += 1
+            status = (row.get(cat + "_status") or "NOT_CHECKED").strip().upper()
+            counts[status] += 1
+            failed = any(flag in status for flag in ("ERROR", "BLOCKED", "UNAVAILABLE"))
+            unresolved = failed or any(flag in status for flag in (
+                "REVIEW", "NO_SOURCE", "NO_CIK", "NOT_CHECKED", "NO_VERIFIED_SOURCE",
+                "NON_FDA_SOURCE", "DATE_UNVERIFIED"))
+            if unresolved:
+                issues[cat + ":" + status] += 1
+                if len(examples) < 12:
+                    examples.append({
+                        "ticker": row.get("ticker", ""),
+                        "event_key": row.get("event_key", ""),
+                        "category": cat,
+                        "status": status,
+                        "note": (row.get(cat + "_note") or "")[:160],
+                    })
+            if failed:
+                true_failures[cat + ":" + status] += 1
     outfile = out / (source.lower() + "_event_rechecks.csv")
     write_rows(outfile, scope, list(scope[0]) if scope else [
         "event_key", "run_status", "requested_scope"])
-    errors = sum(1 for row in scope for cat in STATUS_MAP[source]
-                 if any(part in (row.get(cat + "_status") or "").upper()
-                        for part in ("ERROR", "BLOCKED", "UNAVAILABLE", "REVIEW",
-                                     "NO_SOURCE", "NO_CIK", "NOT_CHECKED")))
     return {"events_due": len(keys), "events_checked": len(scope),
             "source_observations": len(scope) * len(STATUS_MAP[source]),
-            "source_status_counts": dict(counts), "source_issue_count": errors,
+            "source_status_counts": dict(counts),
+            "source_issue_count": sum(issues.values()),
+            "source_technical_failure_count": sum(true_failures.values()),
+            "source_review_only_count": sum(issues.values()) - sum(true_failures.values()),
+            "source_issue_breakdown": dict(issues),
+            "source_technical_failure_breakdown": dict(true_failures),
+            "source_issue_examples": examples,
             "recheck_exit_code": exitcode, "recheck_output": str(outfile)}
 
 
@@ -283,7 +305,8 @@ def main(argv=None):
         "status": status, "source": args.source,
         "scope": "PDUFA event-specific live sources; SEC also inventories company registry",
         "full_coverage_verified": False,
-        "errors_count": int(bool(problem)) + evidence.get("source_issue_count", 0),
+        "errors_count": int(bool(problem)) + evidence.get("source_technical_failure_count", 0),
+        "source_review_count": evidence.get("source_review_only_count", 0),
         "errors": [problem] if problem else [],
         "missing_required_source_families": (
             evidence.get("missing_required_source_families", FULL_SOURCE_FAMILIES)),
