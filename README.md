@@ -1,5 +1,32 @@
 # PDUFA Command Center
 
+## Independent scan completion emails (October 11, 2026)
+
+The original **PDUFA One-Time Clinical Scan** completed #2 PIPELINE, #3 PRE3
+and #4 POST3 as separate clinical-source jobs but did not send END emails.
+The replacement completion notification lives in
+`.github/workflows/pdufa-clinical-scan-end-email.yml`: it listens for
+`workflow_run: completed` for that exact collector workflow, so it can
+report success, failure, or cancellation independently of the original job.
+It does **not** trigger another clinical scan and has no recurring scan schedule.
+
+`scripts/notify_completed_clinical_run.py` reads the three exact scan jobs and
+`scan_execution_report.json` audit manifests from the GitHub Actions artifacts,
+then submits one email per #2/#3/#4 through `scripts/scan_email.py`.
+Collector success without a full all-source coverage audit remains
+**PARTIAL/UNVERIFIED**, never full-baseline COMPLETE. Missing manifests, failed
+collector jobs and error counts are disclosed rather than invented.
+Review `tests/test_pdufa_completion_emails.py` for offline coverage.
+
+**Activation is still blocked until GitHub repository Actions secrets**
+`PDUFA_GMAIL_USER`, `PDUFA_GMAIL_APP_PASSWORD` and
+`PDUFA_ALERT_EMAIL` are configured and a delivery test succeeds.
+The ChatGPT Gmail connector cannot give GitHub Actions its SMTP credentials.
+See `docs/GMAIL_SCAN_ALERT_SETUP.md`. To resend the historical completion
+email after configuring secrets, manually run
+`PDUFA Clinical Scan Completion Email` with run ID `38195214610`.
+Manual resends intentionally repeat messages; do not use them blindly.
+
 ## Watchlist / Trading subtab (October 11, 2026)
 
 Inside **PDUFA → WATCHLIST / TRADING**, Watchlist is on top and Trading is
