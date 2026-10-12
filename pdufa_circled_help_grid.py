@@ -15,7 +15,7 @@ from pdufa_display_columns import finance_style
 from pdufa_table_headers import column_help, style_countdown_cells
 
 
-_HEADER = re.compile(r'(<th\\b[^>]*class="col_heading[^"]*"[^>]*>)(.*?)(</th>)', re.S)
+_HEADER = re.compile(r'(<th\b[^>]*class="col_heading[^"]*"[^>]*>)(.*?)(</th>)', re.S)
 
 
 def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 310) -> str:
@@ -25,7 +25,7 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
     styled = style_countdown_cells(finance_style(visible))
     # Keep existing countdown and financing Styler colors, plus safe text data.
     markup = styled.hide(axis="index").format(escape="html").to_html()
-    markup = re.sub(r'<table\\b', '<table class="pdufa-help-grid"', markup, count=1)
+    markup = re.sub(r'<table\b', '<table class="pdufa-help-grid"', markup, count=1)
 
     counter = iter(enumerate(visible_columns))
     def decorate(match):
@@ -82,7 +82,7 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
       .pdufa-help-grid a{color:#0b57d0;text-decoration:underline}
     </style>
     """.replace("__HEIGHT__", str(int(height)))
-    script = """
+    script = r"""
     <script>
     (() => {
       const table = document.querySelector('.pdufa-help-grid');
