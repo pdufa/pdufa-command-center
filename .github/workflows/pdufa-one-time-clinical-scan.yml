@@ -1,0 +1,122 @@
+name: PDUFA One-Time Clinical Scan
+
+# Single launch: creation of THIS workflow on main triggers its initial push.
+# No cron, no dispatch, and no triggers for later unrelated commits.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-one-time-clinical-scan.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-clinical-baseline-initial
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: 'PDUFA #${{ matrix.scan }} ${{ matrix.label }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - scan: '2'
+            label: PIPELINE
+            collector: all_phase_scan
+            status_file: all_phase_scan_state.json
+          - scan: '3'
+            label: PRE3
+            collector: phase_pipeline
+            status_file: phase_pipeline_state.json
+          - scan: '4'
+            label: POST3
+            collector: phase3_results_intake
+            status_file: phase3_intake_status.json
+    steps:
+      - name: Check out existing snapshot (never rewrite repository)
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source collector dependency
+        run: python -m pip install requests
+      - name: Announce scope in workflow log
+        run: |
+          echo 'Starting live ClinicalTrials.gov collector for #${{ matrix.scan }} ${{ matrix.label }}'
+          echo 'This is CLINICAL-ONLY INITIAL COLLECTION, not a full FDA/SEC/issuer/market baseline.'
+          echo 'All files are temporary job artifacts; dashboard source data are NOT updated automatically.'
+      - name: Run live evidence scan
+        id: collect
+        run: |
+          if [ '${{ matrix.scan }}' = '4' ]; then
+            python scripts/phase3_results_intake.py --mode backfill --max-pages 120 --data-dir data
+          elif [ '${{ matrix.scan }}' = '3' ]; then
+            python scripts/phase_pipeline.py --data-dir data --lookback-days 730 --page-limit 60
+          else
+            python scripts/all_phase_scan.py --data-dir data
+          fi
+      - name: Save honest coverage report
+        if: always()
+        shell: bash
+        env:
+          SCAN_ID: '${{ matrix.scan }}'
+          SCAN_LABEL: '${{ matrix.label }}'
+          SCAN_STATUS: '${{ matrix.status_file }}'
+          COLLECTOR_OUTCOME: '${{ steps.collect.outcome }}'
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from datetime import datetime, timezone
+          path = Path('data') / os.environ['SCAN_STATUS']
+          try:
+              state = json.loads(path.read_text(encoding='utf-8'))
+          except (OSError, ValueError):
+              state = {}
+          report = {
+              'created_at_utc': datetime.now(timezone.utc).isoformat(),
+              'scan': os.environ['SCAN_ID'],
+              'scan_label': os.environ['SCAN_LABEL'],
+              'scan_kind': 'CLINICAL_SOURCE_COLLECTION_ONLY',
+              'status': 'PARTIAL' if state and os.environ['COLLECTOR_OUTCOME'] == 'success' else 'FAILED',
+              'collector_status': state.get('status', 'NO_FRESH_STATUS'),
+              'collector_step_outcome': os.environ['COLLECTOR_OUTCOME'],
+              'baseline_verified': False,
+              'full_coverage_verified': False,
+              'companies_due': state.get('registry_companies'),
+              'companies_checked': state.get('companies_checked'),
+              'tracked_trials_total': state.get('tracked_trials_total'),
+              'tracked_trials_checked': state.get('tracked_trials_checked'),
+              'studies_checked': state.get('studies_checked', state.get('studies_scanned')),
+              'new_records': state.get('new_records'),
+              'changed_trials_this_execution': state.get('changed_trials_this_execution'),
+              'errors': state.get('errors'),
+              'missing_required_source_families': [
+                  'FDA', 'SEC', 'issuer releases', 'full market data', 'complete identity reconciliation'
+              ],
+              'note': 'Collector outputs are attached as workflow artifacts. They are not yet merged into the production dashboard.'
+          }
+          Path('scan_execution_report.json').write_text(json.dumps(report,indent=2)+'\n')
+          print('SCAN_REPORT_BEGIN')
+          print(json.dumps(report,indent=2))
+          print('SCAN_REPORT_END')
+          PY
+      - name: Archive collector evidence and status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clinical-scan-${{ matrix.scan }}-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            scan_execution_report.json
+            data/${{ matrix.status_file }}
+            data/all_phase_trials.csv
+            data/phase_pipeline.csv
+            data/phase_pipeline_market_caps.csv
+            data/phase3_announcements.csv
