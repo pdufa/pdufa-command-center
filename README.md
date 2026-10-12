@@ -7,8 +7,12 @@ below. W and T are two independent browser-saved research tags. Click **W** or
 **T** directly before any ticker in **UNIFIED OVERVIEW → #2 PIPELINE, #3 PRE3,
 or #4 POST3**. When the Watchlist/Trading subtab opens, the selected ticker
 appears with an attached TradingView stock chart, which loads automatically.
-**+ TRADE** on a Watchlist row adds that ticker to Trading without removing it
-from Watchlist; either tag can be removed independently.
+Clicking a **Watchlist ticker name** or **MOVE TO TRADE** transfers that
+ticker to the Trading section and removes its Watchlist row and chart.
+The W tag is cleared and the T tag is added atomically; an existing T tag
+is retained instead of being toggled off. The Trading chart starts when the
+move happens (or keeps its original Trading tracking date if already tagged).
+**REMOVE W** and **REMOVE T** remain independent removal actions.
 
 **Compact + Full Chart upgrade:** Each Watchlist and Trading ticker retains its
 lightweight, auto-loading TradingView Symbol Overview chart. The **FULL CHART**
