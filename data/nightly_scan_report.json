@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "updated_at_utc": "2026-10-12T15:24:31.837447+00:00",
+  "latest_run_id": 38269493384,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384",
+  "latest_run_started_at_utc": "2026-10-12T15:20:20Z",
+  "latest_run_conclusion": "success",
+  "scope": "CLINICAL_SCANS_2_3_4_ONLY",
+  "status": "UNVERIFIED",
+  "verification": {
+    "checked_at_utc": "2026-10-12T15:24:31.837467+00:00",
+    "artifact_integrity": "ISSUES",
+    "all_source_coverage": "NOT_VERIFIED",
+    "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
+  },
+  "scans": [
+    {
+      "scan": "2",
+      "label": "PIPELINE",
+      "status": "UNVERIFIED",
+      "artifact_integrity": "FAILED",
+      "run_id": 38269493384,
+      "new_records": null,
+      "changed_trials_this_execution": null,
+      "errors_count": null,
+      "issues": [
+        "Cannot validate archived artifact: HTTPError"
+      ],
+      "metrics": {},
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384"
+    },
+    {
+      "scan": "3",
+      "label": "PRE3",
+      "status": "UNVERIFIED",
+      "artifact_integrity": "FAILED",
+      "run_id": 38269493384,
+      "new_records": null,
+      "changed_trials_this_execution": null,
+      "errors_count": null,
+      "issues": [
+        "Cannot validate archived artifact: HTTPError"
+      ],
+      "metrics": {},
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384"
+    },
+    {
+      "scan": "4",
+      "label": "POST3",
+      "status": "UNVERIFIED",
+      "artifact_integrity": "FAILED",
+      "run_id": 38269493384,
+      "new_records": null,
+      "changed_trials_this_execution": null,
+      "errors_count": null,
+      "issues": [
+        "Cannot validate archived artifact: HTTPError"
+      ],
+      "metrics": {},
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384"
+    }
+  ],
+  "metrics": {
+    "new_records": null,
+    "changed_trials": null,
+    "errors": null
+  },
+  "missing_required_source_families": [
+    "FDA regulatory decision/date verification",
+    "SEC financing and dilution verification",
+    "issuer press release verification",
+    "cash and runway verification",
+    "complete market, ownership and short-interest verification",
+    "issuer/program identity and complete source coverage audit"
+  ],
+  "history": [
+    {
+      "run_id": 38269493384,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38269493384",
+      "started_at_utc": "2026-10-12T15:20:20Z",
+      "run_conclusion": "success",
+      "status": "UNVERIFIED",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": null
+    }
+  ]
+}
