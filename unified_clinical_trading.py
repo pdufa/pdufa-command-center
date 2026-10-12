@@ -187,7 +187,6 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
             st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
-            render_ticker_toggle_panel("overview_2", df)
             st.metric("Matching programs", len(df))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if df.empty:
@@ -198,12 +197,14 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                  "2nd Financing Completed", "Cash Runway (months)",
                  "Score type", "Pipeline stage", "F", "Drug", "NCT ID"],
                 height=310,
+                ticker_controls=True,
+                watchlist=st.session_state.get("watchlist", []),
+                trading_tickers=st.session_state.get("trading_tickers", []),
             )
             st.caption("Expand ALL FIELDS below for every clinical field, score component and source link.")
         with pre3_col, st.container(border=True, key="overview_pre3_panel"):
             st.markdown("### #3-PRE3")
             st.caption("Pre-readout Phase 3 programs · clinical evidence, scores and review priority")
-            render_ticker_toggle_panel("overview_3", pre3)
             st.metric("Matching pre-readout programs", len(pre3))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if pre3.empty:
@@ -214,6 +215,9 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                  "2nd Financing Completed", "Cash Runway (months)",
                  "Score type", "Score status", "F", "Drug", "NCT ID"],
                 height=310,
+                ticker_controls=True,
+                watchlist=st.session_state.get("watchlist", []),
+                trading_tickers=st.session_state.get("trading_tickers", []),
             )
             with st.expander("ALL PRE3 FIELDS & EVIDENCE"):
                 pdufa_dataframe(finance_style(pre3.head(350)), hide_index=True,
@@ -225,7 +229,6 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         with post3_col, st.container(border=True, key="overview_post3_panel"):
             st.markdown("### #4-POST3")
             st.caption("Post-readout candidates · qualification, scores and financing evidence")
-            render_ticker_toggle_panel("overview_4", post3)
             st.metric("Matching candidates", len(post3))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if post3.empty:
@@ -236,6 +239,9 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                  "2nd Financing Completed", "Cash Runway (months)",
                  "Score type", "Entry qualification", "F", "Drug", "NCT ID"],
                 height=310,
+                ticker_controls=True,
+                watchlist=st.session_state.get("watchlist", []),
+                trading_tickers=st.session_state.get("trading_tickers", []),
             )
             with st.expander("ALL TRADING FIELDS & EVIDENCE"):
                 pdufa_dataframe(finance_style(post3.head(350)), hide_index=True,
