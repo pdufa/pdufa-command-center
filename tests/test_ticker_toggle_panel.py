@@ -64,7 +64,7 @@ class TickerToggleTests(unittest.TestCase):
         self.assertIn('render_ticker_toggle_panel("pre3_3", tab', app)
         for marker in ("overview_2", "overview_3", "overview_4", "post3_4"):
             self.assertIn(f'render_ticker_toggle_panel("{marker}"', unified)
-        self.assertIn("streamlit-local-storage==0.0.25",
+        self.assertIn("streamlit-js-eval==1.0.0",
                       (ROOT / "requirements.txt").read_text())
 
     def test_buttons_are_manual_labels_not_broker_orders(self):
