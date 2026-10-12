@@ -5,6 +5,7 @@ import html
 import pandas as pd
 import streamlit as st
 from pdufa_table_headers import pdufa_dataframe, attach_survey
+from ticker_toggle_panel import render_ticker_toggle_panel
 from pdufa_circled_help_grid import render_dashboard_sheet
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
@@ -186,6 +187,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
             st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
+            render_ticker_toggle_panel("overview_2", df)
             st.metric("Matching programs", len(df))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if df.empty:
@@ -201,6 +203,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         with pre3_col, st.container(border=True, key="overview_pre3_panel"):
             st.markdown("### #3-PRE3")
             st.caption("Pre-readout Phase 3 programs · clinical evidence, scores and review priority")
+            render_ticker_toggle_panel("overview_3", pre3)
             st.metric("Matching pre-readout programs", len(pre3))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if pre3.empty:
@@ -222,6 +225,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         with post3_col, st.container(border=True, key="overview_post3_panel"):
             st.markdown("### #4-POST3")
             st.caption("Post-readout candidates · qualification, scores and financing evidence")
+            render_ticker_toggle_panel("overview_4", post3)
             st.metric("Matching candidates", len(post3))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if post3.empty:
@@ -404,6 +408,8 @@ def render_combined_overview(root="data", *, dashboard=False):
                       + [item.get("Ticker", "") for item in post]
                       + ([item.get("Ticker", "") for item in pre] if dashboard else [])
                       if str(value).strip()})
+    if not dashboard:
+        render_ticker_toggle_panel("post3_4", post, title="TICKER WATCH / TRADE")
     focus_options = ["All tickers", *tickers]
     prefix = "overview" if dashboard else "unified"
     focus_key = "overview_shared_ticker" if dashboard else "postphase3_shared_ticker"
