@@ -1,5 +1,28 @@
 # PDUFA Command Center
 
+## Active #2/#3/#4 clinical-source nightly scan schedule
+
+**Enabled:** `.github/workflows/pdufa-nightly-clinical.yml`. The initial
+`push` on October 11, 2026 triggered all three parallel source collectors
+immediately; independently verified START emails arrived at 9:34 PM PDT.
+Subsequent runs are scheduled with GitHub Actions cron `0 9 * * *`
+(02:00 PDT / 01:00 PST, subject to GitHub Actions scheduling delays).
+Manual `workflow_dispatch` is also available. Future unrelated commits
+do not trigger another scan.
+
+Each collector (#2 all-phase trial inventory and tracked NCT refresh;
+#3 Phase 2/3 clinical pipeline + limited market-cap checks; #4 Phase 3
+ClinicalTrials.gov posted-results *daily* update) is wrapped by
+`scripts/run_scan_with_email.py`. A successful START email submission is
+required before collection; the END email is attempted even on failure.
+The report explicitly remains **PARTIAL/FAILED** for the *full-source*
+baseline; clinical completion is not FDA, SEC, issuer, or full market
+verification. Output CSVs, state, and notification audit are archived as
+GitHub Actions artifacts (30-day retention). **These archived outputs do
+not automatically update the deployed Streamlit dashboard.** The config
+`clinical_source_schedule.enabled` tracks this *limited* schedule
+separately from the unimplemented full-source automation/baseline gate.
+
 ## Independent scan completion emails (October 11, 2026)
 
 The original **PDUFA One-Time Clinical Scan** completed #2 PIPELINE, #3 PRE3
