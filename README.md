@@ -10,6 +10,20 @@ appears with an attached TradingView stock chart, which loads automatically.
 **+ TRADE** on a Watchlist row adds that ticker to Trading without removing it
 from Watchlist; either tag can be removed independently.
 
+**Compact + Full Chart upgrade:** Each Watchlist and Trading ticker retains its
+lightweight, auto-loading TradingView Symbol Overview chart. The **FULL CHART**
+button alongside that ticker opens a larger interactive TradingView Advanced
+Chart within the same row. It starts on daily candlesticks with Volume visible
+and preloads EMA, RSI and MACD indicators. TradingView's toolbar exposes
+additional provider-supported indicators, drawing tools, timeframes and chart
+settings. **HIDE FULL CHART** or **CLOSE FULL CHART** collapses the advanced
+view while retaining the compact chart and independent W/T selections.
+Advanced widgets load only on demand, to avoid launching one heavy chart for
+every selected ticker. If TradingView cannot embed a chart for a ticker, its
+external TradingView ticker link remains available; no technical data is
+invented. These widget settings are not a guaranteed persistent indicator
+template or event-anchored price backtest.
+
 New selections capture separate Watch and Trade activation timestamps under
 `pdufa_watch_trading_since_v1`; the existing membership store
 `pdufa_watch_trading_v1` remains compatible with earlier Watch/Trade buttons.
