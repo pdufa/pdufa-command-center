@@ -10,6 +10,13 @@ on:
   schedule:
     - cron: '0 9 * * *'
   workflow_dispatch:
+    inputs:
+      scan:
+        description: 'Clinical scan to collect (#2, #3, #4, or all)'
+        type: choice
+        options: ['ALL', '2', '3', '4']
+        default: 'ALL'
+        required: true
 
 permissions:
   contents: read
@@ -20,6 +27,7 @@ concurrency:
 
 jobs:
   collect:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
     name: 'PDUFA #${{ matrix.scan }} ${{ matrix.label }} — notified scan'
     runs-on: ubuntu-latest
     timeout-minutes: 125
