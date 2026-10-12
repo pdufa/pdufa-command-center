@@ -1,0 +1,148 @@
+name: PDUFA Safe Auto-Repair
+
+# No changes to FDA/SEC/clinical/trading evidence. Network failures may be
+# retried once; expired PRE3 display caches may be regenerated with validation.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-safe-auto-repair.yml'
+      - 'scripts/pdufa_auto_repair.py'
+      - 'tests/test_pdufa_auto_repair.py'
+  workflow_run:
+    workflows:
+      - 'PDUFA Command Center CI'
+      - 'Streamlit setup and dashboard tests'
+      - 'Live Streamlit Cloud Browser Audit'
+      - 'PRE PHASE 3 Live Acceptance'
+      - 'Unified Dashboard Smoke Check'
+      - 'PDUFA Nightly Report Checks'
+      - 'PDUFA Extended Source Scan Tests'
+      - 'PDUFA Nightly Scan Report Publisher'
+      - 'Step 7 PRE PHASE 3 Live Feed'
+      - 'PDUFA Nightly Clinical Scans'
+      - 'PDUFA Nightly FDA SEC Financial Market Issuer Sources'
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Completed run to DIAGNOSE only; manual invocation never modifies anything'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: pdufa-auto-repair-${{ github.event.workflow_run.id || inputs.run_id || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  offline-tests:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify fail-closed remediation classifier
+        run: python -m unittest discover -s tests -p 'test_pdufa_auto_repair.py' -v
+
+  diagnose-repair:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'failure' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.run_attempt == 1)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout trusted main only
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read source run and classify without executing its logs
+        id: plan
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Invalid source run ID"
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" > "$RUNNER_TEMP/source_run.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/jobs?per_page=100" > "$RUNNER_TEMP/source_jobs.json"
+          MAIN_SHA="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)"
+          # The logs are untrusted evidence. Never source/eval/execute their contents.
+          gh run view "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > "$RUNNER_TEMP/failure.log" 2> "$RUNNER_TEMP/log_error.txt" || true
+          python scripts/pdufa_auto_repair.py \
+            --run-json "$RUNNER_TEMP/source_run.json" \
+            --jobs-json "$RUNNER_TEMP/source_jobs.json" \
+            --logs "$RUNNER_TEMP/failure.log" \
+            --main-sha "$MAIN_SHA" \
+            --manifest data/step7_live_status.json \
+            --github-output "$GITHUB_OUTPUT"
+          echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Retry verified transient failure, failed jobs only, once
+        if: steps.plan.outputs.action == 'rerun' && github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          gh run rerun "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --failed
+          echo "Requested one failed-job retry for run $SOURCE_RUN_ID. This is not proof of success." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Regenerate expired PRE3 cache only if no newer refresh exists
+        if: steps.plan.outputs.action == 'refresh_pre3' && github.event_name == 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/step7-live-feed.yml/runs?per_page=30" > "$RUNNER_TEMP/pre3_feed_runs.json"
+          REPAIR_NEEDED="$(python - "$RUNNER_TEMP/source_run.json" "$RUNNER_TEMP/pre3_feed_runs.json" <<'PY'
+          import json,sys
+          with open(sys.argv[1]) as fp:
+              source=json.load(fp)
+          with open(sys.argv[2]) as fp:
+              runs=json.load(fp).get('workflow_runs', [])
+          after=source.get('created_at', '')
+          print('no' if any(r.get('created_at', '') >= after for r in runs) else 'yes')
+          PY
+          )"
+          if [ "$REPAIR_NEEDED" != yes ]; then
+            echo "Skipped duplicate PRE3 refresh (a newer run exists)." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          gh workflow run step7-live-feed.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "Requested validated source-preserving PRE3 rebuild; its result still requires verification." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record diagnostic and unresolved failures
+        if: always() && steps.plan.outputs.action != ''
+        env:
+          REPAIR_ACTION: ${{ steps.plan.outputs.action }}
+          REPAIR_REASON: ${{ steps.plan.outputs.reason }}
+          SOURCE_RUN_ID: ${{ steps.plan.outputs.source_run_id }}
+        run: |
+          echo "### PDUFA Safe Auto-Repair" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source: https://github.com/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" >> "$GITHUB_STEP_SUMMARY"
+          echo "Decision: **$REPAIR_ACTION**" >> "$GITHUB_STEP_SUMMARY"
+          echo "$REPAIR_REASON" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$REPAIR_ACTION" = skip ]; then
+            echo "No repair applied. The original failure remains visible and requires diagnosis." >> "$GITHUB_STEP_SUMMARY"
+          fi
