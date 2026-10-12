@@ -9,6 +9,8 @@ on:
       - '.github/workflows/pdufa-safe-auto-repair.yml'
       - 'scripts/pdufa_auto_repair.py'
       - 'tests/test_pdufa_auto_repair.py'
+  # Nightly scan repairs must follow the ordered scoring/error-check pipeline.
+  # Independent CI, acceptance and PRE3 refresh safeguards remain here.
   workflow_run:
     workflows:
       - 'PDUFA Command Center CI'
@@ -18,10 +20,7 @@ on:
       - 'Unified Dashboard Smoke Check'
       - 'PDUFA Nightly Report Checks'
       - 'PDUFA Extended Source Scan Tests'
-      - 'PDUFA Nightly Scan Report Publisher'
       - 'Step 7 PRE PHASE 3 Live Feed'
-      - 'PDUFA Nightly Clinical Scans'
-      - 'PDUFA Nightly FDA SEC Financial Market Issuer Sources'
     types: [completed]
   workflow_dispatch:
     inputs:
