@@ -7,7 +7,7 @@ import pandas as pd
 from pandas.io.formats.style import Styler
 import streamlit as st
 from pdufa_display_columns import align_pdufa_finance_columns, PDUFA_DAY_COLUMNS, FINANCE_NEIGHBORS
-from pdufa_date_gradient import COUNTDOWN_BANDS, date_color
+from pdufa_date_gradient import date_color
 
 
 HELP_ICON = "?\u20dd"
@@ -173,10 +173,9 @@ def header_config(data, config=None):
         entry = dict(original) if isinstance(original, dict) else {"label": original}
         label = str(entry.get("label") or column)
         label = label.replace(HELP_ICON, "").replace("ⓘ", "").strip()
-        # Keep the countdown header compact: display the legend once
-        # underneath the table, not inside every countdown column heading.
+        # All PDUFA tables use one short header; the color is on each day cell.
         if column in PDUFA_DAY_COLUMNS:
-            label = label.split(chr(10))[0]
+            label = "Days to PDUFA"
             entry["width"] = "small"
         entry["label"] = f"{HELP_ICON} {label}"
         help_text = entry.get("help")
@@ -252,29 +251,6 @@ def render_survey_box(data):
     )
 
 
-def render_countdown_band_key(data):
-    """Visible second-line color strip shared by native dataframe/editor grids."""
-    frame = data.data if isinstance(data, Styler) else data
-    if not hasattr(frame, "columns") or not any(c in frame.columns for c in PDUFA_DAY_COLUMNS):
-        return
-    cells = "".join(
-        '<span style="background:' + bg + ';color:' + fg +
-        ';border:1px solid #333;border-radius:4px;padding:2px 7px;'
-        'font-weight:800;font-size:11px;white-space:nowrap;">' +
-        html.escape(label) + '</span>'
-        for label, _, bg, fg in COUNTDOWN_BANDS
-    )
-    st.markdown(
-        '<div data-pdufa-countdown-key="true" '
-        'style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;'
-        'padding:4px 1px 2px;font-size:11px;">'
-        '<strong>Days to PDUFA:</strong> ' + cells +
-        '<span style="color:#555;font-size:10px;">Gray = past / unknown</span>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-
-
 def style_countdown_cells(data):
     """Color only the countdown value, preserving existing finance/clinical Styler."""
     frame = data.data if isinstance(data, Styler) else data
@@ -305,7 +281,6 @@ def pdufa_dataframe(data, **kwargs):
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
     data = style_countdown_cells(data)
     result = st.dataframe(data, **kwargs)
-    render_countdown_band_key(data)
     render_survey_box(source)
     if isinstance(data, Styler) and not data.data.empty and "F" in data.data:
         st.caption(
@@ -328,6 +303,5 @@ def pdufa_editor(data, **kwargs):
     if kwargs.get("num_rows") != "dynamic":
         data = style_countdown_cells(data)
     result = st.data_editor(data, **kwargs)
-    render_countdown_band_key(data)
     render_survey_box(source)
     return result
