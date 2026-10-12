@@ -113,6 +113,9 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         ("errors_count", "Errors"),
         ("source_observations", "Source observations"),
         ("source_issue_count", "Sources needing review"),
+        ("source_technical_failure_count", "Blocked/failed source checks"),
+        ("source_review_only_count", "Evidence gaps / review checks"),
+        ("source_review_count", "Evidence gaps / review checks"),
         ("feeds_checked", "Issuer feeds checked"),
         ("issuer_news_candidates", "News items discovered (unverified)"),
         ("issuer_press_releases_verified", "Issuer releases verified"),
@@ -125,7 +128,28 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
     errors = report.get("errors")
     if isinstance(errors, list) and errors:
         lines.append(f"Errors: {len(errors)}")
-    missing = report.get("missing_required_source_families")
+    breakdown = report.get("source_issue_breakdown")
+    if isinstance(breakdown, dict) and breakdown:
+        lines.append("Issue categories (source:status = checks):")
+        for kind, count in sorted(breakdown.items(), key=lambda item: (-item[1], item[0]))[:12]:
+            if isinstance(kind, str) and isinstance(count, int):
+                lines.append(f"  {kind[:80]}: {count}")
+    samples = report.get("source_issue_examples")
+    if isinstance(samples, list) and samples:
+        lines.append("Examples requiring review:")
+        for row in samples[:6]:
+            if isinstance(row, dict):
+                ticker = str(row.get("ticker", ""))[:14]
+                category = str(row.get("category", ""))[:25]
+                status = str(row.get("status", ""))[:65]
+                lines.append(f"  {ticker} {category}: {status}")
+    sec_counts = report.get("sec_registry_status_counts")
+    if isinstance(sec_counts, dict) and sec_counts:
+        lines.append("SEC registry access: " + ", ".join(
+            f"{name[:45]}={count}" for name, count in
+            sorted(sec_counts.items(), key=lambda x: (-x[1], x[0]))[:10]
+            if isinstance(count, int)))
+        missing = report.get("missing_required_source_families")
     if isinstance(missing, list) and missing:
         lines.append("Unverified source families: " + ", ".join(map(str, missing[:10])))
     if full_scope and state in {"COMPLETE", "COMPLETE WITH WARNINGS"}:
