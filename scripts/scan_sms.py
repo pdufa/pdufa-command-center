@@ -69,18 +69,36 @@ def local_clock(when: datetime) -> str:
     return when.astimezone(PACIFIC).strftime("%m/%d %I:%M%p PT")
 
 
+SCAN_NAMES = {
+    "2": "#2 PIPELINE",
+    "3": "#3 PRE3",
+    "4": "#4 POST3",
+    "ALL": "#2/#3/#4",
+}
+STATUS_NAMES = {
+    "COMPLETE": "COMPLETE",
+    "COMPLETE WITH WARNINGS": "WARNINGS",
+    "PARTIAL": "PARTIAL",
+    "FAILED": "FAILED",
+    "UNVERIFIED": "UNVERIFIED",
+}
+
+
 def begin_text(scan: str, mode: str, run_id: str, at: datetime) -> str:
+    label = SCAN_NAMES.get(scan.upper(), scan)
     return single_sms(
-        f"PDUFA {safe_label(scan)} {safe_label(mode)} START {local_clock(at)}. "
+        f"PDUFA {safe_label(label)} {safe_label(mode)} START {local_clock(at)}. "
         f"Run {run_id[:8]}. Scanning now; results pending."
     )
 
 
 def finish_text(scan: str, mode: str, run_id: str, status: str,
                 details: str, duration_seconds: float) -> str:
+    label = SCAN_NAMES.get(scan.upper(), scan)
+    status_label = STATUS_NAMES.get(status, "UNVERIFIED")
     elapsed = max(0, round(duration_seconds / 60))
     return single_sms(
-        f"PDUFA {safe_label(scan)} {safe_label(mode)} END: {safe_label(status, 16)}. "
+        f"PDUFA {safe_label(label)} {safe_label(mode)} END: {status_label}. "
         f"{safe_label(details, 85)}. {elapsed}m. Run {run_id[:8]}."
     )
 
