@@ -184,6 +184,8 @@ def render_nightly_scan_report():
         st.warning("No published clinical report is available. The next completed nightly scan will publish a source-audited summary; no completion counts are inferred.")
 
     st.markdown("### Scan controls")
+    st.link_button("OPEN SCAN CONTROLS IN GITHUB ACTIONS",
+                   "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-scan-control.yml")
     st.caption("VERIFY ALL checks the archived #2/#3/#4 collector reports and saved source-state counts; it cannot certify missing FDA/SEC/issuer/market sources. REVERIFY PARTIAL recollects selected clinical data and checks the new archive. RESCAN ALL reruns all three clinical collectors. These actions do not place trades.")
     token = dashboard_secret("PDUFA_GITHUB_TOKEN")
     pin = dashboard_secret("PDUFA_SCAN_CONTROL_PIN")
