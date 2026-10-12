@@ -56,8 +56,8 @@ class TickerToggleTests(unittest.TestCase):
                                   ("app.py", app),
                                   ("unified_clinical_trading.py", unified)):
             ast.parse(content, filename=filename)
-        self.assertIn('st.button("−" if symbol in watch else "+"', module)
-        self.assertIn('st.button("−" if symbol in trade else "+"', module)
+        self.assertIn('st.button("W",', module)
+        self.assertIn('st.button("T",', module)
         self.assertIn('on_click=_toggle, args=(symbol, "watch")', module)
         self.assertIn('on_click=_toggle, args=(symbol, "trade")', module)
         self.assertIn('render_ticker_toggle_panel("pipeline_2", prepared', app)
@@ -70,7 +70,7 @@ class TickerToggleTests(unittest.TestCase):
     def test_buttons_are_manual_labels_not_broker_orders(self):
         source = (ROOT / "ticker_toggle_panel.py").read_text(encoding="utf-8")
         self.assertIn("NOT a broker transaction", source)
-        self.assertIn("green − selected / white + add", source)
+        self.assertIn("green W/T selected / white not selected", source)
 
 
 if __name__ == "__main__":
