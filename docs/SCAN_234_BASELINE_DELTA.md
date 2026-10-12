@@ -106,73 +106,73 @@ present; it always marks the full baseline unverified and nightly automation
 disabled. The next implementation task is wiring the actual source-fetching
 orchestrator with resumable checkpoints and a complete per-identity ledger.
 
-## Mandatory two SMS texts per scan (CRITICAL)
+## Mandatory two EMAIL alerts per scan (CRITICAL)
 
-**Contract:** Every individually executed scan, including #2 PIPELINE,
-#3 PRE3, #4 POST3, source collectors, deep reviews, reconciliations and
-nightly deltas, submits **exactly one START text before collecting data and
-one END text with an actual results summary when execution ends**. When three
-individual tabs are scanned, that means **six SMS messages total**. These
-are scan-level notifications, not per-ticker texts.
+The user prefers **two emails per separately executed scan** while the
+RingCentral/SMS delivery path remains unverified. This applies to all
+#2 PIPELINE, #3 PRE3, #4 POST3 baseline/delta/deep/reconciliation scans and
+any source collector run as its own separately tracked scan. Three scans
+produce **six emails total**.
 
-* START contains scan name, baseline/delta/deep mode, Pacific start time and
-  run ID. It must be acknowledged by the SMS provider BEFORE scanning starts.
-* END contains completion status, verified checked/due count, new/changed
-  records, warnings/errors when supplied by a *newly updated scan ledger*,
-  run duration and run ID. If there is no fresh verified ledger, text
-  **UNVERIFIED** instead of fabricated counts.
-* END is attempted after success, partial coverage, nonzero exit,
-  caught scanner failure, and configured child-process timeouts. If the final
-  SMS fails, retain the job failure in a JSON notification audit; never silently
-  claim that the user received it. A host crash or forced shutdown can prevent
-  the second text; a future independent watchdog must reconcile abandoned runs.
-* A #2/#3/#4 or combined run may say **COMPLETE** only when its new result
-  ledger explicitly has `full_coverage_verified=true`. A clinical-only
-  collector's local COMPLETE is not a complete PDUFA scan. Otherwise the text
-  says UNVERIFIED with the available counts.
-* The SMS transport sends **one ASCII single-segment message**, with no
-  automatic retry after an ambiguous carrier/provider outcome (avoids duplicate
-  SMS). The provider accepting a message does **not** prove iPhone delivery.
-* **Critical precondition:** if provider secrets are not configured, or the
-  START text isn't acknowledged, do not run the scanner. It is safer to delay
-  scans than to silently violate the notification requirement.
-* The notifier runs through a generic command wrapper so a newly added scan
-  must opt into the same enforced contract, rather than implementing its own
-  untested notification rules.
+* **START** email before any data fetch: scan name, scan mode, start timestamp
+  in America/Los_Angeles, run ID and dashboard link.
+* **END** email upon completion or failure: scan and mode, status, finished
+  timestamp in Pacific time, duration, actually checked/due identities,
+  verified new/changed records, errors/warnings and dashboard link.
+* Every END summary uses a *fresh, updated* output manifest. The scanner may
+  claim COMPLETE for #2/#3/#4 only when the full-source ledger explicitly
+  says `full_coverage_verified=true`; clinical-only completion is not enough.
+* Failed jobs, blocked sources and subprocess timeouts still attempt an END
+  email. An abrupt runner shutdown/host crash can prevent the final email;
+  an independent watchdog or durable queue is still required to guarantee
+  crash recovery. Do not claim device/email delivery merely because SMTP
+  accepted an email.
+* The scanner must **not start** if mandatory START email submission fails.
+  No blind retry after an ambiguous provider response (avoid duplicates).
+* A notification audit checkpoint is saved before starting each scan.
+  Email credentials must only be injected through GitHub Actions secrets.
 
-Implementation: `scripts/scan_sms.py` (Twilio REST API via Python stdlib),
-`scripts/run_scan_with_sms.py` (scan command wrapper + audit log), and
-`tests/test_scan_sms_notifications.py` (success/failure/duplicate guards).
-For production, store the following **only as repository Actions secrets or
-runner environment variables**, not in Git or logs:
+Current implementation:
+`scripts/scan_email.py` + `scripts/run_scan_with_email.py`.
+The generic wrapper does not enable a scan schedule by itself.
+Tests: `tests/test_scan_email_notifications.py`.
+
+Setup these private GitHub repository Actions secrets:
 
 ```text
-TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN
-TWILIO_FROM_NUMBER
-PDUFA_SMS_TO_NUMBER
+PDUFA_GMAIL_USER
+PDUFA_GMAIL_APP_PASSWORD
+PDUFA_ALERT_EMAIL
 ```
 
-The sender must be an SMS-capable number provided by Twilio and the recipient
-must be a validated E.164 mobile number. The generic invocation is:
+Use the connected Gmail account as the sender if supported; Google app
+password availability depends on Gmail account security settings and is
+separate from the Gmail connection to ChatGPT. The password must NOT be
+pasted into ChatGPT or committed to source code. Read:
+`docs/GMAIL_SCAN_ALERT_SETUP.md`.
+
+A manual one-email test is at
+`.github/workflows/email-delivery-test.yml`.
+The previously built SMS provider and the manual SMS test remain stored in
+the repository as optional experiments; they are **not** the chosen
+production notification path and no SMS is required to run the future
+Gmail-notified scanner.
+
+Example of the new wrapper, using one **clinical source-only collector**:
 
 ```bash
-python scripts/run_scan_with_sms.py --scan 2 --mode BASELINE \
-  --status-file data/all_phase_scan_state.json -- \
+python scripts/run_scan_with_email.py --scan 2 --mode BASELINE \
+  --status-file data/all_phase_scan_state.json --timeout-seconds 3000 -- \
   python scripts/all_phase_scan.py
 ```
 
-**This example runs only the existing clinical inventory collector, not a
-certified all-source baseline.** Its end text must therefore say UNVERIFIED
-unless the eventual full-source orchestrator attests to complete coverage. All future workflows must call the wrapper for
-*every separately executed scan* rather than bypassing it. The wrapper writes
-`reports/scan_notifications/<run_id>.json` for auditing. Retain those audit
-records in a protected log/artifact; they do not include Twilio credentials.
+This example is NOT a certified all-source #2 baseline. The END email must
+therefore report UNVERIFIED, even if the local clinical collector says COMPLETE.
 
-Current state: **SMS credentials are not configured or verified; no texts have
-been sent from this code, and no nightly scanning workflows were re-enabled.**
-The earlier ChatGPT push-notification test is distinct from SMS and cannot
-be used by a GitHub worker as a substitute for these two texts.
+**Current state:** An initial delivery test using the connected ChatGPT
+Gmail account was submitted successfully, but GitHub Actions SMTP secrets
+are not configured/verified, and production scan notifications are not
+active. No nightly scan workflow has been restored.
 
 ## Capacity guidance (planning, not a run promise)
 
