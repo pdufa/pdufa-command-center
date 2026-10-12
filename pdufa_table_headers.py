@@ -10,7 +10,6 @@ from pdufa_display_columns import align_pdufa_finance_columns, PDUFA_DAY_COLUMNS
 from pdufa_date_gradient import date_color
 
 
-PDUFA_COLUMN_WIDTH_PX = 70
 HELP_ICON = "?\u20dd"
 FIELD_HELP = {
     "ticker": "Stock-market ticker identifying the company. Trial and FDA evidence must still match the exact drug and event.",
@@ -177,9 +176,8 @@ def header_config(data, config=None):
         # All PDUFA tables use one short header; the color is on each day cell.
         if column in PDUFA_DAY_COLUMNS:
             label = "Days to PDUFA"
-        # Explicitly use 70px for every displayed PDUFA column, including
-        # custom column_config labels. Long headers may span many rows.
-        entry["width"] = PDUFA_COLUMN_WIDTH_PX
+        # Use intrinsic content-based sizing, including for preconfigured columns.
+        entry.pop("width", None)
         entry["label"] = f"{HELP_ICON} {label}"
         help_text = entry.get("help")
         if (not help_text or help_text == str(column) or
@@ -282,7 +280,7 @@ def pdufa_dataframe(data, **kwargs):
                 ordered[insertion:insertion] = [c for c in FINANCE_NEIGHBORS if c in data]
                 kwargs["column_order"] = ordered
     kwargs["column_config"] = header_config(data, kwargs.get("column_config"))
-    # Stretching would redistribute spare pixels and undo the 70px columns.
+    # Keep the grid at its natural content width rather than stretching columns.
     kwargs.pop("use_container_width", None)
     kwargs["width"] = "content"
     data = style_countdown_cells(data)
