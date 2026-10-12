@@ -94,7 +94,10 @@ def _init_browser_selection(panel_id):
         )
         if st.session_state.get("_ticker_selections_dirty"):
             st.session_state["_ticker_selections_hydrated"] = True
-        if not st.session_state.get("_ticker_selections_hydrated"):
+        # Inline table buttons write the same browser storage without executing
+        # a Python widget callback. Reconcile it on each Streamlit rerun, not
+        # only the first hydration, while keeping a fresh native click authoritative.
+        if not st.session_state.get("_ticker_selections_dirty"):
             parsed = parse_saved(raw)
             if parsed is not None:
                 st.session_state["watchlist"] = parsed["watch"]
