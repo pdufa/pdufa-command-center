@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
+  # Push-only integration test dispatches a read-only audit, never a scan.
+  actions: write
   contents: read
 
 concurrency:
@@ -29,6 +30,15 @@ jobs:
           python-version: '3.12'
       - name: Test alert classification without network access
         run: python -m unittest discover -s tests -p 'test_adhoc_alert_check.py' -v
+      - name: Trigger a single integration audit using GitHub's dispatch API
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run pdufa-adhoc-error-check.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "Dispatched one real, read-only ad hoc GitHub/Gmail audit." >> "$GITHUB_STEP_SUMMARY"
+          echo "Inspect the new workflow_dispatch run for source availability and archived results." >> "$GITHUB_STEP_SUMMARY"
       - name: Audit latest GitHub workflows and Gmail scan alert headers
         if: github.event_name == 'workflow_dispatch'
         env:
