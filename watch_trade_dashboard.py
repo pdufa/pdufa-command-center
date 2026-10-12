@@ -42,6 +42,20 @@ button.active{background:#22863a;color:white}
 .chart .tradingview-widget-container__widget{height:calc(100% - 18px);width:100%}
 .chart small{font-size:10px;padding-left:4px}
 .chart a{color:#1456aa}
+.full-chart-control{border:2px solid #111;background:#f7faf7}
+.advanced-panel[hidden]{display:none!important}
+.advanced-panel{grid-column:1/-1;min-width:0;border:2px solid #111;
+        background:#fff;border-radius:9px;padding:10px;margin:1px 0 6px}
+.advanced-head{display:flex;align-items:center;justify-content:space-between;
+        gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.advanced-title{font-weight:800;font-size:16px}
+.advanced-subtitle{font-size:12px;color:#424242;line-height:1.4;margin-bottom:8px}
+.advanced-chart{height:615px;min-width:0;background:#fff;overflow:hidden;
+        border:1px solid #aaa;border-radius:7px}
+.advanced-chart .tradingview-widget-container{width:100%;height:100%}
+.advanced-chart .tradingview-widget-container__widget{width:100%;height:calc(100% - 25px)}
+.advanced-chart small{font-size:11px;padding:2px 4px}
+.advanced-chart a{color:#1456aa}
 .pending{padding:25px 12px;font-size:13px;color:#555}
 .empty{font-size:14px;padding:25px 8px;color:#555;text-align:center}
 .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -54,12 +68,13 @@ button.active{background:#22863a;color:white}
   .stock{grid-template-columns:minmax(0,1fr)}
   .identity{flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap}
   .chart{height:235px}
+  .advanced-chart{height:570px}
 }
 </style>
 </head>
 <body>
 <main>
-  <p class="description">Press <b>W</b> or <b>T</b> before a ticker in #2 PIPELINE, #3 PRE3 or #4 POST3. It appears here automatically when this tab opens. Charts launch when the stock is added or appears on screen.</p>
+  <p class="description">Press <b>W</b> or <b>T</b> before a ticker in #2 PIPELINE, #3 PRE3 or #4 POST3. It appears here automatically when this tab opens. Compact charts launch automatically; click FULL CHART beside a ticker to open candlesticks with EMA, RSI, MACD and volume, plus more indicators through the chart toolbar.</p>
   <div class="controls"><button id="refresh" type="button">↻ Sync lists</button><span id="sync-status" aria-live="polite"></span></div>
   <section aria-label="Watchlist">
     <div class="title"><h2>WATCHLIST</h2><span class="count" id="watch-count">0 tickers</span></div>
@@ -71,7 +86,7 @@ button.active{background:#22863a;color:white}
     <div class="header"><span>Ticker / Actions</span><span>Attached Stock Chart</span></div>
     <div id="trade-rows" aria-live="polite"></div>
   </section>
-  <p class="note">W and T are independent research tags; adding T does not place an order or erase W. Start times are saved locally in this browser, not as verified execution timestamps. TradingView data may be delayed; its default chart range is the closest supported window to the selection date, not a precise point-in-time backtest. No chart data is invented if the quote provider is unavailable.</p>
+  <p class="note">W and T are independent research tags; adding T does not place an order or erase W. Start times are saved locally in this browser, not as verified execution timestamps. TradingView data may be delayed; its default chart range is the closest supported window to the selection date, not a precise point-in-time backtest. Click FULL CHART for the interactive TradingView Advanced Chart; it loads on demand. You can add provider-supported indicators and drawings from its toolbar; market quotes may be delayed or unavailable.</p>
 </main>
 <script>
 (() => {
@@ -80,6 +95,8 @@ button.active{background:#22863a;color:white}
   const START_KEY = 'pdufa_watch_trading_since_v1';
   const CHANNEL = 'pdufa_watch_trading_sync_v1';
   const CHART_URL = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+  const ADVANCED_CHART_URL = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  const DEFAULT_STUDIES = ['MAExp@tv-basicstudies','RSI@tv-basicstudies','MACD@tv-basicstudies'];
   const tickerPattern = /^[A-Z][A-Z0-9.\-]{0,12}$/;
   const unique = values => [...new Set((Array.isArray(values) ? values : [])
       .filter(t => typeof t === 'string' && tickerPattern.test(t)))].sort();
@@ -178,6 +195,53 @@ button.active{background:#22863a;color:white}
     container.append(widget,credit,script);
     target.replaceChildren(container);
   }
+  function mountAdvancedChart(panel,ticker) {
+    if (!panel || !panel.isConnected || panel.hidden || !tickerPattern.test(ticker)) return;
+    if (panel.dataset.mounted === 'true') return;
+    const target = panel.querySelector('.advanced-chart');
+    if (!target) return;
+    panel.dataset.mounted = 'true';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'tradingview-widget-container';
+    const widget = document.createElement('div');
+    widget.className = 'tradingview-widget-container__widget';
+    const credit = document.createElement('small');
+    const link = document.createElement('a');
+    link.href = 'https://www.tradingview.com/symbols/'+encodeURIComponent(ticker)+'/';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = ticker+' advanced chart by TradingView';
+    credit.append(link);
+    const script = document.createElement('script');
+    script.src = ADVANCED_CHART_URL;
+    script.type = 'text/javascript';
+    script.async = true;
+    script.textContent = JSON.stringify({
+      autosize: true, symbol: ticker, interval: 'D', timezone: 'exchange',
+      theme: 'light', locale: 'en', style: '1', backgroundColor: '#ffffff',
+      gridColor: 'rgba(0,0,0,0.06)', withdateranges: true,
+      hide_side_toolbar: false, hide_top_toolbar: false, hide_volume: false,
+      allow_symbol_change: false, save_image: true, details: false,
+      hotlist: false, calendar: false, studies: DEFAULT_STUDIES,
+      show_popup_button: true, popup_width: '1200', popup_height: '750',
+      support_host: 'https://www.tradingview.com'
+    });
+    wrapper.append(widget,credit,script);
+    target.replaceChildren(wrapper);
+  }
+  function toggleAdvancedChart(kind,ticker) {
+    const key = kind+'|'+ticker+'|'+(started[kind][ticker]||'');
+    const row = createdRows.get(key);
+    if (!row) return;
+    const panel = row.querySelector('.advanced-panel');
+    if (!panel) return;
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    if (opening) mountAdvancedChart(panel,ticker);
+    const actions = row.querySelector('.actions');
+    if (actions) actions.replaceWith(makeRowActions(kind,ticker));
+    if (opening) panel.scrollIntoView({block:'nearest',behavior:'smooth'});
+  }
   function makeButton(text,label,onClick,active=false) {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -199,21 +263,7 @@ button.active{background:#22863a;color:white}
     const time = document.createElement('div');
     time.className = 'started';
     time.textContent = 'Tracking since '+localDate(startTime);
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-    if (kind === 'watch') {
-      actions.append(
-        makeButton(selected.trade.includes(ticker) ? 'T SELECTED' : '+ TRADE',
-          'Add '+ticker+' to Trading',()=>toggle('trade',ticker), selected.trade.includes(ticker)),
-        makeButton('REMOVE W','Remove '+ticker+' from Watchlist',()=>toggle('watch',ticker))
-      );
-    } else {
-      if (!selected.watch.includes(ticker))
-        actions.append(makeButton('+ WATCH','Add '+ticker+' to Watchlist',
-          ()=>toggle('watch',ticker)));
-      actions.append(makeButton('REMOVE T','Remove '+ticker+' from Trading list',
-        ()=>toggle('trade',ticker)));
-    }
+    const actions = makeRowActions(kind,ticker);
     identity.append(symbol,time,actions);
     const chart = document.createElement('div');
     chart.className = 'chart';
@@ -224,7 +274,28 @@ button.active{background:#22863a;color:white}
     waiting.className = 'pending';
     waiting.textContent = 'Loading '+ticker+' stock chart…';
     chart.append(waiting);
-    row.append(identity,chart);
+    const advanced = document.createElement('div');
+    advanced.className = 'advanced-panel';
+    advanced.hidden = true;
+    const head = document.createElement('div');
+    head.className = 'advanced-head';
+    const title = document.createElement('strong');
+    title.className = 'advanced-title';
+    title.textContent = ticker+' — FULL TECHNICAL CHART';
+    const close = makeButton('✕ CLOSE FULL CHART','Close full chart for '+ticker,
+      ()=>toggleAdvancedChart(kind,ticker));
+    head.append(title,close);
+    const help = document.createElement('div');
+    help.className = 'advanced-subtitle';
+    help.textContent = 'Candlesticks + Volume + EMA + RSI + MACD. Add other studies and drawings from the TradingView toolbar.';
+    const target = document.createElement('div');
+    target.className = 'advanced-chart';
+    const loading = document.createElement('div');
+    loading.className = 'pending';
+    loading.textContent = 'Preparing '+ticker+' advanced chart…';
+    target.append(loading);
+    advanced.append(head,help,target);
+    row.append(identity,chart,advanced);
     if (observer) observer.observe(chart);
     else window.setTimeout(() => mountChart(chart), 0);
     return row;
@@ -236,7 +307,7 @@ button.active{background:#22863a;color:white}
       const next = new Set(list.map(t => kind+'|'+t+'|'+(started[kind][t] || '')));
       for (const [key,object] of [...createdRows]) {
         if (key.startsWith(kind+'|') && !next.has(key)) {
-          if (observer) observer.unobserve(object.lastElementChild);
+          if (observer) observer.unobserve(object.querySelector('.chart'));
           object.remove();createdRows.delete(key);chartMounted.delete(key);
         }
       }
@@ -271,7 +342,7 @@ button.active{background:#22863a;color:white}
       if (newest) {
         const key = kind+'|'+newest+'|'+(started[kind][newest]||'');
         const latestRow = createdRows.get(key);
-        if (latestRow) mountChart(latestRow.lastElementChild);
+        if (latestRow) mountChart(latestRow.querySelector('.chart'));
       }
     }
     document.getElementById('sync-status').textContent = 'Watch '+selected.watch.length+' · Trade '+selected.trade.length;
@@ -279,6 +350,14 @@ button.active{background:#22863a;color:white}
   function makeRowActions(kind,ticker) {
     const actions = document.createElement('div');
     actions.className = 'actions';
+    const key = kind+'|'+ticker+'|'+(started[kind][ticker]||'');
+    const row = createdRows.get(key);
+    const opened = Boolean(row && row.querySelector('.advanced-panel:not([hidden])'));
+    const fullButton = makeButton(opened ? 'HIDE FULL CHART' : 'FULL CHART',
+      (opened ? 'Hide' : 'Open')+' TradingView Advanced Chart for '+ticker,
+      ()=>toggleAdvancedChart(kind,ticker));
+    fullButton.classList.add('full-chart-control');
+    actions.append(fullButton);
     if (kind === 'watch') {
       actions.append(
         makeButton(selected.trade.includes(ticker) ? 'T SELECTED' : '+ TRADE',
@@ -341,7 +420,7 @@ button.active{background:#22863a;color:white}
     if (list.has(ticker)) {
       const key = kind+'|'+ticker+'|'+started[kind][ticker];
       const row = createdRows.get(key);
-      if (row) mountChart(row.lastElementChild);
+      if (row) mountChart(row.querySelector('.chart'));
     }
     if (channel) channel.postMessage(selected);
   }
