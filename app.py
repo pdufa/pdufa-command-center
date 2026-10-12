@@ -14,6 +14,7 @@ from unified_clinical_trading import _load as load_unified_evidence, render_comb
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
 from site_scorecard import render_site_scorecard
+from score_input_audit import render_score_input_audit
 import nightly_scan_dashboard as nightly_scan_dashboard_module
 render_nightly_scan_report = nightly_scan_dashboard_module.render_nightly_scan_report
 from phase2_pre_readout_p import attach_phase2_p
@@ -3242,8 +3243,8 @@ if page == "PDUFA":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
     # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
-    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab = st.tabs(
-        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WATCHLIST / TRADING"],
+    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab, scoring_tests_tab = st.tabs(
+        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WATCHLIST / TRADING", "SCORING TESTS"],
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
@@ -4088,6 +4089,10 @@ if page == "PDUFA":
             # inside the embedded Watchlist / Trading screen.
             st.session_state["_ticker_selections_hydrated"] = False
             render_watch_trade_dashboard()
+
+    with scoring_tests_tab:
+        if scoring_tests_tab.open:
+            render_score_input_audit()
 
 elif page == "DISEASE & MARKET HORIZON":
     st.markdown("## DISEASE & MARKET HORIZON")
