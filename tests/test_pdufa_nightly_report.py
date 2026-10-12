@@ -61,6 +61,19 @@ class NightlyScanAuditTests(unittest.TestCase):
         self.assertEqual(audit.archive_json(blob, "nightly-clinical-2.json")["scan"], "2")
         self.assertEqual(audit.archive_json(blob, audit.SCANS["2"][1])["status"], "COMPLETE")
 
+    def test_large_pipeline_state_within_eight_megabytes_is_valid(self):
+        with tempfile.TemporaryDirectory() as folder:
+            extract_test_archive(folder)
+            source = Path(folder) / "data" / audit.SCANS["2"][1]
+            state = json.loads(source.read_text(encoding="utf-8"))
+            state["large_source_audit"] = "x" * (2 * 1024 * 1024)
+            source.write_text(json.dumps(state), encoding="utf-8")
+            self.assertGreater(source.stat().st_size, 1024 * 1024)
+            self.assertLess(source.stat().st_size, audit.MAX_JSON)
+            row = audit.inspect_artifact("2", {}, "fake", extracted_dir=folder)
+        self.assertEqual(row["status"], "PARTIAL")
+        self.assertEqual(row["artifact_integrity"], "PASS")
+
     def test_unknown_totals_do_not_turn_into_zero(self):
         self.assertIsNone(audit.verified_total(
             [{"new_records": None}, {"new_records": 0}], "new_records"))
