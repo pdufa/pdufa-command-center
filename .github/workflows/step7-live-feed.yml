@@ -6,8 +6,8 @@ on:
     paths:
       - '.github/workflows/step7-live-feed.yml'
       - 'scripts/publish_step7_feed.py'
-  schedule:
-    - cron: '0 12 * * *'
+  # Called only after all nightly source scans finish; manual refresh remains available.
+  workflow_call:
   workflow_dispatch:
 
 permissions:
