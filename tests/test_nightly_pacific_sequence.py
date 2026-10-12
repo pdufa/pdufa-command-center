@@ -69,8 +69,8 @@ class PacificNightlySequenceTests(unittest.TestCase):
         self.assertIn("uses: ./.github/workflows/step7-live-feed.yml", feed)
         self.assertIn("contents: write", feed)
         standalone_feed = read("step7-live-feed.yml")
-        self.assertNotIn("\\n  schedule:", standalone_feed)
-        self.assertIn("\\n  workflow_call:", standalone_feed)
+        self.assertNotIn("\n  schedule:", standalone_feed)
+        self.assertIn("\n  workflow_call:", standalone_feed)
 
     def test_scoring_and_repair_only_follow_extended_scan(self):
         score = read("pdufa-nightly-scoring-then-repair.yml")
