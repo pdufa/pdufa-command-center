@@ -61,6 +61,28 @@ class TimelineLegendTests(unittest.TestCase):
         self.assertIn(":has(.st-key-overview_pipeline_panel)", source)
         self.assertIn('a, b, c = st.columns(3)', source)
 
+    def test_equal_height_cards_without_stretching_post3_timeline(self):
+        source = (Path(__file__).resolve().parents[1]
+                  / "unified_clinical_trading.py").read_text(encoding="utf-8")
+        # Cards fill the height of their responsive row; no fixed pixel height.
+        self.assertIn("align-items:stretch !important", source)
+        self.assertIn("align-self:stretch !important", source)
+        self.assertIn("flex:1 1 auto", source)
+        self.assertIn("height:100%", source)
+        self.assertIn("display:flex !important", source)
+        # The expanded all-program timeline must be below the equal-height
+        # cards; otherwise #4 would make all three unreasonably tall.
+        self.assertIn('    with st.expander("PDUFA TIMELINE", expanded=True):', source)
+        self.assertNotIn('            with st.expander("PDUFA TIMELINE"', source)
+        self.assertLess(
+            source.index('key="overview_trading_export"'),
+            source.index('    with st.expander("PDUFA TIMELINE"'),
+        )
+        self.assertEqual(source.count('render_dashboard_sheet('), 3)
+        self.assertEqual(
+            source.count('st.markdown(_timing_legend_html(), unsafe_allow_html=True)'), 3,
+        )
+
     def test_legend_sits_below_each_matching_count_before_table(self):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
