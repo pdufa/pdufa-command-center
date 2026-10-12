@@ -7,6 +7,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Keep the newest main-branch validation; superseded commits should not keep
+# sending duplicate stale failure alerts while code is being repaired.
+concurrency:
+  group: pdufa-command-center-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
