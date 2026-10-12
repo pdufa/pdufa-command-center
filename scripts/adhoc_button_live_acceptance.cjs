@@ -50,6 +50,13 @@ async function appFrame(page){
       if(buttons && links && pin)break;
       await sleep(1250);
     }
+    result.setup = scanBody.includes("Direct one-click dispatch is locked until")
+      ? "STREAMLIT_TOKEN_OR_PIN_MISSING"
+      : scanBody.includes("Enter your scan-control PIN to enable the on-demand check.")
+        ? "READY_PIN_REQUIRED"
+        : "CREDENTIAL_STATUS_UNKNOWN";
+    if(result.setup === "STREAMLIT_TOKEN_OR_PIN_MISSING")
+      result.errors.push("Streamlit lacks the required GitHub token or scan PIN");
     result.checks.scansPage = scanBody.includes("5. SCANS — FIND CHANGES & NEW EVIDENCE");
     result.checks.adhocButton = buttons===1;
     result.checks.adhocPin = pin>0;
