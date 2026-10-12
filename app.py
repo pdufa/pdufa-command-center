@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
-from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, column_help as pdufa_column_help
+from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, PDUFA_COLUMN_WIDTH_PX, column_help as pdufa_column_help
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
@@ -2289,7 +2289,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
     .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
-    .merged-pdufa-table th.countdown-head{min-width:132px;width:132px;max-width:132px;background:#fff !important;background-image:none !important;color:#111 !important}
+    .merged-pdufa-table th.countdown-head{min-width:20px;width:20px;max-width:20px;background:#fff !important;background-image:none !important;color:#111 !important}
     .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
@@ -2341,6 +2341,42 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .help-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:18px;height:18px;border:1.5px solid #555;border-radius:50%%;background:#fff;color:#111;font-size:11px;line-height:1;font-weight:900;vertical-align:middle;cursor:help}
     .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111;outline:none}
     .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
+
+    /* Exactly 20px per column; long headings grow vertically rather than widening. */
+    .merged-pdufa-table{table-layout:fixed;min-width:0}
+    .merged-pdufa-table col{width:20px}
+    .merged-pdufa-table th:not([colspan]),.merged-pdufa-table td{
+      box-sizing:border-box;width:20px !important;min-width:20px !important;
+      max-width:20px !important;padding:2px 0 !important}
+    .merged-pdufa-table th{
+      height:auto !important;vertical-align:top !important;white-space:normal !important;
+      overflow:visible !important;text-overflow:clip !important;
+      overflow-wrap:anywhere !important;word-break:break-word !important;
+      line-height:1.05 !important;font-size:9px !important}
+    .merged-pdufa-table td{font-size:9px !important;line-height:1.1;overflow:hidden;text-overflow:clip;white-space:nowrap}
+    .merged-pdufa-table th.angle-head>span{
+      position:static !important;display:block !important;transform:none !important;
+      white-space:normal !important;overflow-wrap:anywhere !important}
+    .merged-pdufa-table th.group-head{
+      width:auto !important;min-width:0 !important;max-width:none !important;
+      height:auto !important;overflow-wrap:anywhere !important}
+    .merged-pdufa-table .header-controls{
+      display:flex !important;flex-direction:column;align-items:center;gap:2px;width:100%%}
+    .merged-pdufa-table .sort-head{
+      display:flex !important;flex-direction:column;align-items:center;gap:2px;
+      width:100%%;max-width:20px;padding:0 !important;white-space:normal !important;
+      overflow-wrap:anywhere !important;word-break:break-word !important;font-size:9px !important}
+    .merged-pdufa-table .sort-label{
+      display:block;width:100%%;white-space:normal !important;
+      overflow-wrap:anywhere !important;word-break:break-word !important}
+    .merged-pdufa-table .sort-icon{
+      box-sizing:border-box;width:16px;height:16px;margin:0 !important;
+      padding:0 !important;font-size:10px !important;line-height:13px}
+    .merged-pdufa-table .help-icon{
+      box-sizing:border-box;width:16px;height:16px;font-size:9px !important}
+    .merged-pdufa-table .stage-filter-head,.merged-pdufa-table .finance-filter-head{
+      box-sizing:border-box;width:16px;height:17px;margin:0 !important;
+      padding:0 !important;font-size:10px !important}
     a{color:#111}
     </style>
     """ % int(height_px)
@@ -2580,7 +2616,8 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     table_html = (
         local_css
         + f'<div class="merged-table-wrap">'
-        + '<table class="merged-pdufa-table">'
+        + f'<table class="merged-pdufa-table" style="width:{PDUFA_COLUMN_WIDTH_PX * len(cols)}px;min-width:{PDUFA_COLUMN_WIDTH_PX * len(cols)}px;max-width:{PDUFA_COLUMN_WIDTH_PX * len(cols)}px">'
+        + '<colgroup>' + (f'<col style="width:{PDUFA_COLUMN_WIDTH_PX}px">' * len(cols)) + '</colgroup>'
         + thead_html
         + '<tbody>'
         + "".join(rows)
