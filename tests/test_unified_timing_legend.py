@@ -26,16 +26,28 @@ class TimelineLegendTests(unittest.TestCase):
         self.assertIn("Past / unknown", markup)
         self.assertIn("not FDA approval probability", markup)
 
-    def test_legend_sits_immediately_below_matching_programs(self):
+    def test_legend_sits_below_each_matching_count_before_table(self):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
-        self.assertIn(
-            'st.metric("Matching programs", len(df))\n'
-            '            st.markdown(_timing_legend_html(), unsafe_allow_html=True)',
-            source
+        for metric, dataframe in (
+            ('st.metric("Matching programs", len(df))',
+             'pdufa_dataframe(finance_style(df.head(150))'),
+            ('st.metric("Matching pre-readout programs", len(pre3))',
+             'pdufa_dataframe(finance_style(pre3.head(150))'),
+            ('st.metric("Matching candidates", len(post3))',
+             'pdufa_dataframe(finance_style(post3.head(150))'),
+        ):
+            with self.subTest(metric=metric):
+                pos = source.index(metric)
+                legend = source.index(
+                    'st.markdown(_timing_legend_html(), unsafe_allow_html=True)', pos
+                )
+                table = source.index(dataframe, pos)
+                self.assertLess(pos, legend)
+                self.assertLess(legend, table)
+        self.assertEqual(
+            source.count('st.markdown(_timing_legend_html(), unsafe_allow_html=True)'), 3
         )
-        self.assertLess(source.index('st.markdown(_timing_legend_html()'),
-                        source.index('pdufa_dataframe(finance_style(df.head(150))'))
 
 
 if __name__ == "__main__":
