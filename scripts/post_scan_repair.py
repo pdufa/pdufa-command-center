@@ -11,7 +11,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from pdufa_auto_repair import RERUN_ALLOWLIST, decide
+from scripts.pdufa_auto_repair import RERUN_ALLOWLIST, decide
 
 
 def gh(*args):
