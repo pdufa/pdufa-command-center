@@ -1,6 +1,10 @@
 name: PDUFA Nightly Scan Report Publisher
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-nightly-report.yml'
   workflow_run:
     workflows: ["PDUFA Nightly Clinical Scans"]
     types: [completed]
@@ -35,19 +39,40 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Resolve completed source run
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_EVENT: ${{ github.event_name }}
+          DISPATCH_SOURCE_ID: ${{ inputs.source_run_id }}
+          COMPLETED_SOURCE_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          if [ "$WORKFLOW_EVENT" = "workflow_dispatch" ]; then
+            SOURCE_RUN_ID="$DISPATCH_SOURCE_ID"
+          elif [ "$WORKFLOW_EVENT" = "workflow_run" ]; then
+            SOURCE_RUN_ID="$COMPLETED_SOURCE_ID"
+          else
+            SOURCE_RUN_ID="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=20" --jq '[.workflow_runs[] | select(.status=="completed")][0].id')"
+          fi
+          if ! [[ "$SOURCE_RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::No completed clinical source run available."
+            exit 1
+          fi
+          echo "run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "Source clinical run: $SOURCE_RUN_ID"
       - name: Download archived clinical scan evidence from source run
         uses: actions/download-artifact@v4
         with:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
+          run-id: ${{ steps.source.outputs.run_id }}
           pattern: nightly-clinical-*
           path: reports/downloaded_nightly_scans
           merge-multiple: false
       - name: Build source-validated nightly report
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
+          SOURCE_RUN_ID: ${{ steps.source.outputs.run_id }}
         run: |
           python scripts/pdufa_scan_audit.py --run-id "$SOURCE_RUN_ID" --out data/nightly_scan_report.json --artifacts-dir reports/downloaded_nightly_scans
       - name: Commit Streamlit-visible report
