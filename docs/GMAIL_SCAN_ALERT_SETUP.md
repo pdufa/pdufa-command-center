@@ -55,3 +55,35 @@ from running. A watchdog or external email queue is required for a strict
 guarantee even after a hard shutdown.
 
 There are no active nightly scan workflows at the moment.
+
+## Independent END notifier for the completed #2/#3/#4 collector jobs
+
+The clinical collection workflow is `.github/workflows/pdufa-one-time-clinical-scan.yml`.
+Its original October 11, 2026 run `38195214610` finished all three GitHub jobs.
+The one-time source scan had no automatic completion email step. Its reports
+were partial because they excluded FDA, SEC, issuer, and full-market evidence.
+
+A separate `.github/workflows/pdufa-clinical-scan-end-email.yml` listens to
+`workflow_run: completed` on **PDUFA One-Time Clinical Scan**. It is a
+watcher: changing it does **not** relaunch the collector. It sends three END
+emails, using the collector's GitHub job outcome and each job's archived
+`scan_execution_report.json`. The watcher sends even if individual collectors
+failed or were canceled, provided GitHub emits the completion event.
+
+**Set the three private repository Actions secrets above before expecting
+automatic delivery.** Without them the watcher records an explicit FAILED
+notification job. The connected ChatGPT Gmail account is not an Actions secret.
+
+To test your GitHub email settings, manually run:
+`https://github.com/pdufa/pdufa-command-center/actions/workflows/email-delivery-test.yml`
+
+To request the three historical END summaries, manually run:
+`https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-clinical-scan-end-email.yml`
+and enter run ID `38195214610`. Running this after separate email delivery
+has already occurred can create duplicates. GitHub SMTP submission success
+does not itself guarantee inbox arrival; check inbox, filters and spam.
+
+Abrupt GitHub outages can still suppress the completion event; for a strict
+delivery SLA, add an independent monitor and durable notification queue.
+This notifier handles only the named source-only workflow; other collectors
+require their own workflow_run routing before claiming full coverage.
