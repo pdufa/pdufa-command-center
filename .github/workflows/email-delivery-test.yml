@@ -1,0 +1,36 @@
+name: PDUFA Gmail Delivery Test
+
+# Manual-only connectivity test. No clinical, FDA, or market scans start.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  email-delivery-test:
+    name: Submit one Gmail test email
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - name: Checkout notification utilities
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check secret names exist without logging values
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing required GitHub secret ${key}. No email attempted."
+              exit 1
+            fi
+          done
+      - name: Submit exactly one email
+        run: python -m scripts.email_delivery_test
