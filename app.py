@@ -13,6 +13,7 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
+from site_scorecard import render_site_scorecard
 import nightly_scan_dashboard as nightly_scan_dashboard_module
 render_nightly_scan_report = nightly_scan_dashboard_module.render_nightly_scan_report
 from phase2_pre_readout_p import attach_phase2_p
@@ -3197,7 +3198,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","6. RECHECK","9. PREDICTION ENGINE","11. PLAN"]
+nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","7. SITE SCORE","6. RECHECK","9. PREDICTION ENGINE","11. PLAN"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -4973,6 +4974,9 @@ elif page == "9. PREDICTION ENGINE":
                         f"Current locked holdout result: {hm['match_pct']:.1f}% Match at {hm['coverage_pct']:.1f}% Coverage. "
                         "Use the year controls to validate the locked gate sequentially: 2023 tune → 2024 validation → 2025 later holdout. Do not retune after viewing a holdout."
                     )
+
+elif page == "7. SITE SCORE":
+    render_site_scorecard()
 
 elif page == "5. SCANS":
     st.markdown("## 5. SCANS — FIND CHANGES & NEW EVIDENCE")
