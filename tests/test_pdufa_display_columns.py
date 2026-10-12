@@ -47,17 +47,24 @@ class PdufaGridTests(unittest.TestCase):
                 header = header_config(sample)[name]
                 self.assertEqual(header["label"].split(" ", 1)[1], "Days to PDUFA")
                 self.assertNotIn("\\n", header["label"])
-                self.assertEqual(header["width"], 70)
+                self.assertNotIn("width", header)
                 for band in ("+90", "90–60", "59–30", "29–0"):
                     self.assertNotIn(band, header["label"])
                 self.assertIn("past", header["help"].lower())
 
-    def test_all_pdufa_columns_20_px(self):
+    def test_pdufa_columns_have_no_explicit_width_limits(self):
         sample = pd.DataFrame({"Ticker": ["ABC"], "Drug": ["Drug"], "Indication": ["Disease"],
                                "DAYS TO PDUFA": [75], "Cash Runway (months)": [18]})
         configured = header_config(sample)
-        self.assertEqual({c: configured[c]["width"] for c in sample.columns},
-                         {c: 70 for c in sample.columns})
+        self.assertTrue(all("width" not in configured[c] for c in sample.columns))
+        preconfigured = header_config(sample, {
+            "Ticker": {"label": "Symbol", "width": 180, "help": "Issuer ticker"},
+            "Drug": {"width": "large"},
+        })
+        self.assertNotIn("width", preconfigured["Ticker"])
+        self.assertNotIn("width", preconfigured["Drug"])
+        self.assertIn("Symbol", preconfigured["Ticker"]["label"])
+        self.assertEqual(preconfigured["Ticker"]["help"], "Issuer ticker")
 
     def test_no_pdufa_color_swatch_legend_rendered(self):
         from inspect import getsource
@@ -73,11 +80,14 @@ class PdufaGridTests(unittest.TestCase):
         self.assertNotIn("render_countdown_band_key", source)
         self.assertNotIn("pdufa-band-chip", source)
         self.assertNotIn("countdown-band-row", source)
-        self.assertIn("min-width:70px;width:70px;max-width:70px", source)
-        self.assertIn("th.countdown-head{min-width:70px;width:70px;max-width:70px;background:#fff !important;background-image:none !important;color:#111 !important}", source)
-        self.assertIn('style="width:{PDUFA_COLUMN_WIDTH_PX}px"', source)
-        self.assertIn("overflow-wrap:anywhere !important", source)
+        self.assertIn("th.countdown-head{background:#fff !important;background-image:none !important;color:#111 !important}", source)
+        self.assertIn("table-layout:auto", source)
+        self.assertIn("width:max-content", source)
+        self.assertIn("overflow-wrap:anywhere", source)
         self.assertIn("height:auto !important", source)
+        self.assertNotIn("PDUFA_COLUMN_WIDTH_PX", source)
+        self.assertNotIn("<colgroup>", source)
+        self.assertNotIn("table-layout:fixed", source)
         self.assertIn("pdufa_date_color(raw)", source)
         self.assertIn('label = html.escape("Days to PDUFA"', source)
 
