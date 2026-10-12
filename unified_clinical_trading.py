@@ -1,6 +1,7 @@
 """Read-only combined clinical-to-trading overview, no ordinal rankings."""
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import html
 import pandas as pd
 import streamlit as st
 from pdufa_table_headers import pdufa_dataframe, attach_survey
@@ -9,7 +10,8 @@ from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
 from pdufa_display_columns import (POST_SCORES, PRE_SCORES, PRE_PRIORITY_SCORES,
                                   POST_PRIORITY_SCORES, prepare_pdufa_grid, sort_pdufa_grid,
-                                  DISPLAY_ORDER_OPTIONS, finance_style)
+                                  DISPLAY_ORDER_OPTIONS, finance_style, FINANCE_PALETTE)
+from pdufa_date_gradient import COUNTDOWN_BANDS
 from datetime import timezone
 from pathlib import Path
 
@@ -24,6 +26,57 @@ def _load(day, root="data"):
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         pre = []
     return pipeline, post, health, pre, snapshot is not None
+
+def _timing_legend_html():
+    """Legend uses the same colors as the rendered PDUFA and financing cells."""
+    countdown_key = (
+        ("91+ days", COUNTDOWN_BANDS[0][2]),
+        ("90–60 days", COUNTDOWN_BANDS[1][2]),
+        ("59–30 days", COUNTDOWN_BANDS[2][2]),
+        ("29–0 days", COUNTDOWN_BANDS[3][2]),
+        ("Past / unknown", FINANCE_PALETTE["unknown"]),
+    )
+    financing_key = (
+        ("Started", FINANCE_PALETTE["green"]),
+        ("Running", FINANCE_PALETTE["yellow"]),
+        ("Closed", FINANCE_PALETTE["red"]),
+        ("Unverified", FINANCE_PALETTE["unknown"]),
+    )
+
+    def legend_row(heading, items):
+        swatches = "".join(
+            '<span class="timing-key-item">'
+            f'<span class="timing-key-swatch" style="background:{html.escape(color, quote=True)}" aria-hidden="true"></span>'
+            f'{html.escape(label)}</span>'
+            for label, color in items
+        )
+        return (
+            '<div class="timing-key-row">'
+            f'<strong>{html.escape(heading)}</strong>'
+            f'<div class="timing-key-items">{swatches}</div>'
+            '</div>'
+        )
+
+    return (
+        '<style>'
+        '.timing-key{background:#fff;color:#111;border:1px solid #111;border-radius:8px;'
+        'padding:8px 10px;margin:5px 0 10px;font-size:12px;line-height:1.4}'
+        '.timing-key-row+.timing-key-row{border-top:1px solid #ddd;margin-top:6px;padding-top:6px}'
+        '.timing-key-row>strong{display:block;font-size:12px;margin-bottom:3px}'
+        '.timing-key-items{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}'
+        '.timing-key-item{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}'
+        '.timing-key-swatch{display:inline-block;flex:0 0 12px;width:12px;height:12px;'
+        'border:1px solid #333;border-radius:2px;box-sizing:border-box}'
+        '.timing-key-note{font-size:11px;color:#444;margin-top:5px}'
+        '</style>'
+        '<div class="timing-key" aria-label="PDUFA countdown and financing timeline color key">'
+        + legend_row("DAYS TO PDUFA", countdown_key)
+        + legend_row("FINANCING TIMELINE (F)", financing_key)
+        + '<div class="timing-key-note">Colors indicate countdown windows and '
+          'financing stage—not FDA approval probability or financing safety.</div>'
+        + '</div>'
+    )
+
 
 def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search, display_order):
     """Named source panels share filters without changing evidence or scores."""
@@ -78,6 +131,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
             st.metric("Matching programs", len(df))
+            st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if df.empty:
                 st.info("No pipeline programs match these filters.")
             pdufa_dataframe(finance_style(df.head(150)), hide_index=True,
