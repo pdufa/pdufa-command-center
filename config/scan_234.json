@@ -155,52 +155,58 @@
   "documentation": "docs/SCAN_234_BASELINE_DELTA.md",
   "notification_policy": {
     "priority": "CRITICAL_REQUIRED_BEFORE_PRODUCTION",
-    "channel": "SMS",
-    "provider": "Twilio (not RingCentral)",
+    "delivery_mode": "EMAIL_TWO_PER_SCAN",
+    "sms_provider": "RingCentral connected in ChatGPT but not usable by GitHub Actions; previous direct profile access returned a tool error",
+    "sms_optional_when_separately_configured": true,
+    "email_provider": "Gmail SMTP",
     "messages_per_scan": 2,
-    "per_scan_scope": "Every individual #2 PIPELINE, #3 PRE3, #4 POST3 and any separately executed source/deep/reconciliation scan",
+    "individual_scans": [
+      "#2 PIPELINE",
+      "#3 PRE3",
+      "#4 POST3",
+      "each individually executed extra scan"
+    ],
     "events": [
       "START_BEFORE_COLLECTING",
-      "END_AFTER_EXIT_WITH_SOURCE_DATED_RESULTS_OR_FAILURE"
+      "END_AFTER_EXIT_WITH_VERIFIED_RESULTS_OR_FAILURE"
     ],
-    "end_always_attempted": true,
-    "notify_on": [
+    "on_all_scan_outcomes": [
       "COMPLETE",
       "COMPLETE WITH WARNINGS",
       "PARTIAL",
       "FAILED",
       "UNVERIFIED"
     ],
+    "start_email_required": true,
+    "end_email_attempted_on_success_and_failure": true,
     "summary_fields": [
-      "scan",
+      "run_id",
+      "scan_name",
       "mode",
-      "coverage_status",
-      "identities_checked_vs_due",
-      "new",
-      "changed",
-      "warnings",
-      "errors",
-      "duration",
-      "run_id"
+      "Pacific timestamps",
+      "elapsed time",
+      "status",
+      "companies/trials checked vs due",
+      "new findings",
+      "changes",
+      "warnings/errors",
+      "dashboard link"
     ],
-    "require_live_sms_configuration_before_start": true,
-    "start_send_failure": "BLOCK_SCAN_AND_AUDIT",
-    "end_send_failure": "MARK_NOTIFICATION_FAILURE_AND_ALERT_IN_AUDIT",
-    "no_fabricated_results": true,
-    "never_claim_delivered_on_provider_acceptance": true,
-    "sender_environment_secrets": [
-      "TWILIO_ACCOUNT_SID",
-      "TWILIO_AUTH_TOKEN",
-      "TWILIO_FROM_NUMBER",
-      "PDUFA_SMS_TO_NUMBER"
+    "fail_closed_on_start_email_failure": true,
+    "no_duplicate_retries_after_ambiguous_submission": true,
+    "do_not_claim_delivery_when_smtp_only_accepted": true,
+    "implementation": "scripts/run_scan_with_email.py",
+    "transport": "scripts/scan_email.py",
+    "tests": "tests/test_scan_email_notifications.py",
+    "required_actions_secrets": [
+      "PDUFA_GMAIL_USER",
+      "PDUFA_GMAIL_APP_PASSWORD",
+      "PDUFA_ALERT_EMAIL"
     ],
-    "delivery_status": "NOT_CONFIGURED",
+    "recipient_email": "Configured in PDUFA_ALERT_EMAIL; never hardcoded into code",
+    "email_setup_state": "NOT_CONFIGURED",
     "notifications_active": false,
     "nightly_schedules_restored": false,
-    "implementation": "scripts/run_scan_with_sms.py",
-    "transport": "scripts/scan_sms.py",
-    "test_command": "python -m unittest discover -s tests -p test_scan_sms_notifications.py -v",
-    "sample_invocation": "python scripts/run_scan_with_sms.py --scan 2 --mode BASELINE --status-file data/all_phase_scan_state.json -- python scripts/all_phase_scan.py",
-    "warning": "The sample #2 command is only a clinical collector, not a certified complete #2 baseline. Scan orchestration and source coverage must still be implemented."
+    "note": "Gmail connected to ChatGPT does not grant GitHub Actions SMTP credentials. Use a Gmail app password in Actions Secrets, and confirm real delivery before enabling scans. RingCentral is not required."
   }
 }
