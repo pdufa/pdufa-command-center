@@ -5,6 +5,7 @@ import html
 import pandas as pd
 import streamlit as st
 from pdufa_table_headers import pdufa_dataframe, attach_survey
+from pdufa_circled_help_grid import render_dashboard_sheet
 from pipeline_universe import load_universe
 from post_phase3_unified import build_queue
 from step7_cached_snapshot import load_current_snapshot
@@ -134,10 +135,13 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if df.empty:
                 st.info("No pipeline programs match these filters.")
-            pdufa_dataframe(finance_style(df.head(150)), hide_index=True,
-                         use_container_width=True, height=310,
-                         column_order=["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)",
-                                       "Score type", "Pipeline stage", "F", "Drug", "NCT ID"])
+            render_dashboard_sheet(
+                df.head(150),
+                ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                 "2nd Financing Completed", "Cash Runway (months)",
+                 "Score type", "Pipeline stage", "F", "Drug", "NCT ID"],
+                height=310,
+            )
             st.caption("Expand ALL FIELDS below for every clinical field, score component and source link.")
         with right, st.container(border=True, key="overview_pre3_panel"):
             st.markdown("### #3-PRE3")
@@ -146,12 +150,13 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if pre3.empty:
                 st.info("No current pre-readout programs match these filters.")
-            pdufa_dataframe(finance_style(pre3.head(150)), hide_index=True,
-                         use_container_width=True, height=310,
-                         column_order=[c for c in (
-                             "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)",
-                             "Score type", "Score status", "F", "Drug", "NCT ID",
-                         ) if c in pre3])
+            render_dashboard_sheet(
+                pre3.head(150),
+                ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+                 "2nd Financing Completed", "Cash Runway (months)",
+                 "Score type", "Score status", "F", "Drug", "NCT ID"],
+                height=310,
+            )
             with st.expander("ALL PRE3 FIELDS & EVIDENCE"):
                 pdufa_dataframe(finance_style(pre3.head(350)), hide_index=True,
                              use_container_width=True)
@@ -166,12 +171,13 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         st.markdown(_timing_legend_html(), unsafe_allow_html=True)
         if post3.empty:
             st.info("No current trading candidates match these filters.")
-        pdufa_dataframe(finance_style(post3.head(150)), hide_index=True,
-                     use_container_width=True, height=310,
-                     column_order=[c for c in (
-                         "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)",
-                         "Score type", "Entry qualification", "F", "Drug", "NCT ID",
-                     ) if c in post3])
+        render_dashboard_sheet(
+            post3.head(150),
+            ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
+             "2nd Financing Completed", "Cash Runway (months)",
+             "Score type", "Entry qualification", "F", "Drug", "NCT ID"],
+            height=310,
+        )
         with st.expander("ALL TRADING FIELDS & EVIDENCE"):
             pdufa_dataframe(finance_style(post3.head(350)), hide_index=True,
                          use_container_width=True)
