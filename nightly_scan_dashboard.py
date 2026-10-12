@@ -102,6 +102,109 @@ def _run_request(action, scan, token):
         st.error("Could not submit scan request: " + type(exc).__name__)
 
 
+
+ADHOC_WORKFLOW = "pdufa-adhoc-error-check.yml"
+ADHOC_URL = ("https://github.com/" + REPO + "/actions/workflows/" + ADHOC_WORKFLOW)
+
+
+def dispatch_adhoc_error_check(token):
+    """Authenticated, PIN-gated manual dispatch; 204 means accepted, not complete."""
+    if not token:
+        raise ValueError("GitHub dashboard token is not configured")
+    req = urllib.request.Request(
+        API + "/actions/workflows/" + ADHOC_WORKFLOW + "/dispatches",
+        data=json.dumps({"ref": "main"}).encode("utf-8"),
+        method="POST",
+        headers={
+            "Authorization": "Bearer " + token,
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "Content-Type": "application/json",
+            "User-Agent": "pdufa-command-center-dashboard",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=20) as response:
+        if response.status != 204:
+            raise RuntimeError("GitHub did not accept ad hoc error check")
+
+
+@st.cache_data(ttl=45, show_spinner=False)
+def latest_adhoc_check_run():
+    req = urllib.request.Request(
+        API + "/actions/workflows/" + ADHOC_WORKFLOW +
+        "/runs?event=workflow_dispatch&per_page=1",
+        headers={"Accept": "application/vnd.github+json",
+                 "User-Agent": "pdufa-command-center-dashboard"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=8) as response:
+            data = json.load(response)
+        return (data.get("workflow_runs") or [{}])[0]
+    except (ValueError, OSError, urllib.error.URLError):
+        return {}
+
+
+def render_adhoc_error_check_controls():
+    """One-click Gmail/GitHub health check using existing server-side secrets."""
+    st.markdown("### AD HOC — GMAIL + GITHUB ERROR CHECK")
+    st.caption(
+        "Run the same independent error audit on demand. Checks current GitHub "
+        "workflow failures and recent Gmail alert headers; does not rescan "
+        "clinical/FDA/SEC data, change trading evidence, or send duplicate mail."
+    )
+    token = dashboard_secret("PDUFA_GITHUB_TOKEN")
+    pin = dashboard_secret("PDUFA_SCAN_CONTROL_PIN")
+    supplied = st.text_input(
+        "Ad hoc check PIN", type="password", key="pdufa_adhoc_check_pin",
+        help="Uses the existing scan-control PIN; it is never written to the run log.",
+    )
+    authorized = bool(token and pin and hmac.compare_digest(supplied, pin))
+    if st.button(
+        "▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK",
+        key="pdufa_adhoc_error_check_button",
+        use_container_width=True,
+        disabled=not authorized,
+    ):
+        try:
+            dispatch_adhoc_error_check(token)
+            latest_adhoc_check_run.clear()
+            st.success(
+                "GitHub accepted the ad hoc audit request. This is queued, not "
+                "a completed or passing audit. Open the run below for results."
+            )
+        except urllib.error.HTTPError as exc:
+            st.error(
+                "GitHub rejected the ad hoc request (HTTP " + str(exc.code) +
+                "). Check Actions write permission for the configured token."
+            )
+        except (OSError, RuntimeError, ValueError, urllib.error.URLError) as exc:
+            st.error("Could not start ad hoc audit: " + type(exc).__name__)
+    if not token or not pin:
+        st.warning(
+            "Direct one-click dispatch is locked until PDUFA_GITHUB_TOKEN and "
+            "PDUFA_SCAN_CONTROL_PIN are set in Streamlit secrets. "
+            "You can run the workflow manually from GitHub below."
+        )
+    elif not authorized:
+        st.caption("Enter your scan-control PIN to enable the on-demand check.")
+    st.link_button("OPEN AD HOC ERROR CHECK / RESULTS IN GITHUB", ADHOC_URL)
+    last = latest_adhoc_check_run()
+    if last:
+        st.caption(
+            "Most recent manual check: #" + str(last.get("id", "?")) +
+            " · " + str(last.get("status", "unknown")) +
+            " · " + str(last.get("conclusion") or "not finished") +
+            " · started " + str(last.get("created_at") or "unknown")
+        )
+        url = last.get("html_url")
+        if isinstance(url, str) and url.startswith("https://github.com/"):
+            st.link_button("VIEW LAST AD HOC CHECK RUN", url)
+    st.caption(
+        "GitHub results and a JSON report are saved in the workflow artifacts. "
+        "Gmail access requires working IMAP/app-password credentials; failures "
+        "are reported as UNAVAILABLE, never silently marked clean."
+    )
+
 def _number(v):
     return f"{v:,}" if type(v) is int else "—"
 
