@@ -153,10 +153,24 @@ def score_inputs_for_ticker(data, ticker):
             continue
         for label, domain, maximum in CLINICAL:
             points = (row.get("domain_points") or {}).get(domain)
+            src = (row.get("domain_sources") or {}).get(domain) or {}
             output.append({"Source": "PRE pilot assessment", "Event / Trial": row.get("nct_id", ""),
                            "Input column": domain + " /" + str(maximum),
                            "Value": str(points) if points is not None else "MISSING",
-                           "Present": "YES" if points is not None else "NO"})
+                           "Present": "YES" if points is not None else "NO",
+                           "Evidence URL": src.get("url", ""), "Evidence as-of": src.get("published", "")})
+    for row in data["Pre-readout evidence"]:
+        if str(row.get("ticker", "")).upper() != ticker:
+            continue
+        for label, domain, maximum in CLINICAL:
+            field = domain + "_points"
+            value = row.get(field)
+            output.append({"Source": "PRE reviewed evidence inputs", "Event / Trial": row.get("nct_id", ""),
+                           "Input column": field + " /" + str(maximum),
+                           "Value": str(value) if present(value) else "MISSING",
+                           "Present": "YES" if present(value) else "NO",
+                           "Evidence URL": row.get(domain + "_source", ""),
+                           "Evidence as-of": row.get(domain + "_source_date", "")})
     for row in data["Post market status"]:
         if str(row.get("ticker", "")).upper() != ticker:
             continue
@@ -234,7 +248,8 @@ def render_score_input_audit():
         inspect_df = pd.DataFrame(inspected)
         if missing_only:
             inspect_df = inspect_df[inspect_df["Present"] == "NO"]
-        st.dataframe(inspect_df, hide_index=True, use_container_width=True)
+        st.dataframe(inspect_df, hide_index=True, use_container_width=True,
+                     column_config={"Evidence URL": st.column_config.LinkColumn("Source link")})
         st.caption("Stock price is ticker-level. FDA and financing checks must be joined by exact event; "
                    "PRE clinical points use exact NCT. This panel displays inputs only, not joined evidence.")
     else:
