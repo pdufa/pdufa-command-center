@@ -146,8 +146,10 @@ def dashboard_sheet_html(data: pd.DataFrame, columns: list[str], height: int = 3
             return raw && /^[-+]?(?:\\d*\\.)?\\d+$/.test(raw) ? Number(raw) : null;
           };
           rows.sort((left, right) => {
-            const a = left.cells[index]?.textContent.trim() ?? '';
-            const b = right.cells[index]?.textContent.trim() ?? '';
+            const a = (left.cells[index]?.querySelector('.ticker-inline-symbol') ||
+              left.cells[index])?.textContent.trim() ?? '';
+            const b = (right.cells[index]?.querySelector('.ticker-inline-symbol') ||
+              right.cells[index])?.textContent.trim() ?? '';
             if (!a || !b) return (!a === !b) ? 0 : !a ? 1 : -1;
             const an = numeric(a), bn = numeric(b);
             const difference = an !== null && bn !== null
