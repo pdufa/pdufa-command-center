@@ -106,6 +106,10 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         ("changed_trials_this_execution", "Changed trials"),
         ("companies_with_warnings", "Company warnings"),
         ("tracked_trials_with_warnings", "Trial warnings"),
+        ("studies_checked", "Registry studies checked"),
+        ("matched_trials", "Exact sponsor matched trials"),
+        ("matched_posted_results", "Phase 3 posted results matched"),
+        ("market_cap_source_unavailable", "Market cap sources unavailable"),
         ("errors_count", "Errors"),
     ):
         v = report.get(key)
