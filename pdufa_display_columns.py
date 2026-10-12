@@ -434,6 +434,15 @@ def sort_pdufa_rows(frame):
     return frame.iloc[positions].copy()
 
 
+FINANCE_PALETTE = {
+    "green": "#bbf7d0",
+    "yellow": "#fef08a",
+    "red": "#fecaca",
+    "neutral": "#dbeafe",
+    "unknown": "#e5e7eb",
+}
+
+
 def finance_style(frame):
     """Color financial evidence without altering underlying values or freshness.
 
@@ -443,13 +452,7 @@ def finance_style(frame):
     Raw dollar amounts are neutral blue: a large balance or market cap
     alone does not imply a strong financial position. Missing/unverified is gray.
     """
-    palette = {
-        "green": "#bbf7d0",
-        "yellow": "#fef08a",
-        "red": "#fecaca",
-        "neutral": "#dbeafe",
-        "unknown": "#e5e7eb",
-    }
+    palette = FINANCE_PALETTE
     def paint(level):
         return (
             f"background-color:{palette[level]}; color:#000000;"
