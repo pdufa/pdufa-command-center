@@ -1,0 +1,46 @@
+name: PDUFA Ad Hoc Gmail + GitHub Error Check
+
+# Safe on-demand audit; never starts scans, sends mail, or changes source evidence.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-adhoc-error-check.yml'
+      - 'scripts/adhoc_alert_check.py'
+      - 'tests/test_adhoc_alert_check.py'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: pdufa-adhoc-error-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test alert classification without network access
+        run: python -m unittest discover -s tests -p 'test_adhoc_alert_check.py' -v
+      - name: Audit latest GitHub workflows and Gmail scan alert headers
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+          PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+        run: python scripts/adhoc_alert_check.py
+      - name: Archive ad hoc report without altering saved scanner data
+        if: always() && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-adhoc-alert-check-${{ github.run_id }}
+          path: reports/adhoc_alert_check.json
+          retention-days: 14
+          if-no-files-found: warn
