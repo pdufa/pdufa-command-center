@@ -11,14 +11,8 @@ on:
       - 'tests/test_adhoc_dispatch.py'
       - 'nightly_scan_dashboard.py'
       - 'scripts/adhoc_button_live_acceptance.cjs'
-  workflow_run:
-    workflows:
-      - 'PDUFA Nightly Clinical Scans'
-      - 'PDUFA Nightly FDA SEC Financial Market Issuer Sources'
-      - 'PDUFA Nightly Scan Report Publisher'
-      - 'Step 7 PRE PHASE 3 Live Feed'
-    types: [completed]
-    branches: [main]
+  # Nightly checks now run only AFTER scoring in the post-scan orchestrator.
+  # Manual dashboard workflow_dispatch and push-time tests remain available.
   workflow_dispatch:
 
 permissions:
