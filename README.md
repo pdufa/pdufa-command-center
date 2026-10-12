@@ -1,5 +1,27 @@
 # PDUFA Command Center
 
+## Watchlist / Trading subtab (October 11, 2026)
+
+Inside **PDUFA → WATCHLIST / TRADING**, Watchlist is on top and Trading is
+below. W and T are two independent browser-saved research tags. Click **W** or
+**T** directly before any ticker in **UNIFIED OVERVIEW → #2 PIPELINE, #3 PRE3,
+or #4 POST3**. When the Watchlist/Trading subtab opens, the selected ticker
+appears with an attached TradingView stock chart, which loads automatically.
+**+ TRADE** on a Watchlist row adds that ticker to Trading without removing it
+from Watchlist; either tag can be removed independently.
+
+New selections capture separate Watch and Trade activation timestamps under
+`pdufa_watch_trading_since_v1`; the existing membership store
+`pdufa_watch_trading_v1` remains compatible with earlier Watch/Trade buttons.
+For older entries without an activation timestamp, tracking begins when the
+new screen first observes that entry; no historical entry time is invented.
+The embedded chart chooses the closest supported provider time range to the
+activation timestamp, not an exact adjusted-price baseline or execution
+performance series. Quotes can be delayed or unavailable. Charts are
+automatically mounted on new additions or when visible, with the most recent
+ticker initialized immediately. Browser storage is local to the device;
+no broker orders are sent.
+
 ## Unified Overview dashboard and Post Phase 3 workspace (October 11, 2026)
 
 **PDUFA → UNIFIED OVERVIEW** displays **#1-DB** with linked **#2-PIPELINE**,
