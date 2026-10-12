@@ -1,0 +1,96 @@
+name: PDUFA Scan Report Controls
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Verification or collection operation"
+        required: true
+        type: choice
+        options: [VERIFY_ALL, REVERIFY_PARTIAL, RESCAN_ALL]
+      scan:
+        description: "Source scan for targeted recheck"
+        required: true
+        type: choice
+        options: [ALL, '2', '3', '4']
+        default: ALL
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: pdufa-scan-report-controls
+  cancel-in-progress: false
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout dashboard and report
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Request collector scan for rescan or partial recheck
+        if: ${{ inputs.action == 'RESCAN_ALL' || inputs.action == 'REVERIFY_PARTIAL' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CONTROL_ACTION: ${{ inputs.action }}
+          CONTROL_SCAN: ${{ inputs.scan }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          action = os.environ["CONTROL_ACTION"]
+          scan = "ALL" if action == "RESCAN_ALL" else os.environ["CONTROL_SCAN"]
+          url = ("https://api.github.com/repos/" + os.environ["GITHUB_REPOSITORY"]
+                 + "/actions/workflows/pdufa-nightly-clinical.yml/dispatches")
+          body = json.dumps({"ref": "main", "inputs": {"scan": scan}}).encode()
+          req = urllib.request.Request(url, data=body, method="POST", headers={
+              "Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "Content-Type": "application/json",
+              "User-Agent": "pdufa-scan-report-control",
+          })
+          with urllib.request.urlopen(req, timeout=30) as response:
+              if response.status != 204:
+                  raise RuntimeError("Collector dispatch not accepted")
+          print("Accepted: " + action + " for clinical scan " + scan)
+          print("Newly completed collectors publish a refreshed verified report.")
+          PY
+      - name: Reverify all archived clinical scan reports
+        if: ${{ inputs.action == 'VERIFY_ALL' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, pathlib, subprocess, sys
+          p = pathlib.Path("data/nightly_scan_report.json")
+          if not p.exists():
+              sys.exit("No nightly report yet; run a clinical collection first")
+          current = json.loads(p.read_text())
+          source_id = current.get("latest_run_id")
+          if not isinstance(source_id, int):
+              sys.exit("No valid source run ID yet")
+          subprocess.run([sys.executable, "scripts/pdufa_scan_audit.py",
+                          "--run-id", str(source_id), "--out", str(p),
+                          "--verify-only"], check=True)
+          PY
+      - name: Publish reverified audit
+        if: ${{ inputs.action == 'VERIFY_ALL' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/nightly_scan_report.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Reverify archived clinical scan report integrity"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
