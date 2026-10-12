@@ -1,5 +1,16 @@
 # PDUFA Command Center
 
+## Nightly Scan Report subtab (October 12, 2026)
+
+**PDUFA → NIGHTLY SCAN REPORT**, directly before **WATCHLIST / TRADING**, reads the published `data/nightly_scan_report.json` audit. The existing clinical scan #2 PIPELINE, #3 PRE3 and #4 POST3 run on the existing `pdufa-nightly-clinical.yml` nightly schedule. A separate publisher (`pdufa-nightly-report.yml`) reacts to the completed collection workflow, downloads its archived per-scan JSON/status files, checks consistency and writes the displayed report. Prior scan results are revalidated from their own archived run when a targeted collection occurs; missing or expired artifacts remain UNVERIFIED. The UI does not invent missing new-record or changed-trial totals.
+
+**Three controls** are available: **REVERIFY PARTIAL** recollects the clinical scans and publishes a new audit, **VERIFY ALL** rechecks their archived clinical source evidence, and **RESCAN ALL** reruns the three clinical collectors. An additional target selector can recollect only #2, #3 or #4. The buttons dispatch `pdufa-scan-control.yml`, which in turn dispatches the clinical workflow for data collection. The report and control buttons are separate from trading tags; no order placement occurs.
+
+**Required activation:** To enable the buttons *inside Streamlit*, configure Streamlit app secrets `PDUFA_GITHUB_TOKEN` (fine-grained GitHub token with Actions read/write permission for this repository; keep server-side) and `PDUFA_SCAN_CONTROL_PIN` (private operator PIN). Users without these secrets can still view published reports, and repository owners can use the **OPEN SCAN CONTROLS IN GITHUB ACTIONS** link to trigger the control workflow manually. The collector itself retains the previously documented GitHub Actions secrets `PDUFA_GMAIL_USER`, `PDUFA_GMAIL_APP_PASSWORD`, and `PDUFA_ALERT_EMAIL`: absent secrets block clinical collection. No passwords or personal tokens should be committed to files.
+
+**Operational boundary:** The new tab and workflows are code-installed, but a successful *live end-to-end scan and email delivery* must still be observed after secrets are configured. Before a first published artifact the page explicitly says that no audited report exists. A clinical `PARTIAL` result means clinical-source collection succeeded, **not** that FDA/SEC/issuer/market data was verified. `VERIFY ALL` revalidates archived clinical JSON, not the missing source families. The automated syntax/unit-test check is in `pdufa-nightly-report-checks.yml`.
+
+
 ## Active #2/#3/#4 clinical-source nightly scan schedule
 
 **Enabled:** `.github/workflows/pdufa-nightly-clinical.yml`. The initial
