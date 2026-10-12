@@ -194,6 +194,44 @@ def render_score_input_audit():
 
     st.markdown("## SCORING INPUTS & OVERLAP")
     st.caption("Read-only input lineage from saved datasets. This does not calculate new approval or trade probabilities.")
+
+    # Each completed nightly scan publishes its own scored-input snapshot only
+    # after the collector completes; source gaps stay REVIEW, never become 0.
+    nightly_path = Path("data/nightly_scoring_audit.json")
+    if nightly_path.is_file():
+        try:
+            nightly = json.loads(nightly_path.read_text(encoding="utf-8"))
+            meta = nightly.get("source_scan", {})
+            when = nightly.get("generated_at_utc", "")
+            status = nightly.get("status", "UNKNOWN")
+            when_dt = __import__("datetime").datetime.fromisoformat(str(when).replace("Z", "+00:00"))
+            current = __import__("datetime").datetime.now(__import__("datetime").timezone.utc)
+            stale = ((current - when_dt).total_seconds() > 48 * 3600 or
+                     (current - when_dt).total_seconds() < -3600)
+            st.markdown("### Most recent automated post-scan scoring audit")
+            a1, a2, a3 = st.columns(3)
+            a1.metric("Audit status", status)
+            a2.metric("Reported input gaps", int(nightly.get("counts", {}).get("data_gaps", 0)))
+            a3.metric("Source scan run", str(meta.get("run_id") or "UNKNOWN"))
+            st.caption("Audit saved: " + str(when) + " · Source: " + str(meta.get("workflow") or "UNKNOWN")
+                       + " · Scan result: " + str(meta.get("conclusion") or "UNKNOWN"))
+            if stale:
+                st.warning("The stored scoring audit is older than 48 hours or has an invalid clock time. "
+                           "It must not be treated as fresh verification.")
+            elif status != "NO_INPUT_GAPS_FOUND":
+                st.info("Audit is complete but some scoring inputs or scan evidence require review; "
+                        "that is not a failure of the stock or an FDA outcome.")
+            with st.expander("Show archived nightly scoring inputs and source provenance"):
+                st.dataframe(pd.DataFrame(nightly.get("checks", [])),
+                             hide_index=True, use_container_width=True)
+                st.dataframe(pd.DataFrame(nightly.get("sources", [])),
+                             hide_index=True, use_container_width=True)
+                st.caption(str(nightly.get("provenance_note", "")))
+        except (OSError, ValueError, TypeError, KeyError, OverflowError):
+            st.warning("Last nightly scoring audit is unreadable; the current live input tables remain available.")
+    else:
+        st.info("No nightly scoring audit has been published yet. The automated audit runs "
+                "after each completed overnight source scan, before Gmail/GitHub checks and safe repair.")
     data = load_sources()
     tests = audit_tests(data)
     attention = sum(t["Status"] in ("DATA GAP", "REVIEW") for t in tests)
