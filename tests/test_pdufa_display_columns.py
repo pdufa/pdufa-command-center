@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import pandas as pd
 
 from pdufa_date_gradient import date_color, segment, COUNTDOWN_BANDS
-from pdufa_table_headers import header_config, style_countdown_cells
+from pdufa_table_headers import header_config, column_width_for, style_countdown_cells
 from pdufa_display_columns import (
     FRONT, DISPLAY_ORDER_OPTIONS, enrich_exact_trials, finance_style,
     prepare_pdufa_grid, sort_pdufa_grid, sort_pdufa_rows,
@@ -47,24 +47,38 @@ class PdufaGridTests(unittest.TestCase):
                 header = header_config(sample)[name]
                 self.assertEqual(header["label"].split(" ", 1)[1], "Days to PDUFA")
                 self.assertNotIn("\\n", header["label"])
-                self.assertNotIn("width", header)
+                self.assertGreater(header["width"], 100)
                 for band in ("+90", "90–60", "59–30", "29–0"):
                     self.assertNotIn(band, header["label"])
                 self.assertIn("past", header["help"].lower())
 
-    def test_pdufa_columns_have_no_explicit_width_limits(self):
+    def test_pdufa_columns_expand_to_real_header_and_cell_content(self):
         sample = pd.DataFrame({"Ticker": ["ABC"], "Drug": ["Drug"], "Indication": ["Disease"],
                                "DAYS TO PDUFA": [75], "Cash Runway (months)": [18]})
         configured = header_config(sample)
-        self.assertTrue(all("width" not in configured[c] for c in sample.columns))
+        self.assertTrue(all(isinstance(configured[c]["width"], int)
+                            for c in sample.columns))
+        self.assertGreater(configured["Cash Runway (months)"]["width"],
+                           configured["Ticker"]["width"])
         preconfigured = header_config(sample, {
-            "Ticker": {"label": "Symbol", "width": 180, "help": "Issuer ticker"},
+            "Ticker": {"label": "Symbol", "width": 50, "help": "Issuer ticker"},
             "Drug": {"width": "large"},
         })
-        self.assertNotIn("width", preconfigured["Ticker"])
-        self.assertNotIn("width", preconfigured["Drug"])
+        self.assertGreater(preconfigured["Ticker"]["width"], 50)
+        self.assertIsInstance(preconfigured["Drug"]["width"], int)
         self.assertIn("Symbol", preconfigured["Ticker"]["label"])
         self.assertEqual(preconfigured["Ticker"]["help"], "Issuer ticker")
+
+    def test_long_values_are_fully_sized_without_100px_ceiling(self):
+        narrow = header_config(pd.DataFrame({"Drug": ["X"]}))["Drug"]["width"]
+        medium = header_config(pd.DataFrame({"Drug": ["LONG_DRUG_NAME"]}))["Drug"]["width"]
+        long = header_config(pd.DataFrame({"Drug": ["VERY_LONG_DRUG_PROGRAM_NAME_WITH_MULTIPLE_SEGMENTS"]}))["Drug"]["width"]
+        self.assertLess(narrow, medium)
+        self.assertLess(medium, long)
+        self.assertGreater(long, 250)
+        self.assertEqual(column_width_for("LABEL", ["X" * 400]),
+                         column_width_for("LABEL", ["X" * 400, "X" * 10]))
+        self.assertGreater(column_width_for("LABEL", ["X" * 400]), 2000)
 
     def test_no_pdufa_color_swatch_legend_rendered(self):
         from inspect import getsource
@@ -83,7 +97,8 @@ class PdufaGridTests(unittest.TestCase):
         self.assertIn("th.countdown-head{background:#fff !important;background-image:none !important;color:#111 !important}", source)
         self.assertIn("table-layout:auto", source)
         self.assertIn("width:max-content", source)
-        self.assertIn("overflow-wrap:anywhere", source)
+        self.assertIn("white-space:nowrap !important", source)
+        self.assertIn("overflow:visible", source)
         self.assertIn("height:auto !important", source)
         self.assertNotIn("PDUFA_COLUMN_WIDTH_PX", source)
         self.assertNotIn("<colgroup>", source)
