@@ -12,6 +12,7 @@ import pandas as pd
 import streamlit as st
 
 STORAGE_KEY = "pdufa_watch_trading_v1"
+START_KEY = "pdufa_watch_trading_since_v1"
 ROWS_PER_PAGE = 7
 TICKER_PATTERN = re.compile(r"^[A-Z][A-Z0-9.\-]{0,12}$")
 
@@ -74,7 +75,12 @@ def toggle_membership(existing, ticker):
 
 def _toggle(ticker, category):
     key = "watchlist" if category == "watch" else "trading_tickers"
-    st.session_state[key] = toggle_membership(st.session_state.get(key, []), ticker)
+    new_selection = toggle_membership(st.session_state.get(key, []), ticker)
+    st.session_state[key] = new_selection
+    st.session_state["_ticker_last_toggle"] = {
+        "category": category, "ticker": clean_ticker(ticker),
+        "selected": clean_ticker(ticker) in new_selection,
+    }
     st.session_state["_ticker_selections_dirty"] = True
 
 
@@ -107,9 +113,26 @@ def _init_browser_selection(panel_id):
             counter = int(st.session_state.get("_ticker_storage_revision", 0)) + 1
             st.session_state["_ticker_storage_revision"] = counter
             payload = serialize_selections(st.session_state)
+            # Keep initial W/T selection times in the same browser store used
+            # by the inline buttons and the attached stock-chart dashboard.
+            last_toggle = st.session_state.pop("_ticker_last_toggle", None)
+            update_start = ""
+            if last_toggle:
+                category = json.dumps(last_toggle["category"])
+                ticker = json.dumps(last_toggle["ticker"])
+                selected = "true" if last_toggle["selected"] else "false"
+                update_start = (
+                    f"let marks=JSON.parse(localStorage.getItem({json.dumps(START_KEY)})||'{{}}');"
+                    "marks.watch=marks.watch||{};marks.trade=marks.trade||{};"
+                    f"if({selected}) marks[{category}][{ticker}]=new Date().toISOString();"
+                    f"else delete marks[{category}][{ticker}];"
+                    f"localStorage.setItem({json.dumps(START_KEY)},JSON.stringify(marks));"
+                )
             expression = (
-                f"localStorage.setItem({json.dumps(STORAGE_KEY)}, "
-                f"{json.dumps(payload)})"
+                "(()=>{"
+                f"localStorage.setItem({json.dumps(STORAGE_KEY)}, {json.dumps(payload)});"
+                + update_start
+                + "return true;})()"
             )
             streamlit_js_eval(
                 js_expressions=expression, want_output=False,
@@ -156,7 +179,7 @@ def render_ticker_toggle_panel(panel_id, records, *, title=""):
             return
         watch = {clean_ticker(v) for v in st.session_state.get("watchlist", [])}
         trade = {clean_ticker(v) for v in st.session_state.get("trading_tickers", [])}
-        st.caption(f"Watch {len(watch)} · Trading {len(trade)} · green − selected / white + add")
+        st.caption(f"Watch {len(watch)} · Trading {len(trade)} · green W/T selected / white not selected")
         filter_text = st.text_input(
             "Filter ticker", key=f"ticker_toggles_query_{panel_id}",
             label_visibility="collapsed", placeholder="Find ticker...",
@@ -175,25 +198,25 @@ def render_ticker_toggle_panel(panel_id, records, *, title=""):
                          format_func=lambda value: f"{value} / {pages}")
         page = st.session_state.get(page_key, 1)
         first = (page - 1) * ROWS_PER_PAGE
-        head = st.columns([2.1, 1, 1], gap="small")
-        head[0].markdown("**Ticker**")
-        head[1].markdown("**Watch**")
-        head[2].markdown("**Trade**")
+        head = st.columns([0.7, 0.7, 2.1], gap="small")
+        head[0].markdown("**W**")
+        head[1].markdown("**T**")
+        head[2].markdown("**Ticker**")
         for symbol in matched[first:first + ROWS_PER_PAGE]:
-            cols = st.columns([2.1, 1, 1], gap="small")
-            cols[0].markdown("**" + symbol + "**")
-            with cols[1]:
-                st.button("−" if symbol in watch else "+",
+            cols = st.columns([0.7, 0.7, 2.1], gap="small")
+            with cols[0]:
+                st.button("W",
                           help=("Remove" if symbol in watch else "Add") + " " + symbol + " from Watchlist",
                           type="primary" if symbol in watch else "secondary",
                           key=f"ticker_toggle_{panel_id}_watch_{symbol}",
                           on_click=_toggle, args=(symbol, "watch"))
-            with cols[2]:
-                st.button("−" if symbol in trade else "+",
+            with cols[1]:
+                st.button("T",
                           help=("Remove" if symbol in trade else "Add") + " " + symbol + " from Trading list (no broker orders)",
                           type="primary" if symbol in trade else "secondary",
                           key=f"ticker_toggle_{panel_id}_trade_{symbol}",
                           on_click=_toggle, args=(symbol, "trade"))
+            cols[2].markdown("**" + symbol + "**")
         if not storage_available:
             st.caption("Browser storage unavailable: selections last only for this session.")
         else:
