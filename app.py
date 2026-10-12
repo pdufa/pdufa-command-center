@@ -3876,9 +3876,11 @@ if page == "PDUFA":
                     )
                 if add_watch and selected_watch_ticker:
                     st.session_state["watchlist"] = sorted(watch_values | {selected_watch_ticker})
+                    st.session_state["_ticker_selections_dirty"] = True
                     st.rerun()
                 if remove_watch and selected_watch_ticker:
                     st.session_state["watchlist"] = sorted(watch_values - {selected_watch_ticker})
+                    st.session_state["_ticker_selections_dirty"] = True
                     st.rerun()
                 st.caption(f"Watchlist: {len(watch_values)} tickers selected")
                 # Watchlist rows can be promoted independently to Analysis and Invest.
@@ -4050,7 +4052,7 @@ if page == "PDUFA":
                         grouped_dataframe(invest_rows[detail_cols + tech_cols], stage_controls=False, use_container_width=True, hide_index=True)
 
                 render_analysis_invest_signals()
-                st.caption("Lists are session-only. Invest tracks candidates; it does not place orders.")
+                st.caption("Watch and Trading tags are saved in this browser. Analysis and Invest lists are session-only. None of these labels place broker orders.")
 
                 with st.expander("Additional original-source tables (preserved without unsafe joins)"):
                     for source_name, source_frame in (("FDA regulatory signals", fda_regulatory_signals), ("FDA extensions", fda_extension_ledger), ("FDA facilities", fda_facilities), ("FDA backfill queue", fda_backfill_queue), ("FDA prediction freezes", fda_freezes), ("Historical predictions", prediction_history)):
