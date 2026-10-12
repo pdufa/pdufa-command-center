@@ -13,7 +13,7 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
-from nightly_scan_dashboard import render_nightly_scan_report
+from nightly_scan_dashboard import render_nightly_scan_report, render_adhoc_error_check_controls
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -4975,6 +4975,8 @@ elif page == "9. PREDICTION ENGINE":
 
 elif page == "5. SCANS":
     st.markdown("## 5. SCANS — FIND CHANGES & NEW EVIDENCE")
+    render_adhoc_error_check_controls()
+    st.divider()
 
     # Historical financing scan counter. Prefer the persistent pursuit log when
     # available; otherwise combine the frozen historical universe with the
