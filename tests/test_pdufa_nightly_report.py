@@ -1,8 +1,10 @@
-"""Offline contract tests for the GitHub-published clinical scan report."""
+"""Offline contracts for published clinical scan reports (no external network)."""
 import io
 import json
+import tempfile
 import unittest
 import zipfile
+from pathlib import Path
 from unittest.mock import patch
 
 from scripts import pdufa_scan_audit as audit
@@ -11,44 +13,53 @@ from scripts import pdufa_scan_audit as audit
 def sample_zip(scan="2", *, errors=None, report_status="PARTIAL"):
     errors = errors if errors is not None else []
     report = {
-        "scan": scan,
-        "scan_kind": "CLINICAL_SOURCE_COLLECTION_ONLY",
-        "full_coverage_verified": False,
-        "collector_status": "COMPLETE",
-        "collector_exit_code": 0,
-        "status": report_status,
+        "scan": scan, "scan_kind": "CLINICAL_SOURCE_COLLECTION_ONLY",
+        "full_coverage_verified": False, "collector_status": "COMPLETE",
+        "collector_exit_code": 0, "status": report_status,
         "errors_count": len(errors),
         "created_at_utc": "2026-10-12T09:00:00+00:00",
         "studies_checked": 10,
     }
     state = {"status": "COMPLETE", "errors": errors}
     buf = io.BytesIO()
-    with zipfile.ZipFile(buf, mode="w") as z:
-        z.writestr("reports/nightly-clinical-" + scan + ".json", json.dumps(report))
-        z.writestr("data/" + audit.SCANS[scan][1], json.dumps(state))
+    with zipfile.ZipFile(buf, "w") as archive:
+        archive.writestr("reports/nightly-clinical-" + scan + ".json", json.dumps(report))
+        archive.writestr("data/" + audit.SCANS[scan][1], json.dumps(state))
     return buf.getvalue()
+
+
+def extract_test_archive(path, scan="2", errors=None):
+    with zipfile.ZipFile(io.BytesIO(sample_zip(scan, errors=errors))) as archive:
+        archive.extractall(path)
 
 
 class NightlyScanAuditTests(unittest.TestCase):
     def test_valid_clinical_report_remains_partial(self):
-        with patch.object(audit, "github", return_value=sample_zip()):
-            row = audit.inspect_artifact("2", {"archive_download_url": "https://example.test"}, "fake")
+        with tempfile.TemporaryDirectory() as folder:
+            extract_test_archive(folder)
+            row = audit.inspect_artifact("2", {}, "fake", extracted_dir=folder)
         self.assertEqual(row["status"], "PARTIAL")
         self.assertEqual(row["artifact_integrity"], "PASS")
         self.assertEqual(row["metrics"]["studies_checked"], 10)
         self.assertIsNone(row["new_records"])
 
     def test_absent_archive_is_never_verified(self):
-        with patch.object(audit, "github", side_effect=OSError("unavailable")):
-            row = audit.inspect_artifact("4", {"archive_download_url": "https://example.test"}, "fake")
+        with tempfile.TemporaryDirectory() as folder:
+            row = audit.inspect_artifact("4", {}, "fake", extracted_dir=folder)
         self.assertEqual(row["status"], "UNVERIFIED")
         self.assertEqual(row["artifact_integrity"], "FAILED")
 
     def test_reported_errors_are_checked_against_source(self):
-        with patch.object(audit, "github", return_value=sample_zip(errors=["source down"])):
-            row = audit.inspect_artifact("2", {"archive_download_url": "https://example.test"}, "fake")
+        with tempfile.TemporaryDirectory() as folder:
+            extract_test_archive(folder, errors=["source down"])
+            row = audit.inspect_artifact("2", {}, "fake", extracted_dir=folder)
         self.assertEqual(row["errors_count"], 1)
         self.assertEqual(row["artifact_integrity"], "PASS")
+
+    def test_archive_zip_is_valid_and_readable(self):
+        blob = sample_zip()
+        self.assertEqual(audit.archive_json(blob, "nightly-clinical-2.json")["scan"], "2")
+        self.assertEqual(audit.archive_json(blob, audit.SCANS["2"][1])["status"], "COMPLETE")
 
     def test_unknown_totals_do_not_turn_into_zero(self):
         self.assertIsNone(audit.verified_total(
@@ -57,16 +68,19 @@ class NightlyScanAuditTests(unittest.TestCase):
             [{"new_records": 0}, {"new_records": 5}], "new_records"), 5)
 
     def test_successful_collector_does_not_certify_full_sources(self):
-        result_run = {"conclusion": "success", "html_url": "https://github.com/example/actions/runs/8"}
+        run = {"conclusion": "success", "html_url": "https://github.com/example/actions/runs/8"}
         def mocked_api(path, token):
             if path.endswith("/artifacts?per_page=100"):
                 return {"artifacts": [
                     {"name": "nightly-clinical-2-8", "archive_download_url": "https://example.test"}
                 ]}
-            return result_run
-        with patch.object(audit, "api", side_effect=mocked_api), \
-             patch.object(audit, "github", return_value=sample_zip()):
-            result = audit.gather(8, "fake")
+            return run
+        with tempfile.TemporaryDirectory() as folder:
+            location = Path(folder) / "nightly-clinical-2-8"
+            location.mkdir()
+            extract_test_archive(location)
+            with patch.object(audit, "api", side_effect=mocked_api):
+                result = audit.gather(8, "fake", artifacts_dir=folder)
         self.assertEqual(result["scope"], "CLINICAL_SCANS_2_3_4_ONLY")
         self.assertEqual(result["verification"]["all_source_coverage"], "NOT_VERIFIED")
         self.assertNotEqual(result["status"], "COMPLETE")
