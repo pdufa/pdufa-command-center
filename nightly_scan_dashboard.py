@@ -178,12 +178,14 @@ def render_adhoc_error_check_controls():
             help="Uses your existing scan-control PIN; never written to GitHub logs.",
         )
         authorized = bool(supplied and hmac.compare_digest(supplied, pin))
-        if st.button(
+        clicked = st.button(
             "▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK",
             key="pdufa_adhoc_error_check_button",
             use_container_width=True,
             disabled=not authorized,
-        ):
+        )
+        # Recheck on the server; a disabled UI alone is not authorization.
+        if clicked and authorized:
             try:
                 dispatch_adhoc_error_check(token)
                 latest_adhoc_check_run.clear()
