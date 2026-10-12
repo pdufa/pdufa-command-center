@@ -127,19 +127,32 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
       max-width:100% !important;
       grid-template-columns:repeat(3,minmax(0,33.333333%));
       gap:0 !important;
-      align-items:start;
+      align-items:stretch !important;
     }
+    /* Stretch each Streamlit column's vertical content to the tallest card
+       in its grid row, without forcing a fixed height or hiding content. */
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] {
       box-sizing:border-box !important;
+      display:flex !important;
+      flex-direction:column !important;
+      align-self:stretch !important;
       flex:none !important;
       width:100% !important;
       min-width:0 !important;
       max-width:100% !important;
       padding-inline:0.375rem !important;
     }
+    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
+      display:flex !important;
+      flex-direction:column !important;
+      flex:1 1 auto !important;
+      height:100% !important;
+    }
     .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
     .st-key-overview_post3_panel {
       box-sizing:border-box;
+      flex:1 1 auto;
+      height:100%;
       min-width:0;
       width:100%;
     }
@@ -216,29 +229,30 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
             st.download_button("EXPORT TRADING CANDIDATES", post3.to_csv(index=False).encode(),
                                file_name="unified_trading_candidates.csv", mime="text/csv",
                                key="overview_trading_export")
-            with st.expander("PDUFA TIMELINE", expanded=True):
-                st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
-                fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Date Classification",
-                          "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
-                timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
-                                      post3.reindex(columns=fields)], ignore_index=True)
-                timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
-                timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
-                timeline = sort_pdufa_grid(timeline, display_order)
-                attach_survey(timeline, df)
-                a, b, c = st.columns(3)
-                days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
-                a.metric("Dated programs", len(timeline))
-                b.metric("PDUFA within 30 days", int(days.between(0, 30).sum()))
-                c.metric("Past dates to recheck", int(days.lt(0).sum()))
-                if timeline.empty:
-                    st.info("No dated PDUFA programs match these filters. Undated programs remain in their source panels.")
-                pdufa_dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
-                             column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
-                                            "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
-                st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
-                                   file_name="unified_pdufa_timeline.csv", mime="text/csv",
-                                   key="overview_timeline_export")
+    # Cross-panel timeline belongs below the equal-height cards, not inside #4.
+    with st.expander("PDUFA TIMELINE", expanded=True):
+        st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
+        fields = ["Ticker", "Score /100", "Score type", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed", "Cash Runway (months)", "Date Classification",
+                  "Drug", "NCT ID", "Planned exit (-7 days)", "PDUFA source", "Pipeline source"]
+        timeline = pd.concat([df.reindex(columns=fields), pre3.reindex(columns=fields),
+                              post3.reindex(columns=fields)], ignore_index=True)
+        timeline = timeline.loc[timeline["PDUFA Date"].fillna("").ne("")]
+        timeline = timeline.drop_duplicates(subset=["Ticker", "NCT ID", "Drug", "PDUFA Date"])
+        timeline = sort_pdufa_grid(timeline, display_order)
+        attach_survey(timeline, df)
+        a, b, c = st.columns(3)
+        days = pd.to_numeric(timeline["Days to PDUFA"], errors="coerce")
+        a.metric("Dated programs", len(timeline))
+        b.metric("PDUFA within 30 days", int(days.between(0, 30).sum()))
+        c.metric("Past dates to recheck", int(days.lt(0).sum()))
+        if timeline.empty:
+            st.info("No dated PDUFA programs match these filters. Undated programs remain in their source panels.")
+        pdufa_dataframe(timeline.head(250), hide_index=True, use_container_width=True, height=310,
+                     column_config={"PDUFA source": st.column_config.LinkColumn("PDUFA source"),
+                                    "Pipeline source": st.column_config.LinkColumn("Pipeline source")})
+        st.download_button("EXPORT PDUFA TIMELINE", timeline.to_csv(index=False).encode(),
+                           file_name="unified_pdufa_timeline.csv", mime="text/csv",
+                           key="overview_timeline_export")
 
 
 def render_combined_overview(root="data", *, dashboard=False):
