@@ -62,8 +62,10 @@ class TickerToggleTests(unittest.TestCase):
         self.assertIn('on_click=_toggle, args=(symbol, "trade")', module)
         self.assertIn('render_ticker_toggle_panel("pipeline_2", prepared', app)
         self.assertIn('render_ticker_toggle_panel("pre3_3", tab', app)
-        for marker in ("overview_2", "overview_3", "overview_4", "post3_4"):
-            self.assertIn(f'render_ticker_toggle_panel("{marker}"', unified)
+        # UNIFIED OVERVIEW now embeds W/T controls into its merged HTML
+        # ticker cells. Its source uses a separate POST3 toggle panel.
+        self.assertIn('render_ticker_toggle_panel("post3_4"', unified)
+        self.assertIn('from ticker_toggle_panel import render_ticker_toggle_panel', unified)
         self.assertIn("streamlit-js-eval==1.0.0",
                       (ROOT / "requirements.txt").read_text())
 
