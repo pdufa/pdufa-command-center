@@ -189,6 +189,18 @@ def summarize(checks):
 
 
 def render_site_scorecard():
+    """Side-by-side diagnostics: operations are never mixed with stock inputs."""
+    import streamlit as st
+    from score_input_audit import render_score_input_audit
+
+    ops, inputs = st.tabs(["SITE OPERATIONS", "SCORING INPUTS & OVERLAP"])
+    with ops:
+        render_operational_scorecard()
+    with inputs:
+        render_score_input_audit()
+
+
+def render_operational_scorecard():
     import pandas as pd
     import streamlit as st
 
