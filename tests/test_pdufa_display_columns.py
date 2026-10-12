@@ -84,7 +84,13 @@ class PdufaGridTests(unittest.TestCase):
             with self.subTest(panel=name):
                 start = source.index(f'key="{name}"')
                 self.assertIn(label, source[start:start + 700])
-                self.assertIn("pdufa_dataframe(", source[start:start + 1100])
+                self.assertIn("render_dashboard_sheet(", source[start:start + 1250])
+
+    def test_native_fallback_question_mark_is_not_a_missing_font_glyph(self):
+        self.assertEqual(HELP_ICON, "(?)")
+        self.assertNotIn("\\u20dd", HELP_ICON)
+        header = header_config(pd.DataFrame({"Ticker": ["ABC"]}))["Ticker"]
+        self.assertEqual(header["label"], "Ticker (?)")
 
     def test_pdufa_columns_expand_to_real_header_and_cell_content(self):
         sample = pd.DataFrame({"Ticker": ["ABC"], "Drug": ["Drug"], "Indication": ["Disease"],
