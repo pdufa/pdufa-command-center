@@ -1,0 +1,54 @@
+name: PDUFA Clinical Scan Completion Email
+
+# Run independent of the source collectors, including when a collector fails.
+# Editing this workflow never retriggers clinical scans.
+on:
+  workflow_run:
+    workflows: ["PDUFA One-Time Clinical Scan"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Completed PDUFA One-Time Clinical Scan run ID (manual resend)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: pdufa-end-mail-${{ github.event.workflow_run.id || inputs.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  completion-emails:
+    name: Send three source-honest scan END notifications
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.head_repository.full_name == github.repository
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - name: Checkout notifications code
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate required email secrets without exposing values
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing GitHub Actions secret ${key}. END email cannot be submitted."
+              exit 1
+            fi
+          done
+      - name: Email END for #2 PIPELINE, #3 PRE3 and #4 POST3
+        run: python -m scripts.notify_completed_clinical_run
