@@ -138,6 +138,15 @@ def run_scan(*, scan: str, mode: str, command: list[str],
         duration = max(0, monotonic() - clock_start)
         report, fresh = _fresh_report(status_file, previous_report)
         status, details = summarize_report(report, exit_code, fresh)
+        # #2/#3/#4 must never announce overall COMPLETE just because a
+        # single collector's local CSV inventory says COMPLETE. The future
+        # full-source orchestrator must explicitly attest coverage against
+        # the frozen due-universe ledger.
+        if (status in ("COMPLETE", "COMPLETE WITH WARNINGS")
+                and scan.upper() in {"2", "3", "4", "ALL"}
+                and report.get("full_coverage_verified") is not True):
+            status = "UNVERIFIED"
+            details = details + "; full-source coverage unverified"
         if exception_type:
             details = (details + f"; {exception_type}").strip("; ")
         audit.update({
