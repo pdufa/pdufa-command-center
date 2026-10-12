@@ -409,3 +409,10 @@ jobs:
             reports/missing_sources/
             reports/scan_notifications/
 
+  refresh-prephase3:
+    name: 'Refresh validated PRE PHASE 3 display feed after sources'
+    needs: reconcile
+    if: ${{ always() && needs.reconcile.result == 'success' }}
+    permissions:
+      contents: write
+    uses: ./.github/workflows/step7-live-feed.yml
