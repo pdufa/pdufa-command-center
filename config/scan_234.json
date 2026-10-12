@@ -152,5 +152,55 @@
     "missing required source family",
     "unverified full-program ledger"
   ],
-  "documentation": "docs/SCAN_234_BASELINE_DELTA.md"
+  "documentation": "docs/SCAN_234_BASELINE_DELTA.md",
+  "notification_policy": {
+    "priority": "CRITICAL_REQUIRED_BEFORE_PRODUCTION",
+    "channel": "SMS",
+    "provider": "Twilio (not RingCentral)",
+    "messages_per_scan": 2,
+    "per_scan_scope": "Every individual #2 PIPELINE, #3 PRE3, #4 POST3 and any separately executed source/deep/reconciliation scan",
+    "events": [
+      "START_BEFORE_COLLECTING",
+      "END_AFTER_EXIT_WITH_SOURCE_DATED_RESULTS_OR_FAILURE"
+    ],
+    "end_always_attempted": true,
+    "notify_on": [
+      "COMPLETE",
+      "COMPLETE WITH WARNINGS",
+      "PARTIAL",
+      "FAILED",
+      "UNVERIFIED"
+    ],
+    "summary_fields": [
+      "scan",
+      "mode",
+      "coverage_status",
+      "identities_checked_vs_due",
+      "new",
+      "changed",
+      "warnings",
+      "errors",
+      "duration",
+      "run_id"
+    ],
+    "require_live_sms_configuration_before_start": true,
+    "start_send_failure": "BLOCK_SCAN_AND_AUDIT",
+    "end_send_failure": "MARK_NOTIFICATION_FAILURE_AND_ALERT_IN_AUDIT",
+    "no_fabricated_results": true,
+    "never_claim_delivered_on_provider_acceptance": true,
+    "sender_environment_secrets": [
+      "TWILIO_ACCOUNT_SID",
+      "TWILIO_AUTH_TOKEN",
+      "TWILIO_FROM_NUMBER",
+      "PDUFA_SMS_TO_NUMBER"
+    ],
+    "delivery_status": "NOT_CONFIGURED",
+    "notifications_active": false,
+    "nightly_schedules_restored": false,
+    "implementation": "scripts/run_scan_with_sms.py",
+    "transport": "scripts/scan_sms.py",
+    "test_command": "python -m unittest discover -s tests -p test_scan_sms_notifications.py -v",
+    "sample_invocation": "python scripts/run_scan_with_sms.py --scan 2 --mode BASELINE --status-file data/all_phase_scan_state.json -- python scripts/all_phase_scan.py",
+    "warning": "The sample #2 command is only a clinical collector, not a certified complete #2 baseline. Scan orchestration and source coverage must still be implemented."
+  }
 }
