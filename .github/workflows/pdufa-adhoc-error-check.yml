@@ -8,6 +8,8 @@ on:
       - '.github/workflows/pdufa-adhoc-error-check.yml'
       - 'scripts/adhoc_alert_check.py'
       - 'tests/test_adhoc_alert_check.py'
+      - 'tests/test_adhoc_dispatch.py'
+      - 'nightly_scan_dashboard.py'
       - 'scripts/adhoc_button_live_acceptance.cjs'
   workflow_dispatch:
 
@@ -55,6 +57,21 @@ jobs:
           path: reports/adhoc_alert_check.json
           retention-days: 14
           if-no-files-found: warn
+
+  dispatch-contract:
+    name: Ad hoc PIN and GitHub request contract
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dashboard test imports only
+        run: python -m pip install streamlit pandas
+      - name: Test server-side PIN gate and GitHub POST with synthetic credentials
+        run: python -m unittest discover -s tests -p 'test_adhoc_dispatch.py' -v
 
   live-button:
     name: Live SCANS button and PIN-gate acceptance
