@@ -4075,6 +4075,9 @@ if page == "PDUFA":
 
     with watch_trade_tab:
         if watch_trade_tab.open:
+            # On returning to a native selector, rehydrate any tags changed
+            # inside the embedded Watchlist / Trading screen.
+            st.session_state["_ticker_selections_hydrated"] = False
             render_watch_trade_dashboard()
 
 elif page == "DISEASE & MARKET HORIZON":
