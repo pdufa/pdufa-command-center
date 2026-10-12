@@ -8,7 +8,7 @@ from datetime import date, timedelta
 import pandas as pd
 
 from pdufa_date_gradient import date_color, segment, COUNTDOWN_BANDS
-from pdufa_table_headers import header_config, column_width_for, style_countdown_cells
+from pdufa_table_headers import HELP_ICON, header_config, column_width_for, style_countdown_cells
 from pdufa_display_columns import (
     FRONT, DISPLAY_ORDER_OPTIONS, enrich_exact_trials, finance_style,
     prepare_pdufa_grid, sort_pdufa_grid, sort_pdufa_rows,
@@ -45,12 +45,46 @@ class PdufaGridTests(unittest.TestCase):
             with self.subTest(name=name):
                 sample = pd.DataFrame({name: [90], "Ticker": ["XYZ"]})
                 header = header_config(sample)[name]
-                self.assertEqual(header["label"].split(" ", 1)[1], "Days to PDUFA")
+                self.assertEqual(header["label"], f"Days to PDUFA {HELP_ICON}")
+                self.assertFalse(header["label"].startswith(HELP_ICON))
                 self.assertNotIn("\\n", header["label"])
                 self.assertGreater(header["width"], 100)
                 for band in ("+90", "90–60", "59–30", "29–0"):
                     self.assertNotIn(band, header["label"])
                 self.assertIn("past", header["help"].lower())
+
+    def test_circled_question_mark_follows_each_header_inline(self):
+        # The shared header builder is used by all three dashboard tables:
+        # #2 PIPELINE, #3 PRE3 and #4 POST3.
+        for title in ("Ticker", "Drug", "Indication", "Score /100",
+                      "PDUFA Date", "Days to PDUFA", "F",
+                      "Cash Runway (months)"):
+            with self.subTest(title=title):
+                sample = pd.DataFrame({title: ["VALUE"]})
+                entry = header_config(sample)[title]
+                self.assertEqual(entry["label"], f"{title} {HELP_ICON}")
+                self.assertEqual(entry["label"].count(HELP_ICON), 1)
+                self.assertFalse(entry["label"].startswith(HELP_ICON))
+                self.assertTrue(entry["help"])
+        configured = header_config(
+            pd.DataFrame({"Ticker": ["XYZ"]}),
+            {"Ticker": {"label": f"Symbol {HELP_ICON}", "help": "Issuer ID"}},
+        )
+        self.assertEqual(configured["Ticker"]["label"], f"Symbol {HELP_ICON}")
+        self.assertEqual(configured["Ticker"]["help"], "Issuer ID")
+
+    def test_unified_panels_share_right_side_help_headers(self):
+        source = (Path(__file__).resolve().parents[1]
+                  / "unified_clinical_trading.py").read_text(encoding="utf-8")
+        for name, label in (
+            ("overview_pipeline_panel", "#2-PIPELINE"),
+            ("overview_pre3_panel", "#3-PRE3"),
+            ("overview_post3_panel", "#4-POST3"),
+        ):
+            with self.subTest(panel=name):
+                start = source.index(f'key="{name}"')
+                self.assertIn(label, source[start:start + 700])
+                self.assertIn("pdufa_dataframe(", source[start:start + 1100])
 
     def test_pdufa_columns_expand_to_real_header_and_cell_content(self):
         sample = pd.DataFrame({"Ticker": ["ABC"], "Drug": ["Drug"], "Indication": ["Disease"],
