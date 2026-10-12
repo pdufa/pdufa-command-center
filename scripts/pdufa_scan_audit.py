@@ -7,6 +7,8 @@ import argparse
 import io
 import json
 import os
+import subprocess
+import tempfile
 import urllib.request
 import zipfile
 from datetime import datetime, timezone
@@ -66,11 +68,39 @@ def archive_json(blob, basename):
         return result
 
 
+def directory_json(root, basename):
+    """Read a validated JSON member from an extracted GitHub Actions artifact."""
+    matches = [p for p in Path(root).rglob(basename) if p.is_file()]
+    if len(matches) != 1:
+        raise ValueError("Missing or ambiguous " + basename)
+    if matches[0].stat().st_size > MAX_JSON:
+        raise ValueError("Report JSON is too large")
+    data = json.loads(matches[0].read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("Report JSON is not an object")
+    return data
+
+
+def gh_artifact_dir(run_id, artifact_name, token, destination):
+    """Use GitHub CLI's supported artifact redirect handling, not urllib."""
+    destination = Path(destination)
+    destination.mkdir(parents=True, exist_ok=True)
+    env = dict(os.environ, GH_TOKEN=token)
+    result = subprocess.run(
+        ["gh", "run", "download", str(run_id), "--repo", REPO,
+         "--name", artifact_name, "--dir", str(destination)],
+        capture_output=True, text=True, timeout=180, env=env, check=False,
+    )
+    if result.returncode:
+        raise RuntimeError("GitHub artifact download failed: " + result.stderr[-700:])
+    return destination
+
+
 def nonnegative_count(value):
     return type(value) is int and value >= 0
 
 
-def inspect_artifact(scan, artifact, token):
+def inspect_artifact(scan, artifact, token, *, extracted_dir=None):
     row = {
         "scan": scan, "label": SCANS[scan][0], "status": "UNVERIFIED",
         "artifact_integrity": "NOT_CHECKED", "run_id": None,
@@ -78,9 +108,17 @@ def inspect_artifact(scan, artifact, token):
         "errors_count": None, "issues": [], "metrics": {},
     }
     try:
-        blob = github(artifact["archive_download_url"], token)
-        report = archive_json(blob, "nightly-clinical-" + scan + ".json")
-        state = archive_json(blob, SCANS[scan][1])
+        if extracted_dir is not None:
+            report = directory_json(extracted_dir, "nightly-clinical-" + scan + ".json")
+            state = directory_json(extracted_dir, SCANS[scan][1])
+        else:
+            with tempfile.TemporaryDirectory(prefix="pdufa-scan-audit-") as folder:
+                path = gh_artifact_dir(
+                    artifact["workflow_run"]["id"] if isinstance(artifact.get("workflow_run"), dict)
+                    else artifact.get("_source_run_id"),
+                    artifact["name"], token, folder)
+                report = directory_json(path, "nightly-clinical-" + scan + ".json")
+                state = directory_json(path, SCANS[scan][1])
         issues = []
         if str(report.get("scan")) != scan:
             issues.append("Scan identifier differs from artifact identifier")
@@ -151,7 +189,7 @@ def verified_total(rows, key):
     return sum(values) if values and all(nonnegative_count(v) for v in values) else None
 
 
-def gather(run_id, token, prior=None):
+def gather(run_id, token, prior=None, *, artifacts_dir=None):
     run = api("/actions/runs/" + str(run_id), token)
     artifacts = api("/actions/runs/" + str(run_id) + "/artifacts?per_page=100", token)
     prior = prior if isinstance(prior, dict) else {}
@@ -166,14 +204,17 @@ def gather(run_id, token, prior=None):
     rows = []
     for scan, (label, _) in SCANS.items():
         if scan in artifact_map:
-            row = inspect_artifact(scan, artifact_map[scan], token)
+            artifact = dict(artifact_map[scan], _source_run_id=int(run_id))
+            extracted = (Path(artifacts_dir) / artifact["name"]) if artifacts_dir else None
+            row = inspect_artifact(scan, artifact, token, extracted_dir=extracted)
             row["run_id"] = int(run_id)
             row["run_url"] = run.get("html_url")
         elif scan in old_rows:
             earlier = old_rows[scan]
             archived = previous_artifact(scan, earlier, token)
             if archived is not None:
-                row = inspect_artifact(scan, archived, token)
+                artifact = dict(archived, _source_run_id=earlier.get("run_id"))
+                row = inspect_artifact(scan, artifact, token)
                 row["run_id"] = earlier.get("run_id")
                 row["run_url"] = earlier.get("run_url")
             else:
@@ -235,6 +276,8 @@ def main():
     p.add_argument("--out", type=Path, default=Path("data/nightly_scan_report.json"))
     p.add_argument("--only-scan", choices=["ALL", "2", "3", "4"], default="ALL")
     p.add_argument("--verify-only", action="store_true")
+    p.add_argument("--artifacts-dir", type=Path, default=None,
+                   help="Locally extracted Actions artifacts (one directory per artifact name)")
     args = p.parse_args()
     token = os.environ.get("GITHUB_TOKEN", "")
     if not token:
@@ -245,7 +288,7 @@ def main():
             prior = json.loads(args.out.read_text(encoding="utf-8"))
         except (ValueError, OSError):
             pass
-    result = gather(args.run_id, token, prior=prior)
+    result = gather(args.run_id, token, prior=prior, artifacts_dir=args.artifacts_dir)
     if args.verify_only and args.only_scan != "ALL":
         keep = {r["scan"]: r for r in prior.get("scans", [])}
         result["scans"] = [r if r["scan"] == args.only_scan else keep.get(r["scan"], r)
