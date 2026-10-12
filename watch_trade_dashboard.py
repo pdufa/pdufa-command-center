@@ -78,7 +78,7 @@ button.active{background:#22863a;color:white}
 </head>
 <body>
 <main>
-  <p class="description">Press <b>W</b> or <b>T</b> before a ticker in #2 PIPELINE, #3 PRE3 or #4 POST3. In Watchlist, click the <b>ticker name</b> or <b>MOVE TO TRADE</b> to move that ticker and its chart to Trading (not duplicate it). Each Trading chart starts from its own tracking date. Use <b>FULL CHART</b> for the larger technical chart.</p>
+  <p class="description">Press <b>W</b> or <b>T</b> before a ticker in #2 PIPELINE, #3 PRE3 or #4 POST3. Click a <b>Watchlist ticker</b> (or MOVE TO TRADE) to move it into Trading. Click a <b>Trading ticker</b> (or REMOVE T) to return it to Watchlist. Each move transfers the ticker and its chart without duplicates. Use <b>FULL CHART</b> for the larger technical chart.</p>
   <div class="controls"><button id="refresh" type="button">↻ Sync lists</button><span id="sync-status" aria-live="polite"></span></div>
   <section aria-label="Watchlist">
     <div class="title"><h2>WATCHLIST</h2><span class="count" id="watch-count">0 tickers</span></div>
@@ -90,7 +90,7 @@ button.active{background:#22863a;color:white}
     <div class="header"><span>Ticker / Actions</span><span>Attached Stock Chart</span></div>
     <div id="trade-rows" aria-live="polite"></div>
   </section>
-  <p class="note">Moving a Watchlist ticker to Trading clears its W tag and sets its T tag in one action. Existing Trading tracking times are preserved; a new Trading selection starts tracking when moved. This does not place a broker order. Start times are saved locally in this browser and are not execution timestamps. TradingView compact ranges are approximate, quotes may be delayed, and FULL CHART loads the interactive technical chart only on demand.</p>
+  <p class="note">Moving a Watchlist ticker to Trading clears W and adds T; removing a Trading ticker clears T and returns it to Watchlist. The destination's prior tracking time is preserved if present, otherwise a new tracking time starts. This does not place a broker order. Start times are saved locally in this browser and are not execution timestamps. TradingView compact ranges are approximate, quotes may be delayed, and FULL CHART loads the interactive technical chart only on demand.</p>
 </main>
 <script>
 (() => {
@@ -261,14 +261,18 @@ button.active{background:#22863a;color:white}
     row.className = 'stock';
     const identity = document.createElement('div');
     identity.className = 'identity';
-    const symbol = document.createElement(kind === 'watch' ? 'button' : 'strong');
-    symbol.className = kind === 'watch' ? 'symbol ticker-move' : 'symbol';
+    const symbol = document.createElement('button');
+    symbol.className = 'symbol ticker-move';
+    symbol.type = 'button';
     symbol.textContent = ticker;
     if (kind === 'watch') {
-      symbol.type = 'button';
       symbol.title = 'Move '+ticker+' from Watchlist into Trading';
       symbol.setAttribute('aria-label','Move '+ticker+' from Watchlist into Trading');
       symbol.addEventListener('click',()=>promoteToTrade(ticker));
+    } else {
+      symbol.title = 'Return '+ticker+' from Trading into Watchlist';
+      symbol.setAttribute('aria-label','Return '+ticker+' from Trading into Watchlist');
+      symbol.addEventListener('click',()=>returnToWatch(ticker));
     }
     const time = document.createElement('div');
     time.className = 'started';
@@ -341,7 +345,7 @@ button.active{background:#22863a;color:white}
         empty.className = 'empty';
         empty.textContent = kind === 'watch'
           ? 'No watchlist tickers. Press W beside a ticker in #2, #3 or #4.'
-          : 'No trade tickers. Press T in #2, #3 or #4, or + TRADE beside a watchlist ticker.';
+          : 'No trade tickers. Press T in #2, #3 or #4, or MOVE TO TRADE beside a watchlist ticker.';
         replacement.append(empty);
       }
       bucket.replaceChildren(replacement);
@@ -375,8 +379,8 @@ button.active{background:#22863a;color:white}
         makeButton('REMOVE W','Remove '+ticker+' from Watchlist',()=>toggle('watch',ticker))
       );
     } else {
-      actions.append(makeButton('REMOVE T','Remove '+ticker+' from Trading list',
-        ()=>toggle('trade',ticker)));
+      actions.append(makeButton('REMOVE T','Remove '+ticker+' from Trading and return to Watchlist',
+        ()=>returnToWatch(ticker)));
     }
     return actions;
   }
@@ -430,6 +434,32 @@ button.active{background:#22863a;color:white}
     if (moved) mountChart(moved.querySelector('.chart'));
     document.getElementById('sync-status').textContent =
       ticker+' moved to Trading · Watch '+selected.watch.length+' · Trade '+selected.trade.length;
+    if (channel) channel.postMessage(selected);
+  }
+
+  function returnToWatch(ticker) {
+    if (!tickerPattern.test(ticker)) return;
+    // Merge current selection; repeated clicks cannot toggle off Watchlist.
+    const current = normalize(get(KEY));
+    if (current) selected = current;
+    started = parseStarts();
+    const trade = new Set(selected.trade);
+    if (!trade.has(ticker)) return;
+    trade.delete(ticker);
+    const watch = new Set(selected.watch);
+    watch.add(ticker);
+    selected.trade = [...trade].sort();
+    selected.watch = [...watch].sort();
+    delete started.trade[ticker];
+    if (!started.watch[ticker]) started.watch[ticker] = new Date().toISOString();
+    save(START_KEY,started);
+    save(KEY,selected);
+    render(); // Trading row/chart disappear; Watchlist row/chart appear.
+    const key = 'watch|'+ticker+'|'+started.watch[ticker];
+    const returned = createdRows.get(key);
+    if (returned) mountChart(returned.querySelector('.chart'));
+    document.getElementById('sync-status').textContent =
+      ticker+' returned to Watchlist · Watch '+selected.watch.length+' · Trade '+selected.trade.length;
     if (channel) channel.postMessage(selected);
   }
 
