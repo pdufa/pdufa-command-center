@@ -16,6 +16,7 @@ on:
       - "post_phase3_priority.py"
       - "post_phase3_workspace.py"
       - "data/step7_financing_review.csv"
+      - "data/step7_live_status.json"
       - "data/pdufa_candidates.csv"
       - "step7_live.py"
       - "data/pre_readout_intake_status.json"
