@@ -30,7 +30,7 @@ class TimelineLegendTests(unittest.TestCase):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
         self.assertIn(
-            'pipeline_col, pre3_col, post3_col = st.columns(3, gap="small")',
+            'pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1], gap="small")',
             source,
         )
         for column, panel in (
@@ -49,11 +49,14 @@ class TimelineLegendTests(unittest.TestCase):
         self.assertLess(source.index("with pre3_col"),
                         source.index("with post3_col"))
         # Three across on large screens; wrap to two then one on narrower screens.
-        self.assertIn("grid-template-columns:repeat(3,minmax(0,1fr))", source)
+        self.assertIn("grid-template-columns:repeat(3,minmax(0,33.333333%))", source)
         self.assertIn("@media (max-width:1250px)", source)
-        self.assertIn("grid-template-columns:repeat(2,minmax(0,1fr))", source)
+        self.assertIn("grid-template-columns:repeat(2,minmax(0,50%))", source)
         self.assertIn("@media (max-width:800px)", source)
-        self.assertIn("grid-template-columns:minmax(0,1fr)", source)
+        self.assertIn("grid-template-columns:minmax(0,100%)", source)
+        self.assertIn('width:100% !important;', source)
+        self.assertIn('gap:0 !important;', source)
+        self.assertIn('padding-inline:0.375rem !important;', source)
         # Only the overview row wraps; nested PDUFA timeline metrics do not.
         self.assertIn(":has(.st-key-overview_pipeline_panel)", source)
         self.assertIn('a, b, c = st.columns(3)', source)
