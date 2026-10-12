@@ -89,6 +89,33 @@ class MissingSourceTests(unittest.TestCase):
             self.assertEqual(outcome["events_checked"], 1)
             self.assertGreater(outcome["source_issue_count"], 0)
 
+    def test_sec_report_separates_review_from_actual_blockages(self):
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root)
+            rows(folder / "pdufa_candidates.csv", [
+                {"event_key": "AAA|DRUG", "ticker": "AAA"},
+                {"event_key": "BBB|DRUG", "ticker": "BBB"},
+                {"event_key": "CCC|DRUG", "ticker": "CCC"}])
+            rows(folder / "recheck_status.csv", [
+                {"event_key": "AAA|DRUG", "ticker": "AAA",
+                 "requested_scope": "ALL", "financing_status": "NO_SOURCE",
+                 "ownership_insiders_status": "SEC_FILINGS_CHECKED"},
+                {"event_key": "BBB|DRUG", "ticker": "BBB",
+                 "requested_scope": "ALL", "financing_status": "PARTIAL_SOURCE_REVIEW",
+                 "ownership_insiders_status": "SEC_FILINGS_CHECKED"},
+                {"event_key": "CCC|DRUG", "ticker": "CCC",
+                 "requested_scope": "ALL", "financing_status": "SOURCE_BLOCKED_RETAINED",
+                 "ownership_insiders_status": "SEC_FILINGS_CHECKED"}])
+            class Done:
+                returncode = 0
+            with patch.object(scan.subprocess, "run", return_value=Done()):
+                result = scan.recheck("SEC", folder, folder / "artifact")
+            self.assertEqual(result["source_issue_count"], 3)
+            self.assertEqual(result["source_technical_failure_count"], 1)
+            self.assertEqual(result["source_review_only_count"], 2)
+            self.assertEqual(len(result["source_issue_examples"]), 3)
+            self.assertEqual(result["source_issue_breakdown"]["financing:NO_SOURCE"], 1)
+
     def test_combined_audit_report_stays_partial(self):
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root)
