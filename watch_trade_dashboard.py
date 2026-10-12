@@ -225,7 +225,8 @@ button.active{background:#22863a;color:white}
     waiting.textContent = 'Loading '+ticker+' stock chart…';
     chart.append(waiting);
     row.append(identity,chart);
-    if (observer) observer.observe(chart); else mountChart(chart);
+    if (observer) observer.observe(chart);
+    else window.setTimeout(() => mountChart(chart), 0);
     return row;
   }
   function render() {
