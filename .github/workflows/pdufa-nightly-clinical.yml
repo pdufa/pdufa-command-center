@@ -27,7 +27,6 @@ concurrency:
 
 jobs:
   collect:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
     name: 'PDUFA #${{ matrix.scan }} ${{ matrix.label }} — notified scan'
     runs-on: ubuntu-latest
     timeout-minutes: 125
@@ -50,14 +49,18 @@ jobs:
       PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
     steps:
       - name: Checkout saved clinical source snapshots
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
         uses: actions/checkout@v4
       - name: Set up Python
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install ClinicalTrials.gov collector dependency
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
         run: python -m pip install requests
       - name: Verify email settings exist before any scanning
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
         shell: bash
         run: |
           for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
@@ -67,6 +70,7 @@ jobs:
             fi
           done
       - name: Submit START email, scan evidence, submit END email
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan }}
         id: scan
         shell: bash
         run: |
@@ -87,7 +91,7 @@ jobs:
           fi
           exit "$exit_code"
       - name: Archive scan results, source status and notification audit
-        if: always()
+        if: ${{ always() && (github.event_name != 'workflow_dispatch' || inputs.scan == 'ALL' || inputs.scan == matrix.scan) }}
         uses: actions/upload-artifact@v4
         with:
           name: nightly-clinical-${{ matrix.scan }}-${{ github.run_id }}
