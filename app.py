@@ -2289,7 +2289,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .merged-pdufa-table{border-collapse:separate;border-spacing:0;background:#fff;color:#111;width:100%%;table-layout:fixed;font-size:13px}
     .merged-pdufa-table th,.merged-pdufa-table td{border-right:1px solid #777;border-bottom:1px solid #777;padding:6px 8px;text-align:center;color:#111;background:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .merged-pdufa-table th.normal-head{white-space:normal;overflow-wrap:anywhere}
-    .merged-pdufa-table th.countdown-head{min-width:20px;width:20px;max-width:20px;background:#fff !important;background-image:none !important;color:#111 !important}
+    .merged-pdufa-table th.countdown-head{min-width:50px;width:50px;max-width:50px;background:#fff !important;background-image:none !important;color:#111 !important}
     .merged-pdufa-table td.ticker-cell,.merged-pdufa-table th.ticker-head{width:88px}
     .merged-pdufa-table th{position:sticky;top:0;z-index:4;background:#f4f4f4}
     .merged-pdufa-table th.normal-head{height:158px;vertical-align:bottom;font-weight:700}
@@ -2342,12 +2342,12 @@ def _render_merged_table_panel(frame, heading, height_px=690):
     .help-icon:hover,.help-icon:focus{background:#111;color:#fff;border-color:#111;outline:none}
     .sort-icon{display:inline-block;margin-left:5px;padding:2px 5px;border:2px solid #000;border-radius:5px;background:#fff;color:#000;font-size:15px;line-height:1;font-weight:900;vertical-align:middle}
 
-    /* Exactly 20px per column; long headings grow vertically rather than widening. */
+    /* Exactly 50px per column; long headings grow vertically rather than widening. */
     .merged-pdufa-table{table-layout:fixed;min-width:0}
-    .merged-pdufa-table col{width:20px}
+    .merged-pdufa-table col{width:50px}
     .merged-pdufa-table th:not([colspan]),.merged-pdufa-table td{
-      box-sizing:border-box;width:20px !important;min-width:20px !important;
-      max-width:20px !important;padding:2px 0 !important}
+      box-sizing:border-box;width:50px !important;min-width:50px !important;
+      max-width:50px !important;padding:2px 0 !important}
     .merged-pdufa-table th{
       height:auto !important;vertical-align:top !important;white-space:normal !important;
       overflow:visible !important;text-overflow:clip !important;
@@ -2364,7 +2364,7 @@ def _render_merged_table_panel(frame, heading, height_px=690):
       display:flex !important;flex-direction:column;align-items:center;gap:2px;width:100%%}
     .merged-pdufa-table .sort-head{
       display:flex !important;flex-direction:column;align-items:center;gap:2px;
-      width:100%%;max-width:20px;padding:0 !important;white-space:normal !important;
+      width:100%%;max-width:50px;padding:0 !important;white-space:normal !important;
       overflow-wrap:anywhere !important;word-break:break-word !important;font-size:9px !important}
     .merged-pdufa-table .sort-label{
       display:block;width:100%%;white-space:normal !important;
