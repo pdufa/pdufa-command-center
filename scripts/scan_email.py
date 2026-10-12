@@ -115,7 +115,6 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         ("source_issue_count", "Sources needing review"),
         ("source_technical_failure_count", "Blocked/failed source checks"),
         ("source_review_only_count", "Evidence gaps / review checks"),
-        ("source_review_count", "Evidence gaps / review checks"),
         ("feeds_checked", "Issuer feeds checked"),
         ("issuer_news_candidates", "News items discovered (unverified)"),
         ("issuer_press_releases_verified", "Issuer releases verified"),
