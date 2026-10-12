@@ -35,12 +35,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Download archived clinical scan evidence from source run
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
+          pattern: nightly-clinical-*
+          path: reports/downloaded_nightly_scans
+          merge-multiple: false
       - name: Build source-validated nightly report
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SOURCE_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run_id || github.event.workflow_run.id }}
         run: |
-          python scripts/pdufa_scan_audit.py --run-id "$SOURCE_RUN_ID" --out data/nightly_scan_report.json
+          python scripts/pdufa_scan_audit.py --run-id "$SOURCE_RUN_ID" --out data/nightly_scan_report.json --artifacts-dir reports/downloaded_nightly_scans
       - name: Commit Streamlit-visible report
         run: |
           git config user.name "github-actions[bot]"
