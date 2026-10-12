@@ -66,18 +66,15 @@ class SurveillanceScheduleTests(unittest.TestCase):
         self.assertEqual(record["step_outcomes"]["recheck_weekly"], "skipped")
         self.assertEqual(record["required_steps"], list(REQUIRED_STEPS["daily"]))
 
-    def test_workflow_declares_single_local_timezone_trigger_per_cadence(self):
-        flow = (Path(__file__).resolve().parents[1] /
-                ".github/workflows/surveillance.yml").read_text(encoding="utf-8")
-        for cron in SCHEDULES:
-            self.assertIn(f'cron: "{cron}"\n      timezone: "America/Los_Angeles"', flow)
-        self.assertEqual(flow.count('timezone: "America/Los_Angeles"'), 3)
-        self.assertNotIn('local_hm=', flow)
-        self.assertIn('python scripts/surveillance_schedule.py --resolve', flow)
-        self.assertIn('python scripts/surveillance_schedule.py --record', flow)
-        for step in {name for items in REQUIRED_STEPS.values() for name in items}:
-            self.assertIn(f'id: {step}', flow)
-        self.assertIn("git add -A data", flow)
+    def test_legacy_surveillance_workflow_removed_until_verified_baseline(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertFalse((root / ".github/workflows/surveillance.yml").exists())
+        # Keep the date resolver as historical source code, but no scheduled
+        # scanner may restart while coverage and SMS transport are unverified.
+        self.assertTrue((root / "scripts/surveillance_schedule.py").is_file())
+        config = (root / "config/scan_234.json").read_text(encoding="utf-8")
+        self.assertIn('"automation_enabled": false', config)
+        self.assertIn('"notifications_active": false', config)
 
 
 if __name__ == "__main__":
