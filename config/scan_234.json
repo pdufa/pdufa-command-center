@@ -230,5 +230,34 @@
     "output_delivery": "Gmail START/END plus 30-day GitHub Actions artifacts",
     "production_dashboard_updates_automatic": false,
     "limitations": "Full-source baseline (FDA, SEC, issuer, cash, market, identity audit) remains unverified; do not set automation_enabled=true until that distinct baseline is actually implemented and verified."
+  },
+  "extended_source_schedule": {
+    "enabled": true,
+    "workflow": ".github/workflows/pdufa-nightly-missing-sources.yml",
+    "immediate_launch": "Triggered by initial workflow file push on 2026-10-11",
+    "nightly_cron_utc": "30 9 * * *",
+    "pacific_daylight_time": "02:30",
+    "pacific_standard_time": "01:30",
+    "jobs": [
+      "FDA",
+      "SEC",
+      "FINANCIAL",
+      "MARKET",
+      "ISSUER",
+      "AUDIT"
+    ],
+    "uses": "scripts/nightly_missing_sources.py and scripts/recheck_events.py",
+    "email_start_and_end": true,
+    "results_location": "GitHub Actions artifacts (30-day retention)",
+    "full_source_coverage_verified": false,
+    "production_dashboard_auto_ingest": false,
+    "scope_limitations": [
+      "FDA recheck limited to source links and exact saved PDUFA events; not a complete FDA application ledger",
+      "SEC event financing/ownership recheck plus registry filings index; closings require exhibit review",
+      "FINANCIAL event-linked SEC cash/runway checks, not independent full financial reconciliation",
+      "MARKET event-linked delayed quotes/volume; short/borrow/IV unsupported",
+      "ISSUER Google News RSS discovery only; no primary issuer release verification",
+      "AUDIT reconciles only this workflow's five available manifests; clinical status and independent full-program verification remain separate"
+    ]
   }
 }
