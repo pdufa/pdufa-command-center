@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError
+from types import SimpleNamespace
 
 from scripts import nightly_missing_sources as scan
 
@@ -18,6 +19,21 @@ def rows(path, records):
         writer.writerows(records)
 
 
+def seed_scope(folder):
+    rows(folder / "pdufa_candidates.csv", [{"event_key": "ABC|DRUG", "ticker": "ABC", "drug": "Drug"}])
+    rows(folder / "company_registry.csv", [{"ticker": "ABC", "cik10": "0000000001"}])
+
+
+def finish_recheck(folder, command, **kwargs):
+    records = scan.read_rows(folder / "recheck_status.csv")
+    for record in records:
+        record["execution_id"] = command[command.index("--run-id") + 1]
+        record["completed_at_utc"] = scan.now()
+        record["run_status"] = "COMPLETED_WITH_ERRORS"
+    rows(folder / "recheck_status.csv", records)
+    return SimpleNamespace(returncode=0)
+
+
 class MissingSourceTests(unittest.TestCase):
     def test_source_families_are_separate_and_not_full_baseline(self):
         self.assertEqual(set(scan.CATS), {"FDA", "SEC", "FINANCIAL", "MARKET"})
@@ -27,12 +43,14 @@ class MissingSourceTests(unittest.TestCase):
     def test_coverage_requires_all_manifests(self):
         with tempfile.TemporaryDirectory() as root:
             output = Path(root)
-            data = scan.coverage(output)
+            seed_scope(output)
+            data = scan.coverage(output, output)
             self.assertEqual(data["sources_passed"], 0)
             self.assertEqual(len(data["missing_required_source_families"]), 5)
             (output / "fda_scan_report.json").write_text('{"status":"COMPLETE"}')
-            data = scan.coverage(output)
-            self.assertEqual(data["sources_passed"], 1)
+            data = scan.coverage(output, output)
+            self.assertEqual(data["sources_passed"], 0)
+            self.assertIn("FDA", data["manifest_rejections"])
             self.assertIn("ISSUER", data["missing_required_source_families"])
 
     def test_sec_http_403_circuit_breaker_preserves_all_registry_ids(self):
@@ -79,9 +97,7 @@ class MissingSourceTests(unittest.TestCase):
                 {"event_key": "ABC|DRUG", "requested_scope": "ALL",
                  "run_status": "COMPLETED_WITH_ERRORS",
                  "pdufa_date_status": "SOURCE_BLOCKED_RETAINED"}])
-            class Done:
-                returncode = 0
-            with patch.object(scan.subprocess, "run", return_value=Done()) as execution:
+            with patch.object(scan.subprocess, "run", side_effect=lambda command, **kw: finish_recheck(folder, command, **kw)) as execution:
                 outcome = scan.recheck("FDA", folder, folder / "audit")
             command = execution.call_args.args[0]
             self.assertIn("--all", command)
@@ -106,9 +122,7 @@ class MissingSourceTests(unittest.TestCase):
                 {"event_key": "CCC|DRUG", "ticker": "CCC",
                  "requested_scope": "ALL", "financing_status": "SOURCE_BLOCKED_RETAINED",
                  "ownership_insiders_status": "SEC_FILINGS_CHECKED"}])
-            class Done:
-                returncode = 0
-            with patch.object(scan.subprocess, "run", return_value=Done()):
+            with patch.object(scan.subprocess, "run", side_effect=lambda command, **kw: finish_recheck(folder, command, **kw)):
                 result = scan.recheck("SEC", folder, folder / "artifact")
             self.assertEqual(result["source_issue_count"], 3)
             self.assertEqual(result["source_technical_failure_count"], 1)
@@ -119,6 +133,7 @@ class MissingSourceTests(unittest.TestCase):
     def test_combined_audit_report_stays_partial(self):
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root)
+            seed_scope(folder)
             report = folder / "coverage.json"
             code = scan.main(["--source", "AUDIT",
                               "--data-dir", str(folder),
@@ -130,6 +145,20 @@ class MissingSourceTests(unittest.TestCase):
             self.assertFalse(state["full_coverage_verified"])
             self.assertEqual(state["sources_passed"], 0)
 
+    def test_stale_recheck_rows_do_not_count_as_current_collection(self):
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root)
+            seed_scope(folder)
+            rows(folder / "recheck_status.csv", [{
+                "event_key": "ABC|DRUG", "requested_scope": "ALL",
+                "run_status": "COMPLETED", "execution_id": "old-run",
+                "completed_at_utc": scan.now(), "pdufa_date_status": "FINAL_DECISION_VERIFIED"}])
+            with patch.object(scan.subprocess, "run", return_value=SimpleNamespace(returncode=0)):
+                outcome = scan.recheck("FDA", folder, folder / "out")
+            self.assertEqual(outcome["events_checked"], 0)
+            self.assertEqual(outcome["collection_missing_event_keys"], ["ABC|DRUG"])
+
 
 if __name__ == "__main__":
     unittest.main()
+

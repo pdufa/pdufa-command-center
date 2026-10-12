@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, csv, html, json, os, re, time, urllib.parse, urllib.request
+import argparse, csv, html, json, os, re, time, urllib.parse, urllib.request, uuid
 from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
@@ -13,7 +13,7 @@ STATUS=DATA/"recheck_status.csv"
 # No user contact is embedded in the repository.
 UA=os.environ.get("SEC_USER_AGENT", "").strip() or "PDUFACommandCenter/1.0 pdufa-command-center@users.noreply.github.com"
 CATS=["pdufa_date","phase3","financing","cash_runway","market_data","ownership_insiders"]
-BASE=["event_key","ticker","company","drug","pdufa_date","run_status","requested_scope","started_at_utc","completed_at_utc","last_successful_recheck_utc","change_count","error_count"]
+BASE=["event_key","ticker","company","drug","pdufa_date","run_status","requested_scope","execution_id","started_at_utc","completed_at_utc","last_successful_recheck_utc","change_count","error_count"]
 COLS=BASE+sum(([c+"_status",c+"_note",c+"_source"] for c in CATS),[])
 
 def now():
@@ -281,10 +281,16 @@ def setv(df,i,k,v):
     df.at[i,k]=nv; return 1
 
 def main():
+    global DATA, CAND, REG, STATUS
     ap=argparse.ArgumentParser()
+    ap.add_argument("--data-dir", type=Path)
+    ap.add_argument("--run-id", default=str(uuid.uuid4()))
     ap.add_argument("--event-key",action="append",default=[]); ap.add_argument("--ticker",action="append",default=[])
     ap.add_argument("--all",action="store_true"); ap.add_argument("--categories",default=",".join(CATS)); ap.add_argument("--no-sleep",action="store_true")
-    a=ap.parse_args(); c=load(CAND).drop_duplicates("event_key",keep="last").reset_index(drop=True); st=status_frame(c); cm=cik_map()
+    a=ap.parse_args()
+    if a.data_dir is not None:
+        DATA=a.data_dir; CAND=DATA/"pdufa_candidates.csv"; REG=DATA/"company_registry.csv"; STATUS=DATA/"recheck_status.csv"
+    c=load(CAND).drop_duplicates("event_key",keep="last").reset_index(drop=True); st=status_frame(c); cm=cik_map()
     cats=[x for x in a.categories.split(",") if x]; bad=[x for x in cats if x not in CATS]
     if bad: raise SystemExit("unknown categories: "+",".join(bad))
     if a.all: ids=list(c.index); scope="ALL"
@@ -299,7 +305,7 @@ def main():
     for n,i in enumerate(ids,1):
         r=c.loc[i]; key=s(r["event_key"]); q=st.index[st["event_key"].eq(key)]
         if len(q)!=1: raise SystemExit("status mismatch for "+key)
-        j=q[0]; st.at[j,"run_status"]="RUNNING"; st.at[j,"requested_scope"]=scope; st.at[j,"started_at_utc"]=started
+        j=q[0]; st.at[j,"run_status"]="RUNNING"; st.at[j,"requested_scope"]=scope; st.at[j,"execution_id"]=a.run_id; st.at[j,"started_at_utc"]=started
         cik=cm.get(s(r["ticker"]).upper(),""); files=[]; sub=""; secerr=""
         if "financing" in cats or "ownership_insiders" in cats:
             try: files,sub=sec_filings(cik)
@@ -341,3 +347,4 @@ def main():
 
 if __name__=="__main__":
     main()
+

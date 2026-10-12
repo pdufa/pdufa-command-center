@@ -115,6 +115,11 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         ("source_issue_count", "Sources needing review"),
         ("source_technical_failure_count", "Blocked/failed source checks"),
         ("source_review_only_count", "Evidence gaps / review checks"),
+        ("findings_verified", "Findings verified"),
+        ("findings_due", "Findings requiring verification"),
+        ("findings_unresolved", "Unresolved findings"),
+        ("findings_conflicted", "Conflicting findings"),
+        ("verification_technical_failure_count", "Technical verification failures"),
         ("feeds_checked", "Issuer feeds checked"),
         ("issuer_news_candidates", "News items discovered (unverified)"),
         ("issuer_press_releases_verified", "Issuer releases verified"),
@@ -148,9 +153,19 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
             f"{name[:45]}={count}" for name, count in
             sorted(sec_counts.items(), key=lambda x: (-x[1], x[0]))[:10]
             if isinstance(count, int)))
-        missing = report.get("missing_required_source_families")
+    missing = report.get("missing_required_source_families")
     if isinstance(missing, list) and missing:
         lines.append("Unverified source families: " + ", ".join(map(str, missing[:10])))
+    verification_examples = report.get("verification_issue_examples")
+    if isinstance(verification_examples, list) and verification_examples:
+        lines.append("Verification items requiring attention:")
+        for row in verification_examples[:6]:
+            if isinstance(row, dict):
+                lines.append("  " + str(row.get("ticker", ""))[:14] + " " +
+                    str(row.get("claim", ""))[:40] + ": " + str(row.get("reason", ""))[:150])
+    rejected = report.get("manifest_rejections")
+    if isinstance(rejected, dict) and rejected:
+        lines.append("Missing/rejected source manifests: " + ", ".join(sorted(rejected)))
     if full_scope and state in {"COMPLETE", "COMPLETE WITH WARNINGS"}:
         if report.get("full_coverage_verified") is not True:
             state = "UNVERIFIED"
@@ -176,3 +191,4 @@ def send_email(settings, subject, body, *, smtp_factory=None):
         # SMTP can accept an email before a network timeout; no automatic retry.
         raise EmailSendError("Mail submission failed or is unconfirmed") from exc
     return {"status": "submitted_not_delivered"}
+

@@ -17,9 +17,18 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+import uuid
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+
+if __package__ in ("", None):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts.source_verification import (
+    VERSION, STATES, digest, read_rows as strict_rows, run_identity,
+    scope_hash, summary as verification_summary, validate_submissions, verify_source,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -84,7 +93,10 @@ def http_bytes(url, *, agent, timeout=15, accept="application/json"):
     request = urllib.request.Request(url, headers={
         "User-Agent": agent, "Accept": accept})
     with urllib.request.urlopen(request, timeout=timeout) as response:
-        return response.read(3_000_001)
+        payload = response.read(3_000_001)
+        if response.status != 200 or not payload.strip() or len(payload) > 3_000_000:
+            raise ValueError("HTTP response is empty, oversized, or unsuccessful")
+        return payload
 
 
 def failure_label(exc):
@@ -118,7 +130,7 @@ def sec_registry(data_dir, out, agent):
             item["source_url"] = url
             try:
                 payload = json.loads(http_bytes(url, agent=agent))
-                recent = payload.get("filings", {}).get("recent", {})
+                recent = validate_submissions(payload, cik, ticker)
                 forms = recent.get("form", [])
                 dates = recent.get("filingDate", [])
                 item["status"] = "FILINGS_INDEX_CHECKED"
@@ -189,8 +201,10 @@ def issuer_discovery(data_dir, out):
 def recheck(source, data_dir, out):
     """Use existing direct-source event recheck with isolated checkout outputs."""
     events = candidates(data_dir)
+    execution_id = str(uuid.uuid4())
     args = [sys.executable, str(ROOT / "scripts/recheck_events.py"),
-            "--all", "--categories", ",".join(CATS[source])]
+            "--all", "--categories", ",".join(CATS[source]),
+            "--data-dir", str(data_dir), "--run-id", execution_id]
     try:
         result = subprocess.run(args, cwd=ROOT, timeout=3600, check=False)
         exitcode = result.returncode
@@ -199,8 +213,18 @@ def recheck(source, data_dir, out):
         exitcode = 1
     rows = read_rows(data_dir / "recheck_status.csv")
     keys = {x["event_key"] for x in events}
+    def fresh(row):
+        try:
+            stamp = datetime.fromisoformat(row.get("completed_at_utc", "").replace("Z", "+00:00"))
+            return (row.get("execution_id") == execution_id and
+                    row.get("run_status") in {"COMPLETED", "COMPLETED_WITH_ERRORS"} and
+                    stamp <= datetime.now(timezone.utc))
+        except (ValueError, TypeError):
+            return False
     scope = [r for r in rows if r.get("event_key") in keys and
-             r.get("requested_scope") == "ALL"]
+             r.get("requested_scope") == "ALL" and fresh(r)]
+    # Duplicate/stale rows cannot inflate collection completion.
+    scope = list({r["event_key"]: r for r in scope}.values())
     counts = Counter()
     issues = Counter()
     true_failures = Counter()
@@ -237,28 +261,110 @@ def recheck(source, data_dir, out):
             "source_issue_breakdown": dict(issues),
             "source_technical_failure_breakdown": dict(true_failures),
             "source_issue_examples": examples,
+            "collection_missing_event_keys": sorted(keys - {r["event_key"] for r in scope}),
+            "collection_execution_id": execution_id,
             "recheck_exit_code": exitcode, "recheck_output": str(outfile)}
 
 
-def coverage(out):
+def coverage(out, data_dir=DATA):
+    """Reconcile source evidence, never just trust a COMPLETE label."""
     reports = {}
+    rows = []
+    rejected = {}
+    expected_scope = scope_hash(strict_rows(data_dir / "pdufa_candidates.csv"),
+                                strict_rows(data_dir / "company_registry.csv"))
     for name in ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER"):
         path = out / (name.lower() + "_scan_report.json")
         try:
-            reports[name] = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
+            report = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(report, dict) or report.get("verification_version") != VERSION:
+                raise ValueError("Missing verification attestation")
+            if report.get("verification_run_id") != run_identity():
+                raise ValueError("Manifest belongs to a different workflow run/attempt/commit")
+            if report.get("verification_scope_sha256") != expected_scope:
+                raise ValueError("Manifest does not match current event and company scope")
+            ledger = out / (name.lower() + "_verification.csv")
+            if report.get("verification_ledger") != ledger.name or digest(ledger.read_bytes()) != report.get("verification_ledger_sha256"):
+                raise ValueError("Verification ledger is missing or its content hash disagrees")
+            evidence = strict_rows(ledger)
+            if not evidence or any(r.get("verification_status") not in STATES or r.get("category") != name for r in evidence):
+                raise ValueError("Invalid or empty verification ledger")
+            allowed_claims = {
+                "FDA": {"PDUFA_TARGET", "FDA_DECISION"},
+                "SEC": {"FILINGS_INVENTORY", "FINANCING_CLOSURE"},
+                "FINANCIAL": {"CASH_FACT", "RUNWAY_ESTIMATE", "CASH_AND_RUNWAY"},
+                "MARKET": {"PRICE_VOLUME", "SHORT_IV_BORROW"},
+                "ISSUER": {"PRIMARY_RELEASE"},
+            }
+            if any(r.get("claim") not in allowed_claims[name] for r in evidence):
+                raise ValueError("Ledger contains claims outside source scope")
+            started = datetime.fromisoformat(report["started_at"])
+            finished = datetime.fromisoformat(report["finished_at"])
+            age = (datetime.now(timezone.utc) - finished).total_seconds()
+            if age < -60 or age > 30 * 3600 or started > finished:
+                raise ValueError("Source manifest is stale or future-dated")
+            if any(not started <= datetime.fromisoformat(r["checked_at"]) <= finished for r in evidence):
+                raise ValueError("Evidence fetch timestamps are outside this source run")
+            keys = [r["event_key"] + ":" + r["claim"] for r in evidence]
+            if len(keys) != len(set(keys)):
+                raise ValueError("Duplicate verification claims")
+            events = {r["event_key"] for r in strict_rows(data_dir / "pdufa_candidates.csv")}
+            expected_keys = set(events)
+            if name == "SEC":
+                expected_keys |= {"REGISTRY:" + r["ticker"] for r in strict_rows(data_dir / "company_registry.csv")}
+            if {r["event_key"] for r in evidence} != expected_keys:
+                raise ValueError("Verification ledger omits or adds event/company identities")
+            for event in expected_keys:
+                claims = {r["claim"] for r in evidence if r["event_key"] == event}
+                required = ({"FILINGS_INVENTORY"} if event.startswith("REGISTRY:") else
+                            {"FINANCING_CLOSURE"} if name == "SEC" else
+                            {"PRICE_VOLUME", "SHORT_IV_BORROW"} if name == "MARKET" else
+                            {"PRIMARY_RELEASE"} if name == "ISSUER" else None)
+                if required is not None and claims != required:
+                    raise ValueError("Ledger omits a required claim for " + event)
+                if name == "FDA" and len(claims) != 1:
+                    raise ValueError("Regulatory claim scope is ambiguous")
+                if name == "FINANCIAL" and claims not in ({"CASH_AND_RUNWAY"}, {"CASH_FACT", "RUNWAY_ESTIMATE"}):
+                    raise ValueError("Financial ledger omits cash/runway scope")
+            if any(r["verification_status"] == "VERIFIED" and (not r.get("source_url") or not re.fullmatch(r"[a-f0-9]{64}", r.get("source_sha256", ""))) for r in evidence):
+                raise ValueError("Verified claim lacks primary/provider source content hash")
+            totals = verification_summary(evidence)
+            if any(report.get(k) != v for k, v in totals.items()):
+                raise ValueError("Manifest counts disagree with verification ledger")
+            complete = totals["findings_due"] == totals["findings_verified"]
+            if report.get("scope_coverage_verified") is not complete:
+                raise ValueError("Manifest coverage assertion disagrees with evidence")
+            if report.get("status") == "FAILED" or report.get("recheck_exit_code", 0) != 0:
+                raise ValueError("Source collector or verifier failed")
+            if report.get("collection_missing_event_keys"):
+                complete = False
+            reports[name] = {"status": "COMPLETE" if complete else "PARTIAL"}
+            rows.extend(evidence)
+        except (OSError, ValueError, TypeError, KeyError) as exc:
             reports[name] = {"status": "NOT_RUN_OR_MISSING"}
+            rejected[name] = str(exc)[:180]
     statuses = {name: r.get("status", "UNKNOWN") for name, r in reports.items()}
     missing = [name for name, status in statuses.items() if status != "COMPLETE"]
-    return {"source_statuses": statuses,
+    combined = out / "combined_verification.csv"
+    from scripts.source_verification import FIELDS
+    write_rows(combined, rows, FIELDS)
+    write_rows(out / "verification_review_queue.csv",
+               [r for r in rows if r["verification_status"] != "VERIFIED"], FIELDS)
+    return {**verification_summary(rows), "verification_version": VERSION,
+            "verification_run_id": run_identity(), "verification_scope_sha256": expected_scope,
+            "scope_coverage_verified": not missing,
+            "manifest_rejections": rejected,
+            "combined_verification_ledger": combined.name,
+            "combined_verification_ledger_sha256": digest(combined.read_bytes()),
+            "source_statuses": statuses,
             "missing_required_source_families": missing,
             "sources_passed": sum(x == "COMPLETE" for x in statuses.values()),
             "sources_due": len(statuses),
-            "note": "Clinical collection has a separate nightly workflow. "
-                    "Issuer RSS is discovery only; verified IR releases, full "
-                    "SEC closing-exhibit evidence, FDA action adjudication, "
-                    "cash runway, short/borrow/IV, and dashboard ingestion "
-                    "remain separately auditable."}
+            "verification_issue_examples": [{k: r[k] for k in ("ticker", "category", "claim", "verification_status", "reason")}
+                for r in rows if r["verification_status"] != "VERIFIED"][:12],
+            "note": "Reconciles fresh source ledgers from this run. Clinical collection, "
+                    "second-financing sequence adjudication and dashboard ingestion "
+                    "have separate scopes; five-source completion is not a full trading baseline."}
 
 
 def main(argv=None):
@@ -275,7 +381,7 @@ def main(argv=None):
     evidence = {}
     try:
         if args.source == "AUDIT":
-            evidence = coverage(args.artifacts_dir)
+            evidence = coverage(args.artifacts_dir, args.data_dir)
         elif args.source == "ISSUER":
             evidence = issuer_discovery(args.data_dir, args.artifacts_dir)
         else:
@@ -284,40 +390,44 @@ def main(argv=None):
                 from_env = os.environ.get("SEC_USER_AGENT", "").strip()
                 if not re.fullmatch(r".{3,120}\s+[^\s@]+@[^\s@]+\.[^\s@]+", from_env):
                     evidence["sec_registry_reason"] = "No valid identifying SEC_USER_AGENT"
-                else:
-                    evidence.update(sec_registry(args.data_dir, args.artifacts_dir, from_env))
+                # The verifier now performs the full, identity-checked inventory.
+                # Avoid fetching all 717 submissions twice in the same source job.
+        if args.source != "AUDIT":
+            evidence.update(verify_source(args.source, args.data_dir, args.artifacts_dir))
     except Exception as exc:
         problem = type(exc).__name__
         print("Source scan failed: " + problem, file=sys.stderr)
 
-    if args.source == "AUDIT":
-        # This audit can only certify completeness with independently checked
-        # primary evidence and cross-system reconciliation, which is not present.
-        status = "PARTIAL" if not problem else "FAILED"
-    elif problem or (args.source in CATS and evidence.get("recheck_exit_code", 1) != 0):
+    if problem or (args.source in CATS and evidence.get("recheck_exit_code", 1) != 0):
         status = "FAILED"
     else:
-        status = "PARTIAL"  # Coverage gaps are explicit, never masked.
+        status = "COMPLETE" if evidence.get("scope_coverage_verified") and not evidence.get("collection_missing_event_keys") else "PARTIAL"
     counts = [k + ": " + str(v) for k, v in evidence.items()
               if isinstance(v, int) and not isinstance(v, bool)]
     report = {
         "scan": args.source, "started_at": first, "finished_at": now(),
         "status": status, "source": args.source,
         "scope": "PDUFA event-specific live sources; SEC also inventories company registry",
+        "scan_kind": "VERIFIED_EXTENDED_SOURCE_CHECKS",
+        "completion_scope": "This source's ledger claims; not the full clinical/trading baseline",
         "full_coverage_verified": False,
-        "errors_count": int(bool(problem)) + evidence.get("source_technical_failure_count", 0),
-        "source_review_count": evidence.get("source_review_only_count", 0),
+        "errors_count": int(bool(problem)) + evidence.get("verification_technical_failure_count", 0),
+        "source_review_count": evidence.get("findings_unresolved", 0) + evidence.get("findings_conflicted", 0),
         "errors": [problem] if problem else [],
         "missing_required_source_families": (
             evidence.get("missing_required_source_families", FULL_SOURCE_FAMILIES)),
-        "verification_limits": "Source requests and links do NOT certify second financing closure, CRLs, Phase 3 success, or trade eligibility.",
+        "verification_limits": "Verification is limited to each ledger claim. "
+            "Cash runway is an estimate. A filing inventory is not a financing closing; "
+            "a release is not an FDA decision. This does not certify Phase 3 success, "
+            "second-financing sequence, full trading baseline or trade eligibility.",
         "source_summary": "; ".join(counts),
         **evidence,
     }
     write_json(args.report, report)
     print(json.dumps(report, indent=2))
-    return 0 if status == "PARTIAL" else 1
+    return 1 if status == "FAILED" else 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
