@@ -129,6 +129,28 @@ def inspect_artifact(scan, artifact, token):
     return row
 
 
+def previous_artifact(scan, previous_row, token):
+    """Find the original archive for a previously published per-scan result."""
+    source_id = previous_row.get("run_id")
+    if type(source_id) is not int or source_id <= 0:
+        return None
+    try:
+        response = api("/actions/runs/" + str(source_id) + "/artifacts?per_page=100", token)
+    except Exception:
+        return None
+    expected = "nightly-clinical-" + scan + "-" + str(source_id)
+    for artifact in response.get("artifacts", []):
+        if artifact.get("name") == expected and not artifact.get("expired"):
+            return artifact
+    return None
+
+
+def verified_total(rows, key):
+    """Missing values must stay unknown; never convert missing counts to zero."""
+    values = [row.get(key) for row in rows]
+    return sum(values) if values and all(nonnegative_count(v) for v in values) else None
+
+
 def gather(run_id, token, prior=None):
     run = api("/actions/runs/" + str(run_id), token)
     artifacts = api("/actions/runs/" + str(run_id) + "/artifacts?per_page=100", token)
@@ -148,7 +170,21 @@ def gather(run_id, token, prior=None):
             row["run_id"] = int(run_id)
             row["run_url"] = run.get("html_url")
         elif scan in old_rows:
-            row = old_rows[scan]
+            earlier = old_rows[scan]
+            archived = previous_artifact(scan, earlier, token)
+            if archived is not None:
+                row = inspect_artifact(scan, archived, token)
+                row["run_id"] = earlier.get("run_id")
+                row["run_url"] = earlier.get("run_url")
+            else:
+                row = {
+                    "scan": scan, "label": label, "status": "UNVERIFIED",
+                    "artifact_integrity": "MISSING", "run_id": earlier.get("run_id"),
+                    "run_url": earlier.get("run_url"),
+                    "issues": ["Previously published artifact is missing, expired or inaccessible"],
+                    "metrics": {}, "new_records": None,
+                    "changed_trials_this_execution": None, "errors_count": None,
+                }
         else:
             row = {"scan": scan, "label": label, "status": "UNVERIFIED",
                    "artifact_integrity": "MISSING", "run_id": None,
@@ -163,9 +199,9 @@ def gather(run_id, token, prior=None):
     coverage = ("FAILED" if any(x["status"] == "FAILED" for x in rows)
                 else "UNVERIFIED" if any(x["status"] == "UNVERIFIED" for x in rows)
                 else "PARTIAL")
-    metrics = {"new_records": sum(x["new_records"] or 0 for x in rows),
-               "changed_trials": sum(x["changed_trials_this_execution"] or 0 for x in rows),
-               "errors": sum(x["errors_count"] or 0 for x in rows)}
+    metrics = {"new_records": verified_total(rows, "new_records"),
+               "changed_trials": verified_total(rows, "changed_trials_this_execution"),
+               "errors": verified_total(rows, "errors_count")}
     history = [h for h in prior.get("history", []) if isinstance(h, dict)
                and h.get("run_id") != int(run_id)][:29]
     history.insert(0, {
