@@ -36,6 +36,38 @@ ERROR_SUBJECT = re.compile(r"\b(?:fail(?:ed|ure)?|error|bounce|undeliverable|del
 PDUFA_SUBJECT = re.compile(r"PDUFA|GitHub|workflow|scan", re.I)
 
 
+SCAN_COMPLETION_WORKFLOWS = frozenset({
+    "PDUFA Nightly Clinical Scans",
+    "PDUFA Nightly FDA SEC Financial Market Issuer Sources",
+    "PDUFA Nightly Scan Report Publisher",
+    "Step 7 PRE PHASE 3 Live Feed",
+})
+
+
+def completed_scan_context(token: str, source_run_id: str) -> dict:
+    """Tie post-scan audit to its actual completed run, including failures."""
+    if not re.fullmatch(r"[1-9][0-9]*", source_run_id):
+        raise ValueError("Invalid source scan run identifier")
+    run = github_json("/actions/runs/" + source_run_id, token)
+    repository = (run.get("head_repository") or {}).get("full_name")
+    if (run.get("name") not in SCAN_COMPLETION_WORKFLOWS
+            or repository != REPO or run.get("head_branch") != "main"
+            or run.get("status") != "completed"):
+        raise ValueError("Source run is not a completed approved PDUFA main-branch scan")
+    conclusion = run.get("conclusion")
+    return {
+        "run_id": run.get("id"),
+        "workflow": run.get("name"),
+        "conclusion": conclusion,
+        "trigger_event": run.get("event"),
+        "created_at": run.get("created_at"),
+        "completed_at": run.get("updated_at"),
+        "url": run.get("html_url"),
+        "needs_attention": conclusion != "success",
+        "note": "A successful GitHub scan does not prove FDA/SEC/clinical evidence coverage.",
+    }
+
+
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -183,6 +215,9 @@ def build_report() -> tuple[dict, int]:
         if not token:
             raise RuntimeError("GitHub token missing")
         report["github"] = audit_github(token)
+        source_run_id = os.environ.get("PDUFA_SOURCE_RUN_ID", "").strip()
+        if source_run_id:
+            report["source_scan"] = completed_scan_context(token, source_run_id)
     except (urllib.error.URLError, urllib.error.HTTPError, ValueError, OSError, RuntimeError) as exc:
         report["github"] = {"status": "UNAVAILABLE", "reason": "GitHub API failed (" + type(exc).__name__ + ")."}
         code = 1
@@ -195,7 +230,9 @@ def build_report() -> tuple[dict, int]:
         code = 1
     report["overall"] = (
         "CHECK_INCOMPLETE" if code else
-        "ISSUES_FOUND" if report["github"]["current_failures"] or report["gmail"]["error_subjects"] else
+        "ISSUES_FOUND" if (report["github"]["current_failures"]
+                           or report["gmail"]["error_subjects"]
+                           or report.get("source_scan", {}).get("needs_attention")) else
         "NO_CURRENT_ERRORS_DETECTED"
     )
     return report, code
@@ -216,6 +253,12 @@ def main() -> int:
                 fp.write("- **" + source.title() + ":** " + info["status"] + "\n")
                 if info.get("reason"):
                     fp.write("  - " + info["reason"] + "\n")
+            source = report.get("source_scan")
+            if source:
+                fp.write("- Completed source run: " + source["workflow"] +
+                         " (run #" + str(source["run_id"]) + ", " +
+                         str(source["conclusion"]) + ") — " +
+                         str(source["url"]) + "\n")
             for failure in report["github"].get("current_failures", []):
                 fp.write("- Unresolved: " + failure["workflow"] + " — " + str(failure.get("url")) + "\n")
             fp.write("\nRead-only audit; an accepted workflow run does not prove source evidence is complete.\n")

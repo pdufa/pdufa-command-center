@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from adhoc_alert_check import current_issue, filter_headers
+from adhoc_alert_check import current_issue, filter_headers, completed_scan_context
+from unittest.mock import patch
 
 
 class AdhocAlertTests(unittest.TestCase):
@@ -39,6 +40,40 @@ class AdhocAlertTests(unittest.TestCase):
         self.assertEqual(r["error_subjects"], 1)
         self.assertEqual(r["scan_end_subjects"], 1)
         self.assertEqual(r["scan_start_subjects"], 0)
+
+    def test_completed_source_scan_is_linked_and_verified(self):
+        source = {
+            "id": 987, "name": "PDUFA Nightly Clinical Scans",
+            "head_repository": {"full_name": "pdufa/pdufa-command-center"},
+            "head_branch": "main", "status": "completed",
+            "conclusion": "failure", "event": "schedule",
+            "html_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/987",
+        }
+        with patch("adhoc_alert_check.github_json", return_value=source) as request:
+            result = completed_scan_context("synthetic-token", "987")
+        self.assertTrue(result["needs_attention"])
+        self.assertEqual(result["run_id"], 987)
+        request.assert_called_once_with("/actions/runs/987", "synthetic-token")
+        with patch("adhoc_alert_check.github_json",
+                   return_value={**source, "conclusion": "success"}):
+            self.assertFalse(completed_scan_context("synthetic-token", "987")["needs_attention"])
+
+    def test_unapproved_scan_or_fork_rejected(self):
+        good = {
+            "id": 123, "name": "Step 7 PRE PHASE 3 Live Feed",
+            "head_repository": {"full_name": "pdufa/pdufa-command-center"},
+            "head_branch": "main", "status": "completed", "conclusion": "success",
+        }
+        for changes in ({"name": "Unknown workflow"},
+                        {"head_repository": {"full_name": "other/fork"}},
+                        {"head_branch": "not-main"},
+                        {"status": "in_progress"}):
+            with self.subTest(changes=changes):
+                with patch("adhoc_alert_check.github_json", return_value={**good, **changes}):
+                    with self.assertRaises(ValueError):
+                        completed_scan_context("synthetic-token", "123")
+        with self.assertRaises(ValueError):
+            completed_scan_context("synthetic-token", "123/not-a-run")
 
 
 if __name__ == "__main__":

@@ -132,7 +132,7 @@ def dispatch_adhoc_error_check(token):
 def latest_adhoc_check_run():
     req = urllib.request.Request(
         API + "/actions/workflows/" + ADHOC_WORKFLOW +
-        "/runs?event=workflow_dispatch&per_page=1",
+        "/runs?per_page=1",
         headers={"Accept": "application/vnd.github+json",
                  "User-Agent": "pdufa-command-center-dashboard"},
     )
@@ -148,7 +148,8 @@ def render_adhoc_error_check_controls():
     """Protected direct dispatch when configured; otherwise honest GitHub fallback."""
     st.markdown("### AD HOC — GMAIL + GITHUB ERROR CHECK")
     st.caption(
-        "Check GitHub workflow failures and recent Gmail alert headers immediately. "
+        "Checks automatically after completed nightly clinical, FDA/SEC, report and PRE3 runs. "
+        "You can also check GitHub failures and Gmail alert headers immediately. "
         "The audit does not rescan clinical/FDA/SEC data, change evidence, "
         "send emails, or change your automatic schedule."
     )
@@ -207,7 +208,7 @@ def render_adhoc_error_check_controls():
     last = latest_adhoc_check_run()
     if last:
         st.caption(
-            "Most recent manual check: #" + str(last.get("id", "?")) +
+            "Latest automatic/manual error check: #" + str(last.get("id", "?")) +
             " · " + str(last.get("status", "unknown")) +
             " · " + str(last.get("conclusion") or "not finished") +
             " · started " + str(last.get("created_at") or "unknown")
