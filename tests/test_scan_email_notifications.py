@@ -26,6 +26,24 @@ class ScanEmailTests(unittest.TestCase):
     def settings(self):
         return EmailSettings.from_env(self.TEST_ENV)
 
+    def test_email_is_the_critical_channel_and_no_scanners_auto_start(self):
+        root = Path(__file__).resolve().parents[1]
+        config = json.loads((root / "config/scan_234.json").read_text(encoding="utf-8"))
+        policy = config["notification_policy"]
+        self.assertEqual(policy["delivery_mode"], "EMAIL_TWO_PER_SCAN")
+        self.assertEqual(policy["messages_per_scan"], 2)
+        self.assertEqual(policy["priority"], "CRITICAL_REQUIRED_BEFORE_PRODUCTION")
+        self.assertTrue(policy["start_email_required"])
+        self.assertTrue(policy["end_email_attempted_on_success_and_failure"])
+        self.assertFalse(policy["notifications_active"])
+        self.assertFalse(config["automation_enabled"])
+        self.assertFalse(policy["nightly_schedules_restored"])
+        for name in ("overnight-pdufa.yml", "phase-pipeline.yml", "surveillance.yml"):
+            self.assertFalse((root / ".github/workflows" / name).exists())
+        manual_test = (root / ".github/workflows/email-delivery-test.yml").read_text()
+        self.assertIn("workflow_dispatch:", manual_test)
+        self.assertNotIn("schedule:", manual_test)
+
     def test_sender_and_recipient_are_required(self):
         with self.assertRaises(EmailSetupError):
             EmailSettings.from_env({})
