@@ -6,7 +6,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import parse_qs
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
+import os
+import subprocess
 
 from scripts.scan_sms import (
     SMSSettings, SMSSetupError, SMSSendError, begin_text, finish_text,
@@ -30,12 +32,13 @@ class NotificationContractTests(unittest.TestCase):
         self.assertNotEqual(s.sender, s.recipient)
         with tempfile.TemporaryDirectory() as folder:
             called = Mock()
-            with self.assertRaises(SMSSetupError):
-                run_scan(scan="2", mode="BASELINE", command=["fake"],
-                         status_file=Path(folder) / "status.json",
-                         audit_dir=Path(folder) / "audits",
-                         settings=None, executor=called,
-                         sender=Mock())
+            with patch.dict(os.environ, {}, clear=True):
+                with self.assertRaises(SMSSetupError):
+                    run_scan(scan="2", mode="BASELINE", command=["fake"],
+                             status_file=Path(folder) / "status.json",
+                             audit_dir=Path(folder) / "audits",
+                             settings=None, executor=called,
+                             sender=Mock())
             called.assert_not_called()
 
     def test_messages_fit_exactly_one_ascii_sms_segment(self):
@@ -240,6 +243,25 @@ class NotificationContractTests(unittest.TestCase):
             self.assertEqual(len(msgs), 2)
             self.assertIn("END: FAILED", msgs[1])
             self.assertEqual(audit["coverage_status"], "FAILED")
+
+    def test_timeout_reports_failure_and_sends_finish_text(self):
+        settings = SMSSettings.from_env(self.ENV)
+        with tempfile.TemporaryDirectory() as folder:
+            messages = []
+            def timeout_executor(*_, **kwargs):
+                self.assertEqual(kwargs["timeout"], 5)
+                raise subprocess.TimeoutExpired(cmd=["mock"], timeout=5)
+            rc, audit = run_scan(
+                scan="4", mode="BASELINE", command=["mock"],
+                status_file=Path(folder) / "status.json",
+                audit_dir=Path(folder) / "audit", timeout_seconds=5,
+                settings=settings, executor=timeout_executor,
+                sender=lambda _, message: (messages.append(message) or {
+                    "status": "submitted_not_delivered"}))
+            self.assertEqual(rc, 1)
+            self.assertEqual(len(messages), 2)
+            self.assertIn("END: FAILED", messages[1])
+            self.assertIn("TimeoutExpired", audit["summary"])
 
     def test_summary_fail_closed_for_missing_or_incomplete_counts(self):
         state, detail = summarize_report(
