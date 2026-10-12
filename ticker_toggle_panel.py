@@ -78,23 +78,22 @@ def _toggle(ticker, category):
     st.session_state["_ticker_selections_dirty"] = True
 
 
-def _init_browser_selection():
-    """Once per session, load the device's saved selections; save after a click.
+def _init_browser_selection(panel_id):
+    """Restore per-browser selections without blocking the Streamlit script.
 
-    A browser storage component can require a second Streamlit rerun to return
-    its first value. Never replace selections edited in this session with a
-    delayed browser read. The localStorage failure mode is session-only.
+    Component values are asynchronous. A new user selection always wins over
+    a later-returning browser read, and only successful clicks write storage.
     """
     st.session_state.setdefault("watchlist", [])
     st.session_state.setdefault("trading_tickers", [])
     try:
-        from streamlit_local_storage import LocalStorage
-        if "_ticker_local_storage" not in st.session_state:
-            st.session_state["_ticker_local_storage"] = LocalStorage(key="pdufa_ticker_storage_initial_v1")
-        storage = st.session_state["_ticker_local_storage"]
+        from streamlit_js_eval import streamlit_js_eval
+        raw = streamlit_js_eval(
+            js_expressions=f"localStorage.getItem({json.dumps(STORAGE_KEY)})",
+            key=f"pdufa_ticker_read_{panel_id}", want_output=True,
+        )
         if st.session_state.get("_ticker_selections_dirty"):
             st.session_state["_ticker_selections_hydrated"] = True
-        raw = storage.getItem(STORAGE_KEY)
         if not st.session_state.get("_ticker_selections_hydrated"):
             parsed = parse_saved(raw)
             if parsed is not None:
@@ -104,8 +103,15 @@ def _init_browser_selection():
         if st.session_state.pop("_ticker_selections_dirty", False):
             counter = int(st.session_state.get("_ticker_storage_revision", 0)) + 1
             st.session_state["_ticker_storage_revision"] = counter
-            storage.setItem(STORAGE_KEY, serialize_selections(st.session_state),
-                            key=f"pdufa_ticker_write_{counter}")
+            payload = serialize_selections(st.session_state)
+            expression = (
+                f"localStorage.setItem({json.dumps(STORAGE_KEY)}, "
+                f"{json.dumps(payload)})"
+            )
+            streamlit_js_eval(
+                js_expressions=expression, want_output=False,
+                key=f"pdufa_ticker_write_{panel_id}_{counter}",
+            )
         return True
     except (ImportError, AttributeError, RuntimeError, ValueError, TypeError):
         return False
@@ -141,7 +147,7 @@ def render_ticker_toggle_panel(panel_id, records, *, title=""):
     with st.container(key=f"ticker_toggles_{panel_id}"):
         if title:
             st.markdown("**" + title + "**")
-        storage_available = _init_browser_selection()
+        storage_available = _init_browser_selection(panel_id)
         if not tickers:
             st.caption("No valid ticker symbols in this section.")
             return
