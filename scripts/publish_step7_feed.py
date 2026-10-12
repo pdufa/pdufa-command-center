@@ -6,8 +6,11 @@ verification of stale SEC, clinical, financing or market inputs.
 import json
 import os
 import tempfile
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from step7_cached_snapshot import load_current_snapshot
 from step7_live import build_snapshot, write_csv
