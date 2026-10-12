@@ -1,0 +1,88 @@
+{
+  "generated_at_utc": "2026-10-12T19:17:49.738707+00:00",
+  "status": "REVIEW_REQUIRED",
+  "source_scan": {
+    "workflow": "PDUFA Nightly FDA SEC Financial Market Issuer Sources",
+    "run_id": 38296100402,
+    "conclusion": "success"
+  },
+  "counts": {
+    "models_mapped": 9,
+    "overlaps": 6,
+    "input_tests": 6,
+    "data_gaps": 4,
+    "reviews": 0
+  },
+  "checks": [
+    {
+      "Test": "Clinical model redundancy",
+      "Status": "SHARED INPUT",
+      "Result": "2/2 matching PRE pilot score inputs agree",
+      "Why it matters": "Matching point ledgers are not independent clinical confirmations."
+    },
+    {
+      "Test": "Trade Score coverage",
+      "Status": "DATA GAP",
+      "Result": "0/45 stock rows contain trade_score",
+      "Why it matters": "Missing saved scores must not be replaced by a clinical mean without a distinct label."
+    },
+    {
+      "Test": "Public PoA coverage",
+      "Status": "DATA GAP",
+      "Result": "0/45 stock rows contain public_approval_probability",
+      "Why it matters": "All-sources PoA requires both estimates; missing does not equal 0%."
+    },
+    {
+      "Test": "FDA V3 calculated probability",
+      "Status": "DATA GAP",
+      "Result": "0/45 FDA review rows have fda_probability",
+      "Why it matters": "Approval model remains gated until review evidence is sufficient."
+    },
+    {
+      "Test": "Post Phase 3 entry gates",
+      "Status": "DATA GAP",
+      "Result": "0/38 financing-review rows contain at least one gate PASS",
+      "Why it matters": "No verified PASS is not evidence of an eligible entry; gate status overrides scores."
+    },
+    {
+      "Test": "Market data overlap",
+      "Status": "SHARED INPUT",
+      "Result": "34 market records; momentum + relative volume reused across 2 post models",
+      "Why it matters": "One quote and date may legitimately support multiple models, but not multiple independent votes."
+    }
+  ],
+  "sources": [
+    {
+      "dataset": "PDUFA candidates",
+      "path": "data/pdufa_candidates.csv",
+      "file_present": true,
+      "saved_records": 45
+    },
+    {
+      "dataset": "FDA V3 review",
+      "path": "data/fda_review_engine.csv",
+      "file_present": true,
+      "saved_records": 45
+    },
+    {
+      "dataset": "Pre-readout evidence",
+      "path": "data/phase3_pre_readout_evidence.csv",
+      "file_present": true,
+      "saved_records": 4
+    },
+    {
+      "dataset": "Post financing gates",
+      "path": "data/step7_financing_review.csv",
+      "file_present": true,
+      "saved_records": 38
+    },
+    {
+      "dataset": "Post market status",
+      "path": "data/step7_market_status.csv",
+      "file_present": true,
+      "saved_records": 34
+    }
+  ],
+  "scope": "Read-only saved-input column/overlap checks after a completed nightly scan",
+  "provenance_note": "Checked-in scoring datasets are inspected after the workflow completed. They are not necessarily the fresh artifacts of that workflow. Missing data is not a negative clinical result; shared inputs are not independent votes."
+}
