@@ -11,6 +11,7 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
                                    finance_style, sort_pdufa_grid, sort_pdufa_rows,
                                    DISPLAY_ORDER_OPTIONS)
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
+from ticker_toggle_panel import render_ticker_toggle_panel
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -2803,6 +2804,7 @@ def render_pre_phase3():
         st.info("No available trial rows. Check the Phase 2–3 collector in GitHub Actions.")
     else:
         tab = pd.DataFrame(trials)
+        render_ticker_toggle_panel("pre3_3", tab, title="TICKER WATCH / TRADE")
         st.markdown("### ALL-TRIAL REVIEW PRIORITY")
         p0, p1, p2 = st.columns(3)
         p0.metric("Priority score coverage", f"{manifest['review_priority_rows']:,} / {len(trials):,}")
@@ -3422,6 +3424,7 @@ if page == "PDUFA":
             _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS, "DATE TOTAL")
 
             st.markdown("### PDUFA TRIALS / PROGRAMS")
+            render_ticker_toggle_panel("pipeline_2", prepared, title="TICKER WATCH / TRADE")
             st.caption("Displayed count always equals the exact number of table rows.")
             empty_chart = prepare_pdufa_grid(
                 pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values())),
