@@ -2,14 +2,11 @@ name: PDUFA Nightly FDA SEC Financial Market Issuer Sources
 
 # Collect, verify direct-source claims, then reconcile the evidence ledgers.
 on:
-  push:
+  # Only the completed, published clinical scan can start the extended source scan.
+  workflow_run:
+    workflows: ['PDUFA Nightly Scan Report Publisher']
+    types: [completed]
     branches: [main]
-    paths:
-      - '.github/workflows/pdufa-nightly-missing-sources.yml'
-      - 'scripts/source_verification.py'
-      - 'scripts/nightly_missing_sources.py'
-  schedule:
-    - cron: '30 9 * * *'
   workflow_dispatch:
 
 permissions:
@@ -20,24 +17,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  live-sources:
-    name: 'Live PDUFA ${{ matrix.source }} source check'
+  source_fda:
+    name: 'Live PDUFA FDA source check'
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - source: FDA
-            slug: fda
-          - source: SEC
-            slug: sec
-          - source: FINANCIAL
-            slug: financial
-          - source: MARKET
-            slug: market
-          - source: ISSUER
-            slug: issuer
     env:
       PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
       PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
@@ -67,13 +51,13 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "${{ matrix.source }}" --mode DELTA \
-            --status-file "reports/missing_sources/${{ matrix.slug }}_scan_report.json" \
+            --scan "FDA" --mode DELTA \
+            --status-file "reports/missing_sources/fda_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
             python scripts/nightly_missing_sources.py \
-              --source "${{ matrix.source }}" \
-              --report "reports/missing_sources/${{ matrix.slug }}_scan_report.json"
+              --source "FDA" \
+              --report "reports/missing_sources/fda_scan_report.json"
           exit_code=$?
           if [ "$exit_code" -eq 3 ]; then
             echo "::warning::Verification ledger contains unresolved claims, conflicts, or technical failures."
@@ -84,7 +68,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: source-manifest-${{ matrix.slug }}-${{ github.run_id }}
+          name: source-manifest-fda-${{ github.run_id }}
           retention-days: 30
           if-no-files-found: error
           path: reports/missing_sources/
@@ -92,7 +76,279 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: source-ledger-${{ matrix.slug }}-${{ github.run_id }}
+          name: source-ledger-fda-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            data/recheck_status.csv
+            data/pdufa_candidates.csv
+            reports/scan_notifications/
+
+  source_sec:
+    name: 'Live PDUFA SEC source check'
+    needs: source_fda
+    if: ${{ always() && (github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - name: Checkout repository research evidence
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install event recheck and primary PDF verification dependencies
+        run: python -m pip install pandas pypdf
+      - name: Verify email credentials before any external collection
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email secret ${key}; no unnotified scan allowed."
+              exit 1
+            fi
+          done
+      - name: Send START, collect and verify live evidence, send END
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "SEC" --mode DELTA \
+            --status-file "reports/missing_sources/sec_scan_report.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python scripts/nightly_missing_sources.py \
+              --source "SEC" \
+              --report "reports/missing_sources/sec_scan_report.json"
+          exit_code=$?
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Verification ledger contains unresolved claims, conflicts, or technical failures."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Save per-source manifest for reconciliation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-manifest-sec-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: error
+          path: reports/missing_sources/
+      - name: Archive source ledger and Gmail submission audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-ledger-sec-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            data/recheck_status.csv
+            data/pdufa_candidates.csv
+            reports/scan_notifications/
+
+  source_financial:
+    name: 'Live PDUFA FINANCIAL source check'
+    needs: source_sec
+    if: ${{ always() && (github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - name: Checkout repository research evidence
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install event recheck and primary PDF verification dependencies
+        run: python -m pip install pandas pypdf
+      - name: Verify email credentials before any external collection
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email secret ${key}; no unnotified scan allowed."
+              exit 1
+            fi
+          done
+      - name: Send START, collect and verify live evidence, send END
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "FINANCIAL" --mode DELTA \
+            --status-file "reports/missing_sources/financial_scan_report.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python scripts/nightly_missing_sources.py \
+              --source "FINANCIAL" \
+              --report "reports/missing_sources/financial_scan_report.json"
+          exit_code=$?
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Verification ledger contains unresolved claims, conflicts, or technical failures."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Save per-source manifest for reconciliation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-manifest-financial-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: error
+          path: reports/missing_sources/
+      - name: Archive source ledger and Gmail submission audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-ledger-financial-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            data/recheck_status.csv
+            data/pdufa_candidates.csv
+            reports/scan_notifications/
+
+  source_market:
+    name: 'Live PDUFA MARKET source check'
+    needs: source_financial
+    if: ${{ always() && (github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - name: Checkout repository research evidence
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install event recheck and primary PDF verification dependencies
+        run: python -m pip install pandas pypdf
+      - name: Verify email credentials before any external collection
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email secret ${key}; no unnotified scan allowed."
+              exit 1
+            fi
+          done
+      - name: Send START, collect and verify live evidence, send END
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "MARKET" --mode DELTA \
+            --status-file "reports/missing_sources/market_scan_report.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python scripts/nightly_missing_sources.py \
+              --source "MARKET" \
+              --report "reports/missing_sources/market_scan_report.json"
+          exit_code=$?
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Verification ledger contains unresolved claims, conflicts, or technical failures."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Save per-source manifest for reconciliation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-manifest-market-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: error
+          path: reports/missing_sources/
+      - name: Archive source ledger and Gmail submission audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-ledger-market-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            data/recheck_status.csv
+            data/pdufa_candidates.csv
+            reports/scan_notifications/
+
+  source_issuer:
+    name: 'Live PDUFA ISSUER source check'
+    needs: source_market
+    if: ${{ always() && (github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - name: Checkout repository research evidence
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install event recheck and primary PDF verification dependencies
+        run: python -m pip install pandas pypdf
+      - name: Verify email credentials before any external collection
+        shell: bash
+        run: |
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email secret ${key}; no unnotified scan allowed."
+              exit 1
+            fi
+          done
+      - name: Send START, collect and verify live evidence, send END
+        id: collect
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "ISSUER" --mode DELTA \
+            --status-file "reports/missing_sources/issuer_scan_report.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python scripts/nightly_missing_sources.py \
+              --source "ISSUER" \
+              --report "reports/missing_sources/issuer_scan_report.json"
+          exit_code=$?
+          if [ "$exit_code" -eq 3 ]; then
+            echo "::warning::Verification ledger contains unresolved claims, conflicts, or technical failures."
+            exit 0
+          fi
+          exit "$exit_code"
+      - name: Save per-source manifest for reconciliation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-manifest-issuer-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: error
+          path: reports/missing_sources/
+      - name: Archive source ledger and Gmail submission audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-ledger-issuer-${{ github.run_id }}
           retention-days: 30
           if-no-files-found: warn
           path: |
@@ -102,7 +358,7 @@ jobs:
 
   reconcile:
     name: 'Combined coverage / missing source audit'
-    needs: live-sources
+    needs: [source_fda, source_sec, source_financial, source_market, source_issuer]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 12
