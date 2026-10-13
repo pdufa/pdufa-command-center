@@ -507,7 +507,7 @@ class Verifier:
                                 and not re.search(r"(?i)\bfor\b", passage)):
                             context = " ".join(sentences[max(0, i-1):i+1])
                         if drug_matches(event, context) and indication_matches(event, context):
-                            passages.append(passage)
+                            passages.append(context)
                     observed = set().union(*(attributed_target_dates(event, p) for p in passages)) if passages else set()
                     if not expected or not observed:
                         continue
