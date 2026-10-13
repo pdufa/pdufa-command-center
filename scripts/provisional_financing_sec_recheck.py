@@ -6,11 +6,16 @@ A search-engine result is discovery. Research leads remain visible on SEC failur
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import re
+import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 FIELDS = (
     "event_key", "ticker", "company_ir_status", "ir_close_date",
@@ -19,8 +24,8 @@ FIELDS = (
     "gem_entry_authorized",
 )
 FORMS = {"8-K", "8-K/A", "6-K", "10-Q", "10-K"}
-MAX_FILINGS = 4
-MAX_DOCUMENTS = 5
+MAX_FILINGS = 8
+MAX_DOCUMENTS = 6
 
 
 def safe_document(name):
@@ -32,7 +37,7 @@ def safe_document(name):
 def _filings(verifier, event, close):
     """Use *fresh* SEC submissions, validated by issuer CIK and ticker."""
     _, _, recent = verifier.submissions(event)
-    cutoff = min(close + timedelta(days=90), verifier.as_of)
+    cutoff = min(close + timedelta(days=180), verifier.as_of)
     matched = []
     for form, filed, accession, primary in zip(
         recent["form"], recent["filingDate"],
@@ -76,7 +81,7 @@ def _result(lead, status, reason, sec=None):
     return {
         "event_key": lead["event_key"],
         "ticker": lead["ticker"],
-        "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
+        "company_ir_status": "PUBLIC_IR_RESEARCH_LEAD",
         "ir_close_date": lead["public_close_date"],
         "transaction_type": lead["transaction_type"],
         "company_ir_url": lead["company_ir_url"],
@@ -151,6 +156,7 @@ def recheck_leads(verifier, events, targets_path, output_path):
                     "financing_evidence_url": url,
                     "financing_close_date": close.isoformat(),
                     "_financing_review": {},
+                    "_recheck_exact_sec_url": True,
                 })
                 row = verifier.financing(probe)
                 if row["verification_status"] == "VERIFIED" and row.get("source_sha256"):
@@ -179,3 +185,35 @@ def recheck_leads(verifier, events, targets_path, output_path):
         writer.writeheader()
         writer.writerows(results)
     return results
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Fresh SEC recheck of provisional financing leads")
+    parser.add_argument("--data-dir", type=Path, default=Path("data"))
+    parser.add_argument("--targets", type=Path, default=Path("data/finance_ir_sec_recheck_targets.csv"))
+    parser.add_argument("--output", type=Path, default=Path("reports/missing_sources/sec_financing_ir_recheck.csv"))
+    args = parser.parse_args(argv)
+    from scripts.source_verification import Verifier, read_rows
+    events = read_rows(args.data_dir / "pdufa_candidates.csv")
+    registry = read_rows(args.data_dir / "company_registry.csv")
+    if not events or not registry:
+        raise SystemExit("Missing candidate or company registry: no SEC verification performed")
+    # Every invocation uses a newly constructed verifier and fresh SEC submission
+    # requests. Research leads never become proof just because they are in CSV.
+    verifier = Verifier(registry)
+    rows = recheck_leads(verifier, events, args.targets, args.output)
+    if not rows:
+        raise SystemExit("Empty SEC recheck queue; no confirmation audit published")
+    totals = {}
+    for row in rows:
+        status = row["sec_recheck_status"]
+        totals[status] = totals.get(status, 0) + 1
+        if row["gem_entry_authorized"] != "NO":
+            raise SystemExit("Unsafe SEC recheck output attempted entry authorization")
+    print(json.dumps({"checked": len(rows), "status_counts": totals,
+                      "trade_entry_authorized": 0, "output": str(args.output)},
+                     sort_keys=True))
+    return rows
+
+
+if __name__ == "__main__":
+    main()
