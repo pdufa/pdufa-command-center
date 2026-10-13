@@ -11,7 +11,8 @@ from unittest.mock import Mock, patch
 
 from scripts.scan_email import (
     EmailSettings, EmailSetupError, EmailSendError,
-    compose_start, compose_end, report_summary, send_email
+    compose_start, compose_end, report_summary, send_email,
+    place_self_sent_message_in_inbox,
 )
 from scripts.run_scan_with_email import run_scan
 
@@ -93,6 +94,38 @@ class ScanEmailTests(unittest.TestCase):
         self.assertEqual(len(sent), 1)
         self.assertEqual(sent[0]["To"], settings.recipient)
         self.assertNotIn(settings.app_password, str(result))
+
+    def test_self_sent_notification_is_labeled_inbox_when_gmail_accepts(self):
+        settings = EmailSettings("sample@gmail.com", "private-value", "sample@gmail.com")
+        calls = []
+        class FakeImap:
+            def __init__(self, host, port, timeout):
+                calls.append(("server", host, port))
+            def login(self, sender, password):
+                calls.append(("login", sender))
+            def select(self, mailbox):
+                calls.append(("select", mailbox))
+                return "OK", [b"10"]
+            def uid(self, command, *args):
+                calls.append((command, *args))
+                if command == "SEARCH":
+                    return "OK", [b"101"]
+                return "OK", [b""]
+            def logout(self):
+                calls.append(("logout",))
+        status = place_self_sent_message_in_inbox(
+            settings, "<example@localhost>", imap_factory=FakeImap)
+        self.assertEqual(status, "INBOX_LABEL_ACCEPTED")
+        self.assertTrue(any(row[0] == "STORE" and row[-1] == r"(\\Inbox)"
+                            for row in calls))
+        self.assertNotIn(settings.app_password, str(calls))
+
+    def test_non_self_addressed_mail_never_accesses_imap(self):
+        self.assertEqual(
+            place_self_sent_message_in_inbox(
+                self.settings(), "<external@test>",
+                imap_factory=lambda *a, **kw: self.fail("IMAP must not start")),
+            "EXTERNAL_RECIPIENT_NOT_CHECKED")
 
     def test_two_emails_on_success_and_audit(self):
         with tempfile.TemporaryDirectory() as folder:
