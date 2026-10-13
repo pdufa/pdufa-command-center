@@ -11,10 +11,9 @@ from datetime import date
 from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows
+from trade_window import EXIT_BUFFER_DAYS as TRADE_EXIT_DAYS_BEFORE_PDUFA, MIN_NEW_ENTRY_DAYS
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
-TRADE_EXIT_DAYS_BEFORE_PDUFA = 3  # calendar days; final new-entry day is PDUFA -4
-MIN_NEW_ENTRY_DAYS = TRADE_EXIT_DAYS_BEFORE_PDUFA + 1
 # Stage-specific evidence-rubric weights, all totaling 100.
 WEIGHTS = {
     "Phase 3": {
@@ -144,10 +143,10 @@ def _reasons(record, event, stage, feed_current):
         if _number(record.get("Financing evidence /20")) != 20:
             reasons.append("Verified financing / dilution clearance missing")
     if stage in ("Post-Financing", "PDUFA") and event:
-        if str(event.get("new_dilution_flag") or "").strip().upper() in (
-            "YES", "TRUE", "1", "ACTIVE", "UNRESOLVED", "UNKNOWN"
+        if str(event.get("new_dilution_flag") or "").strip().upper() not in (
+            "NO", "FALSE", "0", "NONE", "CLEARED", "RESOLVED"
         ):
-            reasons.append("Current dilution flag not cleared")
+            reasons.append("Current dilution not explicitly cleared in event evidence")
     return reasons
 
 
