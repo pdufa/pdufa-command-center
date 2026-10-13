@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
+from gem_calibration_ui import render_gem_calibration
 
 FILES = (
     "pdufa_candidates.csv",
@@ -200,6 +201,8 @@ def render_gem_scans(root="data"):
                 mime="text/csv",
                 key="gem_export_" + stage,
             )
+    st.divider()
+    render_gem_calibration(root)
     st.caption(
         "Qualification here means a source-supported research ranking only. "
         "Do not place trades from these scores alone: cash runway, valuation, "
