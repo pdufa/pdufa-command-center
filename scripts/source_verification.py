@@ -90,6 +90,26 @@ def dates(text):
     return found
 
 
+def target_dates(text):
+    """Dates explicitly attached to the target, excluding release datelines."""
+    date_pattern = (r"(?:20\d{2}-\d{2}-\d{2}|(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)\s+\d{1,2},?\s+20\d{2})")
+    markers = list(re.finditer(r"(?i)\b(?:PDUFA\s*\)?\s*(?:(?:goal|target|action)\s+){0,2}date|target\s+action\s+date|goal\s+date)\b", text))
+    observed = set()
+    for marker in markers:
+        tail = text[marker.end():marker.end()+110]
+        match = re.search(date_pattern, tail, re.I)
+        if not match:
+            continue
+        bridge = tail[:match.start()]
+        if re.fullmatch(r"(?i)[\s():,;-]*(?:(?:of|is|on|for|set|as|the|has|been|at|to|a|and|in|FDA|target)\b[\s():,;-]*)*", bridge):
+            observed |= dates(match.group())
+    # Compact primary statements such as "PDUFA November 1, 2026" are valid;
+    # an arbitrary date elsewhere after a headline containing PDUFA is not.
+    for match in re.finditer(r"(?i)\bPDUFA[\s():,-]+(?:(?:goal|target|action|deadline|date|of|is|on)\s+)*" + date_pattern, text):
+        observed |= dates(match.group())
+    return observed
+
+
 def drug_matches(event, text):
     # Full names/codes and explicitly supplied parenthetical aliases only.
     parts = re.split(r"[()/|;]", event.get("drug", ""))
@@ -414,7 +434,7 @@ class Verifier:
                         context = " ".join(sentences[max(0, i-1):i+2])
                         if drug_matches(event, context) and indication_matches(event, context):
                             passages.append(passage)
-                    observed = set().union(*(dates(p) for p in passages)) if passages else set()
+                    observed = set().union(*(target_dates(p) for p in passages)) if passages else set()
                     if not expected or not observed:
                         continue
                     state = "VERIFIED" if observed == {expected} else "CONFLICT"

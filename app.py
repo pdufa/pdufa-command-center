@@ -13,7 +13,19 @@ from unified_clinical_trading import _load as load_unified_evidence, render_comb
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
 import nightly_scan_dashboard as nightly_scan_dashboard_module
-render_nightly_scan_report = nightly_scan_dashboard_module.render_nightly_scan_report
+def render_nightly_scan_report():
+    # Streamlit can rerun app.py while retaining an imported report module.
+    # Reload only when that module's tracked file changed, so deployed controls
+    # and source-report readers cannot stay bound to an older function object.
+    import hashlib
+    import importlib
+    from pathlib import Path
+    source = Path(nightly_scan_dashboard_module.__file__)
+    revision = hashlib.sha256(source.read_bytes()).hexdigest()
+    if getattr(nightly_scan_dashboard_module, "_loaded_source_revision", None) != revision:
+        importlib.reload(nightly_scan_dashboard_module)
+        nightly_scan_dashboard_module._loaded_source_revision = revision
+    nightly_scan_dashboard_module.render_nightly_scan_report()
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
@@ -3186,7 +3198,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-11 · ALL-TRIAL REVIEW PRIORITY V1 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · MATCH VALIDATION IN PREDICTION ENGINE · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-13 · SOURCE SCAN REPAIRS V2 · ALL-TRIAL REVIEW PRIORITY V1 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · MATCH VALIDATION IN PREDICTION ENGINE · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -5448,4 +5460,5 @@ else:
 
 st.divider()
 st.caption("FDA probabilities are model estimates, not FDA determinations. Direction / FDA Match is a result score, not an approval probability: before a final FDA outcome it shows the predicted direction; after the outcome it shows 100% for a matching direction or 0% for a miss. Missing fields are labeled Not available or Not scored rather than being invented.")
+
 

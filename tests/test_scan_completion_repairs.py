@@ -90,6 +90,16 @@ class ScanRepairs(unittest.TestCase):
         self.assertEqual(result["verification_status"], "VERIFIED")
         self.assertIn("2026-10-10", result["observed"])
 
+    def test_release_dateline_does_not_create_a_false_target_conflict(self):
+        source = b"Test Pharma on February 25, 2026 announced TestDrug for lung cancer with a PDUFA goal date of November 1, 2026."
+        result = self.verifier(source).regulatory({**EVENT, "pdufa_evidence_url": DOC})[0]
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["observed"], "2026-11-01")
+
+    def test_two_explicit_target_dates_still_require_reconciliation(self):
+        text = "PDUFA goal date of November 1, 2026, extended to a target action date of December 1, 2026."
+        self.assertEqual(v.target_dates(text), {"2026-11-01", "2026-12-01"})
+
     def test_dose_suffix_does_not_hide_exact_active_drug_identity(self):
         self.assertTrue(v.drug_matches({"drug": "Ameluz PDT"}, "Ameluz is a photosensitizer"))
         self.assertTrue(v.drug_matches({"drug": "Phentolamine Ophthalmic Solution 0.75%"}, "phentolamine ophthalmic solution for presbyopia"))
