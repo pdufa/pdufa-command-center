@@ -24,7 +24,7 @@ def write_csv(root, name, rows):
         writer.writerows(rows)
 
 
-def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENTRY READY — ATTESTED EVIDENCE / NOT INDEPENDENTLY AUDITED"):
+def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENTRY READY — ATTESTED EVIDENCE / NOT INDEPENDENTLY AUDITED", closed=True):
     (tmp_path / "step7_live_status.json").write_text(json.dumps(
         {"generated_at_utc": "2026-10-11T14:13:50+00:00"}), encoding="utf-8")
     write_csv(tmp_path, "pdufa_candidates.csv", [{
@@ -46,6 +46,14 @@ def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENT
         "Source scan": "FINANCING_VERIFIED", "Recheck freshness": "RECENT",
         "Second source": "https://www.sec.gov/Archives/edgar/data/1/close",
     }])
+    if closed:
+        write_csv(tmp_path, "second_financing_status.csv", [{
+            "event_key": EVENT, "second_financing_status": "CLOSED",
+            "second_financing_closed": "YES",
+            "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+            "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
+            "verified_as_of": TODAY.isoformat(),
+        }])
     write_csv(tmp_path, "step7_pre_phase3_feed.csv", [])
     return tmp_path
 
@@ -55,7 +63,7 @@ def test_green_only_with_current_verified_event(tmp_path):
     assert len(rows) == 1
     assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
     assert status["green_count"] == 1
-    assert rows[0]["Planned exit (-7 days)"] == (TODAY + timedelta(days=33)).isoformat()
+    assert rows[0]["Planned exit (-3 days)"] == (TODAY + timedelta(days=37)).isoformat()
 
 
 def test_unified_gate_and_score_columns_in_one_row(tmp_path):
@@ -88,9 +96,10 @@ def test_unrated_lead_cannot_jump_a_verified_event(tmp_path):
 
 
 def test_second_financing_completed_requires_audited_exact_event(tmp_path):
-    fixture(tmp_path)
+    fixture(tmp_path, closed=False)
     rows, _ = build_queue(tmp_path, TODAY)
     assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
+    assert rows[0]["Entry qualification"].startswith("REVIEW")
     closed = {
         "event_key": EVENT,
         "second_financing_status": "CLOSED",
@@ -198,8 +207,8 @@ def test_stale_snapshot_invalidates_green(tmp_path):
     assert status["green_count"] == 0
 
 
-def test_last_week_never_starts_position(tmp_path):
-    rows, _ = build_queue(fixture(tmp_path, due=7), TODAY)
+def test_no_new_entry_at_pdufa_minus_three(tmp_path):
+    rows, _ = build_queue(fixture(tmp_path, due=3), TODAY)
     assert rows[0]["Entry qualification"] == "RED WINDOW — NO NEW ENTRY"
 
 
@@ -283,7 +292,7 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_one_missing_gate_cannot_be_green,
             test_blocked_sec_does_not_allow_green,
             test_stale_snapshot_invalidates_green,
-            test_last_week_never_starts_position,
+            test_no_new_entry_at_pdufa_minus_three,
             test_resolved_event_is_not_eligible,
             test_missing_exact_financing_event_is_not_ticker_matched,
             test_trial_registry_posting_is_never_called_phase3_success,
