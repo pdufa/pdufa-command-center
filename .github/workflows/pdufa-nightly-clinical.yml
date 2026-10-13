@@ -11,6 +11,11 @@ on:
         options: ['ALL', '2', '3', '4']
         default: 'ALL'
         required: true
+      include_gem:
+        description: 'Include fourth GEMS block in the nightly ALL sequence'
+        type: boolean
+        default: false
+        required: false
 
 permissions:
   contents: read
@@ -210,3 +215,23 @@ jobs:
             data/phase_pipeline.csv
             data/phase_pipeline_market_caps.csv
             data/phase3_announcements.csv
+
+  gem_block:
+    name: 'BLOCK 4 GEMS — dispatch research scan after POST3'
+    needs: scan4
+    if: ${{ always() && inputs.scan == 'ALL' && inputs.include_gem }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Request fourth GEMS scan (no entry certification)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/gem-research-quality.yml/dispatches" \
+            -f ref=main -f 'inputs[action]=REVERIFY_PARTIAL'
+          echo "Fourth GEMS research scan accepted after #2 / #3 / #4."
+          echo "The GEM workflow reports its own completion, Gmail notices and source-health holds."
