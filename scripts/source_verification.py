@@ -988,6 +988,12 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
         if sec_auto_retries >= SEC_AUTO_RECOVERY_LIMIT or not retryable_sec_failure(row):
             return row
         sec_auto_retries += 1
+        # body() intentionally caches *all* outcomes, including failures.
+        # Evict ONLY this confirmed transient exception or the retry would
+        # immediately replay the cached HTTP_503 instead of a new SEC fetch.
+        failed_url = row.get("source_url", "")
+        if isinstance(verifier.cache.get(failed_url), Exception):
+            verifier.cache.pop(failed_url, None)
         retry_result, attempted = retry_sec_claim(row, recheck)
         if attempted and retry_result["verification_status"] != "TECHNICAL_FAILURE":
             sec_auto_recovered += 1
