@@ -39,6 +39,41 @@ def publish(artifacts, data_dir, output):
     status = ("COMPLETE WITH WARNINGS" if optional_gaps else "COMPLETE") if complete else "PARTIAL"
     run_id = os.environ.get("GITHUB_RUN_ID", "")
     run_url = "https://github.com/pdufa/pdufa-command-center/actions/runs/" + run_id if run_id.isdigit() else ""
+    # Publish fresh SEC rechecks as a separate, non-authoritative research
+    # section inside the existing source report. This report is already
+    # deployed to SCANS; no workflow modification or trading-state mutation.
+    ir_report = {"status": "NO_FRESH_RESULT", "leads_checked": 0,
+                 "sec_transactions_verified": 0, "results": []}
+    ir_path = artifacts / "finance_ir_sec_recheck.csv"
+    sec_manifest_path = artifacts / "sec_scan_report.json"
+    if sec_manifest_path.is_file():
+        sec_manifest = json.loads(sec_manifest_path.read_text())
+        intended = int(sec_manifest.get("public_ir_leads_checked_against_sec", 0))
+        if (sec_manifest.get("public_ir_recheck_status") == "COMPLETE"
+                and ir_path.is_file()):
+            raw_ir_rows = read_rows(ir_path)
+            # A single closing is not the second post-Phase3 financing;
+            # publish no entry authorization, including when SEC verifies it.
+            valid = (len(raw_ir_rows) == intended and 0 < intended <= 1000 and
+                     all(row.get("company_ir_status") == "CONFIRMED_PUBLIC_SOURCE_LEAD"
+                         and row.get("gem_entry_authorized") == "NO"
+                         and row.get("event_key") and row.get("ir_close_date")
+                         and row.get("sec_recheck_status")
+                         for row in raw_ir_rows))
+            if valid:
+                ir_report = {
+                    "status": "COMPLETE_RESEARCH_ONLY",
+                    "leads_checked": len(raw_ir_rows),
+                    "sec_transactions_verified": sum(
+                        row.get("sec_recheck_status") == "SEC_TRANSACTION_VERIFIED"
+                        for row in raw_ir_rows),
+                    "results": raw_ir_rows,
+                    "entry_authorized": False,
+                }
+            else:
+                ir_report["status"] = "RECHECK_LEDGER_INCONSISTENT"
+        elif sec_manifest.get("public_ir_recheck_status") == "FAILED":
+            ir_report["status"] = "SEC_RECHECK_FAILED"
     report = {"schema_version": 2, "verification_version": VERSION,
               "updated_at_utc": now(), "status": status,
               "source_checked_at_utc": max(checked_times) if checked_times else "",
@@ -47,6 +82,7 @@ def publish(artifacts, data_dir, output):
               "source_commit": os.environ.get("GITHUB_SHA", ""),
               "scope": "Five extended source ledgers; full trading eligibility is evaluated separately",
               "full_coverage_verified": False, "sources": source_rows,
+              "public_ir_sec_recheck": ir_report,
               "required_issue_examples": required_gaps[:24],
               "supplemental_issue_examples": optional_gaps[:12], **reconciled}
     output.parent.mkdir(parents=True, exist_ok=True)
