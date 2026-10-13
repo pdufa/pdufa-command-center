@@ -81,7 +81,7 @@ def _result(lead, status, reason, sec=None):
     return {
         "event_key": lead["event_key"],
         "ticker": lead["ticker"],
-        "company_ir_status": "PUBLIC_IR_RESEARCH_LEAD",
+        "company_ir_status": "CONFIRMED_PUBLIC_SOURCE_LEAD",
         "ir_close_date": lead["public_close_date"],
         "transaction_type": lead["transaction_type"],
         "company_ir_url": lead["company_ir_url"],
