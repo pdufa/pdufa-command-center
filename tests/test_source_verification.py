@@ -217,6 +217,57 @@ class VerificationTests(unittest.TestCase):
         self.assertTrue(result["source_url"].endswith("ex99-5.htm"))
         self.assertEqual(len([url for url in checked if "/ex99-" in url]), 5)
 
+    def test_explicit_extended_pdufa_date_is_verified_only_for_exact_program(self):
+        old_url = SEC_DOC.replace("ex99-1.htm", "previous.htm")
+        new_url = SEC_DOC
+        prior = b"Test Pharma announced TestDrug for lung cancer. PDUFA target date October 1, 2026."
+        extension = (b"Test Pharma reports that the FDA has extended the PDUFA "
+                     b"target action date for TestDrug for lung cancer from "
+                     b"October 1, 2026 to November 1, 2026.")
+        def fetch(url, new_document=extension):
+            if url == old_url:
+                return prior
+            if "/submissions/" in url:
+                return json.dumps(submissions()).encode()
+            if url.endswith("index.json"):
+                return b'{"directory":{"item":[{"name":"ex99-1.htm"}]}}'
+            if url == new_url:
+                return new_document
+            raise AssertionError(url)
+
+        event = {**EVENT, "pdufa_evidence_url": old_url}
+        verifier = verify.Verifier([COMPANY], fetch=fetch, as_of=date(2026, 10, 12))
+        result = verifier.regulatory(event)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertEqual(result["observed"], "2026-11-01")
+        self.assertEqual(result["source_url"], new_url)
+        self.assertIn("supersedes 2026-10-01", result["reason"])
+        self.assertEqual(len(result["source_sha256"]), 64)
+
+        # Without the exact drug/indication or unambiguous extension language,
+        # the original contradictory primary evidence remains a conflict.
+        for body in (
+            extension.replace(b"TestDrug", b"OtherDrug"),
+            extension.replace(b"lung cancer", b"other disease"),
+            extension.replace(b"extended", b"mentioned"),
+            extension.replace(b"November 1, 2026", b"December 1, 2026"),
+        ):
+            verifier = verify.Verifier(
+                [COMPANY], fetch=lambda url, b=body: fetch(url, b),
+                as_of=date(2026, 10, 12))
+            rejected = verifier.regulatory(event)[0]
+            self.assertEqual(rejected["verification_status"], "CONFLICT", rejected)
+            self.assertEqual(rejected["source_url"], old_url)
+
+    def test_explicit_extension_direct_source_rejects_other_target(self):
+        release = (b"Test Pharma says the FDA has extended the PDUFA "
+                   b"target action date for TestDrug for lung cancer from "
+                   b"October 1, 2026 to November 1, 2026.")
+        first = {**EVENT, "pdufa_evidence_url": SEC_DOC}
+        self.assertEqual(self.verifier(release).regulatory(first)[0]["verification_status"], "VERIFIED")
+        wrong = {**first, "pdufa_date": "2026-12-01"}
+        self.assertEqual(self.verifier(release).regulatory(wrong)[0]["verification_status"], "CONFLICT")
+
     def test_saved_primary_date_conflict_not_overridden_by_fallback(self):
         url = SEC_DOC
         event = {**EVENT, "pdufa_evidence_url": url}
