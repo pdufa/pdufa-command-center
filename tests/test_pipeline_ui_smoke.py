@@ -75,24 +75,19 @@ class PipelinePageSmokeTests(unittest.TestCase):
             self.assertEqual(int(counts.iloc[-1]), len(shown))
             self.assertEqual(int(counts.iloc[:-1].sum()), len(shown))
 
-    def test_plan_tab_renders_editing_and_backup_without_errors(self):
-        """PLAN is a genuine reachable page, with an editor and backup controls."""
+    def test_plan_tab_removed_but_saved_plan_preserved(self):
+        """Deleted PLAN screen must redirect to PDUFA without losing its data."""
         app = AppTest.from_file(str(APP_PATH), default_timeout=90)
         app.session_state["nav"] = "11. PLAN"
         app.run()
         self.assertFalse(list(app.exception),
                          [str(error.message) for error in app.exception])
-        self.assertEqual(app.radio(key="nav").value, "11. PLAN")
-        self.assertTrue(any("11. PLAN — SYSTEM RULES & OPERATING RHYTHM"
-                            in item.body for item in app.markdown))
-        self.assertTrue(any(item.label == "Plan Items" for item in app.metric))
-        self.assertTrue(any(item.key == "save_swiftlook_plan" for item in app.button))
-        self.assertTrue(any(item.key == "download_swiftlook_plan"
-                            for item in app.get("download_button")))
-        # AppTest does not expose Streamlit's data_editor widget as a test element.
-        # The live Playwright audit verifies the rendered PLAN screen on mobile.
-        plan_code = APP_PATH.read_text(encoding="utf-8")
-        self.assertIn('edited_plan = grouped_editor(', plan_code)
+        main_nav = app.radio(key="nav")
+        self.assertEqual(main_nav.value, "PDUFA")
+        self.assertNotIn("11. PLAN", main_nav.options)
+        self.assertTrue((APP_PATH.parent / "data/swiftlook_plan.csv").is_file())
+        self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN" in item.body
+                            for item in app.markdown))
 
     def test_pipeline_opens_with_both_selectors_and_empty_chart(self):
         # Streamlit resolves relative paths against this test file in newer
