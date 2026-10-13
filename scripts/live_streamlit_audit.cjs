@@ -35,6 +35,8 @@ async function waitForRender(page,frame,accepts,timeout=180000){
       text=await frame.locator("body").innerText({timeout:9000});
       if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(text))
         throw Error("Streamlit displays an application exception: "+text.slice(-650));
+      if(text.includes("Source integration failed.") && text.includes("PRE PHASE 3 — LIVE SOURCE MONITOR"))
+        throw Error("PRE PHASE 3 source cache failed validation; refresh Step 7 feed: "+text.slice(-420));
       if(await accepts(text,frame)){
         stableSince??=Date.now();
         // Timed fragments can keep the global Running indicator active even
