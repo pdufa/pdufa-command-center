@@ -301,7 +301,8 @@ class VerificationTests(unittest.TestCase):
             release.replace(b"Closing releases final", b"Closing may release final"),
             release.replace(b"Closing releases final", b"Closing expects to release final"),
             release.replace(b"final $2.5 million of $11 million", b"final $25 million of $11 million"),
-            release.replace(b"today announced the closing", b"today announced plans for"),
+            release.replace(b"Closes Purchase", b"Plans Purchase").replace(
+                b"today announced the closing", b"today announced plans for"),
         ):
             self.assertNotEqual(
                 self.verifier(false_claim).financing(event)["verification_status"], "VERIFIED")
