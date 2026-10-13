@@ -17,6 +17,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from statistics import mean, median
 from urllib.parse import urlsplit
+from trade_window import EXIT_BUFFER_DAYS
 
 EVENT_FIELDS = (
     "event_key", "ticker", "nct_id", "issuer_cik", "phase3_readout_date",
@@ -34,7 +35,7 @@ BAR_FIELDS = (
 )
 ENTRY_METHODS = ("READOUT_BENCHMARK", "FIRST_FINANCING_BENCHMARK",
                  "SECOND_FINANCING", "POST_SECOND_FINANCING_BASE")
-EXIT_DAYS = (30, 14, 7)
+EXIT_DAYS = (30, 14, 7, EXIT_BUFFER_DAYS)
 TRADE_FIELDS = (
     "event_key", "ticker", "nct_id", "entry_method", "exit_days_before_pdufa",
     "status", "reason", "entry_signal_date", "entry_date", "exit_target_date",
