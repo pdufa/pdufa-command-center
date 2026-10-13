@@ -588,14 +588,14 @@ def render_nightly_scan_report():
                      use_container_width=True, key="nightly_reverify_selected"):
             _run_request("REVERIFY_PARTIAL", scan_choice, token)
     with target_verify:
-        if st.button("VERIFY SELECTED", disabled=not authorized,
+        if st.button("VERIFY SAVED SOURCES", disabled=not authorized,
                      use_container_width=True, key="nightly_verify_selected"):
             _run_request("VERIFY_ALL", scan_choice, token)
     with target_rescan:
         if st.button("RESCAN SELECTED", disabled=not authorized,
                      use_container_width=True, key="nightly_rescan_selected"):
             _run_request("RESCAN_ALL", scan_choice, token)
-    st.caption("All controls execute on GitHub Actions; a queued request is not a completed scan. The next published audit is the record of results.")
+    st.caption("VERIFY SAVED SOURCES runs the established ALL clinical-archive audit for #2/#3/#4, or the GEM-only saved-source audit when GEMS is selected. REVERIFY and RESCAN honor the selected target. All requests run on GitHub Actions: acceptance is not completion.")
     st.divider()
     # Keep the existing read-only Gmail/GitHub audit accessible after the
     # former top-level SCANS page was removed. The function applies its own
