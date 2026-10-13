@@ -59,7 +59,7 @@ def test_financing_is_only_scored_when_exact_second_closing_verified():
 def test_pdufa_timing_blocks_late_or_distant_events():
     rows, _ = run([sample(days=14), sample("BBB", days=91)])
     assert all(r["PDUFA rank"] is None for r in rows)
-    assert rows[0]["Phase 3 rank"] is None  # RED/exit window guard needed in source qualification
+    assert rows[0]["Phase 3 rank"] is not None  # Phase 3 ranking has its own window
     assert rows[1]["Phase 3 rank"] is not None
 
 
