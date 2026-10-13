@@ -119,12 +119,12 @@ def attributed_target_dates(event, passage):
     the next program's goal date. We retain preceding program context until
     its own dated target, then reset for the next dated target.
     """
-    date_rx = (r"(?:20\\d{2}-\\d{2}-\\d{2}|"
+    date_rx = (r"(?:20\d{2}-\d{2}-\d{2}|"
                r"(?:January|February|March|April|May|June|July|August|September|"
-               r"October|November|December|Jan\\.?|Feb\\.?|Mar\\.?|Apr\\.?|"
-               r"Jun\\.?|Jul\\.?|Aug\\.?|Sep\\.?|Sept\\.?|Oct\\.?|Nov\\.?|Dec\\.?)"
-               r"\\s+\\d{1,2},?\\s+20\\d{2})")
-    markers = list(re.finditer(r"(?i)\\b(?:PDUFA|target\\s+action\\s+date|goal\\s+date)\\b", passage))
+               r"October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|"
+               r"Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)"
+               r"\s+\d{1,2},?\s+20\d{2})")
+    markers = list(re.finditer(r"(?i)\b(?:PDUFA|target\s+action\s+date|goal\s+date)\b", passage))
     confirmed = set()
     prior_target_end = 0
     for marker in markers:
