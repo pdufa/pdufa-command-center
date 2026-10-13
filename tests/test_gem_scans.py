@@ -2,7 +2,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from gem_scans import STAGES, WEIGHTS, build_gem_scans
+from gem_scans import STAGES, WEIGHTS, build_gem_scans, all_mandatory_entry_gates_pass
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -16,6 +16,7 @@ def sample(ticker="AAA", market=10, second=True, days=40):
         "2nd Financing Completed": (
             "YES — VERIFIED (HISTORICAL)" if second else "NOT VERIFIED"
         ),
+        "Verified 2nd financing close date": "2026-09-15" if second else "",
         "PDUFA verification": "VERIFIED — SOURCE LINKED",
         "Days to PDUFA": days, "Evidence score /100": 85,
         "Clinical evidence /30": 30, "Financing evidence /20": 20,
@@ -65,6 +66,41 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[1]["PDUFA GEM"] == "#2 (96)"
         assert all(status["scan_counts"][stage]["qualified"] == 2 for stage in STAGES)
 
+
+    def test_only_fully_qualified_all_stage_and_second_closed_programs_enter_shortlist(self):
+        best = sample("AAA", market=10)
+        one_short = sample("BBB", market=7)
+        one_short["Entry qualification"] = "REVIEW — ENTRY BLOCKED"
+        before_second = sample("CCC", second=False)
+        on_exit = sample("DDD", days=3)
+        rows, status = run([best, one_short, before_second, on_exit])
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 1)
+        self.assertEqual(sum(all_mandatory_entry_gates_pass(row) for row in rows), 1)
+        self.assertEqual(rows[0]["GEM strict shortlist rank"], 1)
+        self.assertEqual(rows[0]["GEM ALL ENTRY GATES"], "PASS — MANUAL REVIEW ONLY")
+        self.assertTrue(all(row["GEM strict shortlist rank"] is None for row in rows[1:]))
+        self.assertTrue(all(row["GEM ALL ENTRY GATES"] == "NOT MET — WATCH / REVIEW"
+                            for row in rows[1:]))
+        # A high research rank is explicitly insufficient without Stage 1 GREEN.
+        self.assertIsNotNone(rows[1]["PDUFA rank"])
+        self.assertFalse(all_mandatory_entry_gates_pass(rows[1]))
+
+    def test_strict_shortlist_empty_if_sec_blocked_or_financing_not_closed(self):
+        for kwargs in (
+            {"sec_current": False},
+            {"fresh": False},
+        ):
+            rows, status = run([sample()], **kwargs)
+            self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
+            self.assertIsNone(rows[0]["GEM strict shortlist rank"])
+        rows, status = run([sample(second=False)])
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
+        rows, status = run([sample(days=3)])
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
+        row = sample()
+        row["Verified 2nd financing close date"] = ""
+        rows, status = run([row])
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
 
     def test_global_sec_blocked_cannot_produce_post_financing_or_pdufa_entry(self):
         rows, status = run([sample(second=True)], sec_current=False)
