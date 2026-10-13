@@ -120,6 +120,7 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
             "stored_results": _int_or_none(gem_registry.get("stored_results")) if gem_fresh else None,
             "verified_phase3_tracking": _int_or_none(gem.get("verified_phase3_tracking")) if gem_fresh else None,
             "awaiting_second_financing": _int_or_none(gem.get("awaiting_second_financing")) if gem_fresh else None,
+            "strict_entry_gate_shortlist_count": _int_or_none(gem.get("strict_entry_gate_shortlist_count")) if gem_fresh else None,
             "run_url": gem.get("run_url") if gem_fresh else None,
             "all_source_trade_verification": "NOT VERIFIED",
         },
