@@ -994,7 +994,7 @@ class Verifier:
             url = review.get("second_financing_source", "")
             close = review.get("second_financing_date", "")
         mapped = self.event_sources(event).get("financing_urls", [])
-        if isinstance(mapped, list) and mapped and close:
+        if isinstance(mapped, list) and mapped and close and not event.get("_recheck_exact_sec_url"):
             # A source replacement retains the saved closing date and exact
             # event. No company-wide later financing can supply that date.
             url = next((u for u in mapped if sec_url_matches(u, self.cik(event))), url)
