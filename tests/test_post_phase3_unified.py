@@ -55,7 +55,7 @@ def test_green_only_with_current_verified_event(tmp_path):
     assert len(rows) == 1
     assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
     assert status["green_count"] == 1
-    assert rows[0]["Planned exit (-7 days)"] == (TODAY + timedelta(days=33)).isoformat()
+    assert rows[0]["Planned exit (-3 days)"] == (TODAY + timedelta(days=37)).isoformat()
 
 
 def test_unified_gate_and_score_columns_in_one_row(tmp_path):
@@ -198,9 +198,14 @@ def test_stale_snapshot_invalidates_green(tmp_path):
     assert status["green_count"] == 0
 
 
-def test_last_week_never_starts_position(tmp_path):
-    rows, _ = build_queue(fixture(tmp_path, due=7), TODAY)
+def test_pdufa_minus_three_is_no_new_entry(tmp_path):
+    rows, _ = build_queue(fixture(tmp_path, due=3), TODAY)
     assert rows[0]["Entry qualification"] == "RED WINDOW — NO NEW ENTRY"
+
+def test_pdufa_minus_four_is_last_new_entry_day(tmp_path):
+    rows, _ = build_queue(fixture(tmp_path, due=4), TODAY)
+    assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
+    assert rows[0]["PDUFA evidence /15"] == 15
 
 
 def test_resolved_event_is_not_eligible(tmp_path):
@@ -283,7 +288,8 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_one_missing_gate_cannot_be_green,
             test_blocked_sec_does_not_allow_green,
             test_stale_snapshot_invalidates_green,
-            test_last_week_never_starts_position,
+            test_pdufa_minus_three_is_no_new_entry,
+            test_pdufa_minus_four_is_last_new_entry_day,
             test_resolved_event_is_not_eligible,
             test_missing_exact_financing_event_is_not_ticker_matched,
             test_trial_registry_posting_is_never_called_phase3_success,
