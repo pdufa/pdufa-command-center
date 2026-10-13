@@ -12,6 +12,7 @@ from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
+from gem_financing_gate import entry_status
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -245,6 +246,20 @@ def build_gem_scans(root="data", as_of=None):
             item[stage + " score"] = _score(item, stage) if not reasons else None
             item[stage + " rank"] = None
             item[stage + " GEM"] = "—"
+        # Every candidate may be researched from verified Phase 3 onwards,
+        # but NO NEW ENTRY is considered before second-financing CLOSURE.
+        # This is not broker permission or an automated buy recommendation.
+        finance_closed = item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
+        postclose_qualified = any(item[k + " score"] is not None
+                                  for k in ("Post-Financing", "PDUFA"))
+        item["GEM trade entry gate"] = entry_status(
+            closed=finance_closed,
+            qualified=postclose_qualified,
+            feed_current=source_status["feed_current"],
+            days_to_pdufa=days,
+            excluded=status.startswith("CLOSED") and
+                     "PDUFA -3" not in status,
+        )
         results.append(item)
 
     for stage in STAGES:
