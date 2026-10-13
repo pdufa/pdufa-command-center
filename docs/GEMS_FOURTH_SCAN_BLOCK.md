@@ -32,3 +32,19 @@ No source label, Phase 3 score, registry posting, or second-financing announceme
 **WATCH ONLY** until two **distinct** financings after the verified successful Phase 3 release have **actually closed**, with exact-program, dated, independently reviewed SEC primary filings. The SEC recheck, dilution, clinical efficacy/safety, market base and volume, and PDUFA date requirements must also pass. If the live SEC source is blocked or stale, the Post-Financing and PDUFA GEM rankings remain withheld. Exit remains planned for **PDUFA minus 3 calendar days**. Nothing in this block places broker orders.
 
 A successful workflow or a complete registry collection does **not** certify all required sources, historical trading alpha, price appreciation, or FDA approval.
+
+## Finding the few fully qualified GEMS
+
+The GEMS detail view defaults to **ALL MANDATORY ENTRY GATES PASSED**. This is
+the **intersection** of all three source-verified GEM stage qualifications,
+Stage 1 GREEN, two separate post-readout financings that have actually closed,
+fresh source/SEC checks, dilution/clinical/market/PDUFA gates, and the entry
+window extending beyond PDUFA minus three days. It exports a ranked CSV of only
+these fully screened **manual entry-review** candidates.
+
+Other tabs remain available for Phase 3 leads and partially qualified
+research candidates. A Phase 3 rank, a quoted score of 100/100, or a second
+financing announcement does NOT put a stock into the strict shortlist.
+The fourth-block audit displays the exact strict-shortlist count, including 0
+when no companies pass. The system does not claim proven return alpha or place
+trades.
