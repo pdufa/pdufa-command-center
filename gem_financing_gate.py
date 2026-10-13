@@ -11,7 +11,13 @@ from __future__ import annotations
 from datetime import date, datetime
 
 from step7_entry import safe_source
-from post_phase3_unified import parsed_date  # normalized ISO dates only
+
+
+def parsed_date(value):
+    try:
+        return date.fromisoformat(str(value or "").strip()[:10])
+    except (ValueError, TypeError):
+        return None
 
 
 def second_post_phase3_close(event_key, phase3_date, stage, *, as_of):
