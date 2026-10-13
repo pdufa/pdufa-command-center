@@ -122,6 +122,22 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(v.regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
         self.assertNotIn("https://news.google.com/story", v.cache)
 
+    def test_multidrug_release_keeps_pdufa_dates_with_own_program(self):
+        event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
+        release = (
+            b"Test Pharma reports that TestDrug for lung cancer was accepted "
+            b"with priority review (PDUFA November 1, 2026); "
+            b"OtherDrug for skin infections received priority review "
+            b"(PDUFA May 8, 2027), with no advisory committee planned."
+        )
+        row = self.verifier(release).regulatory(event)[0]
+        self.assertEqual(row["verification_status"], "VERIFIED")
+        self.assertEqual(row["observed"], "2026-11-01")
+        self.assertNotIn("2027-05-08", row["observed"])
+        wrong_event = {**event, "pdufa_date": "2026-11-02"}
+        wrong = self.verifier(release).regulatory(wrong_event)[0]
+        self.assertEqual(wrong["verification_status"], "CONFLICT")
+
     def test_other_program_target_in_same_filing_cannot_verify_event(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
         body = b"TestDrug is being studied in lung cancer. The trial is ongoing. We have a separate pipeline. OtherDrug is for skin infections. The PDUFA target date is November 1, 2026."
