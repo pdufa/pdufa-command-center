@@ -100,7 +100,7 @@ def _event_map(root):
     return unique
 
 
-def phase3_tracking_state(record, event, feed_current):
+def phase3_tracking_state(record, event, feed_current, as_of=None):
     """Watch begins at confirmed successful Phase 3, not financing closure.
 
     Ranking requires additional clinical/market gates. A stale feed can never
@@ -115,6 +115,17 @@ def phase3_tracking_state(record, event, feed_current):
             str(event.get("monitor_eligibility") or "").strip().upper() == "EXCLUDED" or
             str(record.get("Entry qualification") or "").startswith("EXCLUDED")):
         return "CLOSED — FDA EVENT RESOLVED"
+    # An unrelated trial or a future-dated readout cannot start this
+    # exact-program GEM watch, even if an old source status says VERIFIED.
+    event_ticker = str(event.get("ticker") or "").strip().upper()
+    event_nct = str(event.get("nct_id") or "").strip().upper()
+    if ((event_ticker and event_ticker != str(record.get("Ticker") or "").strip().upper())
+            or (event_nct and event_nct != str(record.get("NCT ID") or "").strip().upper())):
+        return "VERIFICATION HOLD — SOURCE PROGRAM IDENTITY CONFLICT"
+    observed = parsed_date(as_of) if as_of else parsed_date(record.get("As of Pacific"))
+    clinical_date = parsed_date(event.get("phase3_date"))
+    if observed is None or clinical_date is None or clinical_date > observed:
+        return "AWAITING VERIFIED NONFUTURE PHASE 3 READOUT"
     if str(event.get("conflict_flag") or "").strip().upper() not in (
         "", "NO", "NONE", "FALSE", "0", "PASS"
     ):
@@ -215,7 +226,7 @@ def build_gem_scans(root="data", as_of=None):
                 str(record.get("Entry qualification") or "").startswith("RED WINDOW")):
             item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
-        status = phase3_tracking_state(item, event, source_status["feed_current"])
+        status = phase3_tracking_state(item, event, source_status["feed_current"], source_status.get("as_of"))
         item["Phase 3 tracking"] = status
         item["Phase 3 result date (source)"] = (
             str(event.get("phase3_date") or "")[:10]
