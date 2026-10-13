@@ -66,7 +66,7 @@ class GemReadinessTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root/"phase3_announcements.csv").write_text(
-                "ticker,nct_id\\nTEST,NCT01234567\\n", encoding="utf-8"
+                "ticker,nct_id\nTEST,NCT01234567\n", encoding="utf-8"
             )
             (root/"phase3_intake_status.json").write_text(json.dumps({
                 "status": "COMPLETE", "complete": True,
@@ -88,7 +88,7 @@ class GemReadinessTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root/"phase3_announcements.csv").write_text(
-                "ticker,nct_id\\nTEST,NCT01234567\\n", encoding="utf-8"
+                "ticker,nct_id\nTEST,NCT01234567\n", encoding="utf-8"
             )
             (root/"phase3_intake_status.json").write_text(json.dumps({
                 "status": "COMPLETE", "complete": True,
