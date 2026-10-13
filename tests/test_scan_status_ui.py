@@ -2,7 +2,7 @@
 import unittest
 
 from scan_status_ui import (
-    WORKFLOWS, pacific_time, run_link, run_state,
+    WORKFLOWS, combine_run_pages, pacific_time, run_link, run_state,
     verification_numbers, workflow_snapshots,
 )
 
@@ -52,6 +52,21 @@ class ScanStatusPanelTests(unittest.TestCase):
             "https://github.com/pdufa/pdufa-command-center/actions/runs/38425422351")
         self.assertEqual(run_link({"html_url": "https://github.com/attacker/fake/actions/runs/1"}), "")
         self.assertEqual(run_link({"html_url": "javascript:alert(1)"}), "")
+
+    def test_active_source_survives_a_flood_of_newer_skipped_repair_runs(self):
+        source = WORKFLOWS["FDA / SEC / Financial / Market / Issuer"]
+        running = {"id": 10, "path": ".github/workflows/" + source,
+                   "status": "in_progress", "created_at": "2026-10-13T15:00:00Z"}
+        queued = {"id": 11, "path": ".github/workflows/" + source,
+                  "status": "queued", "created_at": "2026-10-13T16:00:00Z"}
+        noise = [{"id": i + 20, "path": ".github/workflows/pdufa-safe-auto-repair.yml",
+                  "status": "completed", "conclusion": "skipped",
+                  "created_at": "2026-10-13T16:01:00Z"}
+                 for i in range(100)]
+        combined = combine_run_pages(noise, [running], [queued, running])
+        self.assertEqual(len(combined), 102)
+        self.assertEqual([r["id"] for r in combined if r["status"] == "in_progress"], [10])
+        self.assertEqual(workflow_snapshots(combined)[source]["id"], 11)
 
     def test_pacific_time_and_missing_timestamp(self):
         self.assertIn("PDT", pacific_time("2026-10-13T15:50:03Z"))
