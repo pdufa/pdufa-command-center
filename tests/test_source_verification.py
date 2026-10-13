@@ -336,8 +336,14 @@ class VerificationTests(unittest.TestCase):
             b"the Closing Date, (2) a potential additional $75 million draw "
             b"at the Company's option following FDA approval."
         )
-        self.assertTrue(verify.documented_drawn_credit_tranche(actual.decode(), "2026-09-04"),
-                        "SEC funded-draw parser did not recognize actual dated cash receipt")
+        self.assertTrue(
+            verify.documented_drawn_credit_tranche(actual.decode(), "2026-09-04"),
+            {"dates": sorted(verify.dates(actual.decode())),
+             "matches_closing": bool(verify.re.search(r"(?i)\bClosing\s+Date\b", actual.decode())),
+             "matches_credit": bool(verify.re.search(r"(?i)\bcredit\s+agreement\b", actual.decode())),
+             "matches_draw": bool(verify.re.search(
+                 r"(?i)\$\s*[\d,.]+\s+(?:million|billion)\s+drawn\s+on\s+the\s+Closing\s+Date\b",
+                 actual.decode()))})
         result = self.verifier(actual).financing(event)
         self.assertEqual(result["verification_status"], "VERIFIED", result)
         self.assertEqual(result["observed"], "2026-09-04")
