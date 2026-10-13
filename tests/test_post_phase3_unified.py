@@ -212,6 +212,33 @@ def test_no_new_entry_at_pdufa_minus_three(tmp_path):
     assert rows[0]["Entry qualification"] == "RED WINDOW — NO NEW ENTRY"
 
 
+def test_four_days_remaining_is_eligible_when_financing_verified(tmp_path):
+    rows, status = build_queue(fixture(tmp_path, due=4), TODAY)
+    assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
+    assert rows[0]["PDUFA evidence /15"] == 15
+    assert status["green_count"] == 1
+
+
+def test_unverified_second_financing_cannot_be_green(tmp_path):
+    rows, status = build_queue(fixture(tmp_path, closed=False), TODAY)
+    assert rows[0]["Entry qualification"].startswith("REVIEW")
+    assert status["green_count"] == 0
+
+
+def test_old_second_financing_audit_cannot_be_green(tmp_path):
+    fixture(tmp_path)
+    write_csv(tmp_path, "second_financing_status.csv", [{
+        "event_key": EVENT, "second_financing_status": "CLOSED",
+        "second_financing_closed": "YES",
+        "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+        "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
+        "verified_as_of": (TODAY - timedelta(days=45)).isoformat(),
+    }])
+    rows, status = build_queue(tmp_path, TODAY)
+    assert rows[0]["Entry qualification"].startswith("REVIEW")
+    assert status["green_count"] == 0
+
+
 def test_resolved_event_is_not_eligible(tmp_path):
     rows, _ = build_queue(fixture(tmp_path, outcome="APPROVED"), TODAY)
     assert rows[0]["Entry qualification"].startswith("EXCLUDED")
@@ -293,6 +320,9 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_blocked_sec_does_not_allow_green,
             test_stale_snapshot_invalidates_green,
             test_no_new_entry_at_pdufa_minus_three,
+            test_four_days_remaining_is_eligible_when_financing_verified,
+            test_unverified_second_financing_cannot_be_green,
+            test_old_second_financing_audit_cannot_be_green,
             test_resolved_event_is_not_eligible,
             test_missing_exact_financing_event_is_not_ticker_matched,
             test_trial_registry_posting_is_never_called_phase3_success,
