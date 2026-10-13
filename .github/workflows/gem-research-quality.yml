@@ -9,6 +9,8 @@ on:
   # the safety gate does not depend on waiting for the next scheduled slot.
   # Publishing CSV/JSON files will not recursively trigger this workflow.
   push:
+    branches:
+      - main
     paths:
       - ".github/workflows/gem-research-quality.yml"
   schedule:
