@@ -84,6 +84,7 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
         subject, body = compose_start(scan, mode, run_id, start)
         response = sender(settings, subject, body)
         audit["start_email"] = response["status"]
+        audit["start_inbox"] = response.get("inbox_status", "NOT_CONFIRMED")
         if audit["start_email"] != "submitted_not_delivered":
             raise EmailSendError("Mail provider did not acknowledge START message")
     except Exception as exc:
@@ -141,6 +142,7 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
                 scan, mode, run_id, finished, state, details, duration)
             response = sender(settings, subject, body)
             audit["end_email"] = response["status"]
+            audit["end_inbox"] = response.get("inbox_status", "NOT_CONFIRMED")
             if audit["end_email"] != "submitted_not_delivered":
                 audit["end_email"] = "FAILED_OR_UNKNOWN"
         except Exception as exc:
@@ -178,6 +180,8 @@ def main():
         "status": audit["coverage_status"],
         "start_email": audit["start_email"],
         "end_email": audit["end_email"],
+        "start_inbox": audit.get("start_inbox", "NOT_CONFIRMED"),
+        "end_inbox": audit.get("end_inbox", "NOT_CONFIRMED"),
         "summary": audit.get("summary", ""),
     }, indent=2))
     return code
