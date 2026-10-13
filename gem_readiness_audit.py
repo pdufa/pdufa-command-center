@@ -69,6 +69,7 @@ def clinical_collection_status(path, as_of):
                  "STALE_CLINICAL_ONLY")
         return {"status": label, "pacific_day": pacific_day.isoformat(),
                 "age_days": age, "matched_posted_results": obj.get("matched_posted_results"),
+                "stored_results": obj.get("stored_results"),
                 "source_completed": completed}
     except (ValueError, TypeError, KeyError, OSError, AttributeError):
         return {"status": "UNVERIFIABLE", "pacific_day": None, "age_days": None}
@@ -119,11 +120,25 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
     clinical = clinical_collection_status(p/"phase3_intake_status.json", today)
     if clinical["status"] != "CURRENT_CLINICAL_ONLY":
         risks.append("PHASE3_COLLECTOR_COVERAGE_NOT_CURRENTLY_VERIFIED")
+    # A saved collector state may describe data retained only as a past
+    # workflow artifact, while the current checkout has an empty CSV. A
+    # "complete" collector badge must NOT mask missing discovery observations.
+    ledger = inputs["phase3_announcements.csv"]
+    stored_results = clinical.get("stored_results")
+    source_ledger_reconciled = (
+        ledger["state"] == "PRESENT" and
+        isinstance(stored_results, int) and not isinstance(stored_results, bool) and
+        stored_results == ledger["rows"]
+    )
+    if not source_ledger_reconciled:
+        risks.append("PHASE3_RESULT_LEDGER_MISSING_OR_COUNT_MISMATCH")
+    all_source_issues = bool(source_stale or missing_required or
+                             not source_ledger_reconciled)
     return {
         "as_of_pacific": today.isoformat(),
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "research_status": ("HOLD_STALE_OR_MISSING_SOURCES"
-                            if source_stale or missing_required else
+                            if all_source_issues else
                             "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED"),
         "full_universe_coverage_verified": False,
         "historical_return_edge_validated": False,
@@ -140,6 +155,9 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         "discovery_review_leads": len(discovery),
         "discovery_source_status": discovery_status,
         "clinical_collector": clinical,
+        "phase3_saved_ledger_reconciled": source_ledger_reconciled,
+        "phase3_saved_ledger_rows": ledger["rows"],
+        "phase3_collector_reported_stored_rows": stored_results,
         "required_source_inventory": inputs,
         "missing_required_inputs": missing_required,
         "historical_data_inventory": histories,
