@@ -309,6 +309,53 @@ class VerificationTests(unittest.TestCase):
                  b"PDUFA November 1, 2026 - FDA target date remains scheduled.")
         self.assertEqual(self.verifier(wrong).issuer(event)[0]["verification_status"], "REVIEW_REQUIRED")
 
+    def test_official_businesswire_datelines_verify_issuer_release(self):
+        vertex = {**EVENT, "company": "Vertex Pharmaceuticals Incorporated",
+                  "drug": "povetacicept",
+                  "indication": "IgA nephropathy (IgAN) in adults",
+                  "trial_evidence_url": SEC_DOC}
+        release = (
+            b"BOSTON--(BUSINESS WIRE)--Jun. 1, 2026-- "
+            b"Vertex Pharmaceuticals Incorporated today announced that "
+            b"povetacicept for IgA nephropathy (IgAN) in adults "
+            b"was accepted for FDA BLA review."
+        )
+        result = self.verifier(release).issuer(vertex)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["observed"], "2026-06-01")
+
+        exel = {**EVENT, "company": "Exelixis, Inc.",
+                "drug": "zanzalintinib + atezolizumab",
+                "indication": "metastatic colorectal cancer",
+                "trial_evidence_url": SEC_DOC}
+        combination = (
+            b"ALAMEDA, Calif.--(BUSINESS WIRE)--Feb. 2, 2026-- "
+            b"Exelixis, Inc. today announced its NDA for zanzalintinib, "
+            b"in combination with atezolizumab, for metastatic colorectal "
+            b"cancer was accepted for FDA review."
+        )
+        actual = self.verifier(combination).issuer(exel)[0]
+        self.assertEqual(actual["verification_status"], "VERIFIED")
+        self.assertEqual(actual["observed"], "2026-02-02")
+
+        # Two molecules mentioned in unrelated sections don't establish
+        # a named combination. Nor can a future PDUFA goal be the release date.
+        unrelated = (
+            b"ALAMEDA, Calif.--(BUSINESS WIRE)--Feb. 2, 2026-- "
+            b"Exelixis, Inc. today announced zanzalintinib for metastatic "
+            b"colorectal cancer. " + b"Research continues. " * 19 +
+            b"Separately, the company announced atezolizumab development."
+        )
+        self.assertEqual(self.verifier(unrelated).issuer(exel)[0]["verification_status"],
+                         "REVIEW_REQUIRED")
+        undated = (
+            b"Exelixis, Inc. announced zanzalintinib in combination with "
+            b"atezolizumab for metastatic colorectal cancer. "
+            b"PDUFA target action date December 3, 2026--."
+        )
+        self.assertEqual(self.verifier(undated).issuer(exel)[0]["verification_status"],
+                         "REVIEW_REQUIRED")
+
     def test_issuer_discovers_actual_sec_exhibit_when_saved_url_absent(self):
         def fetch(url):
             if url.endswith(".json") and "/submissions/" in url:
