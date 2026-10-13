@@ -309,6 +309,15 @@ def render_scan_status(published_report_loader):
                " · coverage: " + str(report.get("status", "UNVERIFIED")) +
                ". Unresolved items include missing evidence and conflicting claims, not unfinished compute jobs.")
 
+    sec_data = next((s for s in report.get("sources", [])
+                     if s.get("source") == "SEC"), {})
+    if "auto_retry_attempts" in sec_data:
+        retried = int(sec_data.get("auto_retry_attempts", 0))
+        cleared = int(sec_data.get("auto_retry_cleared", 0))
+        st.caption(f"SEC self-recovery: {retried} bounded network rechecks, "
+                   f"{cleared} technical failures cleared in this scan. "
+                   "This does not waive any missing-financing evidence checks.")
+
     comparison = report.get("comparison") or {}
     if comparison.get("available"):
         st.markdown("#### Change from previous published scan")

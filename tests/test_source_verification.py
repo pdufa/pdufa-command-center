@@ -72,6 +72,75 @@ class VerificationTests(unittest.TestCase):
         result = self.verifier(b"").registry(COMPANY)
         self.assertEqual(result["verification_status"], "TECHNICAL_FAILURE")
 
+    def test_full_september_month_is_not_corrupted_by_sept_abbreviation(self):
+        self.assertEqual(verify.dates("September 4, 2026"), {"2026-09-04"})
+        self.assertEqual(verify.dates("Sept. 4, 2026"), {"2026-09-04"})
+        self.assertEqual(verify.dates("Sep 4, 2026"), {"2026-09-04"})
+        self.assertEqual(verify.dates("September 4, 2026 and Sept. 5, 2026"),
+                         {"2026-09-04", "2026-09-05"})
+
+    def test_sec_transient_retry_never_promotes_unverified_or_conflicting_evidence(self):
+        base = {"event_key": "ABC|DRUG", "ticker": "ABC", "category": "SEC",
+                "claim": "FINANCING_CLOSURE", "verification_status": "TECHNICAL_FAILURE",
+                "reason": "HTTP_503", "source_url": SEC_DOC, "source_sha256": ""}
+        calls, delays = [], []
+        fresh = {**base, "verification_status": "VERIFIED",
+                 "source_sha256": "a" * 64, "reason": "Dated SEC closing documented"}
+        new, attempted = verify.retry_sec_claim(
+            base, lambda: (calls.append("fetch"), fresh)[1],
+            sleeper=lambda seconds: delays.append(seconds))
+        self.assertTrue(attempted)
+        self.assertEqual(new["verification_status"], "VERIFIED")
+        self.assertEqual(calls, ["fetch"])
+        self.assertEqual(delays, [2])
+        for blocked in ("HTTP_403", "HTTP_401", "An identifying SEC_USER_AGENT is required",
+                        "SourceUnavailable", "HTTP_404"):
+            calls.clear()
+            prior = {**base, "reason": blocked}
+            same, attempted = verify.retry_sec_claim(prior, lambda: calls.append("should not run"))
+            self.assertFalse(attempted, blocked)
+            self.assertEqual(same, prior)
+            self.assertFalse(calls)
+        review, attempted = verify.retry_sec_claim(
+            {**base, "verification_status": "REVIEW_REQUIRED", "reason": "No proof of close"},
+            lambda: self.fail("Missing evidence must never auto-retry"))
+        self.assertFalse(attempted)
+        self.assertEqual(review["verification_status"], "REVIEW_REQUIRED")
+        with self.assertRaisesRegex(ValueError, "ungrounded verification"):
+            verify.retry_sec_claim(base, lambda: {**fresh, "source_sha256": ""}, sleeper=lambda _: None)
+        with self.assertRaisesRegex(ValueError, "claim identity"):
+            verify.retry_sec_claim(base, lambda: {**fresh, "ticker": "XYZ"}, sleeper=lambda _: None)
+
+    def test_sec_source_auto_rechecks_transport_failure_within_original_run(self):
+        calls = []
+        def first_fails_then_succeeds(url):
+            if "/submissions/" in url:
+                calls.append(url)
+                if len(calls) == 1:
+                    raise verify.SourceUnavailable("HTTP_503")
+                return json.dumps(submissions()).encode()
+            raise AssertionError("Unexpected external request " + url)
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            save_rows(folder / "pdufa_candidates.csv", [{**EVENT}])
+            save_rows(folder / "company_registry.csv", [COMPANY])
+            out = folder / "reports"
+            with patch.object(verify.time, "sleep"):
+                manifest = verify.verify_source(
+                    "SEC", folder, out, fetch=first_fails_then_succeeds,
+                    as_of=date(2026, 10, 12))
+            entries = verify.read_rows(out / "sec_verification.csv")
+            indexed = next(row for row in entries if row["claim"] == "FILINGS_INVENTORY")
+            self.assertEqual(indexed["verification_status"], "VERIFIED")
+            self.assertEqual(len(indexed["source_sha256"]), 64)
+            self.assertEqual(manifest["sec_auto_retry_attempts"], 1)
+            self.assertEqual(manifest["sec_auto_retry_cleared"], 1)
+            self.assertEqual(manifest["sec_auto_retry_limit"], 8)
+            self.assertEqual(len(calls), 2)
+            financing = next(row for row in entries if row["claim"] == "FINANCING_CLOSURE")
+            self.assertEqual(financing["verification_status"], "REVIEW_REQUIRED")
+            self.assertEqual(manifest["required_findings_unresolved"], 1)
+
     def test_response_cache_does_not_refetch_shared_company(self):
         calls = []
         def fetch(url):
@@ -274,8 +343,16 @@ class VerificationTests(unittest.TestCase):
             b"the Closing Date, (2) a potential additional $75 million draw "
             b"at the Company's option following FDA approval."
         )
+        self.assertTrue(
+            verify.documented_drawn_credit_tranche(actual.decode(), "2026-09-04"),
+            {"dates": sorted(verify.dates(actual.decode())),
+             "matches_closing": bool(verify.re.search(r"(?i)\bClosing\s+Date\b", actual.decode())),
+             "matches_credit": bool(verify.re.search(r"(?i)\bcredit\s+agreement\b", actual.decode())),
+             "matches_draw": bool(verify.re.search(
+                 r"(?i)\$\s*[\d,.]+\s+(?:million|billion)\s+drawn\s+on\s+the\s+Closing\s+Date\b",
+                 actual.decode()))})
         result = self.verifier(actual).financing(event)
-        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
         self.assertEqual(result["observed"], "2026-09-04")
         self.assertIn("actual funded credit-facility draw", result["reason"])
         self.assertIn("$75 million drawn on the Closing Date", result["evidence"])

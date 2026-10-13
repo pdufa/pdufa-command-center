@@ -23,7 +23,13 @@ def publish(artifacts, data_dir, output):
         if findings:
             manifest = json.loads((artifacts / (source.lower() + "_scan_report.json")).read_text())
             checked_times.append(manifest["finished_at"])
-        source_rows.append({"source": source, "status": state, **summary(findings)})
+        item = {"source": source, "status": state, **summary(findings)}
+        if source == "SEC" and findings:
+            # These are source-request recovery counts, never evidence proof.
+            item["auto_retry_attempts"] = int(manifest.get("sec_auto_retry_attempts", 0))
+            item["auto_retry_cleared"] = int(manifest.get("sec_auto_retry_cleared", 0))
+            item["auto_retry_limit"] = int(manifest.get("sec_auto_retry_limit", 0))
+        source_rows.append(item)
     findings = read_rows(artifacts / "combined_verification.csv")
     required_gaps = [r for r in findings if r["verification_required"] == "YES"
                      and r["verification_status"] not in {"VERIFIED", "NOT_APPLICABLE"}]
