@@ -13,7 +13,7 @@ The GEMS panel already contains three independently scored **Phase 3**, **Post-F
 
 The same PIN-gated controls operate on each block:
 
-- **VERIFY SELECTED / VERIFY ALL**: GEMS recomputes source readiness using saved files, **without fresh collection**. Clinical 2/3/4 use their established archive-audit logic.
+- **VERIFY SAVED SOURCES / VERIFY ALL**: GEMS recomputes source readiness using saved files, **without fresh collection**. Selecting a clinical target runs the existing three-archive verification bundle; it is not a single-file verification.
 - **REVERIFY SELECTED / REVERIFY PARTIAL**: GEMS refreshes recent ClinicalTrials.gov posted results then audits saved sources; clinical collectors use their existing incremental checks.
 - **RESCAN SELECTED / RESCAN ALL**: GEMS backfills all accessible registry Phase 3 result pages then audits; clinical 2/3/4 use their existing collector. All requests are asynchronous GitHub Actions jobs; dispatch acceptance is not verified completion.
 
