@@ -14,6 +14,7 @@ from math import ceil, isfinite
 from statistics import mean, median
 
 from gem_scans import WEIGHTS as LIVE_WEIGHTS
+from trade_window import MIN_NEW_ENTRY_DAYS, calendar_exit_target
 from post_phase3_trade_backtest import (
     bars_by_ticker, day, https, number, prior_liquidity,
 )
@@ -118,7 +119,7 @@ def validate_snapshot(row, as_of):
                 not https(row.get("pdufa_source_url")) or
                 _text(row.get("pdufa_verdict")) != "VERIFIED"):
             return "PDUFA_SOURCE_OR_PUBLICATION_MISSING", None
-        if (pdufa - signal).days < 4:
+        if (pdufa - signal).days < MIN_NEW_ENTRY_DAYS:
             return "INSIDE_PDUFA_MINUS_3_EXIT_WINDOW", None
     if stage == "PDUFA" and points["PDUFA evidence /15"] != 15:
         return "PDUFA_EVIDENCE_SCORE_NOT_VERIFIED", None
@@ -176,7 +177,7 @@ def _simulate(row, decoded, bars, *, as_of, slippage_bps, min_daily_dollars):
         if last >= len(bars):
             return OTHER, "NOT_YET_30_HISTORICAL_SESSIONS", None
     else:
-        target = decoded["pdufa"] - timedelta(days=3)
+        target = calendar_exit_target(decoded["pdufa"])
         last = next((j for j in reversed(range(len(bars)))
                      if bars[j]["session"] <= target), None)
         if last is None or last <= i or (target - bars[last]["session"]).days > 5:
