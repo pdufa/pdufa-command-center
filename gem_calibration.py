@@ -14,6 +14,7 @@ from math import ceil, isfinite
 from statistics import mean, median
 
 from gem_scans import WEIGHTS as LIVE_WEIGHTS
+from trade_window import MIN_NEW_ENTRY_DAYS, calendar_exit_target
 from post_phase3_trade_backtest import (
     bars_by_ticker, day, https, number, prior_liquidity,
 )
@@ -21,6 +22,7 @@ from post_phase3_trade_backtest import (
 SNAPSHOT_FIELDS = (
     "event_key", "ticker", "nct_id", "issuer_cik", "stage", "signal_date",
     "phase3_public_date", "phase3_source_url",
+    "first_financing_public_date", "first_financing_source_url",
     "second_financing_public_date", "second_financing_source_url",
     "pdufa_date", "pdufa_public_date", "pdufa_source_url",
     "market_source_url", "early_fda_action_date",
@@ -99,13 +101,18 @@ def validate_snapshot(row, as_of):
         return "MARKET_SOURCE_OR_QUOTE_MISSING", None
     if _text(row.get("conflict_flag")).upper() not in ("NONE", "NO", "FALSE", "0", "PASS"):
         return "UNRESOLVED_EVIDENCE_CONFLICT", None
+    first_finance_public = day(row.get("first_financing_public_date"))
     finance_public = day(row.get("second_financing_public_date"))
     if stage in ("Post-Financing", "PDUFA"):
-        if (finance_public is None or clinical_public > finance_public or
+        if (not first_finance_public or not finance_public or
+                clinical_public > first_finance_public or
+                first_finance_public >= finance_public or
                 finance_public > signal or
+                not _sec_for_cik(row.get("first_financing_source_url"),
+                                 row.get("issuer_cik")) or
                 not _sec_for_cik(row.get("second_financing_source_url"),
                                  row.get("issuer_cik"))):
-            return "FINANCING_PUBLICATION_OR_SEC_IDENTITY_UNVERIFIED", None
+            return "TWO_SEC_FINANCING_PUBLICATION_DATES_OR_ISSUER_UNVERIFIED", None
         if (_text(row.get("financing_verdict")) != "TWO_DISTINCT_POST_PHASE3_CLOSES_VERIFIED" or
                 _text(row.get("no_unresolved_dilution")) != "YES" or
                 points["Financing evidence /20"] != 20):
@@ -118,7 +125,7 @@ def validate_snapshot(row, as_of):
                 not https(row.get("pdufa_source_url")) or
                 _text(row.get("pdufa_verdict")) != "VERIFIED"):
             return "PDUFA_SOURCE_OR_PUBLICATION_MISSING", None
-        if (pdufa - signal).days < 4:
+        if (pdufa - signal).days < MIN_NEW_ENTRY_DAYS:
             return "INSIDE_PDUFA_MINUS_3_EXIT_WINDOW", None
     if stage == "PDUFA" and points["PDUFA evidence /15"] != 15:
         return "PDUFA_EVIDENCE_SCORE_NOT_VERIFIED", None
@@ -176,7 +183,7 @@ def _simulate(row, decoded, bars, *, as_of, slippage_bps, min_daily_dollars):
         if last >= len(bars):
             return OTHER, "NOT_YET_30_HISTORICAL_SESSIONS", None
     else:
-        target = decoded["pdufa"] - timedelta(days=3)
+        target = calendar_exit_target(decoded["pdufa"])
         last = next((j for j in reversed(range(len(bars)))
                      if bars[j]["session"] <= target), None)
         if last is None or last <= i or (target - bars[last]["session"]).days > 5:

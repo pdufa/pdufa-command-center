@@ -82,6 +82,10 @@ def render_gem_calibration(root="data"):
             "Weights live": "UNCHANGED",
         })
     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.link_button(
+        "VIEW NIGHTLY GEM CALIBRATION AUDITS / RESEARCH QUEUE",
+        "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-gem-calibration-audit.yml",
+    )
     with st.expander("Full audit, missing inputs and methodology", expanded=False):
         st.json(report)
         st.caption(

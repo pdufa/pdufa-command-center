@@ -147,7 +147,7 @@ def render_post_phase3_stage1(root="data", include_positions=True, ticker=None):
     df = df.drop(columns=["Research rank", "Evidence rank"], errors="ignore")
     st.caption(
         f"{len(df)} candidates match. RED WINDOW means do not start a new trade "
-        "inside the final seven calendar days; it is not an executed sale. "
+        "from PDUFA −3 onward; it is not an executed sale. "
         "The separate Stage 2 panel below evaluates only positions you report."
     )
     st.markdown("#### ALL CANDIDATES — STATUS + SCORES + EVIDENCE GAPS")

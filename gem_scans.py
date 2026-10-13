@@ -11,10 +11,9 @@ from datetime import date
 from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows
+from trade_window import EXIT_BUFFER_DAYS as TRADE_EXIT_DAYS_BEFORE_PDUFA, MIN_NEW_ENTRY_DAYS
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
-TRADE_EXIT_DAYS_BEFORE_PDUFA = 3  # calendar days; final new-entry day is PDUFA -4
-MIN_NEW_ENTRY_DAYS = TRADE_EXIT_DAYS_BEFORE_PDUFA + 1
 # Stage-specific evidence-rubric weights, all totaling 100.
 WEIGHTS = {
     "Phase 3": {
@@ -144,10 +143,10 @@ def _reasons(record, event, stage, feed_current):
         if _number(record.get("Financing evidence /20")) != 20:
             reasons.append("Verified financing / dilution clearance missing")
     if stage in ("Post-Financing", "PDUFA") and event:
-        if str(event.get("new_dilution_flag") or "").strip().upper() in (
-            "YES", "TRUE", "1", "ACTIVE", "UNRESOLVED", "UNKNOWN"
+        if str(event.get("new_dilution_flag") or "").strip().upper() not in (
+            "NO", "FALSE", "0", "NONE", "CLEARED", "RESOLVED"
         ):
-            reasons.append("Current dilution flag not cleared")
+            reasons.append("Current dilution not explicitly cleared in event evidence")
     return reasons
 
 
@@ -162,14 +161,6 @@ def build_gem_scans(root="data", as_of=None):
     results = []
     for record in records:
         item = dict(record)
-        # Stage 1 still enforces its older PDUFA -7 research entry cutoff.
-        # The GEM scanner independently verifies the FDA source for days 4–7,
-        # without bypassing actual clinical, financing or dilution gates.
-        days = record.get("Days to PDUFA")
-        if (days is not None and MIN_NEW_ENTRY_DAYS <= days <= 7 and
-                record.get("PDUFA verification") == "VERIFIED — SOURCE LINKED" and
-                str(record.get("Entry qualification") or "").startswith("RED WINDOW")):
-            item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
         for stage in STAGES:
             reasons = _reasons(item, event, stage, source_status["feed_current"])
@@ -181,14 +172,30 @@ def build_gem_scans(root="data", as_of=None):
         results.append(item)
 
     for stage in STAGES:
-        rated = sorted(
-            (item for item in results if item[stage + " score"] is not None),
-            key=lambda item: (-item[stage + " score"], item.get("Ticker", ""),
-                              item.get("Exact event", ""), item.get("NCT ID", "")),
+        # Ticker-level rankings: a company with multiple programs occupies
+        # ONE rank position. Its highest eligible exact event represents it.
+        best = {}
+        for item in results:
+            ticker = str(item.get("Ticker") or "").strip().upper()
+            value = item[stage + " score"]
+            if not ticker or value is None:
+                continue
+            current = best.get(ticker)
+            if (current is None or
+                    (-value, str(item.get("Exact event") or ""),
+                     str(item.get("NCT ID") or "")) <
+                    (-current[stage + " score"],
+                     str(current.get("Exact event") or ""),
+                     str(current.get("NCT ID") or ""))):
+                best[ticker] = item
+        ordered = sorted(
+            best.values(), key=lambda r: (
+                -r[stage + " score"], str(r.get("Ticker") or ""),
+                str(r.get("Exact event") or ""),
+            )
         )
-        # Competition ranking: exact ties share a rank; subsequent ranks skip.
         last_score, rank = None, None
-        for position, item in enumerate(rated, 1):
+        for position, item in enumerate(ordered, 1):
             if item[stage + " score"] != last_score:
                 rank = position
                 last_score = item[stage + " score"]
@@ -196,10 +203,15 @@ def build_gem_scans(root="data", as_of=None):
             item[stage + " GEM"] = f"#{rank} ({item[stage + ' score']})"
 
     details = dict(source_status)
+    tickers = {str(row.get("Ticker") or "").strip().upper()
+               for row in results if str(row.get("Ticker") or "").strip()}
     details["scan_counts"] = {
         stage: {
-            "qualified": sum(item[stage + " score"] is not None for item in results),
-            "review": sum(item[stage + " score"] is None for item in results),
+            "qualified": len({str(item.get("Ticker") or "").strip().upper()
+                              for item in results if item[stage + " rank"] is not None}),
+            "review": len(tickers) - len({str(item.get("Ticker") or "").strip().upper()
+                                         for item in results if item[stage + " rank"] is not None}),
+            "qualifying_programs": sum(item[stage + " score"] is not None for item in results),
         }
         for stage in STAGES
     }
@@ -207,3 +219,31 @@ def build_gem_scans(root="data", as_of=None):
     details["last_eligible_entry_days_before_pdufa"] = MIN_NEW_ENTRY_DAYS
     details["rubric"] = "STAGE-EVIDENCE-GEMS-V2-D3 — NOT APPROVAL OR RETURN FORECAST"
     return results, details
+
+def ticker_gems(items):
+    """One display row per ticker with independently ranked GEM programs.
+
+    Individual exact-event evidence rows remain in the stage details/exports.
+    Do not merge Phase 3 evidence from one NCT into financing on another.
+    """
+    groups = {}
+    for item in items:
+        ticker = str(item.get("Ticker") or "").strip().upper()
+        if not ticker:
+            continue
+        if ticker not in groups:
+            groups[ticker] = {"Ticker": ticker, "Drug": "",
+                              **{stage + " GEM": "—" for stage in STAGES}}
+        summary = groups[ticker]
+        for stage in STAGES:
+            if item.get(stage + " rank") is not None:
+                summary[stage + " GEM"] = item[stage + " GEM"]
+                summary[stage + " program"] = str(item.get("Drug") or "")
+                summary[stage + " event"] = str(item.get("Exact event") or "")
+                if stage == "Post-Financing":
+                    summary["Drug"] = str(item.get("Drug") or "")
+        if not summary.get("Drug"):
+            summary["Drug"] = str(item.get("Drug") or "")
+    return sorted(groups.values(), key=lambda r: (
+        min((int(r[stage + " GEM"].split(" ")[0][1:]) for stage in STAGES
+             if r[stage + " GEM"] != "—"), default=10**9), r["Ticker"]))

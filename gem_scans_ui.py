@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 import streamlit as st
 
-from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
+from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans, ticker_gems
 from gem_calibration_ui import render_gem_calibration
 
 FILES = (
@@ -138,17 +138,21 @@ def render_gem_scans(root="data"):
             "No currently verified GEM qualifiers pass all requirements. "
             "Research candidates remain below for evidence review; no ranks are invented."
         )
-    if shown:
-        st.markdown(_gems_table(shown[:75]), unsafe_allow_html=True)
-        if len(shown) > 75:
-            st.caption(f"Showing the first 75 of {len(shown):,} candidates in the grouped GEMS display.")
+    ticker_rows = ticker_gems(shown)
+    if ticker_rows:
+        st.markdown(_gems_table(ticker_rows[:75]), unsafe_allow_html=True)
+        if len(ticker_rows) > 75:
+            st.caption(f"Showing the first 75 of {len(ticker_rows):,} unique tickers in GEMS. "
+                       "Individual exact-event program rows remain in the scan detail tables.")
+        st.caption(f"{len(ticker_rows):,} unique tickers · {len(shown):,} exact-program research rows. "
+                   "A ticker has only one GEM rank per category; that category's top verified program is used.")
     else:
         st.info("No candidates match the selected GEMS view.")
 
     st.caption(
-        "GEM entry cutoff is PDUFA -3. The original POST PHASE 3 Stage 1 "
-        "workspace still has its legacy -7-day entry gate; its entry status "
-        "is labeled separately in the GEM detail exports to avoid confusion."
+        "GEM and POST PHASE 3 entry gates now use the same PDUFA −3 "
+        "planned exit. Event-level entry readiness and stage-level research "
+        "rankings remain separate decisions."
     )
     st.markdown("### GEM SCAN QUALIFIERS & FULL COLUMNS")
     tabs = st.tabs(list(STAGES))
@@ -189,13 +193,20 @@ def render_gem_scans(root="data"):
                 stage + " GEM": "GEM rank (score)",
                 stage + " qualifier": "Qualification",
                 stage + " missing": "Missing qualifiers",
-                "Entry qualification": "Legacy Stage 1 entry gate (PDUFA -7)",
+                "Entry qualification": "Exact-event entry gate (PDUFA -3)",
             })
+            distinct_scores = len({record[stage + " score"] for record in items
+                                   if record[stage + " score"] is not None})
             st.caption(
-                f"{len(table):,} rows · {counts[stage]['qualified']:,} "
-                "strictly qualified in this classification. A blank rank "
-                "means REVIEW, not a score of zero."
+                f"{len(table):,} exact-event rows · {counts[stage]['qualified']:,} "
+                f"qualified tickers · {distinct_scores} distinct evidenced scores. "
+                "A blank rank means REVIEW or a secondary program of the same ticker, "
+                "not a zero score."
             )
+            if counts[stage]["qualified"] > 1 and distinct_scores < 3:
+                st.warning("LOW RANKING DISCRIMINATION: fewer than three distinct "
+                           "scores among qualified candidates. Treat tied GEM "
+                           "ranks as research priorities, not trading edge.")
             st.dataframe(table.head(250), use_container_width=True, hide_index=True)
             if len(table) > 250:
                 st.caption("First 250 rows shown; export includes all filtered rows.")

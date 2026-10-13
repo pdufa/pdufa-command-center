@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from step7_entry import GATES, safe_source
 from post_phase3_priority import WEIGHTS, score_candidate, assign_priority_ranks
+from trade_window import EXIT_BUFFER_DAYS, MIN_NEW_ENTRY_DAYS, calendar_exit_target
 from post_phase3_review_priority import REVIEW_COMPONENTS, review_priority, assign_review_ranks
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
@@ -32,7 +33,7 @@ COLUMNS = (
     "Exact event", "Phase 3 evidence", "Financing #2", "2nd Financing Completed",
     "Financing cycle (separate)",
     "PDUFA verification", "Days to PDUFA", "PDUFA date",
-    "Planned exit (-7 days)", "Next action", "Blockers",
+    "Planned exit (-3 days)", "Next action", "Blockers",
     "Registry source", "Phase 3 source", "Financing source",
     "PDUFA source", "As of Pacific",
 )
@@ -95,7 +96,7 @@ def _blank(lane, ticker, drug, indication, nct, today):
         **dict.fromkeys(WEIGHTS, 0),
         "PDUFA verification": "REVIEW — SOURCE MISSING",
         "Days to PDUFA": None, "PDUFA date": "",
-        "Planned exit (-7 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
+        "Planned exit (-3 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
         "Blockers": "No exact-event clinical/financing gate review",
         "Registry source": "", "Phase 3 source": "", "Financing source": "",
         "PDUFA source": "", "As of Pacific": today.isoformat(),
@@ -181,7 +182,7 @@ def build_queue(root, as_of=None):
         indication = clean(event.get("indication"))
         pdufa = parsed_date(event.get("pdufa_date"))
         days = (pdufa - today).days if pdufa else None
-        exit_date = (pdufa - timedelta(days=7)) if pdufa else None
+        exit_date = (calendar_exit_target(pdufa)) if pdufa else None
         outcome = clean(event.get("outcome")).upper()
         excluded = (outcome in RESOLVED or
                     clean(event.get("check_status")).upper().startswith("RESOLVED_") or
@@ -211,10 +212,19 @@ def build_queue(root, as_of=None):
         stage_name = clean(fin_stage.get("second_financing_status")).upper()
         fin_review_date = parsed_date(fin_stage.get("verified_as_of"))
         stage_fresh = bool(fin_review_date and 0 <= (today - fin_review_date).days <= 7)
-        second_financing_verified = (stage_name in {"CLOSED", "FINISHED"} and
-                clean(fin_stage.get("second_financing_audit_status")) == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
-                clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
-                https_source(fin_stage.get("second_financing_source")))
+        first_fin_date = parsed_date(fin_stage.get("first_financing_date"))
+        second_fin_date = parsed_date(fin_stage.get("second_financing_date"))
+        pivotal_readout = parsed_date(event.get("phase3_date"))
+        second_financing_verified = (
+            stage_name in {"CLOSED", "FINISHED"} and
+            clean(fin_stage.get("second_financing_audit_status")) ==
+                "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
+            clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
+            bool(pivotal_readout and first_fin_date and second_fin_date and
+                 pivotal_readout <= first_fin_date < second_fin_date) and
+            safe_source(fin_stage.get("first_financing_source"), sec=True) and
+            safe_source(fin_stage.get("second_financing_source"), sec=True)
+        )
         if second_financing_verified:
             financing_cycle = "RED — FINANCING CLOSED (HISTORICAL)"
         elif stage_fresh and stage_name in {"RUNNING", "IN_PROGRESS"}:
@@ -223,11 +233,16 @@ def build_queue(root, as_of=None):
             financing_cycle = "GREEN — FINANCING STARTED (AS OF REVIEW)"
         else:
             financing_cycle = "REVIEW — FINANCING UNVERIFIED"
+        dilution_explicitly_cleared = clean(event.get("new_dilution_flag")).upper() in (
+            "NO", "FALSE", "0", "NONE", "CLEARED", "RESOLVED"
+        )
         green = (current_feed and funding and attested_ready and verified_date and
-                 clinical and not conflict and pdufa is not None and days > 7)
+                 clinical and not conflict and second_financing_verified and
+                 dilution_explicitly_cleared and
+                 pdufa is not None and days >= MIN_NEW_ENTRY_DAYS)
         if excluded:
             status, action = "EXCLUDED — FDA DECIDED / DATE PASSED", "Historical only; do not open a position"
-        elif pdufa is not None and days <= 7:
+        elif pdufa is not None and days <= EXIT_BUFFER_DAYS:
             status, action = "RED WINDOW — NO NEW ENTRY", "Scheduled exit window; do not initiate a new trade"
         elif not current_feed:
             status, action = "REVIEW — SOURCE SNAPSHOT STALE", "Refresh saved source feed and financing checks"
@@ -243,6 +258,10 @@ def build_queue(root, as_of=None):
                 action = "Review successful Phase 3 primary endpoint, benefit and safety"
             elif conflict:
                 action = "Resolve conflicting clinical/regulatory evidence"
+            elif not second_financing_verified:
+                action = "Verify both separate post-Phase-3 SEC financing closes with exact issuer dates"
+            elif not dilution_explicitly_cleared:
+                action = "Verify that current unresolved dilution risk is explicitly cleared"
             else:
                 action = "Clear missing clinical, financing, dilution and market gates"
         item = _blank("SAVED REGULATORY PIPELINE", ticker, drug, indication, nct, today)
@@ -256,7 +275,7 @@ def build_queue(root, as_of=None):
             "Entry qualification": status,
             "PDUFA verification": ("VERIFIED — SOURCE LINKED" if verified_date else "REVIEW — NOT VERIFIED"),
             "Days to PDUFA": days, "PDUFA date": pdufa.isoformat() if pdufa else "",
-            "Planned exit (-7 days)": exit_date.isoformat() if exit_date else "",
+            "Planned exit (-3 days)": exit_date.isoformat() if exit_date else "",
             "Next action": action,
             "Blockers": clean(funding.get("Gate reasons")) or (
                 "No exact-event financing review available" if not funding else clean(funding.get("Why blocked"))),

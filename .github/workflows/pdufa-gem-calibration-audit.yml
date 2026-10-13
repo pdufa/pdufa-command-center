@@ -1,0 +1,59 @@
+name: PDUFA GEM Historical Evidence and Calibration Audit
+
+# This is a read-only historical-evidence audit. It does not contact SEC,
+# rerun the clinical collectors, certify trade returns or modify GEM weights.
+on:
+  # Daily morning fallback; GitHub limits chained workflow_run depth.
+  # This job only reviews saved research inputs and never scans SEC directly.
+  schedule:
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - PDUFA Nightly Scoring Then Error Check And Safe Repair
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-gem-calibration-${{ github.event_name == 'workflow_run' && 'nightly' || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  evidence:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout trusted main evidence and calibration code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate no-fabrication historical evidence queue and status report
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          python scripts/run_gem_calibration.py \
+            --report reports/gem_validation_report.json \
+            --queue-output reports/gem_historical_research_queue.csv
+      - name: Archive audit for SCANS review and historical source work
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-gem-audit-${{ github.run_id }}
+          path: |
+            reports/gem_validation_report.json
+            reports/gem_historical_research_queue.csv
+          if-no-files-found: error
+          retention-days: 30

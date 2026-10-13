@@ -2,7 +2,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from gem_scans import STAGES, WEIGHTS, build_gem_scans
+from gem_scans import STAGES, WEIGHTS, build_gem_scans, ticker_gems
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -67,10 +67,8 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[2]["Post-Financing rank"] is not None
         assert rows[2]["PDUFA rank"] is not None
 
-    def test_last_week_survives_old_stage1_red_cutoff_if_primary_source_verified(self):
+    def test_pdufa_minus_five_qualifies_with_direct_primary_source(self):
         row = sample(days=5)
-        row["Entry qualification"] = "RED WINDOW — NO NEW ENTRY"
-        row["PDUFA evidence /15"] = 0  # older Stage 1 day-7 scoring rule
         rows, _ = run([row])
         assert rows[0]["PDUFA rank"] == 1
         assert rows[0]["PDUFA score"] == 100
@@ -115,6 +113,36 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         rows, _ = run([sample(), sample("BBB"), sample("CCC", market=7)])
         assert [r["Phase 3 rank"] for r in rows] == [1, 1, 3]
 
+
+
+    def test_missing_current_dilution_evidence_fails_closed(self):
+        row = sample()
+        rows, _ = run([row], events={
+            row["Exact event"]: {"conflict_flag": "NONE"}
+        })
+        assert rows[0]["Phase 3 rank"] == 1
+        assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["PDUFA rank"] is None
+        assert "not explicitly cleared" in rows[0]["PDUFA missing"]
+
+    def test_one_ticker_gets_only_one_rank_even_with_multiple_programs(self):
+        lesser = sample("AAA", market=7)
+        better = sample("AAA", market=10)
+        better["Exact event"] = "AAA|DRUG_DIFFERENT_20261130"
+        better["Drug"] = "Different pivotal program"
+        competitor = sample("BBB", market=9)
+        items, report = run([lesser, better, competitor])
+        ranked = [row for row in items if row["Post-Financing rank"] is not None]
+        assert len(ranked) == 2
+        assert {row["Ticker"] for row in ranked} == {"AAA", "BBB"}
+        assert report["scan_counts"]["Post-Financing"]["qualified"] == 2
+        assert report["scan_counts"]["Post-Financing"]["qualifying_programs"] == 3
+        grouped = ticker_gems(items)
+        assert len(grouped) == 2
+        assert grouped[0]["Ticker"] == "AAA"
+        assert grouped[0]["Post-Financing program"] == "Different pivotal program"
+        assert items[0]["Post-Financing rank"] is None
+        assert items[1]["Post-Financing rank"] == 1
 
     def test_original_scans_and_protected_controls_are_preserved(self):
         source = (ROOT / "nightly_scan_dashboard.py").read_text(encoding="utf-8")
