@@ -14,9 +14,53 @@ import streamlit as st
 
 REPO = "pdufa/pdufa-command-center"
 REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/nightly_scan_report.json"
+SOURCE_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pdufa_source_report.json"
 API = "https://api.github.com/repos/" + REPO
 WORKFLOW = "pdufa-scan-control.yml"
 LABELS = {"2": "#2 PIPELINE", "3": "#3 PRE3", "4": "#4 POST3"}
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def published_source_report():
+    request = urllib.request.Request(SOURCE_REPORT_URL, headers={"User-Agent": "pdufa-command-center-dashboard", "Accept": "application/json"})
+    try:
+        with urllib.request.urlopen(request, timeout=8) as response:
+            report = json.load(response)
+    except (OSError, ValueError):
+        try:
+            report = json.loads(Path("data/pdufa_source_report.json").read_text())
+        except (OSError, ValueError):
+            return {}
+    return report if isinstance(report, dict) and report.get("schema_version") == 2 else {}
+
+
+def render_extended_source_report():
+    report = published_source_report()
+    if not report:
+        return
+    st.markdown("### FDA / SEC / FINANCIAL / MARKET / ISSUER")
+    st.write("**Scan execution:** " + str(report.get("execution_status", "UNVERIFIED")) +
+             " · **Required source verification:** " + str(report.get("status", "UNVERIFIED")))
+    st.caption("Checked: " + str(report.get("updated_at_utc", "unknown")) +
+               ". Completion refers to the checks listed below; trading evidence and eligibility remain separate.")
+    rows = [{"Scan": r["source"], "Status": r["status"], "Verified": r.get("findings_verified", 0),
+             "Not applicable": r.get("findings_not_applicable", 0),
+             "Required gaps": r.get("required_findings_unresolved", 0),
+             "Supplemental unavailable": r.get("optional_findings_unavailable", 0)} for r in report.get("sources", [])]
+    if rows:
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    issues = report.get("required_issue_examples", [])
+    if issues:
+        with st.expander("Required evidence still needing attention"):
+            st.dataframe(pd.DataFrame([{k:r.get(k) for k in ("ticker", "category", "claim", "verification_status", "reason")} for r in issues]), hide_index=True, use_container_width=True)
+    if report.get("optional_findings_unavailable"):
+        st.info("Some supplemental market fields are unavailable. Short shares are kept separate from short interest as a percentage of float; options IV and borrow data are not inferred from prices.")
+    run_url = report.get("latest_run_url", "")
+    if run_url.startswith("https://github.com/" + REPO + "/actions/runs/"):
+        st.link_button("VIEW SOURCE SCAN AND EVIDENCE", run_url)
+    st.link_button("RERUN SOURCE CHECKS IN GITHUB", "https://github.com/" + REPO + "/actions/workflows/pdufa-nightly-missing-sources.yml")
+    st.download_button("DOWNLOAD SOURCE VERIFICATION SUMMARY", json.dumps(report, indent=2),
+                       file_name="pdufa_source_verification_summary.json", mime="application/json")
 
 
 @st.cache_data(ttl=90, show_spinner=False)
@@ -228,6 +272,7 @@ def _number(v):
 def render_nightly_scan_report():
     st.markdown("## NIGHTLY SCAN REPORT")
     st.caption("Clinical-source #2 PIPELINE / #3 PRE3 / #4 POST3 · automatic nightly scan + archived-source integrity check · last published results. FDA, SEC, issuer and full market verification remain separate.")
+    render_extended_source_report()
 
     report, loading_note = published_report()
     running = latest_run()
@@ -352,3 +397,4 @@ def render_nightly_scan_report():
     # former top-level SCANS page was removed. The function applies its own
     # server-side PIN check and never initiates clinical scans.
     render_adhoc_error_check_controls()
+

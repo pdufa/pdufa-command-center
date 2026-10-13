@@ -9,6 +9,8 @@ Every ledger finding has one status:
 | Status | Meaning |
 | --- | --- |
 | VERIFIED | The named claim passed the source, identity, date, and data checks applicable to its scope. |
+| NOT_APPLICABLE | Same-period primary financial facts establish that a finite cash-burn runway does not apply because operating cash flow is nonnegative. |
+| UNAVAILABLE | A separately identified supplemental market field is unavailable; this is never accepted as a verified trading input. |
 | REVIEW_REQUIRED | Required evidence is missing, ambiguous, stale, or outside the automated check's scope. |
 | CONFLICT | A primary/provider value or identity disagrees with the saved claim. |
 | TECHNICAL_FAILURE | The worker could not retrieve or inspect the required response. |
@@ -24,11 +26,11 @@ technically failed checks.
 
 | Source | Implemented checks and scope limits |
 | --- | --- |
-| FDA | FDA pages or company-matched SEC documents; drug, indication, and explicit claim date. FDA pages also require company identity. A reported PDUFA target cannot become a decision date. A past target with no resolved outcome remains under review. Publication dates cannot substitute for action dates. |
-| SEC | Nonempty submissions response with matching CIK and ticker, valid filing identities, and aligned arrays. A filings inventory does not establish insider accumulation. A dated closing clause remains under review until the exact deal and post-Phase-3 second-financing sequence are adjudicated. |
-| FINANCIAL | Matching Companyfacts CIK, cash-equivalents USD fact with filing accession and a current period, plus same-period operating cash flow. Simple runway arithmetic is an estimate, not a company forecast. Restricted cash and investments are not silently relabeled as cash. |
-| MARKET | Direct market-provider ticker, aligned and finite price/volume bars, session freshness, and disagreement with collected price. Quote verification does not verify short interest, IV, or borrow. Those fields remain explicit gaps. |
-| ISSUER | Direct company-matched SEC issuer exhibit with company, drug, indication, announcement language, and a release dateline or publication metadata. When no saved exhibit is available, the verifier inspects exhibits from up to three recent 8-Ks. Google News RSS remains discovery only. |
+| FDA | FDA pages, company-matched SEC documents, or explicitly mapped official issuer hosts; drug, indication, and explicit claim date. FDA pages also require company identity. A reported PDUFA target cannot become a decision date. A past target with no resolved outcome remains under review. Publication dates cannot substitute for action dates. |
+| SEC | Nonempty submissions response with matching CIK and ticker, valid filing identities, and aligned arrays. A filings inventory does not establish insider accumulation. Legacy records can have blank primary-document names without invalidating the dated accession inventory. Event-matched financing review ledgers supply documents to inspect again. A completed, dated, quantified transaction clause can verify that closing; it does not certify the post-Phase-3 second-financing sequence. |
+| FINANCIAL | Matching Companyfacts CIK, current USD cash facts, including transition and applicable foreign filing forms, with the same filing accession and period for operating cash flow. Cash including restricted cash is labeled LIQUIDITY_FACT and cannot become spendable-cash runway. Simple runway arithmetic is an estimate, not a company forecast. Restricted cash and investments are not silently relabeled as cash. |
+| MARKET | Direct market-provider ticker, aligned and finite price/volume bars, session freshness, and disagreement with collected price. Nasdaq short shares and days to cover are checked separately against ticker and settlement date; shares are not relabeled as percent of float. Provider-reported near-money options IV is checked when obtainable; access-denied or missing data and unconfigured broker borrow remain explicit UNAVAILABLE supplemental fields. |
+| ISSUER | Direct company-matched SEC issuer exhibit or explicitly mapped official issuer source with company, drug, indication, announcement language, and a release dateline or publication metadata. When no saved exhibit is available, the verifier inspects exhibits from up to eight recent 8-K/6-K filings. Google News RSS remains discovery only. |
 
 Requests retry transient HTTP/network failures once. SEC requests are paced;
 three HTTP 403 responses activate a circuit breaker. Shared URLs are cached
@@ -37,7 +39,7 @@ within a verification job, including their actual fetch timestamps.
 ## Completion and reconciliation
 
 A source run can earn `COMPLETE` for its declared ledger scope when every
-required finding is verified and all event rechecks belong to that execution.
+required finding is VERIFIED or evidence-backed NOT_APPLICABLE and all event rechecks belong to that execution. Supplemental market fields use an explicit separate policy: their absence produces COMPLETE WITH WARNINGS for core price/volume checks, while their actual missing values remain unavailable to trading gates.
 Otherwise it stays `PARTIAL`; a failed collector/verifier is `FAILED`.
 
 The combined audit verifies the workflow run, attempt and commit, scope hash,
@@ -65,3 +67,10 @@ python -m unittest discover -s tests -p 'test_nightly_missing_sources.py' -v
 python -m unittest discover -s tests -p 'test_scan_email_notifications.py' -v
 python -m unittest discover -s tests -p 'test_sec_recheck_fail_closed.py' -v
 ```
+
+
+## Publishing and repair validation
+
+The reconciled five-source summary, full ledger, and required review queue are published to `data/pdufa_source_report.json`, `data/pdufa_source_verification.csv`, and `data/pdufa_source_review_queue.csv`. SCANS shows scan execution separately from required-evidence verification, source counts, and unavailable supplemental data. A fresh hash/scope/run audit is required before publishing. This publication does not promote trading gates or manufacture missing FDA/financing/borrow evidence.
+
+The extended-source workflow also runs after changes to its collectors or issuer source mapping, so a collector repair receives a fresh live check and the existing START/END notifications. Checkouts are pinned to the workflow commit. `tests/test_scan_completion_repairs.py` covers the observed legacy SEC, transition-report, cash-period, issuer, funding handoff, and supplemental-data failures.

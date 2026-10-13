@@ -2,6 +2,13 @@ name: PDUFA Nightly FDA SEC Financial Market Issuer Sources
 
 # Collect, verify direct-source claims, then reconcile the evidence ledgers.
 on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/source_verification.py"
+      - "scripts/recheck_events.py"
+      - "config/issuer_sources.json"
+      - ".github/workflows/pdufa-nightly-missing-sources.yml"
   # Only the completed, published clinical scan can start the extended source scan.
   workflow_run:
     workflows: ['PDUFA Nightly Scan Report Publisher']
@@ -30,6 +37,8 @@ jobs:
     steps:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -98,6 +107,8 @@ jobs:
     steps:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -166,6 +177,8 @@ jobs:
     steps:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -234,6 +247,8 @@ jobs:
     steps:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -302,6 +317,8 @@ jobs:
     steps:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -369,6 +386,8 @@ jobs:
     steps:
       - name: Checkout baseline for scope audit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -409,6 +428,45 @@ jobs:
             reports/missing_sources/
             reports/scan_notifications/
 
+  publish-source-report:
+    name: 'Publish reconciled source verification to SCANS'
+    needs: reconcile
+    if: ${{ always() && needs.reconcile.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: source-combined-coverage-${{ github.run_id }}
+          path: reports/
+      - name: Revalidate evidence and prepare published source summary
+        run: python scripts/publish_source_audit.py
+      - name: Publish source summary without changing trading gates
+        shell: bash
+        run: |
+          mkdir -p /tmp/pdufa-source-publish
+          cp data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv /tmp/pdufa-source-publish/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout -B source-audit-publish origin/main
+          cp /tmp/pdufa-source-publish/* data/
+          git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish verified extended source scan summary"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main || exit 1
+          done
+          exit 1
+
   refresh-prephase3:
     name: 'Refresh validated PRE PHASE 3 display feed after sources'
     needs: reconcile
@@ -416,3 +474,4 @@ jobs:
     permissions:
       contents: write
     uses: ./.github/workflows/step7-live-feed.yml
+

@@ -120,7 +120,7 @@ class VerificationTests(unittest.TestCase):
         event = {**EVENT, "pdufa_evidence_url": "https://news.google.com/story"}
         v = self.verifier(b"TestDrug lung cancer PDUFA November 1, 2026")
         self.assertEqual(v.regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
-        self.assertEqual(v.cache, {})
+        self.assertNotIn("https://news.google.com/story", v.cache)
 
     def test_other_program_target_in_same_filing_cannot_verify_event(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
@@ -174,7 +174,7 @@ class VerificationTests(unittest.TestCase):
     def test_verified_quote_does_not_verify_short_iv_or_borrow(self):
         records = self.verifier(market_payload()).market(EVENT)
         self.assertEqual(records[0]["verification_status"], "VERIFIED")
-        self.assertEqual(records[1]["verification_status"], "REVIEW_REQUIRED")
+        self.assertEqual(records[1]["verification_status"], "UNAVAILABLE")
         self.assertEqual(self.verifier(market_payload("XYZ")).market(EVENT)[0]["verification_status"], "CONFLICT")
         stamp = datetime(2026, 9, 1, tzinfo=timezone.utc).timestamp()
         self.assertEqual(self.verifier(market_payload(timestamp=stamp)).market(EVENT)[0]["verification_status"], "REVIEW_REQUIRED")
@@ -216,8 +216,9 @@ class VerificationTests(unittest.TestCase):
             before = (folder / "pdufa_candidates.csv").read_bytes()
             result = verify.verify_source("MARKET", folder, folder / "out", fetch=lambda u: json.dumps(market_payload()).encode(), as_of=date(2026, 10, 12))
             self.assertEqual(result["findings_verified"], 1)
-            self.assertEqual(result["findings_unresolved"], 1)
-            self.assertFalse(result["scope_coverage_verified"])
+            self.assertEqual(result["findings_unresolved"], 0)
+            self.assertEqual(result["optional_findings_unavailable"], 3)
+            self.assertTrue(result["scope_coverage_verified"])
             ledger = folder / "out" / result["verification_ledger"]
             self.assertEqual(result["verification_ledger_sha256"], verify.digest(ledger.read_bytes()))
             self.assertEqual((folder / "pdufa_candidates.csv").read_bytes(), before)
@@ -305,3 +306,4 @@ class ReconciliationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

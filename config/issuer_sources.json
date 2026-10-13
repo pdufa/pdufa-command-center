@@ -1,0 +1,67 @@
+{
+  "AGIO": {
+    "hosts": [
+      "investor.agios.com"
+    ]
+  },
+  "BLTE": {
+    "hosts": [
+      "investors.belitebio.com"
+    ]
+  },
+  "CAPR": {
+    "hosts": [
+      "www.capricor.com"
+    ]
+  },
+  "CGEM": {
+    "hosts": [
+      "investors.cullinantherapeutics.com"
+    ]
+  },
+  "COGT": {
+    "hosts": [
+      "investors.cogentbio.com"
+    ]
+  },
+  "EXEL": {
+    "hosts": [
+      "exelixis.gcs-web.com"
+    ]
+  },
+  "INBX": {
+    "hosts": [
+      "inhibrx.investorroom.com"
+    ]
+  },
+  "IONS": {
+    "hosts": [
+      "ir.ionis.com"
+    ]
+  },
+  "PHAR": {
+    "hosts": [
+      "www.pharming.com"
+    ]
+  },
+  "PHVS": {
+    "hosts": [
+      "ir.pharvaris.com"
+    ]
+  },
+  "SRPT": {
+    "hosts": [
+      "investorrelations.sarepta.com"
+    ]
+  },
+  "VRTX": {
+    "hosts": [
+      "investors.vrtx.com"
+    ]
+  },
+  "VTRS": {
+    "hosts": [
+      "newsroom.viatris.com"
+    ]
+  }
+}

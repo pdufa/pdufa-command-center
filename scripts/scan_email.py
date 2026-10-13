@@ -123,7 +123,10 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         ("source_technical_failure_count", "Blocked/failed source checks"),
         ("source_review_only_count", "Evidence gaps / review checks"),
         ("findings_verified", "Findings verified"),
-        ("findings_due", "Findings requiring verification"),
+        ("findings_due", "Findings checked"),
+        ("required_findings_unresolved", "Required findings still unresolved"),
+        ("findings_not_applicable", "Findings verified as not applicable"),
+        ("optional_findings_unavailable", "Supplemental fields unavailable"),
         ("findings_unresolved", "Unresolved findings"),
         ("findings_conflicted", "Conflicting findings"),
         ("verification_technical_failure_count", "Technical verification failures"),
@@ -137,6 +140,8 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
         if isinstance(v, int) and not isinstance(v, bool):
             lines.append(f"{label_text}: {v}")
     errors = report.get("errors")
+    if report.get("execution_status"):
+        lines.insert(0, "Scan execution: " + str(report["execution_status"]))
     if isinstance(errors, list) and errors:
         lines.append(f"Errors: {len(errors)}")
     breakdown = report.get("source_issue_breakdown")
@@ -240,4 +245,5 @@ def send_email(settings, subject, body, *, smtp_factory=None):
         if smtp_factory is None else "NOT_CHECKED_TEST_TRANSPORT"
     )
     return {"status": "submitted_not_delivered", "inbox_status": inbox_status}
+
 

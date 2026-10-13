@@ -22,9 +22,10 @@ from collections import Counter
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-VERSION = 1
-STATES = ("VERIFIED", "REVIEW_REQUIRED", "CONFLICT", "TECHNICAL_FAILURE")
+VERSION = 2
+STATES = ("VERIFIED", "NOT_APPLICABLE", "UNAVAILABLE", "REVIEW_REQUIRED", "CONFLICT", "TECHNICAL_FAILURE")
 FIELDS = ["event_key", "ticker", "category", "claim", "verification_status",
+          "verification_required",
           "expected", "observed", "reason", "source_url", "source_sha256",
           "checked_at", "evidence"]
 MAX_BODY = 8_000_000
@@ -92,6 +93,10 @@ def dates(text):
 def drug_matches(event, text):
     # Full names/codes and explicitly supplied parenthetical aliases only.
     parts = re.split(r"[()/|;]", event.get("drug", ""))
+    parts += re.split(r"[|;]", event.get("drug_aliases", ""))
+    # Delivery/dose suffixes are not part of the active drug identity. Keep
+    # combination partners intact, and still require the exact indication.
+    parts += [re.sub(r"(?i)\s+(?:PDT|HCl|immediate-release|cream\s+[\d.]+%|ophthalmic solution\s+[\d.]+%)$", "", p.strip()) for p in parts]
     for part in parts:
         part = normalized(part)
         if len(part) >= 4 and part not in {"pdt", "injection", "tablets", "oral"}:
@@ -120,11 +125,12 @@ def company_matches(event, text):
 def publication_dates(raw, plain):
     metadata = set(re.findall(r'(?i)"datePublished"\s*:\s*"(20\d{2}-\d{2}-\d{2})', raw))
     metadata |= set(re.findall(r'(?i)<time[^>]*datetime=["\'](20\d{2}-\d{2}-\d{2})', raw))
+    metadata |= set(re.findall(r'(?i)<meta[^>]*property=["\']article:published_time["\'][^>]*content=["\'](20\d{2}-\d{2}-\d{2})', raw))
     if metadata:
         return metadata
     # Require a press-release dateline marker rather than any early date;
     # a future PDUFA target in the headline is not a release date.
-    marker = re.search(r"(?i)((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+20\d{2})\s*(?:\(|—|--|/PRNewswire)", plain[:400])
+    marker = re.search(r"(?i)((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)\s+\d{1,2},\s+20\d{2})\s*(?:\(|—|--|/PRNewswire)", plain[:6000])
     return dates(marker.group(1)) if marker else set()
 
 
@@ -139,6 +145,57 @@ class SourceUnavailable(RuntimeError):
 
 class IdentityConflict(ValueError):
     pass
+
+
+FINANCIAL_FORMS = {"10-Q", "10-K", "10-Q/A", "10-K/A", "10-QT", "10-KT",
+                   "10-QT/A", "10-KT/A", "20-F", "20-F/A", "40-F", "40-F/A", "6-K"}
+
+
+def financial_snapshot(payload, cik, as_of):
+    """One cash definition and aligned reporting periods for collection/review."""
+    if not isinstance(payload, dict) or str(payload.get("cik", "")).zfill(10) != cik:
+        raise IdentityConflict("Companyfacts CIK mismatch")
+    cutoff = as_of.isoformat()
+    def values(taxonomy, tag):
+        items = payload.get("facts", {}).get(taxonomy, {}).get(tag, {}).get("units", {}).get("USD", [])
+        result = []
+        for row in items:
+            try:
+                end, filed = date.fromisoformat(row["end"]), date.fromisoformat(row["filed"])
+                if (row.get("form") in FINANCIAL_FORMS and numeric(row.get("val"))
+                        and end <= filed <= as_of
+                        and re.fullmatch(r"\d{10}-\d{2}-\d{6}", row.get("accn", ""))):
+                    result.append(row)
+            except (ValueError, KeyError, TypeError):
+                continue
+        return result
+    choices = []
+    for taxonomy, tag, basis in (
+        ("us-gaap", "CashAndCashEquivalentsAtCarryingValue", "CASH_EQUIVALENTS"),
+        ("ifrs-full", "CashAndCashEquivalents", "CASH_EQUIVALENTS"),
+        ("us-gaap", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "CASH_INCLUDING_RESTRICTED"),
+    ):
+        for row in values(taxonomy, tag):
+            if row["val"] >= 0 and (as_of - date.fromisoformat(row["end"])).days <= 180:
+                choices.append((row, taxonomy, tag, basis))
+    if not choices:
+        raise ValueError("No current nonnegative USD cash fact with a filing accession")
+    # Prefer the newest period, and exact cash equivalents over restricted cash
+    # in the SAME period. Never choose the largest balance or a stale exact tag.
+    cash, taxonomy, tag, basis = max(choices, key=lambda x: (
+        x[0]["end"], x[3] == "CASH_EQUIVALENTS", x[0]["filed"]))
+    flows = []
+    flow_tag = "NetCashProvidedByUsedInOperatingActivities" if taxonomy == "us-gaap" else "CashFlowsFromUsedInOperatingActivities"
+    for row in values(taxonomy, flow_tag):
+        try:
+            days = (date.fromisoformat(row["end"]) - date.fromisoformat(row["start"])).days + 1
+            if row["end"] == cash["end"] and row["accn"] == cash["accn"] and 60 <= days <= 380:
+                flows.append((days, row))
+        except (ValueError, KeyError, TypeError):
+            continue
+    aligned = min(flows, key=lambda x: x[0]) if flows else None
+    return {"cash": cash, "cash_basis": basis, "taxonomy": taxonomy, "cash_tag": tag,
+            "flow": aligned[1] if aligned else None, "flow_days": aligned[0] if aligned else None}
 
 
 def validate_submissions(payload, cik, ticker):
@@ -156,8 +213,13 @@ def validate_submissions(payload, cik, ticker):
         raise ValueError("SEC recent-filings arrays are empty or inconsistent")
     for filed, accession, document in zip(recent["filingDate"], recent["accessionNumber"], recent["primaryDocument"]):
         date.fromisoformat(filed)
-        if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession) or not document:
+        if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession):
             raise ValueError("SEC filing identity is malformed")
+        # Legacy EDGAR records legitimately omit primaryDocument. Their dated
+        # accession still belongs in an inventory; it cannot be fetched as an
+        # empty document or prove a closing. Keep rejecting inconsistent arrays.
+        if not isinstance(document, str):
+            raise ValueError("SEC primary-document field is malformed")
     return recent
 
 
@@ -171,12 +233,15 @@ def sec_url_matches(url, cik):
 
 
 class Verifier:
-    def __init__(self, companies, fetch=None, as_of=None):
+    def __init__(self, companies, fetch=None, as_of=None, issuer_sources=None):
         self.companies = {r["ticker"].upper(): r for r in companies}
         self.fetcher = fetch or self.fetch
         self.as_of = as_of or datetime.now(timezone.utc).date()
         self.cache = {}
         self.sec_denials = 0
+        self.issuer_sources = issuer_sources or {}
+        self.issuer_document_cache = {}
+        self.unavailable_providers = set()
 
     def fetch(self, url):
         host = (urllib.parse.urlsplit(url).hostname or "").lower()
@@ -241,10 +306,11 @@ class Verifier:
         raw = body.decode("utf-8", "replace")
         return raw, visible(raw)
 
-    def result(self, event, category, claim, state, reason, url="", expected="", observed="", evidence=""):
+    def result(self, event, category, claim, state, reason, url="", expected="", observed="", evidence="", required=True):
         cached = self.cache.get(url)
         return {"event_key": event.get("event_key", ""), "ticker": event.get("ticker", ""),
                 "category": category, "claim": claim, "verification_status": state,
+                "verification_required": "YES" if required else "NO",
                 "expected": str(expected), "observed": str(observed), "reason": reason,
                 "source_url": url, "source_sha256": digest(cached[0]) if isinstance(cached, tuple) else "",
                 "checked_at": cached[1] if isinstance(cached, tuple) else utcnow(),
@@ -266,7 +332,7 @@ class Verifier:
         return url, payload, validate_submissions(payload, cik, event["ticker"])
 
     def references(self, event):
-        found = [event.get(k, "") for k in ("pdufa_evidence_url", "trial_evidence_url", "financing_evidence_url")]
+        found = [event.get(k, "") for k in ("pdufa_evidence_url", "trial_evidence_url", "financing_evidence_url", "issuer_evidence_url")]
         for key in ("evidence_summary", "regulatory_summary"):
             found += re.findall(r"https://[^\s<>\"']+", event.get(key, ""))
         return list(dict.fromkeys(u.rstrip(".,;) ") for u in found if u))
@@ -277,7 +343,43 @@ class Verifier:
             return "FDA"
         if sec_url_matches(url, self.cik(event)):
             return "SEC_ISSUER"
+        config = self.issuer_sources.get(event.get("ticker", "").upper(), {})
+        if host in config.get("hosts", []) and urllib.parse.urlsplit(url).scheme == "https":
+            return "ISSUER"
         return ""
+
+    def issuer_documents(self, event):
+        """Saved primary references first, then bounded actual SEC exhibits."""
+        yielded = set()
+        for url in self.references(event):
+            if self.primary(event, url) and url not in yielded:
+                yielded.add(url)
+                yield url
+        cik = self.cik(event)
+        if not cik:
+            return
+        if cik not in self.issuer_document_cache:
+            _, _, recent = self.submissions(event)
+            found = []
+            indices = [i for i, form in enumerate(recent["form"])
+                       if form in {"8-K", "8-K/A", "6-K"}
+                       and recent["filingDate"][i] <= self.as_of.isoformat()][:8]
+            for i in indices:
+                acc = recent["accessionNumber"][i].replace("-", "")
+                base = "https://www.sec.gov/Archives/edgar/data/" + str(int(cik)) + "/" + acc + "/"
+                listing = json.loads(self.body(base + "index.json"))
+                for item in listing.get("directory", {}).get("item", []):
+                    name = item.get("name", "")
+                    if (re.search(r"(?i)(?:ex[-_]?99|exhibit[-_]?99)", name)
+                            and name.lower().endswith((".htm", ".html"))
+                            and re.fullmatch(r"[A-Za-z0-9_.-]+", name)):
+                        found.append(base + name)
+                if len(found) >= 12:
+                    break
+            self.issuer_document_cache[cik] = found
+        for url in self.issuer_document_cache[cik]:
+            if url not in yielded:
+                yield url
 
     def regulatory(self, event):
         expected_outcome = event.get("outcome", "").strip().upper()
@@ -285,12 +387,20 @@ class Verifier:
         expected = event.get("decision_date", "") if claim == "FDA_DECISION" else event.get("pdufa_date", "")
         refs = [u for u in self.references(event) if self.primary(event, u)]
         results = []
+        # Empty saved references previously meant an event was never looked up.
+        if not refs:
+            try:
+                refs = list(self.issuer_documents(event))[:12]
+            except (ValueError, KeyError, TypeError) as exc:
+                return [self.result(event, "FDA", claim, "REVIEW_REQUIRED", "Primary-source discovery requires review: " + str(exc), expected=expected)]
+            except Exception as exc:
+                return [self.result(event, "FDA", claim, "TECHNICAL_FAILURE", str(exc), expected=expected)]
         for url in refs[:4]:
             try:
                 _, plain = self.document(url)
                 if not drug_matches(event, plain) or not indication_matches(event, plain):
                     continue
-                if self.primary(event, url) == "FDA" and not company_matches(event, plain):
+                if self.primary(event, url) in {"FDA", "ISSUER"} and not company_matches(event, plain):
                     continue
                 application = event.get("application_number", "").strip()
                 if application and not re.search(r"(?<!\d)" + re.escape(application) + r"(?!\d)", plain):
@@ -326,9 +436,9 @@ class Verifier:
                         if outcome == "CRL" and not re.search(r"(?i)\b(?:received|issued|delivered)\b", passage):
                             continue
                         action_dates = dates(passage)
-                        if not expected or not action_dates:
+                        if not action_dates:
                             continue
-                        state = "VERIFIED" if outcome == expected_outcome and action_dates == {expected} else "CONFLICT"
+                        state = "VERIFIED" if outcome == expected_outcome and len(action_dates) == 1 and (not expected or action_dates == {expected}) else "CONFLICT"
                         results.append(self.result(event, "FDA", claim, state,
                             "Event outcome and explicit action date match" if state == "VERIFIED" else "Outcome/action date conflict requires review",
                             url, expected_outcome + " " + expected, outcome + " " + " | ".join(sorted(action_dates)), passage))
@@ -363,6 +473,12 @@ class Verifier:
     def financing(self, event):
         url = event.get("financing_evidence_url", "")
         close = event.get("financing_close_date", "")
+        review = event.get("_financing_review", {})
+        if not close and review.get("second_financing_audit_status") == "VERIFIED_SECOND_POST_PHASE3_FINANCING":
+            # A matching event ledger supplies a candidate to re-open, not proof.
+            # Never borrow another company's or another program's financing.
+            url = review.get("second_financing_source", "")
+            close = review.get("second_financing_date", "")
         if not sec_url_matches(url, self.cik(event)) or not close:
             return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                 "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence", url, close)
@@ -373,6 +489,13 @@ class Verifier:
             if not any(close in dates(p) for p in passages):
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                     "No completed transaction clause matches the stored closing date", url, close)
+            from sec_financing_closure import candidates as closing_candidates
+            clauses = [r["excerpt"] for r in closing_candidates({"text": plain})]
+            matched = [p for p in clauses if dates(p) == {close} and re.search(r"\$\s*[\d,.]+\s*(?:million|billion)?", p)]
+            if matched:
+                return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                    "Company-matched SEC document confirms a dated closing and financing amount; this verifies that closing only, not the post-Phase-3 second-financing sequence",
+                    url, close, close, " | ".join(matched))
             # A closing can be real without being financing #2 after Phase 3.
             return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                 "Dated closing clause found; exact deal, proceeds and post-Phase-3 second-financing sequence still require adjudication",
@@ -386,54 +509,32 @@ class Verifier:
         if not cik:
             return [self.result(event, "FINANCIAL", "CASH_AND_RUNWAY", "REVIEW_REQUIRED", "Missing CIK")]
         try:
-            payload = json.loads(self.body(url))
-            if str(payload.get("cik", "")).zfill(10) != cik:
-                raise IdentityConflict("Companyfacts CIK mismatch")
-            facts = payload.get("facts", {}).get("us-gaap", {})
-            def values(name):
-                items = facts.get(name, {}).get("units", {}).get("USD", [])
-                return [r for r in items if r.get("form") in {"10-Q", "10-K"}
-                        and numeric(r.get("val")) and r.get("end", "") <= self.as_of.isoformat()
-                        and r.get("end", "") <= r.get("filed", "") <= self.as_of.isoformat()
-                        and re.fullmatch(r"\d{10}-\d{2}-\d{6}", r.get("accn", ""))]
-            # Cash equivalents, restricted cash and investments are different
-            # measures; never pick the largest total and relabel it cash.
-            cash_rows = values("CashAndCashEquivalentsAtCarryingValue")
-            if not cash_rows:
-                raise ValueError("No cash-equivalents USD fact with filing accession")
-            cash = max(cash_rows, key=lambda r: (r["end"], r.get("filed", "")))
-            age = (self.as_of - date.fromisoformat(cash["end"])).days
-            if age > 180 or cash["val"] < 0:
-                raise ValueError("Cash fact is stale or negative")
-            expected_cash = event.get("cash", "")
-            state = "VERIFIED"
-            if expected_cash and abs(float(expected_cash) - cash["val"]) > 1:
-                state = "CONFLICT"
-            result = [self.result(event, "FINANCIAL", "CASH_FACT", state,
-                "Exact cash-equivalents fact, period and filing accession checked", url,
-                expected_cash, cash["val"], json.dumps(cash, sort_keys=True))]
-            flows = []
-            for fact in values("NetCashProvidedByUsedInOperatingActivities"):
-                if fact["end"] != cash["end"] or not fact.get("start"):
-                    continue
-                days = (date.fromisoformat(fact["end"]) - date.fromisoformat(fact["start"])).days + 1
-                if 60 <= days <= 380:
-                    flows.append((days, fact))
-            if not flows:
+            snapshot = financial_snapshot(json.loads(self.body(url)), cik, self.as_of)
+            cash, flow = snapshot["cash"], snapshot["flow"]
+            exact = snapshot["cash_basis"] == "CASH_EQUIVALENTS"
+            expected = event.get("cash", "") if exact else ""
+            state = "CONFLICT" if expected and abs(float(expected) - cash["val"]) > 1 else "VERIFIED"
+            result = [self.result(event, "FINANCIAL", "CASH_FACT" if exact else "LIQUIDITY_FACT", state,
+                "Current USD fact checked: " + snapshot["cash_basis"] + "; period and filing accession retained",
+                url, expected, cash["val"], json.dumps(snapshot, sort_keys=True))]
+            if flow is None:
                 result.append(self.result(event, "FINANCIAL", "RUNWAY_ESTIMATE", "REVIEW_REQUIRED",
-                    "No operating-cash-flow duration aligned to cash period; no runway certified", url))
-                return result
-            days, flow = min(flows, key=lambda r: (r[0], -date.fromisoformat(r[1].get("filed", r[1]["end"])).toordinal()))
-            if flow["val"] >= 0:
+                    "No operating cash flow from the same filing and period; no runway certified", url))
+            elif flow["val"] >= 0:
+                result.append(self.result(event, "FINANCIAL", "RUNWAY_ESTIMATE", "NOT_APPLICABLE",
+                    "Aligned operating cash flow is nonnegative; finite cash-burn runway does not apply",
+                    url, observed="NOT_APPLICABLE", evidence=json.dumps(snapshot, sort_keys=True)))
+            elif not exact:
                 result.append(self.result(event, "FINANCIAL", "RUNWAY_ESTIMATE", "REVIEW_REQUIRED",
-                    "Operating cash flow is nonnegative; finite cash-burn runway is not applicable", url))
-                return result
-            runway = cash["val"] / (-flow["val"] / (days / 30.4375))
-            expected = event.get("cash_runway_months", "")
-            state = "CONFLICT" if expected and abs(float(expected)-runway) > 0.15 else "VERIFIED"
-            result.append(self.result(event, "FINANCIAL", "RUNWAY_ESTIMATE", state,
-                "Arithmetic verified using aligned cash/operating-flow periods; estimate excludes future financings and spending changes",
-                url, expected, round(runway, 4), json.dumps({"cash": cash, "operating_flow": flow, "days": days}, sort_keys=True)))
+                    "Reported cash includes restricted cash; an unrestricted balance is required for spendable-cash runway",
+                    url, evidence=json.dumps(snapshot, sort_keys=True)))
+            else:
+                runway = cash["val"] / (-flow["val"] / (snapshot["flow_days"] / 30.4375))
+                expected = event.get("cash_runway_months", "")
+                state = "CONFLICT" if expected and abs(float(expected) - runway) > 0.15 else "VERIFIED"
+                result.append(self.result(event, "FINANCIAL", "RUNWAY_ESTIMATE", state,
+                    "Arithmetic verified using the same cash/operating-flow filing and period; estimate excludes future financings and spending changes",
+                    url, expected, round(runway, 4), json.dumps(snapshot, sort_keys=True)))
             return result
         except IdentityConflict as exc:
             state, reason = "CONFLICT", str(exc)
@@ -471,62 +572,140 @@ class Verifier:
             state = "CONFLICT" if expected and abs(float(expected)-price) > max(0.02, price*0.005) else "VERIFIED"
             return [self.result(event, "MARKET", "PRICE_VOLUME", state,
                 "Direct provider response ticker, bar alignment, numbers and session checked; no exchange-level corroboration claimed",
-                url, expected, price, json.dumps({"session": session.isoformat(), "close": price, "volume": volume})),
-                self.result(event, "MARKET", "SHORT_IV_BORROW", "REVIEW_REQUIRED",
-                    "Price feed does not verify short interest, IV or borrow availability/fees")]
+                url, expected, price, json.dumps({"session": session.isoformat(), "close": price, "volume": volume}))] + self.market_extras(event)
         except IdentityConflict as exc:
             state, reason = "CONFLICT", str(exc)
         except (ValueError, KeyError, TypeError) as exc:
             state, reason = "REVIEW_REQUIRED", str(exc)
         except Exception as exc:
             state, reason = "TECHNICAL_FAILURE", type(exc).__name__
-        return [self.result(event, "MARKET", "PRICE_VOLUME", state, reason, url),
-                self.result(event, "MARKET", "SHORT_IV_BORROW", "REVIEW_REQUIRED", "Separate sources required")]
+        return [self.result(event, "MARKET", "PRICE_VOLUME", state, reason, url)] + self.market_extras(event)
+
+    def optional_payload(self, url):
+        host = urllib.parse.urlsplit(url).hostname
+        if host in self.unavailable_providers:
+            raise SourceUnavailable("Provider denied supplemental data earlier in this run")
+        try:
+            return json.loads(self.body(url))
+        except Exception as exc:
+            if any(code in str(exc) for code in ("HTTP_401", "HTTP_403", "HTTP_429")):
+                self.unavailable_providers.add(host)
+            raise
+
+    def market_extras(self, event):
+        """Separate dated supplemental observations; never infer float %/borrow."""
+        ticker = event["ticker"].upper()
+        records = []
+        url = "https://api.nasdaq.com/api/quote/" + urllib.parse.quote(ticker) + "/short-interest?assetclass=stocks"
+        try:
+            data = self.optional_payload(url).get("data") or {}
+            if str(data.get("symbol", "")).upper() != ticker:
+                raise ValueError("No ticker-matched Nasdaq short-interest response")
+            observations = []
+            for row in (data.get("shortInterestTable") or {}).get("rows", []):
+                settled = datetime.strptime(row["settlementDate"], "%m/%d/%Y").date()
+                shares = int(str(row["interest"]).replace(",", ""))
+                ratio = float(str(row["daysToCover"]).replace(",", ""))
+                if settled <= self.as_of and (self.as_of-settled).days <= 40 and shares >= 0 and math.isfinite(ratio) and ratio >= 0:
+                    observations.append((settled, shares, ratio))
+            if not observations:
+                raise ValueError("No current finite settlement-dated short-interest row")
+            settled, shares, ratio = max(observations)
+            value = {"settlement_date": settled.isoformat(), "short_shares": shares, "days_to_cover": ratio}
+            records.append(self.result(event, "MARKET", "SHORT_INTEREST", "VERIFIED",
+                "Nasdaq reported short shares and days to cover; this is not short interest as a percentage of float",
+                url, observed=json.dumps(value, sort_keys=True), evidence=json.dumps(value, sort_keys=True), required=False))
+        except Exception as exc:
+            records.append(self.result(event, "MARKET", "SHORT_INTEREST", "UNAVAILABLE", str(exc), url, required=False))
+        url = "https://query1.finance.yahoo.com/v7/finance/options/" + urllib.parse.quote(ticker)
+        try:
+            result = self.optional_payload(url)["optionChain"]
+            if result.get("error") or len(result.get("result") or []) != 1:
+                raise ValueError("No unique options chain")
+            chain = result["result"][0]
+            if chain.get("underlyingSymbol", "").upper() != ticker:
+                raise ValueError("Options underlying ticker mismatch")
+            expiries = [(abs((datetime.fromtimestamp(t, timezone.utc).date()-self.as_of).days-30), t)
+                        for t in chain.get("expirationDates", [])
+                        if 21 <= (datetime.fromtimestamp(t, timezone.utc).date()-self.as_of).days <= 45]
+            if not expiries:
+                raise ValueError("No listed expiration within 21-45 days")
+            expiry = min(expiries)[1]
+            url += "?date=" + str(expiry)
+            chain = self.optional_payload(url)["optionChain"]["result"][0]
+            if chain.get("underlyingSymbol", "").upper() != ticker:
+                raise ValueError("Dated options underlying mismatch")
+            spot = chain.get("quote", {}).get("regularMarketPrice")
+            if not numeric(spot) or spot <= 0:
+                raise ValueError("No finite underlying quote")
+            candidates = []
+            for option_set in chain.get("options", []):
+                if option_set.get("expirationDate") != expiry:
+                    continue
+                for contract in option_set.get("calls", []) + option_set.get("puts", []):
+                    iv, strike, traded = contract.get("impliedVolatility"), contract.get("strike"), contract.get("lastTradeDate")
+                    if not numeric(iv) or not 0 < iv <= 10 or not numeric(strike) or not numeric(traded):
+                        continue
+                    age = (self.as_of-datetime.fromtimestamp(traded, timezone.utc).date()).days
+                    if 0 <= age <= 7 and abs(strike-spot)/spot <= .15:
+                        candidates.append((abs(strike-spot), contract))
+            if not candidates:
+                raise ValueError("No recent near-money option with provider-reported IV")
+            contract = min(candidates, key=lambda x:x[0])[1]
+            value = {"contract": contract.get("contractSymbol"), "implied_volatility": contract["impliedVolatility"],
+                     "expiration": datetime.fromtimestamp(expiry, timezone.utc).date().isoformat(), "strike": contract["strike"]}
+            records.append(self.result(event, "MARKET", "OPTIONS_IV", "VERIFIED",
+                "Provider IV for a dated near-money option; not an interpolated constant 30-day IV",
+                url, observed=json.dumps(value, sort_keys=True), evidence=json.dumps(value, sort_keys=True), required=False))
+        except Exception as exc:
+            records.append(self.result(event, "MARKET", "OPTIONS_IV", "UNAVAILABLE", str(exc), url, required=False))
+        records.append(self.result(event, "MARKET", "BORROW", "UNAVAILABLE",
+            "Borrow availability and fees require a broker-specific source; no broker data is configured", required=False))
+        return records
 
     def issuer(self, event):
-        refs = [u for u in self.references(event) if sec_url_matches(u, self.cik(event))
-                and re.search(r"(?i)(?:ex[-_]?99|exhibit[-_]?99)", u)]
         failures = []
-        if not refs:
-            try:
-                _, _, recent = self.submissions(event)
-                # Discover actual issuer exhibits, not Google News redirects.
-                indices = [i for i, form in enumerate(recent["form"]) if form == "8-K"][:3]
-                for i in indices:
-                    acc = recent["accessionNumber"][i].replace("-", "")
-                    base = "https://www.sec.gov/Archives/edgar/data/" + str(int(self.cik(event))) + "/" + acc + "/"
-                    listing = json.loads(self.body(base + "index.json"))
-                    for item in listing.get("directory", {}).get("item", []):
-                        name = item.get("name", "")
-                        if re.search(r"(?i)(?:ex[-_]?99|exhibit[-_]?99)", name) and name.lower().endswith((".htm", ".html")):
-                            refs.append(base + urllib.parse.quote(name))
-            except Exception as exc:
-                failures.append(type(exc).__name__)
-        for url in refs[:6]:
-            try:
-                raw, plain = self.document(url)
-                if not drug_matches(event, plain) or not indication_matches(event, plain) or not company_matches(event, plain):
+        try:
+            for i, url in enumerate(self.issuer_documents(event)):
+                if i >= 16:
+                    break
+                if self.primary(event, url) == "FDA":
                     continue
-                if not re.search(r"(?i)\b(?:press release|announced|announces|reported|reports)\b", plain):
+                try:
+                    raw, plain = self.document(url)
+                    if not drug_matches(event, plain) or not indication_matches(event, plain) or not company_matches(event, plain):
+                        continue
+                    if not re.search(r"(?i)\b(?:press release|announced|announces|reported|reports)\b", plain):
+                        continue
+                    posted = publication_dates(raw, plain)
+                    if len(posted) != 1:
+                        continue
+                    published = next(iter(posted))
+                    if published > self.as_of.isoformat():
+                        return [self.result(event, "ISSUER", "PRIMARY_RELEASE", "CONFLICT", "Release date is in the future", url, observed=published)]
+                    return [self.result(event, "ISSUER", "PRIMARY_RELEASE", "VERIFIED",
+                        "Primary company-matched source, drug, indication and explicit publication date checked; release claims are not an FDA decision",
+                        url, observed=published, evidence=plain[:900])]
+                except (ValueError, KeyError, TypeError):
                     continue
-                posted = publication_dates(raw, plain)
-                if len(posted) != 1:
-                    continue
-                published = next(iter(posted))
-                if published > self.as_of.isoformat():
-                    return [self.result(event, "ISSUER", "PRIMARY_RELEASE", "CONFLICT", "Release date is in the future", url, observed=published)]
-                return [self.result(event, "ISSUER", "PRIMARY_RELEASE", "VERIFIED",
-                    "Company CIK, SEC exhibit, drug, indication and explicit release date checked; release claims are not an FDA decision",
-                    url, observed=published, evidence=plain[:900])]
-            except Exception as exc:
-                failures.append(type(exc).__name__)
+                except Exception as exc:
+                    failures.append(str(exc)[:120])
+        except (ValueError, KeyError, TypeError):
+            pass
+        except Exception as exc:
+            failures.append(str(exc)[:120])
         return [self.result(event, "ISSUER", "PRIMARY_RELEASE", "TECHNICAL_FAILURE" if failures else "REVIEW_REQUIRED",
             "Primary issuer release not confirmed" + (": " + ", ".join(failures[:3]) if failures else " for this event"))]
 
 
 def summary(rows):
     counts = Counter(row["verification_status"] for row in rows)
+    mandatory = [r for r in rows if r.get("verification_required", "YES") == "YES"]
+    incomplete = [r for r in mandatory if r["verification_status"] not in {"VERIFIED", "NOT_APPLICABLE"}]
     return {"findings_due": len(rows), "findings_verified": counts["VERIFIED"],
+            "findings_not_applicable": counts["NOT_APPLICABLE"], "findings_unavailable": counts["UNAVAILABLE"],
+            "required_findings_due": len(mandatory), "required_findings_unresolved": len(incomplete),
+            "optional_findings_unavailable": sum(r["verification_status"] == "UNAVAILABLE" and r.get("verification_required") == "NO" for r in rows),
             "findings_unresolved": counts["REVIEW_REQUIRED"], "findings_conflicted": counts["CONFLICT"],
             "verification_technical_failure_count": counts["TECHNICAL_FAILURE"],
             "verification_status_counts": dict(counts)}
@@ -541,11 +720,16 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
         raise ValueError("Duplicate candidate event identities")
     if not companies or len({r["ticker"].upper() for r in companies}) != len(companies):
         raise ValueError("Company registry is empty or contains duplicate tickers")
-    verifier = Verifier(companies, fetch=fetch, as_of=as_of)
+    config_path = Path(__file__).resolve().parents[1] / "config/issuer_sources.json"
+    issuer_sources = json.loads(config_path.read_text()) if config_path.exists() else {}
+    financing_path = data_dir / "second_financing_status.csv"
+    financing_reviews = {r["event_key"]: r for r in read_rows(financing_path)} if financing_path.exists() else {}
+    verifier = Verifier(companies, fetch=fetch, as_of=as_of, issuer_sources=issuer_sources)
     results = []
     if source == "SEC":
         results += [verifier.registry(company) for company in companies]
     for event in events:
+        event = {**event, "_financing_review": financing_reviews.get(event["event_key"], {})}
         if source == "FDA":
             results += verifier.regulatory(event)
         elif source == "SEC":
@@ -575,7 +759,8 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
             "verification_scope_sha256": scope_hash(events, companies),
             "verification_ledger": path.name, "verification_ledger_sha256": digest(path.read_bytes()),
             "verification_events_due": len(events), "verification_events_checked": len({r["event_key"] for r in results if not r["event_key"].startswith("REGISTRY:")}),
-            "scope_coverage_verified": bool(results) and totals["findings_verified"] == len(results),
+            "scope_coverage_verified": bool(results) and totals["required_findings_unresolved"] == 0,
             "verification_issue_examples": [{k: r[k] for k in ("ticker", "category", "claim", "verification_status", "reason")}
-                for r in results if r["verification_status"] != "VERIFIED"][:12],
+                for r in results if r["verification_status"] not in {"VERIFIED", "NOT_APPLICABLE"}] [:12],
             "issuer_press_releases_verified": sum(r["category"] == "ISSUER" and r["verification_status"] == "VERIFIED" for r in results)}
+

@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-import argparse, csv, html, json, os, re, time, urllib.parse, urllib.request, uuid
+import argparse, csv, html, json, os, re, sys, time, urllib.parse, urllib.request, uuid
 from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
 
 ROOT=Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.source_verification import financial_snapshot, validate_submissions
 DATA=ROOT/"data"
 CAND=DATA/"pdufa_candidates.csv"
 REG=DATA/"company_registry.csv"
@@ -103,7 +106,7 @@ def sec_filings(cik,limit=12):
     cik=str(cik).zfill(10)
     url="https://data.sec.gov/submissions/CIK"+cik+".json"
     o=json.loads(get(url,accept="application/json"))
-    r=(o.get("filings") or {}).get("recent") or {}
+    r=validate_submissions(o,cik, next((t for t in o.get("tickers",[]) if t), ""))
     out=[]
     keep={"8-K","10-Q","10-K","S-3","S-3ASR","424B5","424B3","4","3","SC 13D","SC 13D/A","SC 13G","SC 13G/A"}
     for i,f in enumerate(r.get("form") or []):
@@ -210,23 +213,32 @@ def latest_fact(o,names):
 
 def cash_check(cik):
     if not cik: return {"status":"NO_CIK","note":"No SEC CIK available.","source":""}
-    u="https://data.sec.gov/api/xbrl/companyfacts/CIK"+str(cik).zfill(10)+".json"
+    cik=str(cik).zfill(10)
+    u="https://data.sec.gov/api/xbrl/companyfacts/CIK"+cik+".json"
     try:
-        o=json.loads(get(u,accept="application/json"))
-        cf=latest_fact(o,["CashAndCashEquivalentsAtCarryingValue","CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents","CashAndShortTermInvestments"])
-        op=latest_fact(o,["NetCashProvidedByUsedInOperatingActivities"])
-        if not cf: return {"status":"CHECKED_NO_CASH_FACT","note":"SEC Companyfacts checked; no current cash fact safely identified.","source":u}
-        cash=max(0,cf[2]); runway=None; msg="Latest SEC cash fact USD "+format(cash,",.0f")+" ("+cf[0]+")."
-        if op and op[2]<0:
-            a=s(op[3].get("start")); b=s(op[3].get("end"))
-            try: days=(pd.Timestamp(b)-pd.Timestamp(a)).days
-            except Exception: days=0
-            if 60<=days<=200:
-                burn=-op[2]; monthly=burn/(days/30.4375)
-                if monthly>0: runway=cash/monthly; msg+=" Simple runway ~"+format(runway,".1f")+" months."
-        return {"status":"RUNWAY_ESTIMATED" if runway is not None else "CASH_UPDATED","note":msg,"source":u,"cash":cash,"runway":runway}
+        snapshot=financial_snapshot(json.loads(get(u,accept="application/json")),cik,datetime.now(timezone.utc).date())
+        cash,flow=snapshot["cash"],snapshot["flow"]
+        exact=snapshot["cash_basis"]=="CASH_EQUIVALENTS"
+        runway=None
+        result={"status":"CASH_UPDATED" if exact else "LIQUIDITY_UPDATED",
+                "note":"Current SEC USD fact "+format(cash["val"],",.0f")+" ("+cash["end"]+"); basis "+snapshot["cash_basis"]+".",
+                "source":u,"cash_basis":snapshot["cash_basis"],"cash_period":cash["end"],
+                "cash":cash["val"] if exact else None,
+                "reported_liquidity":cash["val"] if not exact else None,"runway":None}
+        if flow and flow["val"]>=0:
+            result["status"]="RUNWAY_NOT_APPLICABLE"
+            result["note"]+=" Aligned operating cash flow is nonnegative; finite cash-burn runway does not apply."
+        elif flow and exact:
+            runway=cash["val"]/(-flow["val"]/(snapshot["flow_days"]/30.4375))
+            result.update(status="RUNWAY_ESTIMATED",runway=runway)
+            result["note"]+=" Same-filing/period runway estimate "+format(runway,".1f")+" months."
+        elif not exact:
+            result["note"]+=" Restricted cash is not relabeled as spendable cash."
+        return result
+    except (ValueError,KeyError,TypeError) as e:
+        return {"status":"CASH_FACT_REVIEW_REQUIRED","note":note(str(e)),"source":u}
     except Exception as e:
-        return {"status":"SOURCE_BLOCKED_RETAINED","note":note("SEC Companyfacts unavailable from worker; retained stored cash/runway values. "+str(e)),"source":u}
+        return {"status":"SOURCE_BLOCKED_RETAINED","note":note("SEC Companyfacts unavailable; retained stored figures. "+str(e)),"source":u}
 
 def market_check(ticker):
     symbol=s(ticker).upper()
@@ -325,7 +337,11 @@ def main():
             # Step 4 human-reviewed, SEC-exhibit evidence must establish
             # actual closing, date, identity and exact financing transaction.
         if "cash_runway" in cats:
-            res["cash_runway"]=cash_check(cik); ch+=setv(c,i,"cash",res["cash_runway"].get("cash")); ch+=setv(c,i,"cash_runway_months",res["cash_runway"].get("runway"))
+            res["cash_runway"]=cash_check(cik)
+            for field,key in (("cash","cash"),("cash_runway_months","runway"),("cash_basis","cash_basis"),("cash_period","cash_period"),("reported_liquidity","reported_liquidity")):
+                ch+=setv(c,i,field,res["cash_runway"].get(key))
+            if res["cash_runway"].get("status")=="RUNWAY_NOT_APPLICABLE" and "cash_runway_months" in c and s(c.at[i,"cash_runway_months"]):
+                c.at[i,"cash_runway_months"]=""; ch+=1
         if "market_data" in cats:
             res["market_data"]=market_check(r["ticker"]); ch+=setv(c,i,"price_last",res["market_data"].get("price")); ch+=setv(c,i,"avg_volume_20d",res["market_data"].get("volume")); ch+=setv(c,i,"return_30d_pct",res["market_data"].get("return30"))
         if "ownership_insiders" in cats:
@@ -347,4 +363,5 @@ def main():
 
 if __name__=="__main__":
     main()
+
 

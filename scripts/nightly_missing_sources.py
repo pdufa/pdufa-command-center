@@ -292,12 +292,20 @@ def coverage(out, data_dir=DATA):
             allowed_claims = {
                 "FDA": {"PDUFA_TARGET", "FDA_DECISION"},
                 "SEC": {"FILINGS_INVENTORY", "FINANCING_CLOSURE"},
-                "FINANCIAL": {"CASH_FACT", "RUNWAY_ESTIMATE", "CASH_AND_RUNWAY"},
-                "MARKET": {"PRICE_VOLUME", "SHORT_IV_BORROW"},
+                "FINANCIAL": {"CASH_FACT", "LIQUIDITY_FACT", "RUNWAY_ESTIMATE", "CASH_AND_RUNWAY"},
+                "MARKET": {"PRICE_VOLUME", "SHORT_INTEREST", "OPTIONS_IV", "BORROW"},
                 "ISSUER": {"PRIMARY_RELEASE"},
             }
             if any(r.get("claim") not in allowed_claims[name] for r in evidence):
                 raise ValueError("Ledger contains claims outside source scope")
+            for finding in evidence:
+                supplemental = name == "MARKET" and finding["claim"] != "PRICE_VOLUME"
+                if finding.get("verification_required") != ("NO" if supplemental else "YES"):
+                    raise ValueError("Ledger changed the required/optional claim policy")
+                if finding["verification_status"] == "UNAVAILABLE" and not supplemental:
+                    raise ValueError("Required evidence cannot be dismissed as optional unavailable data")
+                if finding["verification_status"] == "NOT_APPLICABLE" and (name, finding["claim"]) != ("FINANCIAL", "RUNWAY_ESTIMATE"):
+                    raise ValueError("Not-applicable status is outside the cash-burn runway scope")
             started = datetime.fromisoformat(report["started_at"])
             finished = datetime.fromisoformat(report["finished_at"])
             age = (datetime.now(timezone.utc) - finished).total_seconds()
@@ -318,38 +326,40 @@ def coverage(out, data_dir=DATA):
                 claims = {r["claim"] for r in evidence if r["event_key"] == event}
                 required = ({"FILINGS_INVENTORY"} if event.startswith("REGISTRY:") else
                             {"FINANCING_CLOSURE"} if name == "SEC" else
-                            {"PRICE_VOLUME", "SHORT_IV_BORROW"} if name == "MARKET" else
+                            {"PRICE_VOLUME", "SHORT_INTEREST", "OPTIONS_IV", "BORROW"} if name == "MARKET" else
                             {"PRIMARY_RELEASE"} if name == "ISSUER" else None)
                 if required is not None and claims != required:
                     raise ValueError("Ledger omits a required claim for " + event)
                 if name == "FDA" and len(claims) != 1:
                     raise ValueError("Regulatory claim scope is ambiguous")
-                if name == "FINANCIAL" and claims not in ({"CASH_AND_RUNWAY"}, {"CASH_FACT", "RUNWAY_ESTIMATE"}):
+                if name == "FINANCIAL" and claims not in ({"CASH_AND_RUNWAY"}, {"CASH_FACT", "RUNWAY_ESTIMATE"}, {"LIQUIDITY_FACT", "RUNWAY_ESTIMATE"}):
                     raise ValueError("Financial ledger omits cash/runway scope")
-            if any(r["verification_status"] == "VERIFIED" and (not r.get("source_url") or not re.fullmatch(r"[a-f0-9]{64}", r.get("source_sha256", ""))) for r in evidence):
+            if any(r["verification_status"] in {"VERIFIED", "NOT_APPLICABLE"} and (not r.get("source_url") or not re.fullmatch(r"[a-f0-9]{64}", r.get("source_sha256", ""))) for r in evidence):
                 raise ValueError("Verified claim lacks primary/provider source content hash")
             totals = verification_summary(evidence)
             if any(report.get(k) != v for k, v in totals.items()):
                 raise ValueError("Manifest counts disagree with verification ledger")
-            complete = totals["findings_due"] == totals["findings_verified"]
+            complete = totals["required_findings_unresolved"] == 0
             if report.get("scope_coverage_verified") is not complete:
                 raise ValueError("Manifest coverage assertion disagrees with evidence")
             if report.get("status") == "FAILED" or report.get("recheck_exit_code", 0) != 0:
                 raise ValueError("Source collector or verifier failed")
             if report.get("collection_missing_event_keys"):
                 complete = False
-            reports[name] = {"status": "COMPLETE" if complete else "PARTIAL"}
+            reports[name] = {"status": ("COMPLETE WITH WARNINGS" if totals["optional_findings_unavailable"] else "COMPLETE") if complete else "PARTIAL"}
             rows.extend(evidence)
         except (OSError, ValueError, TypeError, KeyError) as exc:
             reports[name] = {"status": "NOT_RUN_OR_MISSING"}
             rejected[name] = str(exc)[:180]
     statuses = {name: r.get("status", "UNKNOWN") for name, r in reports.items()}
-    missing = [name for name, status in statuses.items() if status != "COMPLETE"]
+    missing = [name for name, status in statuses.items() if status not in {"COMPLETE", "COMPLETE WITH WARNINGS"}]
     combined = out / "combined_verification.csv"
     from scripts.source_verification import FIELDS
     write_rows(combined, rows, FIELDS)
     write_rows(out / "verification_review_queue.csv",
-               [r for r in rows if r["verification_status"] != "VERIFIED"], FIELDS)
+               [r for r in rows if r["verification_required"] == "YES" and r["verification_status"] not in {"VERIFIED", "NOT_APPLICABLE"}], FIELDS)
+    write_rows(out / "supplemental_data_gaps.csv",
+               [r for r in rows if r["verification_required"] == "NO" and r["verification_status"] != "VERIFIED"], FIELDS)
     return {**verification_summary(rows), "verification_version": VERSION,
             "verification_run_id": run_identity(), "verification_scope_sha256": expected_scope,
             "scope_coverage_verified": not missing,
@@ -358,10 +368,10 @@ def coverage(out, data_dir=DATA):
             "combined_verification_ledger_sha256": digest(combined.read_bytes()),
             "source_statuses": statuses,
             "missing_required_source_families": missing,
-            "sources_passed": sum(x == "COMPLETE" for x in statuses.values()),
+            "sources_passed": sum(x in {"COMPLETE", "COMPLETE WITH WARNINGS"} for x in statuses.values()),
             "sources_due": len(statuses),
             "verification_issue_examples": [{k: r[k] for k in ("ticker", "category", "claim", "verification_status", "reason")}
-                for r in rows if r["verification_status"] != "VERIFIED"][:12],
+                for r in rows if r["verification_required"] == "YES" and r["verification_status"] not in {"VERIFIED", "NOT_APPLICABLE"}][:12],
             "note": "Reconciles fresh source ledgers from this run. Clinical collection, "
                     "second-financing sequence adjudication and dashboard ingestion "
                     "have separate scopes; five-source completion is not a full trading baseline."}
@@ -401,7 +411,10 @@ def main(argv=None):
     if problem or (args.source in CATS and evidence.get("recheck_exit_code", 1) != 0):
         status = "FAILED"
     else:
-        status = "COMPLETE" if evidence.get("scope_coverage_verified") and not evidence.get("collection_missing_event_keys") else "PARTIAL"
+        if evidence.get("scope_coverage_verified") and not evidence.get("collection_missing_event_keys"):
+            status = "COMPLETE WITH WARNINGS" if evidence.get("optional_findings_unavailable") else "COMPLETE"
+        else:
+            status = "PARTIAL"
     counts = [k + ": " + str(v) for k, v in evidence.items()
               if isinstance(v, int) and not isinstance(v, bool)]
     report = {
@@ -410,12 +423,13 @@ def main(argv=None):
         "scope": "PDUFA event-specific live sources; SEC also inventories company registry",
         "scan_kind": "VERIFIED_EXTENDED_SOURCE_CHECKS",
         "completion_scope": "This source's ledger claims; not the full clinical/trading baseline",
+        "execution_status": "FAILED" if problem or evidence.get("recheck_exit_code", 0) else "COMPLETE",
         "full_coverage_verified": False,
         "errors_count": int(bool(problem)) + evidence.get("verification_technical_failure_count", 0),
         "source_review_count": evidence.get("findings_unresolved", 0) + evidence.get("findings_conflicted", 0),
         "errors": [problem] if problem else [],
         "missing_required_source_families": (
-            evidence.get("missing_required_source_families", FULL_SOURCE_FAMILIES)),
+            evidence.get("missing_required_source_families", [args.source] if status == "PARTIAL" else [])),
         "verification_limits": "Verification is limited to each ledger claim. "
             "Cash runway is an estimate. A filing inventory is not a financing closing; "
             "a release is not an FDA decision. This does not certify Phase 3 success, "
@@ -430,4 +444,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
