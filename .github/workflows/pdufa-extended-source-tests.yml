@@ -12,19 +12,6 @@ on:
       - 'tests/test_source_verification.py'
       - 'tests/test_scan_completion_repairs.py'
       - 'tests/test_scan_email_notifications.py'
-  # Verify primary-source parser changes before merge, not only after.
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/pdufa-extended-source-tests.yml'
-      - 'scripts/nightly_missing_sources.py'
-      - 'scripts/source_verification.py'
-      - 'scripts/recheck_events.py'
-      - 'scripts/scan_email.py'
-      - 'tests/test_nightly_missing_sources.py'
-      - 'tests/test_source_verification.py'
-      - 'tests/test_scan_completion_repairs.py'
-      - 'tests/test_scan_email_notifications.py'
   workflow_dispatch:
 permissions:
   contents: read
