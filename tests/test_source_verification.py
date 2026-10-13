@@ -72,6 +72,13 @@ class VerificationTests(unittest.TestCase):
         result = self.verifier(b"").registry(COMPANY)
         self.assertEqual(result["verification_status"], "TECHNICAL_FAILURE")
 
+    def test_full_september_month_is_not_corrupted_by_sept_abbreviation(self):
+        self.assertEqual(verify.dates("September 4, 2026"), {"2026-09-04"})
+        self.assertEqual(verify.dates("Sept. 4, 2026"), {"2026-09-04"})
+        self.assertEqual(verify.dates("Sep 4, 2026"), {"2026-09-04"})
+        self.assertEqual(verify.dates("September 4, 2026 and Sept. 5, 2026"),
+                         {"2026-09-04", "2026-09-05"})
+
     def test_sec_transient_retry_never_promotes_unverified_or_conflicting_evidence(self):
         base = {"event_key": "ABC|DRUG", "ticker": "ABC", "category": "SEC",
                 "claim": "FINANCING_CLOSURE", "verification_status": "TECHNICAL_FAILURE",
