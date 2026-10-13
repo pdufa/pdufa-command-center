@@ -17,7 +17,7 @@ concurrency:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 95
     steps:
       - name: Checkout current saved source snapshots
         uses: actions/checkout@v4
@@ -29,10 +29,16 @@ jobs:
           python-version: "3.12"
       - name: Install scanner dependencies
         run: python -m pip install -r requirements.txt
-      - name: Refresh actual Phase 3 registry discovery observations
+      - name: Backfill missing Phase 3 history or refresh daily changes
         id: clinical
         continue-on-error: true
-        run: python scripts/phase3_results_intake.py --mode daily --max-pages 120 --data-dir data
+        run: |
+          if [ ! -s data/phase3_announcements.csv ]; then
+            echo "Empty discovery ledger: retrieve all registry Phase 3 posted results before incremental scanning"
+            python scripts/phase3_results_intake.py --mode backfill --max-pages 120 --data-dir data
+          else
+            python scripts/phase3_results_intake.py --mode daily --max-pages 120 --data-dir data
+          fi
       - name: Write fail-closed GEM quality report and prospective research observations
         if: always()
         run: python scripts/run_gem_daily_readiness.py --output-dir reports/gem_daily
