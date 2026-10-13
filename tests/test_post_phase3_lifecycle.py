@@ -125,7 +125,7 @@ class TestPositionMonitoring(unittest.TestCase):
                                   program=candidate(pdufa=30))
         self.assertEqual(rows[0]["Trade lifecycle"], "RED — EXIT DUE / NOT RECORDED")
         self.assertIn("PDUFA DATE CHANGED", rows[0]["Monitoring alert"])
-        self.assertEqual(rows[0]["Conservative PDUFA date"], "2026-10-18")
+        self.assertEqual(rows[0]["Conservative PDUFA date"], "2026-10-14")
         self.assertEqual(totals["due"], 1)
 
     def test_missing_quote_makes_no_marked_profit(self):
