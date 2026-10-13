@@ -217,6 +217,38 @@ class VerificationTests(unittest.TestCase):
         self.assertTrue(result["source_url"].endswith("ex99-5.htm"))
         self.assertEqual(len([url for url in checked if "/ex99-" in url]), 5)
 
+    def test_signed_fda_letter_is_action_not_issuer_announcement(self):
+        pdf = "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/208081Orig1s040ltr.pdf"
+        page = ("NDA 208081/S-040 SUPPLEMENT APPROVAL\n"
+                "Biofrontera Inc c/o Cardinal Health Regulatory Sciences.\n"
+                "Application for Ameluz gel with superficial basal cell carcinoma (sBCC).\n"
+                "We have completed our review of this application, as amended. "
+                "It is approved, effective on the date of this letter.\n"
+                "Signature Page 1 of 1. This is a representation of an "
+                "electronic record that was signed electronically.\n"
+                "/s/ TATIANA OUSSOVA 09/09/2026 06:35:00 PM\n")
+        event = {"event_key": "BFRI|AMELUZ_SBCC_20260928",
+                 "ticker": "BFRI", "company": "Biofrontera Inc.",
+                 "drug": "Ameluz PDT", "indication": "superficial basal cell carcinoma (sBCC)",
+                 "outcome": "APPROVED", "decision_date": "2026-09-09",
+                 "pdufa_evidence_url": pdf}
+        company = {"ticker": "BFRI", "company": "Biofrontera Inc.", "cik10": "0001858685"}
+        self.assertEqual(verify.documented_fda_signed_approval(event, page), "2026-09-09")
+        verifier = verify.Verifier([company], fetch=lambda _: page.encode(),
+                                   as_of=date(2026, 10, 12))
+        result = verifier.regulatory(event)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertEqual(result["observed"], "APPROVED 2026-09-09")
+        self.assertEqual(result["source_url"], pdf)
+        self.assertEqual(verifier.regulatory({**event, "decision_date": "2026-09-14"})[0]["verification_status"], "CONFLICT")
+        for changed in (
+            page.replace("effective on the date of this letter", "pending further review"),
+            page.replace("09/09/2026", "11/31/2026"),
+            page.replace("Ameluz", "AnotherDrug"),
+            page.replace("superficial basal cell carcinoma", "another indication"),
+        ):
+            self.assertIsNone(verify.documented_fda_signed_approval(event, changed))
+
     def test_explicit_extended_pdufa_date_is_verified_only_for_exact_program(self):
         old_url = SEC_DOC.replace("ex99-1.htm", "previous.htm")
         new_url = SEC_DOC
