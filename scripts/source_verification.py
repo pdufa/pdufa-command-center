@@ -80,7 +80,7 @@ def dates(text):
                r"Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)"
                r"\s+\d{1,2},?\s+20\d{2}\b")
     for token in re.findall(pattern, text, re.I):
-        token = re.sub(r"(?i)\bSept\.?", "Sep", token).replace(".", "")
+        token = re.sub(r"(?i)\bSept\.?(?=\s)", "Sep", token).replace(".", "")
         for fmt in ("%B %d, %Y", "%B %d %Y", "%b %d, %Y", "%b %d %Y"):
             try:
                 found.add(datetime.strptime(token, fmt).date().isoformat())
