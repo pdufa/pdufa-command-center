@@ -277,6 +277,43 @@ def render_scan_status(published_report_loader):
                " · coverage: " + str(report.get("status", "UNVERIFIED")) +
                ". Unresolved items include missing evidence and conflicting claims, not unfinished compute jobs.")
 
+    comparison = report.get("comparison") or {}
+    if comparison.get("available"):
+        st.markdown("#### Change from previous published scan")
+        x, y, z = st.columns(3)
+        x.metric("Issues resolved", int(comparison.get("resolved_count", 0)))
+        y.metric("New unresolved", int(comparison.get("new_count", 0)))
+        z.metric("Net fewer unresolved", int(comparison.get("net_reduction", 0)))
+        st.caption("Compared with run #" + str(comparison.get("previous_run_id") or "unknown") +
+                   ". Changes are matched by event, source and claim; a lower total alone is not evidence of a fix.")
+        if comparison.get("new_count"):
+            st.warning("New verification gaps were detected; inspect the affected candidates below.")
+        if comparison.get("resolved_examples") or comparison.get("new_examples"):
+            with st.expander("Exactly which issues changed?"):
+                for name, key in (("Resolved since prior audit", "resolved_examples"),
+                                  ("New or reopened mandatory issues", "new_examples")):
+                    examples = comparison.get(key) or []
+                    if examples:
+                        st.write("**" + name + "**")
+                        st.dataframe(pd.DataFrame(examples), use_container_width=True,
+                                     hide_index=True)
+                st.caption("Up to 12 examples per group; complete changes are reflected in the counts.")
+    elif comparison.get("reason"):
+        st.caption("Run-to-run comparison not available: " + str(comparison["reason"]))
+
+    history = report.get("verification_history") or []
+    if len(history) >= 2:
+        previous_counts = [
+            {"Run": str(x.get("run_id") or "")[-9:],
+             "Unresolved": int(x["remaining"])}
+            for x in history
+            if isinstance(x, dict) and str(x.get("remaining", "")).isdigit()
+        ]
+        if len(previous_counts) >= 2:
+            with st.expander("Mandatory evidence gaps over recent published scans"):
+                st.line_chart(pd.DataFrame(previous_counts), x="Run", y="Unresolved")
+                st.caption("These are saved publication snapshots, not repeated displays of one run.")
+
     if sources.get("id") and str(sources["id"]) != str(report.get("latest_run_id")):
         if sources.get("status") in ACTIVE:
             st.info("The newest source scan is still running or queued; these evidence totals belong to an earlier published audit.")
