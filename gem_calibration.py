@@ -118,12 +118,10 @@ def validate_snapshot(row, as_of):
                 not https(row.get("pdufa_source_url")) or
                 _text(row.get("pdufa_verdict")) != "VERIFIED"):
             return "PDUFA_SOURCE_OR_PUBLICATION_MISSING", None
-        if (pdufa - signal).days < 15:
-            return "INSIDE_PDUFA_MINUS_14_EXIT_WINDOW", None
-    if stage == "PDUFA" and (
-        (pdufa - signal).days > 90 or points["PDUFA evidence /15"] != 15
-    ):
-        return "OUTSIDE_VERIFIED_15_TO_90_DAY_PDUFA_WINDOW", None
+        if (pdufa - signal).days < 4:
+            return "INSIDE_PDUFA_MINUS_3_EXIT_WINDOW", None
+    if stage == "PDUFA" and points["PDUFA evidence /15"] != 15:
+        return "PDUFA_EVIDENCE_SCORE_NOT_VERIFIED", None
     early = _text(row.get("early_fda_action_date"))
     early_date = day(early) if early else None
     if early and early_date is None:
@@ -178,11 +176,11 @@ def _simulate(row, decoded, bars, *, as_of, slippage_bps, min_daily_dollars):
         if last >= len(bars):
             return OTHER, "NOT_YET_30_HISTORICAL_SESSIONS", None
     else:
-        target = decoded["pdufa"] - timedelta(days=14)
+        target = decoded["pdufa"] - timedelta(days=3)
         last = next((j for j in reversed(range(len(bars)))
                      if bars[j]["session"] <= target), None)
         if last is None or last <= i or (target - bars[last]["session"]).days > 5:
-            return OTHER, "PDUFA_MINUS_14_EXIT_PRICE_UNAVAILABLE", None
+            return OTHER, "PDUFA_MINUS_3_EXIT_PRICE_UNAVAILABLE", None
     if any((bars[j+1]["session"] - bars[j]["session"]).days > 7
            for j in range(i, last)):
         return OTHER, "MISSING_PRICE_SESSIONS", None
@@ -378,7 +376,7 @@ def calibrate(snapshots, price_bars, *, as_of=None,
         "warnings":[
             "Source URLs and publication dates require independent primary-document verification; a supplied string alone is not proof.",
             "Prospective source snapshots must represent the full candidate universe, including losers and delisted issuers.",
-            "Stage-specific horizons differ: Phase 3 exits after 30 actual sessions; Post-Financing and PDUFA exit at PDUFA minus 14 calendar days.",
+            "Stage-specific horizons differ: Phase 3 exits after 30 actual sessions; Post-Financing and PDUFA exit at PDUFA minus 3 calendar days.",
             "Early FDA action scenarios are censored and may omit tail losses; paired outcomes may share issuer exposure.",
             "Train-only small hypothesis search followed by chronological holdout is exploratory, not evidence of perfection.",
             "Live GEM score weights are NEVER automatically changed by these reports.",
