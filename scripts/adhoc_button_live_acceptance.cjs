@@ -1,4 +1,4 @@
-// Inspect the live SCANS navigation and ad hoc button; never submit a scan.
+// Inspect PDUFA → SCANS and the protected ad hoc error-check controls; never submit a scan.
 const { chromium } = require("playwright-core");
 const fs = require("fs");
 const path = require("path");
@@ -32,11 +32,12 @@ async function appFrame(page){
     let frame=null;
     while(Date.now()<deadline){
       frame=await appFrame(page);
-      if(frame && await frame.getByText("5. SCANS",{exact:true}).count())break;
+      if(frame && await frame.getByRole("tab",{name:"SCANS",exact:true}).count())break;
       await sleep(1500);
     }
-    if(!frame)throw Error("Streamlit app navigation did not render");
-    await frame.getByText("5. SCANS",{exact:true}).click({timeout:10000});
+    if(!frame || !(await frame.getByRole("tab",{name:"SCANS",exact:true}).count()))
+      throw Error("PDUFA SCANS subtab did not render");
+    await frame.getByRole("tab",{name:"SCANS",exact:true}).click({timeout:15000});
     let scanBody = "", buttons = 0, links=0, pin=0, fallback=0;
     while(Date.now()<deadline){
       frame=await appFrame(page);
@@ -48,7 +49,8 @@ async function appFrame(page){
       links=await frame.getByText("OPEN AD HOC ERROR CHECK / RESULTS IN GITHUB",{exact:true}).count();
       fallback=await frame.getByText("▶ RUN AD HOC CHECK IN GITHUB",{exact:true}).count();
       pin=await frame.getByText("Ad hoc check PIN",{exact:false}).count();
-      if((buttons && links && pin) || (fallback && scanBody.includes("One-click dispatch is not configured")))break;
+      if(scanBody.includes("AD HOC — GMAIL + GITHUB ERROR CHECK")
+         && ((buttons && links && pin) || (fallback && scanBody.includes("One-click dispatch is not configured"))))break;
       await sleep(1250);
     }
     result.mode = buttons === 1 && links > 0 && pin > 0
@@ -56,7 +58,9 @@ async function appFrame(page){
       : fallback === 1 && scanBody.includes("One-click dispatch is not configured")
         ? "GITHUB_MANUAL_RUN_FALLBACK"
         : "NOT_AVAILABLE";
-    result.checks.scansPage = scanBody.includes("5. SCANS — FIND CHANGES & NEW EVIDENCE");
+    result.checks.scansPage = scanBody.includes("NIGHTLY SCAN REPORT")
+      && scanBody.includes("AD HOC — GMAIL + GITHUB ERROR CHECK")
+      && (await frame.getByRole("tab",{name:"SCANS",exact:true}).getAttribute("aria-selected")) === "true";
     result.checks.safeRunPathVisible = result.mode !== "NOT_AVAILABLE";
     result.checks.noApplicationException = !/This app has encountered an error|Traceback \(most recent call last\)/i.test(scanBody);
     result.checks.pinProtected = result.mode==="DIRECT_PIN_GATED"
