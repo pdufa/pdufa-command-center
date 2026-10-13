@@ -249,7 +249,12 @@ class GemReadinessTests(unittest.TestCase):
         self.assertIn("phase3_results_intake.py", workflow)
         self.assertIn("stored_results", workflow)
         self.assertIn("git push origin HEAD:main", workflow)
-        self.assertIn("if: success()", workflow)
+        # Publish PARTIAL/FAILED block visibility even on collector errors,
+        # but the clinical ledger must only publish after exact count validation.
+        self.assertIn("if: always()", workflow)
+        self.assertIn("steps.registry_validation.outcome", workflow)
+        self.assertIn("git add -- data/gem_scan_block_report.json", workflow)
+        self.assertIn("git add -- data/phase3_intake_status.json data/phase3_announcements.csv", workflow)
         self.assertIn("actions/upload-artifact@", workflow)
         self.assertIn("run_gem_daily_readiness.py", workflow)
         self.assertIn("research-only", (root/"gem_prospective.py").read_text().lower())
