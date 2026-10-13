@@ -210,6 +210,10 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
             row.get("2nd Financing Completed") != "YES — VERIFIED (HISTORICAL)"
             for row in verified_tracking),
         "ranked": qualified,
+        "strict_entry_gate_shortlist_count": sum(
+            row.get("GEM ALL ENTRY GATES") == "PASS — MANUAL REVIEW ONLY"
+            for row in items
+        ),
         "ranking_discrimination": info,
         "discovery_review_leads": len(discovery),
         "discovery_source_status": discovery_status,
