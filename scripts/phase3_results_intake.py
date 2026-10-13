@@ -62,6 +62,8 @@ def fetch(params):
 def scan(mode, max_pages, data_dir=DATA):
     data_dir = Path(data_dir)
     registry = rows(data_dir / "company_registry.csv")
+    if not registry:
+        raise ValueError("Company registry missing or empty; cannot establish discovery coverage")
     sponsors = {}
     for company in registry:
         key = normalized(company.get("company"))
@@ -73,7 +75,10 @@ def scan(mode, max_pages, data_dir=DATA):
     # later registry refresh must not overwrite the earlier issuer evidence.
     issuer_rows = [r for r in existing if r.get("source_type") == "ISSUER_TOPLINE_RELEASE"]
     registry_rows = [r for r in existing if r.get("source_type") != "ISSUER_TOPLINE_RELEASE"]
-    by_nct = {r.get("nct_id"): r for r in registry_rows if r.get("nct_id")}
+    # Keep ticker + NCT as the key: different issuers must not silently
+    # overwrite one another when a trial is co-sponsored or licensed.
+    by_nct = {(r.get("ticker"), r.get("nct_id")): r for r in registry_rows
+              if r.get("ticker") and r.get("nct_id")}
     old_without_nct = [r for r in registry_rows if not r.get("nct_id")]
     now = datetime.now(timezone.utc).isoformat()
     params = {"query.term": "AREA[Phase]PHASE3 AND AREA[StudyType]INTERVENTIONAL",
@@ -85,6 +90,11 @@ def scan(mode, max_pages, data_dir=DATA):
         # Incremental scan: recently updated studies, plus retained historical ledger.
         params["query.term"] += " AND AREA[LastUpdatePostDate]RANGE[" + (
             (datetime.now(timezone.utc).date() - timedelta(days=90)).isoformat()) + ",MAX]"
+    if not isinstance(max_pages, int) or not 1 <= max_pages <= 1000:
+        raise ValueError("Invalid maximum page budget")
+    if mode not in ("backfill", "daily"):
+        raise ValueError("Invalid scan mode")
+    seen_page_tokens = set()
     try:
         for page in range(max_pages):
             payload = fetch(params)
@@ -115,7 +125,8 @@ def scan(mode, max_pages, data_dir=DATA):
                 # Multiple interventions remain a REVIEW, not a falsely identified drug.
                 drug = " | ".join(sorted(set(interventions)))
                 indication = " | ".join(sorted(set(conditions)))
-                old = by_nct.get(nct, {})
+                identity = (matches[0].get("ticker", ""), nct)
+                old = by_nct.get(identity, {})
                 row = {key: old.get(key, "") for key in FIELDS}
                 row.update({"ticker": matches[0].get("ticker", ""), "company": matches[0].get("company", ""),
                     "drug": drug, "indication": indication, "phase3_results_posted_at": posted,
@@ -126,30 +137,39 @@ def scan(mode, max_pages, data_dir=DATA):
                     "source_list_note": "Registry results-post date, NOT a company topline press-release date",
                     "nct_id": nct, "source_type": "CLINICALTRIALS_RESULTS",
                     "first_seen_at": old.get("first_seen_at") or now, "last_checked_at": now})
-                if nct not in by_nct:
+                if identity not in by_nct:
                     state["new_records"] += 1
-                by_nct[nct] = row
+                by_nct[identity] = row
                 state["matched_posted_results"] += 1
             state["pages"] += 1
             token = payload.get("nextPageToken")
             if not token:
                 state["complete"] = True
                 break
+            if token in seen_page_tokens:
+                raise ValueError("Registry returned duplicate pagination token")
+            seen_page_tokens.add(token)
             params["pageToken"] = token
             print("page", state["pages"], "studies", state["studies_checked"], flush=True)
     except Exception as exc:
         state["errors"].append(type(exc).__name__ + ": " + str(exc))
+    if not state["complete"] and not state["errors"]:
+        state["errors"].append("Page budget exhausted with registry pages remaining")
     merged = issuer_rows + old_without_nct + list(by_nct.values())
     merged.sort(key=lambda r: (r.get("phase3_results_posted_at", ""), r.get("ticker", ""), r.get("nct_id", "")), reverse=True)
-    # Existing evidence is never removed when an upstream request fails.
-    write(path, merged)
+    # Never replace the last published, complete ledger with a partial
+    # collector run. Preserve the evidence for manual inspection via state.
+    publish = state["complete"] and not state["errors"]
+    if publish:
+        write(path, merged)
     state.update({"finished_at": datetime.now(timezone.utc).isoformat(),
-                  "stored_results": len(merged),
+                  "stored_results": len(merged) if publish else len(existing),
+                  "unpublished_partial_rows": 0 if publish else len(merged),
                   "status": ("COMPLETE WITH WARNINGS" if state["complete"] and state["errors"] else "COMPLETE" if state["complete"] else "PARTIAL" if state.get("studies_checked", 0) else "FAILED")})
     (data_dir / "phase3_intake_status.json").write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(state, indent=2))
-    if state["errors"]:
-        raise RuntimeError("Phase 3 intake incomplete; retained successful records.")
+    if not publish:
+        raise RuntimeError("Phase 3 intake incomplete; existing discovery ledger preserved.")
 
 
 if __name__ == "__main__":
