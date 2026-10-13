@@ -316,8 +316,16 @@ def calibrate(snapshots, price_bars, *, as_of=None,
         holdout=[r for r in rows if r["month"]>=cutoff and
                  r["ticker"] not in train_tickers]
         repeats=sum(r["month"]>=cutoff and r["ticker"] in train_tickers for r in rows)
+        # Strict gates can fix most feature scores to their maximum.
+        # Without multiple varying score dimensions, no weight change can
+        # demonstrate independent ranking improvement.
+        varying_components = [
+            field for field in LIVE_WEIGHTS[stage]
+            if len({r["points"][field] for r in train}) >= 2
+        ]
         eligible=(len({r["ticker"] for r in train})>=MIN_TRAIN and
                   len({r["ticker"] for r in holdout})>=MIN_HOLDOUT and
+                  len(varying_components) >= 2 and
                   _cohorts(train,LIVE_WEIGHTS[stage])["competitive_months"]>=MIN_TRAIN_MONTHS and
                   _cohorts(holdout,LIVE_WEIGHTS[stage])["competitive_months"]>=MIN_HOLDOUT_MONTHS)
         # Never pick weights based on holdout performance.
@@ -334,7 +342,11 @@ def calibrate(snapshots, price_bars, *, as_of=None,
         chosen=rankings[0][0] if eligible else None
         report={
             "status":("EXPLORATORY_HOLDOUT_VALIDATED_NOT_PRODUCTION_APPROVED"
-                      if eligible else "INSUFFICIENT_INDEPENDENT_COHORT_DATA"),
+                      if eligible else
+                      "INSUFFICIENT_SCORE_DISCRIMINATION"
+                      if len(varying_components) < 2 else
+                      "INSUFFICIENT_INDEPENDENT_COHORT_DATA"),
+            "varying_score_components":varying_components,
             "completed_trades":len(rows), "unique_tickers":len({r["ticker"] for r in rows}),
             "calibrated":bool(eligible),
             "train_months":len({r["month"] for r in train}),
@@ -378,6 +390,7 @@ def calibrate(snapshots, price_bars, *, as_of=None,
             "Prospective source snapshots must represent the full candidate universe, including losers and delisted issuers.",
             "Stage-specific horizons differ: Phase 3 exits after 30 actual sessions; Post-Financing and PDUFA exit at PDUFA minus 3 calendar days.",
             "Early FDA action scenarios are censored and may omit tail losses; paired outcomes may share issuer exposure.",
+            "Strict gates can leave only market activity varying; score weights cannot be tuned meaningfully without at least two independently varying predictors.",
             "Train-only small hypothesis search followed by chronological holdout is exploratory, not evidence of perfection.",
             "Live GEM score weights are NEVER automatically changed by these reports.",
         ],
