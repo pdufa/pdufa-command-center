@@ -144,6 +144,20 @@ def attributed_target_dates(event, passage):
 
 
 def drug_matches(event, text):
+    # Explicit combination drugs must be present together in one local
+    # context. Splitting '+' into independent aliases would be unsafe:
+    # seeing component A elsewhere on a company page cannot prove A+B.
+    raw_drug = str(event.get("drug", ""))
+    if re.search(r"\s\+\s", raw_drug):
+        components = [normalized(part) for part in re.split(r"\s*\+\s*", raw_drug)]
+        if not (2 <= len(components) <= 4 and
+                all(len(component) >= 3 for component in components)):
+            return False
+        body = normalized(text)
+        patterns = [components, list(reversed(components))]
+        return any(bool(re.search(
+            r"(?<!\w)" + r"\b.{0,180}\b".join(map(re.escape, parts)) + r"(?!\w)",
+            body)) for parts in patterns)
     # Full names/codes and explicitly supplied parenthetical aliases only.
     parts = re.split(r"[()/|;]", event.get("drug", ""))
     parts += re.split(r"[|;]", event.get("drug_aliases", ""))
@@ -218,7 +232,18 @@ def publication_dates(raw, plain):
         r"(?i)\b[A-Z]{2,}(?:\s+[A-Z]{2,}){0,3},\s*(?:[A-Z][a-z]+\.?,\s*)?"
         + "(" + month + r"\s+\d{1,2},\s+20\d{2})" + r"\s+[-–—]\s",
         plain[:6000])
-    return dates(dateline.group(1)) if dateline else set()
+    if dateline:
+        return dates(dateline.group(1))
+    # Legitimate issuer releases syndicated by Business Wire use
+    # "BOSTON--(BUSINESS WIRE)--Jun. 1, 2026--" or
+    # "ALAMEDA, Calif.--(BUSINESS WIRE)--Feb. 2, 2026--".
+    # A bare PDUFA target date is never a publication dateline.
+    wire = re.search(
+        r"(?i)\b[A-Z][A-Z ]{2,35}(?:,\s*[A-Z][a-z]{2,15}\.)?--"
+        r"\((?:BUSINESS WIRE|GLOBE NEWSWIRE)\)--\s*("
+        + month + r"\s+\d{1,2},\s+20\d{2})--",
+        plain[:6000])
+    return dates(wire.group(1)) if wire else set()
 
 
 def numeric(value):
