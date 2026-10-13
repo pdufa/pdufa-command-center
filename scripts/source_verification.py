@@ -381,6 +381,32 @@ def documented_preferred_share_purchase(text, closing_date):
     return ""
 
 
+
+def documented_drawn_credit_tranche(text, closing_date):
+    """Verify a funded debt draw at a dated credit-facility closing only.
+
+    An undrawn facility limit is not financing proceeds. Demand an actual
+    amount already "drawn on the Closing Date" within the dated SEC passage;
+    later optional tranches must not be counted as funded.
+    """
+    for label in re.finditer(r"(?i)\bClosing\s+Date\b", text):
+        start = max(0, label.start() - 130)
+        passage = text[start:label.end() + 1050]
+        if closing_date not in dates(passage):
+            continue
+        if not re.search(r"(?i)\b(?:credit\s+agreement|credit\s+facility)\b", passage):
+            continue
+        draws = re.finditer(
+            r"(?i)\$\s*[\d,.]+\s+(?:million|billion)\s+drawn\s+on\s+the\s+Closing\s+Date\b",
+            passage)
+        for draw in draws:
+            before = passage[max(0, draw.start() - 35):draw.start()]
+            if re.search(r"(?i)\b(?:would|will|might|may|expected|potential|anticipated)\b", before):
+                continue
+            return passage[:draw.end()]
+    return ""
+
+
 class Verifier:
     def __init__(self, companies, fetch=None, as_of=None, issuer_sources=None):
         self.companies = {r["ticker"].upper(): r for r in companies}
@@ -653,13 +679,18 @@ class Verifier:
         try:
             _, plain = self.document(url)
             passages = [plain[max(0, m.start()-100):m.end()+350] for m in re.finditer(
-                r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
+                r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:previously[-\s]+announced\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
             if not any(close in dates(p) for p in passages):
                 completed_purchase = documented_preferred_share_purchase(plain, close)
                 if completed_purchase:
                     return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
                         "Company-matched SEC filing confirms completed, dated preferred-share purchases and aggregate price; second post-Phase-3 financing order and dilution risk remain separate",
                         url, close, close, completed_purchase)
+                drawn = documented_drawn_credit_tranche(plain, close)
+                if drawn:
+                    return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                        "SEC filing confirms this closing's actual funded credit-facility draw only; undrawn commitments, other tranches and post-Phase-3 financing sequence are NOT verified",
+                        url, close, close, drawn)
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                     "No completed transaction clause matches the stored closing date", url, close)
             from sec_financing_closure import candidates as closing_candidates

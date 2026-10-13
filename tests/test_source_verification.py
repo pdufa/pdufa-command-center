@@ -241,6 +241,58 @@ class VerificationTests(unittest.TestCase):
             self.assertEqual(self.verifier(invalid).financing(event)["verification_status"],
                              "REVIEW_REQUIRED")
 
+    def test_sec_completed_previously_announced_convertible_notes_close(self):
+        event = {**EVENT, "financing_evidence_url": SEC_DOC,
+                 "financing_close_date": "2025-11-18"}
+        close = (b"On November 18, 2025, Test Pharma completed its previously-announced "
+                 b"public offering of $230,000,000 aggregate principal amount of "
+                 b"1.625% convertible senior notes due 2031.")
+        item = self.verifier(close).financing(event)
+        self.assertEqual(item["verification_status"], "VERIFIED")
+        self.assertEqual(item["observed"], "2025-11-18")
+        self.assertIn("not the post-Phase-3 second-financing sequence", item["reason"])
+        self.assertEqual(len(item["source_sha256"]), 64)
+        for unverified in (
+            b"On November 18, 2025, Test Pharma expects to complete its "
+            b"previously-announced public offering of $230,000,000 of notes.",
+            b"On November 18, 2025, Test Pharma completed its "
+            b"previously-announced public offering of convertible notes.",
+            close.replace(b"November 18, 2025", b"November 19, 2025"),
+        ):
+            self.assertNotEqual(
+                self.verifier(unverified).financing(event)["verification_status"],
+                "VERIFIED")
+
+    def test_sec_credit_facility_requires_actual_draw_not_total_capacity(self):
+        event = {**EVENT, "financing_evidence_url": SEC_DOC,
+                 "financing_close_date": "2026-09-04"}
+        actual = (
+            b"On September 4, 2026 (the Closing Date), Test Pharma entered "
+            b"into a Credit Agreement with its lenders. The Credit Agreement "
+            b"provides a senior secured credit facility of up to $400 million "
+            b"available in the following tranches: (1) $75 million drawn on "
+            b"the Closing Date, (2) a potential additional $75 million draw "
+            b"at the Company's option following FDA approval."
+        )
+        result = self.verifier(actual).financing(event)
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["observed"], "2026-09-04")
+        self.assertIn("actual funded credit-facility draw", result["reason"])
+        self.assertIn("$75 million drawn on the Closing Date", result["evidence"])
+        self.assertIn("undrawn commitments", result["reason"])
+        not_funded = (
+            b"On September 4, 2026 (the Closing Date), Test Pharma entered "
+            b"into a Credit Agreement for a $400 million credit facility; "
+            b"the first $75 million may be drawn on the Closing Date."
+        )
+        self.assertNotEqual(
+            self.verifier(not_funded).financing(event)["verification_status"],
+            "VERIFIED")
+        wrong_date = actual.replace(b"September 4, 2026", b"September 5, 2026")
+        self.assertNotEqual(
+            self.verifier(wrong_date).financing(event)["verification_status"],
+            "VERIFIED")
+
     def test_cash_fact_and_aligned_runway_arithmetic_are_separate_claims(self):
         records = self.verifier(financial_payload()).financial(EVENT)
         self.assertEqual([r["verification_status"] for r in records], ["VERIFIED", "VERIFIED"])
