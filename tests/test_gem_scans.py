@@ -25,11 +25,23 @@ def sample(ticker="AAA", market=10, second=True, days=40):
 
 
 def run(rows, *, fresh=True, events=None):
-    if events is None:
-        events = {
-            r["Exact event"]: {"conflict_flag": "NONE", "new_dilution_flag": "NO"}
-            for r in rows
+    verified_events = {
+        r["Exact event"]: {
+            "ticker": r["Ticker"], "nct_id": r["NCT ID"],
+            "phase3_status": "VERIFIED_SUCCESS",
+            "phase3_date": "2026-10-01",
+            "trial_evidence_url": "https://issuer.example/verified-readout",
+            "conflict_flag": "NONE", "new_dilution_flag": "NO",
         }
+        for r in rows
+    }
+    # Synthetic positive fixtures must contain FULL pre-signal primary
+    # evidence, not just an unaudited score string and event identifier.
+    if events is not None:
+        for key, overrides in events.items():
+            if key in verified_events:
+                verified_events[key].update(overrides)
+    events = verified_events
     with patch("gem_scans.build_queue", return_value=(
         rows, {"feed_current": fresh, "as_of": "2026-10-13"},
     )), patch("gem_scans._event_map", return_value=events):
@@ -151,6 +163,9 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         }
         rows, meta = run([row], events=event)
         assert rows[0]["Phase 3 tracking"].startswith("AWAITING VERIFIED")
+        assert rows[0]["Phase 3 rank"] is None
+        assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["PDUFA rank"] is None
         assert meta["phase3_tracking_count"] == 0
 
     def test_verified_phase3_with_stale_source_stays_on_hold(self):
