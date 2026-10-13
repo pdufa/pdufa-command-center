@@ -198,10 +198,34 @@ def render_gem_scans(root="data"):
             except (OSError, ValueError, pd.errors.ParserError):
                 st.warning("Published SEC recheck results could not be read.")
         else:
-            st.info(
-                "No renewed SEC recheck results published to this snapshot yet. "
-                "Research leads are retained; trading remains on verification hold."
-            )
+            # The source publisher stores SEC rechecks inside the existing
+            # signed-off source-report JSON, avoiding extra workflows.
+            source_report_file = path / "pdufa_source_report.json"
+            try:
+                published = (json.loads(source_report_file.read_text(encoding="utf-8"))
+                             if source_report_file.is_file() else {})
+                findings = published.get("public_ir_sec_recheck") or {}
+                if (findings.get("status") == "COMPLETE_RESEARCH_ONLY"
+                        and findings.get("results")):
+                    st.dataframe(
+                        pd.DataFrame(findings["results"]),
+                        use_container_width=True, hide_index=True
+                    )
+                    st.caption(
+                        f"{findings.get('leads_checked', 0)} dated IR leads SEC-rechecked; "
+                        f"{findings.get('sec_transactions_verified', 0)} individual SEC "
+                        "transactions confirmed. This is NOT confirmation of two "
+                        "post-Phase-3 financings or approval to trade."
+                    )
+                else:
+                    st.info(
+                        "SEC recheck publication: " +
+                        str(findings.get("status", "NOT YET AVAILABLE")) +
+                        ". Public findings remain recorded; no new trade entry "
+                        "is permitted from provisional research."
+                    )
+            except (OSError, ValueError, TypeError, pd.errors.ParserError):
+                st.warning("SEC recheck source-report snapshot is unavailable.")
     counts = status["scan_counts"]
     track_metrics = st.columns(2)
     track_metrics[0].metric(
