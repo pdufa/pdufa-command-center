@@ -3241,10 +3241,12 @@ if page == "PDUFA":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
     if st.session_state.get("pdufa_subtab") == "SCORING TESTS":
         st.session_state["pdufa_subtab"] = "SCANS"
+    if st.session_state.get("pdufa_subtab") == "WATCHLIST / TRADING":
+        st.session_state["pdufa_subtab"] = "WT"
     # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
     unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab, scoring_tests_tab = st.tabs(
-        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WATCHLIST / TRADING", "SCANS"],
+        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WT", "SCANS"],
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
