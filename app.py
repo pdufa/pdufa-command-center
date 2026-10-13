@@ -3199,7 +3199,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","7. SITE SCORE","6. RECHECK","9. PREDICTION ENGINE"]
+nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","7. SITE SCORE","9. PREDICTION ENGINE"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -5243,140 +5243,6 @@ elif page == "5. SCANS":
         grouped_dataframe(pd.DataFrame(result_rows), use_container_width=True, hide_index=True)
     else:
         st.info("No scan results yet. Run one of the six SCAN buttons above.")
-
-
-elif page == "6. RECHECK":
-    st.markdown("## 6. RECHECK — VERIFY QUESTIONABLE EVIDENCE")
-    st.caption(
-        "Recheck is locked to the exact event_key. It never substitutes another company's event. "
-        "The six categories are PDUFA/FDA, Phase 3/p-value, financing closure, cash runway, market data, and ownership/insiders."
-    )
-
-    lookup = st.text_input("Ticker lookup", value="", placeholder="Example: SRRK or CABA", key="recheck_ticker_lookup").strip().upper()
-    lookup_rows = df[df["ticker"].fillna("").astype(str).str.upper().eq(lookup)].copy() if lookup else pd.DataFrame()
-    if lookup and lookup_rows.empty:
-        st.warning(f"{lookup} has no current PDUFA event in the saved event feed. No other ticker/event will be substituted.")
-
-    event_rows = lookup_rows if lookup and not lookup_rows.empty else df.copy()
-    event_rows = event_rows.sort_values(["pdufa_date","ticker"], na_position="last")
-    event_keys = event_rows["event_key"].astype(str).tolist()
-    if not event_keys:
-        st.info("No PDUFA events are available to recheck.")
-    else:
-        current_key = str(st.session_state.get("selected_event_key",""))
-        default_idx = event_keys.index(current_key) if current_key in event_keys else 0
-        selected_recheck_key = st.selectbox(
-            "Exact PDUFA event",
-            event_keys,
-            index=default_idx,
-            format_func=lambda k: (
-                f"{event_rows.loc[event_rows['event_key'].astype(str).eq(k), 'ticker'].iloc[0]} · "
-                f"{safe_text(event_rows.loc[event_rows['event_key'].astype(str).eq(k), 'drug'].iloc[0])} · "
-                f"{safe_text(event_rows.loc[event_rows['event_key'].astype(str).eq(k), 'pdufa_date'].iloc[0])}"
-            ),
-            key="recheck_event_key",
-        )
-        selected_row = event_rows[event_rows["event_key"].astype(str).eq(selected_recheck_key)].iloc[0]
-        st.code(selected_recheck_key, language=None)
-        st.caption(
-            f"Locked target: {safe_text(selected_row.get('ticker'))} · "
-            f"{safe_text(selected_row.get('drug'))} · "
-            f"{safe_text(selected_row.get('pdufa_date'))}"
-        )
-
-        st.markdown("### Six recheck categories")
-        q1,q2,q3 = st.columns(3)
-        q4,q5,q6 = st.columns(3)
-        checks = {
-            "pdufa_date": q1.checkbox("PDUFA date / FDA decision", value=True, key="recheck_c1"),
-            "phase3": q2.checkbox("Phase 3 results / p-value", value=True, key="recheck_c2"),
-            "financing": q3.checkbox("Financing closure", value=True, key="recheck_c3"),
-            "cash_runway": q4.checkbox("Cash runway", value=True, key="recheck_c4"),
-            "market_data": q5.checkbox("Market data", value=True, key="recheck_c5"),
-            "ownership_insiders": q6.checkbox("Options / ownership / insiders", value=True, key="recheck_c6"),
-        }
-        chosen = [k for k,v in checks.items() if v]
-
-        b1,b2 = st.columns(2)
-        with b1:
-            if st.button("▶ RUN RECHECK — SELECTED EVENT", use_container_width=True, disabled=not chosen):
-                with st.spinner("Running exact-event public-source recheck..."):
-                    try:
-                        st.session_state.recheck_last_result = run_recheck_worker(
-                            event_key=selected_recheck_key, categories=chosen
-                        )
-                        st.session_state.selected_event_key = selected_recheck_key
-                        st.session_state.recheck_last_error = ""
-                    except Exception as exc:
-                        st.session_state.recheck_last_error = str(exc)
-                st.rerun()
-        with b2:
-            if st.button("▶ RUN RECHECK — ALL EVENTS", use_container_width=True, disabled=not chosen):
-                with st.spinner("Running all-event public-source recheck..."):
-                    try:
-                        st.session_state.recheck_last_result = run_recheck_worker(
-                            run_all=True, categories=chosen
-                        )
-                        st.session_state.recheck_last_error = ""
-                    except Exception as exc:
-                        st.session_state.recheck_last_error = str(exc)
-                st.rerun()
-
-    if st.session_state.get("recheck_last_error"):
-        st.error(st.session_state.recheck_last_error)
-    elif st.session_state.get("recheck_last_result"):
-        st.success(st.session_state.recheck_last_result)
-
-    rs = load_recheck_status()
-    if not rs.empty:
-        completed = rs[rs["last_successful_recheck_utc"].astype(str).str.strip().ne("")]
-        r1,r2,r3,r4 = st.columns(4)
-        r1.metric("Tracked Events", len(rs))
-        r2.metric("Completed Successfully", len(completed))
-        r3.metric("With Errors", int(rs["run_status"].astype(str).str.contains("ERROR", case=False, na=False).sum()))
-        latest = completed["last_successful_recheck_utc"].max() if not completed.empty else "Not run"
-        r4.metric("Last Successful Recheck", latest)
-
-        target_key = str(st.session_state.get("recheck_event_key", st.session_state.get("selected_event_key","")))
-        one = rs[rs["event_key"].astype(str).eq(target_key)]
-        if not one.empty:
-            rr = one.iloc[0]
-            st.markdown("### Selected event recheck results")
-            rows = []
-            labels = {
-                "pdufa_date":"PDUFA date / FDA decision",
-                "phase3":"Phase 3 results / p-value",
-                "financing":"Financing closure",
-                "cash_runway":"Cash runway",
-                "market_data":"Market data",
-                "ownership_insiders":"Options / ownership / insiders",
-            }
-            for cat,label in labels.items():
-                rows.append({
-                    "Category": label,
-                    "Status": safe_text(rr.get(cat+"_status"), "Not run"),
-                    "Details": safe_text(rr.get(cat+"_note"), "Not run"),
-                    "Source": safe_text(rr.get(cat+"_source"), ""),
-                })
-            grouped_dataframe(
-                pd.DataFrame(rows),
-                use_container_width=True,
-                hide_index=True,
-                column_config={"Source": st.column_config.LinkColumn("Source", display_text="Open source")}
-            )
-            st.caption(
-                f"Run status: {safe_text(rr.get('run_status'),'Not run')} · "
-                f"Last success: {safe_text(rr.get('last_successful_recheck_utc'),'Not run')} · "
-                f"Field changes: {safe_text(rr.get('change_count'),'0')} · "
-                f"Errors: {safe_text(rr.get('error_count'),'0')}"
-            )
-
-    st.info(
-        "Persistent surveillance is scheduled in GitHub at 5:15 AM Pacific daily. "
-        "This page can run the recheck worker against locally stored event records; "
-        "the separate scheduled workflow commits its own results. "
-        "The legacy Daily PDUFA Recheck workflow is manual-only."
-    )
 
 
 
