@@ -4,6 +4,11 @@
       "investor.agios.com"
     ]
   },
+  "ANAB": {
+    "hosts": [
+      "anaptysbio.gcs-web.com"
+    ]
+  },
   "BLTE": {
     "hosts": [
       "investors.belitebio.com"
@@ -52,6 +57,11 @@
   "SRPT": {
     "hosts": [
       "investorrelations.sarepta.com"
+    ]
+  },
+  "SVRA": {
+    "hosts": [
+      "investors.savarapharma.com"
     ]
   },
   "VRTX": {
