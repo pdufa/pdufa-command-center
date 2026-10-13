@@ -170,6 +170,60 @@ class VerificationTests(unittest.TestCase):
         self.assertNotIn("outcome", result)
         self.assertEqual(event.get("decision_date", ""), "")
 
+    def test_stale_saved_primary_link_falls_back_to_company_sec_exhibit(self):
+        stale_url = SEC_DOC.replace("ex99-1.htm", "stale.htm")
+        calls = []
+        def fetch(url, exhibit_drug=b"TestDrug"):
+            calls.append(url)
+            if url == stale_url:
+                return b"Test Pharma discussed TestDrug for lung cancer without an FDA target."
+            if "/submissions/" in url:
+                return json.dumps(submissions()).encode()
+            if url.endswith("index.json"):
+                return b'{"directory":{"item":[{"name":"ex99-1.htm"}]}}'
+            if url == SEC_DOC:
+                return (b"Test Pharma announced " + exhibit_drug +
+                        b" for lung cancer with a PDUFA target date of November 1, 2026.")
+            raise AssertionError(url)
+
+        event = {**EVENT, "pdufa_evidence_url": stale_url}
+        verifier = verify.Verifier([COMPANY], fetch=fetch, as_of=date(2026, 10, 12))
+        result = verifier.regulatory(event)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertEqual(result["source_url"], SEC_DOC)
+        self.assertEqual(result["observed"], "2026-11-01")
+        self.assertEqual(calls[0], stale_url)
+
+        wrong = verify.Verifier([COMPANY], fetch=lambda url: fetch(url, b"WrongDrug"),
+                                as_of=date(2026, 10, 12))
+        self.assertEqual(wrong.regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
+
+    def test_discovery_checks_later_exhibit_within_twelve_document_cap(self):
+        checked = []
+        def fetch(url):
+            checked.append(url)
+            if "/submissions/" in url:
+                return json.dumps(submissions()).encode()
+            if url.endswith("index.json"):
+                names = [{"name": "ex99-%d.htm" % i} for i in range(1, 6)]
+                return json.dumps({"directory": {"item": names}}).encode()
+            if url.endswith("ex99-5.htm"):
+                return (b"Test Pharma announced TestDrug for lung cancer. "
+                        b"The FDA PDUFA target date is November 1, 2026.")
+            return b"Test Pharma announced OtherDrug for a different indication."
+        verifier = verify.Verifier([COMPANY], fetch=fetch, as_of=date(2026, 10, 12))
+        result = verifier.regulatory(EVENT)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertTrue(result["source_url"].endswith("ex99-5.htm"))
+        self.assertEqual(len([url for url in checked if "/ex99-" in url]), 5)
+
+    def test_saved_primary_date_conflict_not_overridden_by_fallback(self):
+        url = SEC_DOC
+        event = {**EVENT, "pdufa_evidence_url": url}
+        verifier = self.verifier(b"Test Pharma announced TestDrug for lung cancer; "
+                                 b"PDUFA target date December 1, 2026.")
+        self.assertEqual(verifier.regulatory(event)[0]["verification_status"], "CONFLICT")
+
     def test_primary_target_disagreement_is_a_conflict(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
         body = b"TestDrug for lung cancer. The PDUFA target date is December 1, 2026."

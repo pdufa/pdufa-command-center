@@ -647,11 +647,12 @@ class Verifier:
             if url not in yielded:
                 yield url
 
-    def regulatory(self, event):
+    def regulatory(self, event, _discovery_only=False):
         expected_outcome = event.get("outcome", "").strip().upper()
         claim = "FDA_DECISION" if expected_outcome in {"APPROVED", "CRL"} else "PDUFA_TARGET"
         expected = event.get("decision_date", "") if claim == "FDA_DECISION" else event.get("pdufa_date", "")
         refs = [u for u in self.references(event) if self.primary(event, u)]
+        saved_refs = bool(refs)
         results = []
         # Empty saved references previously meant an event was never looked up.
         if not refs:
@@ -661,7 +662,10 @@ class Verifier:
                 return [self.result(event, "FDA", claim, "REVIEW_REQUIRED", "Primary-source discovery requires review: " + str(exc), expected=expected)]
             except Exception as exc:
                 return [self.result(event, "FDA", claim, "TECHNICAL_FAILURE", str(exc), expected=expected)]
-        for url in refs[:4]:
+        # A saved-link check stays small, but fresh SEC exhibit discovery
+        # may need more than four exhibits to reach the relevant event.
+        # Both paths remain strictly bounded and evidence-gated.
+        for url in refs[:4 if saved_refs else 12]:
             try:
                 _, plain = self.document(url)
                 if not drug_matches(event, plain) or not indication_matches(event, plain):
@@ -737,6 +741,19 @@ class Verifier:
             return conflicts[:1]
         if verified:
             return verified[:1]
+        if saved_refs and not _discovery_only:
+            # A saved primary URL can be legitimate but unrelated to this exact
+            # regulatory claim. Retry discovery of recent company-matched SEC
+            # exhibits only after saved URLs fail; never convert missing proof
+            # into VERIFIED or overwrite an observed conflict.
+            discovery_event = dict(event)
+            for key in ("pdufa_evidence_url", "trial_evidence_url",
+                        "financing_evidence_url", "issuer_evidence_url",
+                        "evidence_summary", "regulatory_summary"):
+                discovery_event[key] = ""
+            discovered = self.regulatory(discovery_event, _discovery_only=True)
+            if discovered and discovered[0]["verification_status"] in {"VERIFIED", "CONFLICT"}:
+                return discovered
         return results[:1] or [self.result(event, "FDA", claim, "REVIEW_REQUIRED",
             "No primary source safely matches drug, indication, claim and explicit date", expected=expected)]
 
