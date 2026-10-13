@@ -277,6 +277,22 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(result["verification_status"], "REVIEW_REQUIRED")
         self.assertIn("second-financing sequence", result["reason"])
 
+    def test_registrant_state_suffix_does_not_block_named_issuer(self):
+        event = {**EVENT, "company": "VERTEX PHARMACEUTICALS INC / MA",
+                 "drug": "povetacicept",
+                 "indication": "IgA nephropathy (IgAN) in adults",
+                 "pdufa_date": "2026-11-30",
+                 "pdufa_evidence_url": SEC_DOC}
+        filing = (
+            b"Vertex Pharmaceuticals Incorporated announced on June 1, 2026 "
+            b"that povetacicept for IgA nephropathy (IgAN) in adults "
+            b"has PDUFA target action date November 30, 2026."
+        )
+        self.assertTrue(verify.company_matches(event, filing.decode()))
+        self.assertFalse(verify.company_matches(event, "OtherBio Pharmaceuticals Incorporated"))
+        row = self.verifier(filing).regulatory(event)[0]
+        self.assertEqual(row["verification_status"], "VERIFIED", row)
+
     def test_sec_released_final_tranche_is_actual_funding_not_second_phase3(self):
         event = {**EVENT, "financing_evidence_url": SEC_DOC,
                  "financing_close_date": "2025-10-23"}
