@@ -150,9 +150,9 @@ def render_gem_scans(root="data"):
         st.info("No candidates match the selected GEMS view.")
 
     st.caption(
-        "GEM entry cutoff is PDUFA -3. The original POST PHASE 3 Stage 1 "
-        "workspace still has its legacy -7-day entry gate; its entry status "
-        "is labeled separately in the GEM detail exports to avoid confusion."
+        "GEM and POST PHASE 3 entry gates now use the same PDUFA −3 "
+        "planned exit. Event-level entry readiness and stage-level research "
+        "rankings remain separate decisions."
     )
     st.markdown("### GEM SCAN QUALIFIERS & FULL COLUMNS")
     tabs = st.tabs(list(STAGES))
@@ -193,7 +193,7 @@ def render_gem_scans(root="data"):
                 stage + " GEM": "GEM rank (score)",
                 stage + " qualifier": "Qualification",
                 stage + " missing": "Missing qualifiers",
-                "Entry qualification": "Legacy Stage 1 entry gate (PDUFA -7)",
+                "Entry qualification": "Exact-event entry gate (PDUFA -3)",
             })
             distinct_scores = len({record[stage + " score"] for record in items
                                    if record[stage + " score"] is not None})
