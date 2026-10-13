@@ -49,6 +49,46 @@ def csv_inventory(path):
         return {"state": "UNREADABLE", "rows": 0}
 
 
+def json_inventory(path):
+    file = Path(path)
+    if not file.is_file():
+        return {"state": "MISSING"}
+    try:
+        value = json.loads(file.read_text(encoding="utf-8"))
+        if not isinstance(value, dict) or not value:
+            return {"state": "INVALID_JSON"}
+        return {"state": "PRESENT"}
+    except (OSError, UnicodeError, ValueError):
+        return {"state": "INVALID_JSON"}
+
+
+def source_family_health(path, name, as_of):
+    """Read an actual source family's dated collection audit, not the UI badge."""
+    try:
+        state = json.loads(Path(path).read_text(encoding="utf-8"))
+        matches = [row for row in state.get("source_checks", [])
+                   if row.get("Source") == name]
+        if len(matches) != 1:
+            return {"status": "MISSING_OR_AMBIGUOUS_SOURCE"}
+        row = matches[0]
+        checked = datetime.fromisoformat(str(row["Last checked UTC"]).replace("Z", "+00:00"))
+        if checked.tzinfo is None:
+            raise ValueError("Naive source check date")
+        age = (as_of - checked.astimezone(PACIFIC).date()).days
+        good = (row.get("Collector status") == "COMPLETE"
+                and row.get("Freshness") in ("RECENT", "CURRENT")
+                and row.get("Blocked records") == 0
+                and 0 <= age <= 1)
+        return {
+            "status": "CURRENT_SOURCE_ONLY" if good else "PARTIAL_STALE_OR_BLOCKED",
+            "last_check_age_days": age,
+            "blocked_records": row.get("Blocked records"),
+            "source_completeness_not_guaranteed": True,
+        }
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError, AttributeError):
+        return {"status": "UNVERIFIABLE_SOURCE"}
+
+
 def clinical_collection_status(path, as_of):
     file = Path(path)
     if not file.is_file():
@@ -81,10 +121,8 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
     if not isinstance(today, date) or isinstance(today, datetime):
         raise ValueError("as_of must be a date")
     p = Path(root)
-    inputs = {name: ({"state": "PRESENT"} if name.endswith(".json") and
-                       (p/name).is_file() else
-                       {"state": "MISSING"} if name.endswith(".json") else
-                       csv_inventory(p/name)) for name in REQUIRED_FILES}
+    inputs = {name: (json_inventory(p/name) if name.endswith(".json")
+                     else csv_inventory(p/name)) for name in REQUIRED_FILES}
     histories = {name: csv_inventory(p/name) for name in HISTORY_FILES}
     discovery_status = discovery_status or {}
     scan_status = scan_status or {}
@@ -132,6 +170,27 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
     )
     if not source_ledger_reconciled:
         risks.append("PHASE3_RESULT_LEDGER_MISSING_OR_COUNT_MISMATCH")
+    sec = source_family_health(p/"step7_live_status.json",
+                               "SEC financing recheck", today)
+    market = source_family_health(p/"step7_live_status.json",
+                                  "Market EOD price / volume", today)
+    if sec["status"] != "CURRENT_SOURCE_ONLY":
+        risks.append("SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE")
+    if market["status"] != "CURRENT_SOURCE_ONLY":
+        risks.append("MARKET_PRICE_VOLUME_SOURCE_BLOCKED_OR_STALE")
+    acceptance = {
+        "saved_scan_feed_current": not source_stale,
+        "required_saved_sources_valid": not missing_required,
+        "phase3_collector_current": clinical["status"] == "CURRENT_CLINICAL_ONLY",
+        "phase3_discovery_ledger_reconciled": source_ledger_reconciled,
+        "sec_financing_source_current": sec["status"] == "CURRENT_SOURCE_ONLY",
+        "market_price_volume_source_current": market["status"] == "CURRENT_SOURCE_ONLY",
+        # Do not promote readiness from file existence alone. A holdout
+        # requires accepted historical trades and independent validation.
+        "historical_return_edge_independently_validated": False,
+        "complete_public_issuer_universe_verified": False,
+        "live_streamlit_deployment_independently_verified": False,
+    }
     all_source_issues = bool(source_stale or missing_required or
                              not source_ledger_reconciled)
     return {
@@ -155,6 +214,10 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         "discovery_review_leads": len(discovery),
         "discovery_source_status": discovery_status,
         "clinical_collector": clinical,
+        "sec_source_health": sec,
+        "market_source_health": market,
+        "acceptance_checks": acceptance,
+        "all_acceptance_checks_passed": all(acceptance.values()),
         "phase3_saved_ledger_reconciled": source_ledger_reconciled,
         "phase3_saved_ledger_rows": ledger["rows"],
         "phase3_collector_reported_stored_rows": stored_results,
