@@ -1,21 +1,23 @@
 name: GEM Research Quality Snapshot
 
-# Refresh actual ClinicalTrials.gov registry results, audit saved GEM
-# sources, and publish only reconciled review-only ledger observations.
-# The routine does NOT refresh SEC, certify issuer Phase 3 toplines,
-# validate historical stock returns, or place trades.
+# Fourth SCANS dashboard block: GEMS — research-only Phase 3 discovery,
+# post-financing monitoring and PDUFA. Existing #2/#3/#4 clinical IDs stay
+# unchanged. No live SEC/issuer verification or automated trading is implied.
 on:
-  # Also initiate a run when this exact workflow is updated, so activating
-  # the safety gate does not depend on waiting for the next scheduled slot.
-  # Publishing CSV/JSON files will not recursively trigger this workflow.
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - ".github/workflows/gem-research-quality.yml"
   schedule:
     - cron: "10 16 * * *"
   workflow_dispatch:
+    inputs:
+      action:
+        description: "GEM block: saved-source verify, incremental recheck or full registry rescan"
+        type: choice
+        required: true
+        default: REVERIFY_PARTIAL
+        options: [VERIFY_ALL, REVERIFY_PARTIAL, RESCAN_ALL]
 
 permissions:
   contents: write
@@ -28,8 +30,13 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 95
+    env:
+      GEM_ACTION: ${{ github.event_name == 'workflow_dispatch' && inputs.action || 'REVERIFY_PARTIAL' }}
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
     steps:
-      - name: Checkout current saved source snapshots
+      - name: Checkout latest research-only source data
         uses: actions/checkout@v4
         with:
           ref: main
@@ -39,64 +46,137 @@ jobs:
           python-version: "3.12"
       - name: Install scanner dependencies
         run: python -m pip install -r requirements.txt
-      - name: Backfill missing Phase 3 history or refresh daily changes
-        id: clinical
+
+      - name: Gmail START — GEM block
+        id: start_email
         continue-on-error: true
         run: |
-          if [ ! -s data/phase3_announcements.csv ]; then
-            echo "Empty discovery ledger: retrieve all registry Phase 3 posted results before incremental scanning"
+          case "$GEM_ACTION" in
+            VERIFY_ALL) mode=RECONCILE;;
+            RESCAN_ALL) mode=BASELINE;;
+            *) mode=DELTA;;
+          esac
+          python -m scripts.gem_block_email --event START --mode "$mode"
+
+      - name: Collect fresh Phase 3 results (incremental or full backfill)
+        id: clinical
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.start_email.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          if [ "$GEM_ACTION" = "RESCAN_ALL" ] || [ ! -s data/phase3_announcements.csv ]; then
             python scripts/phase3_results_intake.py --mode backfill --max-pages 120 --data-dir data
           else
             python scripts/phase3_results_intake.py --mode daily --max-pages 120 --data-dir data
           fi
-      - name: Write fail-closed GEM quality report and prospective research observations
-        if: always()
-        run: python scripts/run_gem_daily_readiness.py --output-dir reports/gem_daily
-      - name: Retain time-stamped research evidence as workflow artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gem-research-quality-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            reports/gem_daily/
-            data/phase3_intake_status.json
-            data/phase3_announcements.csv
-          retention-days: 90
-          if-no-files-found: warn
 
-      - name: Fail workflow if live Phase 3 collection was not complete
-        if: always()
-        env:
-          COLLECTOR_OUTCOME: ${{ steps.clinical.outcome }}
+      - name: Reconcile actual registry ledger and collector totals
+        id: registry_validation
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.clinical.outcome == 'success' }}
+        continue-on-error: true
         run: |
-          if [ "$COLLECTOR_OUTCOME" != "success" ]; then
-            echo "::error::Phase 3 collector request failed; archived files are NOT a complete discovery refresh."
-            exit 1
-          fi
           python - <<'PY'
           import csv
           import json
           from pathlib import Path
           state = json.loads(Path("data/phase3_intake_status.json").read_text())
           with Path("data/phase3_announcements.csv").open(newline="", encoding="utf-8-sig") as f:
-              saved = sum(1 for row in csv.DictReader(f))
-          if not state.get("complete") or state.get("status") != "COMPLETE" or state.get("errors"):
-              raise SystemExit("Phase 3 collection incomplete; see archived audit")
-          if state.get("stored_results") != saved:
-              raise SystemExit("Phase 3 collector count disagrees with saved announcement rows")
+              actual = sum(1 for _ in csv.DictReader(f))
+          if state.get("status") != "COMPLETE" or state.get("complete") is not True or state.get("errors"):
+              raise SystemExit("Registry collection failed or reported partial source coverage")
+          if state.get("stored_results") != actual:
+              raise SystemExit("Collector count disagrees with saved Phase 3 ledger")
+          print(f"Reconciled {actual} posted-result research observations — NOT clinical successes.")
           PY
 
-      - name: Publish validated Phase 3 discovery ledger to live dashboard repository
-        if: success()
+      - name: Audit all saved GEM source gates and research stage scores
+        id: gem_audit
+        if: always()
+        continue-on-error: true
+        run: python scripts/run_gem_daily_readiness.py --output-dir reports/gem_daily
+
+      - name: Publishable fourth-block status — distinguish partial and failed
+        id: block_report
+        if: always()
+        continue-on-error: true
+        env:
+          COLLECTOR_OUTCOME: ${{ steps.registry_validation.outcome }}
+          AUDIT_OUTCOME: ${{ steps.gem_audit.outcome }}
+        run: |
+          python -m scripts.publish_gem_scan_block \
+            --action "$GEM_ACTION" \
+            --collector-outcome "$COLLECTOR_OUTCOME" \
+            --audit-outcome "$AUDIT_OUTCOME" \
+            --output data/gem_scan_block_report.json
+
+      - name: Publish fourth-block dashboard status and validated registry observations
+        if: always()
         run: |
           set -euo pipefail
+          test -s data/gem_scan_block_report.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- data/phase3_intake_status.json data/phase3_announcements.csv
+          git add -- data/gem_scan_block_report.json
+          # Source data is published ONLY after a fully reconciled registry run.
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && \
+             [ "${{ steps.registry_validation.outcome }}" = "success" ]; then
+            git add -- data/phase3_intake_status.json data/phase3_announcements.csv
+          fi
           if git diff --cached --quiet; then
-            echo "No new registry discovery observations to publish"
+            echo "No change to the GEM dashboard report or source registry"
             exit 0
           fi
-          git commit -m "data: publish verified registry intake observations (research only)"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m "data: publish audited GEM fourth-block research status"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep 5
+          done
+          exit 1
+
+      - name: Gmail END — GEM block including any source failures
+        id: end_email
+        if: always()
+        continue-on-error: true
+        run: |
+          case "$GEM_ACTION" in
+            VERIFY_ALL) mode=RECONCILE;;
+            RESCAN_ALL) mode=BASELINE;;
+            *) mode=DELTA;;
+          esac
+          python -m scripts.gem_block_email --event END --mode "$mode" --report data/gem_scan_block_report.json
+
+      - name: Retain GEM reports and source snapshots as audited artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gem-research-quality-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            reports/gem_daily/
+            data/gem_scan_block_report.json
+            data/phase3_intake_status.json
+            data/phase3_announcements.csv
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Final independently auditable run result
+        if: always()
+        env:
+          START_RESULT: ${{ steps.start_email.outcome }}
+          END_RESULT: ${{ steps.end_email.outcome }}
+          COLLECT_RESULT: ${{ steps.registry_validation.outcome }}
+          AUDIT_RESULT: ${{ steps.gem_audit.outcome }}
+          REPORT_RESULT: ${{ steps.block_report.outcome }}
+        run: |
+          if [ "$START_RESULT" != "success" ] || [ "$END_RESULT" != "success" ]; then
+            echo "::error::GEM START/END Gmail messages were not both acknowledged."
+            exit 1
+          fi
+          if [ "$AUDIT_RESULT" != "success" ] || [ "$REPORT_RESULT" != "success" ]; then
+            echo "::error::GEM read-only source audit or published block report failed."
+            exit 1
+          fi
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ "$COLLECT_RESULT" != "success" ]; then
+            echo "::error::GEM registry source scan was blocked or incomplete."
+            exit 1
+          fi
+          echo "GEM block execution and notifications completed; trading eligibility remains independently source-gated."
