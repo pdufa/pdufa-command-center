@@ -110,6 +110,57 @@ def render_gem_scans(root="data"):
         "evidence. This button-free read-only view does not dispatch a new scan."
     )
     counts = status["scan_counts"]
+    track_metrics = st.columns(2)
+    track_metrics[0].metric(
+        "Verified Phase 3 under tracking", status["phase3_tracking_count"]
+    )
+    track_metrics[1].metric(
+        "Before second-financing closure",
+        status["phase3_tracking_before_second_financing"],
+    )
+    st.caption(
+        "GEM discovery begins when a source-linked successful Phase 3 "
+        "result is verified. A completed trial without a verified successful "
+        "readout does not qualify. Tracking starts BEFORE financing #2 "
+        "closes and is distinct from trade-entry approval."
+    )
+    early = [
+        record for record in items
+        if record.get("Phase 3 tracking", "").startswith("TRACKING")
+    ]
+    with st.expander(
+        "EARLY GEM WATCH — VERIFIED PHASE 3 BEFORE SECOND FINANCING",
+        expanded=True,
+    ):
+        waiting = [
+            record for record in early
+            if record.get("2nd Financing Completed") != "YES — VERIFIED (HISTORICAL)"
+        ]
+        if waiting:
+            fields = [
+                "Ticker", "Drug", "Indication", "NCT ID",
+                "Phase 3 result date (source)", "Phase 3 tracking",
+                "Financing watch", "Financing cycle (separate)",
+                "Phase 3 GEM", "Days to PDUFA", "Phase 3 source",
+                "Exact event",
+            ]
+            st.dataframe(
+                pd.DataFrame(waiting).reindex(columns=fields),
+                use_container_width=True, hide_index=True,
+            )
+        else:
+            st.info(
+                "No currently source-verified successful Phase 3 programs "
+                "awaiting independently verified second-financing closure. "
+                "This is not evidence that no such programs exist outside "
+                "the saved scan universe."
+            )
+        st.caption(
+            "Early watch is read-only and refreshes with the saved clinical "
+            "and financing feeds. It does not execute trades or trigger an "
+            "independent continuous SEC search. A blank Phase 3 GEM rank "
+            "means some ranking gates remain incomplete."
+        )
     cols = st.columns(3)
     for col, stage in zip(cols, STAGES):
         col.metric(stage + " qualified", counts[stage]["qualified"])
@@ -179,6 +230,8 @@ def render_gem_scans(root="data"):
             ))
             ordered = (
                 [stage + " GEM", "Ticker", "Drug", "Indication",
+                 "Phase 3 tracking", "Financing watch",
+                 "Phase 3 result date (source)",
                  stage + " qualifier", stage + " missing"]
                 + list(STAGE_COLUMNS[stage])
                 + ["Exact event", "Entry qualification",
