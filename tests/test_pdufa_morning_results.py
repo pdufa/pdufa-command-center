@@ -59,6 +59,7 @@ class MorningResultsTests(unittest.TestCase):
             "collector_status": "COMPLETE — REGISTRY POSTINGS ONLY",
             "clinical_registry": {"new_records": 9, "stored_results": 2482},
             "verified_phase3_tracking": 4, "awaiting_second_financing": 3,
+            "strict_entry_gate_shortlist_count": 0,
             "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/123",
         }
         fresh = make_snapshot({}, {}, gem=gem, now=now)
@@ -66,6 +67,7 @@ class MorningResultsTests(unittest.TestCase):
         self.assertTrue(fresh["gem"]["overnight_report_published"])
         self.assertEqual(fresh["gem"]["new_records"], 9)
         self.assertEqual(fresh["gem"]["awaiting_second_financing"], 3)
+        self.assertEqual(fresh["gem"]["strict_entry_gate_shortlist_count"], 0)
         self.assertEqual(fresh["gem"]["all_source_trade_verification"], "NOT VERIFIED")
         self.assertFalse(fresh["trade_entry_eligible_from_morning_snapshot"])
         old = make_snapshot({}, {}, gem={**gem, "generated_at_utc": "2026-10-13T20:10:00Z"}, now=now)
@@ -73,6 +75,7 @@ class MorningResultsTests(unittest.TestCase):
         self.assertEqual(old["gem"]["status"], "PENDING_OR_STALE")
         self.assertIsNone(old["gem"]["new_records"])
         self.assertIsNone(old["gem"]["stored_results"])
+        self.assertIsNone(old["gem"]["strict_entry_gate_shortlist_count"])
         not_verified = make_snapshot({}, {}, gem={**gem, "trade_entry_authorized": True}, now=now)
         self.assertFalse(not_verified["gem"]["overnight_report_published"])
 
