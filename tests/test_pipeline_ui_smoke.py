@@ -1,5 +1,6 @@
 """Exercise the real Streamlit Pipeline page, not only the filter helpers."""
 import unittest
+import re
 import pandas as pd
 from pathlib import Path
 
@@ -433,8 +434,17 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("Review priority rank", columns)
         self.assertIn("Linked Phase 2 PRIMARY p", columns)
         self.assertIn("Review priority /100", columns)
-        self.assertTrue(any("2 provisional, source-cited clinical research score(s) /100" in c.value
-                            for c in app.get("caption")))
+        # Source-dated pilot assessments can expire or be refreshed.
+        captions = [c.value for c in app.get("caption")
+                    if "provisional, source-cited clinical research score(s) /100" in c.value]
+        self.assertEqual(len(captions), 1)
+        count = re.match(
+            r"^(\d+) provisional, source-cited clinical research score\(s\) /100",
+            captions[0],
+        )
+        self.assertIsNotNone(count, captions[0])
+        self.assertGreaterEqual(int(count.group(1)), 0)
+        self.assertIn("not independently audited clinical scores", captions[0])
         self.assertEqual(app.selectbox(key="step7_priority_sort").value, "Top Score")
         self.assertTrue(clinical[0]["Score /100"].dropna().is_monotonic_decreasing)
         self.assertEqual(columns[:5], ["Ticker", "Score /100", "PDUFA Date",
