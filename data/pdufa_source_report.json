@@ -1,16 +1,16 @@
 {
   "combined_verification_ledger": "combined_verification.csv",
-  "combined_verification_ledger_sha256": "4ac5f38ec2e82f5a2b5fb2b9ed5931204011dc3cf1c40b5e22fc71f1eef327f3",
+  "combined_verification_ledger_sha256": "8ba008515a099b47a36b6bb4679d3b1bb27131018ff8be4f94c9c765a8f71b5a",
   "execution_status": "COMPLETE",
-  "findings_conflicted": 2,
+  "findings_conflicted": 1,
   "findings_due": 1119,
   "findings_not_applicable": 10,
   "findings_unavailable": 93,
-  "findings_unresolved": 87,
-  "findings_verified": 927,
+  "findings_unresolved": 81,
+  "findings_verified": 934,
   "full_coverage_verified": false,
-  "latest_run_id": "38422847803",
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38422847803",
+  "latest_run_id": "38425422351",
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38425422351",
   "manifest_rejections": {},
   "missing_required_source_families": [
     "FDA",
@@ -21,11 +21,11 @@
   "note": "Reconciles fresh source ledgers from this run. Clinical collection, second-financing sequence adjudication and dashboard ingestion have separate scopes; five-source completion is not a full trading baseline.",
   "optional_findings_unavailable": 93,
   "required_findings_due": 984,
-  "required_findings_unresolved": 89,
+  "required_findings_unresolved": 82,
   "required_issue_examples": [
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:12.227477+00:00",
+      "checked_at": "2026-10-13T15:51:04.409260+00:00",
       "claim": "FDA_DECISION",
       "event_key": "BFRI|AMELUZ_SBCC_20260928",
       "evidence": "",
@@ -40,7 +40,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:12.713339+00:00",
+      "checked_at": "2026-10-13T15:51:05.161388+00:00",
       "claim": "FDA_DECISION",
       "event_key": "SRRK|APITEGROMAB_20260930",
       "evidence": "",
@@ -55,7 +55,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:14.041314+00:00",
+      "checked_at": "2026-10-13T15:51:06.753827+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
       "evidence": "",
@@ -70,22 +70,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:17.102711+00:00",
-      "claim": "PDUFA_TARGET",
-      "event_key": "CYTK|MYQORZO_HCM_20261114",
-      "evidence": "",
-      "expected": "2026-11-14",
-      "observed": "",
-      "reason": "No primary source safely matches drug, indication, claim and explicit date",
-      "source_sha256": "",
-      "source_url": "",
-      "ticker": "CYTK",
-      "verification_required": "YES",
-      "verification_status": "REVIEW_REQUIRED"
-    },
-    {
-      "category": "FDA",
-      "checked_at": "2026-10-13T15:38:17.892825+00:00",
+      "checked_at": "2026-10-13T15:51:10.910275+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "SMMT|IVONESCIMAB_20261114",
       "evidence": "",
@@ -100,7 +85,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:18.390061+00:00",
+      "checked_at": "2026-10-13T15:51:11.666585+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "CAPR|DERAMIOCEL_DMD_20261122",
       "evidence": "",
@@ -115,22 +100,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:18.938840+00:00",
-      "claim": "PDUFA_TARGET",
-      "event_key": "BBIO|BBP418_LGMD2IR9_20261127",
-      "evidence": "further independent RWE using electronic health records are expected, and we are confident Attruby will consistently demonstrate clinical superiority over tafamidis to the benefit of patients and healthcare delivery systems for which heart failure remains a top concern - All three planned NDAs are now submitted to the FDA: BBP-418 for LGMD2I/R9 was accepted with Priority Review (PDUFA November 27, 2026) | New data to be shared at ESC 2026 BBP-418 for LGMD2I/R9 PDUFA date set for November 27, 2026 with Priority Review Launch upon FDA approval Encaleret for ADH1 PDUFA date set for May 8, 2027 with Priority Review",
-      "expected": "2026-11-27",
-      "observed": "2026-11-27 | 2027-05-08",
-      "reason": "Primary target date disagrees or multiple dates need reconciliation",
-      "source_sha256": "96ceaa9a3ec1b41543806dafe62ca7706dc6744b5fe9ea8c65a4cfcedfb40a72",
-      "source_url": "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000026/bbio-20260630xex991.htm",
-      "ticker": "BBIO",
-      "verification_required": "YES",
-      "verification_status": "CONFLICT"
-    },
-    {
-      "category": "FDA",
-      "checked_at": "2026-10-13T15:38:19.365470+00:00",
+      "checked_at": "2026-10-13T15:51:12.733690+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "VRTX|POVETACICEPT_IGAN_20261130",
       "evidence": "",
@@ -145,7 +115,22 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:28.688366+00:00",
+      "checked_at": "2026-10-13T15:51:20.397911+00:00",
+      "claim": "PDUFA_TARGET",
+      "event_key": "ANAB|IMSIDOLIMAB_GPP_20261212",
+      "evidence": "",
+      "expected": "2026-12-12",
+      "observed": "",
+      "reason": "No primary source safely matches drug, indication, claim and explicit date",
+      "source_sha256": "",
+      "source_url": "",
+      "ticker": "ANAB",
+      "verification_required": "YES",
+      "verification_status": "REVIEW_REQUIRED"
+    },
+    {
+      "category": "FDA",
+      "checked_at": "2026-10-13T15:51:21.403600+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "MLYS|LORUNDROSTAT_20261222",
       "evidence": "",
@@ -160,7 +145,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:29.461669+00:00",
+      "checked_at": "2026-10-13T15:51:21.951121+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "GILD|ANITOCEL_MM_20261223",
       "evidence": "",
@@ -175,7 +160,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:31.167318+00:00",
+      "checked_at": "2026-10-13T15:51:23.319085+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "COGT|BEZUCLASTINIB_NONADVSM_20261230",
       "evidence": "",
@@ -190,7 +175,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:36.388815+00:00",
+      "checked_at": "2026-10-13T15:51:29.884691+00:00",
       "claim": "FDA_DECISION",
       "event_key": "NUVB|IBTROZI_ROS1NSCLC_20270104",
       "evidence": "",
@@ -205,7 +190,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:40.517418+00:00",
+      "checked_at": "2026-10-13T15:51:33.333565+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "IBRX|ANKTIVA_NMIBC_20270106",
       "evidence": "",
@@ -220,7 +205,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:44.817392+00:00",
+      "checked_at": "2026-10-13T15:51:37.120926+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "DYN|ZROSTUDIRSEN_DMD_20270121",
       "evidence": "",
@@ -235,7 +220,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:47.368796+00:00",
+      "checked_at": "2026-10-13T15:51:39.530567+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "PRAX|ULIXACALTAMIDE_ET_20270129",
       "evidence": "",
@@ -250,7 +235,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:38:58.295614+00:00",
+      "checked_at": "2026-10-13T15:51:51.078562+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "EXEL|ZANZALINTINIB_CRC",
       "evidence": "",
@@ -265,7 +250,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:39:06.827652+00:00",
+      "checked_at": "2026-10-13T15:52:00.073210+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "HRMY|PITOLISANT_GR_20270401",
       "evidence": "",
@@ -280,7 +265,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:39:18.920991+00:00",
+      "checked_at": "2026-10-13T15:52:11.154552+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "BBIO|ENCALERET_ADH1",
       "evidence": "",
@@ -295,7 +280,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:39:23.311986+00:00",
+      "checked_at": "2026-10-13T15:52:15.980874+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "BMY|MEZIGDOMIDE_RRMM_20270513",
       "evidence": "",
@@ -310,7 +295,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:39:32.958727+00:00",
+      "checked_at": "2026-10-13T15:52:23.894419+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "SVRA|MOLBREEVI_PAP_20261122",
       "evidence": "",
@@ -325,7 +310,7 @@
     },
     {
       "category": "FDA",
-      "checked_at": "2026-10-13T15:39:37.351426+00:00",
+      "checked_at": "2026-10-13T15:52:27.568646+00:00",
       "claim": "PDUFA_TARGET",
       "event_key": "COGT|BEZUCLASTINIB_GIST_20261130",
       "evidence": "",
@@ -340,7 +325,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-10-13T15:44:17.277859+00:00",
+      "checked_at": "2026-10-13T15:56:17.207343+00:00",
       "claim": "FILINGS_INVENTORY",
       "event_key": "REGISTRY:SNYR",
       "evidence": "",
@@ -355,7 +340,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-10-13T15:44:49.516473+00:00",
+      "checked_at": "2026-10-13T15:56:43.705964+00:00",
       "claim": "FINANCING_CLOSURE",
       "event_key": "BFRI|AMELUZ_SBCC_20260928",
       "evidence": "",
@@ -370,7 +355,7 @@
     },
     {
       "category": "SEC",
-      "checked_at": "2026-10-13T15:44:50.322639+00:00",
+      "checked_at": "2026-10-13T15:56:44.079192+00:00",
       "claim": "FINANCING_CLOSURE",
       "event_key": "SRRK|APITEGROMAB_20260930",
       "evidence": "",
@@ -382,13 +367,28 @@
       "ticker": "SRRK",
       "verification_required": "YES",
       "verification_status": "REVIEW_REQUIRED"
+    },
+    {
+      "category": "SEC",
+      "checked_at": "2026-10-13T15:56:44.439652+00:00",
+      "claim": "FINANCING_CLOSURE",
+      "event_key": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
+      "evidence": "",
+      "expected": "2026-02-18",
+      "observed": "",
+      "reason": "No completed transaction clause matches the stored closing date",
+      "source_sha256": "00f98156ad33e89e311d15ac48576fe00ef232399206dd8e9ce9e70220271444",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1228627/000114036126009247/ef20060643_10k.htm",
+      "ticker": "IRD",
+      "verification_required": "YES",
+      "verification_status": "REVIEW_REQUIRED"
     }
   ],
   "schema_version": 2,
   "scope": "Five extended source ledgers; full trading eligibility is evaluated separately",
   "scope_coverage_verified": false,
-  "source_checked_at_utc": "2026-10-13T15:49:42.055842+00:00",
-  "source_commit": "f3e18e18294354344681a19d247bf8365abe102a",
+  "source_checked_at_utc": "2026-10-13T16:01:54.237385+00:00",
+  "source_commit": "587eb2286e5d866b1f4cb73fbad4e9f7e3eb5a8d",
   "source_statuses": {
     "FDA": "PARTIAL",
     "FINANCIAL": "PARTIAL",
@@ -398,21 +398,20 @@
   },
   "sources": [
     {
-      "findings_conflicted": 1,
+      "findings_conflicted": 0,
       "findings_due": 45,
       "findings_not_applicable": 0,
       "findings_unavailable": 0,
       "findings_unresolved": 20,
-      "findings_verified": 24,
+      "findings_verified": 25,
       "optional_findings_unavailable": 0,
       "required_findings_due": 45,
-      "required_findings_unresolved": 21,
+      "required_findings_unresolved": 20,
       "source": "FDA",
       "status": "PARTIAL",
       "verification_status_counts": {
-        "CONFLICT": 1,
         "REVIEW_REQUIRED": 20,
-        "VERIFIED": 24
+        "VERIFIED": 25
       },
       "verification_technical_failure_count": 0
     },
@@ -477,16 +476,16 @@
       "findings_due": 45,
       "findings_not_applicable": 0,
       "findings_unavailable": 0,
-      "findings_unresolved": 21,
-      "findings_verified": 24,
+      "findings_unresolved": 15,
+      "findings_verified": 30,
       "optional_findings_unavailable": 0,
       "required_findings_due": 45,
-      "required_findings_unresolved": 21,
+      "required_findings_unresolved": 15,
       "source": "ISSUER",
       "status": "PARTIAL",
       "verification_status_counts": {
-        "REVIEW_REQUIRED": 21,
-        "VERIFIED": 24
+        "REVIEW_REQUIRED": 15,
+        "VERIFIED": 30
       },
       "verification_technical_failure_count": 0
     }
@@ -497,7 +496,7 @@
   "supplemental_issue_examples": [
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:32.682475+00:00",
+      "checked_at": "2026-10-13T15:58:53.980796+00:00",
       "claim": "OPTIONS_IV",
       "event_key": "BFRI|AMELUZ_SBCC_20260928",
       "evidence": "",
@@ -512,7 +511,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:32.682504+00:00",
+      "checked_at": "2026-10-13T15:58:53.980820+00:00",
       "claim": "BORROW",
       "event_key": "BFRI|AMELUZ_SBCC_20260928",
       "evidence": "",
@@ -527,7 +526,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:32.912434+00:00",
+      "checked_at": "2026-10-13T15:58:54.451520+00:00",
       "claim": "OPTIONS_IV",
       "event_key": "SRRK|APITEGROMAB_20260930",
       "evidence": "",
@@ -542,7 +541,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:32.912440+00:00",
+      "checked_at": "2026-10-13T15:58:54.451554+00:00",
       "claim": "BORROW",
       "event_key": "SRRK|APITEGROMAB_20260930",
       "evidence": "",
@@ -557,7 +556,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:33.197264+00:00",
+      "checked_at": "2026-10-13T15:58:54.797825+00:00",
       "claim": "OPTIONS_IV",
       "event_key": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
       "evidence": "",
@@ -572,7 +571,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:33.197270+00:00",
+      "checked_at": "2026-10-13T15:58:54.797840+00:00",
       "claim": "BORROW",
       "event_key": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
       "evidence": "",
@@ -587,7 +586,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:33.550983+00:00",
+      "checked_at": "2026-10-13T15:58:55.121778+00:00",
       "claim": "OPTIONS_IV",
       "event_key": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
       "evidence": "",
@@ -602,7 +601,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:33.550989+00:00",
+      "checked_at": "2026-10-13T15:58:55.121789+00:00",
       "claim": "BORROW",
       "event_key": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
       "evidence": "",
@@ -617,7 +616,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:33.866685+00:00",
+      "checked_at": "2026-10-13T15:58:55.327291+00:00",
       "claim": "OPTIONS_IV",
       "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
       "evidence": "",
@@ -632,7 +631,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:33.866691+00:00",
+      "checked_at": "2026-10-13T15:58:55.327300+00:00",
       "claim": "BORROW",
       "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
       "evidence": "",
@@ -647,7 +646,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:34.110901+00:00",
+      "checked_at": "2026-10-13T15:58:55.777915+00:00",
       "claim": "OPTIONS_IV",
       "event_key": "INO|INO3107_RRP_20261030",
       "evidence": "",
@@ -662,7 +661,7 @@
     },
     {
       "category": "MARKET",
-      "checked_at": "2026-10-13T15:46:34.110906+00:00",
+      "checked_at": "2026-10-13T15:58:55.777926+00:00",
       "claim": "BORROW",
       "event_key": "INO|INO3107_RRP_20261030",
       "evidence": "",
@@ -676,7 +675,7 @@
       "verification_status": "UNAVAILABLE"
     }
   ],
-  "updated_at_utc": "2026-10-13T15:50:07.423025+00:00",
+  "updated_at_utc": "2026-10-13T16:02:30.717473+00:00",
   "verification_issue_examples": [
     {
       "category": "FDA",
@@ -703,13 +702,6 @@
       "category": "FDA",
       "claim": "PDUFA_TARGET",
       "reason": "No primary source safely matches drug, indication, claim and explicit date",
-      "ticker": "CYTK",
-      "verification_status": "REVIEW_REQUIRED"
-    },
-    {
-      "category": "FDA",
-      "claim": "PDUFA_TARGET",
-      "reason": "No primary source safely matches drug, indication, claim and explicit date",
       "ticker": "SMMT",
       "verification_status": "REVIEW_REQUIRED"
     },
@@ -723,15 +715,15 @@
     {
       "category": "FDA",
       "claim": "PDUFA_TARGET",
-      "reason": "Primary target date disagrees or multiple dates need reconciliation",
-      "ticker": "BBIO",
-      "verification_status": "CONFLICT"
+      "reason": "No primary source safely matches drug, indication, claim and explicit date",
+      "ticker": "VRTX",
+      "verification_status": "REVIEW_REQUIRED"
     },
     {
       "category": "FDA",
       "claim": "PDUFA_TARGET",
       "reason": "No primary source safely matches drug, indication, claim and explicit date",
-      "ticker": "VRTX",
+      "ticker": "ANAB",
       "verification_status": "REVIEW_REQUIRED"
     },
     {
@@ -761,16 +753,23 @@
       "reason": "No primary source safely matches drug, indication, claim and explicit date",
       "ticker": "NUVB",
       "verification_status": "REVIEW_REQUIRED"
+    },
+    {
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "No primary source safely matches drug, indication, claim and explicit date",
+      "ticker": "IBRX",
+      "verification_status": "REVIEW_REQUIRED"
     }
   ],
-  "verification_run_id": "38422847803:1:f3e18e18294354344681a19d247bf8365abe102a",
+  "verification_run_id": "38425422351:1:587eb2286e5d866b1f4cb73fbad4e9f7e3eb5a8d",
   "verification_scope_sha256": "73489e4829903327adabcbe2cd1607a681054b9739fb46838fdd0c03da73c191",
   "verification_status_counts": {
-    "CONFLICT": 2,
+    "CONFLICT": 1,
     "NOT_APPLICABLE": 10,
-    "REVIEW_REQUIRED": 87,
+    "REVIEW_REQUIRED": 81,
     "UNAVAILABLE": 93,
-    "VERIFIED": 927
+    "VERIFIED": 934
   },
   "verification_technical_failure_count": 0,
   "verification_version": 2
