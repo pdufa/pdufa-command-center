@@ -198,6 +198,25 @@ class VerificationTests(unittest.TestCase):
                                 as_of=date(2026, 10, 12))
         self.assertEqual(wrong.regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
 
+    def test_discovery_checks_later_exhibit_within_twelve_document_cap(self):
+        checked = []
+        def fetch(url):
+            checked.append(url)
+            if "/submissions/" in url:
+                return json.dumps(submissions()).encode()
+            if url.endswith("index.json"):
+                names = [{"name": "ex99-%d.htm" % i} for i in range(1, 6)]
+                return json.dumps({"directory": {"item": names}}).encode()
+            if url.endswith("ex99-5.htm"):
+                return (b"Test Pharma announced TestDrug for lung cancer. "
+                        b"The FDA PDUFA target date is November 1, 2026.")
+            return b"Test Pharma announced OtherDrug for a different indication."
+        verifier = verify.Verifier([COMPANY], fetch=fetch, as_of=date(2026, 10, 12))
+        result = verifier.regulatory(EVENT)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertTrue(result["source_url"].endswith("ex99-5.htm"))
+        self.assertEqual(len([url for url in checked if "/ex99-" in url]), 5)
+
     def test_saved_primary_date_conflict_not_overridden_by_fallback(self):
         url = SEC_DOC
         event = {**EVENT, "pdufa_evidence_url": url}
