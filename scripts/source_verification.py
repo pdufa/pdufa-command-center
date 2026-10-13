@@ -204,10 +204,18 @@ def indication_matches(event, text):
 
 
 def company_matches(event, text):
+    # SEC legal registrant names sometimes append incorporation jurisdiction:
+    # "VERTEX PHARMACEUTICALS INC / MA". A trailing US state is metadata,
+    # not a word the issuer's own press release must contain.
+    company_name = re.sub(
+        r"(?i)\s*/\s*(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|"
+        r"KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|"
+        r"OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\s*$",
+        "", str(event.get("company", "")))
     stop = {"inc", "incorporated", "corp", "corporation", "co", "company",
             "limited", "ltd", "plc", "holdings", "holding", "group",
             "pharma", "pharmaceutical", "pharmaceuticals", "therapeutics"}
-    tokens = [x for x in normalized(event.get("company", "")).split() if x not in stop]
+    tokens = [x for x in normalized(company_name).split() if x not in stop]
     return bool(tokens) and all(x in normalized(text).split() for x in tokens)
 
 
