@@ -214,6 +214,30 @@ def _reasons(record, event, stage, feed_current, sec_current):
     return reasons
 
 
+def all_mandatory_entry_gates_pass(item):
+    """Ultra-selective GEM shortlist; ranks alone never satisfy entry gates.
+
+    Requires attested Stage 1 GREEN, all three independently source-qualified
+    GEM research stages, actual independently checked second financing #2
+    close, and >=4 days until PDUFA -3. A PASS permits human due diligence
+    only and is NOT a buy order or predicted return.
+    """
+    days = item.get("Days to PDUFA")
+    return bool(
+        isinstance(days, int) and not isinstance(days, bool)
+        and days >= MIN_NEW_ENTRY_DAYS
+        and str(item.get("Phase 3 tracking") or "").startswith("TRACKING")
+        and item.get("Entry qualification") == "GREEN — GATES ATTESTED"
+        and item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
+        and bool(item.get("Verified 2nd financing close date"))
+        and item.get("GEM trade entry gate")
+            == "POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER"
+        and all(item.get(stage + " qualifier") == "QUALIFIED — RESEARCH ONLY"
+                and type(item.get(stage + " score")) is int
+                for stage in STAGES)
+    )
+
+
 def build_gem_scans(root="data", as_of=None):
     """Return all research records, stage-wise scored/ranked only when qualified.
 
@@ -280,7 +304,35 @@ def build_gem_scans(root="data", as_of=None):
             item[stage + " rank"] = rank
             item[stage + " GEM"] = f"#{rank} ({item[stage + ' score']})"
 
+    # Entry shortlist is deliberately the INTERSECTION of all mandatory
+    # verified program / financing / market / FDA gates, not the UNION of
+    # candidates ranked in one research stage.
+    shortlist = sorted(
+        (item for item in results if all_mandatory_entry_gates_pass(item)),
+        key=lambda item: (
+            -(item.get("PDUFA score") or 0),
+            -(item.get("Post-Financing score") or 0),
+            -(item.get("Phase 3 score") or 0),
+            str(item.get("Ticker") or ""),
+            str(item.get("Exact event") or ""),
+        ),
+    )
+    for item in results:
+        item["GEM ALL ENTRY GATES"] = (
+            "PASS — MANUAL REVIEW ONLY"
+            if all_mandatory_entry_gates_pass(item)
+            else "NOT MET — WATCH / REVIEW"
+        )
+        item["GEM strict shortlist rank"] = None
+    for position, item in enumerate(shortlist, 1):
+        item["GEM strict shortlist rank"] = position
+
     details = dict(source_status)
+    details["strict_entry_gate_shortlist_count"] = len(shortlist)
+    details["strict_entry_gate_shortlist_definition"] = (
+        "INTERSECTION OF ALL THREE RANKS + STAGE1 GREEN + VERIFIED TWO CLOSES "
+        "+ CURRENT SOURCES + PDUFA > 3 DAYS; HUMAN REVIEW ONLY"
+    )
     details["scan_counts"] = {
         stage: {
             "qualified": sum(item[stage + " score"] is not None for item in results),
