@@ -241,6 +241,28 @@ class VerificationTests(unittest.TestCase):
             self.assertEqual(self.verifier(invalid).financing(event)["verification_status"],
                              "REVIEW_REQUIRED")
 
+    def test_sec_completed_previously_announced_convertible_notes_close(self):
+        event = {**EVENT, "financing_evidence_url": SEC_DOC,
+                 "financing_close_date": "2025-11-18"}
+        close = (b"On November 18, 2025, Test Pharma completed its previously-announced "
+                 b"public offering of $230,000,000 aggregate principal amount of "
+                 b"1.625% convertible senior notes due 2031.")
+        item = self.verifier(close).financing(event)
+        self.assertEqual(item["verification_status"], "VERIFIED")
+        self.assertEqual(item["observed"], "2025-11-18")
+        self.assertIn("not the post-Phase-3 second-financing sequence", item["reason"])
+        self.assertEqual(len(item["source_sha256"]), 64)
+        for unverified in (
+            b"On November 18, 2025, Test Pharma expects to complete its "
+            b"previously-announced public offering of $230,000,000 of notes.",
+            b"On November 18, 2025, Test Pharma completed its "
+            b"previously-announced public offering of convertible notes.",
+            close.replace(b"November 18, 2025", b"November 19, 2025"),
+        ):
+            self.assertNotEqual(
+                self.verifier(unverified).financing(event)["verification_status"],
+                "VERIFIED")
+
     def test_cash_fact_and_aligned_runway_arithmetic_are_separate_claims(self):
         records = self.verifier(financial_payload()).financial(EVENT)
         self.assertEqual([r["verification_status"] for r in records], ["VERIFIED", "VERIFIED"])
