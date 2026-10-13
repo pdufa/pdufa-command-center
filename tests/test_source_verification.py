@@ -217,6 +217,89 @@ class VerificationTests(unittest.TestCase):
         self.assertTrue(result["source_url"].endswith("ex99-5.htm"))
         self.assertEqual(len([url for url in checked if "/ex99-" in url]), 5)
 
+    def test_signed_fda_letter_is_action_not_issuer_announcement(self):
+        pdf = "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/208081Orig1s040ltr.pdf"
+        page = ("NDA 208081/S-040 SUPPLEMENT APPROVAL\n"
+                "Biofrontera Inc c/o Cardinal Health Regulatory Sciences.\n"
+                "Application for Ameluz gel with superficial basal cell carcinoma (sBCC).\n"
+                "We have completed our review of this application, as amended. "
+                "It is approved, effective on the date of this letter.\n"
+                "Signature Page 1 of 1. This is a representation of an "
+                "electronic record that was signed electronically.\n"
+                "/s/ TATIANA OUSSOVA 09/09/2026 06:35:00 PM\n")
+        event = {"event_key": "BFRI|AMELUZ_SBCC_20260928",
+                 "ticker": "BFRI", "company": "Biofrontera Inc.",
+                 "drug": "Ameluz PDT", "indication": "superficial basal cell carcinoma (sBCC)",
+                 "outcome": "APPROVED", "decision_date": "2026-09-09",
+                 "pdufa_evidence_url": pdf}
+        company = {"ticker": "BFRI", "company": "Biofrontera Inc.", "cik10": "0001858685"}
+        self.assertEqual(verify.documented_fda_signed_approval(event, page), "2026-09-09")
+        verifier = verify.Verifier([company], fetch=lambda _: page.encode(),
+                                   as_of=date(2026, 10, 12))
+        result = verifier.regulatory(event)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertEqual(result["observed"], "APPROVED 2026-09-09")
+        self.assertEqual(result["source_url"], pdf)
+        self.assertEqual(verifier.regulatory({**event, "decision_date": "2026-09-14"})[0]["verification_status"], "CONFLICT")
+        for changed in (
+            page.replace("effective on the date of this letter", "pending further review"),
+            page.replace("09/09/2026", "11/31/2026"),
+            page.replace("Ameluz", "AnotherDrug"),
+            page.replace("superficial basal cell carcinoma", "another indication"),
+        ):
+            self.assertIsNone(verify.documented_fda_signed_approval(event, changed))
+
+    def test_explicit_extended_pdufa_date_is_verified_only_for_exact_program(self):
+        old_url = SEC_DOC.replace("ex99-1.htm", "previous.htm")
+        new_url = SEC_DOC
+        prior = b"Test Pharma announced TestDrug for lung cancer. PDUFA target date October 1, 2026."
+        extension = (b"Test Pharma reports that the FDA has extended the PDUFA "
+                     b"target action date for TestDrug for lung cancer from "
+                     b"October 1, 2026 to November 1, 2026.")
+        def fetch(url, new_document=extension):
+            if url == old_url:
+                return prior
+            if "/submissions/" in url:
+                return json.dumps(submissions()).encode()
+            if url.endswith("index.json"):
+                return b'{"directory":{"item":[{"name":"ex99-1.htm"}]}}'
+            if url == new_url:
+                return new_document
+            raise AssertionError(url)
+
+        event = {**EVENT, "pdufa_evidence_url": old_url}
+        verifier = verify.Verifier([COMPANY], fetch=fetch, as_of=date(2026, 10, 12))
+        result = verifier.regulatory(event)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED", result)
+        self.assertEqual(result["observed"], "2026-11-01")
+        self.assertEqual(result["source_url"], new_url)
+        self.assertIn("supersedes 2026-10-01", result["reason"])
+        self.assertEqual(len(result["source_sha256"]), 64)
+
+        # Without the exact drug/indication or unambiguous extension language,
+        # the original contradictory primary evidence remains a conflict.
+        for body in (
+            extension.replace(b"TestDrug", b"OtherDrug"),
+            extension.replace(b"lung cancer", b"other disease"),
+            extension.replace(b"extended", b"mentioned"),
+            extension.replace(b"November 1, 2026", b"December 1, 2026"),
+        ):
+            verifier = verify.Verifier(
+                [COMPANY], fetch=lambda url, b=body: fetch(url, b),
+                as_of=date(2026, 10, 12))
+            rejected = verifier.regulatory(event)[0]
+            self.assertEqual(rejected["verification_status"], "CONFLICT", rejected)
+            self.assertEqual(rejected["source_url"], old_url)
+
+    def test_explicit_extension_direct_source_rejects_other_target(self):
+        release = (b"Test Pharma says the FDA has extended the PDUFA "
+                   b"target action date for TestDrug for lung cancer from "
+                   b"October 1, 2026 to November 1, 2026.")
+        first = {**EVENT, "pdufa_evidence_url": SEC_DOC}
+        self.assertEqual(self.verifier(release).regulatory(first)[0]["verification_status"], "VERIFIED")
+        wrong = {**first, "pdufa_date": "2026-12-01"}
+        self.assertEqual(self.verifier(release).regulatory(wrong)[0]["verification_status"], "CONFLICT")
+
     def test_saved_primary_date_conflict_not_overridden_by_fallback(self):
         url = SEC_DOC
         event = {**EVENT, "pdufa_evidence_url": url}
