@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
-from post_phase3_unified import build_queue, read_rows
+from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = 3  # calendar days; final new-entry day is PDUFA -4
@@ -99,6 +99,49 @@ def _event_map(root):
     return unique
 
 
+def phase3_tracking_state(record, event, feed_current):
+    """Watch begins at confirmed successful Phase 3, not financing closure.
+
+    Ranking requires additional clinical/market gates. A stale feed can never
+    trigger a new trading or verification assertion.
+    """
+    if not feed_current:
+        return "VERIFICATION HOLD — SOURCE STALE"
+    if not event or not str(record.get("Exact event") or "").strip():
+        return "VERIFICATION HOLD — EXACT EVENT UNLINKED"
+    outcome = str(event.get("outcome") or "").strip().upper()
+    if (outcome in RESOLVED or
+            str(event.get("monitor_eligibility") or "").strip().upper() == "EXCLUDED" or
+            str(record.get("Entry qualification") or "").startswith("EXCLUDED")):
+        return "CLOSED — FDA EVENT RESOLVED"
+    if str(event.get("conflict_flag") or "").strip().upper() not in (
+        "", "NO", "NONE", "FALSE", "0", "PASS"
+    ):
+        return "VERIFICATION HOLD — CONFLICTING CLINICAL EVIDENCE"
+    if (str(event.get("phase3_status") or "").strip().upper()
+            not in ("VERIFIED_SUCCESS", "PRIMARY_MET_VERIFIED") or
+            not parsed_date(event.get("phase3_date")) or
+            not https_source(event.get("trial_evidence_url")) or
+            record.get("Phase 3 evidence") != "VERIFIED SUCCESS — SOURCE LINKED"):
+        return "AWAITING VERIFIED SUCCESSFUL PHASE 3 READOUT"
+    days = record.get("Days to PDUFA")
+    if days is not None and days <= TRADE_EXIT_DAYS_BEFORE_PDUFA:
+        return "CLOSED — PDUFA -3 EXIT REACHED"
+    return "TRACKING — VERIFIED SUCCESSFUL PHASE 3"
+
+
+def financing_watch_state(record, tracking_status):
+    if not tracking_status.startswith("TRACKING"):
+        return "NOT ACTIVE — PHASE 3 TRACKING HOLD"
+    if record.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)":
+        return "SECOND FINANCING VERIFIED CLOSED"
+    cycle = str(record.get("Financing cycle (separate)") or "").upper()
+    if "FINANCING RUNNING" in cycle:
+        return "FINANCING IN PROGRESS — CLOSURE PENDING"
+    if "FINANCING STARTED" in cycle:
+        return "FINANCING STARTED — CLOSURE PENDING"
+    return "SECOND FINANCING NOT VERIFIED CLOSED — MONITOR"
+
 def _reasons(record, event, stage, feed_current):
     reasons = []
     days = record.get("Days to PDUFA")
@@ -171,6 +214,13 @@ def build_gem_scans(root="data", as_of=None):
                 str(record.get("Entry qualification") or "").startswith("RED WINDOW")):
             item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
+        status = phase3_tracking_state(item, event, source_status["feed_current"])
+        item["Phase 3 tracking"] = status
+        item["Phase 3 result date (source)"] = (
+            str(event.get("phase3_date") or "")[:10]
+            if event and status.startswith("TRACKING") else ""
+        )
+        item["Financing watch"] = financing_watch_state(item, status)
         for stage in STAGES:
             reasons = _reasons(item, event, stage, source_status["feed_current"])
             item[stage + " qualifier"] = ("QUALIFIED — RESEARCH ONLY" if not reasons else "REVIEW — NOT QUALIFIED")
@@ -203,6 +253,15 @@ def build_gem_scans(root="data", as_of=None):
         }
         for stage in STAGES
     }
+    details["phase3_tracking_count"] = sum(
+        str(item["Phase 3 tracking"]).startswith("TRACKING") for item in results
+    )
+    details["phase3_tracking_before_second_financing"] = sum(
+        str(item["Phase 3 tracking"]).startswith("TRACKING") and
+        item["2nd Financing Completed"] != "YES — VERIFIED (HISTORICAL)"
+        for item in results
+    )
+    details["tracking_trigger"] = "VERIFIED_SUCCESSFUL_PHASE3_RESULTS_NOT_TRIAL_END_DATE"
     details["trade_exit_days_before_pdufa"] = TRADE_EXIT_DAYS_BEFORE_PDUFA
     details["last_eligible_entry_days_before_pdufa"] = MIN_NEW_ENTRY_DAYS
     details["rubric"] = "STAGE-EVIDENCE-GEMS-V2-D3 — NOT APPROVAL OR RETURN FORECAST"
