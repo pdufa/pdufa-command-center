@@ -161,14 +161,6 @@ def build_gem_scans(root="data", as_of=None):
     results = []
     for record in records:
         item = dict(record)
-        # Stage 1 still enforces its older PDUFA -7 research entry cutoff.
-        # The GEM scanner independently verifies the FDA source for days 4–7,
-        # without bypassing actual clinical, financing or dilution gates.
-        days = record.get("Days to PDUFA")
-        if (days is not None and MIN_NEW_ENTRY_DAYS <= days <= 7 and
-                record.get("PDUFA verification") == "VERIFIED — SOURCE LINKED" and
-                str(record.get("Entry qualification") or "").startswith("RED WINDOW")):
-            item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
         for stage in STAGES:
             reasons = _reasons(item, event, stage, source_status["feed_current"])
