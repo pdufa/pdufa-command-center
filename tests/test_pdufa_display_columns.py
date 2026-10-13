@@ -492,6 +492,22 @@ class PdufaGridTests(unittest.TestCase):
             self.assertTrue(pd.isna(result.loc[0, "Score /100"]))
             self.assertEqual(result.loc[0, "Score type"], "NOT SCORED")
 
+    def test_mixed_component_score_types_remain_numeric_without_fabricating_zero(self):
+        frame = pd.DataFrame([
+            {"Ticker": "ONE", "Clinical evidence /30": 22,
+             "Financing evidence /20": "12", "Phase 3 Design /30": "NOT SCORED"},
+            {"Ticker": "TWO", "Clinical evidence /30": "REVIEW",
+             "Financing evidence /20": 33, "Phase 3 Design /30": None},
+        ])
+        result = prepare_pdufa_grid(frame, view="POST PHASE 3", as_of=date(2026, 10, 13))
+        for col in ("Clinical evidence /30", "Financing evidence /20", "Phase 3 Design /30"):
+            self.assertTrue(pd.api.types.is_numeric_dtype(result[col].dtype), col)
+        self.assertEqual(result.loc[0, "Clinical evidence /30"], 22)
+        self.assertEqual(result.loc[0, "Financing evidence /20"], 12)
+        for i, col in ((0, "Phase 3 Design /30"), (1, "Clinical evidence /30"),
+                       (1, "Financing evidence /20"), (1, "Phase 3 Design /30")):
+            self.assertTrue(pd.isna(result.loc[i, col]))
+
     def test_pipeline_exact_trial_join_carries_review_priority_score(self):
         pipeline = pd.DataFrame([{
             "Ticker": "TEST", "NCT ID": "NCT12345678", "Drug": "Alpha",
