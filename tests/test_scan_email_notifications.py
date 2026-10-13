@@ -68,6 +68,27 @@ class ScanEmailTests(unittest.TestCase):
             self.assertIn("New records: 4", body)
             self.assertIn("60.0 minutes", body)
 
+    def test_clinical_end_distinguishes_collection_from_overall_partial(self):
+        at = datetime(2026, 10, 13, 3, 50, tzinfo=timezone.utc)
+        for scan, collector in (("2", "COMPLETE"), ("3", "COMPLETE WITH WARNINGS"),
+                                ("4", "COMPLETE")):
+            subject, body = compose_end(
+                scan, "DELTA", "run-123", at, "PARTIAL", "Errors: 0", 120,
+                collector_status=collector)
+            self.assertIn(f"CLINICAL {collector}", subject)
+            self.assertIn("OVERALL PARTIAL", subject)
+            self.assertIn("Clinical collection: " + collector, body)
+            self.assertIn("Overall PDUFA source verification: PARTIAL", body)
+            self.assertIn("Errors: 0", body)
+
+    def test_incomplete_clinical_collector_never_labeled_complete(self):
+        at = datetime(2026, 10, 13, 3, 50, tzinfo=timezone.utc)
+        subject, _ = compose_end(
+            "2", "DELTA", "run-123", at, "FAILED", "Collector failed", 12,
+            collector_status="FAILED")
+        self.assertIn("FAILED", subject)
+        self.assertNotIn("CLINICAL COMPLETE", subject)
+
     def test_smtp_send_once_and_no_credentials_leak(self):
         settings = self.settings()
         sent = []
