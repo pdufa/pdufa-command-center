@@ -58,11 +58,30 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert "Second separate" in rows[0]["Post-Financing missing"]
 
 
-    def test_pdufa_timing_blocks_late_or_distant_events(self):
-        rows, _ = run([sample(days=14), sample("BBB", days=91)])
-        assert all(r["PDUFA rank"] is None for r in rows)
-        assert rows[0]["Phase 3 rank"] is not None  # Phase 3 ranking has its own window
-        assert rows[1]["Phase 3 rank"] is not None
+    def test_pdufa_trade_window_runs_from_verified_finance_until_minus_three(self):
+        rows, _ = run([sample(days=3), sample("BBB", days=4), sample("CCC", days=91)])
+        assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["PDUFA rank"] is None
+        assert rows[1]["Post-Financing rank"] is not None
+        assert rows[1]["PDUFA rank"] is not None
+        assert rows[2]["Post-Financing rank"] is not None
+        assert rows[2]["PDUFA rank"] is not None
+
+    def test_last_week_survives_old_stage1_red_cutoff_if_primary_source_verified(self):
+        row = sample(days=5)
+        row["Entry qualification"] = "RED WINDOW — NO NEW ENTRY"
+        row["PDUFA evidence /15"] = 0  # older Stage 1 day-7 scoring rule
+        rows, _ = run([row])
+        assert rows[0]["PDUFA rank"] == 1
+        assert rows[0]["PDUFA score"] == 100
+
+    def test_last_week_missing_fda_verification_never_overrides_source_gate(self):
+        row = sample(days=5)
+        row["Entry qualification"] = "RED WINDOW — NO NEW ENTRY"
+        row["PDUFA verification"] = "REVIEW — NOT VERIFIED"
+        row["PDUFA evidence /15"] = 0
+        rows, _ = run([row])
+        assert rows[0]["PDUFA rank"] is None
 
 
     def test_stale_and_unrated_feeds_have_no_gem_ranks(self):
