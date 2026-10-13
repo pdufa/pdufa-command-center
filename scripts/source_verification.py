@@ -252,6 +252,9 @@ def indication_matches(event, text):
     # "autosomal dominant hypocalcemia type 1 (ADH1)" may appear as "ADH1"
     # in a later sentence in the same SEC exhibit. The caller must still
     # independently match the drug, the relevant passage and the dated claim.
+    explicit = str(event.get("indication_aliases", "")).split("|")
+    if any(len(normalized(alias)) >= 6 and normalized(alias) in text for alias in explicit if alias.strip()):
+        return True
     aliases = re.findall(r"\(([A-Za-z][A-Za-z0-9/-]{2,12})\)", str(event.get("indication", "")))
     return any(normalized(alias) in body for alias in aliases
                if len(normalized(alias)) >= 3 and normalized(alias) not in {"fda", "usa"})
@@ -279,6 +282,16 @@ def publication_dates(raw, plain):
     metadata |= set(re.findall(r'(?i)<meta[^>]*property=["\']article:published_time["\'][^>]*content=["\'](20\d{2}-\d{2}-\d{2})', raw))
     if metadata:
         return metadata
+    # Official investor-release date fields are publication metadata, unlike
+    # arbitrary dates in a pipeline paragraph or a page footer.
+    published_fields = re.findall(
+        r'(?is)<(?:div|span)[^>]*class=["\'][^"\']*'
+        r'(?:field--name-field-nir-news-date|news-details-date|article-time)'
+        r'[^"\']*["\'][^>]*>(.*?)</(?:div|span)>', raw)
+    if published_fields:
+        dated = set().union(*(dates(visible(field)) for field in published_fields))
+        if dated:
+            return dated
     # Require a press-release dateline marker rather than any early date;
     # a future PDUFA target in the headline is not a release date.
     # Require a named wire service next to a published date. A PDUFA date
@@ -300,7 +313,7 @@ def publication_dates(raw, plain):
              r"Jun\.?|Jul\.?|Aug\.?|Sep\.?|Oct\.?|Nov\.?|Dec\.?)")
     dateline = re.search(
         r"(?i)\b[A-Z]{2,}(?:\s+[A-Z]{2,}){0,3},\s*(?:[A-Z][a-z]+\.?,\s*)?"
-        + "(" + month + r"\s+\d{1,2},\s+20\d{2})" + r"\s+[-–—]\s",
+        + r"\(?" + "(" + month + r"\s+\d{1,2},\s+20\d{2})" + r"\)?\s+[-–—]\s",
         plain[:6000])
     if dateline:
         return dates(dateline.group(1))
@@ -313,7 +326,13 @@ def publication_dates(raw, plain):
         r"\((?:BUSINESS WIRE|GLOBE NEWSWIRE)\)--\s*("
         + month + r"\s+\d{1,2},\s+20\d{2})--",
         plain[:6000])
-    return dates(wire.group(1)) if wire else set()
+    if wire:
+        return dates(wire.group(1))
+    # A named-city issuer dateline can follow BUSINESS WIRE and have
+    # ampersands in the city, e.g. SHANGHAI & CAMBRIDGE, Mass., August 6.
+    city = re.search(r"(?i)\b[A-Z][A-Z &]{2,45},\s*(?:[A-Z][a-z]+\.?,\s*)?"
+                     + r"\(?((?:" + month + r")\s+\d{1,2},\s+20\d{2})\)?\s+--", plain[:6000])
+    return dates(city.group(1)) if city else set()
 
 
 def numeric(value):
@@ -487,6 +506,42 @@ def documented_released_final_tranche(text, closing_date):
     return ""
 
 
+def documented_funded_transaction(text, closing_date):
+    """Explicit dated securities sale, actual loan receipt, or closed placement.
+
+    Require a local past-tense transaction, its own date and dollar amount.
+    Agreement dates, quarter-end ATM totals, future closes and facility limits
+    are insufficient. This never certifies a financing ordinal.
+    """
+    month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
+    date_rx = r"(?:20\d{2}-\d{2}-\d{2}|" + month + r"\s+\d{1,2},?\s+20\d{2})"
+    for match in re.finditer(r"(?i)\bOn\s+(" + date_rx + r")[,\s]+(?:the\s+)?(?:Company|we)\s+(received|sold)\b", text):
+        passage = text[match.start():match.end() + 450]
+        if dates(match.group(1)) != {closing_date}:
+            continue
+        if re.search(r"(?i)\b(?:will|may|expects?|expected|anticipated|proposed|planned|could|would)\b", passage[:180]):
+            continue
+        if not re.search(r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)?", passage):
+            continue
+        if match.group(2).lower() == "received":
+            if (not re.match(r"(?i)\s*\$\s*[\d,]+(?:\.\d+)?\s+(?:million|billion)\s+(?:from|under)\b", text[match.end():])
+                    or not re.search(r"(?i)\b(?:tranche|loan|credit|financing)\b", passage)
+                    or re.search(r"(?i)\b(?:undrawn|commitment|potential|available to borrow)\b", passage[:180])):
+                continue
+        elif not re.search(r"(?i)\b(?:shares|stock|warrants)\b", passage) or not re.search(r"(?i)\b(?:offering|placement)\b", passage):
+            continue
+        return passage
+    for match in re.finditer(r"(?i)\b(?:private\s+placement|public\s+offering|offering|financing)\s+(?:was\s+)?(?:closed|completed|consummated)\s+on\s+(" + date_rx + r")", text):
+        if dates(match.group(1)) != {closing_date}:
+            continue
+        passage = text[max(0,match.start()-100):match.end()+420]
+        if re.search(r"(?i)\b(?:expected|anticipated|scheduled|proposed|planned)\b", text[max(0,match.start()-70):match.start()]):
+            continue
+        if re.search(r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)?", passage) and re.search(r"(?i)\b(?:shares|stock|warrants|purchased|proceeds)\b", passage):
+            return passage
+    return ""
+
+
 def documented_drawn_credit_tranche(text, closing_date):
     """Verify a funded debt draw at a dated credit-facility closing only.
 
@@ -652,10 +707,48 @@ class Verifier:
         return url, payload, validate_submissions(payload, cik, event["ticker"])
 
     def references(self, event):
+        config = self.event_sources(event)
+        mapped = config.get("urls", [])
         found = [event.get(k, "") for k in ("pdufa_evidence_url", "trial_evidence_url", "financing_evidence_url", "issuer_evidence_url")]
         for key in ("evidence_summary", "regulatory_summary"):
             found += re.findall(r"https://[^\s<>\"']+", event.get(key, ""))
-        return list(dict.fromkeys(u.rstrip(".,;) ") for u in found if u))
+        # Exact-event mappings supply discovery links, never expected values
+        # or verification overrides. Inspect them before stale saved links.
+        return list(dict.fromkeys(u.rstrip(".,;) ") for u in mapped + found if isinstance(u, str) and u))
+
+    def event_sources(self, event):
+        config = self.issuer_sources.get(event.get("ticker", "").upper(), {})
+        return config.get("events", {}).get(event.get("event_key", ""), {})
+
+    def mapped_event(self, event):
+        result = dict(event)
+        config = self.event_sources(event)
+        for field in ("drug_aliases", "indication_aliases"):
+            aliases = config.get(field, [])
+            if isinstance(aliases, list) and all(isinstance(a, str) for a in aliases):
+                result[field] = " | ".join([str(event.get(field, ""))] + aliases)
+        return result
+
+    def approval_label_context(self, event, url, plain):
+        """Pair a letter with its exact application/supplement approved label.
+
+        A response-data supplement may name the studies and use disease
+        abbreviations. Its linked FDA label supplies the full indication.
+        A label for a different application or supplement is never accepted.
+        """
+        label_url = self.event_sources(event).get("approval_label_url", "")
+        letter = re.fullmatch(r"/drugsatfda_docs/appletter/(20\d{2})/(\d{6})Orig1s(\d{3})ltr\.pdf",
+                              urllib.parse.urlsplit(url).path)
+        label = re.fullmatch(r"/drugsatfda_docs/label/(20\d{2})/(\d{6})s(\d{3})lbl\.pdf",
+                             urllib.parse.urlsplit(label_url).path)
+        if (self.primary(event, url) != "FDA" or self.primary(event, label_url) != "FDA"
+                or not letter or not label or letter.groups() != label.groups()
+                or not re.search(r"\bNDA\s+" + letter.group(2) + r"/S-" + letter.group(3) + r"\b", plain)):
+            return plain, ""
+        _, label_text = self.document(label_url)
+        if not drug_matches(event, label_text) or not indication_matches(event, label_text):
+            return plain, ""
+        return plain + " " + label_text, label_url
 
     def primary(self, event, url):
         host = (urllib.parse.urlsplit(url).hostname or "").lower()
@@ -702,6 +795,7 @@ class Verifier:
                 yield url
 
     def regulatory(self, event, _discovery_only=False):
+        event = self.mapped_event(event)
         expected_outcome = event.get("outcome", "").strip().upper()
         claim = "FDA_DECISION" if expected_outcome in {"APPROVED", "CRL"} else "PDUFA_TARGET"
         expected = event.get("decision_date", "") if claim == "FDA_DECISION" else event.get("pdufa_date", "")
@@ -722,6 +816,9 @@ class Verifier:
         for url in refs[:4 if saved_refs else 12]:
             try:
                 _, plain = self.document(url)
+                label_url = ""
+                if claim == "FDA_DECISION":
+                    plain, label_url = self.approval_label_context(event, url, plain)
                 if not drug_matches(event, plain) or not indication_matches(event, plain):
                     continue
                 if self.primary(event, url) in {"FDA", "ISSUER"} and not company_matches(event, plain):
@@ -793,7 +890,8 @@ class Verifier:
                              "Signed FDA letter outcome or date contradicts saved event"),
                             url, expected_outcome + " " + expected,
                             "APPROVED " + signed_action,
-                            "FDA signed supplement approval; effective on date of letter"))
+                            "FDA signed supplement approval; effective on date of letter" +
+                            ("; exact approved label " + label_url + " SHA256 " + digest(self.body(label_url)) if label_url else "")))
                         continue
                     # Action wording, identity and date must coexist locally;
                     # publication/modified dates never become decision dates.
@@ -895,11 +993,24 @@ class Verifier:
             # Never borrow another company's or another program's financing.
             url = review.get("second_financing_source", "")
             close = review.get("second_financing_date", "")
+        mapped = self.event_sources(event).get("financing_urls", [])
+        if isinstance(mapped, list) and mapped and close:
+            # A source replacement retains the saved closing date and exact
+            # event. No company-wide later financing can supply that date.
+            url = next((u for u in mapped if sec_url_matches(u, self.cik(event))), url)
         if not sec_url_matches(url, self.cik(event)) or not close:
             return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                 "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence", url, close)
         try:
+            if date.fromisoformat(close) > self.as_of:
+                return self.result(event, 'SEC', 'FINANCING_CLOSURE', 'REVIEW_REQUIRED',
+                    'Saved closing date is in the future; funds received are not established', url, close)
             _, plain = self.document(url)
+            completed = documented_funded_transaction(plain, close)
+            if completed:
+                return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                    "Company-matched SEC document confirms this dated funded transaction only; not the post-Phase-3 second-financing sequence",
+                    url, close, close, completed)
             passages = [plain[max(0, m.start()-100):m.end()+350] for m in re.finditer(
                 r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:previously[-\s]+announced\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
             if not any(close in dates(p) for p in passages):
@@ -944,7 +1055,31 @@ class Verifier:
         if not cik:
             return [self.result(event, "FINANCIAL", "CASH_AND_RUNWAY", "REVIEW_REQUIRED", "Missing CIK")]
         try:
-            snapshot = financial_snapshot(json.loads(self.body(url)), cik, self.as_of)
+            payload = json.loads(self.body(url))
+            try:
+                snapshot = financial_snapshot(payload, cik, self.as_of)
+            except IdentityConflict:
+                raise
+            except ValueError:
+                # Use an explicitly reviewed interim SEC layout only after
+                # Companyfacts identity was checked. No guessed currency,
+                # reporting column, balance or operating cash flow is allowed.
+                spec = self.issuer_sources.get(event['ticker'].upper(), {}).get('financial_report')
+                if not spec or not sec_url_matches(spec.get('url', ''), cik):
+                    raise
+                raw, plain = self.document(spec['url'])
+                if not company_matches(event, plain):
+                    raise IdentityConflict('Interim financial report company mismatch')
+                from scripts.financial_report_evidence import report_snapshot
+                native = report_snapshot(raw, spec, self.as_of)
+                accession = re.search(r'/data/\d+/(\d{18})/', spec['url']).group(1)
+                accession = accession[:10] + '-' + accession[10:12] + '-' + accession[12:]
+                cash_row = {'val': native['cash'], 'end': native['end'], 'accn': accession, 'currency': 'USD'}
+                flow_row = {'val': native['flow'], 'start': native['start'], 'end': native['end'], 'accn': accession, 'currency': 'USD'}
+                snapshot = {'cash': cash_row, 'flow': flow_row, 'flow_days': native['flow_days'],
+                            'cash_basis': 'CASH_EQUIVALENTS', 'taxonomy': 'PRIMARY_USD_INTERIM_STATEMENT',
+                            'cash_tag': spec['cash']['label']}
+                url = spec['url']
             cash, flow = snapshot["cash"], snapshot["flow"]
             exact = snapshot["cash_basis"] == "CASH_EQUIVALENTS"
             expected = event.get("cash", "") if exact else ""
@@ -1105,6 +1240,7 @@ class Verifier:
         return records
 
     def issuer(self, event):
+        event = self.mapped_event(event)
         failures = []
         try:
             for i, url in enumerate(self.issuer_documents(event)):

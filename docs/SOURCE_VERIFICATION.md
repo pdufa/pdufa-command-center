@@ -22,6 +22,35 @@ excerpt. They are saved with the scan artifacts. The combined audit also saves
 The final Gmail summary separates verified, unresolved, conflicting, and
 technically failed checks.
 
+## October 13 required-item repairs
+
+Exact event mappings in `config/issuer_sources.json` provide official source
+links and documented drug/indication aliases. They never supply expected dates,
+cash balances, outcomes or verification statuses. Each source is fetched again
+and subjected to the same issuer, program, indication and claim checks. A map
+for another event cannot be used. For a clinical-data supplement, the FDA-signed
+letter can be paired with its FDA-approved label only when application number,
+supplement number and year match; the label supplies the full indication while
+the letter supplies the signed effective action date.
+
+Funded loan receipts, completed securities sales and `placement closed on`
+clauses are recognized without treating agreements, available facilities,
+quarter-end ATM totals or anticipated dates as exact closes. Discovery links
+retain the original expected closing date. A verified individual transaction
+still does not automatically verify its ordinal after the Phase 3 readout.
+
+When current USD Companyfacts are missing, a reviewed SEC interim statement
+layout may supply cash and operating flow. Company/CIK, reporting period,
+currency, current/prior column order, unit scale, signs and unique table/row
+matches must pass. Numeric values are always parsed from the freshly fetched
+source, never copied from configuration. Foreign-currency values remain outside
+the USD claim, and missing same-period operating flow remains unresolved.
+
+The Synergy registry row now uses SNYRQ/OTC while retaining CIK 0001562733;
+the live SEC identity check must independently confirm that ticker. Nuvation's
+abbreviated disease label is expanded to the FDA-label wording. These source
+repairs do not change probabilities, scores or trading eligibility.
+
 ## Checks by source
 
 | Source | Implemented checks and scope limits |
