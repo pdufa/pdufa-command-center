@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
+from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
 from gem_calibration_ui import render_gem_calibration
 
 FILES = (
@@ -20,6 +21,7 @@ FILES = (
     "step7_market_status.csv",
     "step7_pre_phase3_feed.csv",
     "post_phase3_discoveries.csv",
+    "phase3_announcements.csv",
 )
 STAGE_COLUMNS = {
     "Phase 3": (
@@ -45,6 +47,11 @@ def _saved_gem_scans(root, signature, pacific_day):
     # Source file signature, plus local calendar day, prevents a cached
     # "current" rating from surviving an updated feed or Pacific midnight.
     return build_gem_scans(root, as_of=pacific_day)
+
+
+@st.cache_data(ttl=120, show_spinner=False)
+def _discovery(root, signature, pacific_day):
+    return discover_phase3_results(root, as_of=pacific_day)
 
 
 def _gems_table(items):
@@ -161,6 +168,47 @@ def render_gem_scans(root="data"):
             "independent continuous SEC search. A blank Phase 3 GEM rank "
             "means some ranking gates remain incomplete."
         )
+    st.markdown("### BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2")
+    st.caption(
+        "The saved clinical #4 results-intake ledger includes posted trial "
+        "results and separately sourced issuer readout announcements. These "
+        "are **discovery leads**, NOT proof that primary endpoints succeeded. "
+        "Only the verified-success gate above can start confirmed GEM tracking."
+    )
+    try:
+        discovery, discovery_meta = _discovery(str(path), signature, day)
+    except (OSError, ValueError, TypeError, KeyError):
+        discovery, discovery_meta = [], {"status":"REVIEW_SOURCE_UNAVAILABLE", "source_rows":0}
+    d1, d2, d3 = st.columns(3)
+    d1.metric("Results for clinical review", len(discovery))
+    d2.metric("Saved source records", discovery_meta.get("source_rows", 0))
+    d3.metric("Ambiguous source identities", discovery_meta.get("rejected_ambiguous_identity", 0) +
+              discovery_meta.get("ambiguous_duplicates", 0))
+    st.caption(
+        "Discovery status: " + str(discovery_meta.get("status", "REVIEW")) +
+        ". Neither these records nor their published p-values automatically "
+        "promote a trial to GEM-qualified successful Phase 3."
+    )
+    with st.expander("REVIEW SOURCE-LINKED PHASE 3 RESULTS / ISSUER READOUTS", expanded=False):
+        if discovery:
+            source_rows = pd.DataFrame(discovery).reindex(columns=DISCOVERY_COLUMNS)
+            st.dataframe(source_rows.head(250), hide_index=True, use_container_width=True)
+            if len(source_rows) > 250:
+                st.caption(f"First 250 of {len(source_rows):,} saved review leads shown.")
+            st.download_button(
+                "EXPORT PHASE 3 DISCOVERY REVIEW QUEUE",
+                source_rows.to_csv(index=False).encode("utf-8"),
+                file_name=f"gem_phase3_discovery_review_{day:%Y%m%d}.csv",
+                mime="text/csv", key="gem_discovery_review_csv",
+            )
+        else:
+            st.info("No source-valid posted Phase 3 results or readout leads in the saved ledger.")
+        st.caption(
+            "Clinical #4 collector and nightly scans may be incomplete. "
+            "This list is restricted to the saved source ledger; issuer success, "
+            "effect size, safety, and exact program identity still require "
+            "independent clinical verification."
+        )
     cols = st.columns(3)
     for col, stage in zip(cols, STAGES):
         col.metric(stage + " qualified", counts[stage]["qualified"])
@@ -201,6 +249,23 @@ def render_gem_scans(root="data"):
         "workspace still has its legacy -7-day entry gate; its entry status "
         "is labeled separately in the GEM detail exports to avoid confusion."
     )
+    discrimination = gem_discrimination_audit(items, STAGES)
+    with st.expander("GEM RANKING QUALITY — TIES & EVIDENCE LIMITS", expanded=False):
+        st.dataframe(pd.DataFrame([
+            {
+                "Scan": stage, "Qualified": discrimination[stage]["qualified"],
+                "Distinct scores": discrimination[stage]["unique_scores"],
+                "Stocks tied on score": discrimination[stage]["tied_candidates"],
+                "Largest tie": discrimination[stage]["largest_tied_group"],
+                "Status": discrimination[stage]["status"].replace("_", " "),
+            } for stage in STAGES
+        ]), use_container_width=True, hide_index=True)
+        st.caption(
+            "A high number of tied scores indicates that strict evidence gates "
+            "leave little remaining ranking discrimination. It does NOT establish "
+            "which stock will appreciate the most. Historical GEM calibration "
+            "must be independently validated before adjusting weights."
+        )
     st.markdown("### GEM SCAN QUALIFIERS & FULL COLUMNS")
     tabs = st.tabs(list(STAGES))
     for tab, stage in zip(tabs, STAGES):

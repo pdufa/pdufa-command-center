@@ -11,6 +11,7 @@ from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 from step7_entry import GATES, safe_source
+from trade_window import LAST_ENTRY_MIN_DAYS
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 WEIGHTS = {
@@ -159,7 +160,7 @@ def score_candidate(event, financing, market, today, *,
         _value(event.get("pdufa_confirmation")).upper().startswith("VERIFIED")
         and safe_source(event.get("pdufa_evidence_url"))
         and pdufa_day is not None
-        and (pdufa_day - today).days > 7
+        and (pdufa_day - today).days >= LAST_ENTRY_MIN_DAYS
         and conflict in {"", "NO", "NONE", "FALSE", "0", "PASS"}
     )
     if pdufa_valid:

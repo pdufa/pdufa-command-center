@@ -34,7 +34,7 @@ BAR_FIELDS = (
 )
 ENTRY_METHODS = ("READOUT_BENCHMARK", "FIRST_FINANCING_BENCHMARK",
                  "SECOND_FINANCING", "POST_SECOND_FINANCING_BASE")
-EXIT_DAYS = (30, 14, 7)
+EXIT_DAYS = (30, 14, 7, 3)
 TRADE_FIELDS = (
     "event_key", "ticker", "nct_id", "entry_method", "exit_days_before_pdufa",
     "status", "reason", "entry_signal_date", "entry_date", "exit_target_date",

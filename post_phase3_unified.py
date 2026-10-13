@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 from step7_entry import GATES, safe_source
 from post_phase3_priority import WEIGHTS, score_candidate, assign_priority_ranks
 from post_phase3_review_priority import REVIEW_COMPONENTS, review_priority, assign_review_ranks
+from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 NCT = re.compile(r"^NCT\d{8}$")
@@ -32,7 +33,7 @@ COLUMNS = (
     "Exact event", "Phase 3 evidence", "Financing #2", "2nd Financing Completed",
     "Financing cycle (separate)",
     "PDUFA verification", "Days to PDUFA", "PDUFA date",
-    "Planned exit (-7 days)", "Next action", "Blockers",
+    "Planned exit (-3 days)", "Next action", "Blockers",
     "Registry source", "Phase 3 source", "Financing source",
     "PDUFA source", "As of Pacific",
 )
@@ -95,7 +96,7 @@ def _blank(lane, ticker, drug, indication, nct, today):
         **dict.fromkeys(WEIGHTS, 0),
         "PDUFA verification": "REVIEW — SOURCE MISSING",
         "Days to PDUFA": None, "PDUFA date": "",
-        "Planned exit (-7 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
+        "Planned exit (-3 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
         "Blockers": "No exact-event clinical/financing gate review",
         "Registry source": "", "Phase 3 source": "", "Financing source": "",
         "PDUFA source": "", "As of Pacific": today.isoformat(),
@@ -181,7 +182,7 @@ def build_queue(root, as_of=None):
         indication = clean(event.get("indication"))
         pdufa = parsed_date(event.get("pdufa_date"))
         days = (pdufa - today).days if pdufa else None
-        exit_date = (pdufa - timedelta(days=7)) if pdufa else None
+        exit_date = (pdufa - timedelta(days=EXIT_DAYS_BEFORE_PDUFA)) if pdufa else None
         outcome = clean(event.get("outcome")).upper()
         excluded = (outcome in RESOLVED or
                     clean(event.get("check_status")).upper().startswith("RESOLVED_") or
@@ -223,11 +224,11 @@ def build_queue(root, as_of=None):
             financing_cycle = "GREEN — FINANCING STARTED (AS OF REVIEW)"
         else:
             financing_cycle = "REVIEW — FINANCING UNVERIFIED"
-        green = (current_feed and funding and attested_ready and verified_date and
-                 clinical and not conflict and pdufa is not None and days > 7)
+        green = (current_feed and funding and attested_ready and second_financing_verified and stage_fresh and verified_date and
+                 clinical and not conflict and pdufa is not None and days >= LAST_ENTRY_MIN_DAYS)
         if excluded:
             status, action = "EXCLUDED — FDA DECIDED / DATE PASSED", "Historical only; do not open a position"
-        elif pdufa is not None and days <= 7:
+        elif pdufa is not None and days <= EXIT_DAYS_BEFORE_PDUFA:
             status, action = "RED WINDOW — NO NEW ENTRY", "Scheduled exit window; do not initiate a new trade"
         elif not current_feed:
             status, action = "REVIEW — SOURCE SNAPSHOT STALE", "Refresh saved source feed and financing checks"
@@ -256,7 +257,7 @@ def build_queue(root, as_of=None):
             "Entry qualification": status,
             "PDUFA verification": ("VERIFIED — SOURCE LINKED" if verified_date else "REVIEW — NOT VERIFIED"),
             "Days to PDUFA": days, "PDUFA date": pdufa.isoformat() if pdufa else "",
-            "Planned exit (-7 days)": exit_date.isoformat() if exit_date else "",
+            "Planned exit (-3 days)": exit_date.isoformat() if exit_date else "",
             "Next action": action,
             "Blockers": clean(funding.get("Gate reasons")) or (
                 "No exact-event financing review available" if not funding else clean(funding.get("Why blocked"))),

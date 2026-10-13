@@ -11,10 +11,11 @@ from datetime import date
 from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
+from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
-TRADE_EXIT_DAYS_BEFORE_PDUFA = 3  # calendar days; final new-entry day is PDUFA -4
-MIN_NEW_ENTRY_DAYS = TRADE_EXIT_DAYS_BEFORE_PDUFA + 1
+TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
+MIN_NEW_ENTRY_DAYS = LAST_ENTRY_MIN_DAYS
 # Stage-specific evidence-rubric weights, all totaling 100.
 WEIGHTS = {
     "Phase 3": {

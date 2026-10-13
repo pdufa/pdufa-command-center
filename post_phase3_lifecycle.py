@@ -6,6 +6,8 @@ Finance-stage colors and active-position lifecycle colors are separate.
 """
 from __future__ import annotations
 
+from trade_window import EXIT_DAYS_BEFORE_PDUFA
+
 import csv
 import io
 import math
@@ -26,7 +28,7 @@ DISPLAY_FIELDS = (
     "Trade ID", "Ticker", "Exact event", "NCT ID", "Trade lifecycle",
     "Monitoring alert", "Next action", "Entry date", "Entry price USD",
     "Shares", "PDUFA date at entry", "Current PDUFA date",
-    "Conservative PDUFA date", "Exit deadline (-7d)",
+    "Conservative PDUFA date", "Exit deadline (-3d)",
     "Days to exit deadline", "Exit date", "Exit price USD",
     "Last EOD session", "Last EOD close USD", "Marked or realized P/L %",
     "Marked or realized P/L USD", "Market quote source", "Exit reason",
@@ -178,7 +180,7 @@ def monitor_positions(journal, candidates, market_rows, as_of=None):
         # Use the earlier available date to avoid pushing a planned exit later.
         applicable = min([x for x in (entry_pdufa, current_verified_date) if x],
                          default=None)
-        deadline = applicable - timedelta(days=7) if applicable else None
+        deadline = applicable - timedelta(days=EXIT_DAYS_BEFORE_PDUFA) if applicable else None
         days_remaining = (deadline - today).days if deadline else None
         quote = quote_index.get(ticker)
         alerts = []
@@ -268,7 +270,7 @@ def monitor_positions(journal, candidates, market_rows, as_of=None):
             "Shares": shares, "PDUFA date at entry": _iso(entry_pdufa),
             "Current PDUFA date": _iso(current_pdufa),
             "Conservative PDUFA date": _iso(applicable),
-            "Exit deadline (-7d)": _iso(deadline),
+            "Exit deadline (-3d)": _iso(deadline),
             "Days to exit deadline": days_remaining,
             "Exit date": _iso(exit_date), "Exit price USD": exit_price,
             "Last EOD session": _iso(quote["session"]) if quote else "",
