@@ -13,6 +13,10 @@ on:
     - cron: '45 4 * * *'  # 8:45 PM PST fallback if no start
     - cron: '0 5 * * *'   # 9:00 PM PST fallback if no start
   workflow_dispatch:
+  # One-time bootstrap on an explicit scheduler repair (not ordinary app pushes).
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-nightly-pacific-start.yml']
 
 permissions:
   actions: write
@@ -39,6 +43,19 @@ jobs:
           if [ "$EVENT_NAME" = workflow_dispatch ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             echo "Authorized manual start"
+            exit 0
+          fi
+          if [ "$EVENT_NAME" = push ]; then
+            hour="$(TZ=America/Los_Angeles date +%H)"
+            minute="$(TZ=America/Los_Angeles date +%M)"
+            now_minutes=$((10#$hour * 60 + 10#$minute))
+            if [ "$now_minutes" -ge 1230 ] && [ "$now_minutes" -lt 1320 ]; then
+              echo "run=true" >> "$GITHUB_OUTPUT"
+              echo "Scheduler repair push during nightly window: guarded bootstrap"
+            else
+              echo "run=false" >> "$GITHUB_OUTPUT"
+              echo "Scheduler repair outside nightly window: no scan started"
+            fi
             exit 0
           fi
           offset="$(TZ=America/Los_Angeles date +%z)"
