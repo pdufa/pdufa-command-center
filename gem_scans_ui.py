@@ -118,6 +118,14 @@ def render_gem_scans(root="data"):
             "SOURCE SNAPSHOT STALE: no GEM score or rank may be issued until "
             "the saved clinical, financing and market evidence is refreshed."
         )
+    if not status.get("sec_financing_source_current"):
+        st.error(
+            "NO NEW TRADE ENTRY — SEC FINANCING RECHECK BLOCKED, PARTIAL "
+            "OR STALE. Phase 3 research/watch remains accessible, but "
+            "Post-Financing and PDUFA GEM qualification is withheld even "
+            "for historically attested second closings. Never infer a "
+            "fresh SEC clearance from an old VERIFIED label."
+        )
     st.caption(
         f"Saved data as of (Pacific): {status.get('as_of', 'unknown')} · "
         "Scan output derives from existing clinical, SEC, FDA and market "
