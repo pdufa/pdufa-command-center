@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
+from gem_calibration_ui import render_gem_calibration
 
 FILES = (
     "pdufa_candidates.csv",
@@ -144,6 +145,11 @@ def render_gem_scans(root="data"):
     else:
         st.info("No candidates match the selected GEMS view.")
 
+    st.caption(
+        "GEM entry cutoff is PDUFA -3. The original POST PHASE 3 Stage 1 "
+        "workspace still has its legacy -7-day entry gate; its entry status "
+        "is labeled separately in the GEM detail exports to avoid confusion."
+    )
     st.markdown("### GEM SCAN QUALIFIERS & FULL COLUMNS")
     tabs = st.tabs(list(STAGES))
     for tab, stage in zip(tabs, STAGES):
@@ -183,6 +189,7 @@ def render_gem_scans(root="data"):
                 stage + " GEM": "GEM rank (score)",
                 stage + " qualifier": "Qualification",
                 stage + " missing": "Missing qualifiers",
+                "Entry qualification": "Legacy Stage 1 entry gate (PDUFA -7)",
             })
             st.caption(
                 f"{len(table):,} rows · {counts[stage]['qualified']:,} "
@@ -200,6 +207,8 @@ def render_gem_scans(root="data"):
                 mime="text/csv",
                 key="gem_export_" + stage,
             )
+    st.divider()
+    render_gem_calibration(root)
     st.caption(
         "Qualification here means a source-supported research ranking only. "
         "Do not place trades from these scores alone: cash runway, valuation, "

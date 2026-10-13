@@ -13,6 +13,8 @@ from pathlib import Path
 from post_phase3_unified import build_queue, read_rows
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
+TRADE_EXIT_DAYS_BEFORE_PDUFA = 3  # calendar days; final new-entry day is PDUFA -4
+MIN_NEW_ENTRY_DAYS = TRADE_EXIT_DAYS_BEFORE_PDUFA + 1
 # Stage-specific evidence-rubric weights, all totaling 100.
 WEIGHTS = {
     "Phase 3": {
@@ -54,11 +56,12 @@ SCAN_QUALIFIERS = {
         "All Phase 3 scan qualifiers",
         "Two separate post-Phase-3 financings with exact-event SEC evidence",
         "Second financing independently marked closed; dilution gate verified",
-        "At least 15 days until PDUFA where a target date is recorded",
+        "Verified PDUFA date with at least 4 calendar days remaining (planned exit: PDUFA -3)",
     ),
     "PDUFA": (
         "All Phase 3 scan qualifiers",
-        "Source-verified future PDUFA date: 15–90 days away",
+        "Source-verified future PDUFA date: at least 4 days remaining; no arbitrary 90-day maximum",
+        "Second post-Phase-3 financing independently verified closed",
         "Financing and unresolved-dilution evidence gates verified",
         "Active unresolved FDA application (not decided, CRL or expired)",
     ),
@@ -98,14 +101,18 @@ def _event_map(root):
 
 def _reasons(record, event, stage, feed_current):
     reasons = []
+    days = record.get("Days to PDUFA")
     qualification = str(record.get("Entry qualification") or "")
     event_key = str(record.get("Exact event") or "").strip()
     if not feed_current or record.get("Evidence score /100") is None:
         reasons.append("Source snapshot stale or program evidence unrated")
     if not event_key or not event:
         reasons.append("Unique exact regulatory event not verified")
-    if qualification.startswith(("EXCLUDED", "RED WINDOW")):
-        reasons.append("FDA decision resolved or scheduled exit window reached")
+    if qualification.startswith("EXCLUDED") or (
+        qualification.startswith("RED WINDOW") and
+        days is not None and days <= TRADE_EXIT_DAYS_BEFORE_PDUFA
+    ):
+        reasons.append("FDA decision resolved or PDUFA -3 exit window reached")
     if event and str(event.get("conflict_flag") or "").upper() not in (
         "", "NO", "NONE", "FALSE", "0", "PASS"
     ):
@@ -117,20 +124,23 @@ def _reasons(record, event, stage, feed_current):
         reasons.append("Verified post-readout price base / normalized volume missing")
     if _number(record.get("Market activity /10")) < 4:
         reasons.append("Fresh sourced market quote unavailable")
-    days = record.get("Days to PDUFA")
     if stage == "Post-Financing":
+        if record.get("PDUFA verification") != "VERIFIED — SOURCE LINKED":
+            reasons.append("PDUFA date and planned -3 exit not source verified")
         if str(record.get("2nd Financing Completed") or "") != "YES — VERIFIED (HISTORICAL)":
             reasons.append("Second separate post-Phase-3 financing closure not verified")
         if _number(record.get("Financing evidence /20")) != 20:
             reasons.append("Exact-event SEC closing / unresolved-dilution clearance incomplete")
-        if days is not None and days < 15:
-            reasons.append("Inside 14-day planned exit window")
+        if days is None or days < MIN_NEW_ENTRY_DAYS:
+            reasons.append("No verified future trading window through PDUFA -3")
     if stage == "PDUFA":
         if (record.get("PDUFA verification") != "VERIFIED — SOURCE LINKED"
                 or _number(record.get("PDUFA evidence /15")) != 15):
             reasons.append("PDUFA date and FDA event not source-verified")
-        if days is None or not 15 <= days <= 90:
-            reasons.append("Outside 15–90 days before PDUFA")
+        if days is None or days < MIN_NEW_ENTRY_DAYS:
+            reasons.append("Inside PDUFA -3 exit boundary or PDUFA date missing")
+        if str(record.get("2nd Financing Completed") or "") != "YES — VERIFIED (HISTORICAL)":
+            reasons.append("Verified post-Phase-3 second financing required")
         if _number(record.get("Financing evidence /20")) != 20:
             reasons.append("Verified financing / dilution clearance missing")
     if stage in ("Post-Financing", "PDUFA") and event:
@@ -152,12 +162,20 @@ def build_gem_scans(root="data", as_of=None):
     results = []
     for record in records:
         item = dict(record)
+        # Stage 1 still enforces its older PDUFA -7 research entry cutoff.
+        # The GEM scanner independently verifies the FDA source for days 4–7,
+        # without bypassing actual clinical, financing or dilution gates.
+        days = record.get("Days to PDUFA")
+        if (days is not None and MIN_NEW_ENTRY_DAYS <= days <= 7 and
+                record.get("PDUFA verification") == "VERIFIED — SOURCE LINKED" and
+                str(record.get("Entry qualification") or "").startswith("RED WINDOW")):
+            item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
         for stage in STAGES:
-            reasons = _reasons(record, event, stage, source_status["feed_current"])
+            reasons = _reasons(item, event, stage, source_status["feed_current"])
             item[stage + " qualifier"] = ("QUALIFIED — RESEARCH ONLY" if not reasons else "REVIEW — NOT QUALIFIED")
             item[stage + " missing"] = "; ".join(reasons)
-            item[stage + " score"] = _score(record, stage) if not reasons else None
+            item[stage + " score"] = _score(item, stage) if not reasons else None
             item[stage + " rank"] = None
             item[stage + " GEM"] = "—"
         results.append(item)
@@ -185,5 +203,7 @@ def build_gem_scans(root="data", as_of=None):
         }
         for stage in STAGES
     }
-    details["rubric"] = "STAGE-EVIDENCE-GEMS-V1 — NOT APPROVAL OR RETURN FORECAST"
+    details["trade_exit_days_before_pdufa"] = TRADE_EXIT_DAYS_BEFORE_PDUFA
+    details["last_eligible_entry_days_before_pdufa"] = MIN_NEW_ENTRY_DAYS
+    details["rubric"] = "STAGE-EVIDENCE-GEMS-V2-D3 — NOT APPROVAL OR RETURN FORECAST"
     return results, details
