@@ -159,5 +159,78 @@ class ScanRepairs(unittest.TestCase):
         self.assertGreater(v.summary(result)["required_findings_unresolved"], 0)
         self.assertEqual(v.summary(result)["optional_findings_unavailable"], 3)
 
+    def test_exact_event_mapping_is_refetched_and_other_event_cannot_borrow_it(self):
+        mapped = {"ABC": {"events": {EVENT['event_key']: {"urls": [DOC]}}}}
+        source = b'Test Pharma announced TestDrug for lung cancer. FDA PDUFA target date is November 1, 2026.'
+        verifier = self.verifier(source, issuer_sources=mapped)
+        self.assertEqual(verifier.regulatory(EVENT)[0]['verification_status'], 'VERIFIED')
+        self.assertNotIn(DOC, verifier.references({**EVENT, 'event_key': 'ABC|OTHER'}))
+        wrong = self.verifier(source.replace(b'TestDrug', b'OtherDrug'), issuer_sources=mapped)
+        self.assertEqual(wrong.regulatory(EVENT)[0]['verification_status'], 'REVIEW_REQUIRED')
+
+    def test_completed_placement_and_funded_debt_draw_do_not_require_closed_before_noun(self):
+        placements = [
+            'The Private Placement closed on February 18, 2026. Purchasers purchased preferred stock for an aggregate price of $25.0 million.',
+            'On September 29, 2025, the Company received $50.0 million from the next available tranche under the Existing Loan Agreement.',
+            'On October 31, 2025, the Company sold pursuant to an underwritten public offering 28,452,381 shares of common stock for $4.20 per share.',
+        ]
+        for text, day in zip(placements, ['2026-02-18','2025-09-29','2025-10-31']):
+            self.assertTrue(v.documented_funded_transaction(text, day))
+            self.assertFalse(v.documented_funded_transaction(text, '2026-01-01'))
+        for text in [
+            'On February 18, 2026, the Company entered into an underwriting agreement for $25 million.',
+            'The private placement is expected to close on February 18, 2026 for $25 million.',
+            'On February 18, 2026, the Company received an undrawn credit facility commitment of $50 million.',
+            'As of February 18, 2026, cash includes $25 million of ATM sales during the quarter.',
+        ]:
+            self.assertFalse(v.documented_funded_transaction(text, '2026-02-18'))
+
+    def test_reviewed_financing_link_retains_the_exact_expected_date(self):
+        mapped = {'ABC': {'events': {EVENT['event_key']: {'financing_urls': [DOC]}}}}
+        event = {**EVENT, 'financing_close_date': '2026-02-18', 'financing_evidence_url': DOC+'/bad'}
+        source = b'The Private Placement closed on February 18, 2026. Purchasers purchased stock for $25 million.'
+        result = self.verifier(source, issuer_sources=mapped).financing(event)
+        self.assertEqual(result['verification_status'], 'VERIFIED')
+        self.assertEqual(result['source_url'], DOC)
+        self.assertEqual(self.verifier(source, issuer_sources=mapped).financing({**event,'financing_close_date':'2026-02-19'})['verification_status'],'REVIEW_REQUIRED')
+
+    def test_official_release_date_fields_and_parenthesized_datelines(self):
+        text = 'REDWOOD CITY, Calif., (July 29, 2026) – Test Pharma today reported its results.'
+        self.assertEqual(v.publication_dates(text,text), {'2026-07-29'})
+        html = '<div class="field--name-field-nir-news-date">July 13, 2026</div><p>PDUFA May 13, 2027</p>'
+        self.assertEqual(v.publication_dates(html,v.visible(html)), {'2026-07-13'})
+        self.assertEqual(v.publication_dates('','PDUFA May 13, 2027 -- Test Pharma'), set())
+
+    def test_approval_letter_can_only_use_same_application_and_supplement_label(self):
+        letter_url='https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/123456Orig1s004ltr.pdf'
+        label_url='https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/123456s004lbl.pdf'
+        event={**EVENT,'outcome':'APPROVED','decision_date':'2026-09-16'}
+        config={'ABC':{'events':{EVENT['event_key']:{'approval_label_url':label_url}}}}
+        verifier=self.verifier(b'TestDrug for lung cancer',issuer_sources=config)
+        text='NDA 123456/S-004 Test Pharma SUPPLEMENT APPROVAL TestDrug'
+        combined,label=verifier.approval_label_context(event,letter_url,text)
+        self.assertEqual(label,label_url)
+        self.assertIn('lung cancer',combined)
+        wrong=letter_url.replace('s004','s003')
+        self.assertEqual(verifier.approval_label_context(event,wrong,text),(text,''))
+        wrong=letter_url.replace('123456','654321')
+        self.assertEqual(verifier.approval_label_context(event,wrong,text),(text,''))
+
+    def test_usd_statement_fallback_rejects_foreign_currency_staleness_and_column_swap(self):
+        from scripts.financial_report_evidence import report_snapshot
+        spec={'start':'2026-01-01','end':'2026-06-30','scale':1000,'period_text':'period ended June 30',
+              'currency':'USD','currency_text':'US$','ordered_headers':['Amounts in $000','2026','2025'],
+              'cash':{'label':'Cash and cash equivalents at June 30','number_index':0},
+              'flow':{'label':'Net cash used in operating activities','number_index':0}}
+        html=('Test Pharma US$ period ended June 30 <table><tr><td>Amounts in $000</td><td>2026</td><td>2025</td></tr>'
+              '<tr><td>Cash and cash equivalents at June 30</td><td>100</td><td>50</td></tr>'
+              '<tr><td>Net cash used in operating activities</td><td>(25)</td><td>(10)</td></tr></table>')
+        data=report_snapshot(html,spec,date(2026,10,13))
+        self.assertEqual((data['cash'],data['flow']),(100000,-25000))
+        for raw,settings,as_of in [(html,{**spec,'currency':'EUR'},date(2026,10,13)),
+                                   (html,spec,date(2027,6,30)),
+                                   (html.replace('<td>2026</td><td>2025</td>','<td>2025</td><td>2026</td>'),spec,date(2026,10,13))]:
+            with self.assertRaises(ValueError):report_snapshot(raw,settings,as_of)
+
 
 if __name__ == "__main__": unittest.main()
