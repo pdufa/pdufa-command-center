@@ -116,6 +116,72 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert [r["Phase 3 rank"] for r in rows] == [1, 1, 3]
 
 
+    def test_track_immediately_after_verified_successful_phase3_without_financing(self):
+        row = sample(second=False, days=None)
+        row["Trading setup /20"] = 0
+        row["Evidence score /100"] = 30
+        event = {
+            row["Exact event"]: {
+                "phase3_status": "VERIFIED_SUCCESS",
+                "phase3_date": "2026-10-01",
+                "trial_evidence_url": "https://issuer.example/phase3-results",
+                "conflict_flag": "NONE",
+                "new_dilution_flag": "NO",
+                "outcome": "",
+            }
+        }
+        rows, meta = run([row], events=event)
+        assert rows[0]["Phase 3 tracking"] == "TRACKING — VERIFIED SUCCESSFUL PHASE 3"
+        assert rows[0]["Phase 3 result date (source)"] == "2026-10-01"
+        assert rows[0]["Financing watch"].startswith("SECOND FINANCING NOT VERIFIED")
+        assert rows[0]["Phase 3 rank"] is None  # Technical entry gates still missing.
+        assert rows[0]["Post-Financing rank"] is None
+        assert meta["phase3_tracking_count"] == 1
+        assert meta["phase3_tracking_before_second_financing"] == 1
+
+    def test_end_of_phase3_without_verified_success_cannot_start_tracking(self):
+        row = sample(second=False)
+        event = {
+            row["Exact event"]: {
+                "phase3_status": "RESULTS_REVIEW",
+                "phase3_date": "2026-10-01",
+                "trial_evidence_url": "https://issuer.example/topline",
+                "conflict_flag": "NONE",
+            }
+        }
+        rows, meta = run([row], events=event)
+        assert rows[0]["Phase 3 tracking"].startswith("AWAITING VERIFIED")
+        assert meta["phase3_tracking_count"] == 0
+
+    def test_verified_phase3_with_stale_source_stays_on_hold(self):
+        row = sample(second=False)
+        event = {
+            row["Exact event"]: {
+                "phase3_status": "VERIFIED_SUCCESS",
+                "phase3_date": "2026-10-01",
+                "trial_evidence_url": "https://issuer.example/phase3-results",
+                "conflict_flag": "NONE",
+            }
+        }
+        rows, meta = run([row], fresh=False, events=event)
+        assert rows[0]["Phase 3 tracking"] == "VERIFICATION HOLD — SOURCE STALE"
+        assert meta["phase3_tracking_count"] == 0
+
+    def test_phase3_tracking_never_resurrects_resolved_fda_event(self):
+        row = sample(second=False)
+        event = {
+            row["Exact event"]: {
+                "phase3_status": "VERIFIED_SUCCESS",
+                "phase3_date": "2026-10-01",
+                "trial_evidence_url": "https://issuer.example/phase3-results",
+                "conflict_flag": "NONE",
+                "outcome": "APPROVED",
+            }
+        }
+        rows, meta = run([row], events=event)
+        assert rows[0]["Phase 3 tracking"] == "CLOSED — FDA EVENT RESOLVED"
+        assert meta["phase3_tracking_count"] == 0
+
     def test_original_scans_and_protected_controls_are_preserved(self):
         source = (ROOT / "nightly_scan_dashboard.py").read_text(encoding="utf-8")
         assert "render_gem_scans()" in source
