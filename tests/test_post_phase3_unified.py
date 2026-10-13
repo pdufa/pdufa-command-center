@@ -36,6 +36,7 @@ def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENT
         "phase3_status": stage, "phase3_date": "2026-01-01",
         "trial_evidence_url": "https://issuer.example/results",
         "outcome": outcome, "conflict_flag": "NONE",
+        "new_dilution_flag": "NO",
     }])
     write_csv(tmp_path, "step7_financing_review.csv", [{
         "Exact financing event": EVENT,
@@ -45,6 +46,17 @@ def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENT
             f"{name}: PASS — reviewer confirmed" for name in GATES),
         "Source scan": "FINANCING_VERIFIED", "Recheck freshness": "RECENT",
         "Second source": "https://www.sec.gov/Archives/edgar/data/1/close",
+    }])
+    write_csv(tmp_path, "second_financing_status.csv", [{
+        "event_key": EVENT,
+        "second_financing_status": "CLOSED",
+        "second_financing_closed": "YES",
+        "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+        "first_financing_date": "2026-02-01",
+        "second_financing_date": "2026-03-01",
+        "first_financing_source": "https://www.sec.gov/Archives/edgar/data/1/first",
+        "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/second",
+        "verified_as_of": TODAY.isoformat(),
     }])
     write_csv(tmp_path, "step7_pre_phase3_feed.csv", [])
     return tmp_path
@@ -89,6 +101,7 @@ def test_unrated_lead_cannot_jump_a_verified_event(tmp_path):
 
 def test_second_financing_completed_requires_audited_exact_event(tmp_path):
     fixture(tmp_path)
+    write_csv(tmp_path, "second_financing_status.csv", [])
     rows, _ = build_queue(tmp_path, TODAY)
     assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
     closed = {
@@ -96,6 +109,9 @@ def test_second_financing_completed_requires_audited_exact_event(tmp_path):
         "second_financing_status": "CLOSED",
         "second_financing_closed": "YES",
         "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+        "first_financing_date": "2026-02-01",
+        "second_financing_date": "2026-03-01",
+        "first_financing_source": "https://www.sec.gov/Archives/edgar/data/1/first",
         "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
         "verified_as_of": TODAY.isoformat(),
     }
@@ -161,6 +177,29 @@ def test_unverified_external_readout_lead_gets_research_rank_not_trade_green(tmp
     assert lead["Research rank"] is not None
     assert lead["Research priority /100"] > 0
     assert status["research_ranked"] == 2
+
+
+def test_missing_dilution_clearance_fails_closed(tmp_path):
+    fixture(tmp_path)
+    rows = read_csv_for_test(tmp_path, "pdufa_candidates.csv")
+    rows[0]["new_dilution_flag"] = "UNKNOWN"
+    write_csv(tmp_path, "pdufa_candidates.csv", rows)
+    records, status = build_queue(tmp_path, TODAY)
+    assert status["green_count"] == 0
+    assert "Verify that current unresolved dilution" in records[0]["Next action"]
+
+
+def test_missing_exact_second_closing_fails_green(tmp_path):
+    fixture(tmp_path)
+    write_csv(tmp_path, "second_financing_status.csv", [])
+    rows, status = build_queue(tmp_path, TODAY)
+    assert status["green_count"] == 0
+    assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
+
+
+def read_csv_for_test(root, filename):
+    with (root / filename).open(newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
 
 
 def test_one_missing_gate_cannot_be_green(tmp_path):
@@ -285,6 +324,8 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_stale_sources_remove_rating_without_reclassifying_as_green,
             test_ranks_exist_for_review_candidates_with_no_strict_evidence,
             test_unverified_external_readout_lead_gets_research_rank_not_trade_green,
+            test_missing_dilution_clearance_fails_closed,
+            test_missing_exact_second_closing_fails_green,
             test_one_missing_gate_cannot_be_green,
             test_blocked_sec_does_not_allow_green,
             test_stale_snapshot_invalidates_green,
