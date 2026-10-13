@@ -64,12 +64,12 @@ class TradeBacktest(unittest.TestCase):
     def run_one(self, **kwargs):
         return run_backtest([self.event], self.bars, as_of=TODAY, **kwargs)
 
-    def test_valid_case_all_four_entries_three_exits(self):
+    def test_valid_case_all_four_entries_four_exits(self):
         trades, summary, audit = self.run_one()
         self.assertEqual(len(trades), len(ENTRY_METHODS)*len(EXIT_DAYS))
-        self.assertEqual(len(summary), 12)
+        self.assertEqual(len(summary), 16)
         self.assertEqual(audit["status"], "EXPLORATORY_ONLY_NOT_CALIBRATED")
-        self.assertEqual(audit["completed_scenarios"], 12)
+        self.assertEqual(audit["completed_scenarios"], 16)
         self.assertTrue(all(t["status"]=="COMPLETED" for t in trades))
         self.assertTrue(all(s["status"]=="EXPLORATORY_FEWER_THAN_30_TRADES"
                             for s in summary))
@@ -78,7 +78,7 @@ class TradeBacktest(unittest.TestCase):
     def test_paired_comparison_uses_only_full_matched_cohort(self):
         trades, _, _ = self.run_one()
         paired = paired_comparison(trades)
-        self.assertEqual(len(paired), 12)
+        self.assertEqual(len(paired), 16)
         self.assertTrue(all(r["matched_event_count"] == 1 for r in paired))
         self.assertTrue(all(r["status"] == "EXPLORATORY_FEWER_THAN_30_MATCHED" for r in paired))
         self.assertTrue(all(r["median_delta_vs_second_financing_pct_points"] == 0
@@ -90,7 +90,7 @@ class TradeBacktest(unittest.TestCase):
         self.assertTrue(all(r["matched_event_count"] == 0
                             for r in filtered if r["exit_days_before_pdufa"] == 7))
         self.assertTrue(all(r["matched_event_count"] == 1
-                            for r in filtered if r["exit_days_before_pdufa"] in (30,14)))
+                            for r in filtered if r["exit_days_before_pdufa"] in (30,14,3)))
 
     def test_next_session_open_after_signal(self):
         trades, _, _ = self.run_one()
@@ -133,10 +133,10 @@ class TradeBacktest(unittest.TestCase):
     def test_earlier_fda_action_censors_later_windows_not_profitable(self):
         self.event["early_fda_action_date"]="2026-06-10"
         trades, _, audit = self.run_one()
-        self.assertEqual(audit["early_action_censored_scenarios"], 8)
+        self.assertEqual(audit["early_action_censored_scenarios"], 12)
         self.assertEqual(audit["completed_scenarios"], 4)
         for row in trades:
-            if row["exit_days_before_pdufa"] in (14,7):
+            if row["exit_days_before_pdufa"] in (14,7,3):
                 self.assertEqual(row["status"], "CENSORED_EARLY_FDA_ACTION")
                 self.assertEqual(row["net_return_pct"], "")
             else:
