@@ -662,7 +662,10 @@ class Verifier:
                 return [self.result(event, "FDA", claim, "REVIEW_REQUIRED", "Primary-source discovery requires review: " + str(exc), expected=expected)]
             except Exception as exc:
                 return [self.result(event, "FDA", claim, "TECHNICAL_FAILURE", str(exc), expected=expected)]
-        for url in refs[:4]:
+        # A saved-link check stays small, but fresh SEC exhibit discovery
+        # may need more than four exhibits to reach the relevant event.
+        # Both paths remain strictly bounded and evidence-gated.
+        for url in refs[:4 if saved_refs else 12]:
             try:
                 _, plain = self.document(url)
                 if not drug_matches(event, plain) or not indication_matches(event, plain):
