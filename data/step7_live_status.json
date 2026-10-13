@@ -1,11 +1,11 @@
 {
-  "generated_at_utc": "2026-10-13T17:15:43+00:00",
+  "generated_at_utc": "2026-10-13T17:53:35+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
       "Collector status": "COMPLETE",
-      "Freshness": "RECENT",
-      "Health": "RECENT",
+      "Freshness": "STALE",
+      "Health": "STALE",
       "Last checked UTC": "2026-10-11T17:48:53.761656+00:00",
       "Details": "3105 exact ticker+NCT records; scope is not exhaustive",
       "Blocked records": 0
