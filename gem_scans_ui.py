@@ -246,6 +246,22 @@ def render_gem_scans(root="data"):
                                **report["historical_data_inventory"]}.items()
         ]
         st.dataframe(pd.DataFrame(inventory), use_container_width=True, hide_index=True)
+        checks = report["acceptance_checks"]
+        st.caption(
+            "100% acceptance checklist — every gate must pass independently; "
+            "a missing or unverified source counts as NOT MET."
+        )
+        st.dataframe(
+            pd.DataFrame([
+                {"Required acceptance gate": k.replace("_", " ").title(),
+                 "Result": "PASS" if passed else "NOT MET"}
+                for k, passed in checks.items()
+            ]), use_container_width=True, hide_index=True,
+        )
+        st.caption(
+            f"Verified requirements met: {sum(checks.values())}/{len(checks)}. "
+            "This is a requirements audit, not a prediction-accuracy score."
+        )
         st.download_button(
             "DOWNLOAD GEM READINESS AUDIT",
             json.dumps(report, indent=2, sort_keys=True).encode("utf-8"),
