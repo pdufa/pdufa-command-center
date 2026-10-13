@@ -620,7 +620,7 @@ class Verifier:
         try:
             _, plain = self.document(url)
             passages = [plain[max(0, m.start()-100):m.end()+350] for m in re.finditer(
-                r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
+                r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:previously[-\s]+announced\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
             if not any(close in dates(p) for p in passages):
                 completed_purchase = documented_preferred_share_purchase(plain, close)
                 if completed_purchase:
