@@ -427,7 +427,7 @@ def retryable_sec_failure(row):
             and bool(SEC_TRANSIENT_ERROR.search(str(row.get("reason", "")))))
 
 
-def retry_sec_claim(row, retry, *, sleeper=time.sleep):
+def retry_sec_claim(row, retry, *, sleeper=None):
     """Reopen one exact SEC claim without changing proof or review policy.
 
     Caller enforces the global per-run limit, and the standard SEC verifier
@@ -435,7 +435,7 @@ def retry_sec_claim(row, retry, *, sleeper=time.sleep):
     """
     if not retryable_sec_failure(row):
         return row, False
-    sleeper(2)
+    (sleeper or time.sleep)(2)
     updated = retry()
     if not isinstance(updated, dict) or any(
             updated.get(k) != row.get(k) for k in ("event_key", "ticker", "category", "claim")):
