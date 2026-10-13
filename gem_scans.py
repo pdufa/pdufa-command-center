@@ -125,6 +125,8 @@ def _reasons(record, event, stage, feed_current):
     if _number(record.get("Market activity /10")) < 4:
         reasons.append("Fresh sourced market quote unavailable")
     if stage == "Post-Financing":
+        if record.get("PDUFA verification") != "VERIFIED — SOURCE LINKED":
+            reasons.append("PDUFA date and planned -3 exit not source verified")
         if str(record.get("2nd Financing Completed") or "") != "YES — VERIFIED (HISTORICAL)":
             reasons.append("Second separate post-Phase-3 financing closure not verified")
         if _number(record.get("Financing evidence /20")) != 20:
@@ -173,7 +175,7 @@ def build_gem_scans(root="data", as_of=None):
             reasons = _reasons(item, event, stage, source_status["feed_current"])
             item[stage + " qualifier"] = ("QUALIFIED — RESEARCH ONLY" if not reasons else "REVIEW — NOT QUALIFIED")
             item[stage + " missing"] = "; ".join(reasons)
-            item[stage + " score"] = _score(record, stage) if not reasons else None
+            item[stage + " score"] = _score(item, stage) if not reasons else None
             item[stage + " rank"] = None
             item[stage + " GEM"] = "—"
         results.append(item)
