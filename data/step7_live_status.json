@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-13T16:02:45+00:00",
+  "generated_at_utc": "2026-10-13T16:33:35+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -13,8 +13,8 @@
     {
       "Source": "Phase 3 result intake",
       "Collector status": "COMPLETE",
-      "Freshness": "RECENT",
-      "Health": "RECENT",
+      "Freshness": "STALE",
+      "Health": "STALE",
       "Last checked UTC": "2026-10-11T16:18:43.276876+00:00",
       "Details": "2482 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
