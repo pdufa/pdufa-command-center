@@ -407,6 +407,46 @@ def documented_drawn_credit_tranche(text, closing_date):
     return ""
 
 
+
+# SEC may temporarily throttle or drop connections even after an HTTP retry.
+# One additional recheck of the exact claim is permitted, with a strict
+# per-run budget. Never retry a 403/401, missing user agent, actual evidence
+# disagreement, or unproven financing transaction.
+SEC_AUTO_RECOVERY_LIMIT = 8
+SEC_TRANSIENT_ERROR = re.compile(
+    r"(?i)^(?:HTTP_(?:408|429|500|502|503|504)|"
+    r"URLError|TimeoutError|ConnectionResetError|ConnectionAbortedError|"
+    r"ConnectionError|RemoteDisconnected)(?:\b|$)"
+)
+
+
+def retryable_sec_failure(row):
+    """True only for SEC transport failures, never for missing evidence."""
+    return (row.get("category") == "SEC"
+            and row.get("verification_status") == "TECHNICAL_FAILURE"
+            and bool(SEC_TRANSIENT_ERROR.search(str(row.get("reason", "")))))
+
+
+def retry_sec_claim(row, retry, *, sleeper=time.sleep):
+    """Reopen one exact SEC claim without changing proof or review policy.
+
+    Caller enforces the global per-run limit, and the standard SEC verifier
+    must re-fetch and re-validate issuer CIK, claim/date and source content.
+    """
+    if not retryable_sec_failure(row):
+        return row, False
+    sleeper(2)
+    updated = retry()
+    if not isinstance(updated, dict) or any(
+            updated.get(k) != row.get(k) for k in ("event_key", "ticker", "category", "claim")):
+        raise ValueError("Automatic SEC retry changed the claim identity")
+    if updated.get("verification_status") == "VERIFIED" and not (
+            updated.get("source_url") and re.fullmatch(
+                r"[a-f0-9]{64}", str(updated.get("source_sha256", "")))):
+        raise ValueError("Automatic SEC retry produced ungrounded verification")
+    return updated, True
+
+
 class Verifier:
     def __init__(self, companies, fetch=None, as_of=None, issuer_sources=None):
         self.companies = {r["ticker"].upper(): r for r in companies}
@@ -704,6 +744,10 @@ class Verifier:
             return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                 "Dated closing clause found; exact deal, proceeds and post-Phase-3 second-financing sequence still require adjudication",
                 url, close, close, " | ".join(passages))
+        except SourceUnavailable as exc:
+            # Preserve the actual HTTP/transport code so bounded SEC recovery
+            # can distinguish rate limits from permanent evidence gaps.
+            return self.result(event, "SEC", "FINANCING_CLOSURE", "TECHNICAL_FAILURE", str(exc), url, close)
         except Exception as exc:
             return self.result(event, "SEC", "FINANCING_CLOSURE", "TECHNICAL_FAILURE", type(exc).__name__, url, close)
 
@@ -936,14 +980,30 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
     financing_reviews = {r["event_key"]: r for r in read_rows(financing_path)} if financing_path.exists() else {}
     verifier = Verifier(companies, fetch=fetch, as_of=as_of, issuer_sources=issuer_sources)
     results = []
+    sec_auto_retries = 0
+    sec_auto_recovered = 0
+
+    def safe_sec_retry(row, recheck):
+        nonlocal sec_auto_retries, sec_auto_recovered
+        if sec_auto_retries >= SEC_AUTO_RECOVERY_LIMIT or not retryable_sec_failure(row):
+            return row
+        sec_auto_retries += 1
+        retry_result, attempted = retry_sec_claim(row, recheck)
+        if attempted and retry_result["verification_status"] != "TECHNICAL_FAILURE":
+            sec_auto_recovered += 1
+        return retry_result
+
     if source == "SEC":
-        results += [verifier.registry(company) for company in companies]
+        for company in companies:
+            first = verifier.registry(company)
+            results.append(safe_sec_retry(first, lambda company=company: verifier.registry(company)))
     for event in events:
         event = {**event, "_financing_review": financing_reviews.get(event["event_key"], {})}
         if source == "FDA":
             results += verifier.regulatory(event)
         elif source == "SEC":
-            results.append(verifier.financing(event))
+            first = verifier.financing(event)
+            results.append(safe_sec_retry(first, lambda event=event: verifier.financing(event)))
         elif source == "FINANCIAL":
             results += verifier.financial(event)
         elif source == "MARKET":
@@ -965,7 +1025,11 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
                   "companies_checked": registry_counts["VERIFIED"],
                   "sec_registry_status_counts": dict(registry_counts),
                   "sec_registry_output": path.name} if source == "SEC" else {})
-    return {**totals, **inventory, "verification_version": VERSION, "verification_run_id": run_identity(),
+    recovery = ({"sec_auto_retry_attempts": sec_auto_retries,
+                 "sec_auto_retry_cleared": sec_auto_recovered,
+                 "sec_auto_retry_limit": SEC_AUTO_RECOVERY_LIMIT}
+                if source == "SEC" else {})
+    return {**totals, **inventory, **recovery, "verification_version": VERSION, "verification_run_id": run_identity(),
             "verification_scope_sha256": scope_hash(events, companies),
             "verification_ledger": path.name, "verification_ledger_sha256": digest(path.read_bytes()),
             "verification_events_due": len(events), "verification_events_checked": len({r["event_key"] for r in results if not r["event_key"].startswith("REGISTRY:")}),
