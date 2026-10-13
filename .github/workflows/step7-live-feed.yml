@@ -9,10 +9,6 @@ on:
   # Called only after all nightly source scans finish; manual refresh remains available.
   workflow_call:
   workflow_dispatch:
-  # Materialize an up-to-date Pacific-day display cache even when no new
-  # upstream collector commit occurs overnight. This does NOT refresh evidence.
-  schedule:
-    - cron: '15 7,8,16 * * *'
 
 permissions:
   contents: write
