@@ -71,6 +71,7 @@ def _gems_table(items):
         '<div class="gems-scroll"><table class="gems-table">'
         '<thead><tr><th colspan="3">GEMS</th>'
         '<th rowspan="2">Ticker</th><th rowspan="2">Drug / program</th>'
+        '<th rowspan="2">Trade-entry rule</th>'
         '</tr><tr><th>Phase 3</th><th>Post-Financing</th><th>PDUFA</th>'
         '</tr></thead><tbody>'
     )
@@ -83,8 +84,10 @@ def _gems_table(items):
             cells.append(f"<td{cls}>{html.escape(value)}</td>")
         ticker = html.escape(str(item.get("Ticker") or ""))
         drug = html.escape(str(item.get("Drug") or ""))
+        gate = html.escape(str(item.get("GEM trade entry gate") or
+                               "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"))
         rows.append("<tr>" + "".join(cells) +
-                    f'<td class="ticker">{ticker}</td><td>{drug}</td></tr>')
+                    f'<td class="ticker">{ticker}</td><td>{drug}</td><td>{gate}</td></tr>')
     return style + header + "".join(rows) + "</tbody></table></div>"
 
 
@@ -94,7 +97,9 @@ def render_gem_scans(root="data"):
         "Three independent source-gated research rankings. Each entry shows "
         "#rank (evidence score /100) in its own classification. GEMS is nested "
         "over three columns immediately before Ticker. Research scores are "
-        "NOT FDA approval probabilities, return forecasts, or entry approval."
+        "NOT FDA approval probabilities, return forecasts, or entry approval. "
+        "ABSOLUTE RULE: watch Phase 3 before financing, but NEVER consider entry "
+        "until TWO DISTINCT post-Phase-3 financing closes are source-verified."
     )
     path = Path(root)
     signature = tuple(
@@ -150,7 +155,7 @@ def render_gem_scans(root="data"):
                 "Ticker", "Drug", "Indication", "NCT ID",
                 "Phase 3 result date (source)", "Phase 3 tracking",
                 "Financing watch", "Financing cycle (separate)",
-                "Phase 3 GEM", "Days to PDUFA", "Phase 3 source",
+                "GEM trade entry gate", "Phase 3 GEM", "Days to PDUFA", "Phase 3 source",
                 "Exact event",
             ]
             st.dataframe(
@@ -170,6 +175,12 @@ def render_gem_scans(root="data"):
             "independent continuous SEC search. A blank Phase 3 GEM rank "
             "means some ranking gates remain incomplete."
         )
+    st.warning(
+        "MANDATORY ENTRY RULE: Phase 3 and financing candidates are WATCH ONLY "
+        "until the second distinct post-readout financing has actually CLOSED "
+        "and its evidence has been verified for the exact program. An offering "
+        "announcement, pricing, active financing or Phase 3 GEM rank is NEVER an entry signal."
+    )
     st.markdown("### BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2")
     st.caption(
         "The saved clinical #4 results-intake ledger includes posted trial "
@@ -354,7 +365,8 @@ def render_gem_scans(root="data"):
             ))
             ordered = (
                 [stage + " GEM", "Ticker", "Drug", "Indication",
-                 "Phase 3 tracking", "Financing watch",
+                 "Phase 3 tracking", "Financing watch", "GEM trade entry gate",
+                 "Verified 2nd financing close date",
                  "Phase 3 result date (source)",
                  stage + " qualifier", stage + " missing"]
                 + list(STAGE_COLUMNS[stage])

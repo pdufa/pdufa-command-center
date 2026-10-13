@@ -57,6 +57,7 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[0]["Phase 3 GEM"] == "#1 (100)"
         assert rows[0]["Post-Financing GEM"] == "#1 (100)"
         assert rows[0]["PDUFA GEM"] == "#1 (100)"
+        assert rows[0]["GEM trade entry gate"].startswith("POST-CLOSE ENTRY REVIEW ELIGIBLE")
         assert rows[1]["Phase 3 GEM"] == "#2 (96)"
         assert rows[1]["Post-Financing GEM"] == "#2 (97)"
         assert rows[1]["PDUFA GEM"] == "#2 (96)"
@@ -66,6 +67,7 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
     def test_financing_is_only_scored_when_exact_second_closing_verified(self):
         rows, _ = run([sample(second=False)])
         assert rows[0]["Phase 3 rank"] == 1
+        assert rows[0]["GEM trade entry gate"] == "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
         assert rows[0]["Post-Financing score"] is None
         assert "Second separate" in rows[0]["Post-Financing missing"]
 
@@ -148,6 +150,7 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[0]["Financing watch"].startswith("SECOND FINANCING NOT VERIFIED")
         assert rows[0]["Phase 3 rank"] is None  # Technical entry gates still missing.
         assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["GEM trade entry gate"] == "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
         assert meta["phase3_tracking_count"] == 1
         assert meta["phase3_tracking_before_second_financing"] == 1
 

@@ -42,6 +42,13 @@ def render_post_phase3_stage1(root="data", include_positions=True, ticker=None):
         return
 
     st.markdown("### STAGE 1 — PHASE 3 → FINANCING #2 → GREEN ENTRY")
+    st.warning(
+        "ABSOLUTE TRADING RULE: research and rank a stock after verified "
+        "Phase 3 results, but remain WATCH ONLY until the SECOND DISTINCT "
+        "post-readout financing has actually CLOSED with exact-event SEC "
+        "evidence and a current review. Announced, priced, started or running "
+        "offerings never qualify as a second completed closing."
+    )
     st.caption(
         "Combined saved regulatory events, result-posted Phase 3 trial leads and "
         "independently sourced research leads. Exact event financing joins only. "
@@ -53,6 +60,11 @@ def render_post_phase3_stage1(root="data", include_positions=True, ticker=None):
     m3.metric("GREEN — attested gates", status["green_count"])
     m4.metric("Need source review", status["review_count"])
     m5.metric("Research leads", status["research_leads"])
+    st.caption(
+        "The separate 'Trade entry gate' column is authoritative for the "
+        "watch-only versus post-close manual review distinction. GREEN "
+        "remains a research gate, not a broker order."
+    )
     st.caption(
         f"Saved source date (Pacific): {status['as_of']} · "
         f"Financing review rows: {status['financing_events']} · "

@@ -19,6 +19,7 @@ from step7_entry import GATES, safe_source
 from post_phase3_priority import WEIGHTS, score_candidate, assign_priority_ranks
 from post_phase3_review_priority import REVIEW_COMPONENTS, review_priority, assign_review_ranks
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
+from gem_financing_gate import second_post_phase3_close, entry_status
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 NCT = re.compile(r"^NCT\d{8}$")
@@ -26,11 +27,13 @@ TICKER = re.compile(r"^[A-Z0-9.-]{1,15}$")
 RESOLVED = {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}
 COLUMNS = (
     "Research rank", "Ticker", "Research priority /100", "Entry qualification",
+    "Trade entry gate",
     "Evidence rank", "Evidence score /100", "Drug", "Indication", "NCT ID",
     "Research priority status", "Research priority limitations",
     "Rating status", "Rating coverage", *REVIEW_COMPONENTS,
     *WEIGHTS.keys(), "Rating limitations", "Source lane",
     "Exact event", "Phase 3 evidence", "Financing #2", "2nd Financing Completed",
+    "Verified 2nd financing close date",
     "Financing cycle (separate)",
     "PDUFA verification", "Days to PDUFA", "PDUFA date",
     "Planned exit (-3 days)", "Next action", "Blockers",
@@ -85,6 +88,8 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "2nd Financing Completed": "NOT VERIFIED",
         "Financing cycle (separate)": "REVIEW — FINANCING UNVERIFIED",
         "Entry qualification": "REVIEW — RESEARCH LEAD",
+        "Trade entry gate": "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED",
+        "Verified 2nd financing close date": "",
         "Research rank": None, "Research priority /100": 0,
         "Research priority status": "RESEARCH TRIAGE ONLY — NOT TRADE READY",
         "Research priority limitations": "Unmatched program; prioritize document collection",
@@ -212,10 +217,12 @@ def build_queue(root, as_of=None):
         stage_name = clean(fin_stage.get("second_financing_status")).upper()
         fin_review_date = parsed_date(fin_stage.get("verified_as_of"))
         stage_fresh = bool(fin_review_date and 0 <= (today - fin_review_date).days <= 7)
-        second_financing_verified = (stage_name in {"CLOSED", "FINISHED"} and
-                clean(fin_stage.get("second_financing_audit_status")) == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
-                clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
-                https_source(fin_stage.get("second_financing_source")))
+        # This absolute trade-entry prerequisite requires TWO chronological
+        # post-readout CLOSINGS, exact-program SEC evidence and a current review.
+        # A historical CLOSED badge by itself can NEVER clear the trade gate.
+        second_financing_verified, second_close_date, finance_hold_reason = (
+            second_post_phase3_close(key, event.get("phase3_date"), fin_stage, as_of=today)
+        )
         if second_financing_verified:
             financing_cycle = "RED — FINANCING CLOSED (HISTORICAL)"
         elif stage_fresh and stage_name in {"RUNNING", "IN_PROGRESS"}:
@@ -236,7 +243,9 @@ def build_queue(root, as_of=None):
             status, action = "GREEN — GATES ATTESTED", "Review evidence and execution plan before any trade"
         else:
             status = "REVIEW — ENTRY BLOCKED"
-            if not funding:
+            if not second_financing_verified:
+                action = "WATCH ONLY — independently verify two distinct post-Phase-3 financing closes"
+            elif not funding:
                 action = "Verify financing sequence for exact clinical program"
             elif not verified_date:
                 action = "Verify PDUFA date against dated primary source"
@@ -253,14 +262,21 @@ def build_queue(root, as_of=None):
                                  else "REVIEW — RESULT NOT ADJUDICATED"),
             "Financing #2": clean(funding.get("Historical second closing")) or "REVIEW — NOT DOCUMENTED",
             "2nd Financing Completed": ("YES — VERIFIED (HISTORICAL)" if second_financing_verified else "NOT VERIFIED"),
+            "Verified 2nd financing close date": second_close_date or "",
+            "Trade entry gate": entry_status(
+                closed=second_financing_verified, qualified=bool(green),
+                feed_current=current_feed, days_to_pdufa=days, excluded=excluded
+            ),
             "Financing cycle (separate)": financing_cycle,
             "Entry qualification": status,
             "PDUFA verification": ("VERIFIED — SOURCE LINKED" if verified_date else "REVIEW — NOT VERIFIED"),
             "Days to PDUFA": days, "PDUFA date": pdufa.isoformat() if pdufa else "",
             "Planned exit (-3 days)": exit_date.isoformat() if exit_date else "",
             "Next action": action,
-            "Blockers": clean(funding.get("Gate reasons")) or (
-                "No exact-event financing review available" if not funding else clean(funding.get("Why blocked"))),
+            "Blockers": (finance_hold_reason if not second_financing_verified
+                         else clean(funding.get("Gate reasons")) or (
+                             "No exact-event financing review available" if not funding
+                             else clean(funding.get("Why blocked")))),
             "Registry source": "https://clinicaltrials.gov/study/" + nct if NCT.fullmatch(nct) else "",
             "Phase 3 source": clean(event.get("trial_evidence_url")),
             "Financing source": clean(funding.get("Second source")),

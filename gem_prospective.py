@@ -18,6 +18,7 @@ COLUMNS = (
     "observation_id", "as_of_pacific", "ticker", "nct_id",
     "exact_event", "drug", "stage", "phase3_tracking",
     "financing_watch", "second_financing_verified_closed",
+    "trade_entry_gate", "second_financing_verified_close_date",
     "pdufa_date", "days_to_pdufa",
     "feed_current", "research_qualification", "gem_score", "gem_rank",
     "phase3_source", "financing_source", "pdufa_source",
@@ -62,6 +63,9 @@ def build_observations(items, status, *, as_of):
                 "stage": stage,
                 "phase3_tracking": str(item.get("Phase 3 tracking") or ""),
                 "financing_watch": str(item.get("Financing watch") or ""),
+                "trade_entry_gate": str(item.get("GEM trade entry gate") or ""),
+                "second_financing_verified_close_date": str(
+                    item.get("Verified 2nd financing close date") or ""),
                 "second_financing_verified_closed": (
                     "YES" if item.get("2nd Financing Completed") ==
                     "YES — VERIFIED (HISTORICAL)" else "NO"

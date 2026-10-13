@@ -51,6 +51,9 @@ def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENT
             "event_key": EVENT, "second_financing_status": "CLOSED",
             "second_financing_closed": "YES",
             "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+            "first_financing_date": "2026-02-02",
+            "first_financing_source": "https://www.sec.gov/Archives/edgar/data/1/first-close",
+            "second_financing_date": "2026-07-07",
             "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
             "verified_as_of": TODAY.isoformat(),
         }])
@@ -62,6 +65,8 @@ def test_green_only_with_current_verified_event(tmp_path):
     rows, status = build_queue(fixture(tmp_path), TODAY)
     assert len(rows) == 1
     assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
+    assert rows[0]["Trade entry gate"].startswith("POST-CLOSE ENTRY REVIEW ELIGIBLE")
+    assert rows[0]["Verified 2nd financing close date"] == "2026-07-07"
     assert status["green_count"] == 1
     assert rows[0]["Planned exit (-3 days)"] == (TODAY + timedelta(days=37)).isoformat()
 
@@ -99,18 +104,23 @@ def test_second_financing_completed_requires_audited_exact_event(tmp_path):
     fixture(tmp_path, closed=False)
     rows, _ = build_queue(tmp_path, TODAY)
     assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
+    assert rows[0]["Trade entry gate"] == "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
     assert rows[0]["Entry qualification"].startswith("REVIEW")
     closed = {
         "event_key": EVENT,
         "second_financing_status": "CLOSED",
         "second_financing_closed": "YES",
         "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+        "first_financing_date": "2026-02-02",
+        "first_financing_source": "https://www.sec.gov/Archives/edgar/data/1/first-close",
+        "second_financing_date": "2026-07-07",
         "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
         "verified_as_of": TODAY.isoformat(),
     }
     write_csv(tmp_path, "second_financing_status.csv", [closed])
     rows, _ = build_queue(tmp_path, TODAY)
     assert rows[0]["2nd Financing Completed"] == "YES — VERIFIED (HISTORICAL)"
+    assert rows[0]["Trade entry gate"].startswith("POST-CLOSE ENTRY REVIEW ELIGIBLE")
     write_csv(tmp_path, "second_financing_status.csv", [{**closed, "event_key": "ACME|OTHER"}])
     rows, _ = build_queue(tmp_path, TODAY)
     assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
