@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: gem-research-quality-audit
@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout current saved source snapshots
         uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -67,3 +69,18 @@ jobs:
           if state.get("stored_results") != saved:
               raise SystemExit("Phase 3 collector count disagrees with saved announcement rows")
           PY
+
+      - name: Publish validated Phase 3 discovery ledger to live dashboard repository
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/phase3_intake_status.json data/phase3_announcements.csv
+          if git diff --cached --quiet; then
+            echo "No new registry discovery observations to publish"
+            exit 0
+          fi
+          git commit -m "data: publish verified registry intake observations (research only)"
+          git pull --rebase origin main
+          git push origin HEAD:main
