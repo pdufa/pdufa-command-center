@@ -347,3 +347,8 @@ def render_nightly_scan_report():
                  key="nightly_reverify_selected"):
         _run_request("REVERIFY_PARTIAL", scan_choice, token)
     st.caption("All controls execute on GitHub Actions; a queued request is not a completed scan. The next published audit is the record of results.")
+    st.divider()
+    # Keep the existing read-only Gmail/GitHub audit accessible after the
+    # former top-level SCANS page was removed. The function applies its own
+    # server-side PIN check and never initiates clinical scans.
+    render_adhoc_error_check_controls()
