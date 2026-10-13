@@ -1341,6 +1341,39 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
             results += verifier.issuer(event)
         else:
             raise ValueError("Unsupported verification source")
+    # Public/Investor Relations closing leads are retained as provisional.
+    # Every SEC run re-opens issuer-matched SEC filings for the dated leads.
+    # This secondary ledger NEVER changes the official claim result or entry
+    # gate until the normal independent financing-sequence audit passes.
+    provisional_recheck = {}
+    if source == "SEC":
+        targets = data_dir / "finance_ir_sec_recheck_targets.csv"
+        if targets.is_file():
+            from provisional_financing_sec_recheck import recheck_leads
+            try:
+                renewed = recheck_leads(
+                    verifier, events, targets,
+                    out / "finance_ir_sec_recheck.csv"
+                )
+                provisional_recheck = {
+                    "public_ir_recheck_status": "COMPLETE",
+                    "public_ir_leads_checked_against_sec": len(renewed),
+                    "public_ir_sec_transactions_verified": sum(
+                        row["sec_recheck_status"] == "SEC_TRANSACTION_VERIFIED"
+                        for row in renewed
+                    ),
+                    "public_ir_sec_recheck_ledger": "finance_ir_sec_recheck.csv",
+                }
+            except Exception as exc:
+                # The full source audit must not report public-recheck success
+                # when even one input fails parsing, writing or validation.
+                provisional_recheck = {
+                    "public_ir_recheck_status": "FAILED",
+                    "public_ir_recheck_error": type(exc).__name__,
+                    "public_ir_leads_checked_against_sec": 0,
+                    "public_ir_sec_transactions_verified": 0,
+                }
+
     out.mkdir(parents=True, exist_ok=True)
     path = out / (source.lower() + "_verification.csv")
     with path.open("w", newline="", encoding="utf-8") as handle:
@@ -1358,7 +1391,7 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
                  "sec_auto_retry_cleared": sec_auto_recovered,
                  "sec_auto_retry_limit": SEC_AUTO_RECOVERY_LIMIT}
                 if source == "SEC" else {})
-    return {**totals, **inventory, **recovery, "verification_version": VERSION, "verification_run_id": run_identity(),
+    return {**totals, **inventory, **recovery, **provisional_recheck, "verification_version": VERSION, "verification_run_id": run_identity(),
             "verification_scope_sha256": scope_hash(events, companies),
             "verification_ledger": path.name, "verification_ledger_sha256": digest(path.read_bytes()),
             "verification_events_due": len(events), "verification_events_checked": len({r["event_key"] for r in results if not r["event_key"].startswith("REGISTRY:")}),
