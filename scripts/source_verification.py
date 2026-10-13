@@ -382,6 +382,49 @@ def documented_preferred_share_purchase(text, closing_date):
 
 
 
+
+def documented_released_final_tranche(text, closing_date):
+    """Verify a final tranche actually released at a dated SEC-documented close.
+
+    Restrict this to factual 'Closing releases final $X of $Y financing'
+    disclosures alongside a stated completed transaction. A planned asset
+    transfer or a future funding commitment alone is never funding proof.
+    """
+    expression = (
+        r"(?i)\bclosing\s+releases?\s+(?:the\s+)?final\s+"
+        r"\$\s*([\d,.]+)\s+(million|billion)\s+of\s+"
+        r"\$\s*([\d,.]+)\s+(million|billion)\s+financing\b"
+    )
+    for match in re.finditer(expression, text):
+        left = max(0, match.start() - 450)
+        right = match.end() + 650
+        passage = text[left:right]
+        if closing_date not in dates(passage):
+            continue
+        try:
+            amount = float(match.group(1).replace(",", ""))
+            overall = float(match.group(3).replace(",", ""))
+            scale = {"million": 1, "billion": 1000}
+            tranche_m = amount * scale[match.group(2).lower()]
+            total_m = overall * scale[match.group(4).lower()]
+        except (ValueError, KeyError):
+            continue
+        if not 0 < tranche_m <= total_m:
+            continue
+        if not re.search(
+                r"(?i)\b(?:announced\s+the\s+closing|"
+                r"has\s+closed|closes\s+(?:the\s+)?purchase|"
+                r"completed\s+(?:its\s+)?(?:restructuring|acquisition))\b",
+                passage):
+            continue
+        if re.search(r"(?i)\b(?:expected|anticipated|proposed|planned|"
+                     r"may|might|would|could)\s+(?:to\s+)?release\b",
+                     passage[max(0, match.start() - left - 100):match.end() - left + 40]):
+            continue
+        return passage
+    return ""
+
+
 def documented_drawn_credit_tranche(text, closing_date):
     """Verify a funded debt draw at a dated credit-facility closing only.
 
@@ -726,6 +769,11 @@ class Verifier:
                     return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
                         "Company-matched SEC filing confirms completed, dated preferred-share purchases and aggregate price; second post-Phase-3 financing order and dilution risk remain separate",
                         url, close, close, completed_purchase)
+                released = documented_released_final_tranche(plain, close)
+                if released:
+                    return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                        "Company-matched SEC exhibit documents a dated, completed transaction releasing the final financing tranche; only that tranche is verified, not the second post-Phase-3 financing sequence",
+                        url, close, close, released)
                 drawn = documented_drawn_credit_tranche(plain, close)
                 if drawn:
                     return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
