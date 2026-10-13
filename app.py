@@ -3239,10 +3239,12 @@ if page == "PDUFA":
     # Preserve existing Streamlit sessions after renaming the daily tab.
     if st.session_state.get("pdufa_subtab") == "PHASE 3 DAILY":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
+    if st.session_state.get("pdufa_subtab") == "SCORING TESTS":
+        st.session_state["pdufa_subtab"] = "SCANS"
     # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
     unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab, scoring_tests_tab = st.tabs(
-        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WATCHLIST / TRADING", "SCORING TESTS"],
+        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WATCHLIST / TRADING", "SCANS"],
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
