@@ -115,12 +115,17 @@ def render_gem_scan_block_status(report=None, run=None):
         if not report_recent(report):
             st.warning("GEMS published research report is stale or undated. "
                        "No stored ranking is a current entry signal.")
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns(5)
         c1.metric("GEMS source status", report.get("status", "UNVERIFIED"))
         clinical = report["clinical_registry"]
         c2.metric("Registry observations", _count(clinical.get("stored_results")))
-        c3.metric("Verified Phase 3 tracking", _count(report.get("verified_phase3_tracking")))
+        c3.metric("Phase 3 tracking", _count(report.get("verified_phase3_tracking")))
         c4.metric("Awaiting financing #2", _count(report.get("awaiting_second_financing")))
+        c5.metric("ALL ENTRY GATES", _count(report.get("strict_entry_gate_shortlist_count")))
+        st.caption("ALL ENTRY GATES is the tiny shortlist passing ALL three research"
+                   " categories, Stage 1 GREEN, independently verified second"
+                   " financing closure, no unresolved dilution and fresh sources."
+                   " It remains a manual due-diligence list, not a buy signal.")
         st.caption("Last audit " + str(report.get("generated_at_utc") or "unknown") +
                    " · action " + str(report.get("action") or "UNKNOWN") +
                    " · archive integrity " + str(report.get("artifact_integrity") or "NOT CHECKED") +
