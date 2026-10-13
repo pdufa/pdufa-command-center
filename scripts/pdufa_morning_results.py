@@ -27,7 +27,7 @@ def _int_or_none(value):
     return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
 
 
-def make_snapshot(clinical, source, *, now=None):
+def make_snapshot(clinical, source, *, gem=None, now=None):
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ValueError("Snapshot time must be timezone aware")
@@ -63,6 +63,14 @@ def make_snapshot(clinical, source, *, now=None):
         }
         for r in scans if isinstance(r, dict) and str(r.get("scan", "")) in {"2", "3", "4"}
     } if clinical_fresh else {}
+    gem = gem if isinstance(gem, dict) else {}
+    gem_time = timestamp(gem.get("generated_at_utc"))
+    gem_fresh = bool(gem.get("scan") == "GEM" and
+                     gem.get("trade_entry_authorized") is False and
+                     gem.get("status") in ("PARTIAL", "FAILED") and
+                     gem_time and cutoff_utc <= gem_time <= now)
+    gem_registry = gem.get("clinical_registry") if gem_fresh else {}
+    gem_registry = gem_registry if isinstance(gem_registry, dict) else {}
     cmp = source.get("comparison", {}) if source_fresh else {}
     if not isinstance(cmp, dict):
         cmp = {}
@@ -104,6 +112,17 @@ def make_snapshot(clinical, source, *, now=None):
             "sec_transactions_verified": _int_or_none(recheck.get("sec_transactions_verified")) if source_fresh else None,
             "source_run_url": source.get("latest_run_url") if source_fresh else None,
         },
+        "gem": {
+            "overnight_report_published": gem_fresh,
+            "status": gem.get("status") if gem_fresh else "PENDING_OR_STALE",
+            "collector_status": gem.get("collector_status") if gem_fresh else "NOT REPORTED",
+            "new_records": _int_or_none(gem_registry.get("new_records")) if gem_fresh else None,
+            "stored_results": _int_or_none(gem_registry.get("stored_results")) if gem_fresh else None,
+            "verified_phase3_tracking": _int_or_none(gem.get("verified_phase3_tracking")) if gem_fresh else None,
+            "awaiting_second_financing": _int_or_none(gem.get("awaiting_second_financing")) if gem_fresh else None,
+            "run_url": gem.get("run_url") if gem_fresh else None,
+            "all_source_trade_verification": "NOT VERIFIED",
+        },
         "trade_entry_eligible_from_morning_snapshot": False,
         "notice": "Read-only snapshot. SEC-verified individual closings do not prove two independent post-Phase-3 financings. A pending/stale component must not be represented as newly verified.",
     }
@@ -114,6 +133,7 @@ def main(argv=None):
     parser.add_argument("--clinical", type=Path, default=Path("data/nightly_scan_report.json"))
     parser.add_argument("--sources", type=Path, default=Path("data/pdufa_source_report.json"))
     parser.add_argument("--out", type=Path, default=Path("data/pdufa_am_6am_results.json"))
+    parser.add_argument("--gem", type=Path, default=Path("data/gem_scan_block_report.json"))
     args = parser.parse_args(argv)
     def read(path):
         try:
@@ -121,7 +141,7 @@ def main(argv=None):
             return obj if isinstance(obj, dict) else {}
         except (OSError, ValueError):
             return {}
-    result = make_snapshot(read(args.clinical), read(args.sources))
+    result = make_snapshot(read(args.clinical), read(args.sources), gem=read(args.gem))
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"snapshot_date_pacific": result["snapshot_date_pacific"],
