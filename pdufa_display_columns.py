@@ -269,9 +269,21 @@ def prepare_pdufa_grid(frame, *, view="UNIFIED", as_of=None):
         types.append(label)
     out["Score /100"] = pd.Series(scores, index=out.index, dtype="Float64")
     out["Score type"] = types
+    # Numeric component scores must not mix strings with ints in Streamlit/Arrow.
+    # Invalid or missing sourced scores remain blank, never a fabricated zero.
     for col in POST_SCORES + PRE_SCORES + PRE_PRIORITY_SCORES + POST_PRIORITY_SCORES:
         if col not in out:
-            out[col] = None
+            out[col] = pd.Series(pd.NA, index=out.index, dtype="Float64")
+        else:
+            limit = int(col.rsplit("/", 1)[1])
+            values = pd.to_numeric(out[col], errors="coerce")
+            out[col] = values.where(values.between(0, limit)).astype("Float64")
+    for col in ("Evidence score /100", "Pre-readout research score /100",
+                "Preliminary clinical score /100", "Review priority /100",
+                "Research priority /100"):
+        if col in out:
+            values = pd.to_numeric(out[col], errors="coerce")
+            out[col] = values.where(values.between(0, 100)).astype("Float64")
     return out[list(FRONT) + [col for col in out.columns if col not in FRONT]]
 
 
