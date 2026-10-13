@@ -277,6 +277,35 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(result["verification_status"], "REVIEW_REQUIRED")
         self.assertIn("second-financing sequence", result["reason"])
 
+    def test_sec_released_final_tranche_is_actual_funding_not_second_phase3(self):
+        event = {**EVENT, "financing_evidence_url": SEC_DOC,
+                 "financing_close_date": "2025-10-23"}
+        release = (
+            b"Test Pharma Closes Purchase of All Drug Assets. "
+            b"Closing releases final $2.5 million of $11 million financing "
+            b"led by existing investors. WOBURN, Mass., October 23, 2025 - "
+            b"Test Pharma today announced the closing of its restructuring "
+            b"and asset purchase agreement with its former parent company. "
+            b"The transaction was funded through an $11 million investment "
+            b"led by existing investors; $8.5 million was funded earlier."
+        )
+        row = self.verifier(release).financing(event)
+        self.assertEqual(row["verification_status"], "VERIFIED", row)
+        self.assertEqual(row["observed"], "2025-10-23")
+        self.assertIn("final financing tranche", row["reason"])
+        self.assertIn("not the second post-Phase-3 financing sequence", row["reason"])
+        self.assertEqual(len(row["source_sha256"]), 64)
+        self.assertTrue(verify.documented_released_final_tranche(release.decode(), "2025-10-23"))
+        for false_claim in (
+            release.replace(b"October 23, 2025", b"October 24, 2025"),
+            release.replace(b"Closing releases final", b"Closing may release final"),
+            release.replace(b"Closing releases final", b"Closing expects to release final"),
+            release.replace(b"final $2.5 million of $11 million", b"final $25 million of $11 million"),
+            release.replace(b"today announced the closing", b"today announced plans for"),
+        ):
+            self.assertNotEqual(
+                self.verifier(false_claim).financing(event)["verification_status"], "VERIFIED")
+
     def test_sec_dated_completed_preferred_share_purchase_is_a_closing_not_stage_two(self):
         event = {**EVENT, "financing_evidence_url": SEC_DOC,
                  "financing_close_date": "2026-07-01"}
