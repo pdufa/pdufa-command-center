@@ -12,6 +12,9 @@ on:
     - cron: '30 4 * * *'  # 8:30 PM PST
     - cron: '45 4 * * *'  # 8:45 PM PST fallback if no start
     - cron: '0 5 * * *'   # 9:00 PM PST fallback if no start
+    - cron: '15 4 * * *'  # 9:15 PM PDT publisher handoff watchdog
+    - cron: '15 5 * * *'  # 9:15 PM PST publisher handoff watchdog
+    - cron: '30 5 * * *'  # 9:30 PM PST second publisher watchdog
   workflow_dispatch:
   # One-time bootstrap on an explicit scheduler repair (not ordinary app pushes).
   push:
@@ -102,3 +105,58 @@ jobs:
             -f ref=main -f 'inputs[scan]=ALL'
           echo "Requested nightly clinical 2 -> 3 -> 4; report -> FDA -> SEC -> FINANCIAL -> MARKET -> ISSUER -> reconcile -> scoring -> error check -> repair."
           echo "Dispatch acceptance is not scan completion; check the actual downstream runs."
+
+      - name: Recover missing clinical report publishing handoff
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Only act after 9 PM Pacific; the completed clinical run must have
+          # had at least three minutes for its normal workflow_run trigger.
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/clinical-runs.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/runs?per_page=100" > "$RUNNER_TEMP/publisher-runs.json"
+          python - "$RUNNER_TEMP/clinical-runs.json" "$RUNNER_TEMP/publisher-runs.json" "$RUNNER_TEMP/publisher-source-id" <<'PY'
+          import json, sys
+          from datetime import datetime, timedelta, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          now = datetime.now(timezone.utc)
+          local = now.astimezone(ZoneInfo("America/Los_Angeles"))
+          if not (21 <= local.hour < 23):
+              print("Report handoff recovery disabled outside 9-11 PM Pacific")
+              raise SystemExit(0)
+          start = local.replace(hour=20, minute=30, second=0, microsecond=0).astimezone(timezone.utc)
+          def read(index):
+              with open(sys.argv[index], encoding="utf-8") as handle:
+                  return json.load(handle).get("workflow_runs", [])
+          def moment(value):
+              return datetime.fromisoformat(value.replace("Z", "+00:00"))
+          scans = [run for run in read(1) if run.get("event") == "workflow_dispatch"
+                   and run.get("created_at") and start <= moment(run["created_at"]) <= now]
+          if not scans:
+              print("No clinical run tonight; report recovery not dispatched")
+              raise SystemExit(0)
+          scan = max(scans, key=lambda run: run["created_at"])
+          if scan.get("status") != "completed" or scan.get("conclusion") != "success":
+              print("Clinical scan not fully successful; do not publish unverified report")
+              raise SystemExit(0)
+          completed = moment(scan["updated_at"])
+          if now - completed < timedelta(minutes=3):
+              print("Allowing the native workflow_run publisher to start")
+              raise SystemExit(0)
+          publishers = [run for run in read(2)
+                        if run.get("created_at") and moment(run["created_at"]) >= completed]
+          if publishers:
+              print("Report publisher already started after this clinical scan; no duplicate")
+              raise SystemExit(0)
+          Path(sys.argv[3]).write_text(str(scan["id"]), encoding="utf-8")
+          print("Missing completed-clinical report handoff: requesting publisher for run " + str(scan["id"]))
+          PY
+          if [ -s "$RUNNER_TEMP/publisher-source-id" ]; then
+            source_id="$(cat "$RUNNER_TEMP/publisher-source-id")"
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/dispatches" \
+              -f ref=main -f "inputs[source_run_id]=$source_id"
+            echo "Requested source-validated report publishing for clinical run $source_id"
+          fi
