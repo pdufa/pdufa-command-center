@@ -7,7 +7,11 @@ name: PDUFA Nightly 8:30 PM Pacific Start
 on:
   schedule:
     - cron: '30 3 * * *'  # 8:30 PM PDT
+    - cron: '45 3 * * *'  # 8:45 PM PDT fallback if no start
+    - cron: '0 4 * * *'   # 9:00 PM PDT fallback if no start
     - cron: '30 4 * * *'  # 8:30 PM PST
+    - cron: '45 4 * * *'  # 8:45 PM PST fallback if no start
+    - cron: '0 5 * * *'   # 9:00 PM PST fallback if no start
   workflow_dispatch:
 
 permissions:
@@ -38,8 +42,8 @@ jobs:
             exit 0
           fi
           offset="$(TZ=America/Los_Angeles date +%z)"
-          if { [ "$SCHEDULE_CRON" = '30 3 * * *' ] && [ "$offset" = -0700 ]; } ||
-             { [ "$SCHEDULE_CRON" = '30 4 * * *' ] && [ "$offset" = -0800 ]; }; then
+          if { { [ "$SCHEDULE_CRON" = '30 3 * * *' ] || [ "$SCHEDULE_CRON" = '45 3 * * *' ] || [ "$SCHEDULE_CRON" = '0 4 * * *' ]; } && [ "$offset" = -0700 ]; } ||
+             { { [ "$SCHEDULE_CRON" = '30 4 * * *' ] || [ "$SCHEDULE_CRON" = '45 4 * * *' ] || [ "$SCHEDULE_CRON" = '0 5 * * *' ]; } && [ "$offset" = -0800 ]; }; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             echo "Correct Pacific-night slot; offset $offset"
           else
@@ -53,6 +57,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # GitHub scheduled starts can be delayed or retried. Do not start a
+          # second nightly chain when a clinical workflow exists after 8:30 PM LA.
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/pdufa-clinical-runs.json"
+          if python - "$RUNNER_TEMP/pdufa-clinical-runs.json" <<'PY'
+          import json, sys
+          from datetime import datetime, timezone
+          from zoneinfo import ZoneInfo
+          now = datetime.now(timezone.utc)
+          start = now.astimezone(ZoneInfo("America/Los_Angeles")).replace(
+              hour=20, minute=30, second=0, microsecond=0).astimezone(timezone.utc)
+          with open(sys.argv[1], encoding="utf-8") as handle:
+              runs = json.load(handle).get("workflow_runs", [])
+          exists = any(
+              run.get("event") == "workflow_dispatch"
+              and start <= datetime.fromisoformat(run["created_at"].replace("Z", "+00:00")) <= now
+              for run in runs if run.get("created_at")
+          )
+          print("Nightly clinical scan already started today" if exists else "No nightly clinical run found since 8:30 PM Pacific")
+          raise SystemExit(0 if exists else 1)
+          PY
+          then
+            echo "No duplicate dispatch; nightly clinical workflow is already recorded."
+            exit 0
+          fi
           gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/dispatches" \
             -f ref=main -f 'inputs[scan]=ALL'
           echo "Requested nightly clinical 2 -> 3 -> 4; report -> FDA -> SEC -> FINANCIAL -> MARKET -> ISSUER -> reconcile -> scoring -> error check -> repair."
