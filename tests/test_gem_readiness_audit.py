@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from gem_readiness_audit import (
     build_readiness_report, clinical_collection_status, csv_inventory,
+    json_inventory, source_family_health,
 )
 from gem_prospective import build_observations, observations_csv
 from gem_scans import STAGES, build_gem_scans
@@ -60,6 +61,78 @@ class GemReadinessTests(unittest.TestCase):
                           report["blocking_or_review_flags"])
             self.assertEqual(report["verified_phase3_tracking"], 1)
             self.assertEqual(report["awaiting_second_financing"], 1)
+
+    def test_phase3_collector_count_mismatch_blocks_research_readiness(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root/"phase3_announcements.csv").write_text(
+                "ticker,nct_id\\nTEST,NCT01234567\\n", encoding="utf-8"
+            )
+            (root/"phase3_intake_status.json").write_text(json.dumps({
+                "status": "COMPLETE", "complete": True,
+                "finished_at": "2026-10-13T16:00:00Z",
+                "stored_results": 2482,
+            }), encoding="utf-8")
+            report = build_readiness_report(
+                root, [], {"feed_current": True}, [], {}, as_of=TODAY
+            )
+            self.assertFalse(report["phase3_saved_ledger_reconciled"])
+            self.assertEqual(report["phase3_saved_ledger_rows"], 1)
+            self.assertEqual(report["phase3_collector_reported_stored_rows"], 2482)
+            self.assertIn("PHASE3_RESULT_LEDGER_MISSING_OR_COUNT_MISMATCH",
+                          report["blocking_or_review_flags"])
+            self.assertFalse(report["all_acceptance_checks_passed"])
+            self.assertFalse(report["acceptance_checks"]["phase3_discovery_ledger_reconciled"])
+
+    def test_valid_source_row_counts_reconcile_without_certifying_return_edge(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root/"phase3_announcements.csv").write_text(
+                "ticker,nct_id\\nTEST,NCT01234567\\n", encoding="utf-8"
+            )
+            (root/"phase3_intake_status.json").write_text(json.dumps({
+                "status": "COMPLETE", "complete": True,
+                "finished_at": "2026-10-13T16:00:00Z",
+                "stored_results": 1,
+            }), encoding="utf-8")
+            report = build_readiness_report(
+                root, [], {"feed_current": True}, [], {}, as_of=TODAY
+            )
+            self.assertTrue(report["phase3_saved_ledger_reconciled"])
+            self.assertFalse(report["historical_return_edge_validated"])
+            self.assertFalse(report["all_acceptance_checks_passed"])
+            self.assertEqual(len(report["acceptance_checks"]), 9)
+
+    def test_stale_and_blocked_sec_checks_cannot_be_counted_as_healthy(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            status_path = root/"step7_live_status.json"
+            status_path.write_text(json.dumps({"source_checks":[{
+                "Source":"SEC financing recheck",
+                "Collector status":"COMPLETE",
+                "Freshness":"RECENT",
+                "Blocked records":38,
+                "Last checked UTC":"2026-10-13T16:00:00Z"
+            }]}), encoding="utf-8")
+            self.assertEqual(source_family_health(
+                status_path, "SEC financing recheck", TODAY)["status"],
+                "PARTIAL_STALE_OR_BLOCKED")
+            status_path.write_text(json.dumps({"source_checks":[{
+                "Source":"SEC financing recheck",
+                "Collector status":"COMPLETE",
+                "Freshness":"RECENT",
+                "Blocked records":0,
+                "Last checked UTC":"2026-10-13T16:00:00Z"
+            }]}), encoding="utf-8")
+            self.assertEqual(source_family_health(
+                status_path, "SEC financing recheck", TODAY)["status"],
+                "CURRENT_SOURCE_ONLY")
+
+    def test_invalid_json_input_is_not_marked_present(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/"step7_live_status.json"
+            path.write_text("{bad json", encoding="utf-8")
+            self.assertEqual(json_inventory(path)["state"], "INVALID_JSON")
 
     def test_csv_inventory_rejects_duplicate_header_and_malformed_rows(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -170,7 +243,13 @@ class GemReadinessTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         workflow = (root/".github/workflows/gem-research-quality.yml").read_text()
         self.assertIn("schedule:", workflow)
-        self.assertIn("contents: read", workflow)
+        self.assertIn("contents: write", workflow)
+        self.assertIn("--mode backfill", workflow)
+        self.assertIn("--mode daily", workflow)
+        self.assertIn("phase3_results_intake.py", workflow)
+        self.assertIn("stored_results", workflow)
+        self.assertIn("git push origin HEAD:main", workflow)
+        self.assertIn("if: success()", workflow)
         self.assertIn("actions/upload-artifact@", workflow)
         self.assertIn("run_gem_daily_readiness.py", workflow)
         self.assertIn("research-only", (root/"gem_prospective.py").read_text().lower())
