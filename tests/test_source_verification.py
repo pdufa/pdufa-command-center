@@ -179,6 +179,15 @@ class VerificationTests(unittest.TestCase):
         stamp = datetime(2026, 9, 1, tzinfo=timezone.utc).timestamp()
         self.assertEqual(self.verifier(market_payload(timestamp=stamp)).market(EVENT)[0]["verification_status"], "REVIEW_REQUIRED")
 
+    def test_undated_saved_price_drift_is_not_a_live_quote_conflict(self):
+        event = {**EVENT, "price_last": "250.00"}
+        row = self.verifier(market_payload()).market(event)[0]
+        self.assertEqual(row["verification_status"], "VERIFIED")
+        self.assertEqual(row["claim"], "PRICE_VOLUME")
+        self.assertEqual(row["expected"], "")
+        self.assertEqual(float(row["observed"]), 10.0)
+        self.assertEqual(json.loads(row["evidence"])["undated_saved_price_last"], "250.00")
+
     def test_market_empty_misaligned_or_nonfinite_data_cannot_verify(self):
         payload = market_payload()
         payload["chart"]["result"][0]["timestamp"] = []
