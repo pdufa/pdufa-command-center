@@ -58,6 +58,42 @@ def render_extended_source_report():
             st.dataframe(pd.DataFrame([{k:r.get(k) for k in ("ticker", "category", "claim", "verification_status", "reason")} for r in issues]), hide_index=True, use_container_width=True)
     if report.get("optional_findings_unavailable"):
         st.info("Some supplemental market fields are unavailable. Short shares are kept separate from short interest as a percentage of float; options IV and borrow data are not inferred from prices.")
+    # Research confirmations remain visible when the subsequent SEC lookup is
+    # blocked. Only a fresh, dated issuer-matched SEC document can verify one
+    # financing transaction; no row can approve the required second financing.
+    st.markdown("### FINANCING: INVESTOR RELATIONS → FRESH SEC RECHECK")
+    ir = report.get("public_ir_sec_recheck") or {}
+    ir_status = str(ir.get("status") or "NOT YET RUN")
+    ir_rows = ir.get("results", [])
+    st.caption(
+        "Research-only evidence. Google/Bing/Yahoo and company IR provide leads; "
+        "every SEC scan re-opens matching issuer filings. A verified SEC transaction "
+        "is NOT proof of two distinct closes after Phase 3, nor a trade signal."
+    )
+    a, b = st.columns(2)
+    a.metric("Public/IR closing leads rechecked", ir.get("leads_checked", 0))
+    b.metric("Individual SEC transactions confirmed", ir.get("sec_transactions_verified", 0))
+    if ir_status != "COMPLETE_RESEARCH_ONLY":
+        st.warning("Fresh IR → SEC confirmation results unavailable: " + ir_status +
+                   ". Earlier research leads remain provisional; do not infer a closing.")
+    if isinstance(ir_rows, list) and ir_rows:
+        display = pd.DataFrame(ir_rows).reindex(columns=[
+            "ticker", "event_key", "company_ir_status", "ir_close_date",
+            "transaction_type", "company_ir_url", "sec_recheck_status",
+            "sec_url", "checked_at_utc", "reason", "gem_entry_authorized",
+        ])
+        st.dataframe(display, use_container_width=True, hide_index=True)
+        st.download_button(
+            "EXPORT INVESTOR RELATIONS / SEC FINANCING RECHECK",
+            data=display.to_csv(index=False), mime="text/csv",
+            file_name="pdufa_financing_ir_sec_recheck.csv",
+            key="pdufa_financing_ir_sec_recheck_export",
+        )
+    st.link_button(
+        "REVIEW ALL 45 PUBLIC-SOURCE RESEARCH FINDINGS",
+        "https://github.com/" + REPO +
+        "/blob/main/reports/missing_sources/public_web_cross_check_2026-10-13.csv",
+    )
     run_url = report.get("latest_run_url", "")
     if run_url.startswith("https://github.com/" + REPO + "/actions/runs/"):
         st.link_button("VIEW SOURCE SCAN AND EVIDENCE", run_url)
