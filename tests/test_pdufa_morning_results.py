@@ -50,6 +50,32 @@ class MorningResultsTests(unittest.TestCase):
         self.assertEqual(result["readiness"], "SOURCE_VERIFICATION_PENDING_OR_STALE")
         self.assertFalse(result["sources"]["overnight_report_published"])
 
+    def test_fourth_gems_block_is_in_6am_result_only_when_same_night(self):
+        now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
+        gem = {
+            "scan": "GEM", "schema_version": 1, "status": "PARTIAL",
+            "trade_entry_authorized": False,
+            "generated_at_utc": "2026-10-14T08:30:00Z",
+            "collector_status": "COMPLETE — REGISTRY POSTINGS ONLY",
+            "clinical_registry": {"new_records": 9, "stored_results": 2482},
+            "verified_phase3_tracking": 4, "awaiting_second_financing": 3,
+            "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/123",
+        }
+        fresh = make_snapshot({}, {}, gem=gem, now=now)
+        self.assertEqual(fresh["gem"]["status"], "PARTIAL")
+        self.assertTrue(fresh["gem"]["overnight_report_published"])
+        self.assertEqual(fresh["gem"]["new_records"], 9)
+        self.assertEqual(fresh["gem"]["awaiting_second_financing"], 3)
+        self.assertEqual(fresh["gem"]["all_source_trade_verification"], "NOT VERIFIED")
+        self.assertFalse(fresh["trade_entry_eligible_from_morning_snapshot"])
+        old = make_snapshot({}, {}, gem={**gem, "generated_at_utc": "2026-10-13T20:10:00Z"}, now=now)
+        self.assertFalse(old["gem"]["overnight_report_published"])
+        self.assertEqual(old["gem"]["status"], "PENDING_OR_STALE")
+        self.assertIsNone(old["gem"]["new_records"])
+        self.assertIsNone(old["gem"]["stored_results"])
+        not_verified = make_snapshot({}, {}, gem={**gem, "trade_entry_authorized": True}, now=now)
+        self.assertFalse(not_verified["gem"]["overnight_report_published"])
+
     def test_dst_standard_time_keeps_six_am_reporting(self):
         now = datetime(2026, 12, 14, 14, 0, tzinfo=timezone.utc)
         clinical = {"updated_at_utc": "2026-12-14T08:00:00Z"}
