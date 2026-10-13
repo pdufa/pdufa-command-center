@@ -162,7 +162,7 @@ a:active,a:focus{color:#ff8a00 !important}
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
   }
-  /* Every page, including 11. PLAN, must be visible without a horizontal swipe. */
+  /* Every page must be visible without a horizontal swipe. */
   [data-testid="stRadio"] label{
     flex:0 0 auto !important;
     white-space:nowrap !important;
@@ -3199,7 +3199,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","7. SITE SCORE","6. RECHECK","9. PREDICTION ENGINE","11. PLAN"]
+nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","4. DECISION","5. SCANS","7. SITE SCORE","6. RECHECK","9. PREDICTION ENGINE"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -5378,96 +5378,6 @@ elif page == "6. RECHECK":
         "The legacy Daily PDUFA Recheck workflow is manual-only."
     )
 
-
-elif page == "11. PLAN":
-    st.markdown("## 11. PLAN — SYSTEM RULES & OPERATING RHYTHM")
-    st.caption(
-        "Editable operating and development plan for SwiftLook. Add, delete, reprioritize, or change rows as the platform evolves. "
-        "This plan is kept separate from prediction history so editing the roadmap cannot alter frozen FDA calls."
-    )
-
-    plan_path = Path("data/swiftlook_plan.csv")
-    plan_columns = ["order","area","task","cadence","priority","status","next_action","notes"]
-    try:
-        plan_df = pd.read_csv(plan_path, keep_default_na=False)
-    except Exception:
-        plan_df = pd.DataFrame(columns=plan_columns)
-
-    for col in plan_columns:
-        if col not in plan_df:
-            plan_df[col] = ""
-    plan_df = plan_df[plan_columns].copy()
-    plan_df["order"] = pd.to_numeric(plan_df["order"], errors="coerce")
-
-    p1,p2,p3,p4 = st.columns(4)
-    p1.metric("Plan Items", len(plan_df))
-    p2.metric("Active", int(plan_df["status"].astype(str).str.upper().eq("ACTIVE").sum()))
-    p3.metric("Next", int(plan_df["status"].astype(str).str.upper().eq("NEXT").sum()))
-    p4.metric("Done", int(plan_df["status"].astype(str).str.upper().eq("DONE").sum()))
-
-    st.markdown("### Edit plan")
-    edited_plan = grouped_editor(
-        plan_df,
-        use_container_width=True,
-        hide_index=True,
-        num_rows="dynamic",
-        key="swiftlook_plan_editor",
-        column_config={
-            "order": st.column_config.NumberColumn("Order", min_value=1, step=1),
-            "area": st.column_config.TextColumn("Area"),
-            "task": st.column_config.TextColumn("Task", width="large"),
-            "cadence": st.column_config.TextColumn("Cadence"),
-            "priority": st.column_config.SelectboxColumn(
-                "Priority", options=["HIGH","MEDIUM","LOW"], required=False
-            ),
-            "status": st.column_config.SelectboxColumn(
-                "Status", options=["ACTIVE","NEXT","PLANNED","HOLD","DONE"], required=False
-            ),
-            "next_action": st.column_config.TextColumn("Next Action", width="large"),
-            "notes": st.column_config.TextColumn("Notes", width="large"),
-        },
-    )
-
-    save_col, download_col = st.columns([1,1])
-    with save_col:
-        if st.button("SAVE PLAN CHANGES", use_container_width=True, key="save_swiftlook_plan"):
-            try:
-                saved = edited_plan.copy()
-                for col in plan_columns:
-                    if col not in saved:
-                        saved[col] = ""
-                saved = saved[plan_columns]
-                saved["order"] = pd.to_numeric(saved["order"], errors="coerce")
-                saved = saved.sort_values("order", na_position="last").reset_index(drop=True)
-                saved.to_csv(plan_path, index=False)
-                st.success("SwiftLook plan saved in the running app.")
-            except Exception as exc:
-                st.error(f"Plan save failed: {exc}")
-
-    with download_col:
-        st.download_button(
-            "DOWNLOAD PLAN BACKUP (.CSV)",
-            data=edited_plan.to_csv(index=False).encode("utf-8"),
-            file_name="swiftlook_plan.csv",
-            mime="text/csv",
-            use_container_width=True,
-            key="download_swiftlook_plan",
-        )
-
-    st.info(
-        "The repository copy is the durable baseline. In-app saves update the running Streamlit filesystem; "
-        "a Streamlit restart/redeploy can restore the repository version, so use the CSV backup for any important manual edits."
-    )
-
-    st.markdown("### Operating rhythm")
-    rhythm = pd.DataFrame([
-        {"When":"Daily · 5:15 AM Pacific","Purpose":"New-company/PDUFA discovery + tracked-event recheck + Strict/Broad refresh"},
-        {"When":"Sunday · 4:00 AM Pacific","Purpose":"Deep review of every PDUFA due in the next 7 days"},
-        {"When":"1st of month · 4:30 AM Pacific","Purpose":"Full universe reconciliation + catch-up scan + full recheck"},
-        {"When":"Material event","Purpose":"Reassess FDA evidence and create a new prediction version when warranted"},
-        {"When":"FDA decision","Purpose":"Score frozen prediction as MATCH or MISS without rewriting history"},
-    ])
-    grouped_dataframe(rhythm, use_container_width=True, hide_index=True)
 
 
 elif page == "4. DECISION":
