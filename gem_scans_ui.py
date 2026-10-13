@@ -387,15 +387,56 @@ def render_gem_scans(root="data"):
         col.metric(stage + " qualified", counts[stage]["qualified"])
         col.caption(f"{counts[stage]['review']:,} require review")
 
+    strict = [
+        item for item in items if item.get("GEM strict shortlist rank") is not None
+    ]
+    st.markdown("### 💎 THE FEW GEMS — ALL MANDATORY ENTRY GATES")
+    st.metric("All mandatory entry gates met", len(strict))
+    st.caption(
+        "STRICT INTERSECTION: verified successful Phase 3 and clinical/safety "
+        "requirements, confirmed price base and normalized volume, both separate "
+        "post-readout financing closings independently attested with SEC sources, "
+        "no unresolved dilution, fresh SEC and market data, confirmed future PDUFA "
+        "and at least 4 days before decision. All three GEM stages must qualify "
+        "and Stage 1 must be GREEN. PASS means manual research/entry review ONLY: "
+        "not an order, return prediction or guarantee of approval."
+    )
+    if not strict:
+        st.warning(
+            "NO STOCK currently passes every mandatory GEM entry gate. "
+            "Watchlist remains research only; financing announcements, a "
+            "single-stage rank or inaccessible SEC evidence never qualify."
+        )
+    else:
+        shortlisted = sorted(strict, key=lambda row: row["GEM strict shortlist rank"])
+        shortlist_columns = [
+            "GEM strict shortlist rank", "Ticker", "Drug", "Indication",
+            "Phase 3 GEM", "Post-Financing GEM", "PDUFA GEM",
+            "Verified 2nd financing close date", "Days to PDUFA",
+            "PDUFA date", "Planned exit (-3 days)",
+            "GEM ALL ENTRY GATES", "GEM trade entry gate", "Exact event",
+            "Phase 3 source", "Financing source", "PDUFA source",
+        ]
+        strict_table = pd.DataFrame(shortlisted).reindex(columns=shortlist_columns)
+        st.dataframe(strict_table.head(25), use_container_width=True, hide_index=True)
+        st.download_button(
+            "EXPORT STRICT ALL-GATE GEMS",
+            strict_table.to_csv(index=False).encode("utf-8"),
+            file_name=f"gem_strict_all_gates_{day:%Y%m%d}.csv",
+            mime="text/csv", key="gem_strict_shortlist_export",
+        )
     mode = st.radio(
-        "GEMS rows", ("All candidates, including review", "Qualified in any classification"),
+        "GEMS research view",
+        ("All mandatory entry gates passed", "Qualified in any research stage",
+         "All candidates, including watch/review"),
         horizontal=True, key="gem_scan_row_mode",
     )
     eligible = [
         item for item in items
         if any(item[stage + " rank"] is not None for stage in STAGES)
     ]
-    shown = eligible if mode.startswith("Qualified") else items
+    shown = (strict if mode.startswith("All mandatory") else
+             eligible if mode.startswith("Qualified in any") else items)
     shown = sorted(
         shown,
         key=lambda r: (
@@ -407,8 +448,8 @@ def render_gem_scans(root="data"):
     )
     if not eligible:
         st.info(
-            "No currently verified GEM qualifiers pass all requirements. "
-            "Research candidates remain below for evidence review; no ranks are invented."
+            "No candidates currently qualify in any single research ranking. "
+            "Unqualified watchlist rows remain available for evidence review."
         )
     if shown:
         st.markdown(_gems_table(shown[:75]), unsafe_allow_html=True)
@@ -468,6 +509,7 @@ def render_gem_scans(root="data"):
             ))
             ordered = (
                 [stage + " GEM", "Ticker", "Drug", "Indication",
+                 "GEM ALL ENTRY GATES", "GEM strict shortlist rank",
                  "Phase 3 tracking", "Financing watch", "GEM trade entry gate",
                  "Verified 2nd financing close date",
                  "Phase 3 result date (source)",
