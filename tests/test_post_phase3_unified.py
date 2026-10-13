@@ -26,7 +26,13 @@ def write_csv(root, name, rows):
 
 def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENTRY READY — ATTESTED EVIDENCE / NOT INDEPENDENTLY AUDITED", closed=True):
     (tmp_path / "step7_live_status.json").write_text(json.dumps(
-        {"generated_at_utc": "2026-10-11T14:13:50+00:00"}), encoding="utf-8")
+        {"generated_at_utc": "2026-10-11T14:13:50+00:00",
+         "source_checks": [{
+             "Source": "SEC financing recheck",
+             "Collector status": "COMPLETE", "Freshness": "RECENT",
+             "Health": "RECENT", "Blocked records": 0,
+             "Last checked UTC": "2026-10-11T14:13:50+00:00",
+         }]}), encoding="utf-8")
     write_csv(tmp_path, "pdufa_candidates.csv", [{
         "event_key": EVENT, "ticker": "ACME", "drug": "Drug A",
         "indication": "Disease A", "nct_id": "NCT01234567",
@@ -229,6 +235,25 @@ def test_four_days_remaining_is_eligible_when_financing_verified(tmp_path):
     assert status["green_count"] == 1
 
 
+def test_sec_blocked_cannot_be_green_even_if_second_financing_closed(tmp_path):
+    fixture(tmp_path)
+    (tmp_path / "step7_live_status.json").write_text(json.dumps({
+        "generated_at_utc": "2026-10-11T14:13:50+00:00",
+        "source_checks": [{
+            "Source": "SEC financing recheck",
+            "Collector status": "PARTIAL", "Freshness": "STALE",
+            "Health": "BLOCKED / PARTIAL", "Blocked records": 38,
+            "Last checked UTC": "2026-10-05T14:37:07Z",
+        }]
+    }), encoding="utf-8")
+    rows, status = build_queue(tmp_path, TODAY)
+    assert status["sec_financing_source_current"] is False
+    assert rows[0]["2nd Financing Completed"] == "YES — VERIFIED (HISTORICAL)"
+    assert rows[0]["Entry qualification"] == "REVIEW — SEC FINANCING RECHECK HOLD"
+    assert rows[0]["Trade entry gate"] == "HOLD — STALE SOURCE EVIDENCE"
+    assert status["green_count"] == 0
+
+
 def test_unverified_second_financing_cannot_be_green(tmp_path):
     rows, status = build_queue(fixture(tmp_path, closed=False), TODAY)
     assert rows[0]["Entry qualification"].startswith("REVIEW")
@@ -331,6 +356,7 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_stale_snapshot_invalidates_green,
             test_no_new_entry_at_pdufa_minus_three,
             test_four_days_remaining_is_eligible_when_financing_verified,
+            test_sec_blocked_cannot_be_green_even_if_second_financing_closed,
             test_unverified_second_financing_cannot_be_green,
             test_old_second_financing_audit_cannot_be_green,
             test_resolved_event_is_not_eligible,
