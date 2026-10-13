@@ -28,7 +28,7 @@ async function appFrame(page){
     });
     const page = await browser.newPage({viewport:{width:1366,height:900}});
     await page.goto(URL,{waitUntil:"domcontentloaded",timeout:60000});
-    const deadline = Date.now()+145000;
+    const deadline = Date.now()+280000; // allow Streamlit Cloud deployment and first-run boot
     let frame=null;
     while(Date.now()<deadline){
       frame=await appFrame(page);
@@ -39,10 +39,30 @@ async function appFrame(page){
       throw Error("PDUFA SCANS subtab did not render");
     await frame.getByRole("tab",{name:"SCANS",exact:true}).click({timeout:15000});
     let scanBody = "", buttons = 0, links=0, pin=0, fallback=0;
+    let lastReload = Date.now();
     while(Date.now()<deadline){
       frame=await appFrame(page);
       if(!frame){await sleep(1000);continue;}
       scanBody=await frame.locator("body").innerText({timeout:8000});
+      // Cloud may temporarily serve an older app revision after GitHub push.
+      // Reload to pick up deployment; do not suppress a genuine absence.
+      if(Date.now()-lastReload>45000 && !scanBody.includes("AD HOC — GMAIL + GITHUB ERROR CHECK")){
+        await page.reload({waitUntil:"domcontentloaded",timeout:60000});
+        frame=null;
+        let selected=false;
+        for(let attempt=0;attempt<20;attempt++){
+          frame=await appFrame(page);
+          if(frame && await frame.getByRole("tab",{name:"SCANS",exact:true}).count()){
+            await frame.getByRole("tab",{name:"SCANS",exact:true}).click({timeout:12000});
+            selected=true;
+            break;
+          }
+          await sleep(1000);
+        }
+        if(!selected)throw Error("SCANS tab missing after refreshed Cloud deployment");
+        lastReload=Date.now();
+        continue;
+      }
       if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(scanBody))
         throw Error("Streamlit application exception: "+scanBody.slice(-650));
       buttons=await frame.getByRole("button",{name:"▶ RUN AD HOC GMAIL + GITHUB ERROR CHECK",exact:true}).count();
@@ -53,6 +73,14 @@ async function appFrame(page){
          && ((buttons && links && pin) || (fallback && scanBody.includes("One-click dispatch is not configured"))))break;
       await sleep(1250);
     }
+    result.liveSnapshot={
+      selectedTab:await frame.getByRole("tab",{name:"SCANS",exact:true}).getAttribute("aria-selected"),
+      nightlyReportVisible:scanBody.includes("NIGHTLY SCAN REPORT"),
+      adHocHeadingVisible:scanBody.includes("AD HOC — GMAIL + GITHUB ERROR CHECK"),
+      cloudLoading:scanBody.includes("Please wait...") || scanBody.includes("Your app is in the oven"),
+      buttonCount:buttons,linkCount:links,pinLabelCount:pin,fallbackCount:fallback,
+      visibleBodyEnding:scanBody.slice(-1600)
+    };
     result.mode = buttons === 1 && links > 0 && pin > 0
       ? "DIRECT_PIN_GATED"
       : fallback === 1 && scanBody.includes("One-click dispatch is not configured")
