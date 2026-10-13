@@ -1,0 +1,111 @@
+name: PDUFA 6 AM Pacific Morning Results
+
+# Read-only publication of the PREVIOUS NIGHT'S saved scan results.
+# No new Phase 3, FDA, SEC, market, or finance collection is triggered.
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 6:00 AM PDT
+    - cron: '15 13 * * *'  # 6:15 AM PDT backup
+    - cron: '0 14 * * *'   # 6:00 AM PST
+    - cron: '15 14 * * *'  # 6:15 AM PST backup
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-am-6am-pacific-report
+  cancel-in-progress: false
+
+jobs:
+  morning-report:
+    name: Publish 6 AM Pacific report to SCANS
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check scheduled Pacific morning slot
+        id: time
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          CRON_SLOT: ${{ github.event.schedule }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          local_hour="$(TZ=America/Los_Angeles date +%H)"
+          local_min="$(TZ=America/Los_Angeles date +%M)"
+          offset="$(TZ=America/Los_Angeles date +%z)"
+          if [ "$local_hour" != "06" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Outside 6:00-6:59 AM Pacific; delayed cron cannot publish as on-time."
+            exit 0
+          fi
+          if { { [ "$CRON_SLOT" = '0 13 * * *' ] || [ "$CRON_SLOT" = '15 13 * * *' ]; } && [ "$offset" = "-0700" ]; } || \
+             { { [ "$CRON_SLOT" = '0 14 * * *' ] || [ "$CRON_SLOT" = '15 14 * * *' ]; } && [ "$offset" = "-0800" ]; }; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.time.outputs.run == 'true'
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        if: steps.time.outputs.run == 'true'
+        with:
+          python-version: '3.12'
+      - name: Check pending/stale and DST handling
+        if: steps.time.outputs.run == 'true'
+        run: python -m unittest discover -s tests -p 'test_pdufa_morning_results.py'
+      - name: Produce morning snapshot from published evidence
+        if: steps.time.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Never replace a completed morning snapshot just because a GitHub
+          # backup cron fired 15 minutes later.
+          if [ -f data/pdufa_am_6am_results.json ]; then
+            if python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          try:
+              r = json.loads(Path("data/pdufa_am_6am_results.json").read_text())
+              day = datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
+              ready = (r.get("snapshot_date_pacific") == day and
+                       r.get("readiness") == "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
+              raise SystemExit(0 if ready else 1)
+          except (ValueError, OSError, TypeError):
+              raise SystemExit(1)
+          PY
+            then
+              echo "Today's complete overnight-reports snapshot already exists."
+              exit 0
+            fi
+          fi
+          python scripts/pdufa_morning_results.py
+      - name: Publish morning report to dashboard
+        if: steps.time.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pdufa_am_6am_results.json
+          if git diff --cached --quiet; then
+            echo "Morning report identical; no publication needed."
+            exit 0
+          fi
+          git commit -m "Publish 6 AM Pacific PDUFA morning report"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Morning report published."
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
