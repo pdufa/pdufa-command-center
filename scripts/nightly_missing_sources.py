@@ -404,6 +404,41 @@ def main(argv=None):
                 # Avoid fetching all 717 submissions twice in the same source job.
         if args.source != "AUDIT":
             evidence.update(verify_source(args.source, args.data_dir, args.artifacts_dir))
+        if args.source == "SEC":
+            # A company IR closing is retained as a research finding while
+            # every new SEC scan independently re-opens issuer submissions
+            # and matches an exact dated financing transaction. The separate
+            # result cannot mark financing #2 or any trade entry as verified.
+            try:
+                from scripts.provisional_financing_sec_recheck import recheck_leads
+                from scripts.source_verification import Verifier, read_rows as source_rows
+                targets = args.data_dir / "finance_ir_sec_recheck_targets.csv"
+                leads = source_rows(targets)
+                if not leads:
+                    raise ValueError("No provisional financing targets")
+                registry = source_rows(args.data_dir / "company_registry.csv")
+                events = source_rows(args.data_dir / "pdufa_candidates.csv")
+                fresh_verifier = Verifier(registry)
+                rows = recheck_leads(
+                    fresh_verifier, events, targets,
+                    args.artifacts_dir / "finance_ir_sec_recheck.csv",
+                )
+                if len(rows) != len(leads) or any(
+                    row.get("gem_entry_authorized") != "NO" for row in rows
+                ):
+                    raise ValueError("Provisional SEC recheck incomplete/unsafe")
+                evidence["public_ir_recheck_status"] = "COMPLETE"
+                evidence["public_ir_leads_checked_against_sec"] = len(rows)
+                evidence["public_ir_sec_transactions_verified"] = sum(
+                    row["sec_recheck_status"] == "SEC_TRANSACTION_VERIFIED"
+                    for row in rows
+                )
+            except Exception as exc:
+                evidence["public_ir_recheck_status"] = "FAILED"
+                evidence["public_ir_recheck_error"] = type(exc).__name__
+                evidence["public_ir_leads_checked_against_sec"] = 0
+                print("Provisional IR financing SEC recheck failed: " +
+                      type(exc).__name__, file=sys.stderr)
     except Exception as exc:
         problem = type(exc).__name__
         print("Source scan failed: " + problem, file=sys.stderr)
