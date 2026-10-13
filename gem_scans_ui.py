@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import html
+import json
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -11,6 +12,7 @@ import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
+from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
 
 FILES = (
@@ -208,6 +210,47 @@ def render_gem_scans(root="data"):
             "This list is restricted to the saved source ledger; issuer success, "
             "effect size, safety, and exact program identity still require "
             "independent clinical verification."
+        )
+    st.markdown("### GEM SOURCE & MODEL READINESS")
+    report = build_readiness_report(
+        path, items, status, discovery, discovery_meta, as_of=day
+    )
+    stat1, stat2, stat3 = st.columns(3)
+    stat1.metric("Ranking source feed",
+                 "CURRENT" if status.get("feed_current") else "STALE / UNVERIFIED")
+    stat2.metric("Clinical collector", report["clinical_collector"]["status"].replace("_", " "))
+    stat3.metric("Validated historical trades", "NOT ESTABLISHED")
+    if report["research_status"].startswith("HOLD"):
+        st.warning(
+            "RESEARCH SOURCE HOLD: saved required inputs are missing or the "
+            "ranking source snapshot is not verified current. No stale source "
+            "may be treated as a new trade-ready GEM signal."
+        )
+    st.caption(
+        "Coverage is NOT independently verified across all US-listed biotechnology "
+        "issuers. GEM scores are research rankings, not proven stock-return "
+        "forecasts. The collection audit distinguishes clinical results from "
+        "verified clinical success and SEC closing evidence."
+    )
+    with st.expander("GEM SOURCE COVERAGE, VALIDATION GAPS & DOWNLOADABLE AUDIT",
+                     expanded=False):
+        missing = report["missing_required_inputs"]
+        if missing:
+            st.write("Missing or invalid saved inputs: " + ", ".join(missing))
+        st.write("Unresolved audit flags: " +
+                 (", ".join(report["blocking_or_review_flags"]) or "None from saved inputs"))
+        inventory = [
+            {"Input": key, "State": value["state"],
+             "Saved rows": value.get("rows", "—")}
+            for key, value in {**report["required_source_inventory"],
+                               **report["historical_data_inventory"]}.items()
+        ]
+        st.dataframe(pd.DataFrame(inventory), use_container_width=True, hide_index=True)
+        st.download_button(
+            "DOWNLOAD GEM READINESS AUDIT",
+            json.dumps(report, indent=2, sort_keys=True).encode("utf-8"),
+            file_name=f"gem_readiness_audit_{day:%Y%m%d}.json",
+            mime="application/json", key="gem_readiness_export",
         )
     cols = st.columns(3)
     for col, stage in zip(cols, STAGES):
