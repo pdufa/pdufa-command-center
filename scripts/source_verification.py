@@ -150,6 +150,10 @@ def documented_fda_signed_approval(event, text):
             or not company_matches(event, text)
             or not drug_matches(event, text)
             or not indication_matches(event, text)
+            # A supplement action letter must name the full disease: an
+            # abbreviation alone may refer to a different application.
+            or normalized(re.sub(r"\s*\([^)]*\)", "", event.get("indication", "")))
+               not in normalized(text)
             or not re.search(r"(?i)\bSignature Page\s+1\s+of\s+1\b", text)):
         return None
     signature = text.rsplit("Signature Page", 1)[-1]
