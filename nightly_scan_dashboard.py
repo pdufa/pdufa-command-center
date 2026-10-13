@@ -14,6 +14,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 from gem_scans_ui import render_gem_scans
+from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
+                               gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status
 from scripts.pdufa_morning_results import make_snapshot
 
@@ -23,7 +25,8 @@ SOURCE_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pd
 API = "https://api.github.com/repos/" + REPO
 WORKFLOW = "pdufa-scan-control.yml"
 AM_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pdufa_am_6am_results.json"
-LABELS = {"2": "#2 PIPELINE", "3": "#3 PRE3", "4": "#4 POST3"}
+LABELS = {"2": "#2 PIPELINE", "3": "#3 PRE3", "4": "#4 POST3",
+          "GEM": "BLOCK 4 — GEMS"}
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -270,7 +273,7 @@ def dashboard_secret(key):
 def dispatch_action(action, scan, token):
     if action not in {"VERIFY_ALL", "REVERIFY_PARTIAL", "RESCAN_ALL"}:
         raise ValueError("Invalid control action")
-    if scan not in {"ALL", "2", "3", "4"}:
+    if scan not in {"ALL", "2", "3", "4", "GEM"}:
         raise ValueError("Invalid scan")
     body = json.dumps({"ref": "main", "inputs": {
         "action": action, "scan": scan,
@@ -294,7 +297,7 @@ def _run_request(action, scan, token):
         dispatch_action(action, scan, token)
         latest_run.clear()
         st.success("GitHub accepted " + action.replace("_", " ") +
-                   (" for #" + scan if scan != "ALL" else " for clinical scans #2/#3/#4") +
+                   (" for " + LABELS.get(scan, scan) if scan != "ALL" else " for #2/#3/#4 and GEMS") +
                    ". Results appear after the workflow finishes and publishes its audit.")
     except urllib.error.HTTPError as exc:
         st.error("GitHub rejected the request (HTTP " + str(exc.code) +
@@ -436,11 +439,13 @@ def render_nightly_scan_report():
     render_gem_scans()
     st.divider()
     st.markdown("## NIGHTLY SCAN REPORT")
-    st.caption("Clinical-source #2 PIPELINE / #3 PRE3 / #4 POST3 · automatic nightly scan + archived-source integrity check · last published results. FDA, SEC, issuer and full market verification remain separate.")
+    st.caption("Four scan blocks: #2 PIPELINE / #3 PRE3 / #4 POST3 / BLOCK 4 GEMS. Each has automatic collection, audit details and manual verification/recheck/rescan controls. A finished workflow is not full FDA, SEC, issuer or market verification.")
     render_extended_source_report()
 
     report, loading_note = published_report()
     running = latest_run()
+    gem_report = published_gem_block_report()
+    gem_running = latest_gem_block_run()
     if loading_note:
         st.info(loading_note)
     if running and running.get("status") in ("queued", "in_progress", "waiting", "pending"):
@@ -491,6 +496,7 @@ def render_nightly_scan_report():
                 "Errors": scan.get("errors_count"),
                 "Run ID": scan.get("run_id"),
             })
+        rows.append(gem_block_summary_row(gem_report))
         if rows:
             st.markdown("### What was newly scanned and verified?")
             st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
@@ -522,10 +528,11 @@ def render_nightly_scan_report():
     else:
         st.warning("No published clinical report is available. The next completed nightly scan will publish a source-audited summary; no completion counts are inferred.")
 
+    render_gem_scan_block_status(gem_report, gem_running)
     st.markdown("### Scan controls")
     st.link_button("OPEN SCAN CONTROLS IN GITHUB ACTIONS",
                    "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-scan-control.yml")
-    st.caption("VERIFY ALL checks the archived #2/#3/#4 collector reports and saved source-state counts; it cannot certify missing FDA/SEC/issuer/market sources. REVERIFY PARTIAL recollects selected clinical data and checks the new archive. RESCAN ALL reruns all three clinical collectors. These actions do not place trades.")
+    st.caption("VERIFY ALL audits saved clinical #2/#3/#4 archives and GEM source gates. REVERIFY PARTIAL rechecks selected clinical/GEM sources, and RESCAN ALL requests all three clinical collectors plus GEM full registry backfill. No action certifies trading readiness or executes an order.")
     token = dashboard_secret("PDUFA_GITHUB_TOKEN")
     pin = dashboard_secret("PDUFA_SCAN_CONTROL_PIN")
     supplied = st.text_input("Scan controls PIN", type="password",
@@ -549,13 +556,23 @@ def render_nightly_scan_report():
         if st.button("RESCAN ALL", disabled=not authorized, use_container_width=True,
                      key="nightly_rescan_all"):
             _run_request("RESCAN_ALL", "ALL", token)
-    scan_choice = st.selectbox("Target one partial clinical scan",
-                               options=["2", "3", "4"],
+    scan_choice = st.selectbox("Target one scan block",
+                               options=["2", "3", "4", "GEM"],
                                format_func=lambda x: LABELS[x],
                                key="nightly_target_scan")
-    if st.button("REVERIFY SELECTED PARTIAL SCAN", disabled=not authorized,
-                 key="nightly_reverify_selected"):
-        _run_request("REVERIFY_PARTIAL", scan_choice, token)
+    target_reverify, target_verify, target_rescan = st.columns(3)
+    with target_reverify:
+        if st.button("REVERIFY SELECTED", disabled=not authorized,
+                     use_container_width=True, key="nightly_reverify_selected"):
+            _run_request("REVERIFY_PARTIAL", scan_choice, token)
+    with target_verify:
+        if st.button("VERIFY SELECTED", disabled=not authorized,
+                     use_container_width=True, key="nightly_verify_selected"):
+            _run_request("VERIFY_ALL", scan_choice, token)
+    with target_rescan:
+        if st.button("RESCAN SELECTED", disabled=not authorized,
+                     use_container_width=True, key="nightly_rescan_selected"):
+            _run_request("RESCAN_ALL", scan_choice, token)
     st.caption("All controls execute on GitHub Actions; a queued request is not a completed scan. The next published audit is the record of results.")
     st.divider()
     # Keep the existing read-only Gmail/GitHub audit accessible after the
