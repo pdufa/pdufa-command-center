@@ -94,7 +94,9 @@ def render_gem_scans(root="data"):
         "Three independent source-gated research rankings. Each entry shows "
         "#rank (evidence score /100) in its own classification. GEMS is nested "
         "over three columns immediately before Ticker. Research scores are "
-        "NOT FDA approval probabilities, return forecasts, or entry approval."
+        "NOT FDA approval probabilities, return forecasts, or entry approval. "
+        "ABSOLUTE RULE: watch Phase 3 before financing, but NEVER consider entry "
+        "until TWO DISTINCT post-Phase-3 financing closes are source-verified."
     )
     path = Path(root)
     signature = tuple(
@@ -150,7 +152,7 @@ def render_gem_scans(root="data"):
                 "Ticker", "Drug", "Indication", "NCT ID",
                 "Phase 3 result date (source)", "Phase 3 tracking",
                 "Financing watch", "Financing cycle (separate)",
-                "Phase 3 GEM", "Days to PDUFA", "Phase 3 source",
+                "GEM trade entry gate", "Phase 3 GEM", "Days to PDUFA", "Phase 3 source",
                 "Exact event",
             ]
             st.dataframe(
@@ -170,6 +172,12 @@ def render_gem_scans(root="data"):
             "independent continuous SEC search. A blank Phase 3 GEM rank "
             "means some ranking gates remain incomplete."
         )
+    st.warning(
+        "MANDATORY ENTRY RULE: Phase 3 and financing candidates are WATCH ONLY "
+        "until the second distinct post-readout financing has actually CLOSED "
+        "and its evidence has been verified for the exact program. An offering "
+        "announcement, pricing, active financing or Phase 3 GEM rank is NEVER an entry signal."
+    )
     st.markdown("### BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2")
     st.caption(
         "The saved clinical #4 results-intake ledger includes posted trial "
@@ -354,7 +362,8 @@ def render_gem_scans(root="data"):
             ))
             ordered = (
                 [stage + " GEM", "Ticker", "Drug", "Indication",
-                 "Phase 3 tracking", "Financing watch",
+                 "Phase 3 tracking", "Financing watch", "GEM trade entry gate",
+                 "Verified 2nd financing close date",
                  "Phase 3 result date (source)",
                  stage + " qualifier", stage + " missing"]
                 + list(STAGE_COLUMNS[stage])
