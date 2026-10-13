@@ -160,3 +160,73 @@ jobs:
               -f ref=main -f "inputs[source_run_id]=$source_id"
             echo "Requested source-validated report publishing for clinical run $source_id"
           fi
+
+      - name: Recover missing extended-source verification handoff
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # The publisher's ordinary workflow_run trigger gets first chance.
+          # Fallback only for this Pacific-night window and only after a verified
+          # successful report publishing run; never call incomplete evidence COMPLETE.
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/clinical-before-sources.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/runs?per_page=100" > "$RUNNER_TEMP/publisher-before-sources.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-missing-sources.yml/runs?per_page=100" > "$RUNNER_TEMP/extended-before-sources.json"
+          python - "$RUNNER_TEMP/clinical-before-sources.json" "$RUNNER_TEMP/publisher-before-sources.json" "$RUNNER_TEMP/extended-before-sources.json" "$RUNNER_TEMP/extended-source-request" <<'PY'
+          import json, sys
+          from datetime import datetime, timedelta, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          now = datetime.now(timezone.utc)
+          la = now.astimezone(ZoneInfo("America/Los_Angeles"))
+          if not (21 <= la.hour < 23):
+              print("Extended-source recovery is limited to 9-11 PM Pacific")
+              raise SystemExit(0)
+          night_start = la.replace(hour=20, minute=30, second=0, microsecond=0).astimezone(timezone.utc)
+
+          def runs(index):
+              with open(sys.argv[index], encoding="utf-8") as handle:
+                  return json.load(handle).get("workflow_runs", [])
+
+          def moment(value):
+              return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+          clinical = [r for r in runs(1) if r.get("event") == "workflow_dispatch"
+                      and r.get("created_at") and night_start <= moment(r["created_at"]) <= now]
+          if not clinical:
+              print("No nightly clinical run; skip extended-source recovery")
+              raise SystemExit(0)
+          latest_clinical = max(clinical, key=lambda r: r["created_at"])
+          if latest_clinical.get("status") != "completed" or latest_clinical.get("conclusion") != "success":
+              print("Clinical job is not successful; skip downstream recovery")
+              raise SystemExit(0)
+          publishers = [r for r in runs(2) if r.get("created_at")
+                        and moment(r["created_at"]) >= moment(latest_clinical["updated_at"])]
+          if not publishers:
+              print("No publisher run exists after completed clinical scan")
+              raise SystemExit(0)
+          publisher = max(publishers, key=lambda r: r["created_at"])
+          if publisher.get("status") != "completed" or publisher.get("conclusion") != "success":
+              print("Report publishing not successful; skip extended-source recovery")
+              raise SystemExit(0)
+          finished = moment(publisher["updated_at"])
+          if now - finished < timedelta(minutes=2):
+              print("Allowing standard report-to-extended workflow_run trigger")
+              raise SystemExit(0)
+          existing = [r for r in runs(3) if r.get("created_at")
+                      and moment(r["created_at"]) >= moment(publisher["created_at"])]
+          if existing:
+              print("Extended verification run already exists; skip duplicate")
+              raise SystemExit(0)
+          Path(sys.argv[4]).write_text(str(publisher["id"]), encoding="utf-8")
+          print("Missing publisher-to-extended handoff after publisher run " + str(publisher["id"]))
+          PY
+          if [ -s "$RUNNER_TEMP/extended-source-request" ]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-missing-sources.yml/dispatches" \
+              -f ref=main
+            echo "Requested FDA, SEC, financial, market, issuer, and coverage reconciliation."
+            echo "Dispatch does not establish source verification or completion."
+          fi
