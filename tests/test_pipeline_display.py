@@ -84,11 +84,11 @@ class PipelineDisplayTests(unittest.TestCase):
         from pathlib import Path
         source = Path("app.py").read_text(encoding="utf-8")
         start = source.index('if page == "PDUFA":')
-        end = source.index('elif page == "DISEASE & MARKET HORIZON":', start)
+        end = source.index('elif page == "2. PDUFA CALENDAR":', start)
         section = source[start:end]
         self.assertIn('with pipeline_tab:', section)
-        self.assertIn('unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab, scoring_tests_tab = st.tabs(', section)
-        self.assertIn('["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "NIGHTLY SCAN REPORT", "WATCHLIST / TRADING", "SCORING TESTS"]', section)
+        self.assertIn('unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab = st.tabs(', section)
+        self.assertIn('["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]', section)
         self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
         self.assertIn('with pre_phase3_tab:', section)
         self.assertIn('if pre_phase3_tab.open:', section)
@@ -114,7 +114,7 @@ class PipelineDisplayTests(unittest.TestCase):
         self.assertNotIn('"PRE PHASE 3"', nav)
         self.assertNotIn('"WATCHLIST"', nav)
         section = source.split('if page == "PDUFA":', 1)[1].split(
-            'elif page == "DISEASE & MARKET HORIZON":', 1
+            'elif page == "2. PDUFA CALENDAR":', 1
         )[0]
         self.assertLess(
             section.index('with pipeline_tab:'), section.index('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS')
