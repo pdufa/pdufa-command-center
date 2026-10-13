@@ -355,6 +355,15 @@ class VerificationTests(unittest.TestCase):
         )
         self.assertEqual(self.verifier(undated).issuer(exel)[0]["verification_status"],
                          "REVIEW_REQUIRED")
+        for fake_dateline in (
+            b"PDUFA December 3, 2026-- FDA action is expected.",
+            b"PDUFA December 3, 2026 \xe2\x80\x94 date set by FDA.",
+            b"PDUFA December 3, 2026 (FDA target date).",
+        ):
+            head = (b"Exelixis, Inc. announced zanzalintinib with atezolizumab "
+                    b"for metastatic colorectal cancer. ")
+            self.assertEqual(self.verifier(head + fake_dateline).issuer(exel)[0]
+                             ["verification_status"], "REVIEW_REQUIRED")
 
     def test_issuer_discovers_actual_sec_exhibit_when_saved_url_absent(self):
         def fetch(url):
