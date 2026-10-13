@@ -132,6 +132,31 @@ async function audit(){
     result.checks.stageCountChart=await appFrame.getByText("STAGE COUNTS",{exact:true}).count()>0;
     result.checks.dateCountChart=await appFrame.getByText("DATE TRIAL COUNTS",{exact:true}).count()>0;
     result.checks.noInitialTrials=/Trials \/ programs displayed\s*0/.test(pipelineReady.text);
+    // Independently inspect the deployed GEM scanners BEFORE the other deep
+    // tabs: a later PRE PHASE 3 cache failure must not hide GEM live status.
+    if(result.tabs.includes("SCANS")){
+      await appFrame.getByRole("tab",{name:"SCANS",exact:true}).click({timeout:15000});
+      const gemsReady=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"SCANS",exact:true}).getAttribute("aria-selected")==="true"
+        && text.includes("GEMS — PHASE 3 / POST-FINANCING / PDUFA")
+        && text.includes("GEM SOURCE & MODEL READINESS")
+        && text.includes("NIGHTLY SCAN REPORT"));
+      appFrame=gemsReady.frame;
+      result.checks.gemScannerStagePanelsLive=
+        ["GEMS — PHASE 3 / POST-FINANCING / PDUFA",
+         "BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2",
+         "GEM SOURCE & MODEL READINESS",
+         "GEM SCAN QUALIFIERS & FULL COLUMNS",
+         "NIGHTLY SCAN REPORT"].every(label=>gemsReady.text.includes(label));
+      if(!result.checks.gemScannerStagePanelsLive)
+        result.errors.push("Live SCANS is missing GEM classifications, discovery, readiness, or source audit.");
+      await page.screenshot({path:path.join(outDir,"streamlit-gem-scans-verification.png"),fullPage:false});
+      await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).click({timeout:15000});
+      const restored=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true"
+        && text.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"));
+      appFrame=restored.frame;
+    }
     if(result.checks.threePdufaTabs){
       await appFrame.getByRole("tab",{name:"POST PHASE 3"}).click({timeout:15000});
       const phase3Ready=await waitForRender(page,appFrame,async(text,frame)=>
