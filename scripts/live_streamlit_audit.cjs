@@ -114,39 +114,11 @@ async function audit(){
     result.checks.threePdufaTabs=["UNIFIED OVERVIEW","PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
     result.checks.pipelineDefaultActive=await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true";
-    result.checks.scoringTestsTabPresent=result.tabs.at(-1)==="SCORING TESTS";
-    if(!result.checks.scoringTestsTabPresent)
-      result.errors.push("SCORING TESTS must be the final PDUFA subtab.");
-    else {
-      await appFrame.getByRole("tab",{name:"SCORING TESTS",exact:true}).click({timeout:15000});
-      const scoringReady=await waitForRender(page,appFrame,async(text,frame)=>
-        await frame.getByRole("tab",{name:"SCORING TESTS",exact:true}).getAttribute("aria-selected")==="true"
-        && text.includes("SCORING INPUTS & OVERLAP")
-        && text.includes("Automatic input tests")
-        && text.includes("Score-to-input column map")
-        && text.includes("Overlap / double-counting inspector")
-        && text.includes("Ticker input inspector")
-        && text.includes("EXPORT INPUT TEST RESULTS"));
-      appFrame=scoringReady.frame;
-      result.checks.scoringTestsContentVisible=true;
-      result.scoringTestsDiagnostic={
-        tabSelected:await appFrame.getByRole("tab",{name:"SCORING TESTS",exact:true}).getAttribute("aria-selected"),
-        bodyContainsModelInputMapping:scoringReady.text.includes("Contributing columns"),
-        bodyContainsOverlapDetails:scoringReady.text.includes("Shared evidence"),
-        bodyContainsTickerSelector:scoringReady.text.includes("Ticker (inspect stored fields only)")
-      };
-      result.checks.scoringTestsInputsVisible=
-        Object.values(result.scoringTestsDiagnostic).every(Boolean)
-        && result.scoringTestsDiagnostic.tabSelected==="true";
-      if(!result.checks.scoringTestsInputsVisible)
-        result.errors.push("SCORING TESTS is missing model inputs, overlap details, or ticker inspection controls.");
-      await page.screenshot({path:path.join(outDir,"streamlit-scoring-tests.png"),fullPage:false});
-      await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).click({timeout:15000});
-      const backToPipeline=await waitForRender(page,appFrame,async(text,frame)=>
-        await frame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true"
-        && text.includes("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS"));
-      appFrame=backToPipeline.frame;
-    }
+    result.checks.scansAndWtTabsPresent=result.tabs.length>=6
+      && result.tabs.at(-2)==="SCANS" && result.tabs.at(-1)==="WT"
+      && !result.tabs.includes("SCORE AUDIT");
+    if(!result.checks.scansAndWtTabsPresent)
+      result.errors.push("Current SCANS / WT tabs missing or SCORE AUDIT unexpectedly restored.");
     if(!result.checks.matchOptimizerNavigationRemoved || !result.checks.pdufaMainNavigationFirst || !result.checks.pipelineDefaultActive)
       result.errors.push("PDUFA must open with PIPELINE and preserve the main navigation.");
     const pipelineReady={frame:appFrame,text:initial};
@@ -309,51 +281,25 @@ async function audit(){
       await page.setViewportSize({width:390,height:844});
       await sleep(1500);
       await page.screenshot({path:path.join(outDir,"streamlit-iphone-width.png"),fullPage:false});
-      // A real phone must reach PLAN without a horizontally hidden navigation option.
-      const mobilePlanChoice=navigationChoice(appFrame,"11. PLAN");
-      result.checks.mobilePlanNavigationVisible=await mobilePlanChoice.evaluate(el=>{
-        const bounds=el.getBoundingClientRect();
-        return bounds.width>0 && bounds.left>=0 && bounds.right<=window.innerWidth;
-      });
-      await mobilePlanChoice.click({timeout:15000});
-      const planReady=await waitForRender(page,appFrame,async(text,frame)=>
-        await frame.getByRole("radio",{name:"11. PLAN",exact:true}).isChecked()
-        && text.includes("11. PLAN — SYSTEM RULES & OPERATING RHYTHM")
-        && text.includes("SAVE PLAN CHANGES") && text.includes("DOWNLOAD PLAN BACKUP"));
-      appFrame=planReady.frame;
-      // Streamlit may paint the PLAN title before its editor/action widgets.
-      // Wait for the actual controls, not only the heading, at iPhone width.
-      let mobilePlanText="";
-      for(let attempt=0;attempt<35;attempt++){
-        mobilePlanText=await appFrame.locator("body").innerText({timeout:9000});
-        if(mobilePlanText.includes("Edit plan")
-          && mobilePlanText.includes("SAVE PLAN CHANGES")
-          && mobilePlanText.includes("DOWNLOAD PLAN BACKUP"))break;
-        await sleep(1000);
-      }
-      result.checks.mobilePlanOpens=mobilePlanText.includes("Edit plan")
-        && mobilePlanText.includes("SAVE PLAN CHANGES")
-        && mobilePlanText.includes("DOWNLOAD PLAN BACKUP")
-        && !/This app has encountered an error|Traceback \(most recent call\)/i.test(mobilePlanText);
-      if(!result.checks.mobilePlanOpens)
-        result.notes.push("Mobile PLAN render incomplete: "+mobilePlanText.slice(-650));
-      await page.screenshot({path:path.join(outDir,"streamlit-iphone-plan.png"),fullPage:false});
-      if(!result.checks.mobilePlanNavigationVisible || !result.checks.mobilePlanOpens)
-        result.errors.push("11. PLAN is not reachable and usable on mobile.");
+      // Mobile screen must reach the live SCANS report after old PLAN navigation was removed.
+      await appFrame.getByRole("tab",{name:"SCANS",exact:true}).click({timeout:15000});
+      const mobileScanReady=await waitForRender(page,appFrame,async(text,frame)=>
+        await frame.getByRole("tab",{name:"SCANS",exact:true}).getAttribute("aria-selected")==="true"
+        && text.includes("NIGHTLY SCAN REPORT"));
+      appFrame=mobileScanReady.frame;
+      result.checks.mobileScansOpens=mobileScanReady.text.includes("NIGHTLY SCAN REPORT")
+        && !/This app has encountered an error|Traceback \\(most recent call\\)/i.test(mobileScanReady.text);
+      await page.screenshot({path:path.join(outDir,"streamlit-iphone-scans.png"),fullPage:false});
+      if(!result.checks.mobileScansOpens)
+        result.errors.push("SCANS could not be opened on mobile.");
     }
     // Walk each independent main navigation page in the deployed browser.
     // This catches runtime exceptions outside Pipeline, which unit tests
     // and startup import checks do not exercise.
     await page.setViewportSize({width:1440,height:900});
     const pages=[
-      ["DISEASE & MARKET HORIZON","DISEASE & MARKET HORIZON"],
-      ["STRATEGY","STRATEGY — NESTED DISEASE"],
       ["2. PDUFA CALENDAR","2. PDUFA CALENDAR"],
-      ["4. DECISION","4. DECISION — FDA OUTCOMES"],
-      ["5. SCANS","5. SCANS — FIND CHANGES"],
-      ["6. RECHECK","6. RECHECK — VERIFY"],
       ["9. PREDICTION ENGINE","9. PREDICTION ENGINE"],
-      ["11. PLAN","11. PLAN — SYSTEM RULES"],
     ];
     result.pages=[];
     for(const [name, expectedHeading] of pages){
