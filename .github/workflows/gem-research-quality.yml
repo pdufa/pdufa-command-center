@@ -1,0 +1,39 @@
+name: GEM Research Quality Snapshot
+
+# Read-only daily evidence audit of saved repository files. Not a fresh
+# ClinicalTrials.gov/issuer/SEC scan and not an automatic trade signal.
+on:
+  schedule:
+    - cron: "10 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gem-research-quality-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout current saved source snapshots
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install scanner dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Write fail-closed GEM quality report and prospective research observations
+        run: python scripts/run_gem_daily_readiness.py --output-dir reports/gem_daily
+      - name: Retain time-stamped research evidence as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gem-research-quality-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/gem_daily/
+          retention-days: 90
+          if-no-files-found: warn
