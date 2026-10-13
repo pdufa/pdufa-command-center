@@ -41,7 +41,8 @@ def render_extended_source_report():
     st.markdown("### FDA / SEC / FINANCIAL / MARKET / ISSUER")
     st.write("**Scan execution:** " + str(report.get("execution_status", "UNVERIFIED")) +
              " · **Required source verification:** " + str(report.get("status", "UNVERIFIED")))
-    st.caption("Checked: " + str(report.get("updated_at_utc", "unknown")) +
+    st.caption("Source checks finished: " + str(report.get("source_checked_at_utc", report.get("updated_at_utc", "unknown"))) +
+               " · Report published: " + str(report.get("updated_at_utc", "unknown")) +
                ". Completion refers to the checks listed below; trading evidence and eligibility remain separate.")
     rows = [{"Scan": r["source"], "Status": r["status"], "Verified": r.get("findings_verified", 0),
              "Not applicable": r.get("findings_not_applicable", 0),

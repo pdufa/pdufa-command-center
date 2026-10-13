@@ -16,9 +16,13 @@ from scripts.source_verification import VERSION, read_rows, summary
 def publish(artifacts, data_dir, output):
     reconciled = coverage(artifacts, data_dir)
     source_rows = []
+    checked_times = []
     for source, state in reconciled["source_statuses"].items():
         ledger = artifacts / (source.lower() + "_verification.csv")
         findings = read_rows(ledger) if source not in reconciled["manifest_rejections"] else []
+        if findings:
+            manifest = json.loads((artifacts / (source.lower() + "_scan_report.json")).read_text())
+            checked_times.append(manifest["finished_at"])
         source_rows.append({"source": source, "status": state, **summary(findings)})
     findings = read_rows(artifacts / "combined_verification.csv")
     required_gaps = [r for r in findings if r["verification_required"] == "YES"
@@ -31,6 +35,7 @@ def publish(artifacts, data_dir, output):
     run_url = "https://github.com/pdufa/pdufa-command-center/actions/runs/" + run_id if run_id.isdigit() else ""
     report = {"schema_version": 2, "verification_version": VERSION,
               "updated_at_utc": now(), "status": status,
+              "source_checked_at_utc": max(checked_times) if checked_times else "",
               "execution_status": "COMPLETE" if not reconciled["manifest_rejections"] else "INCOMPLETE",
               "latest_run_id": run_id, "latest_run_url": run_url,
               "source_commit": os.environ.get("GITHUB_SHA", ""),

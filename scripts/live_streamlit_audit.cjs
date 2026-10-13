@@ -109,7 +109,9 @@ async function audit(){
     result.checks.oldPipelineNavigationAbsent=!result.navigation.includes("PIPELINE");
     result.checks.matchOptimizerNavigationRemoved=!result.navigation.includes("10. MATCH OPTIMIZER");
     result.checks.pdufaMainNavigationFirst=result.navigation.filter(x=>x!=="Navigation")[0]==="PDUFA";
-    result.tabs=(await appFrame.getByRole("tab").allInnerTexts()).map(x=>x.trim());
+    // Nested countdown tabs also use role=tab. Navigation order must be
+    // checked against the PDUFA tablist, not the last nested tabs on the page.
+    result.tabs=(await appFrame.getByRole("tablist").first().getByRole("tab").allInnerTexts()).map(x=>x.trim());
     result.checks.prePhase3MainNavAbsent=!result.navigation.includes("PRE PHASE 3");
     result.checks.threePdufaTabs=["UNIFIED OVERVIEW","PIPELINE","PRE PHASE 3","POST PHASE 3"].every(x=>result.tabs.includes(x));
     result.checks.workbenchSubtabRemoved=!result.tabs.includes("PDUFA WORKBENCH");
@@ -404,3 +406,4 @@ audit().catch(err=>result.errors.push(String(err.stack||err).slice(0,1500))).fin
   console.log("LIVE STREAMLIT AUDIT\n"+JSON.stringify(result,null,2));
   process.exitCode=result.errors.length?1:0;
 });
+

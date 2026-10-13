@@ -455,6 +455,12 @@ jobs:
           cp data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv /tmp/pdufa-source-publish/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Save generated tracked/untracked outputs before switching to the
+          # latest main branch, which may already contain an earlier snapshot.
+          git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Prepare source verification snapshot"
+          fi
           git fetch origin main
           git checkout -B source-audit-publish origin/main
           cp /tmp/pdufa-source-publish/* data/
