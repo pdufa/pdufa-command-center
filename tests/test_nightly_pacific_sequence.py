@@ -43,6 +43,20 @@ class PacificNightlySequenceTests(unittest.TestCase):
         self.assertIn("No duplicate dispatch", scheduler)
         self.assertIn('inputs[scan]=ALL', scheduler)
 
+    def test_publisher_and_extended_source_watchdogs_are_guarded(self):
+        scheduler = read("pdufa-nightly-pacific-start.yml")
+        for cron in ("15 4 * * *", "15 5 * * *"):
+            self.assertIn(cron, scheduler)
+        self.assertIn("Recover missing clinical report publishing handoff", scheduler)
+        self.assertIn("Recover missing extended-source verification handoff", scheduler)
+        self.assertIn("Report publisher already started after this clinical scan", scheduler)
+        self.assertIn("Extended verification run already exists; skip duplicate", scheduler)
+        self.assertIn('publisher.get("conclusion") != "success"', scheduler)
+        self.assertIn('latest_clinical.get("conclusion") != "success"', scheduler)
+        self.assertIn("timedelta(minutes=2)", scheduler)
+        self.assertIn("pdufa-nightly-missing-sources.yml/dispatches", scheduler)
+        self.assertIn("Dispatch does not establish source verification or completion.", scheduler)
+
     def test_clinical_runs_in_numbered_order(self):
         clinical = read("pdufa-nightly-clinical.yml")
         self.assertNotIn("\n  schedule:", clinical)
