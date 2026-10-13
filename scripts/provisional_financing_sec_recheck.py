@@ -52,7 +52,9 @@ def _filings(verifier, event, close):
 def _sec_documents(verifier, cik, accession, primary):
     if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession):
         return []
-    if accession[:10] != cik or not safe_document(primary):
+    # EDGAR accession prefixes may identify a filing agent, not the issuer.
+    # The validated issuer CIK determines the SEC archive directory.
+    if not safe_document(primary):
         return []
     base = ("https://www.sec.gov/Archives/edgar/data/" +
             str(int(cik)) + "/" + accession.replace("-", "") + "/")
