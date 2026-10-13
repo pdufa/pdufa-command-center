@@ -20,6 +20,18 @@ on:
       - "data/pdufa_candidates.csv"
       - "step7_live.py"
       - "data/pre_readout_intake_status.json"
+      # Changes to the GEM and source-cache validation paths need a real
+      # deployed-app check; Python-only tests cannot validate Cloud rendering.
+      - "gem_scans.py"
+      - "gem_scans_ui.py"
+      - "gem_readiness_audit.py"
+      - "gem_phase3_discovery.py"
+      - "step7_cached_snapshot.py"
+      - "scripts/publish_step7_feed.py"
+      - "data/step7_pre_phase3_feed.csv"
+      - "data/phase3_announcements.csv"
+      - "data/phase3_intake_status.json"
+      - "data/pdufa_source_report.json"
 
 permissions:
   contents: read
