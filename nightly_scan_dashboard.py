@@ -239,8 +239,17 @@ def render_nightly_scan_report():
                    ". The report below may describe a previous run.")
     if report:
         summary = report.get("metrics", {})
+        scan_rows = [r for r in report.get("scans", []) if isinstance(r, dict)]
+        completed_collectors = [r for r in scan_rows
+                                if r.get("collector_status") in ("COMPLETE", "COMPLETE WITH WARNINGS")
+                                and r.get("artifact_integrity") == "PASS"]
+        if len(scan_rows) == 3 and len(completed_collectors) == 3:
+            warnings = sum(r.get("collector_status") == "COMPLETE WITH WARNINGS"
+                           for r in completed_collectors)
+            st.success(f"Clinical scans #2, #3, #4: 3/3 completed; {warnings} with source warnings. "
+                       "Overall PDUFA-source verification remains separate.")
         c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Coverage status", str(report.get("status", "UNVERIFIED")))
+        c1.metric("Overall source coverage", str(report.get("status", "UNVERIFIED")))
         c2.metric("New records", _number(summary.get("new_records")))
         c3.metric("Changed trials", _number(summary.get("changed_trials")))
         c4.metric("Reported errors", _number(summary.get("errors")))
@@ -262,7 +271,8 @@ def render_nightly_scan_report():
             metrics = scan.get("metrics") or {}
             rows.append({
                 "Scan": LABELS.get(str(scan.get("scan")), str(scan.get("scan"))),
-                "Result": scan.get("status", "UNVERIFIED"),
+                "Clinical collector": scan.get("collector_status", "UNVERIFIED"),
+                "Overall coverage": scan.get("status", "UNVERIFIED"),
                 "Report check": scan.get("artifact_integrity", "NOT CHECKED"),
                 "Studies checked": metrics.get("studies_checked"),
                 "Trials checked": metrics.get("tracked_trials_checked"),
