@@ -61,6 +61,18 @@ jobs:
             fi
             exit 0
           fi
+          # GitHub can deliver the 20:30/20:45/21:00 UTC schedules hours
+          # late. Checking only the UTC offset previously admitted a 03:56 AM
+          # execution and three repeat clinical collections the next morning.
+          # Never dispatch scheduled work outside the actual Pacific-night window.
+          local_hour="$(TZ=America/Los_Angeles date +%H)"
+          local_minute="$(TZ=America/Los_Angeles date +%M)"
+          local_minutes=$((10#$local_hour * 60 + 10#$local_minute))
+          if [ "$local_minutes" -lt 1230 ] || [ "$local_minutes" -ge 1350 ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skip delayed scheduled trigger outside 8:30-10:30 PM Pacific"
+            exit 0
+          fi
           offset="$(TZ=America/Los_Angeles date +%z)"
           if { { [ "$SCHEDULE_CRON" = '30 3 * * *' ] || [ "$SCHEDULE_CRON" = '45 3 * * *' ] || [ "$SCHEDULE_CRON" = '0 4 * * *' ]; } && [ "$offset" = -0700 ]; } ||
              { { [ "$SCHEDULE_CRON" = '30 4 * * *' ] || [ "$SCHEDULE_CRON" = '45 4 * * *' ] || [ "$SCHEDULE_CRON" = '0 5 * * *' ]; } && [ "$offset" = -0800 ]; }; then

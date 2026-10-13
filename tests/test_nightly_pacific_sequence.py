@@ -1,5 +1,9 @@
 """Contracts for one Pacific nightly start and a strictly serial post-scan chain."""
+import os
 import re
+import subprocess
+import tempfile
+import textwrap
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,6 +37,46 @@ class PacificNightlySequenceTests(unittest.TestCase):
             converted = date.astimezone(ZoneInfo("America/Los_Angeles"))
             self.assertEqual((converted.hour, converted.minute), (20, 30))
         self.assertIn("-f 'inputs[scan]=ALL'", scheduler)
+
+    def test_delayed_utc_crons_do_not_restart_scans_next_morning(self):
+        scheduler = read("pdufa-nightly-pacific-start.yml")
+        block = scheduler.split("      - name: Accept only matching 8:30 PM Pacific cron slot", 1)[1]
+        block = block.split("      - name: Dispatch clinical scan to start serial chain", 1)[0]
+        script = textwrap.dedent(block.split("        run: |\n", 1)[1])
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            fake_date = directory / "date"
+            fake_date.write_text(
+                "#!/bin/sh\n"
+                'case "$1" in\n'
+                '  +%H) echo "$MOCK_LOCAL_HOUR";;\n'
+                '  +%M) echo "$MOCK_LOCAL_MINUTE";;\n'
+                '  +%z) echo "$MOCK_LOCAL_OFFSET";;\n'
+                '  *) exit 2;;\n'
+                "esac\n", encoding="utf-8")
+            fake_date.chmod(0o755)
+            cases = (
+                ("03", "56", "-0700", "30 3 * * *", "run=false"),
+                ("04", "11", "-0700", "45 3 * * *", "run=false"),
+                ("04", "17", "-0700", "0 4 * * *", "run=false"),
+                ("20", "30", "-0700", "30 3 * * *", "run=true"),
+                ("21", "00", "-0700", "0 4 * * *", "run=true"),
+                ("21", "00", "-0800", "0 5 * * *", "run=true"),
+                ("22", "30", "-0700", "30 3 * * *", "run=false"),
+                ("20", "30", "-0700", "30 4 * * *", "run=false"),
+            )
+            for hour, minute, offset, cron, expected in cases:
+                with self.subTest(hour=hour, minute=minute, offset=offset, cron=cron):
+                    output = directory / "result"
+                    output.write_text("", encoding="utf-8")
+                    env = {**os.environ, "PATH": str(directory) + os.pathsep + os.environ.get("PATH", ""),
+                           "EVENT_NAME": "schedule", "SCHEDULE_CRON": cron,
+                           "GITHUB_OUTPUT": str(output), "MOCK_LOCAL_HOUR": hour,
+                           "MOCK_LOCAL_MINUTE": minute, "MOCK_LOCAL_OFFSET": offset}
+                    process = subprocess.run(["bash", "-c", script], env=env,
+                                             capture_output=True, text=True, timeout=10)
+                    self.assertEqual(process.returncode, 0, process.stderr)
+                    self.assertIn(expected, output.read_text(encoding="utf-8"))
 
     def test_fallback_start_never_duplicates_tonights_scans(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
