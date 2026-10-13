@@ -111,6 +111,9 @@ def test_second_financing_completed_requires_audited_exact_event(tmp_path):
         "second_financing_status": "CLOSED",
         "second_financing_closed": "YES",
         "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+        "first_financing_date": "2026-02-02",
+        "first_financing_source": "https://www.sec.gov/Archives/edgar/data/1/first-close",
+        "second_financing_date": "2026-07-07",
         "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/close",
         "verified_as_of": TODAY.isoformat(),
     }
