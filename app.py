@@ -3197,7 +3197,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","9. PREDICTION ENGINE"]
+nav_options = ["PDUFA","2. PDUFA CALENDAR","9. PREDICTION ENGINE"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -4091,81 +4091,6 @@ if page == "PDUFA":
     with scoring_tests_tab:
         if scoring_tests_tab.open:
             render_score_input_audit()
-
-elif page == "DISEASE & MARKET HORIZON":
-    st.markdown("## DISEASE & MARKET HORIZON")
-    st.caption("Disease burden, competing therapies, and commercial opportunity for each Phase 3 drug and indication. Unverified values must remain blank—not estimated as facts.")
-    st.link_button("Open disease and market research sheet", "https://docs.google.com/spreadsheets/d/1lBfjuXloQnoUTOJZYnu6v6PAHrZSqJoWn_-6L6wt-fY/edit#gid=204610070")
-    st.markdown("### Disease burden and addressable patients")
-    st.info("Research fields: U.S./global prevalence, incidence, diagnosed patients, eligible patients, treatable population, severity, and unmet need. Record geography, year, definition, and source.")
-
-    issue_trials_path = Path("data/issue_trials.csv")
-    issue_ledger_path = Path("data/all_phase_trials.csv")
-    issue_trials_signature = (
-        issue_trials_path.stat().st_mtime_ns if issue_trials_path.exists() else 0,
-        issue_ledger_path.stat().st_mtime_ns if issue_ledger_path.exists() else 0,
-    )
-    issue_trials = load_issue_trial_catalog(issue_trials_signature)
-    st.markdown("### Clinical trials by issue")
-    if issue_trials.empty:
-        st.info("No curated issue trials are loaded.")
-    else:
-        issue_options = sorted(issue_trials["issue"].dropna().astype(str).loc[lambda s: s.ne("")].unique())
-        selected_issues = st.multiselect(
-            "Issues to display",
-            options=issue_options,
-            default=issue_options,
-            key="issue_trial_issue_filter",
-        )
-        issue_visible = issue_trials[issue_trials["issue"].isin(selected_issues)].copy()
-        if issue_visible.empty:
-            st.info("Choose at least one issue to display its trials.")
-        else:
-            issue_visible["ClinicalTrials.gov"] = issue_visible["nct_id"].map(
-                lambda nct: "https://clinicaltrials.gov/study/" + str(nct)
-            )
-            issue_labels = {
-                "issue": "Issue",
-                "ticker": "Ticker",
-                "company": "Company",
-                "drug": "Drug",
-                "trial_name": "Trial",
-                "nct_id": "NCT ID",
-                "phase": "Phase",
-                "status": "Trial Status",
-                "target_population_note": "Target Population",
-                "source_updated": "Registry Updated",
-                "checked_at": "Registry Checked",
-                "evidence_url": "Evidence",
-                "ClinicalTrials.gov": "ClinicalTrials.gov",
-            }
-            issue_columns = [
-                "issue", "ticker", "company", "drug", "trial_name", "nct_id",
-                "phase", "status", "target_population_note", "source_updated",
-                "checked_at", "ClinicalTrials.gov", "evidence_url",
-            ]
-            st.dataframe(
-                issue_visible[issue_columns].rename(columns=issue_labels),
-                use_container_width=True,
-                hide_index=True,
-                height=560,
-                column_config={
-                    "ClinicalTrials.gov": st.column_config.LinkColumn("ClinicalTrials.gov"),
-                    "Evidence": st.column_config.LinkColumn("Evidence"),
-                },
-            )
-            st.caption(
-                f"{len(issue_visible):,} curated trial records across "
-                f"{issue_visible['issue'].nunique():,} issue groups. "
-                "Trial status and registry dates are refreshed from ClinicalTrials.gov by the daily scan."
-            )
-
-    st.markdown("### Competing therapies")
-    st.info("Compare approved therapies and Phase 2/3 competitors by mechanism, efficacy, safety, dosing, price/access, and development status. Mark direct head-to-head evidence separately from cross-trial comparisons.")
-    st.markdown("### Commercial valuation and our scores")
-    st.info("Estimate penetration, potential peak sales, sales relative to market cap, Competitive Advantage Score, and Commercial Opportunity Score. Keep OUR FDA PoA separate from OUR TRADE SCORE and Entry Gate.")
-    st.warning("This page is a research framework linked to the Google Sheet. Live company-by-company epidemiology, competitor research, score calculation, and Sheet synchronization are not yet connected.")
-
 
 
 elif page == "2. PDUFA CALENDAR":
