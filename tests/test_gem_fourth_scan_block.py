@@ -21,6 +21,7 @@ class GemsFourthBlockTests(unittest.TestCase):
             "phase3_saved_ledger_rows": 2482,
             "verified_phase3_tracking": 3,
             "awaiting_second_financing": 3,
+            "strict_entry_gate_shortlist_count": 0,
             "ranked": {"Phase 3": 8, "Post-Financing": 0, "PDUFA": 0},
             "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
             "blocking_or_review_flags": ["SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE"],
@@ -69,6 +70,7 @@ class GemsFourthBlockTests(unittest.TestCase):
         self.assertEqual(item["clinical_registry"]["new_records"], 4)
         self.assertEqual(item["clinical_registry"]["stored_results"], 2482)
         self.assertEqual(item["ranked_research_only"]["Phase 3"], 8)
+        self.assertEqual(item["strict_entry_gate_shortlist_count"], 0)
         self.assertFalse(item["trade_entry_authorized"])
         self.assertFalse(item["historical_return_edge_validated"])
         self.assertFalse(item["full_universe_coverage_verified"])
