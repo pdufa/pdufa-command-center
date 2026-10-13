@@ -147,7 +147,9 @@ def render_am_results():
             _number(gem.get("verified_phase3_tracking")) +
             " · awaiting second financing: " +
             _number(gem.get("awaiting_second_financing")) +
-            " · NO TRADE APPROVAL"
+            " · ALL ENTRY GATES: " +
+            _number(gem.get("strict_entry_gate_shortlist_count")) +
+            " · MANUAL REVIEW ONLY — NO TRADE APPROVAL"
         )
     else:
         st.caption("BLOCK 4 — GEMS: latest overnight audit PENDING / STALE; "
