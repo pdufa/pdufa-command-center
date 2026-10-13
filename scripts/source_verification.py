@@ -319,6 +319,35 @@ def sec_url_matches(url, cik):
     return bool(match and int(match.group(1)) == int(cik))
 
 
+
+def documented_preferred_share_purchase(text, closing_date):
+    """Strict SEC 8-K fallback for dated, completed preferred-share purchase.
+
+    A purchase agreement, future issuance, closing target, or term sheet does
+    not prove funds were received. Require a dated actual Closing Date,
+    past-tense Purchasers purchased shares, and an explicit dollar aggregate.
+    This only verifies the specific closing, never financing #2 or entry.
+    """
+    for match in re.finditer(r"(?i)\bclosing\s+date\b", text):
+        passage = text[max(0, match.start() - 95):match.end() + 1000]
+        if closing_date not in dates(passage):
+            continue
+        # Look for a real completed acquisition of issued preferred shares,
+        # not statements that buyers MAY purchase shares in the future.
+        bought = re.search(r"(?i)\bpurchasers?\s+purchased\s+an?\s+aggregate\s+of\s+[\d,]+\s+shares\b", passage)
+        price = re.search(r"(?i)\baggregate\s+purchase\s+price\s+of\s*\$\s*[\d,]+(?:\.\d+)?\b", passage)
+        if not bought or not price or price.start() < bought.end():
+            continue
+        if not re.search(r"(?i)\bpreferred\s+stock\b", passage[:price.end()]):
+            continue
+        # Ensure the purchase follows (rather than precedes) the same dated
+        # Closing Date anchor, so an unrelated historical purchase cannot pass.
+        if bought.start() < match.end() - max(0, match.start() - 95):
+            continue
+        return passage[:price.end()]
+    return ""
+
+
 class Verifier:
     def __init__(self, companies, fetch=None, as_of=None, issuer_sources=None):
         self.companies = {r["ticker"].upper(): r for r in companies}
@@ -593,6 +622,11 @@ class Verifier:
             passages = [plain[max(0, m.start()-100):m.end()+350] for m in re.finditer(
                 r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
             if not any(close in dates(p) for p in passages):
+                completed_purchase = documented_preferred_share_purchase(plain, close)
+                if completed_purchase:
+                    return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                        "Company-matched SEC filing confirms completed, dated preferred-share purchases and aggregate price; second post-Phase-3 financing order and dilution risk remain separate",
+                        url, close, close, completed_purchase)
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                     "No completed transaction clause matches the stored closing date", url, close)
             from sec_financing_closure import candidates as closing_candidates
