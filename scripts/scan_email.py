@@ -69,14 +69,18 @@ def compose_start(scan, mode, run_id, at):
     )
 
 
-def compose_end(scan, mode, run_id, at, status, details, seconds):
+def compose_end(scan, mode, run_id, at, status, details, seconds, *, collector_status=None):
     name = label(scan)
+    clinical = collector_status in ("COMPLETE", "COMPLETE WITH WARNINGS") and str(scan) in {"2", "3", "4"}
+    subject_status = (f"CLINICAL {collector_status} / OVERALL {status}" if clinical else status)
+    collector_line = (f"Clinical collection: {collector_status}\nOverall PDUFA source verification: {status}\n\n"
+                      if clinical else "")
     return (
-        f"[PDUFA] END - {name} - {status}",
+        f"[PDUFA] END - {name} - {subject_status}",
         f"PDUFA SCAN FINISHED\n\nScan: {name}\nMode: {mode}\n"
         f"Finished (Pacific): {when_pacific(at)}\nRun ID: {run_id}\n"
         f"Final status: {status}\nElapsed: {max(seconds,0)/60:.1f} minutes\n\n"
-        f"RESULTS SUMMARY\n{details}\n\n"
+        f"{collector_line}RESULTS SUMMARY\n{details}\n\n"
         f"Dashboard: {DASHBOARD}\n"
         "Unverified source items are not counted as confirmed findings.\n"
     )
