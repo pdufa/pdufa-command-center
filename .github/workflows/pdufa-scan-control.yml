@@ -53,7 +53,7 @@ jobs:
           python - <<'PY'
           import json, os, urllib.request
           action = os.environ["CONTROL_ACTION"]
-          scan = "ALL" if action == "RESCAN_ALL" else os.environ["CONTROL_SCAN"]
+          scan = os.environ["CONTROL_SCAN"]  # target one block or ALL without remapping
           url = ("https://api.github.com/repos/" + os.environ["GITHUB_REPOSITORY"]
                  + "/actions/workflows/pdufa-nightly-clinical.yml/dispatches")
           body = json.dumps({"ref": "main", "inputs": {"scan": scan}}).encode()
