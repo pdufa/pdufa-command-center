@@ -100,6 +100,27 @@ class ScanRepairs(unittest.TestCase):
         text = "PDUFA goal date of November 1, 2026, extended to a target action date of December 1, 2026."
         self.assertEqual(v.target_dates(text), {"2026-11-01", "2026-12-01"})
 
+    def test_neighboring_pdf_program_does_not_supply_target_date(self):
+        source = ("Test Pharma pipeline • OtherDrug for skin infection PDUFA date of December 1, 2026 "
+                  "• TestDrug for lung cancer PDUFA date of November 1, 2026").encode()
+        result = self.verifier(source).regulatory({**EVENT, "pdufa_evidence_url": DOC})[0]
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["observed"], "2026-11-01")
+
+    def test_same_drug_other_indication_does_not_supply_target_date(self):
+        event = {**EVENT, "indication": "advanced systemic mastocytosis", "pdufa_evidence_url": DOC}
+        source = ("Test Pharma TestDrug for advanced systemic mastocytosis has a PDUFA date of November 1, 2026. "
+                  "TestDrug for nonadvanced systemic mastocytosis has a PDUFA date of December 1, 2026.").encode()
+        result = self.verifier(source).regulatory(event)[0]
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["observed"], "2026-11-01")
+
+    def test_nonadvanced_indication_requires_its_qualifier(self):
+        self.assertFalse(v.indication_matches({"indication": "Non-Advanced Systemic Mastocytosis"},
+                                              "advanced systemic mastocytosis"))
+        self.assertTrue(v.indication_matches({"indication": "Non-Advanced Systemic Mastocytosis"},
+                                             "NonAdvanced Systemic Mastocytosis"))
+
     def test_dose_suffix_does_not_hide_exact_active_drug_identity(self):
         self.assertTrue(v.drug_matches({"drug": "Ameluz PDT"}, "Ameluz is a photosensitizer"))
         self.assertTrue(v.drug_matches({"drug": "Phentolamine Ophthalmic Solution 0.75%"}, "phentolamine ophthalmic solution for presbyopia"))

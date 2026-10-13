@@ -128,9 +128,22 @@ def drug_matches(event, text):
 def indication_matches(event, text):
     stop = {"patients", "adults", "adult", "children", "treatment", "therapy",
             "with", "and", "the", "for", "age", "years", "including"}
-    tokens = {x for x in normalized(event.get("indication", "")).split()
+    indication = re.sub(r"\bnonadvanced\b", "non advanced", normalized(event.get("indication", "")))
+    text = re.sub(r"\bnonadvanced\b", "non advanced", normalized(text))
+    tokens = {x for x in indication.split()
               if len(x) >= 4 and x not in stop}
     body = set(normalized(text).split())
+    if re.search(r"\bnon\s*advanced\b", indication):
+        if not re.search(r"\bnon\s*advanced\b", normalized(text)):
+            return False
+    qualifiers = tokens & {"advanced", "nonadvanced", "severe", "chronic", "acute"}
+    if "advanced" in qualifiers:
+        if re.search(r"\bnon\s+advanced\b", indication):
+            qualifiers.discard("advanced")
+        elif not re.search(r"\badvanced\b", re.sub(r"\bnon\s+advanced\b", "nonadvanced", text)):
+            return False
+    if not qualifiers <= body:
+        return False
     return bool(tokens) and len(tokens & body) >= min(2, len(tokens))
 
 
@@ -426,12 +439,30 @@ class Verifier:
                 if application and not re.search(r"(?<!\d)" + re.escape(application) + r"(?!\d)", plain):
                     continue
                 if claim == "PDUFA_TARGET":
-                    sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z])", plain)
+                    # Major PDF bullets separate programs even when extraction
+                    # leaves their descriptions without sentence punctuation.
+                    sections = re.split(r"\s*[•]\s*|(?<=[.!?])\s+(?=[A-Z])", plain)
+                    sentences = []
+                    for section in sections:
+                        if len(section) > 1500:
+                            # HTML menus and headings can precede a dateline
+                            # without punctuation; limit identity to the claim.
+                            sentences.extend(section[max(0, m.start()-650):m.end()+180]
+                                for m in re.finditer(r"(?i)\bPDUFA\b|\btarget action date\b", section))
+                        else:
+                            sentences.append(section)
                     passages = []
                     for i, passage in enumerate(sentences):
                         if not re.search(r"(?i)\bPDUFA\b|\btarget action date\b", passage):
                             continue
-                        context = " ".join(sentences[max(0, i-1):i+2])
+                        context = passage
+                        # A short continuation may inherit its preceding drug
+                        # identity. Never borrow identity from the next program
+                        # or from an explicit target for another indication.
+                        if (not drug_matches(event, passage) and len(passage) <= 350
+                                and re.match(r"(?i)^(?:the\s+)?(?:FDA\b|PDUFA\b)", passage.strip())
+                                and not re.search(r"(?i)\bfor\b", passage)):
+                            context = " ".join(sentences[max(0, i-1):i+1])
                         if drug_matches(event, context) and indication_matches(event, context):
                             passages.append(passage)
                     observed = set().union(*(target_dates(p) for p in passages)) if passages else set()
