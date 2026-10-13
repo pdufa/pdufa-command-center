@@ -138,18 +138,24 @@ async function audit(){
       await appFrame.getByRole("tab",{name:"SCANS",exact:true}).click({timeout:15000});
       const gemsReady=await waitForRender(page,appFrame,async(text,frame)=>
         await frame.getByRole("tab",{name:"SCANS",exact:true}).getAttribute("aria-selected")==="true"
-        && text.includes("GEMS — PHASE 3 / POST-FINANCING / PDUFA")
-        && text.includes("GEM SOURCE & MODEL READINESS")
         && text.includes("NIGHTLY SCAN REPORT"));
       appFrame=gemsReady.frame;
-      result.checks.gemScannerStagePanelsLive=
-        ["GEMS — PHASE 3 / POST-FINANCING / PDUFA",
-         "BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2",
-         "GEM SOURCE & MODEL READINESS",
-         "GEM SCAN QUALIFIERS & FULL COLUMNS",
-         "NIGHTLY SCAN REPORT"].every(label=>gemsReady.text.includes(label));
+      const gemRequired=[
+        "GEMS — PHASE 3 / POST-FINANCING / PDUFA",
+        "BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2",
+        "GEM SOURCE & MODEL READINESS",
+        "GEM SCAN QUALIFIERS & FULL COLUMNS",
+        "NIGHTLY SCAN REPORT"
+      ];
+      result.gemDiagnostic={
+        missing:gemRequired.filter(label=>!gemsReady.text.includes(label)),
+        hasSourceLoadError:gemsReady.text.includes("GEM scan source load failed"),
+        hasStaleSourceWarning:gemsReady.text.includes("SOURCE SNAPSHOT STALE"),
+        visibleGemsSection:gemsReady.text.slice(0,2200),
+      };
+      result.checks.gemScannerStagePanelsLive=result.gemDiagnostic.missing.length===0;
       if(!result.checks.gemScannerStagePanelsLive)
-        result.errors.push("Live SCANS is missing GEM classifications, discovery, readiness, or source audit.");
+        result.errors.push("Live GEM panel incomplete: "+result.gemDiagnostic.missing.join(" | "));
       await page.screenshot({path:path.join(outDir,"streamlit-gem-scans-verification.png"),fullPage:false});
       await appFrame.getByRole("tab",{name:"PIPELINE",exact:true}).click({timeout:15000});
       const restored=await waitForRender(page,appFrame,async(text,frame)=>
