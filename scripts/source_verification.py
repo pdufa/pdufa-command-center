@@ -219,7 +219,15 @@ def publication_dates(raw, plain):
         return metadata
     # Require a press-release dateline marker rather than any early date;
     # a future PDUFA target in the headline is not a release date.
-    marker = re.search(r"(?i)((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)\s+\d{1,2},\s+20\d{2})\s*(?:\(|—|--|/PRNewswire)", plain[:6000])
+    # Require a named wire service next to a published date. A PDUFA date
+    # followed by "--", an em dash, or "(approval target)" is NOT a dateline.
+    marker = re.search(
+        r"(?i)((?:January|February|March|April|May|June|July|August|September|"
+        r"October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|"
+        r"Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)"
+        r"\s+\d{1,2},\s+20\d{2})\s*"
+        r"(?:\(\s*(?:GLOBE NEWSWIRE|BUSINESS WIRE|PRNEWSWIRE|ACCESSWIRE)\s*\)|/PRNewswire)",
+        plain[:6000])
     if marker:
         return dates(marker.group(1))
     # SEC-filed company press releases often use a conventional dateline
