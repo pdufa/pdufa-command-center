@@ -143,6 +143,32 @@ def attributed_target_dates(event, passage):
     return confirmed
 
 
+def documented_pdufa_extension(event, text):
+    """Require one issuer-documented FDA extension from a prior date to a new date.
+
+    A document containing different PDUFA dates alone cannot supersede a
+    conflict. The FDA-extension statement, exact drug, disease and both dated
+    endpoints must occur in the same local passage.
+    """
+    day = (r"(?:20\d{2}-\d{2}-\d{2}|"
+           r"(?:January|February|March|April|May|June|July|August|September|"
+           r"October|November|December)\s+\d{1,2},?\s+20\d{2})")
+    pattern = r"(?i)\bfrom\s+(" + day + r")\s+to\s+(" + day + r")"
+    for match in re.finditer(pattern, text):
+        start = max(0, match.start() - 480)
+        passage = text[start:match.end() + 80]
+        prefix = text[start:match.start()]
+        if (not re.search(r"(?i)\bextend(?:ed|s|ing)?\b", prefix)
+                or not re.search(r"(?i)\bPDUFA\b|Prescription Drug User Fee Act", prefix)
+                or not drug_matches(event, passage)
+                or not indication_matches(event, passage)):
+            continue
+        old, new = dates(match.group(1)), dates(match.group(2))
+        if len(old) == len(new) == 1 and next(iter(old)) < next(iter(new)):
+            return next(iter(old)), next(iter(new)), passage
+    return None
+
+
 def drug_matches(event, text):
     # Explicit combination drugs must be present together in one local
     # context. Splitting '+' into independent aliases would be unsafe:
@@ -676,6 +702,19 @@ class Verifier:
                 if application and not re.search(r"(?<!\d)" + re.escape(application) + r"(?!\d)", plain):
                     continue
                 if claim == "PDUFA_TARGET":
+                    extension = documented_pdufa_extension(event, plain)
+                    if extension:
+                        old_target, new_target, extension_passage = extension
+                        status = "VERIFIED" if new_target == expected else "CONFLICT"
+                        reason = ("Explicit dated FDA PDUFA extension supersedes " + old_target
+                                  if status == "VERIFIED" else
+                                  "Explicit FDA extension disagrees with the saved target date")
+                        if status == "VERIFIED" and expected < self.as_of.isoformat():
+                            status, reason = "REVIEW_REQUIRED", (
+                                "Extended target date has passed; FDA decision still unverified")
+                        results.append(self.result(event, "FDA", claim, status, reason,
+                            url, expected, new_target, extension_passage))
+                        continue
                     # Preserve semicolons within a program description,
                     # but assign target dates only to the corresponding program
                     # via attributed_target_dates; never borrow the next drug's date.
@@ -738,6 +777,24 @@ class Verifier:
         conflicts = [r for r in results if r["verification_status"] == "CONFLICT"]
         verified = [r for r in results if r["verification_status"] == "VERIFIED"]
         if conflicts:
+            if saved_refs and not _discovery_only and claim == "PDUFA_TARGET":
+                # Only a *newer explicit extension* may supersede an older
+                # primary-source target conflict. A second bare date, or a
+                # different drug/program, cannot silently clear the conflict.
+                discovery_event = dict(event)
+                for key in ("pdufa_evidence_url", "trial_evidence_url",
+                            "financing_evidence_url", "issuer_evidence_url",
+                            "evidence_summary", "regulatory_summary"):
+                    discovery_event[key] = ""
+                discovered = self.regulatory(discovery_event, _discovery_only=True)
+                if (discovered and discovered[0]["verification_status"] == "VERIFIED"
+                        and discovered[0]["reason"].startswith(
+                            "Explicit dated FDA PDUFA extension supersedes ")
+                        and all(
+                            c["observed"] == discovered[0]["reason"].rsplit(" ", 1)[-1]
+                            for c in conflicts
+                        )):
+                    return discovered
             return conflicts[:1]
         if verified:
             return verified[:1]
