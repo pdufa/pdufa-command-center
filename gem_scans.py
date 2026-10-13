@@ -170,7 +170,7 @@ def build_gem_scans(root="data", as_of=None):
             item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
         for stage in STAGES:
-            reasons = _reasons(record, event, stage, source_status["feed_current"])
+            reasons = _reasons(item, event, stage, source_status["feed_current"])
             item[stage + " qualifier"] = ("QUALIFIED — RESEARCH ONLY" if not reasons else "REVIEW — NOT QUALIFIED")
             item[stage + " missing"] = "; ".join(reasons)
             item[stage + " score"] = _score(record, stage) if not reasons else None
