@@ -82,7 +82,7 @@ def render_am_results():
         # yesterday's figures as if they were today's 6 AM report.
         clinical, _note = published_report()
         report = make_snapshot(
-            clinical, published_source_report(), now=now
+            clinical, published_source_report(), gem=published_gem_block_report(), now=now
         )
         st.warning(
             "Today's scheduled 6 AM snapshot has not published yet. "
@@ -137,6 +137,25 @@ def render_am_results():
     )
     links = [("CLINICAL", clinical.get("source_run_url")),
              ("SEC / SOURCES", source.get("source_run_url"))]
+    gem = report.get("gem") or {}
+    if gem.get("overnight_report_published"):
+        st.caption(
+            "BLOCK 4 — GEMS: " + str(gem.get("status", "PARTIAL")) +
+            " · Phase 3 posted results stored: " +
+            _number(gem.get("stored_results")) +
+            " · verified Phase 3 tracking: " +
+            _number(gem.get("verified_phase3_tracking")) +
+            " · awaiting second financing: " +
+            _number(gem.get("awaiting_second_financing")) +
+            " · NO TRADE APPROVAL"
+        )
+    else:
+        st.caption("BLOCK 4 — GEMS: latest overnight audit PENDING / STALE; "
+                   "no new results or trade eligibility inferred.")
+    gem_run_url = gem.get("run_url") if gem.get("overnight_report_published") else None
+    if isinstance(gem_run_url, str) and gem_run_url.startswith(
+            "https://github.com/" + REPO + "/actions/runs/"):
+        st.link_button("OPEN OVERNIGHT GEMS SCAN", gem_run_url)
     for label, url in links:
         if isinstance(url, str) and url.startswith(
             "https://github.com/" + REPO + "/actions/runs/"
@@ -151,10 +170,13 @@ def render_am_results():
             for key, row in (clinical.get("runs") or {}).items()
             if isinstance(row, dict)
         ]
-        if rows:
-            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-        else:
-            st.write("No newly published overnight clinical detail available.")
+        rows.append({
+            "Scan": LABELS["GEM"],
+            "Status": gem.get("status") if gem.get("overnight_report_published") else "PENDING_OR_STALE",
+            "New records": gem.get("new_records") if gem.get("overnight_report_published") else None,
+            "Changed trials": None,
+        })
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
 
 def render_extended_source_report():
