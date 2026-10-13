@@ -133,7 +133,7 @@ class GemsFourthBlockTests(unittest.TestCase):
         self.assertIn('options=["2", "3", "4", "GEM"]', nightly)
         self.assertIn('rows.append(gem_block_summary_row(gem_report))', nightly)
         self.assertIn('render_gem_scan_block_status(gem_report, gem_running)', nightly)
-        self.assertIn('VERIFY SELECTED', nightly)
+        self.assertIn('VERIFY SAVED SOURCES', nightly)
         self.assertIn('RESCAN SELECTED', nightly)
         self.assertIn("options: [ALL, '2', '3', '4', GEM]", control)
         self.assertIn("gem-research-quality.yml/dispatches", control)
