@@ -208,6 +208,39 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(result["verification_status"], "REVIEW_REQUIRED")
         self.assertIn("second-financing sequence", result["reason"])
 
+    def test_sec_dated_completed_preferred_share_purchase_is_a_closing_not_stage_two(self):
+        event = {**EVENT, "financing_evidence_url": SEC_DOC,
+                 "financing_close_date": "2026-07-01"}
+        filing = (
+            b"On July 1, 2026 (the Closing Date), Test Pharma entered into an "
+            b"Investment Agreement with the Purchasers providing for the "
+            b"issuance and sale of shares of Series A Preferred Stock. "
+            b"Pursuant to the Investment Agreement, the Purchasers purchased "
+            b"an aggregate of 933,900 shares of Preferred Stock at a purchase "
+            b"price of $1,000 per share, for an aggregate purchase price of "
+            b"$933,900,000. The preferred shares were issued."
+        )
+        record = self.verifier(filing).financing(event)
+        self.assertEqual(record["verification_status"], "VERIFIED")
+        self.assertIn("second post-Phase-3 financing order", record["reason"])
+        self.assertEqual(record["observed"], "2026-07-01")
+        self.assertEqual(len(record["source_sha256"]), 64)
+
+        # Merely entering an agreement, projecting purchases, or a mismatch
+        # of the evidenced Closing Date must not verify cash receipt.
+        for invalid in (
+            b"On July 1, 2026 (the Closing Date), Test Pharma entered "
+            b"into an Investment Agreement. Purchasers will purchase "
+            b"933,900 preferred shares for $933,900,000 in the future.",
+            b"On July 1, 2026 (the Closing Date), Test Pharma entered "
+            b"into an Investment Agreement for Series A Preferred Stock. "
+            b"The Purchasers purchased an aggregate of 933,900 shares of "
+            b"Preferred Stock for an unspecified price.",
+            filing.replace(b"July 1, 2026", b"July 2, 2026"),
+        ):
+            self.assertEqual(self.verifier(invalid).financing(event)["verification_status"],
+                             "REVIEW_REQUIRED")
+
     def test_cash_fact_and_aligned_runway_arithmetic_are_separate_claims(self):
         records = self.verifier(financial_payload()).financial(EVENT)
         self.assertEqual([r["verification_status"] for r in records], ["VERIFIED", "VERIFIED"])
