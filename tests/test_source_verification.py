@@ -264,6 +264,18 @@ class VerificationTests(unittest.TestCase):
         raw = b"Test Pharma announced TestDrug in lung cancer. The PDUFA date is November 1, 2026."
         self.assertEqual(self.verifier(raw).issuer(event)[0]["verification_status"], "REVIEW_REQUIRED")
 
+    def test_city_hyphen_dateline_is_valid_but_pdufa_date_is_not_publish_date(self):
+        event = {**EVENT, "trial_evidence_url": SEC_DOC}
+        raw = (b"Test Pharma reports TestDrug results in lung cancer. "
+               b"SOUTH SAN FRANCISCO, Calif., October 1, 2026 - "
+               b"Test Pharma announces expanded clinical results for TestDrug in lung cancer.")
+        row = self.verifier(raw).issuer(event)[0]
+        self.assertEqual(row["verification_status"], "VERIFIED")
+        self.assertEqual(row["observed"], "2026-10-01")
+        wrong = (b"Test Pharma announces TestDrug for lung cancer. "
+                 b"PDUFA November 1, 2026 - FDA target date remains scheduled.")
+        self.assertEqual(self.verifier(wrong).issuer(event)[0]["verification_status"], "REVIEW_REQUIRED")
+
     def test_issuer_discovers_actual_sec_exhibit_when_saved_url_absent(self):
         def fetch(url):
             if url.endswith(".json") and "/submissions/" in url:
