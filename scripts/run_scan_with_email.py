@@ -139,7 +139,10 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
         })
         try:
             subject, body = compose_end(
-                scan, mode, run_id, finished, state, details, duration)
+                scan, mode, run_id, finished, state, details, duration,
+                collector_status=(report.get("collector_status")
+                                  if report.get("scan_kind") == "CLINICAL_SOURCE_COLLECTION_ONLY"
+                                  else None))
             response = sender(settings, subject, body)
             audit["end_email"] = response["status"]
             audit["end_inbox"] = response.get("inbox_status", "NOT_CONFIRMED")
