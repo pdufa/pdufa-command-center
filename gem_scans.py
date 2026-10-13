@@ -157,6 +157,11 @@ def financing_watch_state(record, tracking_status):
 def _reasons(record, event, stage, feed_current):
     reasons = []
     days = record.get("Days to PDUFA")
+    # Never permit a qualified GEM rank when the exact Phase 3 program has
+    # no currently verified, nonfuture successful result. Early leads
+    # remain visible as research-only review rows with no ranking.
+    if not str(record.get("Phase 3 tracking") or "").startswith("TRACKING"):
+        reasons.append("Verified Phase 3 tracking not active for this exact program")
     qualification = str(record.get("Entry qualification") or "")
     event_key = str(record.get("Exact event") or "").strip()
     if not feed_current or record.get("Evidence score /100") is None:
