@@ -1,11 +1,26 @@
 """Exercise ad hoc PIN authorization and GitHub dispatch without using real secrets/network."""
 import json
+import inspect
 import unittest
 from unittest.mock import MagicMock, patch
 import nightly_scan_dashboard as mod
 
 
 class DispatchAdhocTests(unittest.TestCase):
+    def test_ad_hoc_control_stays_inside_current_pdufa_scans(self):
+        """Prevent orphaning the PIN-gated audit when navigation changes."""
+        scan_renderer = inspect.getsource(mod.render_nightly_scan_report)
+        self.assertIn("render_adhoc_error_check_controls()", scan_renderer)
+        self.assertIn("## NIGHTLY SCAN REPORT", scan_renderer)
+        app = (mod.Path(__file__).resolve().parents[1] / "app.py").read_text(
+            encoding="utf-8") if hasattr(mod, "Path") else None
+        if app is None:
+            from pathlib import Path
+            app = (Path(__file__).resolve().parents[1] / "app.py").read_text(
+                encoding="utf-8")
+        self.assertIn('["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]', app)
+        self.assertIn("render_nightly_scan_report()", app)
+
     def test_dispatch_uses_auth_and_exact_workflow_payload(self):
         response = MagicMock()
         response.status = 204
