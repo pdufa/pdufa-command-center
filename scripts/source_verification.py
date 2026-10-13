@@ -820,6 +820,19 @@ class Verifier:
                 results.append(self.result(event, "FDA", claim, "REVIEW_REQUIRED", "Unusable source: " + type(exc).__name__, url, expected))
         conflicts = [r for r in results if r["verification_status"] == "CONFLICT"]
         verified = [r for r in results if r["verification_status"] == "VERIFIED"]
+        if conflicts and claim == "PDUFA_TARGET":
+            # Explicit issuer-documented FDA amendments can supersede old
+            # target dates within the SAVED primary records themselves.
+            # Do not let an old primary release veto a newer verified extension,
+            # but never resolve unrelated dates or a non-exact program.
+            extensions = [
+                r for r in verified if
+                r["reason"].startswith("Explicit dated FDA PDUFA extension supersedes ")
+            ]
+            if (len(extensions) == 1 and
+                    all(c["observed"] == extensions[0]["reason"].rsplit(" ", 1)[-1]
+                        for c in conflicts)):
+                return extensions
         if conflicts:
             if saved_refs and not _discovery_only and claim == "PDUFA_TARGET":
                 # Only a *newer explicit extension* may supersede an older

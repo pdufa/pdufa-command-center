@@ -291,6 +291,35 @@ class VerificationTests(unittest.TestCase):
             self.assertEqual(rejected["verification_status"], "CONFLICT", rejected)
             self.assertEqual(rejected["source_url"], old_url)
 
+    def test_saved_old_target_cannot_veto_exact_later_fda_extension(self):
+        old_url = SEC_DOC.replace("ex99-1.htm", "outdated.htm")
+        current_url = SEC_DOC
+        old = (b"Test Pharma announced TestDrug for lung cancer. "
+               b"PDUFA target date October 1, 2026.")
+        amended = (b"Test Pharma says FDA has extended the PDUFA target action "
+                   b"date for TestDrug for lung cancer from October 1, 2026 "
+                   b"to November 1, 2026.")
+        event = {**EVENT, "pdufa_evidence_url": old_url,
+                 "trial_evidence_url": current_url}
+        verifier = verify.Verifier([COMPANY],
+            fetch=lambda url: old if url == old_url else amended,
+            as_of=date(2026, 10, 12))
+        resolved = verifier.regulatory(event)[0]
+        self.assertEqual(resolved["verification_status"], "VERIFIED", resolved)
+        self.assertEqual(resolved["source_url"], current_url)
+        self.assertEqual(resolved["observed"], "2026-11-01")
+        # An amendment for the wrong drug/indication or a different new date
+        # must never erase a contrary primary record.
+        for invalid in (
+            amended.replace(b"TestDrug", b"DifferentDrug"),
+            amended.replace(b"lung cancer", b"kidney cancer"),
+            amended.replace(b"November 1, 2026", b"December 1, 2026"),
+        ):
+            v = verify.Verifier([COMPANY],
+                fetch=lambda url, bad=invalid: old if url == old_url else bad,
+                as_of=date(2026, 10, 12))
+            self.assertEqual(v.regulatory(event)[0]["verification_status"], "CONFLICT")
+
     def test_explicit_extension_direct_source_rejects_other_target(self):
         release = (b"Test Pharma says the FDA has extended the PDUFA "
                    b"target action date for TestDrug for lung cancer from "
