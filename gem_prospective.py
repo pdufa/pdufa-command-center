@@ -1,6 +1,6 @@
 """Preserve prospective GEM research states without inventing historical trades.
 
-This is a dated READ-ONLY research observation, not a backtest-ready feature
+This is a dated READ-ONLY, research-only observation, not a backtest-ready feature
 snapshot. Converting it to gem_historical_snapshots.csv is prohibited without
 point-in-time primary disclosure dates, complete financing sequence and
 verified split-adjusted equity prices.
