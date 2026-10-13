@@ -5,7 +5,6 @@ from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_bo
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
-from strategy_view import render_strategy_page
 from post_phase3_workspace import render_post_phase3_workspace
 from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid, sort_pdufa_rows,
@@ -3198,7 +3197,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA","DISEASE & MARKET HORIZON","STRATEGY","2. PDUFA CALENDAR","9. PREDICTION ENGINE"]
+nav_options = ["PDUFA","DISEASE & MARKET HORIZON","2. PDUFA CALENDAR","9. PREDICTION ENGINE"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -4167,24 +4166,6 @@ elif page == "DISEASE & MARKET HORIZON":
     st.info("Estimate penetration, potential peak sales, sales relative to market cap, Competitive Advantage Score, and Commercial Opportunity Score. Keep OUR FDA PoA separate from OUR TRADE SCORE and Entry Gate.")
     st.warning("This page is a research framework linked to the Google Sheet. Live company-by-company epidemiology, competitor research, score calculation, and Sheet synchronization are not yet connected.")
 
-
-elif page == "STRATEGY":
-    # Derive this view from the same persisted Pipeline universe and stage
-    # selection as PIPELINE; curate only exact NCT annotations, never its scope.
-    strategy_today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
-    strategy_signature = tuple(
-        (name, (Path("data") / name).stat().st_mtime_ns)
-        for name in PIPELINE_SOURCE_FILES if (Path("data") / name).exists()
-    )
-    strategy_universe = load_pipeline_universe_data(strategy_signature, strategy_today)
-    issue_trials_path = Path("data/issue_trials.csv")
-    issue_ledger_path = Path("data/all_phase_trials.csv")
-    issue_trials_signature = (
-        issue_trials_path.stat().st_mtime_ns if issue_trials_path.exists() else 0,
-        issue_ledger_path.stat().st_mtime_ns if issue_ledger_path.exists() else 0,
-    )
-    strategy_catalog = load_issue_trial_catalog(issue_trials_signature)
-    render_strategy_page(strategy_universe, strategy_catalog)
 
 
 elif page == "2. PDUFA CALENDAR":
