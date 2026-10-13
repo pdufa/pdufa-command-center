@@ -47,13 +47,13 @@ class PacificNightlySequenceTests(unittest.TestCase):
             directory = Path(directory)
             fake_date = directory / "date"
             fake_date.write_text(
-                "#!/bin/sh\\n"
-                'case "$1" in\\n'
-                '  +%H) echo "$MOCK_LOCAL_HOUR";;\\n'
-                '  +%M) echo "$MOCK_LOCAL_MINUTE";;\\n'
-                '  +%z) echo "$MOCK_LOCAL_OFFSET";;\\n'
-                '  *) exit 2;;\\n'
-                "esac\\n", encoding="utf-8")
+                "#!/bin/sh\n"
+                'case "$1" in\n'
+                '  +%H) echo "$MOCK_LOCAL_HOUR";;\n'
+                '  +%M) echo "$MOCK_LOCAL_MINUTE";;\n'
+                '  +%z) echo "$MOCK_LOCAL_OFFSET";;\n'
+                '  *) exit 2;;\n'
+                "esac\n", encoding="utf-8")
             fake_date.chmod(0o755)
             cases = (
                 ("03", "56", "-0700", "30 3 * * *", "run=false"),
