@@ -24,7 +24,7 @@ def sample(ticker="AAA", market=10, second=True, days=40):
     }
 
 
-def run(rows, *, fresh=True, events=None):
+def run(rows, *, fresh=True, events=None, sec_current=True):
     verified_events = {
         r["Exact event"]: {
             "ticker": r["Ticker"], "nct_id": r["NCT ID"],
@@ -44,7 +44,9 @@ def run(rows, *, fresh=True, events=None):
     events = verified_events
     with patch("gem_scans.build_queue", return_value=(
         rows, {"feed_current": fresh, "as_of": "2026-10-13"},
-    )), patch("gem_scans._event_map", return_value=events):
+    )), patch("gem_scans._event_map", return_value=events), patch(
+        "gem_scans.sec_recheck_current", return_value=sec_current
+    ):
         return build_gem_scans("fake-path")
 
 
@@ -63,6 +65,15 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[1]["PDUFA GEM"] == "#2 (96)"
         assert all(status["scan_counts"][stage]["qualified"] == 2 for stage in STAGES)
 
+
+    def test_global_sec_blocked_cannot_produce_post_financing_or_pdufa_entry(self):
+        rows, status = run([sample(second=True)], sec_current=False)
+        assert status["sec_financing_source_current"] is False
+        assert rows[0]["Phase 3 rank"] == 1  # early watch is still allowed
+        assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["PDUFA rank"] is None
+        assert rows[0]["GEM trade entry gate"] == "HOLD — STALE SOURCE EVIDENCE"
+        assert "unblocked SEC" in rows[0]["Post-Financing missing"]
 
     def test_financing_is_only_scored_when_exact_second_closing_verified(self):
         rows, _ = run([sample(second=False)])
