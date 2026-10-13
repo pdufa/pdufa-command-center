@@ -619,11 +619,17 @@ class Verifier:
             session = datetime.fromtimestamp(stamp, timezone.utc).date()
             if session > self.as_of or (self.as_of-session).days > 7:
                 raise ValueError("Market session is future-dated or over seven calendar days old")
-            expected = event.get("price_last", "")
-            state = "CONFLICT" if expected and abs(float(expected)-price) > max(0.02, price*0.005) else "VERIFIED"
-            return [self.result(event, "MARKET", "PRICE_VOLUME", state,
-                "Direct provider response ticker, bar alignment, numbers and session checked; no exchange-level corroboration claimed",
-                url, expected, price, json.dumps({"session": session.isoformat(), "close": price, "volume": volume}))] + self.market_extras(event)
+            # Imported event.price_last is undated. Treating a normal price
+            # move as a contradiction with today's bar creates false mandatory
+            # conflicts. Without a matching quote date, this is not a valid
+            # same-session price comparison.
+            previous_undated_snapshot = str(event.get("price_last", "")).strip()
+            return [self.result(event, "MARKET", "PRICE_VOLUME", "VERIFIED",
+                "Provider ticker, bar alignment, values and session verified; "
+                "an undated saved price cannot contradict a dated market bar",
+                url, "", price, json.dumps({"session": session.isoformat(),
+                    "close": price, "volume": volume,
+                    "undated_saved_price_last": previous_undated_snapshot}))] + self.market_extras(event)
         except IdentityConflict as exc:
             state, reason = "CONFLICT", str(exc)
         except (ValueError, KeyError, TypeError) as exc:
