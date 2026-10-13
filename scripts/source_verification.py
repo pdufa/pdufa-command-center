@@ -206,7 +206,19 @@ def publication_dates(raw, plain):
     # Require a press-release dateline marker rather than any early date;
     # a future PDUFA target in the headline is not a release date.
     marker = re.search(r"(?i)((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)\s+\d{1,2},\s+20\d{2})\s*(?:\(|—|--|/PRNewswire)", plain[:6000])
-    return dates(marker.group(1)) if marker else set()
+    if marker:
+        return dates(marker.group(1))
+    # SEC-filed company press releases often use a conventional dateline
+    # such as "SOUTH SAN FRANCISCO, Calif., May 5, 2026 -". A bare
+    # "PDUFA November 14, 2026 - ..." is NOT a publication dateline.
+    month = (r"(?:January|February|March|April|May|June|July|August|September|"
+             r"October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|"
+             r"Jun\.?|Jul\.?|Aug\.?|Sep\.?|Oct\.?|Nov\.?|Dec\.?)")
+    dateline = re.search(
+        r"(?i)\b[A-Z]{2,}(?:\s+[A-Z]{2,}){0,3},\s*(?:[A-Z][a-z]+\.?,\s*)?"
+        + "(" + month + r"\s+\d{1,2},\s+20\d{2})" + r"\s+[-–—]\s",
+        plain[:6000])
+    return dates(dateline.group(1)) if dateline else set()
 
 
 def numeric(value):
