@@ -1,8 +1,11 @@
 """No GEM trade-entry review is possible before verified close #2."""
 from datetime import date, timedelta
+import json
+import tempfile
+from pathlib import Path
 import unittest
 
-from gem_financing_gate import second_post_phase3_close, entry_status
+from gem_financing_gate import second_post_phase3_close, entry_status, sec_recheck_current
 
 EVENT = "ACME|PHASE3_20261201"
 AS_OF = date(2026, 10, 13)
@@ -86,6 +89,40 @@ class GemAbsoluteEntryTests(unittest.TestCase):
             closed=True, qualified=True,
             feed_current=True, days_to_pdufa=3
         ), "NO NEW ENTRY — PDUFA −3 EXIT BOUNDARY")
+
+    def test_sec_collector_requires_current_completed_unblocked_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "step7_live_status.json"
+            row = {
+                "Source": "SEC financing recheck",
+                "Collector status": "COMPLETE",
+                "Freshness": "RECENT",
+                "Health": "RECENT",
+                "Blocked records": 0,
+                "Last checked UTC": "2026-10-13T16:00:00+00:00"
+            }
+            def set_status(source_rows):
+                path.write_text(json.dumps({"source_checks": source_rows}),
+                                encoding="utf-8")
+            set_status([row])
+            self.assertTrue(sec_recheck_current(directory, as_of=AS_OF))
+            for override in (
+                {"Blocked records": 1},
+                {"Blocked records": None},
+                {"Blocked records": "0"},
+                {"Collector status": "PARTIAL"},
+                {"Freshness": "STALE"},
+                {"Health": "BLOCKED / PARTIAL"},
+                {"Last checked UTC": "2026-10-01T16:00:00+00:00"},
+                {"Last checked UTC": "2026-10-14T16:00:00+00:00"},
+            ):
+                with self.subTest(override=override):
+                    set_status([{**row, **override}])
+                    self.assertFalse(sec_recheck_current(directory, as_of=AS_OF))
+            set_status([row, row])
+            self.assertFalse(sec_recheck_current(directory, as_of=AS_OF))
+            set_status([])
+            self.assertFalse(sec_recheck_current(directory, as_of=AS_OF))
 
     def test_pre_close_rank_never_unlocks_entry(self):
         self.assertEqual(entry_status(

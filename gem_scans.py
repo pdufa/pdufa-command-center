@@ -12,7 +12,7 @@ from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
-from gem_financing_gate import entry_status
+from gem_financing_gate import entry_status, sec_recheck_current
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -155,7 +155,7 @@ def financing_watch_state(record, tracking_status):
         return "FINANCING STARTED — CLOSURE PENDING"
     return "SECOND FINANCING NOT VERIFIED CLOSED — MONITOR"
 
-def _reasons(record, event, stage, feed_current):
+def _reasons(record, event, stage, feed_current, sec_current):
     reasons = []
     days = record.get("Days to PDUFA")
     # Never permit a qualified GEM rank when the exact Phase 3 program has
@@ -185,6 +185,8 @@ def _reasons(record, event, stage, feed_current):
         reasons.append("Verified post-readout price base / normalized volume missing")
     if _number(record.get("Market activity /10")) < 4:
         reasons.append("Fresh sourced market quote unavailable")
+    if stage in ("Post-Financing", "PDUFA") and not sec_current:
+        reasons.append("Fresh complete unblocked SEC financing recheck required before trade entry")
     if stage == "Post-Financing":
         if record.get("PDUFA verification") != "VERIFIED — SOURCE LINKED":
             reasons.append("PDUFA date and planned -3 exit not source verified")
@@ -219,6 +221,7 @@ def build_gem_scans(root="data", as_of=None):
     out-of-window records stay visible as REVIEW rows with no score or rank.
     """
     records, source_status = build_queue(root, as_of=as_of)
+    sec_current = sec_recheck_current(root, as_of=source_status.get("as_of") or as_of)
     events = _event_map(root)
     results = []
     for record in records:
@@ -240,7 +243,7 @@ def build_gem_scans(root="data", as_of=None):
         )
         item["Financing watch"] = financing_watch_state(item, status)
         for stage in STAGES:
-            reasons = _reasons(item, event, stage, source_status["feed_current"])
+            reasons = _reasons(item, event, stage, source_status["feed_current"], sec_current)
             item[stage + " qualifier"] = ("QUALIFIED — RESEARCH ONLY" if not reasons else "REVIEW — NOT QUALIFIED")
             item[stage + " missing"] = "; ".join(reasons)
             item[stage + " score"] = _score(item, stage) if not reasons else None
@@ -255,7 +258,7 @@ def build_gem_scans(root="data", as_of=None):
         item["GEM trade entry gate"] = entry_status(
             closed=finance_closed,
             qualified=postclose_qualified,
-            feed_current=source_status["feed_current"],
+            feed_current=source_status["feed_current"] and sec_current,
             days_to_pdufa=days,
             excluded=status.startswith("CLOSED") and
                      "PDUFA -3" not in status,
@@ -293,6 +296,7 @@ def build_gem_scans(root="data", as_of=None):
         item["2nd Financing Completed"] != "YES — VERIFIED (HISTORICAL)"
         for item in results
     )
+    details["sec_financing_source_current"] = sec_current
     details["tracking_trigger"] = "VERIFIED_SUCCESSFUL_PHASE3_RESULTS_NOT_TRIAL_END_DATE"
     details["trade_exit_days_before_pdufa"] = TRADE_EXIT_DAYS_BEFORE_PDUFA
     details["last_eligible_entry_days_before_pdufa"] = MIN_NEW_ENTRY_DAYS

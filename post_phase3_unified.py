@@ -19,7 +19,7 @@ from step7_entry import GATES, safe_source
 from post_phase3_priority import WEIGHTS, score_candidate, assign_priority_ranks
 from post_phase3_review_priority import REVIEW_COMPONENTS, review_priority, assign_review_ranks
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
-from gem_financing_gate import second_post_phase3_close, entry_status
+from gem_financing_gate import second_post_phase3_close, entry_status, sec_recheck_current
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 NCT = re.compile(r"^NCT\d{8}$")
@@ -119,6 +119,7 @@ def build_queue(root, as_of=None):
              and as_of.tzinfo else as_of if isinstance(as_of, date)
              and not isinstance(as_of, datetime) else datetime.now(PACIFIC).date())
     current_feed = source_day(root) == today
+    sec_current = sec_recheck_current(root, as_of=today)
     regulatory_rows = read_rows(root / "pdufa_candidates.csv")
     financing_rows = read_rows(root / "step7_financing_review.csv")
     trials = read_rows(root / "step7_pre_phase3_feed.csv")
@@ -231,7 +232,7 @@ def build_queue(root, as_of=None):
             financing_cycle = "GREEN — FINANCING STARTED (AS OF REVIEW)"
         else:
             financing_cycle = "REVIEW — FINANCING UNVERIFIED"
-        green = (current_feed and funding and attested_ready and second_financing_verified and stage_fresh and verified_date and
+        green = (current_feed and sec_current and funding and attested_ready and second_financing_verified and stage_fresh and verified_date and
                  clinical and not conflict and pdufa is not None and days >= LAST_ENTRY_MIN_DAYS)
         if excluded:
             status, action = "EXCLUDED — FDA DECIDED / DATE PASSED", "Historical only; do not open a position"
@@ -241,6 +242,8 @@ def build_queue(root, as_of=None):
             status, action = "REVIEW — SOURCE SNAPSHOT STALE", "Refresh saved source feed and financing checks"
         elif green:
             status, action = "GREEN — GATES ATTESTED", "Review evidence and execution plan before any trade"
+        elif not sec_current:
+            status, action = "REVIEW — SEC FINANCING RECHECK HOLD", "No entry: restore fresh, complete, unblocked SEC source verification"
         else:
             status = "REVIEW — ENTRY BLOCKED"
             if not second_financing_verified:
@@ -265,7 +268,7 @@ def build_queue(root, as_of=None):
             "Verified 2nd financing close date": second_close_date or "",
             "Trade entry gate": entry_status(
                 closed=second_financing_verified, qualified=bool(green),
-                feed_current=current_feed, days_to_pdufa=days, excluded=excluded
+                feed_current=current_feed and sec_current, days_to_pdufa=days, excluded=excluded
             ),
             "Financing cycle (separate)": financing_cycle,
             "Entry qualification": status,
@@ -273,7 +276,8 @@ def build_queue(root, as_of=None):
             "Days to PDUFA": days, "PDUFA date": pdufa.isoformat() if pdufa else "",
             "Planned exit (-3 days)": exit_date.isoformat() if exit_date else "",
             "Next action": action,
-            "Blockers": (finance_hold_reason if not second_financing_verified
+            "Blockers": ("SEC financing source blocked, partial or stale" if not sec_current
+                         else finance_hold_reason if not second_financing_verified
                          else clean(funding.get("Gate reasons")) or (
                              "No exact-event financing review available" if not funding
                              else clean(funding.get("Why blocked")))),
@@ -357,6 +361,7 @@ def build_queue(root, as_of=None):
     return rows, {
         "as_of": today.isoformat(), "feed_current": current_feed,
         "financing_events": len(financing_rows), "saved_trial_rows": len(trials),
+        "sec_financing_source_current": sec_current,
         "independent_research_rows": len(external),
         "green_count": sum(r["Entry qualification"].startswith("GREEN") for r in rows),
         "review_count": sum(r["Entry qualification"].startswith("REVIEW") for r in rows),

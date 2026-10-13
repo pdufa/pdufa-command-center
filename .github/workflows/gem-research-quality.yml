@@ -1,8 +1,18 @@
 name: GEM Research Quality Snapshot
 
-# Read-only daily evidence audit of saved repository files. Not a fresh
-# ClinicalTrials.gov/issuer/SEC scan and not an automatic trade signal.
+# Refresh actual ClinicalTrials.gov registry results, audit saved GEM
+# sources, and publish only reconciled review-only ledger observations.
+# The routine does NOT refresh SEC, certify issuer Phase 3 toplines,
+# validate historical stock returns, or place trades.
 on:
+  # Also initiate a run when this exact workflow is updated, so activating
+  # the safety gate does not depend on waiting for the next scheduled slot.
+  # Publishing CSV/JSON files will not recursively trigger this workflow.
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/gem-research-quality.yml"
   schedule:
     - cron: "10 16 * * *"
   workflow_dispatch:
