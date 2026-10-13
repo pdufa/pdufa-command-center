@@ -24,6 +24,8 @@ FILES = (
     "step7_pre_phase3_feed.csv",
     "post_phase3_discoveries.csv",
     "phase3_announcements.csv",
+    "finance_ir_sec_recheck_targets.csv",
+    "finance_ir_sec_recheck.csv",
 )
 STAGE_COLUMNS = {
     "Phase 3": (
@@ -131,6 +133,75 @@ def render_gem_scans(root="data"):
         "Scan output derives from existing clinical, SEC, FDA and market "
         "evidence. This button-free read-only view does not dispatch a new scan."
     )
+    # Research confirmations remain visible while the nightly SEC collector
+    # independently rechecks each dated transaction. Neither the research
+    # ledger nor a one-transaction SEC match can unlock the GEM entry gate.
+    st.markdown("### PUBLIC / INVESTOR SOURCE CONFIRMATIONS → FRESH SEC RECHECK")
+    st.caption(
+        "Public and company-site findings stay recorded even when SEC has not "
+        "confirmed a closing. Only exact-company and exact-date SEC evidence "
+        "can upgrade the independent transaction check. The second distinct "
+        "post-Phase-3 financing and dilution gates are unchanged."
+    )
+    with st.expander("RESEARCH STATUS — ALL 45 REVIEWED CLAIMS", expanded=False):
+        research_file = (
+            Path(__file__).resolve().parent / "reports" / "missing_sources" /
+            "public_web_cross_check_2026-10-13.csv"
+        )
+        if research_file.is_file():
+            try:
+                reviewed = pd.read_csv(research_file, dtype=str).fillna("")
+                fields = [
+                    "event_key", "category", "claim",
+                    "ir_full_45_review_status", "ir_full_45_evidence",
+                    "ir_full_45_source_links",
+                ]
+                st.dataframe(reviewed.reindex(columns=fields),
+                             use_container_width=True, hide_index=True)
+                st.caption(
+                    f"{len(reviewed):,} public research rows. A REVIEWED row "
+                    "is not proof a financing closed; some contain only pricing, "
+                    "older financing or unrelated acquisition evidence."
+                )
+            except (OSError, ValueError, pd.errors.ParserError):
+                st.warning("Public research ledger could not be displayed.")
+        else:
+            st.info("No saved public/Investor Relations research ledger available.")
+    with st.expander("FINANCING CLOSE DATE LEADS — SEC RECHECK QUEUE",
+                     expanded=False):
+        leads_file = path / "finance_ir_sec_recheck_targets.csv"
+        if leads_file.is_file():
+            try:
+                leads = pd.read_csv(leads_file, dtype=str).fillna("")
+                st.dataframe(leads, use_container_width=True, hide_index=True)
+                st.caption(
+                    "Each row is a dated public-source transaction lead, not an "
+                    "independently qualified second post-Phase-3 financing."
+                )
+            except (OSError, ValueError, pd.errors.ParserError):
+                st.warning("SEC recheck lead queue could not be displayed.")
+        else:
+            st.info("No dated IR/SEC recheck leads published in this build.")
+    with st.expander("LATEST SAVED FRESH SEC TRANSACTION RECHECKS",
+                     expanded=False):
+        fresh_file = path / "finance_ir_sec_recheck.csv"
+        if fresh_file.is_file():
+            try:
+                recent_checks = pd.read_csv(fresh_file, dtype=str).fillna("")
+                st.dataframe(recent_checks, use_container_width=True,
+                             hide_index=True)
+                st.caption(
+                    "SEC_TRANSACTION_VERIFIED confirms only the named closing. "
+                    "Even two matching company transactions do not bypass the "
+                    "separate exact-event Phase 3 timing and dilution review."
+                )
+            except (OSError, ValueError, pd.errors.ParserError):
+                st.warning("Published SEC recheck results could not be read.")
+        else:
+            st.info(
+                "No renewed SEC recheck results published to this snapshot yet. "
+                "Research leads are retained; trading remains on verification hold."
+            )
     counts = status["scan_counts"]
     track_metrics = st.columns(2)
     track_metrics[0].metric(
