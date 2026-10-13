@@ -18,6 +18,9 @@ def record(*, stage="Post-Financing", signal="2026-02-17"):
         "stage": stage, "signal_date": signal,
         "phase3_public_date": "2026-01-05",
         "phase3_source_url": "https://issuer.example/clinical",
+        "first_financing_public_date": "2026-01-23",
+        "first_financing_source_url":
+            "https://www.sec.gov/Archives/edgar/data/12345/filing1.htm",
         "second_financing_public_date": "2026-02-03",
         "second_financing_source_url":
             "https://www.sec.gov/Archives/edgar/data/12345/filing2.htm",
@@ -99,11 +102,23 @@ class GemCalibrationRegressionTests(unittest.TestCase):
         r = record()
         r["second_financing_public_date"] = "2026-03-01"
         reason, _ = validate_snapshot(r, AS_OF)
-        self.assertEqual(reason, "FINANCING_PUBLICATION_OR_SEC_IDENTITY_UNVERIFIED")
+        self.assertEqual(reason, "TWO_SEC_FINANCING_PUBLICATION_DATES_OR_ISSUER_UNVERIFIED")
         r = record()
         r["second_financing_source_url"] = "https://www.sec.gov/Archives/edgar/data/5555/other.htm"
         reason, _ = validate_snapshot(r, AS_OF)
-        self.assertEqual(reason, "FINANCING_PUBLICATION_OR_SEC_IDENTITY_UNVERIFIED")
+        self.assertEqual(reason, "TWO_SEC_FINANCING_PUBLICATION_DATES_OR_ISSUER_UNVERIFIED")
+
+    def test_first_financing_timeline_and_sec_identity_are_mandatory(self):
+        first = record()
+        first["first_financing_public_date"] = ""
+        reason, _ = validate_snapshot(first, AS_OF)
+        self.assertEqual(reason, "TWO_SEC_FINANCING_PUBLICATION_DATES_OR_ISSUER_UNVERIFIED")
+        wrong = record()
+        wrong["first_financing_source_url"] = (
+            "https://www.sec.gov/Archives/edgar/data/98765/notissuer.htm"
+        )
+        reason, _ = validate_snapshot(wrong, AS_OF)
+        self.assertEqual(reason, "TWO_SEC_FINANCING_PUBLICATION_DATES_OR_ISSUER_UNVERIFIED")
 
     def test_early_fda_actions_are_censored_not_fabricated_positive(self):
         r = record()
