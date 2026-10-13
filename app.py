@@ -12,7 +12,6 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
-from score_input_audit import render_score_input_audit
 import nightly_scan_dashboard as nightly_scan_dashboard_module
 render_nightly_scan_report = nightly_scan_dashboard_module.render_nightly_scan_report
 from phase2_pre_readout_p import attach_phase2_p
@@ -3236,23 +3235,20 @@ else:
         st.query_params.clear()
 
 if page == "PDUFA":
-    # Preserve existing Streamlit sessions after renaming the daily tab.
-    if st.session_state.get("pdufa_subtab") == "PHASE 3 DAILY":
+    # Preserve saved subtab selection after older labels are removed or renamed.
+    previous_subtab = st.session_state.get("pdufa_subtab")
+    if previous_subtab == "PHASE 3 DAILY":
         st.session_state["pdufa_subtab"] = "POST PHASE 3"
-    # Migrate previously selected labels once so the two research screens stay distinct.
-    if not st.session_state.get("_pdufa_scan_labels_v2_migrated", False):
-        selected_old = st.session_state.get("pdufa_subtab")
-        if selected_old in ("SCORING TESTS", "SCANS"):
-            st.session_state["pdufa_subtab"] = "SCORE AUDIT"
-        elif selected_old == "NIGHTLY SCAN REPORT":
-            st.session_state["pdufa_subtab"] = "SCANS"
-        st.session_state["_pdufa_scan_labels_v2_migrated"] = True
-    if st.session_state.get("pdufa_subtab") == "WATCHLIST / TRADING":
+    elif previous_subtab == "WATCHLIST / TRADING":
         st.session_state["pdufa_subtab"] = "WT"
+    elif previous_subtab == "NIGHTLY SCAN REPORT":
+        st.session_state["pdufa_subtab"] = "SCANS"
+    elif previous_subtab in ("SCORE AUDIT", "SCORING TESTS"):
+        st.session_state["pdufa_subtab"] = "PIPELINE"
     # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
     # Track the selected tab to avoid running the pre-readout evidence screen in the background.
-    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab, scoring_tests_tab = st.tabs(
-        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT", "SCORE AUDIT"],
+    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab = st.tabs(
+        ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"],
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
@@ -4097,10 +4093,6 @@ if page == "PDUFA":
             # inside the embedded Watchlist / Trading screen.
             st.session_state["_ticker_selections_hydrated"] = False
             render_watch_trade_dashboard()
-
-    with scoring_tests_tab:
-        if scoring_tests_tab.open:
-            render_score_input_audit()
 
 
 elif page == "2. PDUFA CALENDAR":
