@@ -94,14 +94,14 @@ class TestPositionMonitoring(unittest.TestCase):
         self.assertFalse(rows[0]["Exit date"])
 
     def test_exit_preparation_starts_seven_days_before_cutoff(self):
-        rows, _ = self.check(position=trade(initial_pdufa=13),
-                             program=candidate(pdufa=13))
+        rows, _ = self.check(position=trade(initial_pdufa=9),
+                             program=candidate(pdufa=9))
         self.assertEqual(rows[0]["Trade lifecycle"], "YELLOW — EXIT PREPARATION")
         self.assertEqual(rows[0]["Days to exit deadline"], 6)
 
-    def test_red_at_seven_days_to_pdufa(self):
-        rows, totals = self.check(position=trade(initial_pdufa=7),
-                                  program=candidate(pdufa=7))
+    def test_red_at_three_days_to_pdufa(self):
+        rows, totals = self.check(position=trade(initial_pdufa=3),
+                                  program=candidate(pdufa=3))
         self.assertEqual(rows[0]["Trade lifecycle"], "RED — EXIT DUE / NOT RECORDED")
         self.assertEqual(totals["due"], 1)
         self.assertEqual(rows[0]["Days to exit deadline"], 0)
@@ -121,7 +121,7 @@ class TestPositionMonitoring(unittest.TestCase):
         self.assertEqual(totals["due"], 1)
 
     def test_pdufa_change_uses_earlier_date(self):
-        rows, totals = self.check(position=trade(initial_pdufa=7),
+        rows, totals = self.check(position=trade(initial_pdufa=3),
                                   program=candidate(pdufa=30))
         self.assertEqual(rows[0]["Trade lifecycle"], "RED — EXIT DUE / NOT RECORDED")
         self.assertIn("PDUFA DATE CHANGED", rows[0]["Monitoring alert"])
