@@ -71,6 +71,7 @@ def _gems_table(items):
         '<div class="gems-scroll"><table class="gems-table">'
         '<thead><tr><th colspan="3">GEMS</th>'
         '<th rowspan="2">Ticker</th><th rowspan="2">Drug / program</th>'
+        '<th rowspan="2">Trade-entry rule</th>'
         '</tr><tr><th>Phase 3</th><th>Post-Financing</th><th>PDUFA</th>'
         '</tr></thead><tbody>'
     )
@@ -83,8 +84,10 @@ def _gems_table(items):
             cells.append(f"<td{cls}>{html.escape(value)}</td>")
         ticker = html.escape(str(item.get("Ticker") or ""))
         drug = html.escape(str(item.get("Drug") or ""))
+        gate = html.escape(str(item.get("GEM trade entry gate") or
+                               "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"))
         rows.append("<tr>" + "".join(cells) +
-                    f'<td class="ticker">{ticker}</td><td>{drug}</td></tr>')
+                    f'<td class="ticker">{ticker}</td><td>{drug}</td><td>{gate}</td></tr>')
     return style + header + "".join(rows) + "</tbody></table></div>"
 
 
