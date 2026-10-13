@@ -143,6 +143,30 @@ def attributed_target_dates(event, passage):
     return confirmed
 
 
+def documented_fda_signed_approval(event, text):
+    """Require an exact signed FDA approval, not an issuer publication date."""
+    if (not re.search(r"(?i)\bSUPPLEMENT APPROVAL\b", text)
+            or not re.search(r"(?i)\bit is approved,\s*effective\s+on\s+the\s+date\s+of\s+this\s+letter\b", text)
+            or not company_matches(event, text)
+            or not drug_matches(event, text)
+            or not indication_matches(event, text)
+            or not re.search(r"(?i)\bSignature Page\s+1\s+of\s+1\b", text)):
+        return None
+    signature = text.rsplit("Signature Page", 1)[-1]
+    if not re.search(r"(?is)electronic\s+record.{0,140}\bsigned\s+electronically\b", signature):
+        return None
+    matches = re.findall(
+        r"\b(0[1-9]|1[0-2])/([0-2]\d|3[01])/(20\d{2})\s+"
+        r"\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM)\b", signature, re.I)
+    if len(matches) != 1:
+        return None
+    month, day, year = matches[0]
+    try:
+        return datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d").date().isoformat()
+    except ValueError:
+        return None
+
+
 def documented_pdufa_extension(event, text):
     """Require one issuer-documented FDA extension from a prior date to a new date.
 
@@ -751,6 +775,22 @@ class Verifier:
                         state, reason = "REVIEW_REQUIRED", "Original target date confirmed, but target has passed and the final outcome remains unresolved"
                     results.append(self.result(event, "FDA", claim, state, reason, url, expected, " | ".join(sorted(observed)), " | ".join(passages)))
                 else:
+                    # Official FDA-signed supplement letters state approval is
+                    # effective on the date of the signed letter, not a press date.
+                    signed_action = (documented_fda_signed_approval(event, plain)
+                                     if self.primary(event, url) == "FDA"
+                                     and url.lower().endswith(".pdf") else None)
+                    if signed_action:
+                        state = ("VERIFIED" if expected_outcome == "APPROVED"
+                                 and (not expected or signed_action == expected) else "CONFLICT")
+                        results.append(self.result(event, "FDA", claim, state,
+                            ("Signed FDA approval effective on official letter date"
+                             if state == "VERIFIED" else
+                             "Signed FDA letter outcome or date contradicts saved event"),
+                            url, expected_outcome + " " + expected,
+                            "APPROVED " + signed_action,
+                            "FDA signed supplement approval; effective on date of letter"))
+                        continue
                     # Action wording, identity and date must coexist locally;
                     # publication/modified dates never become decision dates.
                     passages = [plain[max(0, m.start()-120):m.end()+450]
