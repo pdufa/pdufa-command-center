@@ -239,6 +239,27 @@ def render_scan_status(published_report_loader):
     st.caption("GitHub 'success' means the workflow executed; it does **not** mean FDA/SEC evidence passed. "
                "Only the latest run for each listed workflow is shown above, including manual or test runs.")
 
+    # Keep recent history visible without conflating a prior successful run
+    # with a currently active new run. Older runs may be beyond the API page.
+    history_paths = {
+        WORKFLOWS["Clinical #2 → #3 → #4"],
+        WORKFLOWS["FDA / SEC / Financial / Market / Issuer"],
+        WORKFLOWS["Scoring → Error check → Repair"],
+    }
+    history = [r for r in sorted(runs, key=lambda x: x.get("created_at") or "", reverse=True)
+               if str(r.get("path") or "").split("/")[-1] in history_paths][:12]
+    if history:
+        with st.expander("RECENT SCAN RUNS — last 12 visible"):
+            past = [{"Workflow": str(r.get("name") or "Unknown"),
+                     "Status": run_state(r),
+                     "Started (Pacific)": pacific_time(r.get("run_started_at") or r.get("created_at")),
+                     "Trigger": r.get("event") or "—",
+                     "Run ID": str(r.get("id") or ""),
+                     "GitHub run": run_link(r)} for r in history]
+            st.dataframe(pd.DataFrame(past), hide_index=True, use_container_width=True,
+                         column_config={"GitHub run": st.column_config.LinkColumn(
+                             "GitHub run", display_text="Open run")})
+
     if not report:
         st.warning("No published source verification report is available. Execution status above is not proof of evidence coverage.")
         return
