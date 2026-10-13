@@ -7,18 +7,22 @@ import hmac
 import json
 import urllib.error
 import urllib.request
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 from gem_scans_ui import render_gem_scans
 from scan_status_ui import render_scan_status
+from scripts.pdufa_morning_results import make_snapshot
 
 REPO = "pdufa/pdufa-command-center"
 REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/nightly_scan_report.json"
 SOURCE_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pdufa_source_report.json"
 API = "https://api.github.com/repos/" + REPO
 WORKFLOW = "pdufa-scan-control.yml"
+AM_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pdufa_am_6am_results.json"
 LABELS = {"2": "#2 PIPELINE", "3": "#3 PRE3", "4": "#4 POST3"}
 
 
@@ -34,6 +38,120 @@ def published_source_report():
         except (OSError, ValueError):
             return {}
     return report if isinstance(report, dict) and report.get("schema_version") == 2 else {}
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def published_am_report():
+    request = urllib.request.Request(
+        AM_REPORT_URL,
+        headers={"User-Agent": "pdufa-command-center-dashboard",
+                 "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=8) as response:
+            payload = json.load(response)
+    except (OSError, ValueError):
+        try:
+            payload = json.loads(
+                Path("data/pdufa_am_6am_results.json").read_text(encoding="utf-8")
+            )
+        except (OSError, ValueError):
+            return {}
+    return (payload if isinstance(payload, dict) and
+            payload.get("schema_version") == 1 and
+            payload.get("report_type") == "PDUFA_6AM_PACIFIC_MORNING_RESULTS"
+            else {})
+
+
+def render_am_results():
+    st.markdown("## 6:00 AM PACIFIC — MORNING SCAN RESULTS")
+    st.caption(
+        "Read-only summary of last night's 8:30 PM clinical, FDA, SEC, "
+        "financial, market and issuer checks. The morning summary does not "
+        "start a new scan or authorize a trade."
+    )
+    now = datetime.now(ZoneInfo("America/Los_Angeles"))
+    report = published_am_report()
+    today = now.date().isoformat()
+    if now.hour >= 6 and report.get("snapshot_date_pacific") != today:
+        # GitHub scheduled starts can be delayed. Show a clearly marked
+        # provisional preview of already-published evidence rather than
+        # yesterday's figures as if they were today's 6 AM report.
+        clinical, _note = published_report()
+        report = make_snapshot(
+            clinical, published_source_report(), now=now
+        )
+        st.warning(
+            "Today's scheduled 6 AM snapshot has not published yet. "
+            "Showing a live preview from the latest published files. "
+            "Missing overnight results remain PENDING."
+        )
+    elif not report:
+        st.info("No 6 AM morning snapshot yet. The first scheduled morning report "
+                "will appear after the next 6 AM Pacific publication.")
+        return
+    elif report.get("snapshot_date_pacific") != today:
+        st.info(
+            "Showing the preceding morning's report (" +
+            str(report.get("snapshot_date_pacific")) +
+            "). Today's report is scheduled for 6:00 AM Pacific."
+        )
+    clinical = report.get("clinical") or {}
+    source = report.get("sources") or {}
+    readiness = str(report.get("readiness") or "UNKNOWN")
+    if readiness != "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS":
+        st.warning(
+            "OVERNIGHT RESULTS PENDING / STALE — at least one source family "
+            "has not published tonight's evidence. No missing counts are "
+            "interpreted as zero."
+        )
+    else:
+        st.info(
+            "Both overnight report families were published. Their results "
+            "can still have unresolved evidence gaps and do not approve GEM entry."
+        )
+    c1, c2, c3, c4 = st.columns(4)
+    percent = source.get("required_source_coverage_percent")
+    pending = source.get("required_findings_unresolved")
+    resolved = source.get("newly_resolved_claims")
+    sec_found = source.get("sec_transactions_verified")
+    c1.metric("Required source coverage", f"{percent:.1f}%" if type(percent) in (int, float) else "Pending")
+    c2.metric("Unresolved required claims", f"{pending:,}" if type(pending) is int else "Pending")
+    c3.metric("Claims newly cleared", f"{resolved:,}" if type(resolved) is int else "Not reported")
+    c4.metric("Individual SEC closings matched", f"{sec_found:,}" if type(sec_found) is int else "Pending")
+    st.caption(
+        "Morning date (Pacific): " + str(report.get("snapshot_date_pacific", "unknown")) +
+        " · Generated: " + str(report.get("generated_at_pacific", "unknown")) +
+        " · Clinical: " + str(clinical.get("status", "PENDING")) +
+        " · Extended source verification: " + str(source.get("status", "PENDING"))
+    )
+    st.caption(
+        "Financing IR→SEC recheck: " + str(source.get("public_ir_sec_recheck_status", "PENDING")) +
+        " · SEC lead checks: " + str(source.get("public_ir_sec_leads_checked") if
+                                  source.get("public_ir_sec_leads_checked") is not None
+                                  else "PENDING") +
+        " · No trade entry is authorized by this summary."
+    )
+    links = [("CLINICAL", clinical.get("source_run_url")),
+             ("SEC / SOURCES", source.get("source_run_url"))]
+    for label, url in links:
+        if isinstance(url, str) and url.startswith(
+            "https://github.com/" + REPO + "/actions/runs/"
+        ):
+            st.link_button("OPEN " + label + " OVERNIGHT RUN", url)
+    with st.expander("6 AM report — latest overnight clinical scan statuses"):
+        rows = [
+            {"Scan": LABELS.get(str(key), str(key)),
+             "Status": row.get("collector_status"),
+             "New records": row.get("new_records"),
+             "Changed trials": row.get("changed_trials")}
+            for key, row in (clinical.get("runs") or {}).items()
+            if isinstance(row, dict)
+        ]
+        if rows:
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        else:
+            st.write("No newly published overnight clinical detail available.")
 
 
 def render_extended_source_report():
@@ -311,6 +429,8 @@ def _number(v):
 def render_nightly_scan_report():
     # Single SCANS home for live GitHub execution health, historical results,
     # required evidence gaps, existing GEMS, and manual controls.
+    render_am_results()
+    st.divider()
     render_scan_status(published_source_report)
     st.divider()
     render_gem_scans()
