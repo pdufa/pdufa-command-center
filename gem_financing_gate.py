@@ -8,7 +8,10 @@ all remaining entry gates are still required before entry consideration.
 """
 from __future__ import annotations
 
+import json
 from datetime import date, datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from step7_entry import safe_source
 
@@ -62,3 +65,44 @@ def entry_status(*, closed, qualified, feed_current, days_to_pdufa,
     if qualified:
         return "POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER"
     return "POST-CLOSE REVIEW — OTHER ENTRY GATES NOT MET"
+
+
+def sec_recheck_current(root, *, as_of):
+    """Reject global SEC-source holds before ANY new GEM trade entry review.
+
+    A completed SEC review is only a source-family health assertion; it does
+    not itself prove closure of either transaction or any specific issuer.
+    Exact-event two-close checks remain mandatory and separate.
+    """
+    today = as_of.date() if isinstance(as_of, datetime) else (
+        parsed_date(as_of) if not isinstance(as_of, date) else as_of
+    )
+    if today is None:
+        return False
+    try:
+        state = json.loads((Path(root) / "step7_live_status.json").read_text(
+            encoding="utf-8"))
+        matches = [r for r in state.get("source_checks", [])
+                   if isinstance(r, dict) and
+                   r.get("Source") == "SEC financing recheck"]
+        if len(matches) != 1:
+            return False
+        sec = matches[0]
+        stamp = datetime.fromisoformat(str(
+            sec.get("Last checked UTC") or "").replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            return False
+        check_day = stamp.astimezone(ZoneInfo("America/Los_Angeles")).date()
+        age = (today - check_day).days
+        blocked = sec.get("Blocked records")
+        return bool(
+            sec.get("Collector status") == "COMPLETE" and
+            sec.get("Freshness") in ("RECENT", "CURRENT") and
+            isinstance(blocked, int) and not isinstance(blocked, bool) and
+            blocked == 0 and
+            "BLOCKED" not in str(sec.get("Health") or "").upper() and
+            "PARTIAL" not in str(sec.get("Health") or "").upper() and
+            0 <= age <= 1
+        )
+    except (ValueError, TypeError, KeyError, OSError, AttributeError):
+        return False
