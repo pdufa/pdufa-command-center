@@ -441,7 +441,10 @@ class Verifier:
                 if claim == "PDUFA_TARGET":
                     # Major PDF bullets separate programs even when extraction
                     # leaves their descriptions without sentence punctuation.
-                    sections = re.split(r"\s*[•]\s*|(?<=[.!?])\s+(?=[A-Z])", plain)
+                    # Investor releases often present multiple programs in a
+                    # single bullet separated by semicolons. Do not borrow
+                    # another drug's PDUFA date across that boundary.
+                    sections = re.split(r"\s*[•]\s*|(?<=[.!?])\s+(?=[A-Z])|;\s*(?=[A-Za-z])", plain)
                     sentences = []
                     for section in sections:
                         if len(section) > 1500:
