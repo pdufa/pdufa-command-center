@@ -106,6 +106,18 @@ class VerificationTests(unittest.TestCase):
         body = b"TestDrug for lung cancer. The PDUFA target date is December 1, 2026."
         self.assertEqual(self.verifier(body).regulatory(event)[0]["verification_status"], "CONFLICT")
 
+    def test_explicit_indication_abbreviation_in_matching_drug_passage(self):
+        event = {**EVENT,
+                 "indication": "autosomal dominant hypocalcemia type 1 (ADH1)",
+                 "pdufa_evidence_url": SEC_DOC}
+        body = b"Test Pharma reports that TestDrug for ADH1 has PDUFA target date November 1, 2026."
+        self.assertEqual(self.verifier(body).regulatory(event)[0]["verification_status"], "VERIFIED")
+        for wrong in (
+            b"Test Pharma reports TestDrug for ADH2 with PDUFA target date November 1, 2026.",
+            b"Test Pharma reports OtherDrug for ADH1 with PDUFA target date November 1, 2026.",
+        ):
+            self.assertEqual(self.verifier(wrong).regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
+
     def test_wrong_drug_indication_company_or_cik_cannot_verify(self):
         event = {**EVENT, "pdufa_evidence_url": "https://www.fda.gov/saved-event"}
         for body in (
