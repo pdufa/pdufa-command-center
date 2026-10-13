@@ -107,17 +107,35 @@ def _json_get(url, *, timeout=10):
         return json.load(response)
 
 
+def combine_run_pages(*pages):
+    """Deduplicate run identity across latest/active/queued GitHub API pages."""
+    indexed = {}
+    for page in pages:
+        for run in page:
+            if isinstance(run, dict) and isinstance(run.get("id"), int):
+                indexed[run["id"]] = run
+    return sorted(indexed.values(), key=lambda x: x.get("created_at") or "",
+                  reverse=True)
+
+
 @st.cache_data(ttl=105, show_spinner=False)
 def recent_github_runs():
-    """One paginated request, cached; errors must not masquerade as 'no runs'."""
-    try:
-        payload = _json_get(API + "/actions/runs?per_page=100")
-        runs = payload.get("workflow_runs")
-        if not isinstance(runs, list):
-            raise ValueError("Missing GitHub workflow run list")
-        return runs, ""
-    except (OSError, ValueError, urllib.error.URLError, TypeError) as exc:
-        return [], "GitHub live status unavailable (" + type(exc).__name__ + ")"
+    """Include ALL active/queued scans even if repair spam buries the recent page."""
+    pages = []
+    notices = []
+    for query in ("?per_page=100", "?status=in_progress&per_page=100",
+                  "?status=queued&per_page=100"):
+        try:
+            payload = _json_get(API + "/actions/runs" + query)
+            batch = payload.get("workflow_runs")
+            if not isinstance(batch, list):
+                raise ValueError("Missing GitHub workflow run list")
+            pages.append(batch)
+        except (OSError, ValueError, urllib.error.URLError, TypeError) as exc:
+            notices.append("GitHub " + ("recent" if query.startswith("?per_page")
+                                         else query.split("status=")[1].split("&")[0]) +
+                           " runs unavailable (" + type(exc).__name__ + ")")
+    return combine_run_pages(*pages), "; ".join(notices)
 
 
 @st.cache_data(ttl=105, show_spinner=False)
@@ -173,12 +191,19 @@ def render_scan_status(published_report_loader):
     report = published_report_loader()
     runs, error = recent_github_runs()
     latest = workflow_snapshots(runs)
-    sources = latest.get(WORKFLOWS["FDA / SEC / Financial / Market / Issuer"], {})
+    source_path = WORKFLOWS["FDA / SEC / Financial / Market / Issuer"]
+    sources = latest.get(source_path, {})
+    running_source = next((r for r in runs if
+                           str(r.get("path") or "").split("/")[-1] == source_path and
+                           r.get("status") == "in_progress"), {})
     validation = latest.get(WORKFLOWS["Code validation"], {})
     clinical = latest.get(WORKFLOWS["Clinical #2 → #3 → #4"], {})
 
     c1, c2, c3 = st.columns(3)
-    c1.metric("Extended source scan", run_state(sources) if sources else "NOT AVAILABLE")
+    source_label = (("RUNNING + QUEUED" if sources.get("status") in ACTIVE and
+                     sources.get("id") != running_source.get("id") else "RUNNING")
+                    if running_source else run_state(sources) if sources else "NOT AVAILABLE")
+    c1.metric("Extended source scan", source_label)
     c2.metric("Code validation", run_state(validation) if validation else "NOT AVAILABLE")
     c3.metric("Clinical scans", run_state(clinical) if clinical else "NOT AVAILABLE")
 
@@ -194,30 +219,37 @@ def render_scan_status(published_report_loader):
         st.link_button("ALL GITHUB ACTIONS", BASE + "/actions", use_container_width=True)
 
     if error:
-        st.warning(error + ". The saved audit below may still be available.")
-    else:
-        active = [(label, latest.get(path, {})) for label, path in WORKFLOWS.items()
-                  if latest.get(path, {}).get("status") in ACTIVE]
-        if active:
-            st.info("Currently active: " + ", ".join(label + " (" + run_state(run) + ")"
-                                                    for label, run in active))
-        else:
-            st.caption("No active runs appear among the 100 latest GitHub Actions results; open Actions to inspect any older active run.")
+        st.warning(error + ". Status may be incomplete; saved audit remains available.")
+    active = []
+    for label, path in WORKFLOWS.items():
+        active.extend((label, run) for run in runs
+                      if str(run.get("path") or "").split("/")[-1] == path and
+                      run.get("status") in ACTIVE)
+    if active:
+        st.info("Currently active: " + ", ".join(
+            label + " #" + str(run.get("id")) + " (" + run_state(run) + ")"
+            for label, run in active[:12]))
+    elif not error:
+        st.caption("No active or queued monitored workflows were returned by GitHub.")
 
-        if sources.get("status") in ACTIVE:
-            jobs = current_job_steps(sources.get("id"))
-            running_jobs = [str(job.get("name")) for job in jobs
-                            if job.get("status") == "in_progress"]
-            if running_jobs:
-                st.write("**Current source stage:** " + " · ".join(running_jobs[:3]))
-            elif sources.get("status") in {"queued", "waiting", "pending"}:
-                st.write("**Current source stage:** Waiting for GitHub to start")
-        failures = [(label, last) for label, path in WORKFLOWS.items()
-                    if (last := latest.get(path, {})).get("status") == "completed"
-                    and last.get("conclusion") in {"failure", "timed_out"}]
-        for label, last in failures:
-            st.error(label + ": " + run_state(last) +
-                     ". Open the linked workflow run to inspect the failing step.")
+    if running_source:
+        jobs = current_job_steps(running_source.get("id"))
+        running_jobs = [str(job.get("name")) for job in jobs
+                        if job.get("status") == "in_progress"]
+        if running_jobs:
+            st.write("**Current source stage:** " + " · ".join(running_jobs[:3]))
+        st.link_button("OPEN CURRENTLY RUNNING SOURCE RUN", run_link(running_source))
+        if sources.get("id") != running_source.get("id") and sources.get("status") in ACTIVE:
+            st.caption("Another source run #" + str(sources.get("id")) +
+                       " is queued while the current source run is still executing.")
+    elif sources.get("status") in {"queued", "waiting", "pending"}:
+        st.write("**Current source stage:** Waiting for GitHub to start")
+    failures = [(label, last) for label, path in WORKFLOWS.items()
+                if (last := latest.get(path, {})).get("status") == "completed"
+                and last.get("conclusion") in {"failure", "timed_out"}]
+    for label, last in failures:
+        st.error(label + ": " + run_state(last) +
+                 ". Open the linked workflow run to inspect the failing step.")
 
     st.markdown("### Latest workflow results")
     table = []
