@@ -144,7 +144,16 @@ def indication_matches(event, text):
             return False
     if not qualifiers <= body:
         return False
-    return bool(tokens) and len(tokens & body) >= min(2, len(tokens))
+    if bool(tokens) and len(tokens & body) >= min(2, len(tokens)):
+        return True
+    # A program's explicit parenthetical indication abbreviation is a
+    # source-provided alias, not an inferred disease match. For example,
+    # "autosomal dominant hypocalcemia type 1 (ADH1)" may appear as "ADH1"
+    # in a later sentence in the same SEC exhibit. The caller must still
+    # independently match the drug, the relevant passage and the dated claim.
+    aliases = re.findall(r"\(([A-Za-z][A-Za-z0-9/-]{2,12})\)", str(event.get("indication", "")))
+    return any(normalized(alias) in body for alias in aliases
+               if len(normalized(alias)) >= 3 and normalized(alias) not in {"fda", "usa"})
 
 
 def company_matches(event, text):
