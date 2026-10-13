@@ -110,6 +110,39 @@ def target_dates(text):
     return observed
 
 
+
+def attributed_target_dates(event, passage):
+    """Match each PDUFA date to the program text preceding THAT date.
+
+    Investor releases can put multiple drug/date pairs into one sentence or
+    HTML table row. The previous program's drug identity must not authorize
+    the next program's goal date. We retain preceding program context until
+    its own dated target, then reset for the next dated target.
+    """
+    date_rx = (r"(?:20\d{2}-\d{2}-\d{2}|"
+               r"(?:January|February|March|April|May|June|July|August|September|"
+               r"October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|"
+               r"Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)"
+               r"\s+\d{1,2},?\s+20\d{2})")
+    markers = list(re.finditer(r"(?i)\b(?:PDUFA|target\s+action\s+date|goal\s+date)\b", passage))
+    confirmed = set()
+    prior_target_end = 0
+    for marker in markers:
+        tail = passage[marker.end():marker.end() + 110]
+        dated = re.search(date_rx, tail, re.I)
+        if not dated:
+            continue
+        end = marker.end() + dated.end()
+        fragment = passage[prior_target_end:end]
+        # The program identity and its indication must coexist before the
+        # claimed date. The date must be explicitly tied to a target marker.
+        if drug_matches(event, fragment) and indication_matches(event, fragment):
+            claimed = target_dates(fragment)
+            confirmed |= claimed & dates(dated.group())
+        prior_target_end = end
+    return confirmed
+
+
 def drug_matches(event, text):
     # Full names/codes and explicitly supplied parenthetical aliases only.
     parts = re.split(r"[()/|;]", event.get("drug", ""))
@@ -173,7 +206,19 @@ def publication_dates(raw, plain):
     # Require a press-release dateline marker rather than any early date;
     # a future PDUFA target in the headline is not a release date.
     marker = re.search(r"(?i)((?:January|February|March|April|May|June|July|August|September|October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|Jun\.?|Jul\.?|Aug\.?|Sep\.?|Sept\.?|Oct\.?|Nov\.?|Dec\.?)\s+\d{1,2},\s+20\d{2})\s*(?:\(|—|--|/PRNewswire)", plain[:6000])
-    return dates(marker.group(1)) if marker else set()
+    if marker:
+        return dates(marker.group(1))
+    # SEC-filed company press releases often use a conventional dateline
+    # such as "SOUTH SAN FRANCISCO, Calif., May 5, 2026 -". A bare
+    # "PDUFA November 14, 2026 - ..." is NOT a publication dateline.
+    month = (r"(?:January|February|March|April|May|June|July|August|September|"
+             r"October|November|December|Jan\.?|Feb\.?|Mar\.?|Apr\.?|"
+             r"Jun\.?|Jul\.?|Aug\.?|Sep\.?|Oct\.?|Nov\.?|Dec\.?)")
+    dateline = re.search(
+        r"(?i)\b[A-Z]{2,}(?:\s+[A-Z]{2,}){0,3},\s*(?:[A-Z][a-z]+\.?,\s*)?"
+        + "(" + month + r"\s+\d{1,2},\s+20\d{2})" + r"\s+[-–—]\s",
+        plain[:6000])
+    return dates(dateline.group(1)) if dateline else set()
 
 
 def numeric(value):
@@ -448,12 +493,10 @@ class Verifier:
                 if application and not re.search(r"(?<!\d)" + re.escape(application) + r"(?!\d)", plain):
                     continue
                 if claim == "PDUFA_TARGET":
-                    # Major PDF bullets separate programs even when extraction
-                    # leaves their descriptions without sentence punctuation.
-                    # Investor releases often present multiple programs in a
-                    # single bullet separated by semicolons. Do not borrow
-                    # another drug's PDUFA date across that boundary.
-                    sections = re.split(r"\s*[•]\s*|(?<=[.!?])\s+(?=[A-Z])|;\s*(?=[A-Za-z])", plain)
+                    # Preserve semicolons within a program description,
+                    # but assign target dates only to the corresponding program
+                    # via attributed_target_dates; never borrow the next drug's date.
+                    sections = re.split(r"\s*[•]\s*|(?<=[.!?])\s+(?=[A-Z])", plain)
                     sentences = []
                     for section in sections:
                         if len(section) > 1500:
@@ -476,8 +519,8 @@ class Verifier:
                                 and not re.search(r"(?i)\bfor\b", passage)):
                             context = " ".join(sentences[max(0, i-1):i+1])
                         if drug_matches(event, context) and indication_matches(event, context):
-                            passages.append(passage)
-                    observed = set().union(*(target_dates(p) for p in passages)) if passages else set()
+                            passages.append(context)
+                    observed = set().union(*(attributed_target_dates(event, p) for p in passages)) if passages else set()
                     if not expected or not observed:
                         continue
                     state = "VERIFIED" if observed == {expected} else "CONFLICT"

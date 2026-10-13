@@ -134,6 +134,37 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(v.regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
         self.assertNotIn("https://news.google.com/story", v.cache)
 
+    def test_semicolon_does_not_separate_drug_from_correct_pdufa_date(self):
+        event = {**EVENT, "pdufa_evidence_url": SEC_DOC,
+                 "drug": "MYQORZO",
+                 "indication": "symptomatic obstructive HCM / MAPLE-HCM expansion",
+                 "pdufa_date": "2026-11-14"}
+        body = (
+            b"MYQORZO approved for symptomatic obstructive HCM; Supplemental NDA "
+            b"for MAPLE-HCM accepted for filing by FDA with PDUFA date of November 14, 2026."
+        )
+        actual = self.verifier(body).regulatory(event)[0]
+        self.assertEqual(actual["verification_status"], "VERIFIED")
+        self.assertEqual(actual["observed"], "2026-11-14")
+
+    def test_two_pdufa_dates_in_one_heading_do_not_cross_attribute(self):
+        event = {**EVENT, "pdufa_evidence_url": SEC_DOC,
+                 "drug": "BBP-418", "indication": "LGMD2I/R9",
+                 "pdufa_date": "2026-11-27"}
+        body = (
+            b"BBP-418 for LGMD2I/R9 PDUFA date set for November 27, 2026 "
+            b"with Priority Review Launch upon FDA approval Encaleret for ADH1 "
+            b"PDUFA date set for May 8, 2027 with Priority Review."
+        )
+        actual = self.verifier(body).regulatory(event)[0]
+        self.assertEqual(actual["verification_status"], "VERIFIED")
+        self.assertEqual(actual["observed"], "2026-11-27")
+        other = {**event, "drug": "Encaleret", "indication": "ADH1",
+                 "pdufa_date": "2027-05-08"}
+        other_row = self.verifier(body).regulatory(other)[0]
+        self.assertEqual(other_row["verification_status"], "VERIFIED")
+        self.assertEqual(other_row["observed"], "2027-05-08")
+
     def test_multidrug_release_keeps_pdufa_dates_with_own_program(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
         release = (
@@ -232,6 +263,18 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(result["observed"], "2026-10-10")
         raw = b"Test Pharma announced TestDrug in lung cancer. The PDUFA date is November 1, 2026."
         self.assertEqual(self.verifier(raw).issuer(event)[0]["verification_status"], "REVIEW_REQUIRED")
+
+    def test_city_hyphen_dateline_is_valid_but_pdufa_date_is_not_publish_date(self):
+        event = {**EVENT, "trial_evidence_url": SEC_DOC}
+        raw = (b"Test Pharma reports TestDrug results in lung cancer. "
+               b"SOUTH SAN FRANCISCO, Calif., October 1, 2026 - "
+               b"Test Pharma announces expanded clinical results for TestDrug in lung cancer.")
+        row = self.verifier(raw).issuer(event)[0]
+        self.assertEqual(row["verification_status"], "VERIFIED")
+        self.assertEqual(row["observed"], "2026-10-01")
+        wrong = (b"Test Pharma announces TestDrug for lung cancer. "
+                 b"PDUFA November 1, 2026 - FDA target date remains scheduled.")
+        self.assertEqual(self.verifier(wrong).issuer(event)[0]["verification_status"], "REVIEW_REQUIRED")
 
     def test_issuer_discovers_actual_sec_exhibit_when_saved_url_absent(self):
         def fetch(url):
