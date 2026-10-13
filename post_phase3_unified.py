@@ -212,10 +212,19 @@ def build_queue(root, as_of=None):
         stage_name = clean(fin_stage.get("second_financing_status")).upper()
         fin_review_date = parsed_date(fin_stage.get("verified_as_of"))
         stage_fresh = bool(fin_review_date and 0 <= (today - fin_review_date).days <= 7)
-        second_financing_verified = (stage_name in {"CLOSED", "FINISHED"} and
-                clean(fin_stage.get("second_financing_audit_status")) == "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
-                clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
-                https_source(fin_stage.get("second_financing_source")))
+        first_fin_date = parsed_date(fin_stage.get("first_financing_date"))
+        second_fin_date = parsed_date(fin_stage.get("second_financing_date"))
+        pivotal_readout = parsed_date(event.get("phase3_date"))
+        second_financing_verified = (
+            stage_name in {"CLOSED", "FINISHED"} and
+            clean(fin_stage.get("second_financing_audit_status")) ==
+                "VERIFIED_SECOND_POST_PHASE3_FINANCING" and
+            clean(fin_stage.get("second_financing_closed")).upper() == "YES" and
+            bool(pivotal_readout and first_fin_date and second_fin_date and
+                 pivotal_readout <= first_fin_date < second_fin_date) and
+            safe_source(fin_stage.get("first_financing_source"), sec=True) and
+            safe_source(fin_stage.get("second_financing_source"), sec=True)
+        )
         if second_financing_verified:
             financing_cycle = "RED — FINANCING CLOSED (HISTORICAL)"
         elif stage_fresh and stage_name in {"RUNNING", "IN_PROGRESS"}:
@@ -224,8 +233,13 @@ def build_queue(root, as_of=None):
             financing_cycle = "GREEN — FINANCING STARTED (AS OF REVIEW)"
         else:
             financing_cycle = "REVIEW — FINANCING UNVERIFIED"
+        dilution_explicitly_cleared = clean(event.get("new_dilution_flag")).upper() in (
+            "NO", "FALSE", "0", "NONE", "CLEARED", "RESOLVED"
+        )
         green = (current_feed and funding and attested_ready and verified_date and
-                 clinical and not conflict and pdufa is not None and days >= MIN_NEW_ENTRY_DAYS)
+                 clinical and not conflict and second_financing_verified and
+                 dilution_explicitly_cleared and
+                 pdufa is not None and days >= MIN_NEW_ENTRY_DAYS)
         if excluded:
             status, action = "EXCLUDED — FDA DECIDED / DATE PASSED", "Historical only; do not open a position"
         elif pdufa is not None and days <= EXIT_BUFFER_DAYS:
@@ -244,6 +258,10 @@ def build_queue(root, as_of=None):
                 action = "Review successful Phase 3 primary endpoint, benefit and safety"
             elif conflict:
                 action = "Resolve conflicting clinical/regulatory evidence"
+            elif not second_financing_verified:
+                action = "Verify both separate post-Phase-3 SEC financing closes with exact issuer dates"
+            elif not dilution_explicitly_cleared:
+                action = "Verify that current unresolved dilution risk is explicitly cleared"
             else:
                 action = "Clear missing clinical, financing, dilution and market gates"
         item = _blank("SAVED REGULATORY PIPELINE", ticker, drug, indication, nct, today)
