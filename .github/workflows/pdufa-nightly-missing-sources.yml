@@ -463,7 +463,27 @@ jobs:
           fi
           git fetch origin main
           git checkout -B source-audit-publish origin/main
+          # Read the latest published evidence, not the (possibly stale)
+          # version from the workflow's original checkout commit.
+          cp data/pdufa_source_report.json /tmp/pdufa-source-prior-report.json || true
+          cp data/pdufa_source_review_queue.csv /tmp/pdufa-source-prior-queue.csv || true
           cp /tmp/pdufa-source-publish/* data/
+          # A GitHub-delayed run must never roll SCANS back to an older audit.
+          # Exit code 3 is a safe no-op; all other failures are real errors.
+          if python scripts/source_audit_delta.py \
+            --prior-report /tmp/pdufa-source-prior-report.json \
+            --prior-queue /tmp/pdufa-source-prior-queue.csv \
+            --incoming-report data/pdufa_source_report.json \
+            --incoming-queue data/pdufa_source_review_queue.csv; then
+            echo "Fresh audit reconciled with prior published snapshot."
+          else
+            status=$?
+            if [ "$status" -eq 3 ]; then
+              echo "Skipping out-of-order source audit; main is newer."
+              exit 0
+            fi
+            exit "$status"
+          fi
           git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish verified extended source scan summary"
