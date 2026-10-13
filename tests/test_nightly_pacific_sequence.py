@@ -34,6 +34,15 @@ class PacificNightlySequenceTests(unittest.TestCase):
             self.assertEqual((converted.hour, converted.minute), (20, 30))
         self.assertIn("-f 'inputs[scan]=ALL'", scheduler)
 
+    def test_fallback_start_never_duplicates_tonights_scans(self):
+        scheduler = read("pdufa-nightly-pacific-start.yml")
+        for cron in ("45 3 * * *", "0 4 * * *", "45 4 * * *", "0 5 * * *"):
+            self.assertIn(cron, scheduler)
+        self.assertIn("pdufa-clinical-runs.json", scheduler)
+        self.assertIn("Nightly clinical scan already started today", scheduler)
+        self.assertIn("No duplicate dispatch", scheduler)
+        self.assertIn('inputs[scan]=ALL', scheduler)
+
     def test_clinical_runs_in_numbered_order(self):
         clinical = read("pdufa-nightly-clinical.yml")
         self.assertNotIn("\n  schedule:", clinical)
