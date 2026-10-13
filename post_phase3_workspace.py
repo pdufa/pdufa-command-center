@@ -53,7 +53,7 @@ def _research_backtest(signature, root="data", ticker=None):
 def _stage3(root="data", ticker=None):
     st.markdown("### STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH")
     st.caption(
-        "Four entry methods × exits 30, 14, or 7 calendar days before PDUFA. "
+        "Four entry methods × exits 30, 14, 7, or 3 calendar days before PDUFA. "
         "Only historically source-verified events and split-adjusted daily prices "
         "can generate simulated returns. No FDA approval-prediction score is "
         "misrepresented as a stock-return backtest."
@@ -166,7 +166,7 @@ def render_post_phase3_workspace(root="data"):
     st.caption(
         "One continuous workflow: verify successful Phase 3 → confirm second "
         "post-readout financing closure → clear entry gates (GREEN) → monitor "
-        "reported holdings (YELLOW) → exit by PDUFA −7 days (RED). "
+        "reported holdings (YELLOW) → exit by PDUFA −3 days (RED). "
         "Status is evidence-based research, never a buy/sell order."
     )
     ticker = render_combined_overview(root=root)
