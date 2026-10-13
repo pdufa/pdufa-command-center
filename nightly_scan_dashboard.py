@@ -12,6 +12,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 from gem_scans_ui import render_gem_scans
+from scan_status_ui import render_scan_status
 
 REPO = "pdufa/pdufa-command-center"
 REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/nightly_scan_report.json"
@@ -272,8 +273,10 @@ def _number(v):
 
 
 def render_nightly_scan_report():
-    # Preserve the existing clinical/source audit and PIN-controlled actions;
-    # place new read-only GEM classification scans above them.
+    # Single SCANS home for live GitHub execution health, historical results,
+    # required evidence gaps, existing GEMS, and manual controls.
+    render_scan_status(published_source_report)
+    st.divider()
     render_gem_scans()
     st.divider()
     st.markdown("## NIGHTLY SCAN REPORT")
