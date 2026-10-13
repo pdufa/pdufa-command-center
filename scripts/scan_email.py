@@ -5,11 +5,14 @@ GitHub Actions secrets; never commit or log the app password.
 """
 import os
 import re
+import imaplib
 import smtplib
 import ssl
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from email.message import EmailMessage
+from email.utils import make_msgid
 from zoneinfo import ZoneInfo
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
@@ -173,11 +176,49 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
     return state, "\n".join(lines) if lines else "No source-verified counts available."
 
 
+def place_self_sent_message_in_inbox(settings, message_id, *, imap_factory=None, sleeper=time.sleep):
+    """Best-effort Gmail Inbox labeling for notifications mailed to the sender.
+
+    SMTP acceptance is not Inbox delivery. Gmail may file self-addressed mail
+    only in Sent. Never resend to compensate for uncertain submission.
+    """
+    if settings.sender.casefold() != settings.recipient.casefold():
+        return "EXTERNAL_RECIPIENT_NOT_CHECKED"
+    imap_factory = imap_factory or imaplib.IMAP4_SSL
+    client = None
+    try:
+        client = imap_factory("imap.gmail.com", 993, timeout=15)
+        client.login(settings.sender, settings.app_password)
+        state, _ = client.select('"[Gmail]/Sent Mail"')
+        if state != "OK":
+            state, _ = client.select('"[Gmail]/All Mail"')
+        if state != "OK":
+            return "INBOX_NOT_CONFIRMED"
+        for attempt in range(3):
+            state, matches = client.uid("SEARCH", None, "HEADER", "Message-ID", message_id)
+            ids = matches[0].split() if state == "OK" and matches else []
+            if ids:
+                state, _ = client.uid("STORE", ids[-1], "+X-GM-LABELS", r"(\\Inbox)")
+                return "INBOX_LABEL_ACCEPTED" if state == "OK" else "INBOX_NOT_CONFIRMED"
+            if attempt < 2:
+                sleeper(1)
+    except (OSError, imaplib.IMAP4.error, TypeError, ValueError):
+        return "INBOX_NOT_CONFIRMED"
+    finally:
+        if client is not None:
+            try:
+                client.logout()
+            except (OSError, imaplib.IMAP4.error):
+                pass
+    return "INBOX_NOT_CONFIRMED"
+
+
 def send_email(settings, subject, body, *, smtp_factory=None):
     message = EmailMessage()
     message["From"] = settings.sender
     message["To"] = settings.recipient
     message["Subject"] = subject
+    message["Message-ID"] = make_msgid()
     message.set_content(body)
     factory = smtp_factory or smtplib.SMTP_SSL
     try:
@@ -190,5 +231,9 @@ def send_email(settings, subject, body, *, smtp_factory=None):
     except Exception as exc:
         # SMTP can accept an email before a network timeout; no automatic retry.
         raise EmailSendError("Mail submission failed or is unconfirmed") from exc
-    return {"status": "submitted_not_delivered"}
+    inbox_status = (
+        place_self_sent_message_in_inbox(settings, message["Message-ID"])
+        if smtp_factory is None else "NOT_CHECKED_TEST_TRANSPORT"
+    )
+    return {"status": "submitted_not_delivered", "inbox_status": inbox_status}
 
