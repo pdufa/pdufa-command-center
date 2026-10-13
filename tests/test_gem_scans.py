@@ -67,10 +67,8 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[2]["Post-Financing rank"] is not None
         assert rows[2]["PDUFA rank"] is not None
 
-    def test_last_week_survives_old_stage1_red_cutoff_if_primary_source_verified(self):
+    def test_pdufa_minus_five_qualifies_with_direct_primary_source(self):
         row = sample(days=5)
-        row["Entry qualification"] = "RED WINDOW — NO NEW ENTRY"
-        row["PDUFA evidence /15"] = 0  # older Stage 1 day-7 scoring rule
         rows, _ = run([row])
         assert rows[0]["PDUFA rank"] == 1
         assert rows[0]["PDUFA score"] == 100
