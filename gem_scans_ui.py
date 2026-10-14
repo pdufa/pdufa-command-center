@@ -134,13 +134,13 @@ def render_gem_scans(root="data"):
     ]
     master_table = pd.DataFrame(display_rows).reindex(columns=MASTER_COLUMNS)
     st.caption(
-        f"Showing {min(len(master_table), 250):,} of {len(master_table):,} "
-        f"matching GEM programs ({len(master_rows):,} total). "
+        f"Showing all {len(master_table):,} matching GEM programs "
+        f"({len(master_rows):,} total before filters). "
         "Eligible records sort by GEM rank first; watch and unverified "
         "programs remain visible below. A blank rank is NOT a zero score. "
         "Use the export for ALL matching rows."
     )
-    st.dataframe(master_table.head(250), use_container_width=True,
+    st.dataframe(master_table, use_container_width=True, height=650,
                  hide_index=True)
     st.download_button(
         "EXPORT GEM MASTER LIST",
