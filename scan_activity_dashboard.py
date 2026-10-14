@@ -6,6 +6,7 @@ The PDUFA SCANS subtab remains the published audit and scan-control surface.
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -47,7 +48,9 @@ def _github_token():
     try:
         return str(st.secrets.get("PDUFA_GITHUB_TOKEN", "") or
                    st.secrets.get("GITHUB_TOKEN", "") or "").strip()
-    except (OSError, KeyError, TypeError):
+    except Exception:
+        # Streamlit raises a custom exception when no secrets.toml exists.
+        # A missing optional read-only token must not break the page.
         return ""
 
 
@@ -143,22 +146,33 @@ def _fetch_runs(_token: str, days: int):
     """
     results = []
     errors = []
-    # A 7-day view still uses at most 50 runs from each workflow.
-    for label, workflow in WORKFLOWS:
+
+    def lookup(label, workflow):
         path = urllib.parse.quote(workflow, safe="")
         url = API + "/actions/workflows/" + path + "/runs?per_page=50"
-        try:
-            response = _get_json(url, _token)
-            rows = response.get("workflow_runs")
-            if not isinstance(rows, list):
-                raise ValueError("Missing workflow_runs list")
-            for raw in rows:
-                if isinstance(raw, dict):
-                    results.append({**raw, "_label": label})
-        except (OSError, ValueError, urllib.error.URLError) as exc:
-            # Error classes only. Never leak request headers or access tokens.
-            errors.append(label + " (" + type(exc).__name__ + ")")
-    return results, errors, datetime.now(timezone.utc).isoformat()
+        response = _get_json(url, _token)
+        rows = response.get("workflow_runs")
+        if not isinstance(rows, list):
+            raise ValueError("Missing workflow_runs list")
+        return label, rows
+
+    # Bounded parallel network I/O avoids serial five-second timeouts turning
+    # an unavailable GitHub API into a minute-long Streamlit page hang.
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        futures = {
+            pool.submit(lookup, label, workflow): label
+            for label, workflow in WORKFLOWS
+        }
+        for future in as_completed(futures):
+            try:
+                label, rows = future.result()
+                for raw in rows:
+                    if isinstance(raw, dict):
+                        results.append({**raw, "_label": label})
+            except (OSError, ValueError, urllib.error.URLError) as exc:
+                # Error classes only. Never leak tokens/URLs from exceptions.
+                errors.append(futures[future] + " (" + type(exc).__name__ + ")")
+    return results, sorted(errors), datetime.now(timezone.utc).isoformat()
 
 
 @st.cache_data(ttl=45, show_spinner=False)
