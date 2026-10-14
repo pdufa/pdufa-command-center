@@ -59,7 +59,9 @@ def main(argv=None):
                "Entry benchmark 2 verified", "GEM priority rank", "GEM priority score /100",
                "Phase 3 quality", "Cash runway months", "Hedge-fund managers holding",
                "Hedge-fund managers adding", "Market capitalization USD",
-               "PDUFA date", "Risk flags", "BPW PoA score",
+               "PDUFA date", "Insider open-market purchases",
+               "Insider purchase amount USD", "Insider source links",
+               "Risk flags", "BPW PoA score",
                "BPW approval/outperformance similarity")
     with (args.output_dir/"gem_bpw_two_benchmark_candidates.csv").open(
             "w", newline="", encoding="utf-8") as f:
