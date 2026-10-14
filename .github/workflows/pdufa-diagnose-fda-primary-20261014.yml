@@ -1,0 +1,51 @@
+name: PDUFA Diagnose Four Primary FDA Date Sources 2026-10-14
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-diagnose-fda-primary-20261014.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    env:
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check exact event primary source text and non-mutating match logic
+        run: |
+          python -m pip install pypdf
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.source_verification import Verifier, read_rows, company_matches, drug_matches, indication_matches, dates, target_dates
+          events={e['event_key']:e for e in read_rows('data/pdufa_candidates.csv')}
+          companies=read_rows('data/company_registry.csv')
+          config=json.loads(Path('config/issuer_sources.json').read_text())
+          verifier=Verifier(companies,issuer_sources=config)
+          urls={
+           'ANAB|IMSIDOLIMAB_GPP_20261212':'https://ir.anaptysbio.com/news-releases/news-release-details/anaptys-announces-first-quarter-2026-financial-results-and',
+           'EXEL|ZANZALINTINIB_CRC':'https://ir.exelixis.com/news-releases/news-release-details/exelixis-announces-us-fda-accepted-new-drug-application',
+           'HRMY|PITOLISANT_GR_20270401':'https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm',
+           'SVRA|MOLBREEVI_PAP_20261122':'https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx'
+          }
+          for key,url in urls.items():
+              event=verifier.mapped_event(events[key])
+              print('EVENT',key,'expected',event['pdufa_date'],'source_type',verifier.primary(event,url))
+              try:
+                  raw,plain=verifier.document(url)
+                  print('LOADED',len(raw),len(plain),'company',company_matches(event,plain),'drug',drug_matches(event,plain),'indication',indication_matches(event,plain),'target_dates',sorted(target_dates(plain))[:12])
+                  import re
+                  markers=list(re.finditer(r'(?i)PDUFA|target action date',plain))
+                  near=[plain[max(0,m.start()-125):m.end()+165].replace('\n',' ')[:310] for m in markers[:8]]
+                  print('ANCHOR_CONTEXT',json.dumps(near))
+                  print('DOC_PREFIX',plain[:230])
+              except Exception as exc:
+                  print('FETCH_FAILED',type(exc).__name__,str(exc)[:170])
+          PY
