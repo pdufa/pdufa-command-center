@@ -72,8 +72,10 @@ class NestedGEMTests(unittest.TestCase):
         self.assertIn('["GEM", "PIPELINE", "PRE PHASE 3"', app)
         self.assertIn('previous_subtab == "UNIFIED OVERVIEW"', app)
         self.assertIn("render_gem_nested_master(root=root, selections_ready=True)", overview)
-        block = '#1 GEM — THREE-LEVEL NESTED MASTER LIST (open to view)'
+        block = '#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)'
         self.assertIn(block, overview)
+        self.assertIn('if st.toggle(', overview)
+        self.assertIn('key="overview_show_gem_master"', overview)
         # Existing filters, three equal-height cards and timeline stay untouched.
         self.assertIn('pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1]', overview)
         self.assertIn('with st.expander("PDUFA TIMELINE", expanded=True)', overview)
