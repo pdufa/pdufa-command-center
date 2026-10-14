@@ -279,6 +279,15 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         "ranked": qualified,
         "cash_runway": runway_counts,
         "hedge_fund_13f": hedge_summary,
+        "insider_form4": {
+            "matched_program_rows": sum(
+                r.get("Insider Form 4 signal") == "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS"
+                for r in items
+            ),
+            "with_open_market_purchases": sum(
+                (r.get("Insider open-market purchases") or 0) > 0 for r in items
+            ),
+        },
         "two_benchmark_candidate_count": sum(
             row.get("Two-benchmark eligible") is True for row in items
         ),
