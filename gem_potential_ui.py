@@ -5,7 +5,10 @@ import pandas as pd
 import streamlit as st
 
 from gem_potential_list import build_potential_list
-from gem_secondary_research import (\n    OPTIONAL_CHECK_TOPICS, optional_check_search_links,\n    research_search_links, source_research_policy,\n)
+from gem_secondary_research import (
+    OPTIONAL_CHECK_TOPICS, optional_check_search_links,
+    research_search_links, source_research_policy,
+)
 
 VISIBLE = ("Ticker", "Drug", "Why potential", "Still needed", "Timing / resolution")
 FULL = (
