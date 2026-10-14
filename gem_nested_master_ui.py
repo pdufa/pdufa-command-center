@@ -17,6 +17,8 @@ import pandas as pd
 import streamlit as st
 
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
+from gem_trading_advisory import (TRADE_COLUMNS, attach_trade_fields,
+                                  load_market_rows, render_gem_trade_panel)
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
 from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_checkboxes, render_research_candidates
 from gem_benchmark_checklist import program_key
@@ -198,6 +200,8 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         st.error("GEM source data could not be loaded; no scores or eligibility inferred.")
         return
+    market_rows = load_market_rows(data_path)
+    rows = attach_trade_fields(rows, market_rows, status, day)
     sources = _unique_sources(items)
     evidence_details = report_rows(
         rows,
@@ -329,6 +333,8 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                 f"**{rank} · {_value(ticker)} · {_value(r.get('Drug'))}**  "
                 f"— {_value(r.get('GEM Stage'))} · **GEM {score}**"
             )
+            st.caption("TRADING: " + str(r.get("Trade assessment") or "WAIT — NO DATA")
+                       + " · " + str(r.get("Trading rationale") or ""))
             if ticker:
                 head[1].button(
                     "W", key=f"gem_nested_w_{uid}",
@@ -346,6 +352,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                 f"OPEN STOCK → six factors → inputs | {_value(r.get('Indication'))} | {_value(r.get('GEM Status'))}",
                 expanded=False,
             ):
+                render_gem_trade_panel(r, market_rows, status, day)
                 benchmarks = pd.DataFrame([
                     {"Entry benchmark": "1. Phase 3 results released",
                      "Verification": _value(r.get("Phase 3 Verified")),
@@ -427,7 +434,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                     st.dataframe(details, use_container_width=True, hide_index=True)
     st.download_button(
         "EXPORT ALL MATCHING GEM CANDIDATES",
-        pd.DataFrame(matching).reindex(columns=MASTER_COLUMNS).to_csv(index=False).encode("utf-8"),
+        pd.DataFrame(matching).reindex(columns=MASTER_COLUMNS + TRADE_COLUMNS).to_csv(index=False).encode("utf-8"),
         file_name=f"gem_unified_master_{day:%Y%m%d}.csv",
         mime="text/csv",
         key="gem_nested_full_export",

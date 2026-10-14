@@ -11,6 +11,8 @@ import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
+from gem_trading_advisory import (TRADE_COLUMNS, attach_trade_fields,
+                                  load_market_rows, render_gem_trade_panel)
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
 from gem_checklist_ui import checklist_filters, render_checkbox_table, render_research_candidates
 from gem_benchmark_checklist import program_key
@@ -216,7 +218,9 @@ def render_gem_scans(root="data"):
         and (not gem_search or any(gem_search in str(row.get(field) or "").casefold()
              for field in ("Ticker", "Drug", "Indication", "Exact Program / Event")))
     ]
-    master_table = pd.DataFrame(display_rows).reindex(columns=MASTER_COLUMNS)
+    market_rows = load_market_rows(path)
+    displayed_trades = attach_trade_fields(display_rows, market_rows, status, day)
+    master_table = pd.DataFrame(displayed_trades).reindex(columns=MASTER_COLUMNS + TRADE_COLUMNS)
     st.caption(
         f"Showing all {len(master_table):,} matching GEM programs "
         f"({len(master_rows):,} total before filters). "
@@ -232,6 +236,25 @@ def render_gem_scans(root="data"):
         file_name=f"gem_master_{day:%Y%m%d}.csv",
         mime="text/csv", key="gem_master_export",
     )
+    st.markdown("### EACH GEM — PRICE CHART + ENTRY / EXIT RECOMMENDATION")
+    st.caption("Select any matching exact program to inspect its saved EOD price history, "
+               "indicator checks, source freshness and risk reason. Every row above "
+               "also includes its trade assessment for sorting/export; incomplete "
+               "verification stays WAIT, not a buy call.")
+    if display_rows:
+        selected_idx = st.selectbox(
+            "Select GEM stock / exact program",
+            range(len(display_rows)),
+            format_func=lambda n: (
+                str(display_rows[n].get("Ticker") or "?") + " · " +
+                str(display_rows[n].get("Drug") or "?") + " · " +
+                str(display_rows[n].get("Exact Program / Event") or "?")
+            ),
+            key="gem_master_trade_detail",
+        )
+        render_gem_trade_panel(display_rows[selected_idx], market_rows, status, day)
+    else:
+        st.caption("No matching program selected. Change the GEM list filter.")
     if not qualified and gem_view == "Entry-eligible only" and research_keys:
         st.info("Verified GEM count is zero, but research candidates are "
                 "available above. Choose Research candidates (source leads) "

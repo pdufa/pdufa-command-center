@@ -88,7 +88,7 @@ def source_research_policy():
         "ISSUER IR/NEWS = company statements to corroborate, not a second financing audit. "
         "SEC / ClinicalTrials.gov = primary records requiring exact-program, "
         "date and two-distinct-post-readout-close verification. "
-        "Neither social attention nor an IR link automatically checks a GEM "
+        "Social attention or an IR link must NEVER automatically check a GEM "
         "benchmark or promotes a stock from #2 PIPELINE into verified #1 GEM."
     )
 

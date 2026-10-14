@@ -6,7 +6,7 @@ from pathlib import Path
 
 from gem_benchmark_checklist import (
     ADVISORIES, BENCHMARKS, UMBRELLA,
-    build_checklist, build_checklist_map, filter_programs,
+    build_checklist, build_checklist_map, filter_programs, program_key,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,8 +94,8 @@ class UmbrellaCheckboxTests(unittest.TestCase):
         a, b = row("AAA"), row("BBB")
         duplicate = [item("AAA"), item("AAA")]
         states = build_checklist_map([a, b], duplicate)
-        self.assertFalse(states[a["Exact Program / Event"]]["phase3_data"]["observed"])
-        self.assertFalse(states[b["Exact Program / Event"]]["phase3_data"]["observed"])
+        self.assertFalse(states[program_key(a)]["phase3_data"]["observed"])
+        self.assertFalse(states[program_key(b)]["phase3_data"]["observed"])
 
     def test_phase3_registry_umbrella_handles_unique_ticker_nct_without_event(self):
         unlinked = row("TRIAL")
