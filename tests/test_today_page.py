@@ -68,7 +68,7 @@ class TodayTabTests(unittest.TestCase):
         self.assertNotIn('"TODAY"', nav_line)
         self.assertNotIn('if page == "TODAY":', app)
         self.assertIn('unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab = st.tabs(', pipeline)
-        self.assertIn('["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]', pipeline)
+        self.assertIn('["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]', pipeline)
         self.assertNotIn('"PDUFA WORKBENCH"', pipeline)
         self.assertIn("with intake_tab:", pipeline)
         post = pipeline.split("with intake_tab:", 1)[1]
