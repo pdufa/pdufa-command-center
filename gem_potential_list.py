@@ -72,7 +72,7 @@ def build_potential_list(root="data", *, as_of=None):
     mapped_ncts = set()
     for event in events.values():
         ticker = str(event.get("ticker") or "").strip().upper()
-        for nct in re.findall(r"NCT\\d{8}", str(event.get("nct_id") or "").upper()):
+        for nct in re.findall(r"NCT\d{8}", str(event.get("nct_id") or "").upper()):
             if ticker:
                 mapped_ncts.add((ticker, nct))
     for key, event in events.items():
@@ -184,7 +184,7 @@ def build_potential_list(root="data", *, as_of=None):
         readout = _parse_date(lead.get("readout_date"))
         link = str(lead.get("source_url") or "").strip()
         if not (re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker) and
-                re.fullmatch(r"NCT\\d{8}", nct) and drug and indication and
+                re.fullmatch(r"NCT\d{8}", nct) and drug and indication and
                 readout and readout <= today and
                 link.startswith("https://")):
             continue
