@@ -176,20 +176,11 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small", wrap=False)
         with gem_col, st.container(border=True, key="overview_gem_panel"):
             st.markdown("### #1-GEM")
-            st.caption("Phase 3 / post-financing / PDUFA · stock, factors and source inputs")
-            st.caption("Open #1 GEM below to see the TWO entry benchmarks, research-umbrella leads and optional evidence checkboxes. Unverified programs remain visible.")
-            from gem_research_preview import research_preview
-            preview = research_preview(root)
-            count = sum(len(v) for v in preview.values())
-            st.caption(f"GEM research source leads: {count} program/ticker observations · "
-                       "verified entry count remains a separate requirement.")
-            for label, tickers in preview.items():
-                if tickers:
-                    st.caption(f"{label}: " + ", ".join(tickers[:8]) +
-                               (" … see GEM list for more" if len(tickers) > 8 else ""))
-
+            st.caption("Clinical Phase 3 → post-readout financing → FDA/PDUFA research")
             from gem_potential_ui import render_gem_potential
             render_gem_potential(root=root, compact=True, namespace="gem_overview_potential")
+            st.caption("Expand the master list below for the two GEM benchmarks "
+                       "and all risk/source checkboxes.")
 
             # A toggle avoids nested expanders in the stock drill-downs.
             if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
