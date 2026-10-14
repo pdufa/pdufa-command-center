@@ -12,7 +12,7 @@ import streamlit as st
 
 from gem_benchmark_checklist import (
     ADVISORIES, BENCHMARKS, CHECK_LABELS, FILTERABLE, UMBRELLA,
-    build_checklist_map, filter_programs,
+    build_checklist_map, filter_programs, program_key,
 )
 
 
@@ -101,12 +101,13 @@ def checkbox_table(rows, checklists):
     out = []
     for r in rows:
         event = str(r.get("Exact Program / Event") or "")
-        checks = checklists.get(event, {})
+        checks = checklists.get(program_key(r), {})
         entry = {
             "Ticker": r.get("Ticker"), "Drug": r.get("Drug"),
             "Stage": r.get("GEM Stage"), "GEM Status": r.get("GEM Status"),
             "GEM Score /100": r.get("GEM Score /100"),
             "Exact Program / Event": event,
+            "NCT ID": r.get("NCT ID"),
         }
         for key, label in columns:
             state = checks.get(key, {})
