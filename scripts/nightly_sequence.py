@@ -3,6 +3,7 @@ from __future__ import annotations
 
 WORKFLOW_NAME = "PDUFA Overnight Sequential Scans"
 WORKFLOW_PATH = ".github/workflows/pdufa-overnight-sequential.yml"
+RUN_TITLE = "ALL + GEM — PDUFA overnight"
 SOURCE_JOBS = tuple(f"Live PDUFA {family} source check" for family in
                     ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER"))
 SOURCE_TAILS = ("Combined coverage / missing source audit",
@@ -14,7 +15,7 @@ TERMINAL = {"success", "failure", "timed_out", "cancelled", "skipped"}
 def completed_source_stage(run, jobs, *, current_run_id, conclusion, repository):
     """Never describe the still-running parent as a completed workflow."""
     if (str(run.get("id")) != str(current_run_id) or
-            run.get("name") != WORKFLOW_NAME or
+            run.get("display_title") != RUN_TITLE or
             run.get("path", "").split("@", 1)[0] != WORKFLOW_PATH or
             run.get("head_branch") != "main" or
             (run.get("head_repository") or {}).get("full_name") != repository or

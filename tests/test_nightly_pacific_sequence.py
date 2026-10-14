@@ -93,7 +93,7 @@ class PacificAdmissionTests(unittest.TestCase):
 
 class SourceStageTests(unittest.TestCase):
     def setUp(self):
-        self.run = dict(id=42, name=WORKFLOW_NAME, path=WORKFLOW, head_branch='main',
+        self.run = dict(id=42, name=RUN_TITLE, display_title=RUN_TITLE, path=WORKFLOW, head_branch='main',
                         head_repository={'full_name': REPO}, status='in_progress')
         self.jobs = [dict(name='sources / ' + name, status='completed', conclusion='success',
                          completed_at='2026-10-15T10:00:00Z') for name in SOURCE_JOBS + SOURCE_TAILS]

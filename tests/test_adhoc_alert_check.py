@@ -77,8 +77,8 @@ class AdhocAlertTests(unittest.TestCase):
             completed_scan_context("synthetic-token", "123/not-a-run")
 
     def test_awaited_parent_context_keeps_running_parent_distinct_from_finished_sources(self):
-        from scripts.nightly_sequence import SOURCE_JOBS, SOURCE_TAILS, WORKFLOW_NAME, WORKFLOW_PATH
-        parent = {"id": 42, "name": WORKFLOW_NAME, "path": WORKFLOW_PATH,
+        from scripts.nightly_sequence import SOURCE_JOBS, SOURCE_TAILS, RUN_TITLE, WORKFLOW_PATH
+        parent = {"id": 42, "name": RUN_TITLE, "display_title": RUN_TITLE, "path": WORKFLOW_PATH,
                   "head_repository": {"full_name": "pdufa/pdufa-command-center"},
                   "head_branch": "main", "status": "in_progress"}
         jobs = [{"name": "sources / " + name, "status": "completed", "conclusion": "success"}

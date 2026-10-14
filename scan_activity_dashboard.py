@@ -128,7 +128,7 @@ def _rows_for_window(runs, now, hours):
         seen.add(run_id)
         result.append({
             "id": run_id,
-            "workflow": str(run.get("display_title") if run.get("name") == "PDUFA Overnight Sequential Scans"
+            "workflow": str(run.get("display_title") if run.get("path") == ".github/workflows/pdufa-overnight-sequential.yml"
                             else run.get("_label") or run.get("name") or "Scan"),
             "name": str(run.get("name") or "Scan"),
             "status": _state(run),
