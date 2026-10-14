@@ -95,12 +95,12 @@ async function verify(){
     await page.screenshot({path:path.join(out,"prephase3-live-scorecards.png"),fullPage:false});
     // A zero provisional count is valid only if the UI explicitly says so
     // and withholds the pilot scorecards. A nonzero count must show them.
-    const provisionalMatch = body.match(/([\\d,]+) provisional, source-cited clinical research score\\(s\\) \\/100/);
+    const provisionalMatch = body.match(/([\d,]+) provisional, source-cited clinical research score\(s\) \/100/);
     const provisionalCount = provisionalMatch
       ? Number(provisionalMatch[1].replace(/,/g,"")) : null;
     checked.evidence = { provisionalCount };
     const pilotHeading = body.includes("DATED CLINICAL RESEARCH PILOT SCORES");
-    const pilotMetric = /[A-Z]{2,6} · NCT\\d{8} · (?:PROVISIONAL|REVIEWED) RESEARCH \\/100/.test(body);
+    const pilotMetric = /[A-Z]{2,6} · NCT\d{8} · (?:PROVISIONAL|REVIEWED) RESEARCH \/100/.test(body);
     const pilotStateConsistent = provisionalCount !== null &&
       (provisionalCount === 0 ? !pilotHeading : pilotHeading && pilotMetric);
     const requiredChecks={
