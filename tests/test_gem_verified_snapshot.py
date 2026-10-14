@@ -62,8 +62,8 @@ class ExactGEMClearanceTests(unittest.TestCase):
                 "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
                 "first_financing_date": "2026-02-01",
                 "second_financing_date": "2026-03-01",
-                "first_financing_source": "https://www.sec.gov/Archives/a",
-                "second_financing_source": "https://www.sec.gov/Archives/b",
+                "first_financing_source": "https://www.sec.gov/Archives/edgar/data/123/first.htm",
+                "second_financing_source": "https://www.sec.gov/Archives/edgar/data/123/second.htm",
                 "verified_as_of": "2026-10-14",
             }])
             active, historical, sec = source_cleared_gems(root, as_of=date(2026, 10, 14))
@@ -87,8 +87,8 @@ class ExactGEMClearanceTests(unittest.TestCase):
                 "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
                 "first_financing_date": "2026-02-01",
                 "second_financing_date": "2026-03-01",
-                "first_financing_source": "https://www.sec.gov/Archives/a",
-                "second_financing_source": "https://www.sec.gov/Archives/b",
+                "first_financing_source": "https://www.sec.gov/Archives/edgar/data/123/first.htm",
+                "second_financing_source": "https://www.sec.gov/Archives/edgar/data/123/second.htm",
                 "verified_as_of": "2026-10-14",
             }])
             active, historical, _ = source_cleared_gems(root, as_of=date(2026, 10, 14))
