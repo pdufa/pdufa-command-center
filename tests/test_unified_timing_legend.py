@@ -30,7 +30,7 @@ class TimelineLegendTests(unittest.TestCase):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
         self.assertIn(
-            'gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small")',
+            'gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small", wrap=False)',
             source,
         )
         for column, panel in (
@@ -51,15 +51,16 @@ class TimelineLegendTests(unittest.TestCase):
                         source.index("with pre3_col"))
         self.assertLess(source.index("with pre3_col"),
                         source.index("with post3_col"))
-        # All four stay adjacent on mobile through sideways scrolling.
-        self.assertIn("grid-template-columns:repeat(4,minmax(280px,1fr))", source)
-        self.assertIn('.st-key-overview_panels {overflow-x:auto;}', source)
-        self.assertNotIn("grid-template-columns:repeat(2", source)
-        self.assertNotIn("grid-template-columns:minmax(0,100%)", source)
-        self.assertIn('width:100% !important;', source)
+        # Native Streamlit 1.65 wrap=False keeps all four in the same
+        # scrollable row on iPhones. Do not override it with a CSS grid.
+        self.assertIn('gap="small", wrap=False)', source)
+        self.assertNotIn("grid-template-columns:repeat(4", source)
+        self.assertNotIn("display:grid !important", source)
+        self.assertIn('flex:1 0 280px !important;', source)
+        self.assertIn('min-width:280px !important;', source)
         self.assertIn('gap:0 !important;', source)
         self.assertIn('padding-inline:0.375rem !important;', source)
-        # Only the overview row scrolls; nested timeline metrics keep their layout.
+        # Only the four-card row is styled; nested timeline metrics remain independent.
         self.assertIn(":has(.st-key-overview_pipeline_panel)", source)
         self.assertIn('a, b, c = st.columns(3)', source)
 
