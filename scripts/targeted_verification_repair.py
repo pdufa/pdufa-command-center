@@ -60,6 +60,10 @@ def fresh_result(verifier, event, row):
     if len(exact) == 1:
         result = dict(exact[0])
         old_expected = (row.get("expected") or "").strip()
+        # Source queues sometimes contain the placeholder UNVERIFIED rather than
+        # an asserted transaction date. It is not conflicting primary evidence.
+        if old_expected.upper() in {"UNVERIFIED", "UNKNOWN", "PENDING", "REVIEW"}:
+            old_expected = ""
         if old_expected and result.get("expected") and old_expected != result["expected"]:
             result["verification_status"] = "CONFLICT"
             result["reason"] = "Expected evidence changed between saved review queue and fresh verification"
