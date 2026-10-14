@@ -185,8 +185,25 @@ async function audit() {
       return;
     }
     await candidates.first().click({timeout:15000});
+    await delay(1800);
+    // Preserve diagnostic facts from the opened disclosure; this distinguishes
+    // real chart failures from a missing/invisible DOM label in the renderer.
+    const probeFrame = await currentFrame(page);
+    const probeText = probeFrame ? await probeFrame.locator("body").innerText({timeout:9000}) : "";
+    const summary = probeFrame ? probeFrame.getByText("OPEN STOCK → six factors → inputs", {exact:false}).first() : null;
+    let disclosure = "unknown";
+    try { disclosure = await summary.evaluate(el => {
+      const holder = el.closest('[data-testid="stExpander"]');
+      const details = holder?.querySelector("details");
+      return details ? (details.open ? "open" : "closed") : (holder ? "found expander" : "expander not found");
+    }); } catch (_) {}
+    report.notes.push("GEM stock probe: header=" +
+                      probeText.includes("ENTRY / EXIT MONITOR") +
+                      "; disclosure=" + disclosure +
+                      "; master=" + probeText.includes("GEM — STOCK → FACTORS → SOURCE INPUTS"));
+    await screenshot(page,"gem-expander-diagnostic");
     const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
-      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR —"), 65000);
+      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR"), 35000);
     // Streamlit's st.dataframe uses a canvas-backed grid; its column titles
     // are not necessarily present in body.innerText. Require the actual
     // rendered research header and inspect Streamlit's dataframe test ID.
@@ -201,13 +218,20 @@ async function audit() {
     // Previous checks navigate away from WT; deliberately re-open it rather
     // than assuming the tab left selected at the end of the preceding loop.
     const selected = await inspectTab(page, "WT", []);
-    const inner = [];
-    for (const frame of page.frames()) {
-      if (frame === selected.frame) continue;
-      try { inner.push(await frame.locator("body").innerText({timeout:2500})); } catch (_) {}
+    let inner = [];
+    // Streamlit custom HTML renders in a separate iframe AFTER the tab itself
+    // reports selected. Allow time for that iframe to mount and populate.
+    for (let attempt=0;attempt<20;attempt++) {
+      inner = [];
+      for (const frame of page.frames()) {
+        if (frame === selected.frame) continue;
+        try { inner.push(await frame.locator("body").innerText({timeout:2500})); } catch (_) {}
+      }
+      if (inner.some(text => text.includes("WATCHLIST") && text.includes("TRADING"))) break;
+      await delay(900);
     }
     if (!inner.some(text => text.includes("WATCHLIST") && text.includes("TRADING"))) {
-      throw Error("Watchlist/Trading iframe absent or incomplete.");
+      throw Error("Watchlist/Trading iframe absent or incomplete after 20 checks; frames="+page.frames().length);
     }
     report.checked.push({screen:"WT embedded Watchlist and Trading",result:"PASS"});
   });
