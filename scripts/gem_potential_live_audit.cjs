@@ -52,8 +52,8 @@ async function audit() {
     app = (await frameWithApp(page)) || app;
     if (errorFrom(app.text)) throw new Error("Live Streamlit page reports an application exception");
     try {
-      if (await app.frame.getByRole("tab", { name: "UNIFIED OVERVIEW", exact: true }).count()) {
-        await app.frame.getByRole("tab", { name: "UNIFIED OVERVIEW", exact: true })
+      if (await app.frame.getByRole("tab", { name: "GEM", exact: true }).count()) {
+        await app.frame.getByRole("tab", { name: "GEM", exact: true })
           .click({ timeout: 12000 });
         found = true;
         break;
@@ -65,14 +65,14 @@ async function audit() {
     }
     await sleep(1200);
   }
-  if (!found) throw new Error("UNIFIED OVERVIEW tab not available for GEM list check");
+  if (!found) throw new Error("GEM tab not available for Potential GEM list check");
   let panelText = "", overview = "";
   for (let i = 0; i < 120; i++) {
     app = (await frameWithApp(page)) || app;
     overview = app.text;
-    if (errorFrom(overview)) throw new Error("UNIFIED OVERVIEW reports an application exception");
+    if (errorFrom(overview)) throw new Error("GEM tab reports an application exception");
     try {
-      if (await app.frame.getByRole("tab", { name: "UNIFIED OVERVIEW", exact: true })
+      if (await app.frame.getByRole("tab", { name: "GEM", exact: true })
         .getAttribute("aria-selected") !== "true") {
         await sleep(900);
         continue;
