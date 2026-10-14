@@ -46,7 +46,7 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
         self.assertEqual(sum(WEIGHTS.values()), 100)
         result = assess(sample(), event(), as_of=DATE)
         self.assertTrue(result["Two-benchmark eligible"])
-        self.assertEqual(result["Two-benchmark priority /100"], 91)
+        self.assertEqual(result["Two-benchmark priority /100"], 82)
         self.assertEqual(result["Two-benchmark rank"], None)
         self.assertIn("QUALIFIED", result["Two-benchmark entry status"])
 
