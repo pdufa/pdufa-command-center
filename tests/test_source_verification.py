@@ -497,6 +497,35 @@ class VerificationTests(unittest.TestCase):
         body = b"TestDrug lung cancer. On October 10, 2026 Test Pharma expects the FDA may issue a complete response letter."
         self.assertEqual(self.verifier(body).regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
 
+    def test_exact_mapped_sec_offering_is_only_one_transaction(self):
+        sec = "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/ex99-1.htm"
+        event = {**EVENT, "financing_close_date": "",
+                 "financing_evidence_url": ""}
+        config = {"ABC": {"events": {"ABC|DRUG": {
+            "individual_financing_close": {
+                "date": "2026-05-11", "sec_url": sec,
+                "evidence_type": "SINGLE_FUNDED_TRANSACTION_ONLY",
+            }}}, "hosts": []}}
+        document = ("Test Pharma entered an agreement. The offering closed "
+                    "on May 11, 2026 and raised $124.3 million in net "
+                    "proceeds from issuance of 4,455,863 shares of stock.")
+        v = verify.Verifier([COMPANY], fetch=lambda _: document.encode(),
+                            as_of=date(2026, 10, 12), issuer_sources=config)
+        result = v.financing(event)
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["observed"], "2026-05-11")
+        self.assertIn("not the post-Phase-3 second-financing sequence",
+                      result["reason"])
+        self.assertEqual(len(result["source_sha256"]), 64)
+        # Mapping from another CIK is not accepted, even if its text is similar.
+        bad = {**config["ABC"]["events"]["ABC|DRUG"]["individual_financing_close"],
+               "sec_url": sec.replace("/data/1/", "/data/2/")}
+        wrong = {"ABC": {"events": {"ABC|DRUG": {
+            "individual_financing_close": bad}}, "hosts": []}}
+        second = verify.Verifier([COMPANY], fetch=lambda _: document.encode(),
+                                 as_of=date(2026, 10, 12), issuer_sources=wrong)
+        self.assertNotEqual(second.financing(event)["verification_status"], "VERIFIED")
+
     def test_financing_keyword_and_date_never_certify_financing_number_two(self):
         event = {**EVENT, "financing_evidence_url": SEC_DOC, "financing_close_date": "2026-10-10"}
         result = self.verifier(b"On October 10, 2026, the company completed its public offering.").financing(event)
