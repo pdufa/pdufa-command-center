@@ -35,6 +35,8 @@ jobs:
           python-version: "3.12"
       - name: Install application dependencies
         run: python -m pip install -r requirements.txt
+      - name: Reject shifted CSV columns and false benchmark eligibility
+        run: python scripts/validate_gem_source_ledgers.py
       - name: Audit EVERY saved financing-stage exact program
         run: python scripts/gem_financing_batch_export.py --output-dir reports/gem_financing_batch
       - name: Run official ClinicalTrials.gov Phase 3 exact-NCT recheck
