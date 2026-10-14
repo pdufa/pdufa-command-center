@@ -1,0 +1,104 @@
+name: PDUFA Overnight Sequential Scans
+run-name: ${{ (github.event_name != 'workflow_dispatch' || inputs.validate_only) && 'VALIDATE — PDUFA overnight' || 'ALL + GEM — PDUFA overnight' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      validate_only:
+        description: 'Validate wiring without collecting sources or sending scan notifications'
+        type: boolean
+        default: false
+      gem_action:
+        description: 'GEM incremental recheck or full registry rescan'
+        type: choice
+        options: [REVERIFY_PARTIAL, RESCAN_ALL]
+        default: REVERIFY_PARTIAL
+  # Source changes validate the workflow; only an explicit dispatch runs scans.
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-overnight-sequential.yml']
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-*.yml'
+      - 'scripts/nightly_start.py'
+      - 'scripts/nightly_sequence.py'
+      - 'scripts/validate_clinical_snapshot.py'
+      - 'tests/test_nightly_pacific_sequence.py'
+
+permissions:
+  actions: write
+  contents: write
+
+# Held through sources, scoring, error checks AND repair. Component locks alone
+# cannot prevent the following night's clinical scans overlapping older sources.
+concurrency:
+  group: pdufa-complete-overnight-sequence-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate clock, failure paths, source lineage and publication gates
+        run: python -m unittest discover -s tests -p 'test_nightly_pacific_sequence.py' -v
+
+  clinical:
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' && !inputs.validate_only
+    uses: ./.github/workflows/pdufa-nightly-clinical.yml
+    with:
+      scan: ALL
+      include_gem: true
+      gem_action: ${{ inputs.gem_action || 'REVERIFY_PARTIAL' }}
+    secrets: inherit
+
+  report:
+    needs: clinical
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.clinical.result != 'skipped'
+    uses: ./.github/workflows/pdufa-nightly-report.yml
+    with:
+      source_run_id: ${{ github.run_id }}
+
+  sources:
+    needs: report
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.report.result != 'skipped'
+    uses: ./.github/workflows/pdufa-nightly-missing-sources.yml
+    secrets: inherit
+
+  scoring-and-repair:
+    needs: sources
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped'
+    uses: ./.github/workflows/pdufa-nightly-scoring-then-repair.yml
+    with:
+      source_run_id: ${{ github.run_id }}
+      source_conclusion: ${{ needs.sources.result }}
+    secrets: inherit
+
+  result:
+    needs: [validate, clinical, report, sources, scoring-and-repair]
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      RESULTS: ${{ toJSON(needs) }}
+    steps:
+      - name: Preserve every failed or skipped stage in the final result
+        run: |
+          python - <<'PY'
+          import json, os
+          results = json.loads(os.environ['RESULTS'])
+          lines = ['## Overnight sequential execution', '',
+                   'GitHub execution status only; source evidence may still be PARTIAL.', '']
+          for name, result in results.items():
+              lines.append(f"- {name}: **{result['result']}**")
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('\n'.join(lines) + '\n')
+          if any(item['result'] != 'success' for item in results.values()):
+              raise SystemExit('One or more overnight stages failed or were skipped; inspect their reports.')
+          PY

@@ -27,6 +27,7 @@ GEM_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/gem_scan_blo
 # Explicit, bounded list avoids auto-repair/CI spam obscuring actual scans.
 # GitHub API returns up to 50 recent runs PER workflow, not all repository runs.
 WORKFLOWS = (
+    ("Entire overnight sequence · ALL + GEM", "pdufa-overnight-sequential.yml"),
     ("Clinical scans", "pdufa-nightly-clinical.yml"),
     ("GEMS quality snapshot", "gem-research-quality.yml"),
     ("GEMS financing research", "gem-financing-full-coverage.yml"),
@@ -127,7 +128,8 @@ def _rows_for_window(runs, now, hours):
         seen.add(run_id)
         result.append({
             "id": run_id,
-            "workflow": str(run.get("_label") or run.get("name") or "Scan"),
+            "workflow": str(run.get("display_title") if run.get("name") == "PDUFA Overnight Sequential Scans"
+                            else run.get("_label") or run.get("name") or "Scan"),
             "name": str(run.get("name") or "Scan"),
             "status": _state(run),
             "started": _format_pacific(stamp),

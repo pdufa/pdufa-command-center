@@ -21,6 +21,7 @@ def build_report(root=".", *, source_run_id: str, source_workflow: str,
     if source_workflow not in {
         "PDUFA Nightly Scan Report Publisher",
         "PDUFA Nightly FDA SEC Financial Market Issuer Sources",
+        "PDUFA Overnight Sequential Scans",
     }:
         raise ValueError("Unrecognized nightly scan completion source.")
     if source_conclusion not in {"success", "failure", "timed_out", "cancelled", "skipped"}:
@@ -52,8 +53,8 @@ def build_report(root=".", *, source_run_id: str, source_workflow: str,
                    "input_tests": len(results), "data_gaps": gaps, "reviews": reviewed},
         "checks": results,
         "sources": coverage,
-        "scope": "Read-only saved-input column/overlap checks after a completed nightly scan",
-        "provenance_note": ("Checked-in scoring datasets are inspected after the workflow completed. "
+        "scope": "Read-only saved-input column/overlap checks after completed nightly source jobs",
+        "provenance_note": ("Checked-in scoring datasets are inspected after the source jobs completed. "
                             "They are not necessarily the fresh artifacts of that workflow. "
                             "Missing data is not a negative clinical result; shared inputs are not independent votes."),
     }

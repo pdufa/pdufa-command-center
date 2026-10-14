@@ -17,8 +17,12 @@ jobs:
   bulk-evidence-review:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    env:
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

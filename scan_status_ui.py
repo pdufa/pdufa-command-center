@@ -22,6 +22,7 @@ BASE = "https://github.com/" + REPO
 API = "https://api.github.com/repos/" + REPO
 RAW = "https://raw.githubusercontent.com/" + REPO + "/main/data/"
 WORKFLOWS = {
+    "Entire overnight sequence · ALL + GEM": "pdufa-overnight-sequential.yml",
     "Clinical #2 → #3 → #4": "pdufa-nightly-clinical.yml",
     "GEM · fourth scan block": "gem-research-quality.yml",
     "Clinical report publisher": "pdufa-nightly-report.yml",
@@ -70,6 +71,8 @@ def workflow_snapshots(runs):
     found = {}
     for run in sorted(runs, key=lambda x: x.get("created_at") or "", reverse=True):
         path = str(run.get("path") or "").split("/")[-1]
+        if path == "pdufa-overnight-sequential.yml" and run.get("display_title") != "ALL + GEM — PDUFA overnight":
+            continue
         if path and path not in found and path in WORKFLOWS.values():
             found[path] = run
     return found

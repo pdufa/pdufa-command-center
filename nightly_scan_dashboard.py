@@ -330,17 +330,22 @@ def published_report():
 
 @st.cache_data(ttl=60, show_spinner=False)
 def latest_run():
-    request = urllib.request.Request(
-        API + "/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=1",
-        headers={"Accept": "application/vnd.github+json",
-                 "User-Agent": "pdufa-command-center-dashboard"},
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=8) as response:
-            data = json.load(response)
-        return (data.get("workflow_runs") or [{}])[0]
-    except (ValueError, OSError, urllib.error.URLError):
-        return {}
+    for workflow in ("pdufa-overnight-sequential.yml", "pdufa-nightly-clinical.yml"):
+        request = urllib.request.Request(
+            API + "/actions/workflows/" + workflow + "/runs?branch=main&per_page=10",
+            headers={"Accept": "application/vnd.github+json",
+                     "User-Agent": "pdufa-command-center-dashboard"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=8) as response:
+                data = json.load(response)
+            for run in data.get("workflow_runs") or []:
+                if (workflow != "pdufa-overnight-sequential.yml" or
+                        run.get("display_title") == "ALL + GEM — PDUFA overnight"):
+                    return run
+        except (ValueError, OSError, urllib.error.URLError):
+            continue
+    return {}
 
 
 def dashboard_secret(key):
@@ -546,7 +551,7 @@ def render_nightly_scan_report():
     if loading_note:
         st.info(loading_note)
     if running and running.get("status") in ("queued", "in_progress", "waiting", "pending"):
-        st.warning("Collector run #" + str(running.get("id")) + " is " +
+        st.warning("Scan workflow run #" + str(running.get("id")) + " is " +
                    str(running.get("status")).replace("_", " ") +
                    ". The report below may describe a previous run.")
     if report:
