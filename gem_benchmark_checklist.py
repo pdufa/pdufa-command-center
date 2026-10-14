@@ -50,6 +50,7 @@ def _num(value):
 def _state(passed=False, detail="Not verified", *, observed=False, risk=False):
     return {
         "checked": bool(passed),
+        "observed": bool(observed),
         "status": "PASS" if passed else ("RISK" if risk else "RESEARCH LEAD" if observed else "NOT VERIFIED"),
         "detail": str(detail),
     }
@@ -152,6 +153,46 @@ def filter_programs(rows, checklists, selected=()):
     if not keys.issubset(FILTERABLE):
         raise ValueError("Unknown GEM checkbox filter")
     return [row for row in rows
-            if all(checklists.get(str(row.get("Exact Program / Event") or ""), {})
-                   .get(key, {}).get("checked") is True
-                   for key in keys)]
+            if all(
+                (checklists.get(str(row.get("Exact Program / Event") or ""), {})
+                 .get(key, {}).get("checked") is True)
+                or (key in dict(UMBRELLA) and
+                    checklists.get(str(row.get("Exact Program / Event") or ""), {})
+                    .get(key, {}).get("observed") is True)
+                for key in keys
+            )]
+
+
+def _unique(records, field):
+    """Never attach one program's sources to a repeated or missing event key."""
+    mapping, duplicates = {}, set()
+    for item in records or ():
+        key = str(item.get(field) or "").strip()
+        if not key:
+            continue
+        if key in mapping:
+            duplicates.add(key)
+        else:
+            mapping[key] = item
+    for key in duplicates:
+        mapping.pop(key, None)
+    return mapping
+
+
+def build_checklist_map(master_rows, saved_sources=(), financing_rechecks=(),
+                        clinical_rechecks=(), *, sec_current=False,
+                        feed_current=False):
+    """Link only unique event keys; watch records remain present but unrated."""
+    master_by_event = _unique(master_rows, "Exact Program / Event")
+    sources = _unique(saved_sources, "Exact event")
+    finance = _unique(financing_rechecks, "event_key")
+    clinical = _unique(clinical_rechecks, "event_key")
+    return {
+        key: build_checklist(
+            master, sources.get(key),
+            finance_audit=finance.get(key),
+            clinical_audit=clinical.get(key),
+            sec_current=sec_current, feed_current=feed_current,
+        )
+        for key, master in master_by_event.items()
+    }
