@@ -9,7 +9,7 @@ def test_six_pdufa_subtabs_keep_scans_and_trading():
     start = source.index('if page == "PDUFA":')
     end = source.index('elif page == "2. PDUFA CALENDAR":', start)
     pdufa = source[start:end]
-    assert '["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]' in pdufa
+    assert '["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]' in pdufa
     assert 'nightly_report_tab, watch_trade_tab = st.tabs(' in pdufa
     assert 'with nightly_report_tab:' in pdufa
     assert 'render_nightly_scan_report()' in pdufa
