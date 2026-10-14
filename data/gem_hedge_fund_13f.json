@@ -1,0 +1,4287 @@
+{
+  "as_of_pacific": "2026-10-13",
+  "collector_status": "PARTIAL \u2014 MANAGER SOURCE FAILURES",
+  "generated_at_utc": "2026-10-14T01:42:48.440611+00:00",
+  "limitations": "Selected managers only; exact normalized SEC issuer name and common class CUSIP, not fuzzy ticker matching. Latest and prior distinct report quarters required. Quarterly holdings delayed up to 45 days after quarter end; missing matches are NOT zero ownership.",
+  "manager_count": 4,
+  "managers_complete": 3,
+  "matched_ticker_count": 190,
+  "records": [
+    {
+      "managers": [
+        {
+          "cusip": "00288U106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 30275938,
+          "quarter_end": "2026-06-30",
+          "shares": 33012138
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ABCL"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00509G209",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 20992669,
+          "quarter_end": "2026-06-30",
+          "shares": 20992669
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ABOS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00091E109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2134803,
+          "quarter_end": "2026-06-30",
+          "shares": 2134803
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ABSI"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00370M103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 875796,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ABVX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "004225108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 42896690,
+          "quarter_end": "2026-06-30",
+          "shares": 42912904
+        },
+        {
+          "cusip": "004225108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 137000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ACAD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "007002207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1182624,
+          "quarter_end": "2026-06-30",
+          "shares": 932624
+        },
+        {
+          "cusip": "007002207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1027944,
+          "quarter_end": "2026-06-30",
+          "shares": 844787
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ACET"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00461U105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 6804072,
+          "quarter_end": "2026-06-30",
+          "shares": 12723026
+        },
+        {
+          "cusip": "00461U105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 421500
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ACRS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "004890109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 8340508,
+          "quarter_end": "2026-06-30",
+          "shares": 12229396
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ACRV"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "H0036K147",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1318026,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ADCT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00860C102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 192740
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AGMB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "01021M104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 996351,
+          "quarter_end": "2026-06-30",
+          "shares": 996351
+        },
+        {
+          "cusip": "01021M104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1503084,
+          "quarter_end": "2026-06-30",
+          "shares": 1314405
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AKTS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "01626L204",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 83055,
+          "quarter_end": "2026-06-30",
+          "shares": 83055
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ALGS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "G01767105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 10012267,
+          "quarter_end": "2026-06-30",
+          "shares": 10012267
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ALKS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "022307102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2012500,
+          "quarter_end": "2026-06-30",
+          "shares": 2012500
+        },
+        {
+          "cusip": "022307102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 548163,
+          "quarter_end": "2026-06-30",
+          "shares": 548163
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ALMS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "02043Q107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 119000,
+          "quarter_end": "2026-06-30",
+          "shares": 17000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ALNY"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "02155H200",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 6500000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ALT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00166B105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 13011849,
+          "quarter_end": "2026-06-30",
+          "shares": 13011849
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ALXO"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "031162100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 39900,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AMGN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "03237H101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 183400
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AMLX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "02157Q109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 167500,
+          "quarter_end": "2026-06-30",
+          "shares": 257852
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ANRO"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "04016X101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 25174,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "04016X101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 136900,
+          "quarter_end": "2026-06-30",
+          "shares": 92880
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ARGX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "03969K108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 2042000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ARQT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "04317A107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 9853302,
+          "quarter_end": "2026-06-30",
+          "shares": 17955642
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ARTV"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "04280A100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1992783,
+          "quarter_end": "2026-06-30",
+          "shares": 1992783
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ARWR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "045396207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1020410,
+          "quarter_end": "2026-06-30",
+          "shares": 1020410
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ASMB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "K08588103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 10281496
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ASND"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "05153U107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 2500000
+        },
+        {
+          "cusip": "05153U107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 3333333
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AURA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "04272N102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 3027328,
+          "quarter_end": "2026-06-30",
+          "shares": 3027328
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AVBP"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "05348Y105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 350000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AVLN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "05338F306",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 550000
+        },
+        {
+          "cusip": "05338F306",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 662968,
+          "quarter_end": "2026-06-30",
+          "shares": 1000000
+        },
+        {
+          "cusip": "05338F306",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 475165,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AVTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "05464T104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 213921,
+          "quarter_end": "2026-06-30",
+          "shares": 117578
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AXSM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "G0593M107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 670200,
+          "quarter_end": "2026-06-30",
+          "shares": 915700
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "AZN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "055477103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 7255993,
+          "quarter_end": "2026-06-30",
+          "shares": 7255993
+        },
+        {
+          "cusip": "055477103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 667300,
+          "quarter_end": "2026-06-30",
+          "shares": 191100
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BCAX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "09058V103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 15827186,
+          "quarter_end": "2026-06-30",
+          "shares": 15827186
+        },
+        {
+          "cusip": "09058V103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1425200,
+          "quarter_end": "2026-06-30",
+          "shares": 1852000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BCRX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "088786108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 10885357,
+          "quarter_end": "2026-06-30",
+          "shares": 10885357
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BCYC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "09062X103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 61600,
+          "quarter_end": "2026-06-30",
+          "shares": 61600
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BIIB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "09077V100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1650648,
+          "quarter_end": "2026-06-30",
+          "shares": 1671648
+        },
+        {
+          "cusip": "09077V100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 711811,
+          "quarter_end": "2026-06-30",
+          "shares": 752153
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BIOA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "07782B104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 13300
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BLTE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "110122108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 925000,
+          "quarter_end": "2026-06-30",
+          "shares": 925000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BMY"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "08205P209",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1850000,
+          "quarter_end": "2026-06-30",
+          "shares": 1850000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BNTC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "09075V102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 119743,
+          "quarter_end": "2026-06-30",
+          "shares": 119743
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "BNTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "14070B309",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1507844,
+          "quarter_end": "2026-06-30",
+          "shares": 1507844
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CAPR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "12529R107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 8000000,
+          "quarter_end": "2026-06-30",
+          "shares": 8000000
+        },
+        {
+          "cusip": "12529R107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 856353,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CCCC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "230031106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 243006,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CGEM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "156944100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 948267,
+          "quarter_end": "2026-06-30",
+          "shares": 972800
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CGON"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "15117B202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 665370,
+          "quarter_end": "2026-06-30",
+          "shares": 1182611
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CLDX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "28658R106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 11300939,
+          "quarter_end": "2026-06-30",
+          "shares": 11300939
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CLYM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "20451W101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2344720,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "20451W101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1150646,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CMPS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "20454B104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 15219994,
+          "quarter_end": "2026-06-30",
+          "shares": 15219994
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CMPX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "423494103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 7808627
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "COAG"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "19240Q201",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 322100,
+          "quarter_end": "2026-06-30",
+          "shares": 1681300
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "COGT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "221015100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 450000,
+          "quarter_end": "2026-06-30",
+          "shares": 450000
+        },
+        {
+          "cusip": "221015100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 7165006,
+          "quarter_end": "2026-06-30",
+          "shares": 7165006
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CRVS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "23284F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 4975826,
+          "quarter_end": "2026-06-30",
+          "shares": 4975826
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CTMX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "21217B100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1420838,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CTNM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "23282W605",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 211267
+        },
+        {
+          "cusip": "23282W605",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 25800
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CYTK"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "23306J309",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1461425,
+          "quarter_end": "2026-06-30",
+          "shares": 1461425
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DBVT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "24477V105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 1500000
+        },
+        {
+          "cusip": "24477V105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 804000,
+          "quarter_end": "2026-06-30",
+          "shares": 365400
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DFTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "36322Q206",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 2399310,
+          "quarter_end": "2026-06-30",
+          "shares": 2399702
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DMRA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "24823R105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 3731695,
+          "quarter_end": "2026-06-30",
+          "shares": 3734336
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DNLI"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "10919W405",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 265000,
+          "quarter_end": "2026-06-30",
+          "shares": 265000
+        },
+        {
+          "cusip": "10919W405",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 40000,
+          "quarter_end": "2026-06-30",
+          "shares": 93000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DRUG"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "25056L103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2585978,
+          "quarter_end": "2026-06-30",
+          "shares": 2678430
+        },
+        {
+          "cusip": "25056L103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 2972973,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DSGN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "26818M108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 813449,
+          "quarter_end": "2026-06-30",
+          "shares": 813449
+        },
+        {
+          "cusip": "26818M108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2917884,
+          "quarter_end": "2026-06-30",
+          "shares": 3235684
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "DYN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "28106W103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 8889000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EDIT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "282564103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 555555,
+          "quarter_end": "2026-06-30",
+          "shares": 555555
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EIKN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "29337E102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 905191,
+          "quarter_end": "2026-06-30",
+          "shares": 905191
+        },
+        {
+          "cusip": "29337E102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 7959538,
+          "quarter_end": "2026-06-30",
+          "shares": 6776632
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ELVN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "29842P105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 269000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EPRX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "29446K106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 3096336,
+          "quarter_end": "2026-06-30",
+          "shares": 3096336
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EQ"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "29479A108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 495900
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ERAS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "30054Y107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 847390,
+          "quarter_end": "2026-06-30",
+          "shares": 847390
+        },
+        {
+          "cusip": "30054Y107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 3494638,
+          "quarter_end": "2026-06-30",
+          "shares": 3494638
+        },
+        {
+          "cusip": "30054Y107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 161000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EVMN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "28036F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 6575940,
+          "quarter_end": "2026-06-30",
+          "shares": 3701719
+        },
+        {
+          "cusip": "28036F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 10428437,
+          "quarter_end": "2026-06-30",
+          "shares": 8392730
+        },
+        {
+          "cusip": "28036F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 15518492,
+          "quarter_end": "2026-06-30",
+          "shares": 15518492
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EWTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "81728A207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 1286411
+        },
+        {
+          "cusip": "81728A207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 722020
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "FTH"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "359616109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 6053960,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "FULC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "370920100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1423602,
+          "quarter_end": "2026-06-30",
+          "shares": 1423602
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "GENB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "374163103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 63771366,
+          "quarter_end": "2026-06-30",
+          "shares": 42809751
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "GERN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "G3855L106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 7676697,
+          "quarter_end": "2026-06-30",
+          "shares": 7636813
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "GHRS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "375558103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 59600,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "GILD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "61225M102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 4345736,
+          "quarter_end": "2026-06-30",
+          "shares": 4345736
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "GLUE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "86366E106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1432529,
+          "quarter_end": "2026-06-30",
+          "shares": 1432529
+        },
+        {
+          "cusip": "86366E106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1475403,
+          "quarter_end": "2026-06-30",
+          "shares": 2209400
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "GPCR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "23256X407",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 3832843,
+          "quarter_end": "2026-06-30",
+          "shares": 3271400
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "HELP"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "95075A107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 6681307,
+          "quarter_end": "2026-06-30",
+          "shares": 2387744
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "HOWL"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45166A102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 3946515,
+          "quarter_end": "2026-06-30",
+          "shares": 5010030
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IDYA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45175G207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 378556,
+          "quarter_end": "2026-06-30",
+          "shares": 909269
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IMA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45258D105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 734397,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IMCR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45257U108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 55306
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IMNM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "N44445109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 10916693,
+          "quarter_end": "2026-06-30",
+          "shares": 9508565
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IMTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45258J102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 5457881,
+          "quarter_end": "2026-06-30",
+          "shares": 5435220
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IMVT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45337C102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 30744412,
+          "quarter_end": "2026-06-30",
+          "shares": 30762330
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "INCY"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "457669307",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 7421111,
+          "quarter_end": "2026-06-30",
+          "shares": 8796111
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "INSM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "462222100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2047727,
+          "quarter_end": "2026-06-30",
+          "shares": 2047727
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IONS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "15673T100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 17754430,
+          "quarter_end": "2026-06-30",
+          "shares": 17754430
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IPSC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "254604101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 349657,
+          "quarter_end": "2026-06-30",
+          "shares": 349657
+        },
+        {
+          "cusip": "254604101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 2450221,
+          "quarter_end": "2026-06-30",
+          "shares": 2450221
+        },
+        {
+          "cusip": "254604101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1067550,
+          "quarter_end": "2026-06-30",
+          "shares": 357535
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IRON"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "47103J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 11189693,
+          "quarter_end": "2026-06-30",
+          "shares": 11189693
+        },
+        {
+          "cusip": "47103J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 983600,
+          "quarter_end": "2026-06-30",
+          "shares": 524700
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "JANX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "008064206",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1641137,
+          "quarter_end": "2026-06-30",
+          "shares": 1230426
+        },
+        {
+          "cusip": "008064206",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 3671083,
+          "quarter_end": "2026-06-30",
+          "shares": 3671083
+        },
+        {
+          "cusip": "008064206",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 185011,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "JBIO"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "G52694109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2826246,
+          "quarter_end": "2026-06-30",
+          "shares": 2834643
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KNSA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "50015M109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 19919186,
+          "quarter_end": "2026-06-30",
+          "shares": 19919186
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KOD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "48576U205",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1917354,
+          "quarter_end": "2026-06-30",
+          "shares": 1917354
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KPTI"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "492327101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 759155,
+          "quarter_end": "2026-06-30",
+          "shares": 759155
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KROS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "501147102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 69100,
+          "quarter_end": "2026-06-30",
+          "shares": 83200
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KRYS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "501575104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 8657242,
+          "quarter_end": "2026-06-30",
+          "shares": 8657242
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KYMR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "50180M108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 200000,
+          "quarter_end": "2026-06-30",
+          "shares": 200000
+        },
+        {
+          "cusip": "50180M108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 2208604,
+          "quarter_end": "2026-06-30",
+          "shares": 2208604
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "LBRX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "52635N103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 4178823,
+          "quarter_end": "2026-06-30",
+          "shares": 4178823
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "LENZ"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "532457108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 236800,
+          "quarter_end": "2026-06-30",
+          "shares": 257900
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "LLY"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "52886X107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 5000000,
+          "quarter_end": "2026-06-30",
+          "shares": 5000000
+        },
+        {
+          "cusip": "52886X107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 3602450,
+          "quarter_end": "2026-06-30",
+          "shares": 3947850
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "LXEO"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "55287L101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 3637887,
+          "quarter_end": "2026-06-30",
+          "shares": 3428736
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MBX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "558868105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2141701,
+          "quarter_end": "2026-06-30",
+          "shares": 2143131
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MDGL"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "556099109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1864176,
+          "quarter_end": "2026-06-30",
+          "shares": 1864176
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MGNX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "604749101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 445975,
+          "quarter_end": "2026-06-30",
+          "shares": 445975
+        },
+        {
+          "cusip": "604749101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 318554,
+          "quarter_end": "2026-06-30",
+          "shares": 318554
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MIRM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "603170101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 7692750,
+          "quarter_end": "2026-06-30",
+          "shares": 7692750
+        },
+        {
+          "cusip": "603170101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2052900,
+          "quarter_end": "2026-06-30",
+          "shares": 2110300
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MLYS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "61023L207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 667207,
+          "quarter_end": "2026-06-30",
+          "shares": 667207
+        },
+        {
+          "cusip": "61023L207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 157423
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MNPR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "56565P103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 364705,
+          "quarter_end": "2026-06-30",
+          "shares": 364705
+        },
+        {
+          "cusip": "56565P103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 248294,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MPLT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "58933Y105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 663400,
+          "quarter_end": "2026-06-30",
+          "shares": 663400
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "MRK"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "64135M105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 991691,
+          "quarter_end": "2026-06-30",
+          "shares": 991691
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NGNE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "640268306",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 275000,
+          "quarter_end": "2026-06-30",
+          "shares": 465346
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NKTR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "65487U108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 10805129,
+          "quarter_end": "2026-06-30",
+          "shares": 10805129
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NKTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "640979100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 2139882
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NMRA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "67080M103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 4658556,
+          "quarter_end": "2026-06-30",
+          "shares": 4658556
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NRIX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45826J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 930232
+        },
+        {
+          "cusip": "45826J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 4526926
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NTLA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "67576A100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 220000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "OCUL"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "67613T104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 3001198
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ODTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "68062P106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 2600000,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "OLMA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "07725L102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 8799053,
+          "quarter_end": "2026-06-30",
+          "shares": 8801567
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ONC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "68622P109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2693929,
+          "quarter_end": "2026-06-30",
+          "shares": 2015000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ORIC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "687604108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 1554597
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ORKA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "690469101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 10714000,
+          "quarter_end": "2026-06-30",
+          "shares": 10500968
+        },
+        {
+          "cusip": "690469101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 747000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "OVID"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "696389402",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 7124116,
+          "quarter_end": "2026-06-30",
+          "shares": 7124116
+        },
+        {
+          "cusip": "696389402",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2333000,
+          "quarter_end": "2026-06-30",
+          "shares": 2333000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PALI"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "698955101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 500000
+        },
+        {
+          "cusip": "698955101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 28933371
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PBLS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "92243G108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 11474599,
+          "quarter_end": "2026-06-30",
+          "shares": 11474599
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PCVX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "713317105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 20064545,
+          "quarter_end": "2026-06-30",
+          "shares": 20064545
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PEPG"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "717081103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1946500,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PFE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "N69605108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 375000,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "N69605108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 205400,
+          "quarter_end": "2026-06-30",
+          "shares": 205400
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PHVS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "74006W207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1753198,
+          "quarter_end": "2026-06-30",
+          "shares": 1753198
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PRAX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "74065P101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 10123824,
+          "quarter_end": "2026-06-30",
+          "shares": 10123824
+        },
+        {
+          "cusip": "74065P101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 6475882
+        },
+        {
+          "cusip": "74065P101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 10909256,
+          "quarter_end": "2026-06-30",
+          "shares": 13724571
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PRLD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "69366J200",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 49100,
+          "quarter_end": "2026-06-30",
+          "shares": 49100
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PTCT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "74366E102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 42100,
+          "quarter_end": "2026-06-30",
+          "shares": 42100
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PTGX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "696077601",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 70000,
+          "quarter_end": "2026-06-30",
+          "shares": 62124
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PTN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "746964105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 2332457
+        },
+        {
+          "cusip": "746964105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2252987,
+          "quarter_end": "2026-06-30",
+          "shares": 4127987
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "QTTB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "75383L102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1547090,
+          "quarter_end": "2026-06-30",
+          "shares": 1547090
+        },
+        {
+          "cusip": "75383L102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 76616
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RAPP"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "03969F109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 415621,
+          "quarter_end": "2026-06-30",
+          "shares": 844816
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RCUS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "75886F107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 14700,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "REGN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "76029N106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 11045336,
+          "quarter_end": "2026-06-30",
+          "shares": 11045336
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "REPL"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "75943R102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1160117,
+          "quarter_end": "2026-06-30",
+          "shares": 2826783
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RLAY"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "75955J402",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 2947369,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "75955J402",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 4715864,
+          "quarter_end": "2026-06-30",
+          "shares": 3631195
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RLMD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "04965N104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 864102,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RNA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "G76279101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 4867723,
+          "quarter_end": "2026-06-30",
+          "shares": 4716831
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ROIV"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "76155X100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 9555357,
+          "quarter_end": "2026-06-30",
+          "shares": 11443357
+        },
+        {
+          "cusip": "76155X100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 52000,
+          "quarter_end": "2026-06-30",
+          "shares": 70500
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RVMD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "76243J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 5604483,
+          "quarter_end": "2026-06-30",
+          "shares": 5604483
+        },
+        {
+          "cusip": "76243J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 6666837,
+          "quarter_end": "2026-06-30",
+          "shares": 6666837
+        },
+        {
+          "cusip": "76243J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 314100,
+          "quarter_end": "2026-06-30",
+          "shares": 322900
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RYTM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "76200L309",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 9180000,
+          "quarter_end": "2026-06-30",
+          "shares": 9445039
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RZLT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "78397T202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 4401500,
+          "quarter_end": "2026-06-30",
+          "shares": 4401500
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SABS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "799566104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 310483,
+          "quarter_end": "2026-06-30",
+          "shares": 310483
+        },
+        {
+          "cusip": "799566104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 18750000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SANA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "81734D104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 6995858,
+          "quarter_end": "2026-06-30",
+          "shares": 6995858
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SEPN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "786700104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 952996,
+          "quarter_end": "2026-06-30",
+          "shares": 952996
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SGMT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "829401108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 400000,
+          "quarter_end": "2026-06-30",
+          "shares": 400000
+        },
+        {
+          "cusip": "829401108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 9905045,
+          "quarter_end": "2026-06-30",
+          "shares": 9905045
+        },
+        {
+          "cusip": "829401108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 3530702,
+          "quarter_end": "2026-06-30",
+          "shares": 2555877
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SION"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "83086J200",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1575243,
+          "quarter_end": "2026-06-30",
+          "shares": 1575243
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SKYE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "83422E204",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 9339978,
+          "quarter_end": "2026-06-30",
+          "shares": 12036126
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SLDB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "86627T108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 36391063,
+          "quarter_end": "2026-06-30",
+          "shares": 32786348
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SMMT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "87164F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 962300,
+          "quarter_end": "2026-06-30",
+          "shares": 1542000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SNDX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "85209E208",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 200000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SPRB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "82835W108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 10860977,
+          "quarter_end": "2026-06-30",
+          "shares": 10860977
+        },
+        {
+          "cusip": "82835W108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 8288510,
+          "quarter_end": "2026-06-30",
+          "shares": 8288510
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SPRY"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "81221K108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 700000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SPTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "803607100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 3902596,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SRPT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "86150R107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 3336697,
+          "quarter_end": "2026-06-30",
+          "shares": 3336697
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "STOK"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "869367201",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 715307,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "869367201",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 801144,
+          "quarter_end": "2026-06-30",
+          "shares": 743944
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "STRO"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "82024L103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 6306127,
+          "quarter_end": "2026-06-30",
+          "shares": 6306127
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "STTK"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "P8696W104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2718735,
+          "quarter_end": "2026-06-30",
+          "shares": 2718735
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SVA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "805111101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 635000,
+          "quarter_end": "2026-06-30",
+          "shares": 3959900
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SVRA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00773J202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1000000,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "00773J202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 1621620,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "00773J202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 186145
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "SYRE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "74365U107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 971614,
+          "quarter_end": "2026-06-30",
+          "shares": 971614
+        },
+        {
+          "cusip": "74365U107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 2220000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TARA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "87650L103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 35581
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TARS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "89854M101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 2784792,
+          "quarter_end": "2026-06-30",
+          "shares": 2784792
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TCRX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "878972108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 607788,
+          "quarter_end": "2026-06-30",
+          "shares": 607788
+        },
+        {
+          "cusip": "878972108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 226600,
+          "quarter_end": "2026-06-30",
+          "shares": 226600
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TECX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "87583X109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 333333
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TNGX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "68232V884",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 605531,
+          "quarter_end": "2026-06-30",
+          "shares": 1203260
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TRAW"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "29384C108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 5072730,
+          "quarter_end": "2026-06-30",
+          "shares": 5072730
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TRDA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "89532M101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 2454400,
+          "quarter_end": "2026-06-30",
+          "shares": 1430293
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TRVI"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "877619106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 4004756,
+          "quarter_end": "2026-06-30",
+          "shares": 4004756
+        },
+        {
+          "cusip": "877619106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 23555648,
+          "quarter_end": "2026-06-30",
+          "shares": 23555648
+        },
+        {
+          "cusip": "877619106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 2000000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TSHA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "89422G107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 746841,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        },
+        {
+          "cusip": "89422G107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 253000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TVTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "90240B106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 10607,
+          "quarter_end": "2026-06-30",
+          "shares": 10607
+        },
+        {
+          "cusip": "90240B106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 12198625,
+          "quarter_end": "2026-06-30",
+          "shares": 12198625
+        },
+        {
+          "cusip": "90240B106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 102000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TYRA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "91678A107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 5693589,
+          "quarter_end": "2026-06-30",
+          "shares": 5693589
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "UPB"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "M96088105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 875487,
+          "quarter_end": "2026-06-30",
+          "shares": 676187
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "URGN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "92337R101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 369596,
+          "quarter_end": "2026-06-30",
+          "shares": 369596
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "VERA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "929033207",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 5404998,
+          "quarter_end": "2026-06-30",
+          "shares": 2402095
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "VOR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "92337C203",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 584757,
+          "quarter_end": "2026-06-30",
+          "shares": 2499338
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "VSTM"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "92840H400",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 3060000,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "VTGN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "918385204",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 148314,
+          "quarter_end": "2026-06-30",
+          "shares": 148314
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "VTVT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "00032Q104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 4166000,
+          "quarter_end": "2026-06-30",
+          "shares": 3934296
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "WHWK"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "Y95308105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 822638,
+          "quarter_end": "2026-06-30",
+          "shares": 822638
+        },
+        {
+          "cusip": "Y95308105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 26975505,
+          "quarter_end": "2026-06-30",
+          "shares": 26975505
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "WVE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "98420N105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 370208,
+          "quarter_end": "2026-06-30",
+          "shares": 370208
+        },
+        {
+          "cusip": "98420N105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 1059971,
+          "quarter_end": "2026-06-30",
+          "shares": 892471
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "XENE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "98422T209",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 592300
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "XLO"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "98401F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+          "manager_cik": "0001263508",
+          "manager_name": "Baker Bros. Advisors LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926062547/infotable.xml",
+          "prior_shares": 1102106,
+          "quarter_end": "2026-06-30",
+          "shares": 1102106
+        },
+        {
+          "cusip": "98401F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+          "manager_cik": "0001346824",
+          "manager_name": "RA Capital Management LP",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926062637/infotable.xml",
+          "prior_shares": 4897237,
+          "quarter_end": "2026-06-30",
+          "shares": 5274274
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "XNCR"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "98943L107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+          "manager_cik": "0001055951",
+          "manager_name": "OrbiMed Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126002369/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 1390576
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ZNTL"
+    }
+  ],
+  "reports": [
+    {
+      "cik": "0001263508",
+      "error": "",
+      "latest_filing": "2026-08-14",
+      "latest_period": "2026-06-30",
+      "manager": "Baker Bros. Advisors LP",
+      "source": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
+      "status": "COMPLETE"
+    },
+    {
+      "cik": "0001346824",
+      "error": "",
+      "latest_filing": "2026-08-14",
+      "latest_period": "2026-06-30",
+      "manager": "RA Capital Management LP",
+      "source": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
+      "status": "COMPLETE"
+    },
+    {
+      "cik": "0001055951",
+      "error": "",
+      "latest_filing": "2026-08-14",
+      "latest_period": "2026-06-30",
+      "manager": "OrbiMed Advisors LLC",
+      "source": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
+      "status": "COMPLETE"
+    },
+    {
+      "cik": "0001224962",
+      "error": "Previous 13F quarter missing; cannot infer share delta",
+      "latest_filing": null,
+      "latest_period": null,
+      "manager": "Perceptive Advisors LLC",
+      "source": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/0001012975-26-000777-index.html",
+      "status": "ERROR"
+    }
+  ],
+  "schema_version": 1,
+  "source": "SEC_13F_XML_INFO_TABLE"
+}
