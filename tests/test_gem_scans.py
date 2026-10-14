@@ -291,7 +291,12 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert "PDUFA_SCAN_CONTROL_PIN" in source
         assert 'dispatch_action(action, scan, token)' in source
         ui = (ROOT / "gem_scans_ui.py").read_text(encoding="utf-8")
-        assert 'colspan="3">GEMS' in ui
-        assert 'rowspan="2">Ticker' in ui
-        assert "Phase 3</th><th>Post-Financing</th><th>PDUFA" in ui
+        assert "### GEM — UNIFIED MASTER LIST" in ui
+        assert "build_gem_master_list(items)" in ui
+        assert "EXPORT GEM MASTER LIST" in ui
+        nested = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
+        assert "FACTOR_FIELDS" in nested
+        assert "score_factor_inputs" in nested
+        assert 'args=(ticker, "watch")' in nested
+        assert 'args=(ticker, "trade")' in nested
 
