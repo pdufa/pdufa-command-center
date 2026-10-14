@@ -1,4 +1,4 @@
-"""GEMS — fourth read-only SCANS dashboard block beside clinical #2/#3/#4.
+"""GEM — fourth read-only SCANS dashboard block beside clinical #2/#3/#4.
 
 Never identify a registry posting with a verified successful Phase 3 readout
 or use historical financing mentions to authorize a broker trade.
@@ -17,7 +17,7 @@ import streamlit as st
 REPO = "pdufa/pdufa-command-center"
 REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/gem_scan_block_report.json"
 WORKFLOW = "gem-research-quality.yml"
-LABEL = "BLOCK 4 — GEMS"
+LABEL = "BLOCK 4 — GEM"
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 
 
@@ -100,23 +100,23 @@ def _count(x):
 
 
 def render_gem_scan_block_status(report=None, run=None):
-    st.markdown("### BLOCK 4 — GEMS · PHASE 3 / POST-FINANCING / PDUFA")
+    st.markdown("### BLOCK 4 — GEM · PHASE 3 / POST-FINANCING / PDUFA")
     st.caption("Fourth scan block: same daily automation, PIN-controlled verify/"
                "reverify/full rescan, Github run status, Gmail START/END, archived "
                "reports, and CSV/JSON exports. Existing #4 POST3 stays intact.")
     report = report if valid_gem_report(report) else {}
     run = run if isinstance(run, dict) else {}
     if run.get("status") in ("queued", "in_progress", "waiting", "pending"):
-        st.warning("GEMS workflow queued/running. Saved report may describe a prior scan.")
+        st.warning("GEM workflow queued/running. Saved report may describe a prior scan.")
     if not report:
         st.warning("Fourth-block audit not published yet. "
                    "No successful collection or source verification is inferred.")
     else:
         if not report_recent(report):
-            st.warning("GEMS published research report is stale or undated. "
+            st.warning("GEM published research report is stale or undated. "
                        "No stored ranking is a current entry signal.")
         c1, c2, c3, c4, c5 = st.columns(5)
-        c1.metric("GEMS source status", report.get("status", "UNVERIFIED"))
+        c1.metric("GEM source status", report.get("status", "UNVERIFIED"))
         clinical = report["clinical_registry"]
         c2.metric("Registry observations", _count(clinical.get("stored_results")))
         c3.metric("Phase 3 tracking", _count(report.get("verified_phase3_tracking")))
@@ -177,7 +177,7 @@ def render_gem_scan_block_status(report=None, run=None):
                    " · action " + str(report.get("action") or "UNKNOWN") +
                    " · archive integrity " + str(report.get("artifact_integrity") or "NOT CHECKED") +
                    " · all-source / return validation NOT VERIFIED")
-        with st.expander("GEMS — detailed audit and research rankings"):
+        with st.expander("GEM — detailed audit and research rankings"):
             ranked = report.get("ranked_research_only") or {}
             st.dataframe(pd.DataFrame([
                 {"Stage": name, "Research-ranked": ranked.get(name),
@@ -197,7 +197,7 @@ def render_gem_scan_block_status(report=None, run=None):
                 for name, value in (report.get("acceptance_checks") or {}).items()
             ]), hide_index=True, use_container_width=True)
             st.download_button(
-                "DOWNLOAD GEMS BLOCK 4 AUDIT JSON",
+                "DOWNLOAD GEM BLOCK 4 AUDIT JSON",
                 data=json.dumps(report, indent=2), mime="application/json",
                 file_name="pdufa_gems_block4_audit.json", key="gems_block4_audit_json",
             )
@@ -209,14 +209,14 @@ def render_gem_scan_block_status(report=None, run=None):
         link = report.get("run_url")
         if isinstance(link, str) and link.startswith(
                 "https://github.com/" + REPO + "/actions/runs/"):
-            st.link_button("VIEW PUBLISHED GEMS SCAN", link)
+            st.link_button("VIEW PUBLISHED GEM SCAN", link)
     if run:
-        st.caption("Latest GEMS workflow run #" + str(run.get("id", "?")) +
+        st.caption("Latest GEM workflow run #" + str(run.get("id", "?")) +
                    " · " + str(run.get("status", "unknown")) +
                    " · " + str(run.get("conclusion") or "not finished"))
         link = run.get("html_url")
         if isinstance(link, str) and link.startswith(
                 "https://github.com/" + REPO + "/actions/runs/"):
-            st.link_button("OPEN LATEST GEMS SCAN", link)
-    st.link_button("OPEN GEMS WORKFLOW / ARCHIVES",
+            st.link_button("OPEN LATEST GEM SCAN", link)
+    st.link_button("OPEN GEM WORKFLOW / ARCHIVES",
                    "https://github.com/" + REPO + "/actions/workflows/" + WORKFLOW)
