@@ -1,4 +1,5 @@
 name: PDUFA Reverify 45 Primary Evidence Gaps 2026-10-14
+# Follow-up exact issuer primary release recheck after adding official BMS and Harmony URLs.
 on:
   push:
     branches: [main]
