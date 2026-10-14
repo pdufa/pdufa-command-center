@@ -14,6 +14,7 @@ from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
 from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
+from gem_survey_catalog import survey_rows
 
 FILES = (
     "pdufa_candidates.csv",
@@ -159,15 +160,28 @@ def render_gem_scans(root="data"):
         "Scan output derives from existing clinical, SEC, FDA and market "
         "evidence. This button-free read-only view does not dispatch a new scan."
     )
-    with st.expander("GEM vs BPW — REAL DATA COVERAGE COMPARISON", expanded=True):
-        comparable_file = path / "gem_bpw_comparable.json"
-        try:
-            comparison = json.loads(comparable_file.read_text(encoding="utf-8"))
-        except (OSError, ValueError, UnicodeError):
-            comparison = {}
-        if (comparison.get("schema_version") != 1
-                or comparison.get("as_of_pacific") != day.isoformat()
-                or not isinstance(comparison.get("capability_matrix"), list)):
+    comparable_file = path / "gem_bpw_comparable.json"
+    try:
+        comparison = json.loads(comparable_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeError):
+        comparison = {}
+    comparison_current = (
+        comparison.get("schema_version") == 1
+        and comparison.get("as_of_pacific") == day.isoformat()
+        and isinstance(comparison.get("capability_matrix"), list)
+    )
+    st.markdown("### GEM SURVEY DIRECTORY — 11 SURVEYS")
+    st.caption(
+        "Survey 11 is the BPW research-quality comparison. The former FDA "
+        "approval-probability survey and its standalone Prediction Engine "
+        "page are retired. Only surveys 1 and 2 are entry benchmarks."
+    )
+    st.dataframe(
+        pd.DataFrame(survey_rows(comparison if comparison_current else {})),
+        use_container_width=True, hide_index=True,
+    )
+    with st.expander("GEM vs BPW — REAL DATA COVERAGE COMPARISON", expanded=False):
+        if not comparison_current:
             st.info("A same-day BPW-style source coverage comparison is not yet published.")
         else:
             st.caption(
