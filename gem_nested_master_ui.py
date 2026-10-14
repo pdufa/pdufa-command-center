@@ -173,8 +173,8 @@ def _score_check(row):
     return int(sum(_num(value) for value in values)) == row.get("GEM Score /100")
 
 
-def render_gem_nested_master(root="data", *, selections_ready=False):
-    """Render in first/renamed GEM tab, above the historical clinical cards."""
+def render_gem_nested_master(root="data", *, selections_ready=False, compact=False):
+    """Render the full master list, including inside a narrow dashboard card."""
     st.markdown("### GEM — STOCK → FACTORS → SOURCE INPUTS")
     st.caption(
         "Stock → six 100-point factors → individual saved inputs, formulas and evidence. "
@@ -205,11 +205,11 @@ def render_gem_nested_master(root="data", *, selections_ready=False):
             "SOURCE RECHECK PARTIAL / STALE: recorded qualifications must be reverified "
             "before acting. A displayed score is research context, not a buy signal."
         )
-    m1, m2, m3 = st.columns(3)
+    m1, m2, m3 = (st, st, st) if compact else st.columns(3)
     m1.metric("GEM programs", len(rows))
     m2.metric("Verified 2-benchmark eligible", sum(r["_eligible"] for r in rows))
     m3.metric("Watch / source review", sum(not r["_eligible"] for r in rows))
-    filters = st.columns([2, 2, 1])
+    filters = (st, st, st) if compact else st.columns([2, 2, 1])
     view = filters[0].selectbox(
         "Candidate filter", ["All candidates", "Entry-eligible only", "Watch / review"],
         key="gem_nested_view",

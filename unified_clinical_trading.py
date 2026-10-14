@@ -103,12 +103,13 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     # Shared W/T state was already hydrated by the GEM tab entrypoint.
     st.markdown("""
     <style>
-    .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
+    .st-key-overview_gem_panel, .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
     .st-key-overview_post3_panel {
       background:#ffffff; border:2px solid #000000 !important;
       border-radius:14px; padding:14px; color:#111111;
       position:relative; isolation:isolate;
     }
+    .st-key-overview_gem_panel::before,
     .st-key-overview_pipeline_panel::before,
     .st-key-overview_pre3_panel::before,
     .st-key-overview_post3_panel::before {
@@ -116,18 +117,18 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
       font-size:120px; font-weight:900; line-height:1;
       color:rgba(17,17,17,.10); pointer-events:none; user-select:none;
     }
+    .st-key-overview_gem_panel::before {content:"1";}
     .st-key-overview_pipeline_panel::before {content:"2";}
     .st-key-overview_pre3_panel::before {content:"3";}
     .st-key-overview_post3_panel::before {content:"4";}
-    /* Scope the responsive grid to the three overview cards. Nested metric
-       columns inside the POST3 timeline retain their own layout. */
-    /* #2, #3 and #4 occupy precisely one third of the same 100%-wide row.
-       Internal column padding supplies gutters without stealing grid width. */
+    /* Keep #1/#2/#3/#4 in one row. Narrow screens scroll sideways rather
+       than moving GEM above the other cards. Nested columns are unaffected. */
+    .st-key-overview_panels {overflow-x:auto;}
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
       display:grid !important;
       width:100% !important;
       max-width:100% !important;
-      grid-template-columns:repeat(3,minmax(0,33.333333%));
+      grid-template-columns:repeat(4,minmax(280px,1fr));
       gap:0 !important;
       align-items:stretch !important;
     }
@@ -154,13 +155,13 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
        column. Stretch that wrapper too, or the visible black outlines may
        stop at different vertical positions despite equal grid-row heights. */
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"]
-    [data-testid="stVerticalBlockBorderWrapper"]:has(.st-key-overview_pipeline_panel, .st-key-overview_pre3_panel, .st-key-overview_post3_panel) {
+    [data-testid="stVerticalBlockBorderWrapper"]:has(.st-key-overview_gem_panel, .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel, .st-key-overview_post3_panel) {
       display:flex !important;
       flex-direction:column !important;
       flex:1 1 auto !important;
       height:100% !important;
     }
-    .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
+    .st-key-overview_gem_panel, .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
     .st-key-overview_post3_panel {
       box-sizing:border-box;
       flex:1 1 auto;
@@ -168,15 +169,8 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
       min-width:0;
       width:100%;
     }
-    @media (max-width:1250px) {
-      .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
-        grid-template-columns:repeat(2,minmax(0,50%));
-      }
-    }
     @media (max-width:800px) {
-      .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
-        grid-template-columns:minmax(0,100%);
-      }
+      .st-key-overview_gem_panel::before,
       .st-key-overview_pipeline_panel::before,
       .st-key-overview_pre3_panel::before,
       .st-key-overview_post3_panel::before {font-size:100px; right:12px;}
@@ -184,7 +178,16 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     </style>
     """, unsafe_allow_html=True)
     with st.container(key="overview_panels"):
-        pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1], gap="small")
+        gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small")
+        with gem_col, st.container(border=True, key="overview_gem_panel"):
+            st.markdown("### #1-GEM")
+            st.caption("Phase 3 / post-financing / PDUFA · stock, factors and source inputs")
+            # A toggle avoids nested expanders in the stock drill-downs.
+            if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
+                         value=False, key="overview_show_gem_master"):
+                from gem_nested_master_ui import render_gem_nested_master
+                with st.container(height=560, border=False, key="overview_gem_content"):
+                    render_gem_nested_master(root=root, selections_ready=True, compact=True)
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
             st.markdown("### #2-PIPELINE")
             st.caption("Clinical programs · stage, scores and financing cycle")
@@ -279,14 +282,8 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 def render_combined_overview(root="data", *, dashboard=False):
     """Render linked clinical context and return the shared ticker focus."""
     if dashboard:
-        # #1 GEM is the first visible control. Leave every existing source
-        # audit, filter, #2/#3/#4 panel, timeline and export in place below.
-        # Do not nest expander widgets: stock-level drill-downs have expanders.
+        # Hydrate the shared W/T state before rendering the four sibling cards.
         _init_browser_selection("overview_inline")
-        if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
-                     value=False, key="overview_show_gem_master"):
-            from gem_nested_master_ui import render_gem_nested_master
-            render_gem_nested_master(root=root, selections_ready=True)
     if not dashboard:
         st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
         st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
