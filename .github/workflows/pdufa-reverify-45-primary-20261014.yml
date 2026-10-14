@@ -1,5 +1,5 @@
 name: PDUFA Reverify 45 Primary Evidence Gaps 2026-10-14
-# Extend public-company investor research with exact Pharvaris SEC May 11 funded transaction proof.
+# Include Cogent's SEC November 18 2025 actual notes closing in exact-event verification.
 on:
   push:
     branches: [main]
