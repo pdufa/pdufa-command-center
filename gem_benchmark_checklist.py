@@ -7,6 +7,7 @@ A partial source observation is REVIEW (not a verified PASS).
 from __future__ import annotations
 
 import math
+import re
 
 from gem_master_list import PHASE3_OK, FINANCING_OK
 
@@ -150,6 +151,23 @@ def build_checklist(master, source=None, *, finance_audit=None,
     return out
 
 
+def program_key(row):
+    """Exact regulatory event if available; otherwise unique ticker+NCT trial.
+
+    NCT fallback can display Phase 3 research observations, but does not
+    manufacture a regulatory link or financing closure.
+    """
+    exact = str(row.get("Exact Program / Event") or row.get("Exact event") or "").strip()
+    if exact:
+        return "EVENT|" + exact
+    ticker = str(row.get("Ticker") or "").strip().upper()
+    nct = str(row.get("NCT ID") or "").strip().upper()
+    if (re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker)
+            and re.fullmatch(r"NCT\\d{8}", nct)):
+        return "TRIAL|" + ticker + "|" + nct
+    return ""
+
+
 def filter_programs(rows, checklists, selected=()):
     """Optional checkbox filters only alter the VIEW, never program eligibility."""
     keys = set(selected)
@@ -157,7 +175,7 @@ def filter_programs(rows, checklists, selected=()):
         raise ValueError("Unknown GEM checkbox filter")
     return [row for row in rows
             if all(
-                (checklists.get(str(row.get("Exact Program / Event") or ""), {})
+                (checklists.get(program_key(row), {})
                  .get(key, {}).get("checked") is True)
                 or (key in dict(UMBRELLA) and
                     checklists.get(str(row.get("Exact Program / Event") or ""), {})
@@ -170,7 +188,7 @@ def _unique(records, field):
     """Never attach one program's sources to a repeated or missing event key."""
     mapping, duplicates = {}, set()
     for item in records or ():
-        key = str(item.get(field) or "").strip()
+        key = (str(item.get(field) or "").strip() if field else program_key(item))
         if not key:
             continue
         if key in mapping:
@@ -186,10 +204,18 @@ def build_checklist_map(master_rows, saved_sources=(), financing_rechecks=(),
                         clinical_rechecks=(), *, sec_current=False,
                         feed_current=False):
     """Link only unique event keys; watch records remain present but unrated."""
-    master_by_event = _unique(master_rows, "Exact Program / Event")
-    sources = _unique(saved_sources, "Exact event")
-    finance = _unique(financing_rechecks, "event_key")
-    clinical = _unique(clinical_rechecks, "event_key")
+    # Unique exact event when established, or unique ticker+NCT research identity
+    # for registry leads. Never use issuer ticker alone to transfer SEC evidence.
+    master_by_event = _unique(master_rows, None)
+    sources = _unique(saved_sources, None)
+    finance = _unique(
+        ({"Exact event": r.get("event_key"), **r} for r in financing_rechecks),
+        None,
+    )
+    clinical = _unique(
+        ({"Exact event": r.get("event_key"), **r} for r in clinical_rechecks),
+        None,
+    )
     return {
         key: build_checklist(
             master, sources.get(key),
