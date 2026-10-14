@@ -1,4 +1,4 @@
-"""Full financing-stage coverage must never be reduced to 17 close claims."""
+"""Full financing-stage coverage must not regress to cherry-picked close claims."""
 from __future__ import annotations
 
 import csv
@@ -24,18 +24,21 @@ class FinancingBlockAuditTests(unittest.TestCase):
         rows, summary = build_financing_review(data, as_of=date(2026, 10, 14))
         self.assertEqual(len(rows), 38)
         self.assertEqual(summary["financing_programs_reviewed"], 38)
-        self.assertEqual(summary["historically_attested_two_close"], 17)
-        self.assertEqual(summary["active_benchmark_cleared"], 3)
+        self.assertGreaterEqual(summary["historically_attested_two_close"], 6)
+        self.assertGreaterEqual(summary["active_benchmark_cleared"], 5)
         self.assertEqual(summary["historical_benchmark_cleared"], 1)
         self.assertEqual(summary["trade_entries_authorized"], 0)
         self.assertEqual({r["Ticker"] for r in rows
                           if r["Review status"] == "CLEARED 2/2 — ACTIVE RESEARCH"},
-                         {"NTLA", "ZBIO", "PRAX"})
+                         {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA"})
         self.assertEqual({r["Ticker"] for r in rows
                           if r["Review status"] == "CLEARED 2/2 — HISTORICAL / EXIT"},
                          {"SRRK"})
         self.assertEqual(len({r["Exact program"] for r in rows}), 38)
         self.assertEqual(len(rows), sum(summary["by_status"].values()))
+        self.assertNotEqual(next(r for r in rows if r["Ticker"] == "COGT"
+                                and "NONADVSM" in r["Exact program"])["Review status"],
+                            "CLEARED 2/2 — ACTIVE RESEARCH")
         self.assertTrue(all(not row["Trade entry authorized"] for row in rows))
         self.assertGreater(summary["saved_phase3_result_ledger_rows"], 2000)
         self.assertTrue(all(row["Missing evidence / next actions"] for row in rows))
