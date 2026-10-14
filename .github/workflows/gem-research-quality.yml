@@ -74,6 +74,20 @@ jobs:
             python scripts/phase3_results_intake.py --mode daily --max-pages 120 --data-dir data
           fi
 
+      - name: Recheck exact GEM program NCT results (discovery only, not readout qualification)
+        id: exact_phase3
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.start_email.outcome == 'success' }}
+        continue-on-error: true
+        run: python scripts/gem_phase3_exact_recheck.py --data-dir data
+
+      - name: Fresh SEC recheck of historically attested GEM financing pairs
+        id: two_closes
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.start_email.outcome == 'success' }}
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+        run: python scripts/gem_two_close_recheck.py --data-dir data
+
       - name: Reconcile actual registry ledger and collector totals
         id: registry_validation
         if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.clinical.outcome == 'success' }}
@@ -174,6 +188,14 @@ jobs:
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_insider_form4.json ]; then
             git add -- data/gem_insider_form4.json
           fi
+          # Research-only exact-program evidence attempts. Never rewrite
+          # second_financing_status.csv or PDUFA clinical qualification fields.
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_phase3_exact_recheck.csv ]; then
+            git add -- data/gem_phase3_exact_recheck.csv
+          fi
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_two_close_recheck.csv ]; then
+            git add -- data/gem_two_close_recheck.csv
+          fi
           # Source data is published ONLY after a fully reconciled registry run.
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && \
              [ "${{ steps.registry_validation.outcome }}" = "success" ]; then
@@ -217,6 +239,8 @@ jobs:
             data/gem_bpw_comparable.json
             data/phase3_intake_status.json
             data/phase3_announcements.csv
+            data/gem_phase3_exact_recheck.csv
+            data/gem_two_close_recheck.csv
           retention-days: 90
           if-no-files-found: warn
 
@@ -230,6 +254,8 @@ jobs:
           AUDIT_RESULT: ${{ steps.gem_audit.outcome }}
           BPW_COMPARABLE_RESULT: ${{ steps.bpw_comparable.outcome }}
           REPORT_RESULT: ${{ steps.block_report.outcome }}
+          EXACT_PHASE3_RESULT: ${{ steps.exact_phase3.outcome }}
+          TWO_CLOSE_RESULT: ${{ steps.two_closes.outcome }}
         run: |
           if [ "$START_RESULT" != "success" ] || [ "$END_RESULT" != "success" ]; then
             echo "::error::GEM START/END Gmail messages were not both acknowledged."
@@ -241,6 +267,11 @@ jobs:
           fi
           if [ "$AUDIT_RESULT" != "success" ] || [ "$REPORT_RESULT" != "success" ]; then
             echo "::error::GEM read-only source audit or published block report failed."
+            exit 1
+          fi
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && {
+               [ "$EXACT_PHASE3_RESULT" != "success" ] || [ "$TWO_CLOSE_RESULT" != "success" ]; }; then
+            echo "::error::GEM exact-program Phase 3 or two-financing source review did not execute."
             exit 1
           fi
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ "$COLLECT_RESULT" != "success" ]; then
