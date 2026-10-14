@@ -7,20 +7,20 @@
     "phase3_collector_current": true,
     "phase3_discovery_ledger_reconciled": true,
     "required_saved_sources_valid": true,
-    "saved_scan_feed_current": true,
+    "saved_scan_feed_current": false,
     "sec_financing_source_current": false
   },
   "action": "REVERIFY_PARTIAL",
   "artifact_integrity": "NOT INDEPENDENTLY CHECKED",
   "awaiting_second_financing": 0,
   "blocking_or_review_flags": [
-    "DISCOVERY_SOURCE_TIMESTAMPS_REQUIRE_REVIEW",
+    "CURRENT_RANKING_FEED_STALE_OR_UNVERIFIED",
     "UNVALIDATED_HISTORICAL_STOCK_RETURNS",
     "SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE",
     "MARKET_PRICE_VOLUME_SOURCE_BLOCKED_OR_STALE"
   ],
   "bpw_comparable": {
-    "as_of_pacific": "2026-10-13",
+    "as_of_pacific": "2026-10-14",
     "capability_matrix": [
       {
         "capability": "Phase 3 results and trial evidence",
@@ -52,9 +52,9 @@
       {
         "capability": "SEC cash runway and burn",
         "caveat": "Cash-only financial-source estimate; not an independent cash forecast",
-        "data_coverage_pct": 8.2,
+        "data_coverage_pct": 7.3,
         "key": "runway",
-        "observed_gem_rows": 30,
+        "observed_gem_rows": 27,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -70,9 +70,9 @@
       {
         "capability": "Price and volume momentum",
         "caveat": "Daily market observations; no proprietary options-flow feed",
-        "data_coverage_pct": 10.3,
+        "data_coverage_pct": 0.0,
         "key": "market",
-        "observed_gem_rows": 38,
+        "observed_gem_rows": 0,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -97,9 +97,9 @@
       {
         "capability": "SEC Form 4 open-market insider trading",
         "caveat": "Issuer-capped 90-day P/S transactions; SEC-source gaps and amendments are explicit",
-        "data_coverage_pct": 23.9,
+        "data_coverage_pct": 23.1,
         "key": "insider",
-        "observed_gem_rows": 88,
+        "observed_gem_rows": 85,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -155,29 +155,29 @@
     "similarity_percentage_supported": false
   },
   "cash_runway": {
-    "collected_count": 35,
+    "collected_count": 34,
     "collector_status": "COLLECTED \u2014 CURRENT SEC STEP 4 SNAPSHOTS",
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
-    "missing_or_stale": 338,
-    "source_backed_pass": 13,
-    "target_count": 35,
+    "missing_or_stale": 341,
+    "source_backed_pass": 10,
+    "target_count": 34,
     "under_12_months": 17
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-14T02:27:45.745956+00:00",
-    "matched_posted_results": 93,
-    "new_records": 0,
-    "stored_results": 2482,
-    "studies_checked": 3927
+    "finished_at": "2026-10-14T13:21:17.108429+00:00",
+    "matched_posted_results": 95,
+    "new_records": 1,
+    "stored_results": 2483,
+    "studies_checked": 3959
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-14T02:30:50.932060+00:00",
+  "generated_at_utc": "2026-10-14T13:23:29.034088+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -189,34 +189,34 @@
   "historical_return_edge_validated": false,
   "insider_form4": {
     "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-    "issuers_complete": 32,
-    "issuers_targeted": 35,
-    "matched_program_rows": 88,
+    "issuers_complete": 31,
+    "issuers_targeted": 34,
+    "matched_program_rows": 85,
     "source_errors": 3,
     "with_open_market_purchases": 4
   },
   "label": "BLOCK 4 \u2014 GEMS",
   "market_source_health": {
     "blocked_records": 0,
-    "last_check_age_days": 3,
+    "last_check_age_days": 4,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },
-  "observed_phase3_rows": 2482,
+  "observed_phase3_rows": 2483,
   "ranked_research_only": {
     "PDUFA": 0,
     "Phase 3": 0,
     "Post-Financing": 0
   },
-  "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 38501096626,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38501096626",
+  "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
+  "run_id": 38570976578,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38570976578",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 8,
+    "last_check_age_days": 9,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },

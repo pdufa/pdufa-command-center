@@ -1,8 +1,8 @@
 {
-  "as_of_pacific": "2026-10-13",
+  "as_of_pacific": "2026-10-14",
   "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-14T02:30:50.552034+00:00",
-  "issuer_count": 35,
+  "generated_at_utc": "2026-10-14T13:23:28.429012+00:00",
+  "issuer_count": 34,
   "issuer_errors": [
     {
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
@@ -17,92 +17,13 @@
       "ticker": "INBX"
     }
   ],
-  "issuers_complete": 32,
+  "issuers_complete": 31,
   "limits": "Issuer filing index capped to 25 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
   "records": [
     {
-      "as_of": "2026-10-13",
-      "cik": "0001228627",
-      "filings_reviewed": 8,
-      "latest_filing": "2026-10-02",
-      "status": "COMPLETE",
-      "ticker": "IRD",
-      "transactions": [
-        {
-          "code": "S",
-          "date": "2026-09-30",
-          "filed": "2026-10-02",
-          "owner": "Foundation Fighting Blindness Retinal Degeneration Fund; Foundation Fighting Blindness, Inc.",
-          "price": 4.9568,
-          "shares": 556000,
-          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000204226626000002/primary_doc.xml",
-          "ticker": "IRD"
-        },
-        {
-          "code": "S",
-          "date": "2026-09-03",
-          "filed": "2026-09-08",
-          "owner": "Gagnon Robert E.",
-          "price": 4.5433,
-          "shares": 28000,
-          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000114036126035912/form4.xml",
-          "ticker": "IRD"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-23",
-          "filed": "2026-07-27",
-          "owner": "YERXA BENJAMIN R",
-          "price": 2.97,
-          "shares": 7429,
-          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003354/form4.xml",
-          "ticker": "IRD"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-23",
-          "filed": "2026-07-27",
-          "owner": "SCHACHLE JOSEPH K",
-          "price": 2.94,
-          "shares": 4644,
-          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003353/form4.xml",
-          "ticker": "IRD"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-23",
-          "filed": "2026-07-27",
-          "owner": "Magrath George",
-          "price": 2.9473,
-          "shares": 9475,
-          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003352/form4.xml",
-          "ticker": "IRD"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-23",
-          "filed": "2026-07-27",
-          "owner": "Gagnon Robert E.",
-          "price": 2.9477,
-          "shares": 7783,
-          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003351/form4.xml",
-          "ticker": "IRD"
-        }
-      ]
-    },
-    {
-      "as_of": "2026-10-13",
-      "cik": "0001792044",
-      "filings_reviewed": 5,
-      "latest_filing": "2026-10-02",
-      "status": "COMPLETE",
-      "ticker": "VTRS",
-      "transactions": []
-    },
-    {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0000874015",
-      "filings_reviewed": 22,
+      "filings_reviewed": 19,
       "latest_filing": "2026-09-02",
       "status": "COMPLETE",
       "ticker": "IONS",
@@ -130,7 +51,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001439222",
       "filings_reviewed": 3,
       "latest_filing": "2026-08-06",
@@ -150,7 +71,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001061983",
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "filings_reviewed": 0,
@@ -160,7 +81,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001599298",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -169,7 +90,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001133869",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -178,7 +99,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001160308",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-25",
@@ -187,7 +108,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001743881",
       "filings_reviewed": 8,
       "latest_filing": "2026-09-21",
@@ -297,7 +218,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001622229",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-05",
@@ -327,16 +248,16 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0000875320",
-      "filings_reviewed": 11,
+      "filings_reviewed": 10,
       "latest_filing": "2026-09-10",
       "status": "COMPLETE",
       "ticker": "VRTX",
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001704292",
       "filings_reviewed": 8,
       "latest_filing": "2026-10-05",
@@ -345,7 +266,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0000939767",
       "filings_reviewed": 1,
       "latest_filing": "2026-08-12",
@@ -365,7 +286,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001370053",
       "filings_reviewed": 4,
       "latest_filing": "2026-10-02",
@@ -385,7 +306,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001088856",
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "filings_reviewed": 0,
@@ -395,9 +316,9 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001933414",
-      "filings_reviewed": 14,
+      "filings_reviewed": 12,
       "latest_filing": "2026-10-02",
       "status": "COMPLETE",
       "ticker": "MLYS",
@@ -481,21 +402,11 @@
           "shares": 416,
           "source": "https://www.sec.gov/Archives/edgar/data/1933414/000167265926000036/wk-form4_1784595624.xml",
           "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-15",
-          "filed": "2026-07-15",
-          "owner": "Rodman David Malcom",
-          "price": 26.6112,
-          "shares": 6349,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000099/wk-form4_1784163485.xml",
-          "ticker": "MLYS"
         }
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0000882095",
       "filings_reviewed": 19,
       "latest_filing": "2026-10-02",
@@ -741,31 +652,11 @@
           "shares": 600,
           "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000028/wk-form4_1785879633.xml",
           "ticker": "GILD"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-15",
-          "filed": "2026-07-16",
-          "owner": "Dickinson Andrew D",
-          "price": 129.9256,
-          "shares": 3000,
-          "source": "https://www.sec.gov/Archives/edgar/data/882095/000131020426000022/wk-form4_1784239680.xml",
-          "ticker": "GILD"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-15",
-          "filed": "2026-07-16",
-          "owner": "Mercier Johanna",
-          "price": 129.9192,
-          "shares": 3000,
-          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000026/wk-form4_1784235279.xml",
-          "ticker": "GILD"
         }
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001689548",
       "filings_reviewed": 1,
       "latest_filing": "2026-07-08",
@@ -774,7 +665,16 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
+      "cik": "0001792044",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
+      "ticker": "VTRS",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-14",
       "cik": "0001326110",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-06",
@@ -804,9 +704,9 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001818794",
-      "filings_reviewed": 12,
+      "filings_reviewed": 11,
       "latest_filing": "2026-10-06",
       "status": "COMPLETE",
       "ticker": "DYN",
@@ -994,7 +894,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001828316",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -1003,7 +903,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001889109",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-05",
@@ -1012,7 +912,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001787306",
       "filings_reviewed": 13,
       "latest_filing": "2026-09-18",
@@ -1148,21 +1048,11 @@
           "shares": 4375,
           "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026053753/wk-form4_1785980527.xml",
           "ticker": "ARQT"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-15",
-          "filed": "2026-07-17",
-          "owner": "Welgus Howard G.",
-          "price": 26.91,
-          "shares": 4730,
-          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026048641/wk-form4_1784318483.xml",
-          "ticker": "ARQT"
         }
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001789972",
       "filings_reviewed": 5,
       "latest_filing": "2026-09-10",
@@ -1192,7 +1082,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001745648",
       "filings_reviewed": 10,
       "latest_filing": "2026-08-05",
@@ -1222,7 +1112,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001048477",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-01",
@@ -1242,7 +1132,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0000873303",
       "filings_reviewed": 5,
       "latest_filing": "2026-09-08",
@@ -1251,7 +1141,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001652130",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-06",
@@ -1301,7 +1191,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001802665",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-18",
@@ -1381,7 +1271,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0002007919",
       "error": "SEC issuer Form 4 amendments require manual reconciliation",
       "filings_reviewed": 0,
@@ -1391,7 +1281,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001830487",
       "filings_reviewed": 25,
       "latest_filing": "2026-10-13",
@@ -1591,7 +1481,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001472012",
       "filings_reviewed": 15,
       "latest_filing": "2026-09-15",
@@ -1671,7 +1561,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001579428",
       "filings_reviewed": 3,
       "latest_filing": "2026-09-03",
@@ -1711,7 +1601,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0000014272",
       "filings_reviewed": 16,
       "latest_filing": "2026-10-05",
@@ -1741,7 +1631,7 @@
       ]
     },
     {
-      "as_of": "2026-10-13",
+      "as_of": "2026-10-14",
       "cik": "0001953926",
       "filings_reviewed": 1,
       "latest_filing": "2026-09-02",

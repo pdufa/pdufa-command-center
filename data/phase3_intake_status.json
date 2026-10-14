@@ -1,15 +1,15 @@
 {
   "mode": "daily",
-  "started_at": "2026-10-14T02:27:35.692649+00:00",
+  "started_at": "2026-10-14T13:21:05.749442+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3927,
-  "matched_posted_results": 93,
-  "new_records": 0,
+  "studies_checked": 3959,
+  "matched_posted_results": 95,
+  "new_records": 1,
   "complete": true,
   "errors": [],
-  "finished_at": "2026-10-14T02:27:45.745956+00:00",
-  "stored_results": 2482,
+  "finished_at": "2026-10-14T13:21:17.108429+00:00",
+  "stored_results": 2483,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
