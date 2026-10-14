@@ -11,19 +11,28 @@
 **Operational boundary:** The new tab and workflows are code-installed, but a successful *live end-to-end scan and email delivery* must still be observed after secrets are configured. Before a first published artifact the page explicitly says that no audited report exists. A clinical `PARTIAL` result means clinical-source collection succeeded, **not** that FDA/SEC/issuer/market data was verified. `VERIFY ALL` revalidates archived clinical JSON, not the missing source families. The automated syntax/unit-test check is in `pdufa-nightly-report-checks.yml`.
 
 
-## Active daily PM scan survey — 11:00 PM Pacific
+## Active daily PM scan survey — 9:00 PM Pacific
 
 **Enabled:** `.github/workflows/pdufa-nightly-pacific-start.yml` starts the
-clinical #2 PIPELINE → #3 PRE3 → #4 POST3 scan sequence **daily at 11:00 PM
-Pacific**. GitHub cron uses the following-day UTC date: `0 6 * * *` during
-PDT (UTC−7) and `0 7 * * *` during PST (UTC−8), with 11:15/11:30 PM
-guarded backups. Duplicate detection prevents a second nightly scan.
-After-midnight publisher/source recovery checks do **not** restart scans.
-The GEM research scan is dispatched after POST3; the independent 6 AM
-Pacific read-only report reviews evidence published since the previous night's
-11 PM start. GitHub Actions may delay scheduled jobs. Manual
-`workflow_dispatch` remains available; ordinary app commits do not start
-another clinical collection outside the guarded schedule.
+strictly ordered **daily 9:00 PM Pacific** sequence:
+**#2 PIPELINE → #3 PRE3 → #4 POST3 → GEM research → GEM financing
+full-coverage audit → nightly report → FDA → SEC → FINANCIAL → MARKET →
+ISSUER → source reconciliation → scoring → error check → guarded repair**.
+Each main research step waits for the prior one to finish, even on a
+recorded failure. Morning results are a separate read-only report.
+
+GitHub UTC cron uses `0 4 * * *` during PDT (UTC−7) and
+`0 5 * * *` during PST (UTC−8), with 9:15/9:30 PM guarded backups.
+Duplicate detection prevents a second nightly clinical chain.
+After-midnight publisher/source recovery checks do **not** restart surveys.
+The GEM workflows are called *inside* the nightly clinical workflow so
+the downstream publisher does not start until both GEM tasks finish.
+Their former independent daily schedules are disabled; explicit manual
+`workflow_dispatch` remains supported. The independent 6 AM
+Pacific read-only report checks evidence since the previous night's
+9 PM start. GitHub Actions scheduling can be delayed; the configured
+clock time is a target, not a guaranteed start or completion time.
+No scanner result automatically authorizes trading.
 
 Each collector (#2 all-phase trial inventory and tracked NCT refresh;
 #3 Phase 2/3 clinical pipeline + limited market-cap checks; #4 Phase 3
