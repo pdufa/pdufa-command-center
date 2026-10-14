@@ -188,6 +188,9 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                     st.caption(f"{label}: " + ", ".join(tickers[:8]) +
                                (" … see GEM list for more" if len(tickers) > 8 else ""))
 
+            from gem_potential_ui import render_gem_potential
+            render_gem_potential(root=root, compact=True, namespace="gem_overview_potential")
+
             # A toggle avoids nested expanders in the stock drill-downs.
             if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
                          value=False, key="overview_show_gem_master"):
