@@ -83,6 +83,9 @@ def build_checklist(master, source=None, *, finance_audit=None,
         ))
     )
     clinical_score = _num(src.get("Clinical evidence /30"))
+    positive_phase3 = str(src.get("GEM clinical readout status") or "").strip().upper() in {
+        "VERIFIED_SUCCESS", "PRIMARY_MET_VERIFIED"
+    }
     conflict = str(src.get("GEM clinical conflict flag") or "").strip().upper()
     dilution = str(src.get("GEM financing dilution flag") or "").strip().upper()
     cash = _num(src.get("Cash runway (months)"))
@@ -109,8 +112,8 @@ def build_checklist(master, source=None, *, finance_audit=None,
         "financing_lead": _state(finance, "Verified second close" if finance else (
             "Historical two-close attestation; current verification remains separate" if historical_finance else
             "No historical second-close attestation for this program"), observed=historical_finance and not finance),
-        "clinical_quality": _state(phase3 and clinical_score == 30,
-                                   "Full source-attested clinical evidence" if phase3 and clinical_score == 30 else
+        "clinical_quality": _state(phase3 and positive_phase3 and clinical_score == 30,
+                                   "Full source-attested successful clinical evidence" if phase3 and positive_phase3 and clinical_score == 30 else
                                    "Endpoint, clinical benefit or safety assessment not fully attested"),
         "clinical_conflict": _state(conflict in safe_flags, "Explicit no-conflict flag" if conflict in safe_flags
                                     else "Clinical / regulatory source conflict not cleared", risk=conflict in danger_flags),
