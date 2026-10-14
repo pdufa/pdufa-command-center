@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-13T22:10:00+00:00",
+  "generated_at_utc": "2026-10-14T14:04:02+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -15,8 +15,8 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-13T21:28:23.963238+00:00",
-      "Details": "2482 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
+      "Last checked UTC": "2026-10-14T13:21:17.108429+00:00",
+      "Details": "2483 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
     },
     {
@@ -67,8 +67,8 @@
     {
       "Source": "Market EOD price / volume",
       "Collector status": "COMPLETE",
-      "Freshness": "RECENT",
-      "Health": "RECENT",
+      "Freshness": "STALE",
+      "Health": "STALE",
       "Last checked UTC": "2026-10-11T03:55:34.228255+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
