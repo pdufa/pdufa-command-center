@@ -280,6 +280,12 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 
 def render_combined_overview(root="data", *, dashboard=False):
     """Render linked clinical context and return the shared ticker focus."""
+    if dashboard:
+        # First PDUFA tab is GEM: show the full two-gate ranked watch universe
+        # ahead of the legacy #2/#3/#4 clinical source cards.
+        from gem_nested_master_ui import render_gem_nested_master
+        render_gem_nested_master(root=root)
+        st.divider()
     if not dashboard:
         st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
         st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
