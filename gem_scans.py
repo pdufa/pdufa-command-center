@@ -14,6 +14,7 @@ from post_phase3_unified import build_queue, read_rows, parsed_date, https_sourc
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 from gem_financing_gate import entry_status, sec_recheck_current
 from gem_runway_gate import assess_runway, load_snapshots, passes as runway_passes, MIN_MONTHS
+from gem_runway_trend import load_history as load_runway_history, assess_trend
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -255,6 +256,7 @@ def build_gem_scans(root="data", as_of=None):
     sec_current = sec_recheck_current(root, as_of=source_status.get("as_of") or as_of)
     events = _event_map(root)
     runway_snapshots = load_snapshots(root)
+    runway_history = load_runway_history(root)
     results = []
     for record in records:
         item = dict(record)
@@ -281,6 +283,11 @@ def build_gem_scans(root="data", as_of=None):
             second_close=(item.get("Verified 2nd financing close date") or None)
             if item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
             else None,
+        ))
+        item.update(assess_trend(
+            ticker, runway_snapshots.get(ticker), runway_history.get(ticker, []),
+            as_of=source_status.get("as_of") or as_of,
+            dilution_flag=event.get("new_dilution_flag") if event else "",
         ))
         for stage in STAGES:
             reasons = _reasons(item, event, stage, source_status["feed_current"], sec_current)
@@ -370,6 +377,14 @@ def build_gem_scans(root="data", as_of=None):
     )
     details["sec_financing_source_current"] = sec_current
     details["cash_runway_minimum_months"] = MIN_MONTHS
+    details["cash_runway_deteriorating_count"] = sum(
+        str(row.get("Cash runway trend") or "").startswith("DECLINING")
+        for row in results
+    )
+    details["gem3_dilution_alert_count"] = sum(
+        str(row.get("GEM 3 dilution status") or "").startswith(("HOLD", "ALERT"))
+        for row in results
+    )
     details["cash_runway_passing_count"] = sum(runway_passes(row) for row in results)
     details["cash_runway_unverified_count"] = sum(
         str(row.get("Cash runway gate") or "").startswith("REVIEW") for row in results)
