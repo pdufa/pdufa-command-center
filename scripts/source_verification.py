@@ -200,7 +200,12 @@ def mapped_issuer_release_dateline(event, plain, expected_date):
         return set()
     header = plain[:750]
     found = dates(header)
-    if (found != {expected_date}
+    disease = normalized(re.sub(r"\\([^)]*\\)", "", event.get("indication", "")))
+    required_disease_tokens = {token for token in disease.split()
+                               if len(token) >= 4 and token not in {"with", "and", "the", "for", "patients", "adults"}}
+    header_tokens = set(normalized(header).split())
+    if (not required_disease_tokens or not required_disease_tokens <= header_tokens
+            or found != {expected_date}
             or not re.search(r"(?i)press release|corporate news details", header[:450])
             or not company_matches(event, header)
             or not drug_matches(event, header)
