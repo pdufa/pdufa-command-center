@@ -1,26 +1,22 @@
 name: PDUFA Daily 9:00 PM Pacific Start
 
-# GitHub cron is UTC, not Pacific. Run both candidate UTC slots, then
-# dispatch exactly the one matching the current Los Angeles UTC offset.
-# GitHub may start scheduled jobs late; the cron/offset gate avoids a
-# second nightly dispatch during daylight/standard time transitions.
+# One clock dispatches the WHOLE awaited chain. Recovery slots can start a
+# missed night; a recorded or active full chain prevents duplicate dispatch.
 on:
   schedule:
-    # UTC date rolls over: 9 PM Pacific is 04:00Z (PDT) / 05:00Z (PST).
     - cron: '0 4 * * *'   # 9:00 PM PDT
-    - cron: '15 4 * * *'  # 9:15 PM PDT backup
-    - cron: '30 4 * * *'  # 9:30 PM PDT backup
+    - cron: '15 4 * * *'
+    - cron: '30 4 * * *'
     - cron: '0 5 * * *'   # 9:00 PM PST
-    - cron: '15 5 * * *'  # 9:15 PM PST backup
-    - cron: '30 5 * * *'  # 9:30 PM PST backup
-    - cron: '5 7 * * *'   # 12:05 AM PDT recovery
-    - cron: '35 7 * * *'  # 12:35 AM PDT recovery
-    - cron: '5 8 * * *'   # 12:05 AM PST / 1:05 AM PDT recovery
-    - cron: '35 8 * * *'  # 12:35 AM PST / 1:35 AM PDT recovery
-    - cron: '5 9 * * *'   # 1:05 AM PST recovery
-    - cron: '35 9 * * *'  # 1:35 AM PST recovery
+    - cron: '15 5 * * *'
+    - cron: '30 5 * * *'
+    - cron: '5 7 * * *'
+    - cron: '35 7 * * *'
+    - cron: '5 8 * * *'
+    - cron: '35 8 * * *'
+    - cron: '5 9 * * *'
+    - cron: '35 9 * * *'
   workflow_dispatch:
-  # One-time bootstrap on an explicit scheduler repair (not ordinary app pushes).
   push:
     branches: [main]
     paths: ['.github/workflows/pdufa-nightly-pacific-start.yml']
@@ -35,215 +31,30 @@ concurrency:
 
 jobs:
   dispatch:
-    name: Start one serial daily scan chain
+    name: Start one complete serial daily scan chain
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Accept only matching 9:00 PM Pacific cron slot
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Check Pacific slot and existing full overnight runs
         id: pacific
-        shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           SCHEDULE_CRON: ${{ github.event.schedule }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
-          if [ "$EVENT_NAME" = workflow_dispatch ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Authorized manual start"
-            exit 0
-          fi
-          if [ "$EVENT_NAME" = push ]; then
-            hour="$(TZ=America/Los_Angeles date +%H)"
-            minute="$(TZ=America/Los_Angeles date +%M)"
-            now_minutes=$((10#$hour * 60 + 10#$minute))
-            if [ "$now_minutes" -ge 1260 ] && [ "$now_minutes" -lt 1320 ]; then
-              echo "run=true" >> "$GITHUB_OUTPUT"
-              echo "Scheduler repair push during 9 PM daily start window: guarded bootstrap"
-            else
-              echo "run=false" >> "$GITHUB_OUTPUT"
-              echo "Scheduler repair outside nightly window: no scan started"
-            fi
-            exit 0
-          fi
-          # GitHub scheduled runs sometimes start hours late. Allow the
-          # scheduled 9 PM slot to recover until 2:59 AM Pacific, but keep
-          # after-midnight recovery crons separate and dedupe the scan chain.
-          local_hour="$(TZ=America/Los_Angeles date +%H)"
-          local_minute="$(TZ=America/Los_Angeles date +%M)"
-          hour_num=$((10#$local_hour))
-          if [ "$hour_num" -lt 21 ] && [ "$hour_num" -ge 3 ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skip nightly start outside 9 PM–2:59 AM Pacific recovery window"
-            exit 0
-          fi
-          offset="$(TZ=America/Los_Angeles date +%z)"
-          if { { [ "$SCHEDULE_CRON" = '0 4 * * *' ] || [ "$SCHEDULE_CRON" = '15 4 * * *' ] || [ "$SCHEDULE_CRON" = '30 4 * * *' ]; } && [ "$offset" = -0700 ]; } ||
-             { { [ "$SCHEDULE_CRON" = '0 5 * * *' ] || [ "$SCHEDULE_CRON" = '15 5 * * *' ] || [ "$SCHEDULE_CRON" = '30 5 * * *' ]; } && [ "$offset" = -0800 ]; }; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Correct 9 PM Pacific daily start slot; offset $offset"
-          else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skip non-matching UTC slot; offset $offset"
-          fi
-      - name: Dispatch clinical scan to start serial chain
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/runs?branch=main&per_page=100" > "$RUNNER_TEMP/overnight-runs.json"
+          python scripts/nightly_start.py --event "$EVENT_NAME" --cron "$SCHEDULE_CRON" \
+            --runs-json "$RUNNER_TEMP/overnight-runs.json" --output "$GITHUB_OUTPUT"
+      - name: Dispatch the entire awaited sequence
         if: steps.pacific.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
           set -euo pipefail
-          # GitHub scheduled starts can be delayed or retried. Do not start a
-          # second nightly chain when a clinical workflow exists after 9 PM LA.
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/pdufa-clinical-runs.json"
-          if python - "$RUNNER_TEMP/pdufa-clinical-runs.json" <<'PY'
-          import json, sys
-          from datetime import datetime, timedelta, timezone
-          from zoneinfo import ZoneInfo
-          now = datetime.now(timezone.utc)
-          local = now.astimezone(ZoneInfo("America/Los_Angeles"))
-          night = local - timedelta(days=1) if local.hour < 3 else local
-          start = night.replace(
-              hour=21, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
-          with open(sys.argv[1], encoding="utf-8") as handle:
-              runs = json.load(handle).get("workflow_runs", [])
-          exists = any(
-              run.get("event") == "workflow_dispatch"
-              and start <= datetime.fromisoformat(run["created_at"].replace("Z", "+00:00")) <= now
-              for run in runs if run.get("created_at")
-          )
-          print("Nightly clinical scan already started today" if exists else "No daily clinical run found since 9:00 PM Pacific")
-          raise SystemExit(0 if exists else 1)
-          PY
-          then
-            echo "No duplicate dispatch; nightly clinical workflow is already recorded."
-            exit 0
-          fi
-          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/dispatches" \
-            -f ref=main -f 'inputs[scan]=ALL' -f 'inputs[include_gem]=true'
-          echo "Requested nightly clinical 2 -> 3 -> 4 -> fourth GEMS research block; report -> FDA -> SEC -> FINANCIAL -> MARKET -> ISSUER -> reconcile -> scoring -> error check -> repair."
-          echo "Dispatch acceptance is not scan completion; check the actual downstream runs."
-
-      - name: Recover missing clinical report publishing handoff
-        if: always()
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          # Only act after midnight Pacific; the completed clinical run must have
-          # had at least three minutes for its normal workflow_run trigger.
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/clinical-runs.json"
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/runs?per_page=100" > "$RUNNER_TEMP/publisher-runs.json"
-          python - "$RUNNER_TEMP/clinical-runs.json" "$RUNNER_TEMP/publisher-runs.json" "$RUNNER_TEMP/publisher-source-id" <<'PY'
-          import json, sys
-          from datetime import datetime, timedelta, timezone
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-          now = datetime.now(timezone.utc)
-          local = now.astimezone(ZoneInfo("America/Los_Angeles"))
-          if not (0 <= local.hour < 2):
-              print("Report handoff recovery disabled outside 12-2 AM Pacific")
-              raise SystemExit(0)
-          start = (local - timedelta(days=1)).replace(hour=21, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
-          def read(index):
-              with open(sys.argv[index], encoding="utf-8") as handle:
-                  return json.load(handle).get("workflow_runs", [])
-          def moment(value):
-              return datetime.fromisoformat(value.replace("Z", "+00:00"))
-          scans = [run for run in read(1) if run.get("event") == "workflow_dispatch"
-                   and run.get("created_at") and start <= moment(run["created_at"]) <= now]
-          if not scans:
-              print("No clinical run tonight; report recovery not dispatched")
-              raise SystemExit(0)
-          scan = max(scans, key=lambda run: run["created_at"])
-          if scan.get("status") != "completed" or scan.get("conclusion") != "success":
-              print("Clinical scan not fully successful; do not publish unverified report")
-              raise SystemExit(0)
-          completed = moment(scan["updated_at"])
-          if now - completed < timedelta(minutes=3):
-              print("Allowing the native workflow_run publisher to start")
-              raise SystemExit(0)
-          publishers = [run for run in read(2)
-                        if run.get("created_at") and moment(run["created_at"]) >= completed]
-          if publishers:
-              print("Report publisher already started after this clinical scan; no duplicate")
-              raise SystemExit(0)
-          Path(sys.argv[3]).write_text(str(scan["id"]), encoding="utf-8")
-          print("Missing completed-clinical report handoff: requesting publisher for run " + str(scan["id"]))
-          PY
-          if [ -s "$RUNNER_TEMP/publisher-source-id" ]; then
-            source_id="$(cat "$RUNNER_TEMP/publisher-source-id")"
-            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/dispatches" \
-              -f ref=main -f "inputs[source_run_id]=$source_id"
-            echo "Requested source-validated report publishing for clinical run $source_id"
-          fi
-
-      - name: Recover missing extended-source verification handoff
-        if: always()
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          # The publisher's ordinary workflow_run trigger gets first chance.
-          # Fallback only for the Pacific overnight recovery window and after a verified
-          # successful report publishing run; never call incomplete evidence COMPLETE.
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/clinical-before-sources.json"
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/runs?per_page=100" > "$RUNNER_TEMP/publisher-before-sources.json"
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-missing-sources.yml/runs?per_page=100" > "$RUNNER_TEMP/extended-before-sources.json"
-          python - "$RUNNER_TEMP/clinical-before-sources.json" "$RUNNER_TEMP/publisher-before-sources.json" "$RUNNER_TEMP/extended-before-sources.json" "$RUNNER_TEMP/extended-source-request" <<'PY'
-          import json, sys
-          from datetime import datetime, timedelta, timezone
-          from pathlib import Path
-          from zoneinfo import ZoneInfo
-
-          now = datetime.now(timezone.utc)
-          la = now.astimezone(ZoneInfo("America/Los_Angeles"))
-          if not (0 <= la.hour < 2):
-              print("Extended-source recovery is limited to 12-2 AM Pacific")
-              raise SystemExit(0)
-          night_start = (la - timedelta(days=1)).replace(hour=21, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
-
-          def runs(index):
-              with open(sys.argv[index], encoding="utf-8") as handle:
-                  return json.load(handle).get("workflow_runs", [])
-
-          def moment(value):
-              return datetime.fromisoformat(value.replace("Z", "+00:00"))
-
-          clinical = [r for r in runs(1) if r.get("event") == "workflow_dispatch"
-                      and r.get("created_at") and night_start <= moment(r["created_at"]) <= now]
-          if not clinical:
-              print("No daily clinical run; skip extended-source recovery")
-              raise SystemExit(0)
-          latest_clinical = max(clinical, key=lambda r: r["created_at"])
-          if latest_clinical.get("status") != "completed" or latest_clinical.get("conclusion") != "success":
-              print("Clinical job is not successful; skip downstream recovery")
-              raise SystemExit(0)
-          publishers = [r for r in runs(2) if r.get("created_at")
-                        and moment(r["created_at"]) >= moment(latest_clinical["updated_at"])]
-          if not publishers:
-              print("No publisher run exists after completed clinical scan")
-              raise SystemExit(0)
-          publisher = max(publishers, key=lambda r: r["created_at"])
-          if publisher.get("status") != "completed" or publisher.get("conclusion") != "success":
-              print("Report publishing not successful; skip extended-source recovery")
-              raise SystemExit(0)
-          finished = moment(publisher["updated_at"])
-          if now - finished < timedelta(minutes=2):
-              print("Allowing standard report-to-extended workflow_run trigger")
-              raise SystemExit(0)
-          existing = [r for r in runs(3) if r.get("created_at")
-                      and moment(r["created_at"]) >= moment(publisher["created_at"])]
-          if existing:
-              print("Extended verification run already exists; skip duplicate")
-              raise SystemExit(0)
-          Path(sys.argv[4]).write_text(str(publisher["id"]), encoding="utf-8")
-          print("Missing publisher-to-extended handoff after publisher run " + str(publisher["id"]))
-          PY
-          if [ -s "$RUNNER_TEMP/extended-source-request" ]; then
-            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-missing-sources.yml/dispatches" \
-              -f ref=main
-            echo "Requested FDA, SEC, financial, market, issuer, and coverage reconciliation."
-            echo "Dispatch does not establish source verification or completion."
-          fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" -f ref=main
+          echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
+          echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."

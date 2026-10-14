@@ -1,5 +1,6 @@
 """Regression tests for ad hoc error checks (offline, no Gmail/network)."""
 import sys
+import os
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -74,6 +75,19 @@ class AdhocAlertTests(unittest.TestCase):
                         completed_scan_context("synthetic-token", "123")
         with self.assertRaises(ValueError):
             completed_scan_context("synthetic-token", "123/not-a-run")
+
+    def test_awaited_parent_context_keeps_running_parent_distinct_from_finished_sources(self):
+        from scripts.nightly_sequence import SOURCE_JOBS, SOURCE_TAILS, RUN_TITLE, WORKFLOW_PATH
+        parent = {"id": 42, "name": RUN_TITLE, "display_title": RUN_TITLE, "path": WORKFLOW_PATH,
+                  "head_repository": {"full_name": "pdufa/pdufa-command-center"},
+                  "head_branch": "main", "status": "in_progress"}
+        jobs = [{"name": "sources / " + name, "status": "completed", "conclusion": "success"}
+                for name in SOURCE_JOBS + SOURCE_TAILS]
+        with patch.dict(os.environ, {"GITHUB_RUN_ID": "42", "PDUFA_SERIAL_STAGE_CONCLUSION": "success"}):
+            with patch("adhoc_alert_check.github_json", side_effect=[parent, {"jobs": jobs}]):
+                result = completed_scan_context("synthetic-token", "42")
+        self.assertEqual(result["parent_status"], "in_progress")
+        self.assertEqual(result["stage"], "sources")
 
 
 if __name__ == "__main__":

@@ -2,9 +2,9 @@
 
 ## Nightly Scan Report subtab (October 12, 2026)
 
-**PDUFA → NIGHTLY SCAN REPORT**, directly before **WATCHLIST / TRADING**, reads the published `data/nightly_scan_report.json` audit. The existing clinical scan #2 PIPELINE, #3 PRE3 and #4 POST3 run on the existing `pdufa-nightly-clinical.yml` nightly schedule. A separate publisher (`pdufa-nightly-report.yml`) reacts to the completed collection workflow, downloads its archived per-scan JSON/status files, checks consistency and writes the displayed report. Prior scan results are revalidated from their own archived run when a targeted collection occurs; missing or expired artifacts remain UNVERIFIED. The UI does not invent missing new-record or changed-trial totals.
+**PDUFA → NIGHTLY SCAN REPORT**, directly before **WATCHLIST / TRADING**, reads the published `data/nightly_scan_report.json` audit. The 9 PM Pacific scheduler starts `pdufa-overnight-sequential.yml`, which awaits the clinical collectors, both GEM tasks, report publication, source verification, scoring and repair in one run. The publisher downloads the same run’s archived per-scan JSON/status files, checks consistency and writes the displayed report. Standalone manual clinical runs retain their completion-triggered publisher. Prior scan results are revalidated from their own archived run when a targeted collection occurs; missing or expired artifacts remain UNVERIFIED. The UI does not invent missing new-record or changed-trial totals.
 
-**Three controls** are available: **REVERIFY PARTIAL** recollects the clinical scans and publishes a new audit, **VERIFY ALL** rechecks their archived clinical source evidence, and **RESCAN ALL** reruns the three clinical collectors. An additional target selector can recollect only #2, #3 or #4. The buttons dispatch `pdufa-scan-control.yml`, which in turn dispatches the clinical workflow for data collection. The report and control buttons are separate from trading tags; no order placement occurs.
+**Three controls** are available: **REVERIFY PARTIAL** recollects the clinical scans and publishes a new audit, **VERIFY ALL** rechecks their archived clinical source evidence, and **RESCAN ALL** reruns the three clinical collectors. An additional target selector can recollect only #2, #3 or #4. The buttons dispatch `pdufa-scan-control.yml`. ALL collection requests use the same complete serial workflow, including GEM; targeted requests retain their individual collectors. The report and control buttons are separate from trading tags; no order placement occurs.
 
 **Required activation:** To enable the buttons *inside Streamlit*, configure Streamlit app secrets `PDUFA_GITHUB_TOKEN` (fine-grained GitHub token with Actions read/write permission for this repository; keep server-side) and `PDUFA_SCAN_CONTROL_PIN` (private operator PIN). Users without these secrets can still view published reports, and repository owners can use the **OPEN SCAN CONTROLS IN GITHUB ACTIONS** link to trigger the control workflow manually. The collector itself retains the previously documented GitHub Actions secrets `PDUFA_GMAIL_USER`, `PDUFA_GMAIL_APP_PASSWORD`, and `PDUFA_ALERT_EMAIL`: absent secrets block clinical collection. No passwords or personal tokens should be committed to files.
 
@@ -17,14 +17,20 @@
 strictly ordered **daily 9:00 PM Pacific** sequence:
 **#2 PIPELINE → #3 PRE3 → #4 POST3 → GEM research → GEM financing
 full-coverage audit → nightly report → FDA → SEC → FINANCIAL → MARKET →
-ISSUER → source reconciliation → scoring → error check → guarded repair**.
+ISSUER → source reconciliation → source report → PRE3 display refresh →
+scoring → error check → guarded repair**.
 Each main research step waits for the prior one to finish, even on a
 recorded failure. Morning results are a separate read-only report.
 
 GitHub UTC cron uses `0 4 * * *` during PDT (UTC−7) and
 `0 5 * * *` during PST (UTC−8), with 9:15/9:30 PM guarded backups.
-Duplicate detection prevents a second nightly clinical chain.
-After-midnight publisher/source recovery checks do **not** restart surveys.
+After-midnight recovery crons can start a missed nightly run until 2:59 AM Pacific.
+Duplicate detection checks only the complete workflow, so a targeted manual
+clinical scan cannot suppress the full overnight run. An active older full run
+also blocks a duplicate. One workflow-wide lock covers the entire sequence.
+The chain uses awaited reusable jobs, avoiding lost cross-workflow completion
+events. A recorded failed nightly attempt remains visible; backups do not
+blindly repeat every source scan.
 The GEM workflows are called *inside* the nightly clinical workflow so
 the downstream publisher does not start until both GEM tasks finish.
 Their former independent daily schedules are disabled; explicit manual
@@ -42,8 +48,8 @@ required before collection; the END email is attempted even on failure.
 The report explicitly remains **PARTIAL/FAILED** for the *full-source*
 baseline; clinical completion is not FDA, SEC, issuer, or full market
 verification. Output CSVs, state, and notification audit are archived as
-GitHub Actions artifacts (30-day retention). **These archived outputs do
-not automatically update the deployed Streamlit dashboard.** The config
+GitHub Actions artifacts (30-day retention). **Completed clinical source snapshots are validated and published before the
+next collector starts; incomplete snapshots keep the prior published data.** The config
 `clinical_source_schedule.enabled` tracks this *limited* schedule
 separately from the unimplemented full-source automation/baseline gate.
 

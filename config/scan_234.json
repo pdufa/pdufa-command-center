@@ -217,9 +217,12 @@
   "clinical_source_schedule": {
     "enabled": true,
     "workflow": ".github/workflows/pdufa-nightly-clinical.yml",
-    "cron_utc": "0 9 * * *",
-    "pacific_daylight_time": "02:00",
-    "pacific_standard_time": "01:00",
+    "cron_utc": [
+      "0 4 * * *",
+      "0 5 * * *"
+    ],
+    "pacific_daylight_time": "21:00",
+    "pacific_standard_time": "21:00",
     "first_start_confirmation": "2026-10-11 21:34 PDT: START emails for scans 2, 3, 4 received",
     "scan_ids": [
       "2",
@@ -227,17 +230,17 @@
       "4"
     ],
     "source_scope": "ClinicalTrials.gov collectors and limited Phase 2/3 market capitalization only",
-    "output_delivery": "Gmail START/END plus 30-day GitHub Actions artifacts",
-    "production_dashboard_updates_automatic": false,
-    "limitations": "Full-source baseline (FDA, SEC, issuer, cash, market, identity audit) remains unverified; do not set automation_enabled=true until that distinct baseline is actually implemented and verified."
+    "output_delivery": "Validated completed clinical snapshots and reports published to main, Gmail START/END, and GitHub Actions artifacts",
+    "production_dashboard_updates_automatic": true,
+    "limitations": "Full-source baseline (FDA, SEC, issuer, cash, market, identity audit) remains unverified; do not set automation_enabled=true until that distinct baseline is actually implemented and verified.",
+    "scheduler_workflow": ".github/workflows/pdufa-nightly-pacific-start.yml",
+    "sequence_workflow": ".github/workflows/pdufa-overnight-sequential.yml"
   },
   "extended_source_schedule": {
     "enabled": true,
     "workflow": ".github/workflows/pdufa-nightly-missing-sources.yml",
-    "immediate_launch": "Triggered by initial workflow file push on 2026-10-11",
-    "nightly_cron_utc": "30 9 * * *",
-    "pacific_daylight_time": "02:30",
-    "pacific_standard_time": "01:30",
+    "pacific_daylight_time": "AFTER_CLINICAL_AND_GEM",
+    "pacific_standard_time": "AFTER_CLINICAL_AND_GEM",
     "jobs": [
       "FDA",
       "SEC",
@@ -248,9 +251,9 @@
     ],
     "uses": "scripts/nightly_missing_sources.py and scripts/recheck_events.py",
     "email_start_and_end": true,
-    "results_location": "GitHub Actions artifacts (30-day retention)",
+    "results_location": "Reconciled source report published to main plus GitHub Actions artifacts; source evidence can remain PARTIAL",
     "full_source_coverage_verified": false,
-    "production_dashboard_auto_ingest": false,
+    "production_dashboard_auto_ingest": true,
     "scope_limitations": [
       "FDA recheck limited to source links and exact saved PDUFA events; not a complete FDA application ledger",
       "SEC event financing/ownership recheck plus registry filings index; closings require exhibit review",
@@ -258,6 +261,7 @@
       "MARKET event-linked delayed quotes/volume; short/borrow/IV unsupported",
       "ISSUER Google News RSS discovery only; no primary issuer release verification",
       "AUDIT reconciles only this workflow's five available manifests; clinical status and independent full-program verification remain separate"
-    ]
+    ],
+    "start_policy": "Await clinical, both GEM stages and report in pdufa-overnight-sequential.yml; no independent nightly cron or collection-on-push"
   }
 }

@@ -1,6 +1,12 @@
 name: PDUFA Nightly Scan Report Publisher
 
 on:
+  workflow_call:
+    inputs:
+      source_run_id:
+        description: 'Parent run containing the completed clinical artifacts'
+        type: string
+        required: true
   workflow_run:
     workflows: ["PDUFA Nightly Clinical Scans"]
     types: [completed]
@@ -43,7 +49,7 @@ jobs:
           DISPATCH_SOURCE_ID: ${{ inputs.source_run_id }}
           COMPLETED_SOURCE_ID: ${{ github.event.workflow_run.id }}
         run: |
-          if [ "$WORKFLOW_EVENT" = "workflow_dispatch" ]; then
+          if [ -n "$DISPATCH_SOURCE_ID" ]; then
             SOURCE_RUN_ID="$DISPATCH_SOURCE_ID"
           elif [ "$WORKFLOW_EVENT" = "workflow_run" ]; then
             SOURCE_RUN_ID="$COMPLETED_SOURCE_ID"

@@ -1,8 +1,19 @@
 name: PDUFA Nightly Clinical Scans
 
-# Daily 11:00 PM Pacific start is dispatched by the DST-aware Pacific scheduler.
+# Called and awaited by the single 9 PM Pacific overnight workflow.
 # Ad-hoc workflow_dispatch remains available; only one clinical scan runs at a time.
 on:
+  workflow_call:
+    inputs:
+      scan:
+        type: string
+        default: ALL
+      include_gem:
+        type: boolean
+        default: false
+      gem_action:
+        type: string
+        default: REVERIFY_PARTIAL
   workflow_dispatch:
     inputs:
       scan:
@@ -18,7 +29,8 @@ on:
         required: false
 
 permissions:
-  contents: read
+  contents: write
+  actions: read
 
 concurrency:
   group: pdufa-nightly-clinical-collectors
@@ -37,6 +49,8 @@ jobs:
     steps:
       - name: Checkout saved clinical source snapshots
         uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -72,6 +86,22 @@ jobs:
             exit 0
           fi
           exit "$exit_code"
+      - name: Publish completed clinical snapshot before the next scan
+        run: |
+          set -euo pipefail
+          python scripts/validate_clinical_snapshot.py --scan 2
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/all_phase_scan_state.json data/all_phase_trials.csv
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish completed clinical scan 2 source snapshot"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::Clinical snapshot could not be published; source artifacts retained."
+          exit 1
       - name: Archive scan results, source status and notification audit
         if: always()
         uses: actions/upload-artifact@v4
@@ -101,6 +131,8 @@ jobs:
     steps:
       - name: Checkout saved clinical source snapshots
         uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -136,6 +168,22 @@ jobs:
             exit 0
           fi
           exit "$exit_code"
+      - name: Publish completed clinical snapshot before the next scan
+        run: |
+          set -euo pipefail
+          python scripts/validate_clinical_snapshot.py --scan 3
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/phase_pipeline_state.json data/phase_pipeline.csv data/phase_pipeline_market_caps.csv
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish completed clinical scan 3 source snapshot"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::Clinical snapshot could not be published; source artifacts retained."
+          exit 1
       - name: Archive scan results, source status and notification audit
         if: always()
         uses: actions/upload-artifact@v4
@@ -165,6 +213,8 @@ jobs:
     steps:
       - name: Checkout saved clinical source snapshots
         uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -200,6 +250,22 @@ jobs:
             exit 0
           fi
           exit "$exit_code"
+      - name: Publish completed clinical snapshot before the next scan
+        run: |
+          set -euo pipefail
+          python scripts/validate_clinical_snapshot.py --scan 4
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/phase3_intake_status.json data/phase3_announcements.csv
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish completed clinical scan 4 source snapshot"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::Clinical snapshot could not be published; source artifacts retained."
+          exit 1
       - name: Archive scan results, source status and notification audit
         if: always()
         uses: actions/upload-artifact@v4
@@ -225,7 +291,7 @@ jobs:
       actions: read
     uses: ./.github/workflows/gem-research-quality.yml
     with:
-      action: REVERIFY_PARTIAL
+      action: ${{ inputs.gem_action || 'REVERIFY_PARTIAL' }}
     secrets: inherit
 
   gem_financing:
@@ -235,3 +301,4 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/gem-financing-full-coverage.yml
+    secrets: inherit

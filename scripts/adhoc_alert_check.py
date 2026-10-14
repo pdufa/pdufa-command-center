@@ -29,8 +29,9 @@ WORKFLOWS = (
     "prephase3-acceptance.yml",
     "step7-live-feed.yml",
     "pdufa-nightly-report-checks.yml",
+    "pdufa-overnight-sequential.yml",
 )
-SCAN_WORKFLOWS = frozenset(WORKFLOWS[:3] + ("step7-live-feed.yml",))
+SCAN_WORKFLOWS = frozenset(WORKFLOWS[:3] + ("step7-live-feed.yml", "pdufa-overnight-sequential.yml"))
 GMAIL_FOLDERS = ("INBOX", '"[Gmail]/Sent Mail"')
 ERROR_SUBJECT = re.compile(r"\b(?:fail(?:ed|ure)?|error|bounce|undeliverable|delivery status notification)\b", re.I)
 PDUFA_SUBJECT = re.compile(r"PDUFA|GitHub|workflow|scan", re.I)
@@ -49,6 +50,16 @@ def completed_scan_context(token: str, source_run_id: str) -> dict:
     if not re.fullmatch(r"[1-9][0-9]*", source_run_id):
         raise ValueError("Invalid source scan run identifier")
     run = github_json("/actions/runs/" + source_run_id, token)
+    serial = os.environ.get("PDUFA_SERIAL_STAGE_CONCLUSION", "")
+    if serial:
+        if __package__:
+            from .nightly_sequence import completed_source_stage
+        else:
+            from nightly_sequence import completed_source_stage
+        jobs = github_json("/actions/runs/" + source_run_id + "/jobs?per_page=100", token)
+        return completed_source_stage(
+            run, jobs.get("jobs", []), current_run_id=os.environ.get("GITHUB_RUN_ID", ""),
+            conclusion=serial, repository=REPO)
     repository = (run.get("head_repository") or {}).get("full_name")
     if (run.get("name") not in SCAN_COMPLETION_WORKFLOWS
             or repository != REPO or run.get("head_branch") != "main"
@@ -255,7 +266,7 @@ def main() -> int:
                     fp.write("  - " + info["reason"] + "\n")
             source = report.get("source_scan")
             if source:
-                fp.write("- Completed source run: " + source["workflow"] +
+                fp.write("- Completed source jobs: " + source["workflow"] +
                          " (run #" + str(source["run_id"]) + ", " +
                          str(source["conclusion"]) + ") — " +
                          str(source["url"]) + "\n")

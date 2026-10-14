@@ -2,18 +2,7 @@ name: PDUFA Nightly FDA SEC Financial Market Issuer Sources
 
 # Collect, verify direct-source claims, then reconcile the evidence ledgers.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "scripts/source_verification.py"
-      - "scripts/recheck_events.py"
-      - "scripts/nightly_missing_sources.py"
-      - "scripts/provisional_financing_sec_recheck.py"
-      - "scripts/publish_source_audit.py"
-      - "data/finance_ir_sec_recheck_targets.csv"
-      - "tests/test_provisional_financing_sec_recheck.py"
-      - "config/issuer_sources.json"
-      - ".github/workflows/pdufa-nightly-missing-sources.yml"
+  workflow_call:
   # Only the completed, published clinical scan can start the extended source scan.
   workflow_run:
     workflows: ['PDUFA Nightly Scan Report Publisher']
@@ -43,7 +32,7 @@ jobs:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -113,7 +102,7 @@ jobs:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -185,7 +174,7 @@ jobs:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -255,7 +244,7 @@ jobs:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -325,7 +314,7 @@ jobs:
       - name: Checkout repository research evidence
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -394,7 +383,7 @@ jobs:
       - name: Checkout baseline for scope audit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - name: Configure Python
         uses: actions/setup-python@v5
         with:
@@ -445,7 +434,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -502,8 +491,8 @@ jobs:
 
   refresh-prephase3:
     name: 'Refresh validated PRE PHASE 3 display feed after sources'
-    needs: reconcile
-    if: ${{ always() && needs.reconcile.result == 'success' }}
+    needs: publish-source-report
+    if: ${{ always() && needs.publish-source-report.result != 'skipped' }}
     permissions:
       contents: write
     uses: ./.github/workflows/step7-live-feed.yml

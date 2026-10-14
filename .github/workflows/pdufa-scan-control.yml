@@ -54,9 +54,12 @@ jobs:
           import json, os, urllib.request
           action = os.environ["CONTROL_ACTION"]
           scan = os.environ["CONTROL_SCAN"]  # target one block or ALL without remapping
+          workflow = ("pdufa-overnight-sequential.yml" if scan == "ALL"
+                      else "pdufa-nightly-clinical.yml")
+          inputs = {"gem_action": action} if scan == "ALL" else {"scan": scan}
           url = ("https://api.github.com/repos/" + os.environ["GITHUB_REPOSITORY"]
-                 + "/actions/workflows/pdufa-nightly-clinical.yml/dispatches")
-          body = json.dumps({"ref": "main", "inputs": {"scan": scan}}).encode()
+                 + "/actions/workflows/" + workflow + "/dispatches")
+          body = json.dumps({"ref": "main", "inputs": inputs}).encode()
           req = urllib.request.Request(url, data=body, method="POST", headers={
               "Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
               "Accept": "application/vnd.github+json",
@@ -71,7 +74,7 @@ jobs:
           print("Newly completed collectors publish a refreshed verified report.")
           PY
       - name: Dispatch GEMS fourth-block verification, delta check or baseline rescan
-        if: ${{ inputs.scan == 'GEM' || inputs.scan == 'ALL' }}
+        if: ${{ inputs.scan == 'GEM' || (inputs.scan == 'ALL' && inputs.action == 'VERIFY_ALL') }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
           CONTROL_ACTION: ${{ inputs.action }}

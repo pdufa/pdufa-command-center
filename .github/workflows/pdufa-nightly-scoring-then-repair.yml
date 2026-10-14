@@ -1,6 +1,14 @@
 name: PDUFA Nightly Scoring Then Error Check And Safe Repair
 # Runs only after the full source chain completes: clinical, publisher, five source families, reconciliation.
 on:
+  workflow_call:
+    inputs:
+      source_run_id:
+        type: string
+        required: true
+      source_conclusion:
+        type: string
+        required: true
   workflow_run:
     workflows:
       - PDUFA Nightly FDA SEC Financial Market Issuer Sources
@@ -27,7 +35,7 @@ concurrency:
 
 jobs:
   workflow-tests:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && inputs.source_run_id == ''
     name: Verify orchestrator without scans or repairs
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -44,9 +52,10 @@ jobs:
   scoring:
     name: 1 — Audit scoring inputs after completed nightly scan
     if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.head_repository.full_name == github.repository &&
-      github.event.workflow_run.head_branch == 'main'
+      inputs.source_run_id != '' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     outputs:
@@ -65,29 +74,42 @@ jobs:
         id: source
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}
+          SERIAL_CONCLUSION: ${{ inputs.source_conclusion }}
         shell: bash
         run: |
           set -euo pipefail
           [[ "$SOURCE_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_ID" > "$RUNNER_TEMP/nightly-source.json"
-          python - "$RUNNER_TEMP/nightly-source.json" "$GITHUB_OUTPUT" <<'PY'
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_ID/jobs?per_page=100" > "$RUNNER_TEMP/nightly-jobs.json"
+          python - "$RUNNER_TEMP/nightly-source.json" "$GITHUB_OUTPUT" "$RUNNER_TEMP/nightly-jobs.json" <<'PY'
           import json, os, sys
           with open(sys.argv[1], encoding="utf-8") as f:
               run = json.load(f)
-          approved = {"PDUFA Nightly Scan Report Publisher",
-                      "PDUFA Nightly FDA SEC Financial Market Issuer Sources"}
-          if (run.get("name") not in approved or
-              run.get("head_branch") != "main" or
-              (run.get("head_repository") or {}).get("full_name") != os.environ["GITHUB_REPOSITORY"] or
-              run.get("status") != "completed" or
-              run.get("conclusion") not in ("success", "failure", "timed_out", "cancelled", "skipped")):
-              raise SystemExit("Unverified or unexpected completed nightly source")
+          from scripts.nightly_sequence import completed_source_stage, WORKFLOW_NAME
+          serial = os.environ.get("SERIAL_CONCLUSION", "")
+          if serial:
+              with open(sys.argv[3], encoding="utf-8") as f:
+                  jobs = json.load(f).get("jobs", [])
+              context = completed_source_stage(
+                  run, jobs, current_run_id=os.environ["GITHUB_RUN_ID"],
+                  conclusion=serial, repository=os.environ["GITHUB_REPOSITORY"])
+              source_name, source_conclusion = WORKFLOW_NAME, context["conclusion"]
+          else:
+              approved = {"PDUFA Nightly Scan Report Publisher",
+                          "PDUFA Nightly FDA SEC Financial Market Issuer Sources"}
+              if (run.get("name") not in approved or
+                  run.get("head_branch") != "main" or
+                  (run.get("head_repository") or {}).get("full_name") != os.environ["GITHUB_REPOSITORY"] or
+                  run.get("status") != "completed" or
+                  run.get("conclusion") not in ("success", "failure", "timed_out", "cancelled", "skipped")):
+                  raise SystemExit("Unverified or unexpected completed nightly source")
+              source_name, source_conclusion = run["name"], run["conclusion"]
           with open(sys.argv[2], "a", encoding="utf-8") as out:
               print("source_run_id=" + str(run["id"]), file=out)
-              print("source_workflow=" + run["name"], file=out)
-              print("source_conclusion=" + run["conclusion"], file=out)
-          print("Verified completed source #" + str(run["id"]) + ": " + run["name"])
+              print("source_workflow=" + source_name, file=out)
+              print("source_conclusion=" + source_conclusion, file=out)
+          print("Verified completed source stage #" + str(run["id"]) + ": " + source_name)
           PY
       - name: Install scoring test runner
         run: python -m pip install pytest
@@ -142,8 +164,8 @@ jobs:
     name: 2 — Check Gmail and GitHub after scoring
     needs: scoring
     if: >-
-      always() && github.event_name == 'workflow_run' &&
-      needs.scoring.outputs.source_run_id != ''
+      always() && (github.event_name == 'workflow_run' || inputs.source_run_id != '') &&
+      (needs.scoring.outputs.source_run_id != '' || inputs.source_run_id != '')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -156,7 +178,8 @@ jobs:
       - name: Read-only Gmail and GitHub error audit
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          PDUFA_SOURCE_RUN_ID: ${{ needs.scoring.outputs.source_run_id }}
+          PDUFA_SOURCE_RUN_ID: ${{ needs.scoring.outputs.source_run_id || inputs.source_run_id }}
+          PDUFA_SERIAL_STAGE_CONCLUSION: ${{ inputs.source_conclusion }}
           PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
           PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
         run: python scripts/adhoc_alert_check.py
@@ -173,8 +196,8 @@ jobs:
     name: 3 — Guarded GitHub repair after scoring and error checks
     needs: [scoring, error-check]
     if: >-
-      always() && github.event_name == 'workflow_run' &&
-      needs.scoring.outputs.source_run_id != '' &&
+      always() && (github.event_name == 'workflow_run' || inputs.source_run_id != '') &&
+      (needs.scoring.outputs.source_run_id != '' || inputs.source_run_id != '') &&
       needs.error-check.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -198,7 +221,7 @@ jobs:
       - name: Prepare source-conflict and code-error recovery queue
         if: always()
         env:
-          PDUFA_SOURCE_RUN_ID: ${{ needs.scoring.outputs.source_run_id }}
+          PDUFA_SOURCE_RUN_ID: ${{ needs.scoring.outputs.source_run_id || inputs.source_run_id }}
         shell: bash
         run: |
           python scripts/scan_recovery_triage.py --source-run-id "$PDUFA_SOURCE_RUN_ID"
