@@ -1,18 +1,18 @@
 {
   "source_report_run_id": "38575279522",
-  "generated_at_utc": "2026-10-14T15:53:55.062304+00:00",
+  "generated_at_utc": "2026-10-14T16:48:36.646582+00:00",
   "status": "PARTIAL",
   "execution_status": "COMPLETE",
   "scope": "Targeted recheck of previously unresolved required claims only",
   "findings_due": 45,
-  "findings_verified": 0,
-  "required_findings_unresolved": 45,
+  "findings_verified": 6,
+  "required_findings_unresolved": 39,
   "source_observations": 45,
   "by_source": {
     "FDA": {
       "rechecked": 4,
-      "newly_supported": 0,
-      "still_unresolved": 4
+      "newly_supported": 4,
+      "still_unresolved": 0
     },
     "SEC": {
       "rechecked": 35,
@@ -26,44 +26,21 @@
     },
     "ISSUER": {
       "rechecked": 4,
-      "newly_supported": 0,
-      "still_unresolved": 4
+      "newly_supported": 2,
+      "still_unresolved": 2
     }
   },
   "states": {
-    "REVIEW_REQUIRED": 45
+    "VERIFIED": 6,
+    "REVIEW_REQUIRED": 39
   },
-  "recheck_ledger_sha256": "b2e27e76568b025a1bad60e182d72397690a18d14c690ed1cffd186b96c696e9",
+  "recheck_ledger_sha256": "cd857e2e345a99acdc09142a0e5616ae4e044cae2cc27b860201f05a2e408bcc",
   "recheck_ledger": "data/pdufa_targeted_recheck_results.csv",
   "source_baseline_unchanged": true,
   "trade_entry_authorized": false,
   "gem_financing_sequence_verified": false,
   "caveat": "New claim evidence is a recheck comparison, not an update to canonical source verification, a certified financing sequence or permission to trade. Independent full-source reconciliation is required before promoting any claims.",
   "unresolved_examples": [
-    {
-      "ticker": "ANAB",
-      "category": "FDA",
-      "claim": "PDUFA_TARGET",
-      "reason": "No primary source safely matches drug, indication, claim and explicit date"
-    },
-    {
-      "ticker": "EXEL",
-      "category": "FDA",
-      "claim": "PDUFA_TARGET",
-      "reason": "No primary source safely matches drug, indication, claim and explicit date"
-    },
-    {
-      "ticker": "HRMY",
-      "category": "FDA",
-      "claim": "PDUFA_TARGET",
-      "reason": "No primary source safely matches drug, indication, claim and explicit date"
-    },
-    {
-      "ticker": "SVRA",
-      "category": "FDA",
-      "claim": "PDUFA_TARGET",
-      "reason": "No primary source safely matches drug, indication, claim and explicit date"
-    },
     {
       "ticker": "VTRS",
       "category": "SEC",
@@ -156,6 +133,30 @@
     },
     {
       "ticker": "NUVB",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+    },
+    {
+      "ticker": "IBRX",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+    },
+    {
+      "ticker": "DYN",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+    },
+    {
+      "ticker": "ARQT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+    },
+    {
+      "ticker": "CGEM",
       "category": "SEC",
       "claim": "FINANCING_CLOSURE",
       "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
