@@ -161,6 +161,38 @@ class VerificationTests(unittest.TestCase):
                     v.fetch("https://data.sec.gov/submissions/CIK" + str(i).zfill(10) + ".json")
             self.assertEqual(opened.call_count, 3)
 
+    def test_mapped_target_anchor_requires_primary_text_exact_program_and_date(self):
+        anchor = "FDA PDUFA target action date of November 1, 2026 for TestDrug in lung cancer"
+        body = ("Test Pharma reported a PDUFA target. " + anchor +
+                ". The investigational drug remains under review.")
+        self.assertTrue(verify.exact_mapped_primary_target(EVENT, body, "2026-11-01", anchor))
+        self.assertFalse(verify.exact_mapped_primary_target(
+            EVENT, body.replace("TestDrug", "OtherDrug"), "2026-11-01", anchor))
+        self.assertFalse(verify.exact_mapped_primary_target(
+            EVENT, body.replace("lung cancer", "skin infection"), "2026-11-01", anchor))
+        self.assertFalse(verify.exact_mapped_primary_target(
+            EVENT, body, "2026-11-02", anchor))
+        self.assertFalse(verify.exact_mapped_primary_target(
+            EVENT, body.replace("Test Pharma", "Another Company"), "2026-11-01", anchor))
+        conflicting = body + " OtherDrug in skin cancer PDUFA target action date December 1, 2026."
+        self.assertFalse(verify.exact_mapped_primary_target(
+            EVENT, conflicting, "2026-11-01", anchor))
+
+    def test_mapped_primary_date_is_never_a_signed_fda_decision_or_trade_entry(self):
+        anchored = ("Test Pharma reports TestDrug for lung cancer; "
+                    "FDA PDUFA target action date of November 1, 2026.")
+        anchor = "FDA PDUFA target action date of November 1, 2026"
+        config = {"ABC": {"hosts": [], "events": {
+            "ABC|DRUG": {"urls": [SEC_DOC], "primary_target_anchor": anchor}}}}
+        v = verify.Verifier([COMPANY], fetch=lambda _: anchored.encode(),
+                            as_of=date(2026, 10, 12), issuer_sources=config)
+        row = v.regulatory(EVENT)[0]
+        self.assertEqual(row["claim"], "PDUFA_TARGET")
+        self.assertEqual(row["verification_status"], "VERIFIED")
+        self.assertEqual(row["observed"], "2026-11-01")
+        self.assertEqual(len(row["source_sha256"]), 64)
+        self.assertNotIn("entry", row)
+
     def test_primary_target_can_be_verified_without_becoming_a_decision(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
         body = b"Test Pharma announced TestDrug for lung cancer. The FDA PDUFA target date is November 1, 2026."
