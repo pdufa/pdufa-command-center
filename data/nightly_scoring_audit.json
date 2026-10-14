@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-10-14T18:15:01.694662+00:00",
+  "generated_at_utc": "2026-10-14T18:16:52.047692+00:00",
   "status": "SCAN_FAILURE",
   "source_scan": {
     "workflow": "PDUFA Nightly FDA SEC Financial Market Issuer Sources",
-    "run_id": 38613174359,
+    "run_id": 38613505592,
     "conclusion": "cancelled"
   },
   "counts": {
