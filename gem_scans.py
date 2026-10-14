@@ -13,6 +13,7 @@ from pathlib import Path
 from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 from gem_financing_gate import entry_status, sec_recheck_current
+from gem_runway_gate import assess_runway, load_snapshots, passes as runway_passes, MIN_MONTHS
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -58,6 +59,7 @@ SCAN_QUALIFIERS = {
         "All Phase 3 scan qualifiers",
         "Two separate post-Phase-3 financings with exact-event SEC evidence",
         "Second financing independently marked closed; dilution gate verified",
+        "SEC cash-only runway >=12 months, using post-second-close cash evidence",
         "Verified PDUFA date with at least 4 calendar days remaining (planned exit: PDUFA -3)",
     ),
     "PDUFA": (
@@ -65,6 +67,7 @@ SCAN_QUALIFIERS = {
         "Source-verified future PDUFA date: at least 4 days remaining; no arbitrary 90-day maximum",
         "Second post-Phase-3 financing independently verified closed",
         "Financing and unresolved-dilution evidence gates verified",
+        "Rechecked SEC cash-only runway >=12 months",
         "Active unresolved FDA application (not decided, CRL or expired)",
     ),
 }
@@ -185,6 +188,9 @@ def _reasons(record, event, stage, feed_current, sec_current):
         reasons.append("Verified post-readout price base / normalized volume missing")
     if _number(record.get("Market activity /10")) < 4:
         reasons.append("Fresh sourced market quote unavailable")
+    if stage in ("Post-Financing", "PDUFA") and not runway_passes(record):
+        reasons.append("Cash runway gate not met: " + str(record.get("Cash runway gate") or "UNKNOWN")
+                       + " — " + str(record.get("Cash runway reason") or "no evidence"))
     if stage in ("Post-Financing", "PDUFA") and not sec_current:
         reasons.append("Fresh complete unblocked SEC financing recheck required before trade entry")
     if stage == "Post-Financing":
@@ -230,6 +236,7 @@ def all_mandatory_entry_gates_pass(item):
         and item.get("Entry qualification") == "GREEN — GATES ATTESTED"
         and item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
         and bool(item.get("Verified 2nd financing close date"))
+        and runway_passes(item)
         and item.get("GEM trade entry gate")
             == "POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER"
         and all(item.get(stage + " qualifier") == "QUALIFIED — RESEARCH ONLY"
@@ -247,6 +254,7 @@ def build_gem_scans(root="data", as_of=None):
     records, source_status = build_queue(root, as_of=as_of)
     sec_current = sec_recheck_current(root, as_of=source_status.get("as_of") or as_of)
     events = _event_map(root)
+    runway_snapshots = load_snapshots(root)
     results = []
     for record in records:
         item = dict(record)
@@ -266,6 +274,14 @@ def build_gem_scans(root="data", as_of=None):
             if event and status.startswith("TRACKING") else ""
         )
         item["Financing watch"] = financing_watch_state(item, status)
+        ticker = str(item.get("Ticker") or "").strip().upper()
+        item.update(assess_runway(
+            ticker, runway_snapshots.get(ticker),
+            as_of=source_status.get("as_of") or as_of,
+            second_close=(item.get("Verified 2nd financing close date") or None)
+            if item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
+            else None,
+        ))
         for stage in STAGES:
             reasons = _reasons(item, event, stage, source_status["feed_current"], sec_current)
             item[stage + " qualifier"] = ("QUALIFIED — RESEARCH ONLY" if not reasons else "REVIEW — NOT QUALIFIED")
@@ -281,12 +297,16 @@ def build_gem_scans(root="data", as_of=None):
                                   for k in ("Post-Financing", "PDUFA"))
         item["GEM trade entry gate"] = entry_status(
             closed=finance_closed,
-            qualified=postclose_qualified,
+            qualified=postclose_qualified and runway_passes(item),
             feed_current=source_status["feed_current"] and sec_current,
             days_to_pdufa=days,
             excluded=status.startswith("CLOSED") and
                      "PDUFA -3" not in status,
         )
+        if (finance_closed and source_status["feed_current"] and sec_current
+                and not runway_passes(item) and isinstance(days, int)
+                and days > TRADE_EXIT_DAYS_BEFORE_PDUFA):
+            item["GEM trade entry gate"] = "HOLD — 12-MONTH CASH RUNWAY NOT VERIFIED"
         results.append(item)
 
     for stage in STAGES:
@@ -331,7 +351,7 @@ def build_gem_scans(root="data", as_of=None):
     details["strict_entry_gate_shortlist_count"] = len(shortlist)
     details["strict_entry_gate_shortlist_definition"] = (
         "INTERSECTION OF ALL THREE RANKS + STAGE1 GREEN + VERIFIED TWO CLOSES "
-        "+ CURRENT SOURCES + PDUFA > 3 DAYS; HUMAN REVIEW ONLY"
+        "+ CURRENT SOURCES + RUNWAY >=12 MONTHS + PDUFA > 3 DAYS; HUMAN REVIEW ONLY"
     )
     details["scan_counts"] = {
         stage: {
@@ -349,6 +369,10 @@ def build_gem_scans(root="data", as_of=None):
         for item in results
     )
     details["sec_financing_source_current"] = sec_current
+    details["cash_runway_minimum_months"] = MIN_MONTHS
+    details["cash_runway_passing_count"] = sum(runway_passes(row) for row in results)
+    details["cash_runway_unverified_count"] = sum(
+        str(row.get("Cash runway gate") or "").startswith("REVIEW") for row in results)
     details["tracking_trigger"] = "VERIFIED_SUCCESSFUL_PHASE3_RESULTS_NOT_TRIAL_END_DATE"
     details["trade_exit_days_before_pdufa"] = TRADE_EXIT_DAYS_BEFORE_PDUFA
     details["last_eligible_entry_days_before_pdufa"] = MIN_NEW_ENTRY_DAYS
