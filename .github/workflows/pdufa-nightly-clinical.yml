@@ -1,6 +1,6 @@
 name: PDUFA Nightly Clinical Scans
 
-# Nightly 8:30 PM Pacific start is dispatched by the DST-aware Pacific scheduler.
+# Daily 1:00 PM Pacific start is dispatched by the DST-aware Pacific scheduler.
 # Ad-hoc workflow_dispatch remains available; only one clinical scan runs at a time.
 on:
   workflow_dispatch:
