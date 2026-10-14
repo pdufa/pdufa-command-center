@@ -76,7 +76,7 @@ def stock_checkboxes(row, states, *, namespace="gem"):
         x = states.get(key, {})
         st.checkbox(label + " — " + x.get("status", "NOT VERIFIED"),
                     value=x.get("checked") is True, disabled=True,
-                    key=f"{namespace}_stock_{uid}_{key}")
+                    key=f"{namespace}_stock_{uid}_{key}_{int(x.get('checked') is True)}")
         st.caption(x.get("detail", "Evidence not linked"))
     with st.expander("SOURCE-OBSERVED UMBRELLA + ALL OPTIONAL RESEARCH CHECKS",
                      expanded=False):
@@ -91,7 +91,7 @@ def stock_checkboxes(row, states, *, namespace="gem"):
             )
             st.checkbox(label + " — " + x.get("status", "NOT VERIFIED"),
                         value=checked, disabled=True,
-                        key=f"{namespace}_stock_{uid}_{key}")
+                        key=f"{namespace}_stock_{uid}_{key}_{int(checked)}")
             st.caption(x.get("detail", "Source not verified"))
 
 
