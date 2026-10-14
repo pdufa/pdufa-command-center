@@ -2918,8 +2918,14 @@ def render_pre_phase3():
         scored_pilots = selected.loc[
             pd.to_numeric(selected["Preliminary clinical score /100"], errors="coerce").between(0, 100)
         ].sort_values("Preliminary clinical score /100", ascending=False).head(3)
-        if not scored_pilots.empty:
-            st.markdown("### DATED CLINICAL RESEARCH PILOT SCORES")
+        st.markdown("### DATED CLINICAL RESEARCH PILOT SCORES")
+        if scored_pilots.empty:
+            st.info(
+                "NO CURRENT SOURCE-DATED PILOT SCORES — the dated clinical evidence "
+                "is unavailable, expired, or excluded by the selected filters. "
+                "Scores remain blank; no Phase 3 success or trade readiness is inferred."
+            )
+        else:
             st.caption(
                 "Research judgments only; NOT Phase 3 success probabilities, "
                 "FDA approval probabilities, or ENTRY READY signals. "
