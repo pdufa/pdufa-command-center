@@ -27,6 +27,8 @@ jobs:
         run: python -m py_compile app.py scripts/fda_decision_engine.py scripts/fda_regulatory_signal_monitor.py scripts/fda_pdufa_extension_tracker.py scripts/fda_directional_100pct.py scripts/fda_v3_historical_backtest.py scripts/complete_fda_v3_historical_review.py scripts/fda_100_on_100_gate.py scripts/historical_decisions.py scripts/strict_historical_review.py scripts/recheck_events.py
       - name: Reproduce all 126 Strict evaluations
         run: python scripts/fda_100_on_100_gate.py
+      - name: Validate all GEM source ledgers and exact-program evidence
+        run: python scripts/validate_gem_source_ledgers.py
       - name: Validate data and display schema
         run: python smoke_test.py
       - name: Verify historical assessment integrity
