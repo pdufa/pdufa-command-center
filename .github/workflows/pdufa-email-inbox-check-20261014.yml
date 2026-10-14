@@ -1,0 +1,41 @@
+name: PDUFA One-Time Inbox Delivery Check 2026-10-14
+# One-shot test of self-addressed Gmail inbox labeling after correcting IMAP escaping.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-email-inbox-check-20261014.yml'
+permissions:
+  contents: read
+jobs:
+  check-inbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Submit one notification and verify Gmail Inbox label
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from scripts.scan_email import EmailSettings, send_email
+          settings = EmailSettings.from_env()
+          result = send_email(
+              settings,
+              "[PDUFA] INBOX VERIFICATION TEST - 2026-10-14",
+              "One-time inbox routing verification for your PDUFA scan notifications. No scan was started by this test."
+          )
+          print("SMTP submission:", result["status"])
+          print("Inbox label status:", result["inbox_status"])
+          if result["inbox_status"] != "INBOX_LABEL_ACCEPTED":
+              raise SystemExit("Gmail Inbox routing was not confirmed. SMTP may have accepted a test; do not retry blindly.")
+          PY
