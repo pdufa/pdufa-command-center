@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "status": "PRIMARY_FINANCIAL_EVIDENCE_FOUND_MANUAL_VALIDATION_REQUIRED",
+  "scoring_not_modified": true,
+  "trade_entry_authorized": false,
+  "items": [
+    {
+      "ticker": "BLTE",
+      "event_key": "BLTE|TINLAREBANT_STGD1_20270212",
+      "source": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926095218/tm2623018d1_ex99-1.htm",
+      "sec_accession": "0001104659-26-095218",
+      "form": "6-K Exhibit 99.1",
+      "statement_as_of": "2026-06-30",
+      "native_currency": "USD",
+      "reported_cash_equivalents_approx": 279900000,
+      "reported_treasury_investments_approx": 500100000,
+      "claim": "Issuer SEC-furnished exhibit reports approximate cash equivalents and Treasury holdings, amounts in USD; cash figure is source-backed, not a same-period runway determination",
+      "runway_months": null,
+      "limitation": "Six-month net loss is not an operating cash-flow statement. A same-period cash burn figure and its classification remain unverified. Do not count Treasury investments as unrestricted cash without maturity/liquidity analysis.",
+      "source_validation": "PUBLIC_SEC_PRIMARY_DISCOVERY_NOT_CANONICAL_VERIFIED"
+    },
+    {
+      "ticker": "PHVS",
+      "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
+      "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526345702/phvs-ex99_3.htm",
+      "sec_accession": "0001193125-26-345702",
+      "form": "6-K Exhibit 99.3",
+      "statement_as_of": "2026-06-30",
+      "native_currency": "EUR",
+      "cash_and_cash_equivalents": 318282453,
+      "net_operating_cash_used_six_months": 86566932,
+      "historical_burn_implied_runway_months": 22.1,
+      "formula": "(€318282453 / €86566932) × 6 months",
+      "claim": "Unaudited same-currency IFRS interim statements show period-end euro cash and prior-six-month euro operating cash used, allowing a basic historical-rate ratio",
+      "limitation": "EUR is not USD. This is a backward-looking rough runway measure, not a current USD liquidity verification or a forward cash forecast; future financing, spending changes and restrictions are not modeled.",
+      "source_validation": "PUBLIC_SEC_PRIMARY_DISCOVERY_NOT_CANONICAL_VERIFIED"
+    }
+  ],
+  "next_steps": "Review exact SEC filing accession and issuer identity; integrate currency-aware same-period cash-flow validation only with regression tests, and do not release either financial hold without independently reproducible source verification."
+}
