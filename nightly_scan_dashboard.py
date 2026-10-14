@@ -27,7 +27,7 @@ API = "https://api.github.com/repos/" + REPO
 WORKFLOW = "pdufa-scan-control.yml"
 AM_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pdufa_am_6am_results.json"
 LABELS = {"2": "#2 PIPELINE", "3": "#3 PRE3", "4": "#4 POST3",
-          "GEM": "BLOCK 4 — GEMS"}
+          "GEM": "BLOCK 4 — GEM"}
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -141,7 +141,7 @@ def render_am_results():
     gem = report.get("gem") or {}
     if gem.get("overnight_report_published"):
         st.caption(
-            "BLOCK 4 — GEMS: " + str(gem.get("status", "PARTIAL")) +
+            "BLOCK 4 — GEM: " + str(gem.get("status", "PARTIAL")) +
             " · Phase 3 posted results stored: " +
             _number(gem.get("stored_results")) +
             " · verified Phase 3 tracking: " +
@@ -153,12 +153,12 @@ def render_am_results():
             " · MANUAL REVIEW ONLY — NO TRADE APPROVAL"
         )
     else:
-        st.caption("BLOCK 4 — GEMS: latest overnight audit PENDING / STALE; "
+        st.caption("BLOCK 4 — GEM: latest overnight audit PENDING / STALE; "
                    "no new results or trade eligibility inferred.")
     gem_run_url = gem.get("run_url") if gem.get("overnight_report_published") else None
     if isinstance(gem_run_url, str) and gem_run_url.startswith(
             "https://github.com/" + REPO + "/actions/runs/"):
-        st.link_button("OPEN OVERNIGHT GEMS SCAN", gem_run_url)
+        st.link_button("OPEN OVERNIGHT GEM SCAN", gem_run_url)
     for label, url in links:
         if isinstance(url, str) and url.startswith(
             "https://github.com/" + REPO + "/actions/runs/"
@@ -378,7 +378,7 @@ def _run_request(action, scan, token):
         dispatch_action(action, scan, token)
         latest_run.clear()
         st.success("GitHub accepted " + action.replace("_", " ") +
-                   (" for " + LABELS.get(scan, scan) if scan != "ALL" else " for #2/#3/#4 and GEMS") +
+                   (" for " + LABELS.get(scan, scan) if scan != "ALL" else " for #2/#3/#4 and GEM") +
                    ". Results appear after the workflow finishes and publishes its audit.")
     except urllib.error.HTTPError as exc:
         st.error("GitHub rejected the request (HTTP " + str(exc.code) +
@@ -512,7 +512,7 @@ def _number(v):
 
 def render_nightly_scan_report():
     # Single SCANS home for live GitHub execution health, historical results,
-    # required evidence gaps, existing GEMS, and manual controls.
+    # required evidence gaps, existing GEM, and manual controls.
     render_am_results()
     st.divider()
     render_scan_status(published_source_report)
@@ -520,7 +520,7 @@ def render_nightly_scan_report():
     render_gem_scans()
     st.divider()
     st.markdown("## NIGHTLY SCAN REPORT")
-    st.caption("Four scan blocks: #2 PIPELINE / #3 PRE3 / #4 POST3 / BLOCK 4 GEMS. Each has automatic collection, audit details and manual verification/recheck/rescan controls. A finished workflow is not full FDA, SEC, issuer or market verification.")
+    st.caption("Four scan blocks: #2 PIPELINE / #3 PRE3 / #4 POST3 / BLOCK 4 GEM. Each has automatic collection, audit details and manual verification/recheck/rescan controls. A finished workflow is not full FDA, SEC, issuer or market verification.")
     render_extended_source_report()
 
     report, loading_note = published_report()
@@ -654,7 +654,7 @@ def render_nightly_scan_report():
         if st.button("RESCAN SELECTED", disabled=not authorized,
                      use_container_width=True, key="nightly_rescan_selected"):
             _run_request("RESCAN_ALL", scan_choice, token)
-    st.caption("VERIFY SAVED SOURCES runs the established ALL clinical-archive audit for #2/#3/#4, or the GEM-only saved-source audit when GEMS is selected. REVERIFY and RESCAN honor the selected target. All requests run on GitHub Actions: acceptance is not completion.")
+    st.caption("VERIFY SAVED SOURCES runs the established ALL clinical-archive audit for #2/#3/#4, or the GEM-only saved-source audit when GEM is selected. REVERIFY and RESCAN honor the selected target. All requests run on GitHub Actions: acceptance is not completion.")
     st.divider()
     # Keep the existing read-only Gmail/GitHub audit accessible after the
     # former top-level SCANS page was removed. The function applies its own
