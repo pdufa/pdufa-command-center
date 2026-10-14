@@ -274,6 +274,11 @@ def build_gem_scans(root="data", as_of=None):
                 str(record.get("Entry qualification") or "").startswith("RED WINDOW")):
             item["PDUFA evidence /15"] = 15
         event = events.get(str(record.get("Exact event") or "").strip())
+        # Preserve exact-program raw evidence for the GEM three-level score audit.
+        # These fields explain existing arithmetic and never create new gates.
+        item["GEM clinical readout status"] = event.get("phase3_status", "") if event else ""
+        item["GEM clinical conflict flag"] = event.get("conflict_flag", "") if event else ""
+        item["GEM financing dilution flag"] = event.get("new_dilution_flag", "") if event else ""
         status = phase3_tracking_state(item, event, source_status["feed_current"], source_status.get("as_of"))
         item["Phase 3 tracking"] = status
         item["Phase 3 result date (source)"] = (
