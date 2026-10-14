@@ -139,6 +139,16 @@ def render_gem_scan_block_status(report=None, run=None):
             f"SEC runway recheck: {runway.get('collector_status', 'NOT VERIFIED')} "
             f"({runway.get('collected_count', 0)}/{runway.get('target_count', 0)} targeted)."
         )
+        hedge = report.get("hedge_fund_13f") or {}
+        st.caption(
+            "Specialist-manager SEC 13F: "
+            f"{hedge.get('managers_complete', 0)}/{hedge.get('managers_targeted', 0)} "
+            "selected manager filings collected; "
+            f"{hedge.get('matched_programs', 0)} matched GEM rows; "
+            f"{hedge.get('with_manager_accumulation', 0)} with increases. "
+            f"Status: {hedge.get('collector_status', 'NOT VERIFIED')}. "
+            "Quarterly delayed holdings, never a third entry benchmark."
+        )
         st.caption("Last audit " + str(report.get("generated_at_utc") or "unknown") +
                    " · action " + str(report.get("action") or "UNKNOWN") +
                    " · archive integrity " + str(report.get("artifact_integrity") or "NOT CHECKED") +
