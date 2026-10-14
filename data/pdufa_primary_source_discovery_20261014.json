@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "as_of_date": "2026-10-14",
+  "source_scan_run_id": "38575279522",
+  "status": "PRIMARY_SOURCES_FOUND_AWAITING_INDEPENDENT_COLLECTOR_ADJUDICATION",
+  "newly_identified_items": 12,
+  "findings": [
+    {
+      "ticker": "ANAB",
+      "event_key": "ANAB|IMSIDOLIMAB_GPP_20261212",
+      "source_family": "FDA",
+      "claim": "PDUFA_TARGET",
+      "date": "2026-12-12",
+      "source_type": "issuer_release",
+      "primary_url": "https://ir.anaptysbio.com/news-releases/news-release-details/anaptys-announces-first-quarter-2026-financial-results-and",
+      "finding": "ANAB identifies imsidolimab target action date Dec 12, 2026 for generalized pustular psoriasis; product is out-licensed to Vanda",
+      "remaining": "Exact-event primary link recheck; reflect that ANAB is an economic rights/royalty entity, not the clinical sponsor"
+    },
+    {
+      "ticker": "EXEL",
+      "event_key": "EXEL|ZANZALINTINIB_CRC",
+      "source_family": "FDA",
+      "claim": "PDUFA_TARGET",
+      "date": "2026-12-03",
+      "source_type": "issuer_release",
+      "primary_url": "https://ir.exelixis.com/news-releases/news-release-details/exelixis-announces-us-fda-accepted-new-drug-application",
+      "finding": "Exelixis reports FDA target Dec 3, 2026 for zanzalintinib plus atezolizumab in metastatic colorectal cancer",
+      "remaining": "Exact co-therapy, indication and reported target date parser check"
+    },
+    {
+      "ticker": "HRMY",
+      "event_key": "HRMY|PITOLISANT_GR_20270401",
+      "source_family": "FDA",
+      "claim": "PDUFA_TARGET",
+      "date": "2027-04-01",
+      "source_type": "sec_filed_issuer_release",
+      "primary_url": "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm",
+      "finding": "Harmony's Aug 4 2026 SEC exhibit reports pitolisant GR target April 1, 2027; distinct from pitolisant HD",
+      "remaining": "Narrow line association and indication narcolepsy"
+    },
+    {
+      "ticker": "SVRA",
+      "event_key": "SVRA|MOLBREEVI_PAP_20261122",
+      "source_family": "FDA",
+      "claim": "PDUFA_TARGET",
+      "date": "2026-11-22",
+      "source_type": "issuer_release",
+      "primary_url": "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "finding": "Savara reports MOLBREEVI BLA target Nov 22, 2026",
+      "remaining": "Confirm indication and any amended FDA schedule; release is not an FDA outcome"
+    },
+    {
+      "ticker": "VTRS",
+      "event_key": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
+      "source_family": "ISSUER",
+      "claim": "PRIMARY_RELEASE",
+      "date": "2026-02-25",
+      "source_type": "issuer_release",
+      "primary_url": "https://investor.viatris.com/news-releases/news-release-details/fda-accepts-viatris-supplemental-new-drug-application-mr-141",
+      "finding": "Dated Viatris issuer release reports MR-141 phentolamine presbyopia sNDA and Oct 17 PDUFA goal",
+      "remaining": "Confirm release dateline, program identity and company match in source verification"
+    },
+    {
+      "ticker": "VTRS",
+      "event_key": "VTRS|MR107A02_ACUTEPAIN_20261227",
+      "source_family": "ISSUER",
+      "claim": "PRIMARY_RELEASE",
+      "date": "2026-05-18",
+      "source_type": "issuer_release",
+      "primary_url": "https://investor.viatris.com/news-releases/news-release-details/us-fda-accepts-viatris-new-drug-application-fast-acting/",
+      "finding": "Dated Viatris issuer release reports MR-107A-02 fast-acting meloxicam acute pain NDA Dec 27 PDUFA goal",
+      "remaining": "Independently validate May 18 dated release against exact program"
+    },
+    {
+      "ticker": "HRMY",
+      "event_key": "HRMY|PITOLISANT_GR_20270401",
+      "source_family": "ISSUER",
+      "claim": "PRIMARY_RELEASE",
+      "date": "2026-08-04",
+      "source_type": "sec_filed_issuer_release",
+      "primary_url": "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm",
+      "finding": "Harmony SEC-filed BusinessWire release dated Aug 4, 2026 documents pitolisant GR and PDUFA target",
+      "remaining": "Exact dated release parser"
+    },
+    {
+      "ticker": "BMY",
+      "event_key": "BMY|MEZIGDOMIDE_RRMM_20270513",
+      "source_family": "ISSUER",
+      "claim": "PRIMARY_RELEASE",
+      "date": "2026-07-13",
+      "source_type": "issuer_release",
+      "primary_url": "https://investors.bms.com/iframes/press-releases/press-release-details/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx",
+      "finding": "BMS press release July 13 2026 ties mezigdomide plus carfilzomib/dexamethasone in RRMM to May 13, 2027 target",
+      "remaining": "Confirm combination drug order and slash-separated indication match"
+    },
+    {
+      "ticker": "BLTE",
+      "event_key": "BLTE|TINLAREBANT_STGD1_20270212",
+      "source_family": "FINANCIAL",
+      "claim": "CASH_AND_RUNWAY",
+      "date": "2026-06-30",
+      "source_type": "sec_filed_financial_exhibit",
+      "primary_url": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926095218/tm2623018d1_ex99-1.htm",
+      "finding": "Belite SEC exhibit includes June 30 2026 USD interim balance sheet; cash $279.9m and additional treasury investments disclosed in issuer release",
+      "remaining": "Validate matching cash and operating cash flow in a single SEC reporting period before computing spendable-cash runway"
+    },
+    {
+      "ticker": "PHVS",
+      "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
+      "source_family": "FINANCIAL",
+      "claim": "CASH_AND_RUNWAY",
+      "date": "2026-06-30",
+      "source_type": "sec_filed_financial_statements",
+      "primary_url": "https://ir.pharvaris.com/node/12571/html",
+      "finding": "Pharvaris SEC-linked 6-K reports EUR 318,282,453 cash and EUR 86,566,932 operating cash used in H1 2026",
+      "remaining": "Currency EUR, not USD. Requires currency-aware IFRS cash and cash burn model; NEVER silently convert or certify a USD fact"
+    },
+    {
+      "ticker": "CYTK",
+      "event_key": "CYTK|MYQORZO_HCM_20261114",
+      "source_family": "SEC",
+      "claim": "PROVISIONAL_FINANCING_CLOSE",
+      "date": "2026-05-08",
+      "source_type": "issuer_release",
+      "primary_url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Closing-of-Public-Offering-of-Common-Stock-and-Full-Exercise-of-the-Underwriters-Option-to-Purchase-Additional-Shares-for-Gross-Proceeds-of-805-Million/default.aspx",
+      "finding": "Cytokinetics reports closing public equity deal of $805 million gross on May 8, 2026",
+      "remaining": "Locate matching SEC document with explicit close and adjudicate distinct post-Phase-3 two-financing sequence"
+    },
+    {
+      "ticker": "PHVS",
+      "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
+      "source_family": "SEC",
+      "claim": "PROVISIONAL_FINANCING_CLOSE",
+      "date": "2026-05-11",
+      "source_type": "issuer_release",
+      "primary_url": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-closing-1323-million-underwritten-offering",
+      "finding": "Pharvaris issuer announced $132.3m gross equity offering closed May 2026",
+      "remaining": "Individually dated transaction only; first versus second post-trial funding sequence is not established"
+    }
+  ],
+  "scope": "Exact issuer/program research leads, not canonical verification",
+  "canonical_verified_findings_unchanged": true,
+  "prior_required_unresolved": 45,
+  "gem_entry_authorized": false,
+  "source_constraints": [
+    "Primary-source identity required: event key, company, program, indication, dated claim.",
+    "Issuer-stated PDUFA target is NOT a signed FDA decision.",
+    "A financing announced closed is not two independent post-Phase-3 funded transactions.",
+    "EUR interim cash is NOT a verified USD cash fact.",
+    "A new source link does not close the canonical review queue until independently rechecked."
+  ],
+  "notes": "Official issuer source URLs were also mapped into config/issuer_sources.json for Viatris, BMS, Harmony, Exelixis and Savara; a new full source workflow was automatically launched after the configuration change."
+}
