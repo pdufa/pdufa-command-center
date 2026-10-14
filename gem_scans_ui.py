@@ -1,7 +1,6 @@
 """Read-only Streamlit GEM scanner surface inside the existing SCANS sub-tab."""
 from __future__ import annotations
 
-import html
 import json
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
+from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
 from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
@@ -34,31 +34,6 @@ FILES = (
     "gem_hedge_fund_managers.csv",
     "sec_step4_snapshots.sqlite3",
 )
-STAGE_COLUMNS = {
-    "Phase 3": (
-        "Phase 3 evidence", "Clinical evidence /30", "Trading setup /20",
-        "Market activity /10", "Cash runway (months)", "Cash runway gate",
-        "NCT ID", "Phase 3 source",
-        "Days to PDUFA",
-    ),
-    "Post-Financing": (
-        "2nd Financing Completed", "Financing #2", "Financing evidence /20",
-        "Trading setup /20", "Market activity /10", "Cash runway (months)",
-        "Cash runway gate", "Cash runway reason", "Cash runway source",
-        "Financing source",
-        "Days to PDUFA",
-    ),
-    "PDUFA": (
-        "PDUFA verification", "Days to PDUFA", "PDUFA date",
-        "PDUFA evidence /15", "Clinical evidence /30",
-        "Financing evidence /20", "Cash runway (months)",
-        "Cash runway gate", "Cash runway reason", "Cash runway source",
-        "Cash runway as of", "Cash runway trend", "Cash runway previous (months)",
-        "GEM 3 financial alert", "GEM 3 dilution status",
-        "PDUFA source",
-    ),
-}
-
 
 @st.cache_data(ttl=120, show_spinner=False)
 def _saved_gem_scans(root, signature, pacific_day):
@@ -72,55 +47,8 @@ def _discovery(root, signature, pacific_day):
     return discover_phase3_results(root, as_of=pacific_day)
 
 
-def _gems_table(items):
-    """Accessible, escaped two-row GEMS header with its three subcolumns."""
-    style = """<style>
-    .gems-scroll {overflow-x:auto;border:2px solid #161616;border-radius:8px;background:#fff}
-    .gems-table {border-collapse:collapse;width:100%;min-width:640px;font-size:13px;color:#101010}
-    .gems-table th,.gems-table td {border:1px solid #999;padding:7px 9px;text-align:center;white-space:nowrap}
-    .gems-table thead th {background:#e7f5e9;color:#111;font-weight:800}
-    .gems-table thead tr:first-child th:first-child {background:#196b42;color:#fff}
-    .gems-table td.ticker {font-weight:800}
-    .gems-table td.ranked {color:#08652e;font-weight:800}
-    </style>"""
-    header = (
-        '<div class="gems-scroll"><table class="gems-table">'
-        '<thead><tr><th colspan="3">GEMS</th>'
-        '<th rowspan="2">Ticker</th><th rowspan="2">Drug / program</th>'
-        '<th rowspan="2">Priority rank</th><th rowspan="2">Priority /100</th>'
-        '<th rowspan="2">13F points /10</th>'
-        '<th rowspan="2">Runway (mo)</th><th rowspan="2">Runway status</th>'
-        '<th rowspan="2">Two-benchmark status</th>'
-        '</tr><tr><th>Phase 3</th><th>Post-Financing</th><th>PDUFA</th>'
-        '</tr></thead><tbody>'
-    )
-    rows = []
-    for item in items:
-        cells = []
-        for stage in STAGES:
-            value = str(item.get(stage + " GEM", "—"))
-            cls = ' class="ranked"' if value != "—" else ""
-            cells.append(f"<td{cls}>{html.escape(value)}</td>")
-        ticker = html.escape(str(item.get("Ticker") or ""))
-        drug = html.escape(str(item.get("Drug") or ""))
-        runway = item.get("Cash runway (months)")
-        runway_label = html.escape(str(runway)) if runway is not None else "—"
-        runway_status = html.escape(str(item.get("Cash runway gate") or "REVIEW"))
-        gate = html.escape(str(item.get("Two-benchmark entry status") or "WATCH"))
-        rank = item.get("Two-benchmark rank")
-        rank_label = html.escape(str(rank)) if rank is not None else "—"
-        score = item.get("Two-benchmark priority /100")
-        score_label = html.escape(str(score)) if score is not None else "—"
-        rows.append("<tr>" + "".join(cells) +
-                    f'<td class="ticker">{ticker}</td><td>{drug}</td>'
-                    f'<td>{rank_label}</td><td>{score_label}</td>'
-                    f'<td>{html.escape(str(item.get("Hedge-fund accumulation /10", 0)))}</td>'
-                    f'<td>{runway_label}</td><td>{runway_status}</td><td>{gate}</td></tr>')
-    return style + header + "".join(rows) + "</tbody></table></div>"
-
-
 def render_gem_scans(root="data"):
-    st.markdown("## GEM CANDIDATES — TWO BENCHMARKS, THEN RANK")
+    st.markdown("## GEM — MASTER STOCK LIST")
     st.caption(
         "The only two positive entry benchmarks are (1) dated, source-verified "
         "released Phase 3 results for the exact program, and (2) verified close "
@@ -210,58 +138,63 @@ def render_gem_scans(root="data"):
     m1.metric("Phase 3 readout verified", status.get("two_benchmark_phase3_count", 0))
     m2.metric("Second financing closed", status.get("two_benchmark_financing_count", 0))
     m3.metric("Both benchmarks met", status.get("two_benchmark_candidate_count", 0))
-    st.markdown("### PRIORITIZED TRADING CANDIDATES")
+    st.markdown("### GEM — UNIFIED MASTER LIST")
     st.caption(
-        "Only stocks passing BOTH event benchmarks are ranked. The /100 score "
-        "uses Phase 3 quality (30), runway (20), dilution (15), "
-        "price/volume activity (20), PDUFA timing (5) and 13F specialist "
-        "fund accumulation (10). Missing evidence "
-        "earns zero points within that factor, NOT automatic exclusion. "
-        "Risks may still make a candidate unsuitable; this is manual review only."
+        "ONE stock-program list for Phase 3 → Post-Financing → PDUFA. "
+        "Only the two verified event benchmarks unlock GEM eligibility and "
+        "the 100-point priority rank. The GEM Stage is a descriptive research "
+        "milestone, NOT an extra eligibility condition. The PDUFA stage means "
+        "a verified date within 90 calendar days; the trading exit warning "
+        "begins at PDUFA −3. Other risk factors only rank or warn."
     )
-    ordered = [
-        "Two-benchmark rank", "Ticker", "Drug", "Indication",
-        "Benchmark 1 — Phase 3 released", "Benchmark 2 — Financing #2 closed",
-        "Two-benchmark priority /100",
-        "Phase 3 quality /30", "Financial runway /20",
-        "Dilution overhang /15", "Trading activity /20", "PDUFA timing /5",
-        "Hedge-fund accumulation /10", "Hedge-fund signal",
-        "Hedge-fund managers holding", "Hedge-fund managers adding",
-        "Hedge-fund managers reducing", "Hedge-fund managers new",
-        "Hedge-fund quarter end", "Hedge-fund filed as of",
-        "Hedge-fund position details", "Hedge-fund source links",
-        "Insider Form 4 signal", "Insider open-market purchases",
-        "Insider open-market sales", "Insider purchase amount USD",
-        "Insider sale amount USD", "Insider source links",
-        "Cash runway (months)", "Cash runway trend", "Days to PDUFA",
-        "Verified 2nd financing close date", "Two-benchmark risk flags",
-        "Exact event", "Phase 3 source", "Financing source",
+    master_rows = build_gem_master_list(items)
+    gem_view = st.radio(
+        "GEM list filter",
+        ("All GEM programs", "Entry-eligible only", "Watch / review"),
+        horizontal=True, key="gem_master_filter",
+    )
+    f1, f2 = st.columns([2, 1])
+    with f1:
+        gem_search = st.text_input(
+            "Find GEM ticker, drug, indication or event",
+            value="", key="gem_master_search",
+        ).strip().casefold()
+    with f2:
+        stage_filter = st.selectbox(
+            "GEM stage", ("All stages", "Phase 3", "Post-Financing",
+                         "PDUFA", "Research / Unverified"),
+            key="gem_master_stage",
+        )
+    display_rows = [
+        row for row in master_rows
+        if ((gem_view == "All GEM programs")
+            or (gem_view == "Entry-eligible only" and row["_eligible"])
+            or (gem_view == "Watch / review" and not row["_eligible"]))
+        and (stage_filter == "All stages" or row["GEM Stage"] == stage_filter)
+        and (not gem_search or any(gem_search in str(row.get(field) or "").casefold()
+             for field in ("Ticker", "Drug", "Indication", "Exact Program / Event")))
     ]
-    if qualified:
-        qtable = pd.DataFrame(qualified).reindex(columns=ordered)
-        st.dataframe(qtable.head(100), use_container_width=True, hide_index=True)
-        st.download_button(
-            "EXPORT RANKED TWO-BENCHMARK CANDIDATES",
-            qtable.to_csv(index=False).encode("utf-8"),
-            file_name=f"gem_two_benchmark_ranked_{day:%Y%m%d}.csv",
-            mime="text/csv", key="gem_two_benchmark_export",
-        )
-    else:
+    master_table = pd.DataFrame(display_rows).reindex(columns=MASTER_COLUMNS)
+    st.caption(
+        f"Showing {min(len(master_table), 250):,} of {len(master_table):,} "
+        f"matching GEM programs ({len(master_rows):,} total). "
+        "Eligible records sort by GEM rank first; watch and unverified "
+        "programs remain visible below. A blank rank is NOT a zero score. "
+        "Use the export for ALL matching rows."
+    )
+    st.dataframe(master_table.head(250), use_container_width=True,
+                 hide_index=True)
+    st.download_button(
+        "EXPORT GEM MASTER LIST",
+        master_table.to_csv(index=False).encode("utf-8"),
+        file_name=f"gem_master_{day:%Y%m%d}.csv",
+        mime="text/csv", key="gem_master_export",
+    )
+    if not qualified:
         st.info(
-            "No program is currently source-verified as having BOTH a released "
-            "Phase 3 readout and a separate second post-readout financing close. "
-            "This is not a conclusion about unreviewed companies."
-        )
-    with st.expander("WATCHLIST — WORKING TOWARD THE TWO BENCHMARKS", expanded=False):
-        remaining = [row for row in items if not row.get("Two-benchmark eligible")]
-        waiting_columns = [
-            "Ticker", "Drug", "Indication", "Benchmark 1 — Phase 3 released",
-            "Benchmark 2 — Financing #2 closed", "Two-benchmark risk flags",
-            "Exact event",
-        ]
-        st.dataframe(
-            pd.DataFrame(remaining).reindex(columns=waiting_columns).head(250),
-            use_container_width=True, hide_index=True,
+            "No saved program currently has BOTH required independently verified "
+            "events. The complete GEM watch/review universe remains visible "
+            "above; missing evidence is never treated as a failed trial."
         )
     st.markdown("### HEDGE-FUND OWNERSHIP — SEC 13F QUARTERLY EVIDENCE")
     h1, h2 = st.columns(2)
@@ -426,49 +359,10 @@ def render_gem_scans(root="data"):
         "readout does not qualify. Tracking starts BEFORE financing #2 "
         "closes and is distinct from trade-entry approval."
     )
-    early = [
-        record for record in items
-        if record.get("Phase 3 tracking", "").startswith("TRACKING")
-    ]
-    with st.expander(
-        "EARLY GEM WATCH — VERIFIED PHASE 3 BEFORE SECOND FINANCING",
-        expanded=True,
-    ):
-        waiting = [
-            record for record in early
-            if record.get("2nd Financing Completed") != "YES — VERIFIED (HISTORICAL)"
-        ]
-        if waiting:
-            fields = [
-                "Ticker", "Drug", "Indication", "NCT ID",
-                "Phase 3 result date (source)", "Phase 3 tracking",
-                "Financing watch", "Financing cycle (separate)",
-                "GEM trade entry gate", "Phase 3 GEM", "Days to PDUFA", "Phase 3 source",
-                "Exact event",
-            ]
-            st.dataframe(
-                pd.DataFrame(waiting).reindex(columns=fields),
-                use_container_width=True, hide_index=True,
-            )
-        else:
-            st.info(
-                "No currently source-verified successful Phase 3 programs "
-                "awaiting independently verified second-financing closure. "
-                "This is not evidence that no such programs exist outside "
-                "the saved scan universe."
-            )
-        st.caption(
-            "Early watch is read-only and refreshes with the saved clinical "
-            "and financing feeds. It does not execute trades or trigger an "
-            "independent continuous SEC search. A blank Phase 3 GEM rank "
-            "means some ranking gates remain incomplete."
-        )
-    st.warning(
-        "MANDATORY ENTRY RULE: Phase 3 and financing candidates are WATCH ONLY "
-        "until the second distinct post-readout financing has actually CLOSED "
-        "and its evidence has been verified for the exact program. An offering "
-        "announcement, pricing, active financing or Phase 3 GEM rank is NEVER an entry signal. "
-        "The 12-month cash runway gate is separately mandatory for GEM 2/3."
+    st.caption(
+        "Phase 3 watch programs stay in the ONE GEM master table; they are "
+        "never promoted to entry-ready by a Phase 3 readout alone. The "
+        "second separate financing must be verified closed."
     )
     st.markdown("### BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2")
     st.caption(
@@ -568,96 +462,49 @@ def render_gem_scans(root="data"):
             file_name=f"gem_readiness_audit_{day:%Y%m%d}.json",
             mime="application/json", key="gem_readiness_export",
         )
-    cols = st.columns(3)
-    for col, stage in zip(cols, STAGES):
-        col.metric(stage + " qualified", counts[stage]["qualified"])
-        col.caption(f"{counts[stage]['review']:,} require review")
-
-    strict = [
-        item for item in items if item.get("GEM strict shortlist rank") is not None
-    ]
-    st.markdown("### OPTIONAL — ADDITIONAL CONSERVATIVE RESEARCH FILTERS")
-    st.metric("Meeting every optional research-quality filter", len(strict))
-    st.caption(
-        "This is the old, stricter comparison screen. It also considers safety, "
-        "price base, volume, dilution, cash runway >=12 months, feed freshness "
-        "and verified future PDUFA timing. NONE of these are additional entry "
-        "benchmarks for the two-benchmark priority list above. Failing this "
-        "optional research screen does not erase two-benchmark eligibility. "
-        "Both screens are research, not orders or return predictions."
-    )
-    if not strict:
-        st.info(
-            "No candidate meets every OPTIONAL conservative filter. "
-            "Check the separate two-benchmark priority list above for "
-            "stocks that already met the selected entry benchmarks."
+    with st.expander("OPTIONAL STAGE-SPECIFIC RESEARCH CHECKS — AUDIT ONLY",
+                     expanded=False):
+        st.caption(
+            "Legacy Phase 3, Post-Financing and PDUFA scorecards remain "
+            "available in the underlying source audit. They do NOT create "
+            "three trading lists or add requirements to GEM eligibility. "
+            "The sole GEM /100 trading priority is shown in the master list."
         )
-    else:
-        shortlisted = sorted(strict, key=lambda row: row["GEM strict shortlist rank"])
-        shortlist_columns = [
-            "GEM strict shortlist rank", "Ticker", "Drug", "Indication",
-            "Phase 3 GEM", "Post-Financing GEM", "PDUFA GEM",
-            "Verified 2nd financing close date", "Cash runway (months)",
-            "Cash runway gate", "Cash runway source", "Cash runway as of",
-            "Cash runway trend", "GEM 3 financial alert", "Days to PDUFA",
-            "PDUFA date", "Planned exit (-3 days)",
-            "GEM ALL ENTRY GATES", "GEM trade entry gate", "Exact event",
-            "Phase 3 source", "Financing source", "PDUFA source",
-        ]
-        strict_table = pd.DataFrame(shortlisted).reindex(columns=shortlist_columns)
-        st.dataframe(strict_table.head(25), use_container_width=True, hide_index=True)
-        st.download_button(
-            "EXPORT OPTIONAL CONSERVATIVE RESEARCH SUBSET",
-            strict_table.to_csv(index=False).encode("utf-8"),
-            file_name=f"gem_strict_all_gates_{day:%Y%m%d}.csv",
-            mime="text/csv", key="gem_strict_shortlist_export",
+        for stage in STAGES:
+            st.write(
+                f"{stage}: {counts[stage]['qualified']:,} with complete optional "
+                f"research-stage gates; {counts[stage]['review']:,} requiring review."
+            )
+            st.caption(
+                "Optional historical rubric: " +
+                "; ".join(f"{column}: {points} points"
+                          for column, points in WEIGHTS[stage].items())
+            )
+            with st.expander(stage + " — optional qualifier definitions",
+                             expanded=False):
+                for index, qualifier in enumerate(SCAN_QUALIFIERS[stage], 1):
+                    st.write(f"{index}. {qualifier}")
+        st.write(
+            "Programs meeting every old, stricter research filter:",
+            status.get("strict_entry_gate_shortlist_count", 0),
         )
-    mode = st.radio(
-        "GEMS research view",
-        ("Two benchmarks completed", "Qualified in advanced research rubric",
-         "All candidates, including watch/review"),
-        horizontal=True, key="gem_scan_row_mode",
-    )
-    eligible = [
-        item for item in items
-        if any(item[stage + " rank"] is not None for stage in STAGES)
-    ]
-    shown = (qualified if mode == "Two benchmarks completed" else
-             eligible if mode.startswith("Qualified in advanced") else items)
-    shown = sorted(
-        shown,
-        key=lambda r: (
-            r.get("Two-benchmark rank") or 1000000,
-            min((r[stage + " rank"] for stage in STAGES
-                 if r[stage + " rank"] is not None), default=1000000),
-            str(r.get("Ticker") or ""),
-            str(r.get("Exact event") or ""),
-        ),
-    )
-    if not eligible and mode != "Two benchmarks completed":
-        st.info(
-            "No candidates currently qualify in the optional advanced research rubric. "
-            "Check the separate two-benchmark candidates above."
+        st.caption(
+            "These are diagnostic gates, not the two-entry-benchmark GEM policy. "
+            "No separate qualified-stock list is generated here."
         )
-    if shown:
-        st.markdown(_gems_table(shown[:75]), unsafe_allow_html=True)
-        if len(shown) > 75:
-            st.caption(f"Showing the first 75 of {len(shown):,} candidates in the grouped GEMS display.")
-    else:
-        st.info("No candidates match the selected GEMS view.")
-
     st.caption(
         "Your planned exit remains three days before PDUFA. A decision date "
         "at or inside that boundary is a serious timing warning, rather than "
         "a third qualification benchmark. The separate legacy Stage 1 "
-        "workspace still has an older -7 entry filter; it is not the new "
+        "workspace still has an older -7 entry filter; it is not the "
         "two-benchmark GEM eligibility policy."
     )
     discrimination = gem_discrimination_audit(items, STAGES)
     with st.expander("GEM RANKING QUALITY — TIES & EVIDENCE LIMITS", expanded=False):
         st.dataframe(pd.DataFrame([
             {
-                "Scan": stage, "Qualified": discrimination[stage]["qualified"],
+                "Research stage": stage,
+                "Optional qualified": discrimination[stage]["qualified"],
                 "Distinct scores": discrimination[stage]["unique_scores"],
                 "Stocks tied on score": discrimination[stage]["tied_candidates"],
                 "Largest tie": discrimination[stage]["largest_tied_group"],
@@ -665,80 +512,10 @@ def render_gem_scans(root="data"):
             } for stage in STAGES
         ]), use_container_width=True, hide_index=True)
         st.caption(
-            "A high number of tied scores indicates that strict evidence gates "
-            "leave little remaining ranking discrimination. It does NOT establish "
-            "which stock will appreciate the most. Historical GEM calibration "
-            "must be independently validated before adjusting weights."
+            "This is the diagnostic quality of legacy stage-specific evidence "
+            "rubrics, NOT three separate GEM stock rankings. Historical GEM "
+            "calibration must be validated before changing master-score weights."
         )
-    st.markdown("### GEM SCAN QUALIFIERS & FULL COLUMNS")
-    tabs = st.tabs(list(STAGES))
-    for tab, stage in zip(tabs, STAGES):
-        with tab:
-            st.caption(
-                "Research-only rubric: " +
-                "; ".join(f"{column}: {points} points"
-                          for column, points in WEIGHTS[stage].items())
-            )
-            with st.expander(stage + " — optional advanced research qualifiers", expanded=False):
-                for index, qualifier in enumerate(SCAN_QUALIFIERS[stage], 1):
-                    st.write(f"{index}. {qualifier}")
-            filter_mode = st.radio(
-                "Scan results for " + stage,
-                ("Qualified only", "All including review"),
-                horizontal=True, key="gem_stage_filter_" + stage,
-            )
-            stage_rows = [
-                record for record in items
-                if filter_mode == "All including review"
-                or record[stage + " score"] is not None
-            ]
-            stage_rows.sort(key=lambda r: (
-                r[stage + " rank"] is None,
-                r[stage + " rank"] if r[stage + " rank"] is not None else 1000000,
-                str(r.get("Ticker") or ""), str(r.get("Exact event") or ""),
-            ))
-            ordered = (
-                [stage + " GEM", "Ticker", "Drug", "Indication",
-                 "Two-benchmark rank", "Two-benchmark entry status",
-                 "Two-benchmark priority /100", "Two-benchmark risk flags",
-                 "GEM ALL ENTRY GATES", "GEM strict shortlist rank",
-                 "Phase 3 tracking", "Financing watch", "GEM trade entry gate",
-                 "Verified 2nd financing close date",
-                 "Cash runway (months)", "Cash runway gate",
-                 "Cash runway reason", "Cash runway source",
-                 "Hedge-fund accumulation /10", "Hedge-fund signal",
-                 "Hedge-fund managers adding", "Hedge-fund position details",
-                 "Hedge-fund source links", "Phase 3 result date (source)",
-                 stage + " qualifier", stage + " missing"]
-                + list(STAGE_COLUMNS[stage])
-                + ["Exact event", "Entry qualification",
-                   "Rating limitations", "As of Pacific"]
-            )
-            table = pd.DataFrame(stage_rows).reindex(columns=ordered)
-            table = table.rename(columns={
-                stage + " GEM": "GEM rank (score)",
-                stage + " qualifier": "Qualification",
-                stage + " missing": "Missing qualifiers",
-                "Entry qualification": "Legacy Stage 1 conservative filter (PDUFA -7)",
-                "GEM ALL ENTRY GATES": "Optional strict research filter",
-                "GEM trade entry gate": "Legacy strict research-entry filter",
-            })
-            st.caption(
-                f"{len(table):,} rows · {counts[stage]['qualified']:,} "
-                "strictly qualified in this classification. A blank rank "
-                "means REVIEW, not a score of zero."
-            )
-            st.dataframe(table.head(250), use_container_width=True, hide_index=True)
-            if len(table) > 250:
-                st.caption("First 250 rows shown; export includes all filtered rows.")
-            st.download_button(
-                "EXPORT " + stage.upper() + " GEM SCAN",
-                table.to_csv(index=False).encode("utf-8"),
-                file_name="gem_" + stage.lower().replace("-", "_").replace(" ", "_")
-                          + "_" + day.isoformat() + ".csv",
-                mime="text/csv",
-                key="gem_export_" + stage,
-            )
     st.divider()
     render_gem_calibration(root)
     st.caption(
