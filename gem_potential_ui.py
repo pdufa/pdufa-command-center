@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_potential_list import build_potential_list
+from gem_financing_batch_review import build_financing_review
 from gem_verified_snapshot import source_cleared_gems
 from gem_secondary_research import (
     OPTIONAL_CHECK_TOPICS, optional_check_search_links,
@@ -93,6 +94,56 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             "GLOBAL SEC SOURCE CHECK PARTIAL/STALE — verified program-level "
             "evidence does not clear fresh all-source trading-entry gates."
         )
+    # The full financing-stage scope is broader than historical two-close
+    # attestations; EVERY distinct exact program stays visible for follow-up.
+    financing_worklist, financing_audit = build_financing_review(root)
+    st.caption(
+        f"FINANCING-STAGE REVIEW · {financing_audit['financing_programs_reviewed']} "
+        f"exact programs / {financing_audit['unique_tickers']} tickers · "
+        f"{financing_audit['active_benchmark_cleared']} active 2/2 "
+        f"source-cleared · {financing_audit['pending_or_excluded']} "
+        "pending/excluded"
+    )
+    with st.expander(
+        "ALL FINANCING-STAGE COMPANIES — EVIDENCE, GAPS & SOURCE SEARCH",
+        expanded=False,
+    ):
+        st.caption(
+            "Full financing-block coverage, including 1-close, no-close and "
+            "program-mapping cases. Source-search links do NOT verify findings "
+            "or turn a historical claim into a GEM clearance. "
+            "NO trades authorized from this worklist."
+        )
+        visible_fields = (
+            "Ticker", "Drug", "Exact program", "Review status",
+            "Phase 3 source-clear", "Phase 3 readout date",
+            "Financing ledger claim", "Financing close #1",
+            "Financing close #2", "Missing evidence / next actions",
+            "Primary clinical source", "Financing source #1",
+            "Financing source #2", "Investor news / source search",
+            "SEC program search", "ClinicalTrials.gov search",
+            "Reddit leads (not evidence)",
+        )
+        detail = pd.DataFrame(financing_worklist).reindex(columns=visible_fields)
+        st.dataframe(
+            detail, use_container_width=True, hide_index=True, height=410,
+            column_config={
+                name: st.column_config.LinkColumn(name)
+                for name in (
+                    "Primary clinical source", "Financing source #1",
+                    "Financing source #2", "Investor news / source search",
+                    "SEC program search", "ClinicalTrials.gov search",
+                    "Reddit leads (not evidence)",
+                )
+            },
+        )
+        st.download_button(
+            "EXPORT COMPLETE FINANCING-STAGE GEM REVIEW",
+            data=detail.to_csv(index=False).encode("utf-8"),
+            file_name="gem_full_financing_stage_review.csv",
+            mime="text/csv", key=namespace + "_financing_stage_export",
+        )
+
     st.markdown("### POTENTIAL GEMs — PENDING RESEARCH")
     st.caption(
         "Research leads under #1, NOT the verified GEM entry list. "
