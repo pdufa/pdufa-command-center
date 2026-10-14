@@ -96,7 +96,9 @@ class NestedGEMTests(unittest.TestCase):
         self.assertIn("_init_browser_selection", ui)
         self.assertIn('args=(ticker, "watch")', ui)
         self.assertIn('args=(ticker, "trade")', ui)
-        self.assertIn('pd.DataFrame(matching).reindex(columns=MASTER_COLUMNS)', ui)
+        self.assertIn('pd.DataFrame(matching).reindex(columns=MASTER_COLUMNS + TRADE_COLUMNS)', ui)
+        self.assertIn("render_gem_trade_panel(", ui)
+        self.assertIn("attach_trade_fields(", ui)
         self.assertIn("factor_col.button(", ui)
         self.assertIn("score_factor_inputs(", ui)
 
