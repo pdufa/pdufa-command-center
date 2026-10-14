@@ -465,7 +465,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         if int(count.group(1)) == 0:
             self.assertTrue(any("DATED CLINICAL RESEARCH PILOT SCORES" in m.body
                                 for m in app.markdown))
-            self.assertTrue(any("NO CURRENT SOURCE-DATED PILOT SCORES" in m.message
+            self.assertTrue(any("NO CURRENT SOURCE-DATED PILOT SCORES" in m.body
                                 for m in app.info))
             self.assertFalse(any("· NCT0" in m.label and "RESEARCH /100" in m.label
                                  for m in app.metric))
