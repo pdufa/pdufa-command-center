@@ -26,10 +26,11 @@ SAFE_DILUTION = frozenset(("NO", "NONE", "FALSE", "0"))
 DILUTION_ALERTS = frozenset(("YES", "TRUE", "1", "ACTIVE", "UNRESOLVED"))
 WEIGHTS = {
     "Phase 3 quality /30": 30,
-    "Financial runway /25": 25,
+    "Financial runway /20": 20,
     "Dilution overhang /15": 15,
     "Trading activity /20": 20,
-    "PDUFA timing /10": 10,
+    "PDUFA timing /5": 5,
+    "Hedge-fund accumulation /10": 10,
 }
 assert sum(WEIGHTS.values()) == 100
 
@@ -94,13 +95,13 @@ def _runway_points(months):
     if n is None or n < 0:
         return 0
     if n >= 24:
-        return 25
+        return 20
     if n >= 18:
-        return 21
+        return 17
     if n >= 12:
-        return 16
+        return 13
     if n >= 6:
-        return 8
+        return 7
     return 2
 
 
@@ -111,15 +112,15 @@ def _window_points(days, verified):
     if not isinstance(days, int) or isinstance(days, bool):
         return 0
     if 30 <= days <= 90:
-        return 10
+        return 5
     if 14 <= days <= 29:
-        return 8
-    if 91 <= days <= 180:
-        return 7
-    if days >= 181:
         return 4
-    if 4 <= days <= 13:
+    if 91 <= days <= 180:
         return 3
+    if days >= 181:
+        return 2
+    if 4 <= days <= 13:
+        return 1
     return 0
 
 
@@ -195,12 +196,17 @@ def assess(row, event, *, as_of, feed_current=True, sec_current=True):
         12 * _bounded(row.get("Trading setup /20"), 20) / 20
         + 8 * _bounded(row.get("Market activity /10"), 10) / 10
     )
+    hedge = row.get("Hedge-fund accumulation /10")
+    hedge_points = int(min(10, _bounded(hedge, 10))) if (
+        row.get("Hedge-fund signal") == "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS"
+    ) else 0
     points = {
         "Phase 3 quality /30": clinical,
-        "Financial runway /25": _runway_points(runway),
+        "Financial runway /20": _runway_points(runway),
         "Dilution overhang /15": 15 if dilution in SAFE_DILUTION else 0,
         "Trading activity /20": technical if feed_current else 0,
-        "PDUFA timing /10": _window_points(days, row.get("PDUFA verification")),
+        "PDUFA timing /5": _window_points(days, row.get("PDUFA verification")),
+        "Hedge-fund accumulation /10": hedge_points,
     }
     out.update(points)
     out["Two-benchmark priority /100"] = sum(points.values())
