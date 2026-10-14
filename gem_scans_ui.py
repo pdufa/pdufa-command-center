@@ -28,6 +28,7 @@ FILES = (
     "finance_ir_sec_recheck.csv",
     "gem_runway_evidence.json",
     "gem_hedge_fund_13f.json",
+    "gem_bpw_comparable.json",
     "gem_hedge_fund_managers.csv",
     "sec_step4_snapshots.sqlite3",
 )
@@ -157,7 +158,35 @@ def render_gem_scans(root="data"):
         "Scan output derives from existing clinical, SEC, FDA and market "
         "evidence. This button-free read-only view does not dispatch a new scan."
     )
-    # Primary trading-candidate shortlist uses ONLY the two benchmark passes.
+    with st.expander("GEM vs BPW — REAL DATA COVERAGE COMPARISON", expanded=True):
+        comparable_file = path / "gem_bpw_comparable.json"
+        try:
+            comparison = json.loads(comparable_file.read_text(encoding="utf-8"))
+        except (OSError, ValueError, UnicodeError):
+            comparison = {}
+        if (comparison.get("schema_version") != 1
+                or comparison.get("as_of_pacific") != day.isoformat()
+                or not isinstance(comparison.get("capability_matrix"), list)):
+            st.info("A same-day BPW-style source coverage comparison is not yet published.")
+        else:
+            st.caption(
+                "Comparison is of GEM's source-data COVERAGE against BPW's advertised "
+                "capabilities, not a head-to-head performance test or proprietary "
+                "PoA score comparison. Missing data is reported, never fabricated."
+            )
+            st.dataframe(
+                pd.DataFrame(comparison["capability_matrix"])[
+                    ["capability", "state", "observed_gem_rows",
+                     "total_gem_rows", "data_coverage_pct", "caveat"]
+                ], use_container_width=True, hide_index=True
+            )
+            st.download_button(
+                "DOWNLOAD GEM vs BPW COMPARISON",
+                json.dumps(comparison, indent=2).encode("utf-8"),
+                file_name=f"gem_bpw_comparable_{day:%Y%m%d}.json",
+                mime="application/json", key="gem_bpw_comparable_json_export",
+            )
+        # Primary trading-candidate shortlist uses ONLY the two benchmark passes.
     qualified = sorted(
         (row for row in items if row.get("Two-benchmark eligible") is True),
         key=lambda r: r.get("Two-benchmark rank") or 1000000,
