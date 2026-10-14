@@ -82,8 +82,9 @@ def _gems_table(items):
         '<div class="gems-scroll"><table class="gems-table">'
         '<thead><tr><th colspan="3">GEMS</th>'
         '<th rowspan="2">Ticker</th><th rowspan="2">Drug / program</th>'
-        '<th rowspan="2">Runway (mo)</th><th rowspan="2">Runway gate</th>'
-        '<th rowspan="2">Trade-entry rule</th>'
+        '<th rowspan="2">Priority rank</th><th rowspan="2">Priority /100</th>'
+        '<th rowspan="2">Runway (mo)</th><th rowspan="2">Runway status</th>'
+        '<th rowspan="2">Two-benchmark status</th>'
         '</tr><tr><th>Phase 3</th><th>Post-Financing</th><th>PDUFA</th>'
         '</tr></thead><tbody>'
     )
@@ -99,24 +100,28 @@ def _gems_table(items):
         runway = item.get("Cash runway (months)")
         runway_label = html.escape(str(runway)) if runway is not None else "—"
         runway_status = html.escape(str(item.get("Cash runway gate") or "REVIEW"))
-        gate = html.escape(str(item.get("GEM trade entry gate") or
-                               "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"))
+        gate = html.escape(str(item.get("Two-benchmark entry status") or "WATCH"))
+        rank = item.get("Two-benchmark rank")
+        rank_label = html.escape(str(rank)) if rank is not None else "—"
+        score = item.get("Two-benchmark priority /100")
+        score_label = html.escape(str(score)) if score is not None else "—"
         rows.append("<tr>" + "".join(cells) +
                     f'<td class="ticker">{ticker}</td><td>{drug}</td>'
+                    f'<td>{rank_label}</td><td>{score_label}</td>'
                     f'<td>{runway_label}</td><td>{runway_status}</td><td>{gate}</td></tr>')
     return style + header + "".join(rows) + "</tbody></table></div>"
 
 
 def render_gem_scans(root="data"):
-    st.markdown("## 💎 GEMS — PHASE 3 / POST-FINANCING / PDUFA")
+    st.markdown("## GEM CANDIDATES — TWO BENCHMARKS, THEN RANK")
     st.caption(
-        "Three independent source-gated research rankings. Each entry shows "
-        "#rank (evidence score /100) in its own classification. GEMS is nested "
-        "over three columns immediately before Ticker. Research scores are "
-        "NOT FDA approval probabilities, return forecasts, or entry approval. "
-        "ABSOLUTE RULE: watch Phase 3 before financing, but NEVER consider entry "
-        "until TWO DISTINCT post-Phase-3 financing closes are source-verified "
-        "and SEC cash-only runway >=12 months is documented."
+        "The only two positive entry benchmarks are (1) dated, source-verified "
+        "released Phase 3 results for the exact program, and (2) verified close "
+        "of a second separate financing after that readout. Once both pass, "
+        "financial runway, dilution, clinical strength, price/volume activity "
+        "and PDUFA timing PRIORITIZE or WARN; they do not silently become "
+        "additional entry benchmarks. Scores are research heuristics, not "
+        "approval probabilities, stock-return forecasts or trade orders."
     )
     path = Path(root)
     signature = tuple(
@@ -132,22 +137,75 @@ def render_gem_scans(root="data"):
 
     if not status.get("feed_current"):
         st.warning(
-            "SOURCE SNAPSHOT STALE: no GEM score or rank may be issued until "
-            "the saved clinical, financing and market evidence is refreshed."
+            "SOURCE SNAPSHOT STALE: refresh saved clinical and market data. "
+            "Previously verified results remain labeled, but their evidence "
+            "may no longer reflect current trading circumstances."
         )
     if not status.get("sec_financing_source_current"):
-        st.error(
-            "NO NEW TRADE ENTRY — SEC FINANCING RECHECK BLOCKED, PARTIAL "
-            "OR STALE. Phase 3 research/watch remains accessible, but "
-            "Post-Financing and PDUFA GEM qualification is withheld even "
-            "for historically attested second closings. Never infer a "
-            "fresh SEC clearance from an old VERIFIED label."
+        st.warning(
+            "SEC FINANCING RECHECK PARTIAL/STALE: an already attested closing "
+            "must be reconfirmed before relying on it. This is a source-quality "
+            "warning, not a third fundamental entry benchmark."
         )
     st.caption(
         f"Saved data as of (Pacific): {status.get('as_of', 'unknown')} · "
         "Scan output derives from existing clinical, SEC, FDA and market "
         "evidence. This button-free read-only view does not dispatch a new scan."
     )
+    # Primary trading-candidate shortlist uses ONLY the two benchmark passes.
+    qualified = sorted(
+        (row for row in items if row.get("Two-benchmark eligible") is True),
+        key=lambda r: r.get("Two-benchmark rank") or 1000000,
+    )
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Phase 3 readout verified", status.get("two_benchmark_phase3_count", 0))
+    m2.metric("Second financing closed", status.get("two_benchmark_financing_count", 0))
+    m3.metric("Both benchmarks met", status.get("two_benchmark_candidate_count", 0))
+    st.markdown("### PRIORITIZED TRADING CANDIDATES")
+    st.caption(
+        "Only stocks passing BOTH event benchmarks are ranked. The /100 score "
+        "uses Phase 3 quality (30), runway (25), dilution risk (15), "
+        "price/volume activity (20) and PDUFA timing (10). Missing evidence "
+        "earns zero points within that factor, NOT automatic exclusion. "
+        "Risks may still make a candidate unsuitable; this is manual review only."
+    )
+    ordered = [
+        "Two-benchmark rank", "Ticker", "Drug", "Indication",
+        "Benchmark 1 — Phase 3 released", "Benchmark 2 — Financing #2 closed",
+        "Two-benchmark priority /100",
+        "Phase 3 quality /30", "Financial runway /25",
+        "Dilution overhang /15", "Trading activity /20", "PDUFA timing /10",
+        "Cash runway (months)", "Cash runway trend", "Days to PDUFA",
+        "Verified 2nd financing close date", "Two-benchmark risk flags",
+        "Exact event", "Phase 3 source", "Financing source",
+    ]
+    if qualified:
+        qtable = pd.DataFrame(qualified).reindex(columns=ordered)
+        st.dataframe(qtable.head(100), use_container_width=True, hide_index=True)
+        st.download_button(
+            "EXPORT RANKED TWO-BENCHMARK CANDIDATES",
+            qtable.to_csv(index=False).encode("utf-8"),
+            file_name=f"gem_two_benchmark_ranked_{day:%Y%m%d}.csv",
+            mime="text/csv", key="gem_two_benchmark_export",
+        )
+    else:
+        st.info(
+            "No program is currently source-verified as having BOTH a released "
+            "Phase 3 readout and a separate second post-readout financing close. "
+            "This is not a conclusion about unreviewed companies."
+        )
+    with st.expander("WATCHLIST — WORKING TOWARD THE TWO BENCHMARKS", expanded=False):
+        remaining = [row for row in items if not row.get("Two-benchmark eligible")]
+        waiting_columns = [
+            "Ticker", "Drug", "Indication", "Benchmark 1 — Phase 3 released",
+            "Benchmark 2 — Financing #2 closed", "Two-benchmark risk flags",
+            "Exact event",
+        ]
+        st.dataframe(
+            pd.DataFrame(remaining).reindex(columns=waiting_columns).head(250),
+            use_container_width=True, hide_index=True,
+        )
+    st.divider()
     # Research confirmations remain visible while the nightly SEC collector
     # independently rechecks each dated transaction. Neither the research
     # ledger nor a one-transaction SEC match can unlock the GEM entry gate.
@@ -156,7 +214,8 @@ def render_gem_scans(root="data"):
         "Public and company-site findings stay recorded even when SEC has not "
         "confirmed a closing. Only exact-company and exact-date SEC evidence "
         "can upgrade the independent transaction check. The second distinct "
-        "post-Phase-3 financing and dilution gates are unchanged."
+        "post-Phase-3 financing confirmation is still required. Dilution "
+        "is now an advisory risk/ranking factor, not a third entry benchmark."
     )
     with st.expander("RESEARCH STATUS — ALL 45 REVIEWED CLAIMS", expanded=False):
         research_file = (
@@ -208,7 +267,8 @@ def render_gem_scans(root="data"):
                 st.caption(
                     "SEC_TRANSACTION_VERIFIED confirms only the named closing. "
                     "Even two matching company transactions do not bypass the "
-                    "separate exact-event Phase 3 timing and dilution review."
+                    "separate exact-event Phase 3 timing check. Dilution is a "
+                    "ranking/risk factor rather than an entry benchmark."
                 )
             except (OSError, ValueError, pd.errors.ParserError):
                 st.warning("Published SEC recheck results could not be read.")
@@ -243,12 +303,13 @@ def render_gem_scans(root="data"):
                 st.warning("SEC recheck source-report snapshot is unavailable.")
     counts = status["scan_counts"]
     st.caption(
-        "Cash runway requires >=12 months for GEM 2 and GEM 3; GEM 1 remains watch-only. "
+        "Cash runway is a ranking factor, NOT a minimum trading-entry benchmark. "
         f"{status.get('cash_runway_passing_count', 0)} passes and "
         f"{status.get('cash_runway_unverified_count', 0)} missing/stale sources; "
         f"{status.get('cash_runway_deteriorating_count', 0)} declining runway trends; "
         f"{status.get('gem3_dilution_alert_count', 0)} dilution alerts. "
-        "Pre-close cash statements, restricted cash and absent SEC filings do not qualify."
+        "Pre-close cash statements, restricted cash and missing SEC facts receive "
+        "no qualifying financial-runway ranking points."
     )
     track_metrics = st.columns(2)
     track_metrics[0].metric(
