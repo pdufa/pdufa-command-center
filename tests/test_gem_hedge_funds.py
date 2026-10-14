@@ -122,9 +122,13 @@ class HedgeFundTests(unittest.TestCase):
         }}}
         accepted = filing_inventory(submissions, "0001263508", as_of=ASOF)
         self.assertEqual(len(accepted), 2)
-        self.assertTrue(accepted[1]["amended"])
+        # The August 15 amendment belongs to the JUNE report, not March.
+        # Verify the most recent matching-period filing supersedes the original.
+        self.assertTrue(accepted[0]["amended"])
+        self.assertEqual(accepted[0]["period"], date(2026, 6, 30))
+        self.assertEqual(accepted[0]["accession"], "0001104659-26-097999")
+        self.assertFalse(accepted[1]["amended"])
         self.assertEqual(accepted[1]["period"], date(2026, 3, 31))
-        self.assertEqual(accepted[1]["accession"], "0001104659-26-097999")
 
     def test_amended_restated_13f_is_complete_but_add_only_is_blocked(self):
         filing = {"accession": "0001104659-26-097191", "amended": True}
