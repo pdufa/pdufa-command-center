@@ -102,7 +102,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
         f"exact programs / {financing_audit['unique_tickers']} tickers · "
         f"{financing_audit['active_benchmark_cleared']} active 2/2 "
         f"source-cleared · {financing_audit['pending_or_excluded']} "
-        "pending/excluded"
+        "pending/excluded · "
+        f"{financing_audit['financing_programs_with_matched_phase3_source_leads']} "
+        "with registry/issuer discovery leads"
     )
     with st.expander(
         "ALL FINANCING-STAGE COMPANIES — EVIDENCE, GAPS & SOURCE SEARCH",
@@ -117,6 +119,8 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
         visible_fields = (
             "Ticker", "Drug", "Exact program", "Review status",
             "Phase 3 source-clear", "Phase 3 readout date",
+            "Matched Phase 3 source leads", "Phase 3 discovery examples",
+            "Phase 3 discovery source",
             "Financing ledger claim", "Financing close #1",
             "Financing close #2", "Missing evidence / next actions",
             "Primary clinical source", "Financing source #1",
@@ -130,7 +134,8 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             column_config={
                 name: st.column_config.LinkColumn(name)
                 for name in (
-                    "Primary clinical source", "Financing source #1",
+                    "Primary clinical source", "Phase 3 discovery source",
+                    "Financing source #1",
                     "Financing source #2", "Investor news / source search",
                     "SEC program search", "ClinicalTrials.gov search",
                     "Reddit leads (not evidence)",
