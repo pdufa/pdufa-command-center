@@ -109,7 +109,6 @@ def filing_inventory(submissions, cik, *, as_of):
     if not isinstance(recent, dict) or any(not isinstance(recent.get(k), list) for k in fields):
         raise ValueError("SEC submissions missing required filing fields")
     filings = {}
-    amended_periods = set()
     counts = [len(recent[k]) for k in fields]
     if len(set(counts)) != 1:
         raise ValueError("SEC submission arrays incomplete")
@@ -119,15 +118,13 @@ def filing_inventory(submissions, cik, *, as_of):
                 or not re.fullmatch(r"\d{10}-\d{2}-\d{6}", str(acc))
                 or (as_of - end).days < 0):
             continue
-        if form == "13F-HR/A":
-            amended_periods.add(end)
-        elif form == "13F-HR":
+        if form in ("13F-HR", "13F-HR/A"):
             previous = filings.get(end)
             if previous is None or when > previous["filed"]:
-                filings[end] = {"period": end, "filed": when, "accession": acc}
-    # Ignoring amendments would fabricate a complete comparison.
-    for period in amended_periods:
-        filings.pop(period, None)
+                filings[end] = {"period": end, "filed": when, "accession": acc,
+                                "amended": form == "13F-HR/A"}
+    # An amendment may be a restatement (complete holdings) or add new
+    # holdings (incomplete by itself). Verify its cover page before reading.
     return sorted(filings.values(), key=lambda row: row["period"], reverse=True)[:2]
 
 
@@ -150,6 +147,24 @@ def get_holdings(cik, filing, agent, *, fetch=sec_get):
             matches.append(name)
     if len(matches) != 1:
         raise ValueError("Missing or ambiguous SEC 13F XML information table")
+    if filing.get("amended"):
+        # Treat amendment information tables as complete only when the 13F
+        # cover page explicitly attests RESTATEMENT. "Adds new holdings" is
+        # not an entire portfolio and can never be compared as one.
+        primary = [
+            str(it.get("name") or "") for it in files if isinstance(it, dict)
+            and str(it.get("name") or "").lower() == "primary_doc.xml"
+        ]
+        if len(primary) != 1:
+            raise ValueError("Amended 13F missing unambiguous XML cover page")
+        time.sleep(0.15)
+        cover = ET.fromstring(fetch(directory + "/" + primary[0], agent))
+        amended_types = [
+            (str(element.text or "").strip().upper()) for element in cover.iter()
+            if _leaf(element.tag) == "amendmenttype"
+        ]
+        if amended_types != ["RESTATEMENT"]:
+            raise ValueError("13F amendment not a verified complete restatement")
     time.sleep(0.15)
     url = directory + "/" + matches[0]
     positions = parse_information_table(fetch(url, agent))
