@@ -74,7 +74,8 @@ def source_cleared_gems(root="data", *, as_of=None):
         program = {"Ticker": ticker, "NCT ID": nct, "Exact event": key}
         phase3 = phase3_results_released(program, event, as_of=today)
         financed, close_date, note = second_post_phase3_close(
-            key, event.get("phase3_date"), funding, as_of=today
+            key, event.get("phase3_date"), funding, as_of=today,
+            require_fresh=False,
         )
         if not (phase3 and financed):
             continue
@@ -106,6 +107,9 @@ def source_cleared_gems(root="data", *, as_of=None):
         flags = []
         if not global_sec_healthy:
             flags.append("Global SEC collector PARTIAL/STALE; trading entry on HOLD")
+        audit_date = _date(funding.get("verified_as_of"))
+        if audit_date is None or (today - audit_date).days > 7:
+            flags.append("Program-specific SEC evidence needs a fresh recheck before trading")
         if not str(event.get("pdufa_confirmation") or "").startswith("VERIFIED"):
             flags.append("PDUFA target date not independently verified")
         if is_historical:
