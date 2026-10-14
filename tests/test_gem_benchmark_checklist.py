@@ -97,6 +97,28 @@ class UmbrellaCheckboxTests(unittest.TestCase):
         self.assertFalse(states[a["Exact Program / Event"]]["phase3_data"]["observed"])
         self.assertFalse(states[b["Exact Program / Event"]]["phase3_data"]["observed"])
 
+    def test_phase3_registry_umbrella_handles_unique_ticker_nct_without_event(self):
+        unlinked = row("TRIAL")
+        unlinked["Exact Program / Event"] = ""
+        unlinked["NCT ID"] = "NCT01234567"
+        source = {"Ticker": "TRIAL", "Exact event": "", "NCT ID": "NCT01234567",
+                  "Phase 3 evidence": "REGISTRY RESULTS POSTED — REVIEW"}
+        states = build_checklist_map([unlinked], [source])
+        matching = filter_programs([unlinked], states, ["phase3_data"])
+        self.assertEqual(matching, [unlinked])
+        self.assertEqual(filter_programs([unlinked], states, ["phase3_verified"]), [])
+        self.assertFalse(unlinked["_eligible"])
+
+    def test_ambiguous_same_ticker_nct_never_borrows_issuer_clinical_evidence(self):
+        unlinked = row("TRIAL")
+        unlinked["Exact Program / Event"] = ""
+        unlinked["NCT ID"] = "NCT01234567"
+        source = {"Ticker": "TRIAL", "Exact event": "", "NCT ID": "NCT01234567",
+                  "Phase 3 evidence": "REGISTRY RESULTS POSTED — REVIEW"}
+        states = build_checklist_map([unlinked], [source, source])
+        self.assertEqual(filter_programs([unlinked], states, ["phase3_data"]), [])
+        self.assertEqual(filter_programs([unlinked], states), [unlinked])
+
     def test_checkbox_ui_is_visible_in_both_gem_surfaces(self):
         nested = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
         scan = (ROOT / "gem_scans_ui.py").read_text(encoding="utf-8")
