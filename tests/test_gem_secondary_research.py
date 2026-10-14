@@ -6,7 +6,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from gem_secondary_research import (
-    CONFIRMED_INVESTOR_NEWS, OPTIONAL_CHECK_TOPICS,\n    optional_check_search_links, research_search_links, source_research_policy,
+    CONFIRMED_INVESTOR_NEWS, OPTIONAL_CHECK_TOPICS,
+    optional_check_search_links, research_search_links, source_research_policy,
 )
 
 
