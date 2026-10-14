@@ -1084,7 +1084,8 @@ class Verifier:
             close = review.get("second_financing_date", "")
         mapped_event = self.event_sources(event)
         mapped_exact = mapped_event.get("individual_financing_close", {})
-        if (not close and not url and isinstance(mapped_exact, dict)
+        if (close.strip().upper() in {"", "UNVERIFIED", "UNKNOWN", "REVIEW", "PENDING"}
+                and not url and isinstance(mapped_exact, dict)
                 and mapped_exact.get("date") and mapped_exact.get("sec_url")
                 and sec_url_matches(mapped_exact["sec_url"], self.cik(event))):
             # Exact, event-mapped SEC financing is a primary-source discovery
