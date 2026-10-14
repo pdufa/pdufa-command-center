@@ -1,0 +1,72 @@
+{
+  "generated_at_utc": "2026-10-14T16:41:24.741132+00:00",
+  "status": "PARTIAL",
+  "execution_status": "COMPLETE",
+  "scope": "Only four previously unresolved FDA target-date events",
+  "full_coverage_verified": false,
+  "source_observations": 4,
+  "findings_due": 4,
+  "findings_verified": 3,
+  "required_findings_unresolved": 1,
+  "canonical_source_ledger_updated": false,
+  "trade_entry_authorized": false,
+  "note": "Verifies primary issuer-reported FDA target dates only. Not a signed FDA decision, second financing, probability model or broker authorization.",
+  "results": [
+    {
+      "event_key": "ANAB|IMSIDOLIMAB_GPP_20261212",
+      "ticker": "ANAB",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "verification_status": "VERIFIED",
+      "reason": "Exact-event primary issuer target date and program confirmed; NOT a signed FDA decision",
+      "source_url": "https://ir.anaptysbio.com/news-releases/news-release-details/anaptys-announces-first-quarter-2026-financial-results-and",
+      "source_sha256": "5e298e5203f1e0f1ed8a596c7afbef06f810aae29164d9ef238848cfd59381db",
+      "expected": "2026-12-12",
+      "observed": "2026-12-12",
+      "checked_at": "2026-10-14T16:41:20.042398+00:00",
+      "evidence": "re (chemotherapy) in untreated stage III MMRp/MSS resectable colon cancer Data expected in Q4 2026 JADE \u2013 pivotal Phase 3 \u2013 dostarlimab monotherapy versus placebo in locally advanced unresected head and neck squamous cell carcinoma (PD-L1 CPS\u22651) post chemoradiation Data expected in 2028 Vanda Imsidolimab Financial Collaboration FDA target action date (PDUFA) of Dec. 12, 2026 for imsidolimab in generalized pustular psoriasis (GPP) Recent Leadership and Board of Directors Appointments Announced appointment of Chris Murphy as Chief Financial Officer (CFO) Mr. Murphy brings >20 years\u2019 experience in business development, commercial operations, corporate strategy and investment banking in the biopharmaceutical industry Announced appointment of industry veterans Susannah Gray and Owen Hughes to Board of Directors Ms. Gray brings"
+    },
+    {
+      "event_key": "EXEL|ZANZALINTINIB_CRC",
+      "ticker": "EXEL",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "verification_status": "VERIFIED",
+      "reason": "Exact-event primary issuer target date and program confirmed; NOT a signed FDA decision",
+      "source_url": "https://ir.exelixis.com/news-releases/news-release-details/exelixis-announces-us-fda-accepted-new-drug-application",
+      "source_sha256": "a02b3308536949714260a65cb3d438a82c225b8c7b4b6acf264b281062b3ca4d",
+      "expected": "2026-12-03",
+      "observed": "2026-12-03",
+      "checked_at": "2026-10-14T16:41:21.436597+00:00",
+      "evidence": "t Page Press Release Investors & News / Press Releases / Press Release Exelixis Announces U.S. FDA Accepted the New Drug Application for Zanzalintinib in Combination with an Immune Checkpoint Inhibitor for Patients with Metastatic Colorectal Cancer February 2, 2026 PDF Version \u2013 The FDA assigned a Prescription Drug User Fee Act target action date of December 3, 2026 \u2013 \u2013 Application is based on results from the phase 3 STELLAR-303 pivotal trial, in which zanzalintinib in combination with atezolizumab improved median overall survival and significantly reduced the risk of death versus regorafenib in the intention-to-treat population \u2013 ALAMEDA, Calif. --(BUSINESS WIRE)--Feb. 2, 2026-- Exelixis, Inc. (Nasdaq: EXEL) today announced that its New Drug Application (N"
+    },
+    {
+      "event_key": "HRMY|PITOLISANT_GR_20270401",
+      "ticker": "HRMY",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "verification_status": "VERIFIED",
+      "reason": "Exact-event primary issuer target date and program confirmed; NOT a signed FDA decision",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm",
+      "source_sha256": "9263b6002f14d212465d9a64fa27ebb1c6ca77aae39f92083a0dc891dbf870ef",
+      "expected": "2027-04-01",
+      "observed": "2027-04-01",
+      "checked_at": "2026-10-14T16:41:23.378378+00:00",
+      "evidence": "leep-deprived healthy volunteers in Q3; data expected in early 2027 \u200b \u25cf Commitment to investing in robust development program for BP-205 o Initiating Phase 2 studies to evaluate multiple potential CNS indications in mid-2027 \u200b Pitolisant GR (Gastro-resistant) Tablets: On track to launch in 1H 2027 \u25cf NDA accepted by FDA in July; target PDUFA date of April 1, 2027 o Designed with enteric coating meant to reduce the potential for GI side effects in patients with narcolepsy, 80 \u2013 90% of whom experience GI symptoms as part of their disease o Enables patients to initiate treatment at a therapeutic dose without titration, an important clinical differentiation \u25cf Utility patents filed to extend pitolisant franchise into the 2040s \u200b Pitolisant HD (high dose): Oppo"
+    },
+    {
+      "event_key": "SVRA|MOLBREEVI_PAP_20261122",
+      "ticker": "SVRA",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "verification_status": "REVIEW_REQUIRED",
+      "reason": "No primary source safely matches drug, indication, claim and explicit date",
+      "source_url": "",
+      "source_sha256": "",
+      "expected": "2026-11-22",
+      "observed": "",
+      "checked_at": "2026-10-14T16:41:24.741086+00:00",
+      "evidence": ""
+    }
+  ]
+}
