@@ -23,8 +23,15 @@ def parsed_date(value):
         return None
 
 
-def second_post_phase3_close(event_key, phase3_date, stage, *, as_of):
-    """Return (verified, second_close_date, reason); reject uncertainty."""
+def second_post_phase3_close(event_key, phase3_date, stage, *, as_of,
+                             require_fresh=True):
+    """Check funded historical two-close evidence.
+
+    require_fresh=True is MANDATORY for trade-entry review. A historical
+    research-list display may set it False so a dated closing does not vanish
+    simply because a fresh global SEC recheck is unavailable. The historical
+    evidence then still carries a separate stale-source entry hold.
+    """
     today = as_of.date() if isinstance(as_of, datetime) else as_of
     if not isinstance(today, date):
         raise ValueError("as_of must be a date")
@@ -45,7 +52,7 @@ def second_post_phase3_close(event_key, phase3_date, stage, *, as_of):
             and safe_source(stage.get("second_financing_source"), sec=True)):
         return False, None, "PRIMARY SEC CLOSING EVIDENCE MISSING"
     checked = parsed_date(stage.get("verified_as_of"))
-    if checked is None or not 0 <= (today - checked).days <= 7:
+    if checked is None or checked > today or (require_fresh and (today - checked).days > 7):
         return False, None, "FINANCING VERIFICATION STALE OR FUTURE DATED"
     return True, second.isoformat(), ""
 
