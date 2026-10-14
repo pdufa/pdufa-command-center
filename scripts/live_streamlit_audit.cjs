@@ -161,6 +161,37 @@ async function audit() {
   for (const [name, labels] of tabs) {
     await safely("PDUFA tab " + name, () => inspectTab(page, name, labels));
   }
+  // Exercise the collapsed GEM master UI, not just its title. The chart and
+  // trading assessment require a stock card to open before their code runs.
+  await safely("GEM nested stock entry/exit chart", async() => {
+    await inspectTab(page, "GEM", ["#1-GEM", "GEM — TWO BENCHMARKS VERIFIED"]);
+    const first = await currentFrame(page);
+    const label = "#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)";
+    await first.getByText(label, {exact:true}).click({timeout:15000});
+    const master = await waitFor(page, "GEM nested master", async(f, text) =>
+      await selectedTab(f, "GEM") &&
+      text.includes("GEM — STOCK → FACTORS → SOURCE INPUTS") &&
+      text.includes("GEM programs"));
+    if (/This app has encountered an error|Traceback \(most recent call last\)/i.test(master.text)) {
+      throw Error("GEM master crashed on expansion.");
+    }
+    // A default research-only filter can be empty even with saved GEM rows.
+    // Selecting All candidates tests an actual program's chart when available.
+    const candidates = master.frame.getByText("OPEN STOCK → six factors → inputs", {exact:false});
+    const count = await candidates.count();
+    if (!count) {
+      report.notes.push("GEM nested master opened, but no matching stock cards were displayed for the saved filter.");
+      report.checked.push({screen:"GEM nested master",result:"PASS",stock_chart:"NO STOCK MATCH"});
+      return;
+    }
+    await candidates.first().click({timeout:15000});
+    const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
+      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR —") &&
+      text.includes("Trading metric"), 90000);
+    report.checked.push({screen:"GEM nested stock entry/exit chart",result:"PASS",
+                         source_warnings_visible:chart.text.includes("SOURCE RECHECK PARTIAL / STALE")});
+    await screenshot(page,"gem-entry-exit-stock");
+  });
   // The embedded watchlist is hosted in its own components iframe.
   await safely("WT embedded watchlist", async() => {
     const selected = await waitFor(page, "WT", (frame) => selectedTab(frame, "WT"));
@@ -183,11 +214,28 @@ async function audit() {
   });
   await safely("Mobile width", async() => {
     await page.setViewportSize({width:390,height:844});
-    const found = await inspectRadio(page,"PDUFA",["BIO PDUFA COMMAND CENTER"]);
-    const tabLabels = await found.frame.getByRole("tablist").first().getByRole("tab").allInnerTexts();
-    if (!tabLabels.some(x=>x.trim()==="SCANS")) throw Error("SCANS tab missing at mobile viewport.");
-    report.checked.push({screen:"Mobile tabs at 390px",result:"PASS"});
-    await screenshot(page,"iphone-390");
+    const before = await currentFrame(page);
+    if (!before) throw Error("PDUFA iframe is missing at iPhone width.");
+    const nav = before.getByRole("radio",{name:"PDUFA",exact:true});
+    if (!(await nav.isChecked())) {
+      const group = before.locator('[data-testid="stRadio"]').filter({has:nav});
+      await group.getByText("PDUFA",{exact:true}).click({timeout:15000});
+    }
+    // Wait for the actual PDUFA rerun. The global title appears before the
+    // tabs, so relying on the title alone creates a false mobile failure.
+    const found = await waitFor(page,"Mobile PDUFA tabs",async(f,text) =>
+      await f.getByRole("radio",{name:"PDUFA",exact:true}).isChecked()
+      && text.includes("PDUFA — CLINICAL AND REGULATORY STAGES")
+      && await f.getByRole("tab",{name:"SCANS",exact:true}).count()===1,120000);
+    const scans = found.frame.getByRole("tab",{name:"SCANS",exact:true});
+    await scans.scrollIntoViewIfNeeded({timeout:15000});
+    await scans.click({timeout:15000});
+    await waitFor(page,"Mobile SCANS content",async(f,text) =>
+      await selectedTab(f,"SCANS") &&
+      text.includes("NIGHTLY SCAN REPORT") &&
+      text.includes("GEM — MASTER STOCK LIST"),120000);
+    report.checked.push({screen:"Mobile SCANS opens at 390px",result:"PASS"});
+    await screenshot(page,"iphone-390-scans");
   });
   report.browser_js_errors = jsErrors.slice(0,12);
   report.failed_requests = failedRequests;
