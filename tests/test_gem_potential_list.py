@@ -12,7 +12,8 @@ from gem_potential_list import build_potential_list
 
 def write(root, name, rows):
     with (root / name).open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=rows[0])
+        fields = list(dict.fromkeys(key for row in rows for key in row))
+        writer = csv.DictWriter(file, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
 
