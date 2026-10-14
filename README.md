@@ -217,6 +217,27 @@ The scheduled collector is `scripts/phase2_pre_readout_pvalues_intake.py`, runni
 
 Streamlit presentation layer for the PDUFA clinical and trading research, calendar, and GEM survey system.
 
+## GEM — single master stock list (October 13, 2026)
+
+Under **PDUFA → SCANS → GEM**, Phase 3, Post-Financing and PDUFA
+are now **one stock-program table** named **GEM**. One row is retained for
+each saved exact ticker/drug/event, with a descriptive **GEM Stage**, two
+source-verification statuses, and a single **GEM Rank / GEM Score /100**.
+Eligible candidates appear first, then Phase 3 watches and unverified research
+rows. Filter by eligibility, lifecycle stage or ticker/drug, and export every
+matching row through **EXPORT GEM MASTER LIST**.
+
+Only **released, source-verified Phase 3 results** and **an independently verified
+second post-readout financing close** unlock the GEM ranking. PDUFA within 90
+days determines only the visible PDUFA *stage*, never an eligibility gate; a
+PDUFA −3 date triggers an exit-risk warning. Cash runway, dilution, price/volume,
+13F holdings, insider transactions, and regulatory timing remain ranking/risk
+inputs, not extra entry benchmarks. The old three independent stage research
+rubrics remain in the source audit for historical compatibility and diagnostics;
+their separate stock lists and stage tabs are no longer rendered. The underlying
+nightly scan collection and 11-survey inventory are preserved.
+
+
 ## Navigation
 - **PDUFA → PIPELINE:** The single combined research workflow: current-stage and PDUFA-window selectors, stage/date count charts, the matching trial table (both selectors plus SHOW required), PDUFA countdown, ticker Watchlist management, and Watchlist → Analysis → Invest promotion. Technical ENTRY/EXIT indicators, FDA approval evidence, and second-financing fields remain available here. The separate PDUFA WORKBENCH submenu is removed, while all of its useful tools remain in PIPELINE. Data processing and internal source labels are unchanged.
 - **PDUFA → POST PHASE 3:** The former TODAY reporting is here. Latest intake status appears immediately; select **SHOW POST PHASE 3 DAILY REPORT** to load yesterday’s source-linked Phase 3 posts, cumulative Phase 3 result records, financing evidence, ticker Watchlist management, and CSV export. Loading the large report on demand keeps the PIPELINE view responsive. Collectors and source-data files run independently of the UI.
