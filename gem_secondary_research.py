@@ -13,11 +13,17 @@ from urllib.parse import quote_plus
 # All other issuers fall back to a clearly labeled search for their IR page.
 CONFIRMED_INVESTOR_NEWS = {
     "NTLA": "https://ir.intelliatx.com/press-releases",
-    "AXSM": "https://www.axsome.com/",
+    # AXSM official corporate news is not a dedicated IR press-release page.
+    # Leave it unset so the interface clearly requests IR discovery.
     "CAPR": "https://www.capricor.com/investors/news-events/press-releases",
     "CORT": "https://ir.corcept.com/news-releases/",
     "CLDX": "https://ir.celldex.com/press-releases",
     "MLTX": "https://ir.moonlaketx.com/press-releases",
+    "PRAX": "https://investors.praxismedicines.com/press-releases",
+    "MLYS": "https://ir.mineralystx.com/news-events/press-releases",
+    "SVRA": "https://investors.savarapharma.com/news/",
+    "ZBIO": "https://investors.zenasbio.com/news-releases",
+    "COGT": "https://investors.cogentbio.com/",
 }
 SEARCH_HOST = "https://www.google.com/search?q="
 
@@ -57,6 +63,15 @@ def research_search_links(row):
         "sec_edgar": "https://www.sec.gov/search-filings",
         "sec_program_search": SEARCH_HOST + _quote(
             'site:sec.gov/Archives/edgar "' + ticker + '" "' + drug + '"'
+        ),
+        "sec_funding_close_search": SEARCH_HOST + _quote(
+            'site:sec.gov/Archives/edgar "' + ticker +
+            '" (offering OR private placement OR credit facility) ' +
+            '(closed OR completed OR funded) 8-K 10-Q'
+        ),
+        "issuer_funding_search": SEARCH_HOST + _quote(
+            '"' + ticker + '" "' + drug +
+            '" (offering OR financing OR placement) (closing OR completed OR funded)'
         ),
         "clinical_trials": "https://clinicaltrials.gov/search?term=" + _quote(trial_query),
         "reddit_program": "https://www.reddit.com/search/?q=" +
