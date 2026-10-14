@@ -1,0 +1,13 @@
+{
+  "as_of_pacific": "2026-10-13",
+  "caveat": "SEC source-linked cash-only runway is based on historical operating burn. It does not verify later financings or future liquidity.",
+  "collected_count": 0,
+  "collector_status": "COMPLETE",
+  "failures": [],
+  "generated_at_utc": "2026-10-14T00:16:56.249116+00:00",
+  "history": [],
+  "schema_version": 1,
+  "snapshots": [],
+  "source": "SEC_STEP4_COMPANYFACTS",
+  "target_count": 0
+}
