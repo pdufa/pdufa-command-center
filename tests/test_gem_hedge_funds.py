@@ -121,8 +121,31 @@ class HedgeFundTests(unittest.TestCase):
                                 "0001104659-26-097999"],
         }}}
         accepted = filing_inventory(submissions, "0001263508", as_of=ASOF)
-        self.assertEqual(len(accepted), 1)
-        self.assertEqual(accepted[0]["period"], date(2026, 3, 31))
+        self.assertEqual(len(accepted), 2)
+        self.assertTrue(accepted[1]["amended"])
+        self.assertEqual(accepted[1]["period"], date(2026, 3, 31))
+        self.assertEqual(accepted[1]["accession"], "0001104659-26-097999")
+
+    def test_amended_restated_13f_is_complete_but_add_only_is_blocked(self):
+        filing = {"accession": "0001104659-26-097191", "amended": True}
+        def fetch(url, _):
+            if url.endswith("index.json"):
+                return json.dumps({"directory": {"item": [
+                    {"name": "primary_doc.xml"}, {"name": "infotable.xml"}]}}).encode()
+            if url.endswith("primary_doc.xml"):
+                return b"<form13F><amendmentType>RESTATEMENT</amendmentType></form13F>"
+            return xml_holdings()
+        with patch("scripts.collect_gem_hedge_funds.time.sleep"):
+            self.assertEqual(get_holdings("0001263508", filing, "Test test@example.org",
+                                          fetch=fetch)["holdings"][0]["shares"], 500)
+        def add_only(url, who):
+            if url.endswith("primary_doc.xml"):
+                return b"<form13F><amendmentType>NEW HOLDINGS</amendmentType></form13F>"
+            return fetch(url, who)
+        with patch("scripts.collect_gem_hedge_funds.time.sleep"):
+            with self.assertRaisesRegex(ValueError, "not a verified complete"):
+                get_holdings("0001263508", filing, "Test test@example.org",
+                             fetch=add_only)
 
     def test_get_holdings_exact_infoshare_xml(self):
         filing = {"accession": "0001104659-26-097191"}
