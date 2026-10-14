@@ -173,6 +173,23 @@ def build_financing_review(root="data", *, as_of=None):
         else:
             issue.append("Find and verify TWO distinct funded post-readout financings")
         saved_pdufa = _date(event.get("pdufa_date"))
+        days_to_pdufa = (saved_pdufa - today).days if saved_pdufa else None
+        pdufa_verified = bool(
+            str(event.get("pdufa_confirmation") or "").startswith("VERIFIED")
+            and str(event.get("pdufa_evidence_url") or "").startswith("https://")
+        )
+        if days_to_pdufa is None:
+            timing_window = "DATE UNKNOWN"
+        elif days_to_pdufa <= 3:
+            timing_window = "EXIT/RESOLVED"
+        elif days_to_pdufa <= 13:
+            timing_window = "4–13 DAYS"
+        elif days_to_pdufa <= 30:
+            timing_window = "14–30 DAYS"
+        elif days_to_pdufa <= 90:
+            timing_window = "31–90 DAYS — PRIORITY"
+        else:
+            timing_window = ">90 DAYS"
         outcome = str(event.get("outcome") or "").strip().upper()
         time_closed = bool(
             outcome in RESOLVED
@@ -230,6 +247,10 @@ def build_financing_review(root="data", *, as_of=None):
             "Financing close #2": str(financing.get("second_financing_date") or ""),
             "Financing source #2": str(financing.get("second_financing_source") or ""),
             "PDUFA (saved)": str(event.get("pdufa_date") or ""),
+            "PDUFA days left": days_to_pdufa,
+            "PDUFA window": timing_window,
+            "PDUFA date verified": pdufa_verified,
+            "PDUFA primary source": str(event.get("pdufa_evidence_url") or ""),
             "Missing evidence / next actions": "; ".join(dict.fromkeys(issue)),
             "Investor news / source search": links.get("confirmed_issuer_news")
                 or links.get("find_issuer_news", ""),
