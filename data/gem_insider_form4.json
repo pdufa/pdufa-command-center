@@ -1,7 +1,7 @@
 {
   "as_of_pacific": "2026-10-14",
   "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-14T15:59:05.687083+00:00",
+  "generated_at_utc": "2026-10-14T20:12:50.306298+00:00",
   "issuer_count": 34,
   "issuer_errors": [
     {
@@ -20,6 +20,203 @@
   "issuers_complete": 31,
   "limits": "Issuer filing index capped to 25 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
   "records": [
+    {
+      "as_of": "2026-10-14",
+      "cik": "0001160308",
+      "filings_reviewed": 2,
+      "latest_filing": "2026-09-25",
+      "status": "COMPLETE",
+      "ticker": "SVRA",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-14",
+      "cik": "0001622229",
+      "filings_reviewed": 3,
+      "latest_filing": "2026-10-05",
+      "status": "COMPLETE",
+      "ticker": "COGT",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-08-27",
+          "filed": "2026-08-31",
+          "owner": "Morris Arlene",
+          "price": 37.0925,
+          "shares": 42349,
+          "source": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526377001/ownership.xml",
+          "ticker": "COGT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-27",
+          "filed": "2026-08-31",
+          "owner": "Morris Arlene",
+          "price": 37.5396,
+          "shares": 3161,
+          "source": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526377001/ownership.xml",
+          "ticker": "COGT"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-14",
+      "cik": "0001933414",
+      "filings_reviewed": 12,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
+      "ticker": "MLYS",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-30",
+          "filed": "2026-10-02",
+          "owner": "Congleton Jon",
+          "price": 25.4622,
+          "shares": 75000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000121/wk-form4_1790978009.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-22",
+          "filed": "2026-09-24",
+          "owner": "Slingsby Brian Taylor",
+          "price": 28.8085,
+          "shares": 104320,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000196390126000003/wk-form4_1790300978.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-21",
+          "filed": "2026-09-22",
+          "owner": "Warren Eric",
+          "price": 28.1172,
+          "shares": 7438,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000014/wk-form4_1790117313.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-17",
+          "owner": "Karydas Daphne",
+          "price": 28.58,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000181695226000005/wk-form4_1789681270.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-21",
+          "filed": "2026-08-25",
+          "owner": "Warren Eric",
+          "price": 25.9767,
+          "shares": 7437,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000012/wk-form4_1787692603.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-10",
+          "filed": "2026-08-12",
+          "owner": "Rodman David Malcom",
+          "price": 27.09,
+          "shares": 2170,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000118/wk-form4_1786577585.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-21",
+          "filed": "2026-07-23",
+          "owner": "Warren Eric",
+          "price": 26.8735,
+          "shares": 7438,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000009/wk-form4_1784846362.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-17",
+          "filed": "2026-07-20",
+          "owner": "Rodman David Malcom",
+          "price": 26.53,
+          "shares": 416,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000167265926000036/wk-form4_1784595624.xml",
+          "ticker": "MLYS"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-14",
+      "cik": "0001689548",
+      "filings_reviewed": 1,
+      "latest_filing": "2026-07-08",
+      "status": "COMPLETE",
+      "ticker": "PRAX",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-14",
+      "cik": "0001652130",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-10-06",
+      "status": "COMPLETE",
+      "ticker": "NTLA",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-02",
+          "filed": "2026-10-06",
+          "owner": "Dube Michael P",
+          "price": 12.43,
+          "shares": 1864,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526415541/ownership.xml",
+          "ticker": "NTLA"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-24",
+          "owner": "LEONARD JOHN M",
+          "price": 12.6,
+          "shares": 19890,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526363567/ownership.xml",
+          "ticker": "NTLA"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-21",
+          "filed": "2026-08-24",
+          "owner": "LEONARD JOHN M",
+          "price": 13.0,
+          "shares": 2785,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526363567/ownership.xml",
+          "ticker": "NTLA"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-22",
+          "filed": "2026-07-24",
+          "owner": "Dulac Edward J III",
+          "price": 11.25,
+          "shares": 8111,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526316279/ownership.xml",
+          "ticker": "NTLA"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-14",
+      "cik": "0001953926",
+      "filings_reviewed": 1,
+      "latest_filing": "2026-09-02",
+      "status": "COMPLETE",
+      "ticker": "ZBIO",
+      "transactions": []
+    },
     {
       "as_of": "2026-10-14",
       "cik": "0000874015",
@@ -83,8 +280,8 @@
     {
       "as_of": "2026-10-14",
       "cik": "0001599298",
-      "filings_reviewed": 0,
-      "latest_filing": "",
+      "filings_reviewed": 1,
+      "latest_filing": "2026-10-14",
       "status": "COMPLETE",
       "ticker": "SMMT",
       "transactions": []
@@ -96,15 +293,6 @@
       "latest_filing": "",
       "status": "COMPLETE",
       "ticker": "CAPR",
-      "transactions": []
-    },
-    {
-      "as_of": "2026-10-14",
-      "cik": "0001160308",
-      "filings_reviewed": 2,
-      "latest_filing": "2026-09-25",
-      "status": "COMPLETE",
-      "ticker": "SVRA",
       "transactions": []
     },
     {
@@ -219,36 +407,6 @@
     },
     {
       "as_of": "2026-10-14",
-      "cik": "0001622229",
-      "filings_reviewed": 3,
-      "latest_filing": "2026-10-05",
-      "status": "COMPLETE",
-      "ticker": "COGT",
-      "transactions": [
-        {
-          "code": "S",
-          "date": "2026-08-27",
-          "filed": "2026-08-31",
-          "owner": "Morris Arlene",
-          "price": 37.0925,
-          "shares": 42349,
-          "source": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526377001/ownership.xml",
-          "ticker": "COGT"
-        },
-        {
-          "code": "S",
-          "date": "2026-08-27",
-          "filed": "2026-08-31",
-          "owner": "Morris Arlene",
-          "price": 37.5396,
-          "shares": 3161,
-          "source": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526377001/ownership.xml",
-          "ticker": "COGT"
-        }
-      ]
-    },
-    {
-      "as_of": "2026-10-14",
       "cik": "0000875320",
       "filings_reviewed": 10,
       "latest_filing": "2026-09-10",
@@ -314,96 +472,6 @@
       "status": "INCOMPLETE",
       "ticker": "CORT",
       "transactions": []
-    },
-    {
-      "as_of": "2026-10-14",
-      "cik": "0001933414",
-      "filings_reviewed": 12,
-      "latest_filing": "2026-10-02",
-      "status": "COMPLETE",
-      "ticker": "MLYS",
-      "transactions": [
-        {
-          "code": "S",
-          "date": "2026-09-30",
-          "filed": "2026-10-02",
-          "owner": "Congleton Jon",
-          "price": 25.4622,
-          "shares": 75000,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000121/wk-form4_1790978009.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-09-22",
-          "filed": "2026-09-24",
-          "owner": "Slingsby Brian Taylor",
-          "price": 28.8085,
-          "shares": 104320,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000196390126000003/wk-form4_1790300978.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-09-21",
-          "filed": "2026-09-22",
-          "owner": "Warren Eric",
-          "price": 28.1172,
-          "shares": 7438,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000014/wk-form4_1790117313.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-09-15",
-          "filed": "2026-09-17",
-          "owner": "Karydas Daphne",
-          "price": 28.58,
-          "shares": 3000,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000181695226000005/wk-form4_1789681270.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-08-21",
-          "filed": "2026-08-25",
-          "owner": "Warren Eric",
-          "price": 25.9767,
-          "shares": 7437,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000012/wk-form4_1787692603.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-08-10",
-          "filed": "2026-08-12",
-          "owner": "Rodman David Malcom",
-          "price": 27.09,
-          "shares": 2170,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000118/wk-form4_1786577585.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-21",
-          "filed": "2026-07-23",
-          "owner": "Warren Eric",
-          "price": 26.8735,
-          "shares": 7438,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000009/wk-form4_1784846362.xml",
-          "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-17",
-          "filed": "2026-07-20",
-          "owner": "Rodman David Malcom",
-          "price": 26.53,
-          "shares": 416,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000167265926000036/wk-form4_1784595624.xml",
-          "ticker": "MLYS"
-        }
-      ]
     },
     {
       "as_of": "2026-10-14",
@@ -654,15 +722,6 @@
           "ticker": "GILD"
         }
       ]
-    },
-    {
-      "as_of": "2026-10-14",
-      "cik": "0001689548",
-      "filings_reviewed": 1,
-      "latest_filing": "2026-07-08",
-      "status": "COMPLETE",
-      "ticker": "PRAX",
-      "transactions": []
     },
     {
       "as_of": "2026-10-14",
@@ -1142,56 +1201,6 @@
     },
     {
       "as_of": "2026-10-14",
-      "cik": "0001652130",
-      "filings_reviewed": 5,
-      "latest_filing": "2026-10-06",
-      "status": "COMPLETE",
-      "ticker": "NTLA",
-      "transactions": [
-        {
-          "code": "S",
-          "date": "2026-10-02",
-          "filed": "2026-10-06",
-          "owner": "Dube Michael P",
-          "price": 12.43,
-          "shares": 1864,
-          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526415541/ownership.xml",
-          "ticker": "NTLA"
-        },
-        {
-          "code": "S",
-          "date": "2026-08-20",
-          "filed": "2026-08-24",
-          "owner": "LEONARD JOHN M",
-          "price": 12.6,
-          "shares": 19890,
-          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526363567/ownership.xml",
-          "ticker": "NTLA"
-        },
-        {
-          "code": "S",
-          "date": "2026-08-21",
-          "filed": "2026-08-24",
-          "owner": "LEONARD JOHN M",
-          "price": 13.0,
-          "shares": 2785,
-          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526363567/ownership.xml",
-          "ticker": "NTLA"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-22",
-          "filed": "2026-07-24",
-          "owner": "Dulac Edward J III",
-          "price": 11.25,
-          "shares": 8111,
-          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526316279/ownership.xml",
-          "ticker": "NTLA"
-        }
-      ]
-    },
-    {
-      "as_of": "2026-10-14",
       "cik": "0001802665",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-18",
@@ -1629,15 +1638,6 @@
           "ticker": "BMY"
         }
       ]
-    },
-    {
-      "as_of": "2026-10-14",
-      "cik": "0001953926",
-      "filings_reviewed": 1,
-      "latest_filing": "2026-09-02",
-      "status": "COMPLETE",
-      "ticker": "ZBIO",
-      "transactions": []
     }
   ],
   "schema_version": 1,

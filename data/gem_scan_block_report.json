@@ -24,36 +24,36 @@
       {
         "capability": "Phase 3 results and trial evidence",
         "caveat": "Verified trial readout; endpoint depth depends on source adjudication",
-        "data_coverage_pct": 0.3,
+        "data_coverage_pct": 2.2,
         "key": "clinical",
-        "observed_gem_rows": 1,
+        "observed_gem_rows": 8,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
       {
         "capability": "Two separate post-Phase-3 financing closes",
         "caveat": "GEM-specific eligibility rule verified from source attestations",
-        "data_coverage_pct": 0.0,
+        "data_coverage_pct": 1.6,
         "key": "financing",
-        "observed_gem_rows": 0,
+        "observed_gem_rows": 6,
         "state": "CUSTOM",
         "total_gem_rows": 368
       },
       {
         "capability": "FDA/PDUFA timing and event dates",
         "caveat": "Source-linked decision date and exit horizon; not BPW historical PoA",
-        "data_coverage_pct": 4.1,
+        "data_coverage_pct": 4.9,
         "key": "fda",
-        "observed_gem_rows": 15,
+        "observed_gem_rows": 18,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
       {
         "capability": "SEC cash runway and burn",
         "caveat": "Cash-only financial-source estimate; not an independent cash forecast",
-        "data_coverage_pct": 7.3,
+        "data_coverage_pct": 7.1,
         "key": "runway",
-        "observed_gem_rows": 27,
+        "observed_gem_rows": 26,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -149,7 +149,7 @@
       }
     ],
     "gem_observed_program_rows": 368,
-    "gem_two_benchmark_eligible": 0,
+    "gem_two_benchmark_eligible": 6,
     "same_input_score_comparison_performed": false,
     "similarity_percentage_supported": false
   },
@@ -159,14 +159,14 @@
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
-    "missing_or_stale": 341,
+    "missing_or_stale": 342,
     "source_backed_pass": 10,
     "target_count": 34,
-    "under_12_months": 17
+    "under_12_months": 16
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-14T15:56:17.609792+00:00",
+    "finished_at": "2026-10-14T20:10:22.058562+00:00",
     "matched_posted_results": 95,
     "new_records": 0,
     "stored_results": 2483,
@@ -176,7 +176,7 @@
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-14T15:59:06.187416+00:00",
+  "generated_at_utc": "2026-10-14T20:12:50.936565+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -208,8 +208,8 @@
     "Post-Financing": 0
   },
   "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 38593634716,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38593634716",
+  "run_id": 38629704130,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38629704130",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
@@ -223,7 +223,7 @@
   "status": "PARTIAL",
   "strict_entry_gate_shortlist_count": 0,
   "trade_entry_authorized": false,
-  "two_benchmark_candidate_count": 0,
+  "two_benchmark_candidate_count": 6,
   "two_benchmark_policy": "VERIFIED PHASE 3 RESULTS RELEASE + SECOND SEPARATE POST-READOUT FINANCING CLOSE; OTHER MEASURES ARE RANKING/RISK ONLY",
   "verified_phase3_tracking": 0
 }

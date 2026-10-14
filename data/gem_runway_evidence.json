@@ -4,7 +4,7 @@
   "collected_count": 34,
   "collector_status": "COMPLETE",
   "failures": [],
-  "generated_at_utc": "2026-10-14T15:57:00.175346+00:00",
+  "generated_at_utc": "2026-10-14T20:10:54.229681+00:00",
   "history": [
     {
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
@@ -7946,6 +7946,1549 @@
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
       "as_of": "2026-10-14",
       "cash_includes_restricted": false,
+      "cash_runway_risk": "HIGH \u2014 UNDER 6 MONTHS",
+      "cash_usd": 41800000.0,
+      "cik": "0001160308",
+      "company": "Savara Inc",
+      "company_revenue_usd": 0.0,
+      "current_debt_usd": 0.0,
+      "evidence": {
+        "cash": {
+          "accession": "0001193125-26-344585",
+          "basis": "INSTANT",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001160308.json",
+        "current_debt": {
+          "accession": "0001193125-26-344585",
+          "basis": "INSTANT",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "LongTermDebtCurrent"
+        },
+        "noncurrent_debt": {
+          "accession": "0001193125-26-344585",
+          "basis": "INSTANT",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "LongTermDebtNoncurrent"
+        },
+        "operating_cash_flow": {
+          "accession": "0001193125-26-344585",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": {
+          "accession": "0000950170-21-004253",
+          "basis": "DIRECT QUARTER",
+          "filed": "2021-11-12",
+          "form": "10-Q",
+          "period_end": "2021-09-30",
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
+        },
+        "shares": null,
+        "short_term_investments": {
+          "accession": "0001193125-26-344585",
+          "basis": "INSTANT",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "ShortTermInvestments"
+        },
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001160308.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001193125-26-261770",
+          "close_verified": false,
+          "filed": "2026-06-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526261770/d106055d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-105099",
+          "close_verified": false,
+          "filed": "2026-03-13",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526105099/d107834d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-023378",
+          "close_verified": false,
+          "filed": "2026-01-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526023378/d39349d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-008301",
+          "close_verified": false,
+          "filed": "2026-01-09",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526008301/d24211d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-258725",
+          "close_verified": false,
+          "filed": "2025-10-30",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525258725/d28079d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-258629",
+          "close_verified": false,
+          "filed": "2025-10-30",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525258629/d62228d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-256449",
+          "close_verified": false,
+          "filed": "2025-10-29",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525256449/d28079d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-256290",
+          "close_verified": false,
+          "filed": "2025-10-29",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525256290/d55049d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-193507",
+          "close_verified": false,
+          "filed": "2025-09-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525193507/d12513d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-137150",
+          "close_verified": false,
+          "filed": "2025-06-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525137150/d58104d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-126273",
+          "close_verified": false,
+          "filed": "2025-05-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525126273/d845572d8k.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 9915666.67,
+      "noncurrent_debt_usd": 30109000.0,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -29747000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 4.22,
+      "runway_risk_index_0_100": 85,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": 131234000.0,
+      "ticker": "SVRA"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
+      "cash_runway_risk": "ELEVATED \u2014 6 TO UNDER 12 MONTHS",
+      "cash_usd": 181172000.0,
+      "cik": "0001622229",
+      "company": "Cogent Biosciences, Inc.",
+      "company_revenue_usd": 0.0,
+      "current_debt_usd": null,
+      "evidence": {
+        "cash": {
+          "accession": "0001193125-26-342393",
+          "basis": "INSTANT",
+          "filed": "2026-08-10",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001622229.json",
+        "current_debt": null,
+        "noncurrent_debt": {
+          "accession": "0001193125-25-272334",
+          "basis": "INSTANT",
+          "filed": "2025-11-07",
+          "form": "10-Q",
+          "period_end": "2025-09-30",
+          "tag": "LongTermDebtNoncurrent"
+        },
+        "operating_cash_flow": {
+          "accession": "0001193125-26-342393",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-10",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": {
+          "accession": "0001564590-22-010238",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2022-03-15",
+          "form": "10-K",
+          "period_end": "2020-12-31",
+          "tag": "RevenueFromContractWithCustomerIncludingAssessedTax"
+        },
+        "shares": null,
+        "short_term_investments": null,
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001622229.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001193125-26-380194",
+          "close_verified": false,
+          "filed": "2026-09-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526380194/d184156d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-342695",
+          "close_verified": false,
+          "filed": "2026-08-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526342695/d132277d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-342683",
+          "close_verified": false,
+          "filed": "2026-08-10",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526342683/d149476d424b5.htm"
+        },
+        {
+          "accession": "0001193125-26-341315",
+          "close_verified": false,
+          "filed": "2026-08-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-20260810.htm"
+        },
+        {
+          "accession": "0001193125-26-267566",
+          "close_verified": false,
+          "filed": "2026-06-11",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526267566/d100263d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-205124",
+          "close_verified": false,
+          "filed": "2026-05-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526205124/cogt-20260505.htm"
+        },
+        {
+          "accession": "0001193125-26-053131",
+          "close_verified": false,
+          "filed": "2026-02-17",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526053131/cogt-20260217.htm"
+        },
+        {
+          "accession": "0001193125-25-311217",
+          "close_verified": false,
+          "filed": "2025-12-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525311217/d81277d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-286158",
+          "close_verified": false,
+          "filed": "2025-11-18",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-278679",
+          "close_verified": false,
+          "filed": "2025-11-13",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525278679/d46097d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-277586",
+          "close_verified": false,
+          "filed": "2025-11-12",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525277586/d940106d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-277503",
+          "close_verified": false,
+          "filed": "2025-11-12",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525277503/d159388d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-275686",
+          "close_verified": false,
+          "filed": "2025-11-12",
+          "form": "FWP",
+          "review_note": "Free-writing prospectus: NOT financing closure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525275686/d82246dfwp.htm"
+        },
+        {
+          "accession": "0001193125-25-274642",
+          "close_verified": false,
+          "filed": "2025-11-12",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525274642/d940106d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-274621",
+          "close_verified": false,
+          "filed": "2025-11-12",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525274621/d159388d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-273315",
+          "close_verified": false,
+          "filed": "2025-11-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525273315/d54064d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-261797",
+          "close_verified": false,
+          "filed": "2025-11-03",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525261797/cogt-20251103.htm"
+        },
+        {
+          "accession": "0001193125-25-201353",
+          "close_verified": false,
+          "filed": "2025-09-11",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525201353/d947118d8k.htm"
+        },
+        {
+          "accession": "0000950170-25-102433",
+          "close_verified": false,
+          "filed": "2025-08-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025102433/cogt-20250805.htm"
+        },
+        {
+          "accession": "0001193125-25-157390",
+          "close_verified": false,
+          "filed": "2025-07-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525157390/d92808d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-157121",
+          "close_verified": false,
+          "filed": "2025-07-09",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525157121/d73794d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-156654",
+          "close_verified": false,
+          "filed": "2025-07-08",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525156654/d73794d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-155811",
+          "close_verified": false,
+          "filed": "2025-07-07",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525155811/d156610d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-138813",
+          "close_verified": false,
+          "filed": "2025-06-11",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525138813/d21181d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-135337",
+          "close_verified": false,
+          "filed": "2025-06-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525135337/d20143d8k.htm"
+        },
+        {
+          "accession": "0000950170-25-063987",
+          "close_verified": false,
+          "filed": "2025-05-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025063987/cogt-20250506.htm"
+        },
+        {
+          "accession": "0001193125-25-113402",
+          "close_verified": false,
+          "filed": "2025-05-06",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525113402/d899199d424b5.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 25757000.0,
+      "noncurrent_debt_usd": 44250000.0,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -77271000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 7.03,
+      "runway_risk_index_0_100": 65,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": null,
+      "ticker": "COGT"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
+      "cash_runway_risk": "WATCH \u2014 12 TO UNDER 18 MONTHS",
+      "cash_usd": 138268000.0,
+      "cik": "0001933414",
+      "company": "Mineralys Therapeutics, Inc.",
+      "company_revenue_usd": null,
+      "current_debt_usd": null,
+      "evidence": {
+        "cash": {
+          "accession": "0001933414-26-000114",
+          "basis": "INSTANT",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001933414.json",
+        "current_debt": null,
+        "noncurrent_debt": null,
+        "operating_cash_flow": {
+          "accession": "0001933414-26-000114",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-11",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": null,
+        "shares": null,
+        "short_term_investments": null,
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001933414.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001933414-26-000112",
+          "close_verified": false,
+          "filed": "2026-08-11",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000112/mlys-20260805.htm"
+        },
+        {
+          "accession": "0001628280-26-040225",
+          "close_verified": false,
+          "filed": "2026-06-03",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000162828026040225/mlys-20260603.htm"
+        },
+        {
+          "accession": "0001628280-26-040216",
+          "close_verified": false,
+          "filed": "2026-06-03",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000162828026040216/myls-finalprospectusjune20.htm"
+        },
+        {
+          "accession": "0001628280-26-040024",
+          "close_verified": false,
+          "filed": "2026-06-03",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000162828026040024/mlys-20260602.htm"
+        },
+        {
+          "accession": "0001933414-26-000090",
+          "close_verified": false,
+          "filed": "2026-05-22",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000090/mlys-20260521.htm"
+        },
+        {
+          "accession": "0001933414-26-000082",
+          "close_verified": false,
+          "filed": "2026-05-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000082/mlys-20260506.htm"
+        },
+        {
+          "accession": "0001933414-26-000054",
+          "close_verified": false,
+          "filed": "2026-03-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000054/mlys-20260312.htm"
+        },
+        {
+          "accession": "0001933414-26-000048",
+          "close_verified": false,
+          "filed": "2026-03-09",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys-20260306.htm"
+        },
+        {
+          "accession": "0001933414-26-000002",
+          "close_verified": false,
+          "filed": "2026-01-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000002/mlys-20260106.htm"
+        },
+        {
+          "accession": "0001933414-25-000139",
+          "close_verified": false,
+          "filed": "2025-11-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000139/mlys-20251110.htm"
+        },
+        {
+          "accession": "0001933414-25-000120",
+          "close_verified": false,
+          "filed": "2025-09-03",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000120/mlys-20250902.htm"
+        },
+        {
+          "accession": "0001933414-25-000119",
+          "close_verified": false,
+          "filed": "2025-09-03",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000119/mineralys-424b5finalsept20.htm"
+        },
+        {
+          "accession": "0001933414-25-000107",
+          "close_verified": false,
+          "filed": "2025-09-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000107/mlys-20250902.htm"
+        },
+        {
+          "accession": "0001933414-25-000103",
+          "close_verified": false,
+          "filed": "2025-09-02",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000103/mineralys-424b5prelimsept2.htm"
+        },
+        {
+          "accession": "0001933414-25-000088",
+          "close_verified": false,
+          "filed": "2025-08-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000088/mlys-20250812.htm"
+        },
+        {
+          "accession": "0001933414-25-000070",
+          "close_verified": false,
+          "filed": "2025-06-17",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000070/mlys-20250617.htm"
+        },
+        {
+          "accession": "0001933414-25-000064",
+          "close_verified": false,
+          "filed": "2025-05-22",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000064/mlys-20250522.htm"
+        },
+        {
+          "accession": "0001933414-25-000057",
+          "close_verified": false,
+          "filed": "2025-05-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000057/mlys-20250512.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 10852000.0,
+      "noncurrent_debt_usd": null,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -32556000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 12.74,
+      "runway_risk_index_0_100": 40,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": null,
+      "ticker": "MLYS"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
+      "cash_runway_risk": "LOWER CASH RUNWAY RISK \u2014 18+ MONTHS",
+      "cash_usd": 474761000.0,
+      "cik": "0001689548",
+      "company": "Praxis Precision Medicines, Inc.",
+      "company_revenue_usd": 0.0,
+      "current_debt_usd": null,
+      "evidence": {
+        "cash": {
+          "accession": "0001689548-26-000083",
+          "basis": "INSTANT",
+          "filed": "2026-08-06",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001689548.json",
+        "current_debt": null,
+        "noncurrent_debt": null,
+        "operating_cash_flow": {
+          "accession": "0001689548-26-000083",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-06",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": {
+          "accession": "0001689548-26-000029",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-02-19",
+          "form": "10-K",
+          "period_end": "2025-12-31",
+          "tag": "Revenues"
+        },
+        "shares": null,
+        "short_term_investments": null,
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001689548.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001689548-26-000082",
+          "close_verified": false,
+          "filed": "2026-08-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000082/prax-20260806.htm"
+        },
+        {
+          "accession": "0001689548-26-000072",
+          "close_verified": false,
+          "filed": "2026-07-07",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000072/prax-20260707.htm"
+        },
+        {
+          "accession": "0001104659-26-080356",
+          "close_verified": false,
+          "filed": "2026-07-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926080356/tm2619331d1_8k.htm"
+        },
+        {
+          "accession": "0001689548-26-000069",
+          "close_verified": false,
+          "filed": "2026-06-29",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm"
+        },
+        {
+          "accession": "0001689548-26-000066",
+          "close_verified": false,
+          "filed": "2026-06-22",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000066/prax-20260622.htm"
+        },
+        {
+          "accession": "0001689548-26-000056",
+          "close_verified": false,
+          "filed": "2026-06-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000056/prax-20260610.htm"
+        },
+        {
+          "accession": "0001689548-26-000053",
+          "close_verified": false,
+          "filed": "2026-06-01",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000053/prax-20260601.htm"
+        },
+        {
+          "accession": "0001689548-26-000049",
+          "close_verified": false,
+          "filed": "2026-05-07",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000049/prax-20260507.htm"
+        },
+        {
+          "accession": "0001689548-26-000033",
+          "close_verified": false,
+          "filed": "2026-04-14",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000033/prax-20260414.htm"
+        },
+        {
+          "accession": "0001689548-26-000031",
+          "close_verified": false,
+          "filed": "2026-04-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000031/prax-20260406.htm"
+        },
+        {
+          "accession": "0001689548-26-000028",
+          "close_verified": false,
+          "filed": "2026-02-19",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000028/prax-20260219.htm"
+        },
+        {
+          "accession": "0001689548-26-000016",
+          "close_verified": false,
+          "filed": "2026-02-10",
+          "form": "8-K/A",
+          "review_note": "Amended current report; contents require review",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000016/prax-20260206.htm"
+        },
+        {
+          "accession": "0001689548-26-000005",
+          "close_verified": false,
+          "filed": "2026-01-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000005/prax-20260108.htm"
+        },
+        {
+          "accession": "0001104659-26-001825",
+          "close_verified": false,
+          "filed": "2026-01-07",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926001825/tm261686d3_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-001823",
+          "close_verified": false,
+          "filed": "2026-01-07",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926001823/tm261686-2_424b5.htm"
+        },
+        {
+          "accession": "0001689548-26-000002",
+          "close_verified": false,
+          "filed": "2026-01-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000002/prax-20260106.htm"
+        },
+        {
+          "accession": "0001104659-26-001307",
+          "close_verified": false,
+          "filed": "2026-01-06",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926001307/tm261686-1_424b5.htm"
+        },
+        {
+          "accession": "0001689548-25-000118",
+          "close_verified": false,
+          "filed": "2025-12-29",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000118/prax-20251229.htm"
+        },
+        {
+          "accession": "0001689548-25-000116",
+          "close_verified": false,
+          "filed": "2025-12-11",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000116/prax-20251209.htm"
+        },
+        {
+          "accession": "0001689548-25-000114",
+          "close_verified": false,
+          "filed": "2025-12-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000114/prax-20251204.htm"
+        },
+        {
+          "accession": "0001689548-25-000110",
+          "close_verified": false,
+          "filed": "2025-11-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000110/prax-20251105.htm"
+        },
+        {
+          "accession": "0001689548-25-000103",
+          "close_verified": false,
+          "filed": "2025-10-21",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000103/prax-20251020.htm"
+        },
+        {
+          "accession": "0001104659-25-100488",
+          "close_verified": false,
+          "filed": "2025-10-20",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925100488/tm2528989d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-100487",
+          "close_verified": false,
+          "filed": "2025-10-20",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925100487/tm2528846-2_424b5.htm"
+        },
+        {
+          "accession": "0001104659-25-100136",
+          "close_verified": false,
+          "filed": "2025-10-16",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925100136/tm2528846-1_424b5.htm"
+        },
+        {
+          "accession": "0001689548-25-000100",
+          "close_verified": false,
+          "filed": "2025-10-16",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000100/prax-20251016.htm"
+        },
+        {
+          "accession": "0001104659-25-087865",
+          "close_verified": false,
+          "filed": "2025-09-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925087865/tm2525240d2_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-087861",
+          "close_verified": false,
+          "filed": "2025-09-05",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925087861/tm2525240-1_424b5.htm"
+        },
+        {
+          "accession": "0001689548-25-000094",
+          "close_verified": false,
+          "filed": "2025-08-04",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000094/prax-20250804.htm"
+        },
+        {
+          "accession": "0001689548-25-000086",
+          "close_verified": false,
+          "filed": "2025-07-17",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000086/prax-20250717.htm"
+        },
+        {
+          "accession": "0001689548-25-000075",
+          "close_verified": false,
+          "filed": "2025-06-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000075/prax-20250626.htm"
+        },
+        {
+          "accession": "0001689548-25-000062",
+          "close_verified": false,
+          "filed": "2025-05-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000062/prax-20250502.htm"
+        },
+        {
+          "accession": "0001689548-25-000056",
+          "close_verified": false,
+          "filed": "2025-05-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000056/prax-20250502.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 25847333.33,
+      "noncurrent_debt_usd": null,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -77542000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 18.37,
+      "runway_risk_index_0_100": 15,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": null,
+      "ticker": "PRAX"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
+      "cash_runway_risk": "HIGH \u2014 UNDER 6 MONTHS",
+      "cash_usd": 106128000.0,
+      "cik": "0001652130",
+      "company": "Intellia Therapeutics, Inc.",
+      "company_revenue_usd": 7659000.0,
+      "current_debt_usd": null,
+      "evidence": {
+        "cash": {
+          "accession": "0001193125-26-337952",
+          "basis": "INSTANT",
+          "filed": "2026-08-06",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001652130.json",
+        "current_debt": null,
+        "noncurrent_debt": null,
+        "operating_cash_flow": {
+          "accession": "0001193125-26-337952",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-06",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": {
+          "accession": "0001193125-26-337952",
+          "basis": "DIRECT QUARTER",
+          "filed": "2026-08-06",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
+        },
+        "shares": null,
+        "short_term_investments": null,
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001652130.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001193125-26-385194",
+          "close_verified": false,
+          "filed": "2026-09-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526385194/ntla-20260908.htm"
+        },
+        {
+          "accession": "0001193125-26-383645",
+          "close_verified": false,
+          "filed": "2026-09-04",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526383645/d110798d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-336772",
+          "close_verified": false,
+          "filed": "2026-08-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526336772/ntla-20260806.htm"
+        },
+        {
+          "accession": "0001193125-26-270358",
+          "close_verified": false,
+          "filed": "2026-06-15",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526270358/ntla-20260613.htm"
+        },
+        {
+          "accession": "0001193125-26-265934",
+          "close_verified": false,
+          "filed": "2026-06-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526265934/ntla-20260609.htm"
+        },
+        {
+          "accession": "0001193125-26-215721",
+          "close_verified": false,
+          "filed": "2026-05-11",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526215721/ntla-20260511.htm"
+        },
+        {
+          "accession": "0001193125-26-197489",
+          "close_verified": false,
+          "filed": "2026-04-30",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526197489/d308328d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-192361",
+          "close_verified": false,
+          "filed": "2026-04-29",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526192361/d37532d424b5.htm"
+        },
+        {
+          "accession": "0001193125-26-182419",
+          "close_verified": false,
+          "filed": "2026-04-27",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526182419/d37532d424b5.htm"
+        },
+        {
+          "accession": "0001193125-26-179401",
+          "close_verified": false,
+          "filed": "2026-04-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526179401/d138980d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-151300",
+          "close_verified": false,
+          "filed": "2026-04-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526151300/d65395d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-085425",
+          "close_verified": false,
+          "filed": "2026-03-02",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526085425/d848543d424b5.htm"
+        },
+        {
+          "accession": "0001193125-26-084309",
+          "close_verified": false,
+          "filed": "2026-03-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526084309/d101756d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-073456",
+          "close_verified": false,
+          "filed": "2026-02-26",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526073456/ntla-20260226.htm"
+        },
+        {
+          "accession": "0001193125-26-023387",
+          "close_verified": false,
+          "filed": "2026-01-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526023387/d29201d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-008307",
+          "close_verified": false,
+          "filed": "2026-01-09",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526008307/d15047d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-274596",
+          "close_verified": false,
+          "filed": "2025-11-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525274596/d12611d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-269479",
+          "close_verified": false,
+          "filed": "2025-11-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525269479/d53244d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-256378",
+          "close_verified": false,
+          "filed": "2025-10-29",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525256378/d98865d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-250757",
+          "close_verified": false,
+          "filed": "2025-10-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525250757/d44351d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-217484",
+          "close_verified": false,
+          "filed": "2025-09-25",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525217484/d870108d8k.htm"
+        },
+        {
+          "accession": "0000950170-25-104574",
+          "close_verified": false,
+          "filed": "2025-08-07",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025104574/ntla-20250807.htm"
+        },
+        {
+          "accession": "0001193125-25-141087",
+          "close_verified": false,
+          "filed": "2025-06-16",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525141087/d82485d8k.htm"
+        },
+        {
+          "accession": "0000950170-25-085479",
+          "close_verified": false,
+          "filed": "2025-06-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025085479/ntla-20250611.htm"
+        },
+        {
+          "accession": "0001193125-25-129524",
+          "close_verified": false,
+          "filed": "2025-05-28",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525129524/d40487d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-122076",
+          "close_verified": false,
+          "filed": "2025-05-19",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525122076/d80735d8k.htm"
+        },
+        {
+          "accession": "0000950170-25-066403",
+          "close_verified": false,
+          "filed": "2025-05-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025066403/ntla-20250508.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 27704333.33,
+      "noncurrent_debt_usd": null,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -83113000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 3.83,
+      "runway_risk_index_0_100": 85,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": null,
+      "ticker": "NTLA"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
+      "cash_runway_risk": "ELEVATED \u2014 6 TO UNDER 12 MONTHS",
+      "cash_usd": 196577000.0,
+      "cik": "0001953926",
+      "company": "Zenas BioPharma, Inc.",
+      "company_revenue_usd": 1000000.0,
+      "current_debt_usd": null,
+      "evidence": {
+        "cash": {
+          "accession": "0001104659-26-095448",
+          "basis": "INSTANT",
+          "filed": "2026-08-13",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001953926.json",
+        "current_debt": null,
+        "noncurrent_debt": {
+          "accession": "0001104659-26-027964",
+          "basis": "INSTANT",
+          "filed": "2026-03-16",
+          "form": "10-K",
+          "period_end": "2025-12-31",
+          "tag": "LongTermDebtNoncurrent"
+        },
+        "operating_cash_flow": {
+          "accession": "0001104659-26-095448",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-13",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": {
+          "accession": "0001104659-26-095448",
+          "basis": "DIRECT QUARTER",
+          "filed": "2026-08-13",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
+        },
+        "shares": null,
+        "short_term_investments": {
+          "accession": "0001104659-26-095448",
+          "basis": "INSTANT",
+          "filed": "2026-08-13",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "ShortTermInvestments"
+        },
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001953926.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001104659-26-115151",
+          "close_verified": false,
+          "filed": "2026-10-13",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926115151/tm2627406d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-095437",
+          "close_verified": false,
+          "filed": "2026-08-13",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926095437/tm2622871d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-059700",
+          "close_verified": false,
+          "filed": "2026-05-13",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926059700/tm2614295d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-037821",
+          "close_verified": false,
+          "filed": "2026-03-31",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926037821/tm2610711d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-036536",
+          "close_verified": false,
+          "filed": "2026-03-30",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926036536/tm261753-11_424b5.htm"
+        },
+        {
+          "accession": "0001104659-26-036534",
+          "close_verified": false,
+          "filed": "2026-03-30",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926036534/tm261753-10_424b5.htm"
+        },
+        {
+          "accession": "0001104659-26-035494",
+          "close_verified": false,
+          "filed": "2026-03-27",
+          "form": "FWP",
+          "review_note": "Free-writing prospectus: NOT financing closure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035494/tm261753d6_fwp.htm"
+        },
+        {
+          "accession": "0001104659-26-035475",
+          "close_verified": false,
+          "filed": "2026-03-27",
+          "form": "FWP",
+          "review_note": "Free-writing prospectus: NOT financing closure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035475/tm2610054d1_fwp.htm"
+        },
+        {
+          "accession": "0001104659-26-035241",
+          "close_verified": false,
+          "filed": "2026-03-26",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035241/tm261753-8_424b5.htm"
+        },
+        {
+          "accession": "0001104659-26-035237",
+          "close_verified": false,
+          "filed": "2026-03-26",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035237/tm261753-7_424b5.htm"
+        },
+        {
+          "accession": "0001104659-26-035203",
+          "close_verified": false,
+          "filed": "2026-03-26",
+          "form": "FWP",
+          "review_note": "Free-writing prospectus: NOT financing closure",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035203/tm261753d9_fwp.htm"
+        },
+        {
+          "accession": "0001104659-26-027961",
+          "close_verified": false,
+          "filed": "2026-03-16",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926027961/tm268878d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-015314",
+          "close_verified": false,
+          "filed": "2026-02-13",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926015314/tm266357d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-26-000402",
+          "close_verified": false,
+          "filed": "2026-01-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926000402/tm261774d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-121182",
+          "close_verified": false,
+          "filed": "2025-12-15",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925121182/tm2533427d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-109737",
+          "close_verified": false,
+          "filed": "2025-11-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925109737/tm2530850d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-102317",
+          "close_verified": false,
+          "filed": "2025-10-27",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925102317/tm2529508d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-097663",
+          "close_verified": false,
+          "filed": "2025-10-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925097663/tm2528075d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-085982",
+          "close_verified": false,
+          "filed": "2025-09-02",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925085982/tm2524961d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-076464",
+          "close_verified": false,
+          "filed": "2025-08-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925076464/tm2523154d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-058892",
+          "close_verified": false,
+          "filed": "2025-06-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925058892/tm2517793d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-056215",
+          "close_verified": false,
+          "filed": "2025-06-04",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925056215/tm2517068d1_8k.htm"
+        },
+        {
+          "accession": "0001104659-25-048948",
+          "close_verified": false,
+          "filed": "2025-05-15",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925048948/tm2514981d1_8k.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 19079000.0,
+      "noncurrent_debt_usd": 78636000.0,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -57237000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 10.3,
+      "runway_risk_index_0_100": 65,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": 446549000.0,
+      "ticker": "ZBIO"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
       "cash_runway_risk": "REVIEW \u2014 MISSING OR STALE INPUTS",
       "cash_usd": 350065000.0,
       "cik": "0000874015",
@@ -9264,181 +10807,6 @@
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
       "as_of": "2026-10-14",
       "cash_includes_restricted": false,
-      "cash_runway_risk": "HIGH \u2014 UNDER 6 MONTHS",
-      "cash_usd": 41800000.0,
-      "cik": "0001160308",
-      "company": "Savara Inc",
-      "company_revenue_usd": 0.0,
-      "current_debt_usd": 0.0,
-      "evidence": {
-        "cash": {
-          "accession": "0001193125-26-344585",
-          "basis": "INSTANT",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "CashAndCashEquivalentsAtCarryingValue"
-        },
-        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001160308.json",
-        "current_debt": {
-          "accession": "0001193125-26-344585",
-          "basis": "INSTANT",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "LongTermDebtCurrent"
-        },
-        "noncurrent_debt": {
-          "accession": "0001193125-26-344585",
-          "basis": "INSTANT",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "LongTermDebtNoncurrent"
-        },
-        "operating_cash_flow": {
-          "accession": "0001193125-26-344585",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "NetCashProvidedByUsedInOperatingActivities"
-        },
-        "prior_shares": null,
-        "revenue": {
-          "accession": "0000950170-21-004253",
-          "basis": "DIRECT QUARTER",
-          "filed": "2021-11-12",
-          "form": "10-Q",
-          "period_end": "2021-09-30",
-          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
-        },
-        "shares": null,
-        "short_term_investments": {
-          "accession": "0001193125-26-344585",
-          "basis": "INSTANT",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "ShortTermInvestments"
-        },
-        "submissions_url": "https://data.sec.gov/submissions/CIK0001160308.json"
-      },
-      "filing_review_queue": [
-        {
-          "accession": "0001193125-26-261770",
-          "close_verified": false,
-          "filed": "2026-06-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526261770/d106055d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-105099",
-          "close_verified": false,
-          "filed": "2026-03-13",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526105099/d107834d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-023378",
-          "close_verified": false,
-          "filed": "2026-01-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526023378/d39349d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-008301",
-          "close_verified": false,
-          "filed": "2026-01-09",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526008301/d24211d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-258725",
-          "close_verified": false,
-          "filed": "2025-10-30",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525258725/d28079d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-258629",
-          "close_verified": false,
-          "filed": "2025-10-30",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525258629/d62228d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-256449",
-          "close_verified": false,
-          "filed": "2025-10-29",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525256449/d28079d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-256290",
-          "close_verified": false,
-          "filed": "2025-10-29",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525256290/d55049d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-193507",
-          "close_verified": false,
-          "filed": "2025-09-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525193507/d12513d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-137150",
-          "close_verified": false,
-          "filed": "2025-06-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525137150/d58104d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-126273",
-          "close_verified": false,
-          "filed": "2025-05-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525126273/d845572d8k.htm"
-        }
-      ],
-      "financial_score_0_100": null,
-      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
-      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
-      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
-      "monthly_operating_burn_usd": 9915666.67,
-      "noncurrent_debt_usd": 30109000.0,
-      "operating_cash_flow_months": 3,
-      "operating_cash_flow_usd": -29747000.0,
-      "previous_shares_outstanding": null,
-      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
-      "product_revenue_usd": null,
-      "review_flags": [],
-      "runway_months_cash_only": 4.22,
-      "runway_risk_index_0_100": 85,
-      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
-      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
-      "shares_change_pct": null,
-      "shares_outstanding": null,
-      "short_term_investments_usd": 131234000.0,
-      "ticker": "SVRA"
-    },
-    {
-      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
-      "as_of": "2026-10-14",
-      "cash_includes_restricted": false,
       "cash_runway_risk": "LOWER CASH RUNWAY RISK \u2014 18+ MONTHS",
       "cash_usd": 677911000.0,
       "cik": "0001743881",
@@ -9698,295 +11066,6 @@
       "shares_outstanding": null,
       "short_term_investments_usd": null,
       "ticker": "BBIO"
-    },
-    {
-      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
-      "as_of": "2026-10-14",
-      "cash_includes_restricted": false,
-      "cash_runway_risk": "ELEVATED \u2014 6 TO UNDER 12 MONTHS",
-      "cash_usd": 181172000.0,
-      "cik": "0001622229",
-      "company": "Cogent Biosciences, Inc.",
-      "company_revenue_usd": 0.0,
-      "current_debt_usd": null,
-      "evidence": {
-        "cash": {
-          "accession": "0001193125-26-342393",
-          "basis": "INSTANT",
-          "filed": "2026-08-10",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "CashAndCashEquivalentsAtCarryingValue"
-        },
-        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001622229.json",
-        "current_debt": null,
-        "noncurrent_debt": {
-          "accession": "0001193125-25-272334",
-          "basis": "INSTANT",
-          "filed": "2025-11-07",
-          "form": "10-Q",
-          "period_end": "2025-09-30",
-          "tag": "LongTermDebtNoncurrent"
-        },
-        "operating_cash_flow": {
-          "accession": "0001193125-26-342393",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-08-10",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "NetCashProvidedByUsedInOperatingActivities"
-        },
-        "prior_shares": null,
-        "revenue": {
-          "accession": "0001564590-22-010238",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2022-03-15",
-          "form": "10-K",
-          "period_end": "2020-12-31",
-          "tag": "RevenueFromContractWithCustomerIncludingAssessedTax"
-        },
-        "shares": null,
-        "short_term_investments": null,
-        "submissions_url": "https://data.sec.gov/submissions/CIK0001622229.json"
-      },
-      "filing_review_queue": [
-        {
-          "accession": "0001193125-26-380194",
-          "close_verified": false,
-          "filed": "2026-09-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526380194/d184156d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-342695",
-          "close_verified": false,
-          "filed": "2026-08-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526342695/d132277d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-342683",
-          "close_verified": false,
-          "filed": "2026-08-10",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526342683/d149476d424b5.htm"
-        },
-        {
-          "accession": "0001193125-26-341315",
-          "close_verified": false,
-          "filed": "2026-08-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-20260810.htm"
-        },
-        {
-          "accession": "0001193125-26-267566",
-          "close_verified": false,
-          "filed": "2026-06-11",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526267566/d100263d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-205124",
-          "close_verified": false,
-          "filed": "2026-05-05",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526205124/cogt-20260505.htm"
-        },
-        {
-          "accession": "0001193125-26-053131",
-          "close_verified": false,
-          "filed": "2026-02-17",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526053131/cogt-20260217.htm"
-        },
-        {
-          "accession": "0001193125-25-311217",
-          "close_verified": false,
-          "filed": "2025-12-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525311217/d81277d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-286158",
-          "close_verified": false,
-          "filed": "2025-11-18",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-278679",
-          "close_verified": false,
-          "filed": "2025-11-13",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525278679/d46097d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-277586",
-          "close_verified": false,
-          "filed": "2025-11-12",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525277586/d940106d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-277503",
-          "close_verified": false,
-          "filed": "2025-11-12",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525277503/d159388d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-275686",
-          "close_verified": false,
-          "filed": "2025-11-12",
-          "form": "FWP",
-          "review_note": "Free-writing prospectus: NOT financing closure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525275686/d82246dfwp.htm"
-        },
-        {
-          "accession": "0001193125-25-274642",
-          "close_verified": false,
-          "filed": "2025-11-12",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525274642/d940106d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-274621",
-          "close_verified": false,
-          "filed": "2025-11-12",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525274621/d159388d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-273315",
-          "close_verified": false,
-          "filed": "2025-11-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525273315/d54064d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-261797",
-          "close_verified": false,
-          "filed": "2025-11-03",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525261797/cogt-20251103.htm"
-        },
-        {
-          "accession": "0001193125-25-201353",
-          "close_verified": false,
-          "filed": "2025-09-11",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525201353/d947118d8k.htm"
-        },
-        {
-          "accession": "0000950170-25-102433",
-          "close_verified": false,
-          "filed": "2025-08-05",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025102433/cogt-20250805.htm"
-        },
-        {
-          "accession": "0001193125-25-157390",
-          "close_verified": false,
-          "filed": "2025-07-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525157390/d92808d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-157121",
-          "close_verified": false,
-          "filed": "2025-07-09",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525157121/d73794d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-156654",
-          "close_verified": false,
-          "filed": "2025-07-08",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525156654/d73794d424b5.htm"
-        },
-        {
-          "accession": "0001193125-25-155811",
-          "close_verified": false,
-          "filed": "2025-07-07",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525155811/d156610d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-138813",
-          "close_verified": false,
-          "filed": "2025-06-11",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525138813/d21181d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-135337",
-          "close_verified": false,
-          "filed": "2025-06-05",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525135337/d20143d8k.htm"
-        },
-        {
-          "accession": "0000950170-25-063987",
-          "close_verified": false,
-          "filed": "2025-05-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000095017025063987/cogt-20250506.htm"
-        },
-        {
-          "accession": "0001193125-25-113402",
-          "close_verified": false,
-          "filed": "2025-05-06",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525113402/d899199d424b5.htm"
-        }
-      ],
-      "financial_score_0_100": null,
-      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
-      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
-      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
-      "monthly_operating_burn_usd": 25757000.0,
-      "noncurrent_debt_usd": 44250000.0,
-      "operating_cash_flow_months": 3,
-      "operating_cash_flow_usd": -77271000.0,
-      "previous_shares_outstanding": null,
-      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
-      "product_revenue_usd": null,
-      "review_flags": [],
-      "runway_months_cash_only": 7.03,
-      "runway_risk_index_0_100": 65,
-      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
-      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
-      "shares_change_pct": null,
-      "shares_outstanding": null,
-      "short_term_investments_usd": null,
-      "ticker": "COGT"
     },
     {
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
@@ -11011,209 +12090,6 @@
     {
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
       "as_of": "2026-10-14",
-      "cash_includes_restricted": false,
-      "cash_runway_risk": "WATCH \u2014 12 TO UNDER 18 MONTHS",
-      "cash_usd": 138268000.0,
-      "cik": "0001933414",
-      "company": "Mineralys Therapeutics, Inc.",
-      "company_revenue_usd": null,
-      "current_debt_usd": null,
-      "evidence": {
-        "cash": {
-          "accession": "0001933414-26-000114",
-          "basis": "INSTANT",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "CashAndCashEquivalentsAtCarryingValue"
-        },
-        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001933414.json",
-        "current_debt": null,
-        "noncurrent_debt": null,
-        "operating_cash_flow": {
-          "accession": "0001933414-26-000114",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-08-11",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "NetCashProvidedByUsedInOperatingActivities"
-        },
-        "prior_shares": null,
-        "revenue": null,
-        "shares": null,
-        "short_term_investments": null,
-        "submissions_url": "https://data.sec.gov/submissions/CIK0001933414.json"
-      },
-      "filing_review_queue": [
-        {
-          "accession": "0001933414-26-000112",
-          "close_verified": false,
-          "filed": "2026-08-11",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000112/mlys-20260805.htm"
-        },
-        {
-          "accession": "0001628280-26-040225",
-          "close_verified": false,
-          "filed": "2026-06-03",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000162828026040225/mlys-20260603.htm"
-        },
-        {
-          "accession": "0001628280-26-040216",
-          "close_verified": false,
-          "filed": "2026-06-03",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000162828026040216/myls-finalprospectusjune20.htm"
-        },
-        {
-          "accession": "0001628280-26-040024",
-          "close_verified": false,
-          "filed": "2026-06-03",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000162828026040024/mlys-20260602.htm"
-        },
-        {
-          "accession": "0001933414-26-000090",
-          "close_verified": false,
-          "filed": "2026-05-22",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000090/mlys-20260521.htm"
-        },
-        {
-          "accession": "0001933414-26-000082",
-          "close_verified": false,
-          "filed": "2026-05-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000082/mlys-20260506.htm"
-        },
-        {
-          "accession": "0001933414-26-000054",
-          "close_verified": false,
-          "filed": "2026-03-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000054/mlys-20260312.htm"
-        },
-        {
-          "accession": "0001933414-26-000048",
-          "close_verified": false,
-          "filed": "2026-03-09",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys-20260306.htm"
-        },
-        {
-          "accession": "0001933414-26-000002",
-          "close_verified": false,
-          "filed": "2026-01-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000002/mlys-20260106.htm"
-        },
-        {
-          "accession": "0001933414-25-000139",
-          "close_verified": false,
-          "filed": "2025-11-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000139/mlys-20251110.htm"
-        },
-        {
-          "accession": "0001933414-25-000120",
-          "close_verified": false,
-          "filed": "2025-09-03",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000120/mlys-20250902.htm"
-        },
-        {
-          "accession": "0001933414-25-000119",
-          "close_verified": false,
-          "filed": "2025-09-03",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000119/mineralys-424b5finalsept20.htm"
-        },
-        {
-          "accession": "0001933414-25-000107",
-          "close_verified": false,
-          "filed": "2025-09-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000107/mlys-20250902.htm"
-        },
-        {
-          "accession": "0001933414-25-000103",
-          "close_verified": false,
-          "filed": "2025-09-02",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000103/mineralys-424b5prelimsept2.htm"
-        },
-        {
-          "accession": "0001933414-25-000088",
-          "close_verified": false,
-          "filed": "2025-08-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000088/mlys-20250812.htm"
-        },
-        {
-          "accession": "0001933414-25-000070",
-          "close_verified": false,
-          "filed": "2025-06-17",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000070/mlys-20250617.htm"
-        },
-        {
-          "accession": "0001933414-25-000064",
-          "close_verified": false,
-          "filed": "2025-05-22",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000064/mlys-20250522.htm"
-        },
-        {
-          "accession": "0001933414-25-000057",
-          "close_verified": false,
-          "filed": "2025-05-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000057/mlys-20250512.htm"
-        }
-      ],
-      "financial_score_0_100": null,
-      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
-      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
-      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
-      "monthly_operating_burn_usd": 10852000.0,
-      "noncurrent_debt_usd": null,
-      "operating_cash_flow_months": 3,
-      "operating_cash_flow_usd": -32556000.0,
-      "previous_shares_outstanding": null,
-      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
-      "product_revenue_usd": null,
-      "review_flags": [],
-      "runway_months_cash_only": 12.74,
-      "runway_risk_index_0_100": 40,
-      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
-      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
-      "shares_change_pct": null,
-      "shares_outstanding": null,
-      "short_term_investments_usd": null,
-      "ticker": "MLYS"
-    },
-    {
-      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
-      "as_of": "2026-10-14",
       "cash_includes_restricted": true,
       "cash_runway_risk": "REVIEW \u2014 MISSING OR STALE INPUTS",
       "cash_usd": 3179000000.0,
@@ -11437,336 +12313,6 @@
       "shares_outstanding": null,
       "short_term_investments_usd": null,
       "ticker": "GILD"
-    },
-    {
-      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
-      "as_of": "2026-10-14",
-      "cash_includes_restricted": false,
-      "cash_runway_risk": "LOWER CASH RUNWAY RISK \u2014 18+ MONTHS",
-      "cash_usd": 474761000.0,
-      "cik": "0001689548",
-      "company": "Praxis Precision Medicines, Inc.",
-      "company_revenue_usd": 0.0,
-      "current_debt_usd": null,
-      "evidence": {
-        "cash": {
-          "accession": "0001689548-26-000083",
-          "basis": "INSTANT",
-          "filed": "2026-08-06",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "CashAndCashEquivalentsAtCarryingValue"
-        },
-        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001689548.json",
-        "current_debt": null,
-        "noncurrent_debt": null,
-        "operating_cash_flow": {
-          "accession": "0001689548-26-000083",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-08-06",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "NetCashProvidedByUsedInOperatingActivities"
-        },
-        "prior_shares": null,
-        "revenue": {
-          "accession": "0001689548-26-000029",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-02-19",
-          "form": "10-K",
-          "period_end": "2025-12-31",
-          "tag": "Revenues"
-        },
-        "shares": null,
-        "short_term_investments": null,
-        "submissions_url": "https://data.sec.gov/submissions/CIK0001689548.json"
-      },
-      "filing_review_queue": [
-        {
-          "accession": "0001689548-26-000082",
-          "close_verified": false,
-          "filed": "2026-08-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000082/prax-20260806.htm"
-        },
-        {
-          "accession": "0001689548-26-000072",
-          "close_verified": false,
-          "filed": "2026-07-07",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000072/prax-20260707.htm"
-        },
-        {
-          "accession": "0001104659-26-080356",
-          "close_verified": false,
-          "filed": "2026-07-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926080356/tm2619331d1_8k.htm"
-        },
-        {
-          "accession": "0001689548-26-000069",
-          "close_verified": false,
-          "filed": "2026-06-29",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm"
-        },
-        {
-          "accession": "0001689548-26-000066",
-          "close_verified": false,
-          "filed": "2026-06-22",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000066/prax-20260622.htm"
-        },
-        {
-          "accession": "0001689548-26-000056",
-          "close_verified": false,
-          "filed": "2026-06-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000056/prax-20260610.htm"
-        },
-        {
-          "accession": "0001689548-26-000053",
-          "close_verified": false,
-          "filed": "2026-06-01",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000053/prax-20260601.htm"
-        },
-        {
-          "accession": "0001689548-26-000049",
-          "close_verified": false,
-          "filed": "2026-05-07",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000049/prax-20260507.htm"
-        },
-        {
-          "accession": "0001689548-26-000033",
-          "close_verified": false,
-          "filed": "2026-04-14",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000033/prax-20260414.htm"
-        },
-        {
-          "accession": "0001689548-26-000031",
-          "close_verified": false,
-          "filed": "2026-04-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000031/prax-20260406.htm"
-        },
-        {
-          "accession": "0001689548-26-000028",
-          "close_verified": false,
-          "filed": "2026-02-19",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000028/prax-20260219.htm"
-        },
-        {
-          "accession": "0001689548-26-000016",
-          "close_verified": false,
-          "filed": "2026-02-10",
-          "form": "8-K/A",
-          "review_note": "Amended current report; contents require review",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000016/prax-20260206.htm"
-        },
-        {
-          "accession": "0001689548-26-000005",
-          "close_verified": false,
-          "filed": "2026-01-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000005/prax-20260108.htm"
-        },
-        {
-          "accession": "0001104659-26-001825",
-          "close_verified": false,
-          "filed": "2026-01-07",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926001825/tm261686d3_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-001823",
-          "close_verified": false,
-          "filed": "2026-01-07",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926001823/tm261686-2_424b5.htm"
-        },
-        {
-          "accession": "0001689548-26-000002",
-          "close_verified": false,
-          "filed": "2026-01-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000002/prax-20260106.htm"
-        },
-        {
-          "accession": "0001104659-26-001307",
-          "close_verified": false,
-          "filed": "2026-01-06",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465926001307/tm261686-1_424b5.htm"
-        },
-        {
-          "accession": "0001689548-25-000118",
-          "close_verified": false,
-          "filed": "2025-12-29",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000118/prax-20251229.htm"
-        },
-        {
-          "accession": "0001689548-25-000116",
-          "close_verified": false,
-          "filed": "2025-12-11",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000116/prax-20251209.htm"
-        },
-        {
-          "accession": "0001689548-25-000114",
-          "close_verified": false,
-          "filed": "2025-12-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000114/prax-20251204.htm"
-        },
-        {
-          "accession": "0001689548-25-000110",
-          "close_verified": false,
-          "filed": "2025-11-05",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000110/prax-20251105.htm"
-        },
-        {
-          "accession": "0001689548-25-000103",
-          "close_verified": false,
-          "filed": "2025-10-21",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000103/prax-20251020.htm"
-        },
-        {
-          "accession": "0001104659-25-100488",
-          "close_verified": false,
-          "filed": "2025-10-20",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925100488/tm2528989d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-100487",
-          "close_verified": false,
-          "filed": "2025-10-20",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925100487/tm2528846-2_424b5.htm"
-        },
-        {
-          "accession": "0001104659-25-100136",
-          "close_verified": false,
-          "filed": "2025-10-16",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925100136/tm2528846-1_424b5.htm"
-        },
-        {
-          "accession": "0001689548-25-000100",
-          "close_verified": false,
-          "filed": "2025-10-16",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000100/prax-20251016.htm"
-        },
-        {
-          "accession": "0001104659-25-087865",
-          "close_verified": false,
-          "filed": "2025-09-05",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925087865/tm2525240d2_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-087861",
-          "close_verified": false,
-          "filed": "2025-09-05",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000110465925087861/tm2525240-1_424b5.htm"
-        },
-        {
-          "accession": "0001689548-25-000094",
-          "close_verified": false,
-          "filed": "2025-08-04",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000094/prax-20250804.htm"
-        },
-        {
-          "accession": "0001689548-25-000086",
-          "close_verified": false,
-          "filed": "2025-07-17",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000086/prax-20250717.htm"
-        },
-        {
-          "accession": "0001689548-25-000075",
-          "close_verified": false,
-          "filed": "2025-06-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000075/prax-20250626.htm"
-        },
-        {
-          "accession": "0001689548-25-000062",
-          "close_verified": false,
-          "filed": "2025-05-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000062/prax-20250502.htm"
-        },
-        {
-          "accession": "0001689548-25-000056",
-          "close_verified": false,
-          "filed": "2025-05-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000056/prax-20250502.htm"
-        }
-      ],
-      "financial_score_0_100": null,
-      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
-      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
-      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
-      "monthly_operating_burn_usd": 25847333.33,
-      "noncurrent_debt_usd": null,
-      "operating_cash_flow_months": 3,
-      "operating_cash_flow_usd": -77542000.0,
-      "previous_shares_outstanding": null,
-      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
-      "product_revenue_usd": null,
-      "review_flags": [],
-      "runway_months_cash_only": 18.37,
-      "runway_risk_index_0_100": 15,
-      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
-      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
-      "shares_change_pct": null,
-      "shares_outstanding": null,
-      "short_term_investments_usd": null,
-      "ticker": "PRAX"
     },
     {
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
@@ -13794,288 +14340,6 @@
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
       "as_of": "2026-10-14",
       "cash_includes_restricted": false,
-      "cash_runway_risk": "HIGH \u2014 UNDER 6 MONTHS",
-      "cash_usd": 106128000.0,
-      "cik": "0001652130",
-      "company": "Intellia Therapeutics, Inc.",
-      "company_revenue_usd": 7659000.0,
-      "current_debt_usd": null,
-      "evidence": {
-        "cash": {
-          "accession": "0001193125-26-337952",
-          "basis": "INSTANT",
-          "filed": "2026-08-06",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "CashAndCashEquivalentsAtCarryingValue"
-        },
-        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001652130.json",
-        "current_debt": null,
-        "noncurrent_debt": null,
-        "operating_cash_flow": {
-          "accession": "0001193125-26-337952",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-08-06",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "NetCashProvidedByUsedInOperatingActivities"
-        },
-        "prior_shares": null,
-        "revenue": {
-          "accession": "0001193125-26-337952",
-          "basis": "DIRECT QUARTER",
-          "filed": "2026-08-06",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
-        },
-        "shares": null,
-        "short_term_investments": null,
-        "submissions_url": "https://data.sec.gov/submissions/CIK0001652130.json"
-      },
-      "filing_review_queue": [
-        {
-          "accession": "0001193125-26-385194",
-          "close_verified": false,
-          "filed": "2026-09-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526385194/ntla-20260908.htm"
-        },
-        {
-          "accession": "0001193125-26-383645",
-          "close_verified": false,
-          "filed": "2026-09-04",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526383645/d110798d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-336772",
-          "close_verified": false,
-          "filed": "2026-08-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526336772/ntla-20260806.htm"
-        },
-        {
-          "accession": "0001193125-26-270358",
-          "close_verified": false,
-          "filed": "2026-06-15",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526270358/ntla-20260613.htm"
-        },
-        {
-          "accession": "0001193125-26-265934",
-          "close_verified": false,
-          "filed": "2026-06-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526265934/ntla-20260609.htm"
-        },
-        {
-          "accession": "0001193125-26-215721",
-          "close_verified": false,
-          "filed": "2026-05-11",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526215721/ntla-20260511.htm"
-        },
-        {
-          "accession": "0001193125-26-197489",
-          "close_verified": false,
-          "filed": "2026-04-30",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526197489/d308328d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-192361",
-          "close_verified": false,
-          "filed": "2026-04-29",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526192361/d37532d424b5.htm"
-        },
-        {
-          "accession": "0001193125-26-182419",
-          "close_verified": false,
-          "filed": "2026-04-27",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526182419/d37532d424b5.htm"
-        },
-        {
-          "accession": "0001193125-26-179401",
-          "close_verified": false,
-          "filed": "2026-04-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526179401/d138980d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-151300",
-          "close_verified": false,
-          "filed": "2026-04-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526151300/d65395d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-085425",
-          "close_verified": false,
-          "filed": "2026-03-02",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526085425/d848543d424b5.htm"
-        },
-        {
-          "accession": "0001193125-26-084309",
-          "close_verified": false,
-          "filed": "2026-03-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526084309/d101756d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-073456",
-          "close_verified": false,
-          "filed": "2026-02-26",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526073456/ntla-20260226.htm"
-        },
-        {
-          "accession": "0001193125-26-023387",
-          "close_verified": false,
-          "filed": "2026-01-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526023387/d29201d8k.htm"
-        },
-        {
-          "accession": "0001193125-26-008307",
-          "close_verified": false,
-          "filed": "2026-01-09",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526008307/d15047d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-274596",
-          "close_verified": false,
-          "filed": "2025-11-10",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525274596/d12611d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-269479",
-          "close_verified": false,
-          "filed": "2025-11-06",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525269479/d53244d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-256378",
-          "close_verified": false,
-          "filed": "2025-10-29",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525256378/d98865d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-250757",
-          "close_verified": false,
-          "filed": "2025-10-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525250757/d44351d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-217484",
-          "close_verified": false,
-          "filed": "2025-09-25",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525217484/d870108d8k.htm"
-        },
-        {
-          "accession": "0000950170-25-104574",
-          "close_verified": false,
-          "filed": "2025-08-07",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025104574/ntla-20250807.htm"
-        },
-        {
-          "accession": "0001193125-25-141087",
-          "close_verified": false,
-          "filed": "2025-06-16",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525141087/d82485d8k.htm"
-        },
-        {
-          "accession": "0000950170-25-085479",
-          "close_verified": false,
-          "filed": "2025-06-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025085479/ntla-20250611.htm"
-        },
-        {
-          "accession": "0001193125-25-129524",
-          "close_verified": false,
-          "filed": "2025-05-28",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525129524/d40487d8k.htm"
-        },
-        {
-          "accession": "0001193125-25-122076",
-          "close_verified": false,
-          "filed": "2025-05-19",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312525122076/d80735d8k.htm"
-        },
-        {
-          "accession": "0000950170-25-066403",
-          "close_verified": false,
-          "filed": "2025-05-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1652130/000095017025066403/ntla-20250508.htm"
-        }
-      ],
-      "financial_score_0_100": null,
-      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
-      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
-      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
-      "monthly_operating_burn_usd": 27704333.33,
-      "noncurrent_debt_usd": null,
-      "operating_cash_flow_months": 3,
-      "operating_cash_flow_usd": -83113000.0,
-      "previous_shares_outstanding": null,
-      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
-      "product_revenue_usd": null,
-      "review_flags": [],
-      "runway_months_cash_only": 3.83,
-      "runway_risk_index_0_100": 85,
-      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
-      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
-      "shares_change_pct": null,
-      "shares_outstanding": null,
-      "short_term_investments_usd": null,
-      "ticker": "NTLA"
-    },
-    {
-      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
-      "as_of": "2026-10-14",
-      "cash_includes_restricted": false,
       "cash_runway_risk": "REVIEW \u2014 MISSING OR STALE INPUTS",
       "cash_usd": 549769000.0,
       "cik": "0001802665",
@@ -15227,270 +15491,6 @@
       "shares_outstanding": null,
       "short_term_investments_usd": null,
       "ticker": "BMY"
-    },
-    {
-      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
-      "as_of": "2026-10-14",
-      "cash_includes_restricted": false,
-      "cash_runway_risk": "ELEVATED \u2014 6 TO UNDER 12 MONTHS",
-      "cash_usd": 196577000.0,
-      "cik": "0001953926",
-      "company": "Zenas BioPharma, Inc.",
-      "company_revenue_usd": 1000000.0,
-      "current_debt_usd": null,
-      "evidence": {
-        "cash": {
-          "accession": "0001104659-26-095448",
-          "basis": "INSTANT",
-          "filed": "2026-08-13",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "CashAndCashEquivalentsAtCarryingValue"
-        },
-        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001953926.json",
-        "current_debt": null,
-        "noncurrent_debt": {
-          "accession": "0001104659-26-027964",
-          "basis": "INSTANT",
-          "filed": "2026-03-16",
-          "form": "10-K",
-          "period_end": "2025-12-31",
-          "tag": "LongTermDebtNoncurrent"
-        },
-        "operating_cash_flow": {
-          "accession": "0001104659-26-095448",
-          "basis": "YTD LESS PRIOR YTD",
-          "filed": "2026-08-13",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "NetCashProvidedByUsedInOperatingActivities"
-        },
-        "prior_shares": null,
-        "revenue": {
-          "accession": "0001104659-26-095448",
-          "basis": "DIRECT QUARTER",
-          "filed": "2026-08-13",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
-        },
-        "shares": null,
-        "short_term_investments": {
-          "accession": "0001104659-26-095448",
-          "basis": "INSTANT",
-          "filed": "2026-08-13",
-          "form": "10-Q",
-          "period_end": "2026-06-30",
-          "tag": "ShortTermInvestments"
-        },
-        "submissions_url": "https://data.sec.gov/submissions/CIK0001953926.json"
-      },
-      "filing_review_queue": [
-        {
-          "accession": "0001104659-26-115151",
-          "close_verified": false,
-          "filed": "2026-10-13",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926115151/tm2627406d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-095437",
-          "close_verified": false,
-          "filed": "2026-08-13",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926095437/tm2622871d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-059700",
-          "close_verified": false,
-          "filed": "2026-05-13",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926059700/tm2614295d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-037821",
-          "close_verified": false,
-          "filed": "2026-03-31",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926037821/tm2610711d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-036536",
-          "close_verified": false,
-          "filed": "2026-03-30",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926036536/tm261753-11_424b5.htm"
-        },
-        {
-          "accession": "0001104659-26-036534",
-          "close_verified": false,
-          "filed": "2026-03-30",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926036534/tm261753-10_424b5.htm"
-        },
-        {
-          "accession": "0001104659-26-035494",
-          "close_verified": false,
-          "filed": "2026-03-27",
-          "form": "FWP",
-          "review_note": "Free-writing prospectus: NOT financing closure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035494/tm261753d6_fwp.htm"
-        },
-        {
-          "accession": "0001104659-26-035475",
-          "close_verified": false,
-          "filed": "2026-03-27",
-          "form": "FWP",
-          "review_note": "Free-writing prospectus: NOT financing closure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035475/tm2610054d1_fwp.htm"
-        },
-        {
-          "accession": "0001104659-26-035241",
-          "close_verified": false,
-          "filed": "2026-03-26",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035241/tm261753-8_424b5.htm"
-        },
-        {
-          "accession": "0001104659-26-035237",
-          "close_verified": false,
-          "filed": "2026-03-26",
-          "form": "424B5",
-          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035237/tm261753-7_424b5.htm"
-        },
-        {
-          "accession": "0001104659-26-035203",
-          "close_verified": false,
-          "filed": "2026-03-26",
-          "form": "FWP",
-          "review_note": "Free-writing prospectus: NOT financing closure",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926035203/tm261753d9_fwp.htm"
-        },
-        {
-          "accession": "0001104659-26-027961",
-          "close_verified": false,
-          "filed": "2026-03-16",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926027961/tm268878d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-015314",
-          "close_verified": false,
-          "filed": "2026-02-13",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926015314/tm266357d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-26-000402",
-          "close_verified": false,
-          "filed": "2026-01-05",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926000402/tm261774d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-121182",
-          "close_verified": false,
-          "filed": "2025-12-15",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925121182/tm2533427d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-109737",
-          "close_verified": false,
-          "filed": "2025-11-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925109737/tm2530850d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-102317",
-          "close_verified": false,
-          "filed": "2025-10-27",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925102317/tm2529508d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-097663",
-          "close_verified": false,
-          "filed": "2025-10-08",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925097663/tm2528075d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-085982",
-          "close_verified": false,
-          "filed": "2025-09-02",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925085982/tm2524961d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-076464",
-          "close_verified": false,
-          "filed": "2025-08-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925076464/tm2523154d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-058892",
-          "close_verified": false,
-          "filed": "2025-06-12",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925058892/tm2517793d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-056215",
-          "close_verified": false,
-          "filed": "2025-06-04",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925056215/tm2517068d1_8k.htm"
-        },
-        {
-          "accession": "0001104659-25-048948",
-          "close_verified": false,
-          "filed": "2025-05-15",
-          "form": "8-K",
-          "review_note": "Current report; contents require review to identify any actual financing",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465925048948/tm2514981d1_8k.htm"
-        }
-      ],
-      "financial_score_0_100": null,
-      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
-      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
-      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
-      "monthly_operating_burn_usd": 19079000.0,
-      "noncurrent_debt_usd": 78636000.0,
-      "operating_cash_flow_months": 3,
-      "operating_cash_flow_usd": -57237000.0,
-      "previous_shares_outstanding": null,
-      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
-      "product_revenue_usd": null,
-      "review_flags": [],
-      "runway_months_cash_only": 10.3,
-      "runway_risk_index_0_100": 65,
-      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
-      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
-      "shares_change_pct": null,
-      "shares_outstanding": null,
-      "short_term_investments_usd": 446549000.0,
-      "ticker": "ZBIO"
     }
   ],
   "source": "SEC_STEP4_COMPANYFACTS",
