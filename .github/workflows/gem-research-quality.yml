@@ -1,6 +1,8 @@
 name: GEM Research Quality Snapshot
 
 # 13F specialist holdings: SEC 13F-HR XML + restatement-only 13F-HR/A.
+# BPW-comparable research coverage: SEC 13F, Form4, runway, financing and market,
+# with missing proprietary PoA/options/return evidence explicitly unverified.
 # Primary ranked candidate list: verified Phase 3 release + verified second
 # separate post-readout financing closing; other dimensions rank/flag only.
 # Fourth SCANS dashboard block: GEMS — research-only Phase 3 discovery,
