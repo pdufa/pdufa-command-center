@@ -138,6 +138,10 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         "source_backed_pass": sum(r.get("Cash runway gate") == PASS for r in items),
         "under_12_months": sum(r.get("Cash runway gate") == HOLD for r in items),
         "missing_or_stale": sum(r.get("Cash runway gate", REVIEW) == REVIEW for r in items),
+        "deteriorating": sum(str(r.get("Cash runway trend") or "").startswith("DECLINING")
+                             for r in items),
+        "dilution_alerts": sum(str(r.get("GEM 3 dilution status") or "").startswith(("HOLD", "ALERT"))
+                               for r in items),
     }
     source_stale = scan_status.get("feed_current") is not True
     history_complete = (histories[HISTORY_FILES[0]]["state"] == "PRESENT"
