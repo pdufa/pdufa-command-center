@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "as_of_date": "2026-10-14",
+  "provenance": "Primary issuer investor-relations releases and SEC-filed issuer reports surfaced during manual source discovery",
+  "status": "RESEARCH_LEADS_FOR_EXACT_PROGRAM_REVIEW_NOT_VERIFIED_BY_SCANNER",
+  "source_run_id": "38575279522",
+  "canonical_source_status_unchanged": true,
+  "certification": "NOT_ADJUDICATED",
+  "trading_authorized": false,
+  "purpose": "Focus next independent exact-program verification pass on primary materials. Do not promote a date or change entries from this research ledger alone.",
+  "leads": [
+    {
+      "event_key": "ANAB|IMSIDOLIMAB_GPP_20261212",
+      "ticker": "ANAB",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "expected_date": "2026-12-12",
+      "primary_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1370053/000119312526396696/anab-20260630.htm",
+        "https://anaptysbio.gcs-web.com/news-releases/news-release-details/anaptys-announces-second-quarter-and-transitional-fiscal-year"
+      ],
+      "review": "Issuer reports an FDA target action date for Quimilza/imsidolimab in GPP. Confirm ANAB economic rights versus Vanda development/commercialization rights and distinguish issuer-reported target from direct FDA decision."
+    },
+    {
+      "event_key": "EXEL|ZANZALINTINIB_CRC",
+      "ticker": "EXEL",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "expected_date": "2026-12-03",
+      "primary_urls": [
+        "https://ir.exelixis.com/news-releases/news-release-details/exelixis-announces-us-fda-accepted-new-drug-application",
+        "https://ir.exelixis.com/news-releases/news-release-details/exelixis-provides-update-phase-3-stellar-303-trial-evaluating"
+      ],
+      "review": "Exelixis primary release explicitly names zanzalintinib plus atezolizumab, metastatic colorectal cancer and FDA target date Dec 3, 2026. Audit parser's clause-local exact combination and date attribution; no inference about FDA approval."
+    },
+    {
+      "event_key": "HRMY|PITOLISANT_GR_20270401",
+      "ticker": "HRMY",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "expected_date": "2027-04-01",
+      "primary_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm",
+        "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090090/hrmy-20260630x10q.htm"
+      ],
+      "review": "Harmony's August 2026 SEC-filed release and 10-Q describe accepted pitolisant GR NDA and April 1, 2027 target. Check narrow matching to narcolepsy and ensure not conflated with pitolisant HD's different PDUFA horizon."
+    },
+    {
+      "event_key": "SVRA|MOLBREEVI_PAP_20261122",
+      "ticker": "SVRA",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "expected_date": "2026-11-22",
+      "primary_urls": [
+        "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-First-Quarter-Financial-Results-and-Provides-Business-Update/default.aspx",
+        "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx"
+      ],
+      "review": "Savara primary issuer releases explicitly identify the MOLBREEVI PDUFA target. Recheck the drug alias molgramostim and full autoimmune pulmonary alveolar proteinosis indication; verify no subsequent extension."
+    }
+  ],
+  "unresolved_scope_from_source_report": 45,
+  "note": "Manual discovery is not a fresh collector-attested primary evidence hash. Source URLs require live retrieval, content hashes and exact-event adjudication before any status update. SEC financing sequence and GEMS entry gates remain blocked."
+}
