@@ -7,6 +7,7 @@ trade. The two independent GEM entry benchmarks are never changed here.
 from __future__ import annotations
 
 import csv
+import re
 from datetime import date
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -66,6 +67,14 @@ def build_potential_list(root="data", *, as_of=None):
         return [], []
 
     active, holds = [], []
+    # A saved registry trial must never borrow financing from another trial of
+    # the same ticker. External independent readout leads are added separately.
+    mapped_ncts = set()
+    for event in events.values():
+        ticker = str(event.get("ticker") or "").strip().upper()
+        for nct in re.findall(r"NCT\\d{8}", str(event.get("nct_id") or "").upper()):
+            if ticker:
+                mapped_ncts.add((ticker, nct))
     for key, event in events.items():
         ticker = str(event.get("ticker") or "").strip().upper()
         if not ticker or not str(event.get("drug") or "").strip():
@@ -161,6 +170,58 @@ def build_potential_list(root="data", *, as_of=None):
             ),
         }
         (holds if on_hold else active).append(row)
+
+    # Independent source-linked post-Phase-3 readout leads have ticker+NCT
+    # identity, but no verified regulatory event. Keep each one as research
+    # only; never attach SEC financing evidence using the ticker alone.
+    independent = _rows(root / "post_phase3_discoveries.csv")
+    by_trial, duplicated = {}, set()
+    for lead in independent:
+        ticker = str(lead.get("ticker") or "").strip().upper()
+        nct = str(lead.get("nct_id") or "").strip().upper()
+        drug = str(lead.get("drug") or "").strip()
+        indication = str(lead.get("indication") or "").strip()
+        readout = _parse_date(lead.get("readout_date"))
+        link = str(lead.get("source_url") or "").strip()
+        if not (re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker) and
+                re.fullmatch(r"NCT\\d{8}", nct) and drug and indication and
+                readout and readout <= today and
+                link.startswith("https://")):
+            continue
+        identity = (ticker, nct)
+        if identity in mapped_ncts:
+            continue
+        if identity in by_trial:
+            duplicated.add(identity)
+        else:
+            by_trial[identity] = lead
+    for identity in duplicated:
+        by_trial.pop(identity, None)
+    for (ticker, nct), lead in by_trial.items():
+        active.append({
+            "Ticker": ticker,
+            "Drug": str(lead.get("drug") or "").strip(),
+            "Indication": str(lead.get("indication") or "").strip(),
+            "Why potential": (
+                "Dated issuer Phase 3 readout announcement linked for "
+                + nct + " (research lead, not GEM-verified results)"
+            ),
+            "Still needed": (
+                "Independently verify trial identity, clinical endpoint and readout; "
+                "verify two separate post-readout financing closes"
+            ),
+            "GEM status": "POTENTIAL — RESEARCH ONLY / NOT QUALIFIED",
+            "Evidence type": "Issuer Phase 3 readout (review)",
+            "SEC documents rechecked": 0,
+            "NCT ID": nct,
+            "PDUFA date (saved)": "",
+            "Timing / resolution": "No verified PDUFA timing linked to this exact trial",
+            "Exact program": "TRIAL|" + ticker + "|" + nct,
+            "Clinical source": str(lead.get("source_url") or "").strip(),
+            "Financing SEC source": "",
+            "Source review date": str(lead.get("readout_date") or "").strip(),
+            "_order": (3, 0, ticker, nct),
+        })
 
     for group in (active, holds):
         group.sort(key=lambda row: row["_order"])
