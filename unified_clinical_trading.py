@@ -80,7 +80,7 @@ def _timing_legend_html():
     )
 
 
-def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search, display_order):
+def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search, display_order, root="data"):
     """Named source panels share filters without changing evidence or scores."""
     def filtered_feed(records, view):
         grid = prepare_pdufa_grid(pd.DataFrame(records), view=view, as_of=today)
@@ -183,6 +183,12 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     }
     </style>
     """, unsafe_allow_html=True)
+    # #1 is a new collapsible block INSIDE the former Unified Overview.
+    # Keep all existing overview controls, score-coverage audits, #2/#3/#4 cards,
+    # timeline, all-fields table and exports at their original positions.
+    with st.expander("#1 GEM — THREE-LEVEL NESTED MASTER LIST (open to view)", expanded=False):
+        from gem_nested_master_ui import render_gem_nested_master
+        render_gem_nested_master(root=root, selections_ready=True)
     with st.container(key="overview_panels"):
         pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1], gap="small")
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
@@ -279,13 +285,8 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 def render_combined_overview(root="data", *, dashboard=False):
     """Render linked clinical context and return the shared ticker focus."""
     if dashboard:
-        # First PDUFA tab is GEM: show the full two-gate ranked watch universe
-        # ahead of the legacy #2/#3/#4 clinical source cards.
-        # Initialize before rendering GEM W/T buttons; do not rehydrate later.
+        # Hydrate shared W/T once before either GEM or legacy source-table controls.
         _init_browser_selection("overview_inline")
-        from gem_nested_master_ui import render_gem_nested_master
-        render_gem_nested_master(root=root, selections_ready=True)
-        st.divider()
     if not dashboard:
         st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
         st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
@@ -501,7 +502,8 @@ def render_combined_overview(root="data", *, dashboard=False):
     )
     if dashboard:
         _render_command_center(df, pre, post, today=today, ticker=ticker,
-                               phase=phase, stage=stage, search=search, display_order=display_order)
+                               phase=phase, stage=stage, search=search,
+                               display_order=display_order, root=root)
     full_view = st.expander("ALL FIELDS — CLINICAL, SCORES & SOURCE EVIDENCE") if dashboard else st.container()
     with full_view:
         pdufa_dataframe(finance_style(df.head(350)), hide_index=True, use_container_width=True,
