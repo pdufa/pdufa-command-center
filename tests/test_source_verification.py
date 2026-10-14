@@ -209,15 +209,17 @@ class VerificationTests(unittest.TestCase):
             event, header, "2026-07-13"), {"2026-07-13"})
         self.assertEqual(verify.mapped_issuer_release_dateline(
             event, header, "2026-07-14"), set())
-        for wrong in (
-            header.replace("carfilzomib", "AnotherDrug"),
-            header.replace("multiple myeloma", "another cancer"),
-            header.replace("Bristol Myers Squibb", "Another Company"),
-            header.replace("July 13, 2026", "May 13, 2027"),
-            header.replace("Press Release", "Investor Discussion"),
-        ):
-            self.assertEqual(verify.mapped_issuer_release_dateline(
-                event, wrong, "2026-07-13"), set())
+        wrong_cases = {
+            "partner_mismatch": header.replace("carfilzomib", "AnotherDrug"),
+            "indication_mismatch": header.replace("multiple myeloma", "another cancer"),
+            "company_mismatch": header.replace("Bristol Myers Squibb", "Another Company"),
+            "published_date_mismatch": header.replace("July 13, 2026", "May 13, 2027"),
+            "no_release_label": header.replace("Press Release", "Investor Discussion"),
+        }
+        for name, wrong in wrong_cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(verify.mapped_issuer_release_dateline(
+                    event, wrong, "2026-07-13"), set())
 
     def test_primary_target_can_be_verified_without_becoming_a_decision(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
