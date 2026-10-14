@@ -88,7 +88,9 @@ jobs:
           print(f"Reconciled {actual} posted-result research observations — NOT clinical successes.")
           PY
 
-      - name: Recheck SEC cash runway for source-identified GEM candidates
+      # Financial data may be collected before Phase 3 success is adjudicated;
+      # it does not relax GEM 2/3 clinical or second-financing trade-entry gates.
+      - name: Recheck SEC cash runway for future PDUFA watch candidates
         id: runway
         if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.start_email.outcome == 'success' }}
         continue-on-error: true
