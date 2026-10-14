@@ -26,12 +26,14 @@
     "events": {
       "BMY|MEZIGDOMIDE_RRMM_20270513": {
         "urls": [
+          "https://investors.bms.com/iframes/press-releases/press-release-details/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx",
           "https://news.bms.com/news/corporate-financial/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx"
         ]
       }
     },
     "hosts": [
-      "news.bms.com"
+      "news.bms.com",
+      "investors.bms.com"
     ]
   },
   "CAPR": {
@@ -207,7 +209,7 @@
         "number_index": 0
       },
       "ordered_headers": [
-        "Amounts in $\u2019000",
+        "Amounts in $’000",
         "1H 2026",
         "1H 2025"
       ],
@@ -282,17 +284,20 @@
     "events": {
       "VTRS|MR107A02_ACUTEPAIN_20261227": {
         "urls": [
+          "https://investor.viatris.com/news-releases/news-release-details/us-fda-accepts-viatris-new-drug-application-fast-acting/",
           "https://newsroom.viatris.com/2026-05-18-U-S-FDA-Accepts-Viatris-New-Drug-Application-for-Fast-Acting-Meloxicam-for-the-Treatment-of-Moderate-to-Severe-Acute-Pain"
         ]
       },
       "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017": {
         "urls": [
+          "https://investor.viatris.com/news-releases/news-release-details/fda-accepts-viatris-supplemental-new-drug-application-mr-141",
           "https://newsroom.viatris.com/2026-02-25-FDA-Accepts-Viatris-Supplemental-New-Drug-Application-for-MR-141-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia"
         ]
       }
     },
     "hosts": [
-      "newsroom.viatris.com"
+      "newsroom.viatris.com",
+      "investor.viatris.com"
     ]
   },
   "ZLAB": {
