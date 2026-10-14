@@ -26,22 +26,29 @@ FILES = (
     "phase3_announcements.csv",
     "finance_ir_sec_recheck_targets.csv",
     "finance_ir_sec_recheck.csv",
+    "gem_runway_evidence.json",
+    "sec_step4_snapshots.sqlite3",
 )
 STAGE_COLUMNS = {
     "Phase 3": (
         "Phase 3 evidence", "Clinical evidence /30", "Trading setup /20",
-        "Market activity /10", "NCT ID", "Phase 3 source",
+        "Market activity /10", "Cash runway (months)", "Cash runway gate",
+        "NCT ID", "Phase 3 source",
         "Days to PDUFA",
     ),
     "Post-Financing": (
         "2nd Financing Completed", "Financing #2", "Financing evidence /20",
-        "Trading setup /20", "Market activity /10", "Financing source",
+        "Trading setup /20", "Market activity /10", "Cash runway (months)",
+        "Cash runway gate", "Cash runway reason", "Cash runway source",
+        "Financing source",
         "Days to PDUFA",
     ),
     "PDUFA": (
         "PDUFA verification", "Days to PDUFA", "PDUFA date",
         "PDUFA evidence /15", "Clinical evidence /30",
-        "Financing evidence /20", "PDUFA source",
+        "Financing evidence /20", "Cash runway (months)",
+        "Cash runway gate", "Cash runway reason", "Cash runway source",
+        "PDUFA source",
     ),
 }
 
@@ -73,6 +80,7 @@ def _gems_table(items):
         '<div class="gems-scroll"><table class="gems-table">'
         '<thead><tr><th colspan="3">GEMS</th>'
         '<th rowspan="2">Ticker</th><th rowspan="2">Drug / program</th>'
+        '<th rowspan="2">Runway (mo)</th><th rowspan="2">Runway gate</th>'
         '<th rowspan="2">Trade-entry rule</th>'
         '</tr><tr><th>Phase 3</th><th>Post-Financing</th><th>PDUFA</th>'
         '</tr></thead><tbody>'
@@ -86,10 +94,14 @@ def _gems_table(items):
             cells.append(f"<td{cls}>{html.escape(value)}</td>")
         ticker = html.escape(str(item.get("Ticker") or ""))
         drug = html.escape(str(item.get("Drug") or ""))
+        runway = item.get("Cash runway (months)")
+        runway_label = html.escape(str(runway)) if runway is not None else "—"
+        runway_status = html.escape(str(item.get("Cash runway gate") or "REVIEW"))
         gate = html.escape(str(item.get("GEM trade entry gate") or
                                "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"))
         rows.append("<tr>" + "".join(cells) +
-                    f'<td class="ticker">{ticker}</td><td>{drug}</td><td>{gate}</td></tr>')
+                    f'<td class="ticker">{ticker}</td><td>{drug}</td>'
+                    f'<td>{runway_label}</td><td>{runway_status}</td><td>{gate}</td></tr>')
     return style + header + "".join(rows) + "</tbody></table></div>"
 
 
@@ -101,7 +113,8 @@ def render_gem_scans(root="data"):
         "over three columns immediately before Ticker. Research scores are "
         "NOT FDA approval probabilities, return forecasts, or entry approval. "
         "ABSOLUTE RULE: watch Phase 3 before financing, but NEVER consider entry "
-        "until TWO DISTINCT post-Phase-3 financing closes are source-verified."
+        "until TWO DISTINCT post-Phase-3 financing closes are source-verified "
+        "and SEC cash-only runway >=12 months is documented."
     )
     path = Path(root)
     signature = tuple(
@@ -227,6 +240,12 @@ def render_gem_scans(root="data"):
             except (OSError, ValueError, TypeError, pd.errors.ParserError):
                 st.warning("SEC recheck source-report snapshot is unavailable.")
     counts = status["scan_counts"]
+    st.caption(
+        "Cash runway requires >=12 months for GEM 2 and GEM 3; GEM 1 remains watch-only. "
+        f"{status.get('cash_runway_passing_count', 0)} passes and "
+        f"{status.get('cash_runway_unverified_count', 0)} missing/stale sources. "
+        "Pre-close cash statements, restricted cash and absent SEC filings do not qualify."
+    )
     track_metrics = st.columns(2)
     track_metrics[0].metric(
         "Verified Phase 3 under tracking", status["phase3_tracking_count"]
@@ -282,7 +301,8 @@ def render_gem_scans(root="data"):
         "MANDATORY ENTRY RULE: Phase 3 and financing candidates are WATCH ONLY "
         "until the second distinct post-readout financing has actually CLOSED "
         "and its evidence has been verified for the exact program. An offering "
-        "announcement, pricing, active financing or Phase 3 GEM rank is NEVER an entry signal."
+        "announcement, pricing, active financing or Phase 3 GEM rank is NEVER an entry signal. "
+        "The 12-month cash runway gate is separately mandatory for GEM 2/3."
     )
     st.markdown("### BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2")
     st.caption(
@@ -396,7 +416,8 @@ def render_gem_scans(root="data"):
         "STRICT INTERSECTION: verified successful Phase 3 and clinical/safety "
         "requirements, confirmed price base and normalized volume, both separate "
         "post-readout financing closings independently attested with SEC sources, "
-        "no unresolved dilution, fresh SEC and market data, confirmed future PDUFA "
+        "no unresolved dilution, >=12 months SEC cash-only runway, fresh SEC and market data, "
+        "confirmed future PDUFA "
         "and at least 4 days before decision. All three GEM stages must qualify "
         "and Stage 1 must be GREEN. PASS means manual research/entry review ONLY: "
         "not an order, return prediction or guarantee of approval."
@@ -412,7 +433,8 @@ def render_gem_scans(root="data"):
         shortlist_columns = [
             "GEM strict shortlist rank", "Ticker", "Drug", "Indication",
             "Phase 3 GEM", "Post-Financing GEM", "PDUFA GEM",
-            "Verified 2nd financing close date", "Days to PDUFA",
+            "Verified 2nd financing close date", "Cash runway (months)",
+            "Cash runway gate", "Cash runway source", "Days to PDUFA",
             "PDUFA date", "Planned exit (-3 days)",
             "GEM ALL ENTRY GATES", "GEM trade entry gate", "Exact event",
             "Phase 3 source", "Financing source", "PDUFA source",
@@ -512,6 +534,8 @@ def render_gem_scans(root="data"):
                  "GEM ALL ENTRY GATES", "GEM strict shortlist rank",
                  "Phase 3 tracking", "Financing watch", "GEM trade entry gate",
                  "Verified 2nd financing close date",
+                 "Cash runway (months)", "Cash runway gate",
+                 "Cash runway reason", "Cash runway source",
                  "Phase 3 result date (source)",
                  stage + " qualifier", stage + " missing"]
                 + list(STAGE_COLUMNS[stage])
@@ -545,7 +569,8 @@ def render_gem_scans(root="data"):
     render_gem_calibration(root)
     st.caption(
         "Qualification here means a source-supported research ranking only. "
-        "Do not place trades from these scores alone: cash runway, valuation, "
-        "current dilution and independently backtested return expectations "
+        "Do not place trades from these scores alone: cash-only runway is a historical "
+        "SEC estimate, not guaranteed liquidity. Valuation, dilution and "
+        "independently backtested return expectations "
         "still require individual review."
     )
