@@ -109,7 +109,7 @@ jobs:
               and start <= datetime.fromisoformat(run["created_at"].replace("Z", "+00:00")) <= now
               for run in runs if run.get("created_at")
           )
-          print("Daily clinical scan already started today" if exists else "No daily clinical run found since 11:00 PM Pacific")
+          print("Nightly clinical scan already started today" if exists else "No daily clinical run found since 11:00 PM Pacific")
           raise SystemExit(0 if exists else 1)
           PY
           then
