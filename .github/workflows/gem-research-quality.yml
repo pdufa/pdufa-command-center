@@ -8,13 +8,16 @@ name: GEM Research Quality Snapshot
 # Fourth SCANS dashboard block: GEMS — research-only Phase 3 discovery,
 # post-financing monitoring and PDUFA. Existing #2/#3/#4 clinical IDs stay
 # unchanged. No live SEC/issuer verification or automated trading is implied.
+# Daily GEM collection is called by the 9 PM Pacific serial clinical
+# workflow, not a second independent morning cron.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/gem-research-quality.yml"
-  schedule:
-    - cron: "10 16 * * *"
+  workflow_call:
+    inputs:
+      action:
+        description: "Source-safe GEM collection/reverification mode"
+        required: false
+        type: string
+        default: REVERIFY_PARTIAL
   workflow_dispatch:
     inputs:
       action:
@@ -36,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 95
     env:
-      GEM_ACTION: ${{ github.event_name == 'workflow_dispatch' && inputs.action || 'REVERIFY_PARTIAL' }}
+      GEM_ACTION: ${{ inputs.action || 'REVERIFY_PARTIAL' }}
       PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
       PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
       PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
