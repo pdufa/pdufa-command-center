@@ -27,20 +27,22 @@ def job(text, name):
 class PacificNightlySequenceTests(unittest.TestCase):
     def test_pacific_daylight_and_standard_crons(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        self.assertIn("cron: '30 3 * * *'", scheduler)
-        self.assertIn("cron: '30 4 * * *'", scheduler)
+        self.assertIn("cron: '0 6 * * *'", scheduler)
+        self.assertIn("cron: '0 7 * * *'", scheduler)
         self.assertIn("TZ=America/Los_Angeles date +%z", scheduler)
         self.assertIn('"$offset" = -0700', scheduler)
         self.assertIn('"$offset" = -0800', scheduler)
-        for utc_hour, month in [(3, 7), (4, 1)]:
-            date = datetime(2026, month, 15, utc_hour, 30, tzinfo=timezone.utc)
+        # 11 PM Pacific occurs on the PREVIOUS Pacific date versus UTC.
+        for utc_hour, month in [(6, 7), (7, 1)]:
+            date = datetime(2026, month, 15, utc_hour, 0, tzinfo=timezone.utc)
             converted = date.astimezone(ZoneInfo("America/Los_Angeles"))
-            self.assertEqual((converted.hour, converted.minute), (20, 30))
+            self.assertEqual((converted.hour, converted.minute), (23, 0))
+            self.assertEqual(converted.day, 14)
         self.assertIn("-f 'inputs[scan]=ALL'", scheduler)
 
     def test_delayed_utc_crons_do_not_restart_scans_next_morning(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        block = scheduler.split("      - name: Accept only matching 8:30 PM Pacific cron slot", 1)[1]
+        block = scheduler.split("      - name: Accept only matching 11:00 PM Pacific cron slot", 1)[1]
         block = block.split("      - name: Dispatch clinical scan to start serial chain", 1)[0]
         script = textwrap.dedent(block.split("        run: |\n", 1)[1])
         with tempfile.TemporaryDirectory() as directory:
@@ -56,14 +58,17 @@ class PacificNightlySequenceTests(unittest.TestCase):
                 "esac\n", encoding="utf-8")
             fake_date.chmod(0o755)
             cases = (
-                ("03", "56", "-0700", "30 3 * * *", "run=false"),
-                ("04", "11", "-0700", "45 3 * * *", "run=false"),
-                ("04", "17", "-0700", "0 4 * * *", "run=false"),
-                ("20", "30", "-0700", "30 3 * * *", "run=true"),
-                ("21", "00", "-0700", "0 4 * * *", "run=true"),
-                ("21", "00", "-0800", "0 5 * * *", "run=true"),
-                ("22", "30", "-0700", "30 3 * * *", "run=false"),
-                ("20", "30", "-0700", "30 4 * * *", "run=false"),
+                ("23", "00", "-0700", "0 6 * * *", "run=true"),
+                ("23", "15", "-0700", "15 6 * * *", "run=true"),
+                ("23", "30", "-0700", "30 6 * * *", "run=true"),
+                ("23", "00", "-0800", "0 7 * * *", "run=true"),
+                ("23", "30", "-0800", "30 7 * * *", "run=true"),
+                ("23", "00", "-0700", "0 7 * * *", "run=false"),
+                ("23", "00", "-0800", "0 6 * * *", "run=false"),
+                ("00", "05", "-0700", "5 7 * * *", "run=false"),
+                ("01", "05", "-0800", "5 9 * * *", "run=false"),
+                ("22", "30", "-0700", "30 6 * * *", "run=false"),
+                ("06", "00", "-0700", "0 6 * * *", "run=false"),
             )
             for hour, minute, offset, cron, expected in cases:
                 with self.subTest(hour=hour, minute=minute, offset=offset, cron=cron):
@@ -80,7 +85,7 @@ class PacificNightlySequenceTests(unittest.TestCase):
 
     def test_fallback_start_never_duplicates_tonights_scans(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        for cron in ("45 3 * * *", "0 4 * * *", "45 4 * * *", "0 5 * * *"):
+        for cron in ("0 6 * * *", "15 6 * * *", "30 6 * * *", "0 7 * * *", "15 7 * * *", "30 7 * * *"):
             self.assertIn(cron, scheduler)
         self.assertIn("pdufa-clinical-runs.json", scheduler)
         self.assertIn("Nightly clinical scan already started today", scheduler)
@@ -89,8 +94,12 @@ class PacificNightlySequenceTests(unittest.TestCase):
 
     def test_publisher_and_extended_source_watchdogs_are_guarded(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        for cron in ("15 4 * * *", "15 5 * * *"):
+        for cron in ("5 7 * * *", "35 7 * * *", "5 8 * * *", "35 8 * * *",
+                     "5 9 * * *", "35 9 * * *"):
             self.assertIn(cron, scheduler)
+        # Overnight recovery is anchored to the PREVIOUS night's 11 PM start.
+        self.assertIn("(local - timedelta(days=1)).replace(hour=23", scheduler)
+        self.assertIn("(la - timedelta(days=1)).replace(hour=23", scheduler)
         self.assertIn("Recover missing clinical report publishing handoff", scheduler)
         self.assertIn("Recover missing extended-source verification handoff", scheduler)
         self.assertIn("Report publisher already started after this clinical scan", scheduler)
