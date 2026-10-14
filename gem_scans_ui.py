@@ -88,48 +88,6 @@ def render_gem_scans(root="data"):
         "Scan output derives from existing clinical, SEC, FDA and market "
         "evidence. This button-free read-only view does not dispatch a new scan."
     )
-    comparable_file = path / "gem_bpw_comparable.json"
-    try:
-        comparison = json.loads(comparable_file.read_text(encoding="utf-8"))
-    except (OSError, ValueError, UnicodeError):
-        comparison = {}
-    comparison_current = (
-        comparison.get("schema_version") == 1
-        and comparison.get("as_of_pacific") == day.isoformat()
-        and isinstance(comparison.get("capability_matrix"), list)
-    )
-    st.markdown("### GEM SURVEY DIRECTORY — 11 SURVEYS")
-    st.caption(
-        "Survey 11 is the BPW research-quality comparison. The former FDA "
-        "approval-probability survey and its standalone Prediction Engine "
-        "page are retired. Only surveys 1 and 2 are entry benchmarks."
-    )
-    st.dataframe(
-        pd.DataFrame(survey_rows(comparison if comparison_current else {})),
-        use_container_width=True, hide_index=True,
-    )
-    with st.expander("GEM vs BPW — REAL DATA COVERAGE COMPARISON", expanded=False):
-        if not comparison_current:
-            st.info("A same-day BPW-style source coverage comparison is not yet published.")
-        else:
-            st.caption(
-                "Comparison is of GEM's source-data COVERAGE against BPW's advertised "
-                "capabilities, not a head-to-head performance test or proprietary "
-                "PoA score comparison. Missing data is reported, never fabricated."
-            )
-            st.dataframe(
-                pd.DataFrame(comparison["capability_matrix"])[
-                    ["capability", "state", "observed_gem_rows",
-                     "total_gem_rows", "data_coverage_pct", "caveat"]
-                ], use_container_width=True, hide_index=True
-            )
-            st.download_button(
-                "DOWNLOAD GEM vs BPW COMPARISON",
-                json.dumps(comparison, indent=2).encode("utf-8"),
-                file_name=f"gem_bpw_comparable_{day:%Y%m%d}.json",
-                mime="application/json", key="gem_bpw_comparable_json_export",
-            )
-        # Primary trading-candidate shortlist uses ONLY the two benchmark passes.
     qualified = sorted(
         (row for row in items if row.get("Two-benchmark eligible") is True),
         key=lambda r: r.get("Two-benchmark rank") or 1000000,
@@ -196,6 +154,48 @@ def render_gem_scans(root="data"):
             "events. The complete GEM watch/review universe remains visible "
             "above; missing evidence is never treated as a failed trial."
         )
+    comparable_file = path / "gem_bpw_comparable.json"
+    try:
+        comparison = json.loads(comparable_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError, UnicodeError):
+        comparison = {}
+    comparison_current = (
+        comparison.get("schema_version") == 1
+        and comparison.get("as_of_pacific") == day.isoformat()
+        and isinstance(comparison.get("capability_matrix"), list)
+    )
+    with st.expander("GEM SURVEY DIRECTORY — 11 SURVEYS", expanded=False):
+        st.caption(
+            "Survey 11 is the BPW research-quality comparison. The former FDA "
+            "approval-probability survey and its standalone Prediction Engine "
+            "page are retired. Only surveys 1 and 2 are entry benchmarks."
+        )
+        st.dataframe(
+            pd.DataFrame(survey_rows(comparison if comparison_current else {})),
+            use_container_width=True, hide_index=True,
+        )
+    with st.expander("GEM vs BPW — REAL DATA COVERAGE COMPARISON", expanded=False):
+        if not comparison_current:
+            st.info("A same-day BPW-style source coverage comparison is not yet published.")
+        else:
+            st.caption(
+                "Comparison is of GEM's source-data COVERAGE against BPW's advertised "
+                "capabilities, not a head-to-head performance test or proprietary "
+                "PoA score comparison. Missing data is reported, never fabricated."
+            )
+            st.dataframe(
+                pd.DataFrame(comparison["capability_matrix"])[
+                    ["capability", "state", "observed_gem_rows",
+                     "total_gem_rows", "data_coverage_pct", "caveat"]
+                ], use_container_width=True, hide_index=True
+            )
+            st.download_button(
+                "DOWNLOAD GEM vs BPW COMPARISON",
+                json.dumps(comparison, indent=2).encode("utf-8"),
+                file_name=f"gem_bpw_comparable_{day:%Y%m%d}.json",
+                mime="application/json", key="gem_bpw_comparable_json_export",
+            )
+
     st.markdown("### HEDGE-FUND OWNERSHIP — SEC 13F QUARTERLY EVIDENCE")
     h1, h2 = st.columns(2)
     h1.metric("Candidates with specialist 13F matches",
