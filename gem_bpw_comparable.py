@@ -23,7 +23,7 @@ CAPABILITIES = (
     ("market", "Price and volume momentum", "PARTIAL", "Daily market observations; no proprietary options-flow feed"),
     ("hedge", "Specialist funds' quarterly 13F ownership", "PARTIAL", "Four manager roster, not BPW's wider specialist universe"),
     ("market_cap", "Public market-cap reference", "PARTIAL", "Company-level market-cap file; no rNPV/commercial valuation"),
-    ("insider", "SEC Form 4 open-market insider trading", "NOT VERIFIED", "Requires a separate issuer-insider collector and source matching"),
+    ("insider", "SEC Form 4 open-market insider trading", "PARTIAL", "Issuer-capped 90-day P/S transactions; SEC-source gaps and amendments are explicit"),
     ("options", "Options, implied volatility and unusual flow", "NOT AVAILABLE", "No licensed options chain/Greeks dataset"),
     ("poa", "Probability of FDA approval", "NOT AVAILABLE", "No validated indication-specific PoA scorecard"),
     ("historical", "Financing-to-PDUFA historical return backtest", "NOT VALIDATED", "Validated linked event, price and financing history insufficient"),
@@ -103,6 +103,10 @@ def build_comparable(root, scans, *, as_of, hedge_report=None):
         and str(r.get("Rating status") or "") != "NOT RATED — SNAPSHOT STALE")
     hedge = _status_count(scans, lambda r:
         r.get("Hedge-fund signal") == "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS")
+    insider = _status_count(scans, lambda r:
+        r.get("Insider Form 4 signal") == "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS")
+    insider_buys = _status_count(scans, lambda r:
+        (r.get("Insider open-market purchases") or 0) > 0)
     cap = _status_count(scans, lambda r:
         str(r.get("Ticker") or "").strip().upper() in caps)
     # Flag the existence of a dataset separately from a *validated strategy
@@ -113,12 +117,13 @@ def build_comparable(root, scans, *, as_of, hedge_report=None):
     observed = {"clinical": phase3, "financing": financing, "fda": fda,
                 "runway": runway, "dilution": dilution, "market": market,
                 "hedge": hedge, "market_cap": cap,
-                "insider": 0, "options": 0, "poa": 0,
+                "insider": insider, "options": 0, "poa": 0,
                 "historical": 0, "rnpv": 0, "ma": 0}
     for key, title, baseline, caveat in CAPABILITIES:
         count = observed[key]
         matrix.append({
-            "key": key, "capability": title, "state": baseline,
+            "key": key, "capability": title,
+            "state": "NOT VERIFIED" if key == "insider" and insider == 0 else baseline,
             "observed_gem_rows": count,
             "total_gem_rows": row_count,
             "data_coverage_pct": round(100*count/row_count, 1) if row_count else None,
@@ -141,6 +146,9 @@ def build_comparable(root, scans, *, as_of, hedge_report=None):
             "Hedge-fund managers adding": row.get("Hedge-fund managers adding"),
             "Market capitalization USD": caps.get(ticker),
             "PDUFA date": row.get("PDUFA date"),
+            "Insider open-market purchases": row.get("Insider open-market purchases"),
+            "Insider purchase amount USD": row.get("Insider purchase amount USD"),
+            "Insider source links": row.get("Insider source links"),
             "Risk flags": row.get("Two-benchmark risk flags"),
             "BPW PoA score": None,
             "BPW approval/outperformance similarity": "NOT CALCULABLE WITHOUT LICENSED DATA",
@@ -162,13 +170,15 @@ def build_comparable(root, scans, *, as_of, hedge_report=None):
         "hedge_fund_manager_roster": hedge_report.get("manager_count", 0),
         "hedge_fund_managers_complete": hedge_report.get("managers_complete", 0),
         "hedge_fund_source_status": hedge_report.get("collector_status", "UNVERIFIED"),
+        "insider_form4_covered_rows": insider,
+        "insider_form4_buying_rows": insider_buys,
         "historical_linked_event_rows": historical_raw,
         "historical_price_bar_rows": historical_bars,
         "capability_matrix": matrix,
         "ranked_two_benchmark_candidates": candidate_rows,
         "unvalidated_gaps": [
             "No direct BPW proprietary PoA, options/Greeks, rNPV or conviction-weighted scores",
-            "No SEC Form 4 insider scanner currently integrated",
+            "Form 4 issuer coverage is capped; amendments and missing filings require manual review",
             "Only four selected specialist managers currently tracked",
             "Two-benchmark financing-to-PDUFA backtesting not validated",
             "A coverage audit cannot establish superiority or prediction accuracy",
