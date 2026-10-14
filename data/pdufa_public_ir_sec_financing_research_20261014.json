@@ -351,7 +351,28 @@
       "current_claim_status": "REVIEW_REQUIRED",
       "prior_gems_research_classification": "NO_RESEARCH_RECORD",
       "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
-      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+      "next_action": "Record the two funded facility amendments as issuer capital sources, then exclude Phase 2 pivotal drug from Phase-3-only GEMS; do not falsely assert two Phase-3-linked financings.",
+      "primary_source_research": {
+        "phase_designation": "REGISTRATION_ENABLING_PHASE_2_NOT_PHASE_3",
+        "primary_program_source": "https://www.sec.gov/Archives/edgar/data/2007919/000200791925000093/inhibrx-20250930.htm",
+        "results_date": "2025-10-23",
+        "financing_observations": [
+          {
+            "date": "2026-03-18",
+            "amount_usd": 75000000,
+            "description": "Funded March 2026 term loan B",
+            "source": "https://www.sec.gov/Archives/edgar/data/2007919/000200791926000042/inhibrx-20260630.htm"
+          },
+          {
+            "date": "2026-07-15",
+            "amount_usd": 100000000,
+            "description": "Funded July 2026 term loan C; future undrawn $225m not included",
+            "source": "https://www.sec.gov/Archives/edgar/data/2007919/000200791926000037/inhibrx-20260715.htm"
+          }
+        ],
+        "strict_gem_result": "INELIGIBLE_PHASE_3_REQUIREMENT_NOT_MET",
+        "note": "Both later loan draws occur after registrational PHASE 2 readout, not a completed Phase 3 readout. Do not promote INBX as Phase3 GEMS even when financing funds were actually received. Date Mar 18 references amendment date; exact disbursement evidence is in 2026 10-Q."
+      }
     },
     {
       "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
@@ -440,5 +461,7 @@
       ]
     }
   ],
-  "note": "This is a research disposition audit. It does NOT automatically remove missing mandatory evidence or promote a trade. Reconciliation must verify source primary records with timestamps, exact issuer and content hashes. Ineligible-for-Phase3 and ownership mismatches must be reported separately from missing evidence, not rewritten as successful financing closings."
+  "note": "This is a research disposition audit. It does NOT automatically remove missing mandatory evidence or promote a trade. Reconciliation must verify source primary records with timestamps, exact issuer and content hashes. Ineligible-for-Phase3 and ownership mismatches must be reported separately from missing evidence, not rewritten as successful financing closings.",
+  "additional_researched_at_utc": "2026-10-14",
+  "notes_for_research": "Primary company investor materials, SEC annual/quarterly filings and official release pages may establish finance dates even for non-qualifying Phase 2 registrational programs. Preserve clinical-stage exclusion."
 }
