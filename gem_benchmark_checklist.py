@@ -75,7 +75,8 @@ def build_checklist(master, source=None, *, finance_audit=None,
     )
     p3_status = str(src.get("Phase 3 evidence") or "")
     registry_status = str(clinical.get("source_recheck_status") or "")
-    phase3_lead = (
+    known_non_phase3 = str(clinical.get("saved_phase3_status") or "").upper() == "PHASE_1_2_NOT_PHASE_3"
+    phase3_lead = not known_non_phase3 and (
         phase3 or
         registry_status == "POSTED_RESULTS_DISCOVERY_ONLY"
         or p3_status.startswith((
@@ -225,3 +226,74 @@ def build_checklist_map(master_rows, saved_sources=(), financing_rechecks=(),
         )
         for key, master in master_by_event.items()
     }
+
+def research_candidate_rows(master_rows, checklist_map, *, clinical_rechecks=(),
+                            financing_rechecks=()):
+    """Research-only shortlist from exact-event or unique NCT source observations.
+
+    No new qualification or investment rank is assigned. Records with two
+    independently verified transactions still require exact Phase 3 and
+    financing-sequence adjudication. Duplicate audit IDs never cross-link.
+    """
+    clinical = _unique(
+        ({"Exact event": r.get("event_key"), **r} for r in clinical_rechecks), None
+    )
+    finance = _unique(
+        ({"Exact event": r.get("event_key"), **r} for r in financing_rechecks), None
+    )
+    result = []
+    for row in master_rows:
+        key = program_key(row)
+        if not key:
+            continue
+        checks = checklist_map.get(key, {})
+        p3 = checks.get("phase3_data", {})
+        fin = checks.get("financing_lead", {})
+        p3_lead = p3.get("checked") is True or p3.get("observed") is True
+        fin_lead = fin.get("checked") is True or fin.get("observed") is True
+        if not (p3_lead or fin_lead):
+            continue
+        c = clinical.get(key, {})
+        f = finance.get(key, {})
+        secs = sum(f.get(column) == "VERIFIED" for column in (
+            "first_sec_status", "second_sec_status"
+        ))
+        group = ("Both research leads" if p3_lead and fin_lead else
+                 "Financing lead — Phase 3 review" if fin_lead else
+                 "Phase 3 lead — financing review")
+        state = (
+            "BOTH BENCHMARKS VERIFIED" if row.get("_eligible") is True else
+            "RESEARCH ONLY — NOT GEM ELIGIBLE"
+        )
+        result.append({
+            "Ticker": row.get("Ticker"),
+            "Drug": row.get("Drug"),
+            "Indication": row.get("Indication"),
+            "GEM research group": group,
+            "Phase 3 data observed": bool(p3_lead),
+            "Financing lead observed": bool(fin_lead),
+            "Fresh SEC transactions verified": secs,
+            "Phase 3 benchmark verified": checks.get("phase3_verified", {}).get("checked") is True,
+            "Second financing benchmark verified": checks.get("financing_verified", {}).get("checked") is True,
+            "Status": state,
+            "Phase 3 missing": checks.get("phase3_verified", {}).get("detail", "Not verified"),
+            "Financing missing": checks.get("financing_verified", {}).get("detail", "Not verified"),
+            "Latest clinical review": c.get("source_recheck_status", "NOT RUN / NO MATCH"),
+            "Latest SEC review": f.get("recheck_status", "NOT RUN / NO MATCH"),
+            "NCT ID": row.get("NCT ID"),
+            "PDUFA Date": row.get("PDUFA Date"),
+            "Phase 3 Source": row.get("Phase 3 Source"),
+            "Financing Source": row.get("Financing Source") or f.get("second_sec_url"),
+            "Exact Program / Event": row.get("Exact Program / Event"),
+            "_event_id": key,
+            "_sort": (
+                0 if p3_lead and fin_lead else 1 if fin_lead else 2,
+                -secs,
+                str(row.get("Ticker") or ""),
+                str(row.get("Exact Program / Event") or ""),
+            ),
+        })
+    result.sort(key=lambda item: item["_sort"])
+    for item in result:
+        item.pop("_sort", None)
+    return result
