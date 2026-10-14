@@ -117,6 +117,16 @@ class MorningResultsTests(unittest.TestCase):
         self.assertEqual(out["generated_at_pacific"], "2026-10-14T11:00:00-07:00")
         self.assertEqual(out["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
 
+    def test_delayed_snapshot_does_not_promote_after_six_am_data(self):
+        """Late GitHub runs cannot present afternoon collection as overnight."""
+        now = datetime(2026, 10, 14, 19, 0, tzinfo=timezone.utc)  # noon PDT
+        report = {"updated_at_utc": "2026-10-14T17:00:00Z"}  # 10 AM PDT
+        snapshot = make_snapshot(report, report, now=now)
+        self.assertTrue(snapshot["publication_delayed_after_6am"])
+        self.assertEqual(snapshot["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
+        self.assertFalse(snapshot["clinical"]["overnight_report_published"])
+        self.assertFalse(snapshot["sources"]["overnight_report_published"])
+
     def test_dst_standard_time_keeps_six_am_reporting(self):
         now = datetime(2026, 12, 14, 14, 0, tzinfo=timezone.utc)
         clinical = {"updated_at_utc": "2026-12-14T08:00:00Z"}
