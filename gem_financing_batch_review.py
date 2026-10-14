@@ -48,6 +48,48 @@ def _unique(rows):
     return by_key, duplicated
 
 
+def _normalized_drug(value):
+    return re.sub(r"[^a-z0-9]", "", str(value or "").casefold())
+
+
+def _phase3_source_leads(rows, event, *, today):
+    """Conservative exact-NCT or exact-drug match to independent result ledger.
+
+    These are ONLY retrieval leads. Registry postings and issuer-release URLs
+    require endpoint, success, safety, and indication adjudication by a reviewer.
+    """
+    ticker = str(event.get("ticker") or "").upper().strip()
+    nct = str(event.get("nct_id") or "").upper().strip()
+    drug = _normalized_drug(event.get("drug"))
+    collected = {}
+    for row in rows:
+        if str(row.get("ticker") or "").upper().strip() != ticker:
+            continue
+        trial = str(row.get("nct_id") or "").upper().strip()
+        alt_drug = _normalized_drug(row.get("drug"))
+        matched_nct = bool(NCT.fullmatch(nct) and trial == nct)
+        matched_drug = bool(drug and alt_drug and drug == alt_drug)
+        if not (matched_nct or matched_drug):
+            continue
+        if not NCT.fullmatch(trial):
+            continue
+        published = _date(row.get("phase3_results_posted_at"))
+        source = str(row.get("phase3_results_source") or "")
+        if (str(row.get("source_type") or "") not in {
+                "CLINICALTRIALS_RESULTS", "ISSUER_TOPLINE_RELEASE"}
+                or not published or published > today or
+                not source.startswith("https://")):
+            continue
+        key = (trial, str(row.get("source_type")), source)
+        collected[key] = {
+            "nct": trial, "date": published.isoformat(), "source": source,
+            "type": str(row.get("source_type")),
+        }
+    return sorted(collected.values(), key=lambda x: (
+        x["type"] != "ISSUER_TOPLINE_RELEASE", x["date"], x["nct"]
+    ))
+
+
 def _date(value):
     try:
         return date.fromisoformat(str(value or "")[:10])
@@ -67,6 +109,7 @@ def build_financing_review(root="data", *, as_of=None):
     if not isinstance(today, date):
         raise ValueError("as_of must be a date")
     financing_rows = _read(root / "second_financing_status.csv")
+    clinical_announcements = _read(root / "phase3_announcements.csv")
     events, duplicate_event_keys = _unique(_read(root / "pdufa_candidates.csv"))
     finance, duplicate_finance_keys = _unique(financing_rows)
     cleared, historical, global_sec_current = source_cleared_gems(root, as_of=today)
@@ -81,6 +124,7 @@ def build_financing_review(root="data", *, as_of=None):
         drug = str(event.get("drug") or "").strip()
         indication = str(event.get("indication") or "").strip()
         nct = str(event.get("nct_id") or "").strip().upper()
+        leads = _phase3_source_leads(clinical_announcements, event, today=today)
         phase_date = _date(event.get("phase3_date"))
         first = _date(financing.get("first_financing_date"))
         second = _date(financing.get("second_financing_date"))
@@ -160,6 +204,11 @@ def build_financing_review(root="data", *, as_of=None):
         else:
             classification = "RESEARCH — CLINICAL + FINANCING INCOMPLETE"
             priority = 4
+        if leads and not phase3_verified and not excluded_phase3:
+            issue.append(
+                f"Review {len(leads)} matched Phase 3 issuer/registry source lead(s); "
+                "do not treat a posted result as endpoint verification"
+            )
         links = research_search_links({
             "Ticker": ticker, "Drug": drug, "Indication": indication, "NCT ID": nct
         })
@@ -170,6 +219,11 @@ def build_financing_review(root="data", *, as_of=None):
             "Phase 3 source-clear": bool(phase3_verified and not ambiguous and not excluded_phase3),
             "Phase 3 readout date": str(event.get("phase3_date") or ""),
             "Primary clinical source": str(event.get("trial_evidence_url") or ""),
+            "Matched Phase 3 source leads": len(leads),
+            "Phase 3 discovery examples": "; ".join(
+                x["nct"] + " " + x["date"] + " " + x["type"]
+                for x in leads[:4]),
+            "Phase 3 discovery source": leads[0]["source"] if leads else "",
             "Financing ledger claim": fin_type or "NO HISTORICAL CLOSURE ATTESTATION",
             "Financing close #1": str(financing.get("first_financing_date") or ""),
             "Financing source #1": str(financing.get("first_financing_source") or ""),
@@ -192,6 +246,9 @@ def build_financing_review(root="data", *, as_of=None):
         "as_of_pacific": today.isoformat(),
         "financing_programs_reviewed": len(rows),
         "unique_tickers": len({x["Ticker"] for x in rows}),
+        "saved_phase3_result_ledger_rows": len(clinical_announcements),
+        "financing_programs_with_matched_phase3_source_leads": sum(
+            x["Matched Phase 3 source leads"] > 0 for x in rows),
         "historically_attested_two_close": sum(
             x["Financing ledger claim"] == TWO_CLOSE_ATTESTED for x in rows),
         "active_benchmark_cleared": len(cleared),
