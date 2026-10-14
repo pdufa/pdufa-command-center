@@ -1,13 +1,13 @@
 {
-  "source_report_run_id": "38575279522",
-  "generated_at_utc": "2026-10-14T16:48:36.646582+00:00",
+  "source_report_run_id": "38598841433",
+  "generated_at_utc": "2026-10-14T16:52:46.068055+00:00",
   "status": "PARTIAL",
   "execution_status": "COMPLETE",
   "scope": "Targeted recheck of previously unresolved required claims only",
-  "findings_due": 45,
-  "findings_verified": 6,
-  "required_findings_unresolved": 39,
-  "source_observations": 45,
+  "findings_due": 43,
+  "findings_verified": 5,
+  "required_findings_unresolved": 38,
+  "source_observations": 43,
   "by_source": {
     "FDA": {
       "rechecked": 4,
@@ -25,16 +25,16 @@
       "still_unresolved": 2
     },
     "ISSUER": {
-      "rechecked": 4,
-      "newly_supported": 2,
-      "still_unresolved": 2
+      "rechecked": 2,
+      "newly_supported": 1,
+      "still_unresolved": 1
     }
   },
   "states": {
-    "VERIFIED": 6,
-    "REVIEW_REQUIRED": 39
+    "VERIFIED": 5,
+    "REVIEW_REQUIRED": 38
   },
-  "recheck_ledger_sha256": "cd857e2e345a99acdc09142a0e5616ae4e044cae2cc27b860201f05a2e408bcc",
+  "recheck_ledger_sha256": "e188d938e9890a4e6b49043dfc2feafcb7d1fa1db7186145061eec3846e9428b",
   "recheck_ledger": "data/pdufa_targeted_recheck_results.csv",
   "source_baseline_unchanged": true,
   "trade_entry_authorized": false,
