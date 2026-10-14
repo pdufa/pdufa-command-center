@@ -19,6 +19,7 @@ import streamlit as st
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
 from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_checkboxes
+from gem_benchmark_checklist import program_key
 from gem_scans_ui import FILES, _saved_gem_scans
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
 
@@ -345,7 +346,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                 st.dataframe(benchmarks, use_container_width=True, hide_index=True)
                 stock_checkboxes(
                     r,
-                    checkbox_states.get(str(r.get("Exact Program / Event") or ""), {}),
+                    checkbox_states.get(program_key(r), {}),
                     namespace=f"gem_nested_{uid}",
                 )
                 diagnosis = by_exact_event.get(str(r.get("Exact Program / Event") or ""), {})
