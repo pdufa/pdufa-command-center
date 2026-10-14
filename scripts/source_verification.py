@@ -1082,7 +1082,16 @@ class Verifier:
             # Never borrow another company's or another program's financing.
             url = review.get("second_financing_source", "")
             close = review.get("second_financing_date", "")
-        mapped = self.event_sources(event).get("financing_urls", [])
+        mapped_event = self.event_sources(event)
+        mapped_exact = mapped_event.get("individual_financing_close", {})
+        if (not close and not url and isinstance(mapped_exact, dict)
+                and mapped_exact.get("date") and mapped_exact.get("sec_url")
+                and sec_url_matches(mapped_exact["sec_url"], self.cik(event))):
+            # Exact, event-mapped SEC financing is a primary-source discovery
+            # candidate. It verifies ONE completed transaction only, never the
+            # second post-Phase-3 financing sequence or eligibility to trade.
+            close, url = mapped_exact["date"], mapped_exact["sec_url"]
+        mapped = mapped_event.get("financing_urls", [])
         if isinstance(mapped, list) and mapped and close and not event.get("_recheck_exact_sec_url"):
             # A source replacement retains the saved closing date and exact
             # event. No company-wide later financing can supply that date.
