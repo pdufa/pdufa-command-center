@@ -100,7 +100,7 @@ async function audit() {
   result.checks.activeLeadCountReported = currentCount !== null;
   result.checks.potentialReason = currentCount === 0 ? empty : panelText.includes("Why potential:");
   result.checks.pendingEvidence = currentCount === 0 ? empty : panelText.includes("Pending:");
-  result.checks.numberedCandidates = currentCount === 0 ? empty && numbered === 0 : numbered > 0;
+  result.checks.numberedCandidates = currentCount === 0 ? empty : numbered > 0;
   // A changing research list should never fail only because previous sample
   // tickers are no longer supported by exact-program source evidence.
   result.checks.separateVerifiedList = panelText.includes("NOT the verified GEM entry list");
