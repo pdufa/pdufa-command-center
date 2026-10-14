@@ -156,6 +156,34 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
                 runway_source_status = "STALE — SEC RUNWAY COLLECTION NOT CURRENT"
     except (OSError, ValueError, TypeError, KeyError, AttributeError):
         pass
+    # Supplementary SEC specialist-manager Form 13F. Missing holdings are
+    # NOT proof that a manager has no position or that a stock is ineligible.
+    hedge_summary = {
+        "collector_status": "NOT PUBLISHED",
+        "managers_targeted": 0, "managers_complete": 0,
+        "issuer_name_matched_tickers": 0,
+        "matched_programs": sum(r.get("Hedge-fund signal")
+                                == "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS"
+                                for r in items),
+        "with_manager_accumulation": sum((r.get("Hedge-fund managers adding") or 0) > 0
+                                         for r in items),
+    }
+    try:
+        hdata = json.loads((p / "gem_hedge_fund_13f.json").read_text(encoding="utf-8"))
+        if (isinstance(hdata, dict) and hdata.get("schema_version") == 1
+                and hdata.get("source") == "SEC_13F_XML_INFO_TABLE"
+                and isinstance(hdata.get("records"), list)):
+            if date.fromisoformat(str(hdata.get("as_of_pacific") or "")) > today:
+                hedge_summary["collector_status"] = "HOLD — FUTURE-DATED 13F"
+            else:
+                hedge_summary.update({
+                    "collector_status": str(hdata.get("collector_status") or "UNVERIFIED"),
+                    "managers_targeted": hdata.get("manager_count", 0),
+                    "managers_complete": hdata.get("managers_complete", 0),
+                    "issuer_name_matched_tickers": hdata.get("matched_ticker_count", 0),
+                })
+    except (OSError, ValueError, KeyError, AttributeError, TypeError, UnicodeError):
+        pass
     runway_counts = {
         "collector_status": runway_source_status,
         "target_count": runway_target,
@@ -250,6 +278,7 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
             for row in verified_tracking),
         "ranked": qualified,
         "cash_runway": runway_counts,
+        "hedge_fund_13f": hedge_summary,
         "two_benchmark_candidate_count": sum(
             row.get("Two-benchmark eligible") is True for row in items
         ),
