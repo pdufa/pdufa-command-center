@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_potential_list import build_potential_list
+from gem_secondary_research import research_search_links, source_research_policy
 
 VISIBLE = ("Ticker", "Drug", "Why potential", "Still needed", "Timing / resolution")
 FULL = (
@@ -63,6 +64,60 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 "Still needed": st.column_config.TextColumn("Still needed", width="large"),
             },
         )
+    if potential:
+        with st.expander("INVESTOR RELATIONS + SOCIAL RESEARCH — SELECT POTENTIAL GEM",
+                         expanded=False):
+            st.caption(
+                "Investigate non-benchmark checks here: cash/runway, insider "
+                "activity, dilution, trading attention, discussion and catalysts. "
+                "Source links open a search or the company's known official "
+                "Investor Relations/news page; this panel DOES NOT collect, "
+                "verify or automatically score social posts."
+            )
+            identifiers = list(range(len(potential)))
+            choice = st.selectbox(
+                "Research exact stock / drug program",
+                identifiers,
+                format_func=lambda n: (
+                    str(potential[n].get("Ticker") or "?") + " · " +
+                    str(potential[n].get("Drug") or "?") + " · " +
+                    str(potential[n].get("NCT ID") or potential[n].get("Exact program") or "")
+                ),
+                key=namespace + "_source_research_pick",
+            )
+            lead = potential[choice]
+            links = research_search_links(lead)
+            if links:
+                st.markdown("**COMPANY SOURCES — FIRST**")
+                if links["confirmed_issuer_news"]:
+                    st.link_button("OPEN OFFICIAL COMPANY IR / NEWS",
+                                   links["confirmed_issuer_news"],
+                                   key=namespace + "_open_ir")
+                else:
+                    st.link_button("FIND OFFICIAL COMPANY INVESTOR RELATIONS",
+                                   links["find_issuer_news"],
+                                   key=namespace + "_find_ir")
+                st.markdown(
+                    "[Search this drug on issuer's site](" +
+                    links["issuer_program_search"] + ") · " +
+                    "[Search SEC filings](" + links["sec_program_search"] + ") · " +
+                    "[Search ClinicalTrials.gov](" + links["clinical_trials"] + ")"
+                )
+                st.markdown("**SOCIAL DISCUSSION — LEADS ONLY**")
+                st.markdown(
+                    "[Reddit program discussions](" + links["reddit_program"] +
+                    ") · [Stocktwits ticker](" + links["stocktwits_ticker"] +
+                    ") · [X discussions](" + links["x_program"] +
+                    ") · [Recent news](" + links["news_program"] + ")"
+                )
+                st.caption(source_research_policy())
+                st.markdown(
+                    "**#2 PIPELINE → #1 GEM:** Use these leads to locate an "
+                    "issuer readout and two source-verifiable post-readout "
+                    "financing closings. Only those independently checked "
+                    "events can clear the first two GEM benchmarks."
+                )
+
     with st.expander("ALL POTENTIAL GEM EVIDENCE + SOURCE LINKS", expanded=False):
         table = pd.DataFrame(potential + timing_hold).reindex(columns=FULL)
         st.dataframe(
