@@ -1,23 +1,23 @@
 {
-  "source_report_run_id": "38598841433",
-  "generated_at_utc": "2026-10-14T16:52:46.068055+00:00",
+  "source_report_run_id": "38602603100",
+  "generated_at_utc": "2026-10-14T18:13:12.226387+00:00",
   "status": "PARTIAL",
   "execution_status": "COMPLETE",
   "scope": "Targeted recheck of previously unresolved required claims only",
-  "findings_due": 43,
-  "findings_verified": 5,
-  "required_findings_unresolved": 38,
-  "source_observations": 43,
+  "findings_due": 37,
+  "findings_verified": 1,
+  "required_findings_unresolved": 36,
+  "source_observations": 37,
   "by_source": {
     "FDA": {
-      "rechecked": 4,
-      "newly_supported": 4,
+      "rechecked": 0,
+      "newly_supported": 0,
       "still_unresolved": 0
     },
     "SEC": {
       "rechecked": 35,
-      "newly_supported": 0,
-      "still_unresolved": 35
+      "newly_supported": 1,
+      "still_unresolved": 34
     },
     "FINANCIAL": {
       "rechecked": 2,
@@ -25,16 +25,17 @@
       "still_unresolved": 2
     },
     "ISSUER": {
-      "rechecked": 2,
-      "newly_supported": 1,
-      "still_unresolved": 1
+      "rechecked": 0,
+      "newly_supported": 0,
+      "still_unresolved": 0
     }
   },
   "states": {
-    "VERIFIED": 5,
-    "REVIEW_REQUIRED": 38
+    "REVIEW_REQUIRED": 31,
+    "CONFLICT": 5,
+    "VERIFIED": 1
   },
-  "recheck_ledger_sha256": "e188d938e9890a4e6b49043dfc2feafcb7d1fa1db7186145061eec3846e9428b",
+  "recheck_ledger_sha256": "2dca01617d1279471366d0ee062ecd40a1168029356cadb5576dece82f0668d0",
   "recheck_ledger": "data/pdufa_targeted_recheck_results.csv",
   "source_baseline_unchanged": true,
   "trade_entry_authorized": false,
@@ -111,7 +112,7 @@
       "ticker": "MLYS",
       "category": "SEC",
       "claim": "FINANCING_CLOSURE",
-      "reason": "No completed transaction clause matches the stored closing date"
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "GILD",
@@ -141,7 +142,7 @@
       "ticker": "IBRX",
       "category": "SEC",
       "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "DYN",
