@@ -130,6 +130,49 @@ class PotentialGEMTests(unittest.TestCase):
             self.assertNotEqual(pending[0]["Evidence type"], pending[1]["Evidence type"])
             self.assertFalse(any(r["Evidence type"] == "Phase 3 + financing" for r in pending))
 
+    def test_independent_post_phase3_issuer_leads_are_separate_pending_stocks(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            write(root, "post_phase3_discoveries.csv", [
+                {"ticker": "CLDX", "drug": "barzolvolimab",
+                 "indication": "chronic spontaneous urticaria",
+                 "nct_id": "NCT06445023", "readout_date": "2026-09-22",
+                 "source_url": "https://issuer.example/csuevidence"},
+                {"ticker": "CLDX", "drug": "barzolvolimab",
+                 "indication": "chronic spontaneous urticaria",
+                 "nct_id": "NCT06455202", "readout_date": "2026-09-22",
+                 "source_url": "https://issuer.example/csuevidence"},
+                {"ticker": "MLTX", "drug": "sonelokimab",
+                 "indication": "psoriatic arthritis", "nct_id": "NCT06641076",
+                 "readout_date": "2026-08-10",
+                 "source_url": "https://issuer.example/izar"},
+            ])
+            pending, held = build_potential_list(root, as_of=date(2026, 10, 14))
+            self.assertEqual(sum(x["Ticker"] == "CLDX" for x in pending), 2)
+            self.assertEqual(sum(x["Ticker"] == "MLTX" for x in pending), 1)
+            self.assertTrue(all("not GEM-verified" in x["Why potential"]
+                                for x in pending if x["Ticker"] in ("CLDX", "MLTX")))
+            self.assertTrue(all("two separate post-readout" in x["Still needed"]
+                                for x in pending if x["Ticker"] in ("CLDX", "MLTX")))
+            self.assertFalse(any(x["Ticker"] in ("CLDX", "MLTX") for x in held))
+
+    def test_independent_lead_cannot_borrow_financing_from_same_ticker(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            write(root, "post_phase3_discoveries.csv", [
+                {"ticker": "NTLA", "drug": "different trial",
+                 "indication": "other program", "nct_id": "NCT11111111",
+                 "readout_date": "2026-08-12",
+                 "source_url": "https://issuer.example/other"}
+            ])
+            pending, _ = build_potential_list(root, as_of=date(2026, 10, 14))
+            extra = next(x for x in pending if x["Exact program"] == "TRIAL|NTLA|NCT11111111")
+            self.assertEqual(extra["SEC documents rechecked"], 0)
+            self.assertEqual(extra["Evidence type"], "Issuer Phase 3 readout (review)")
+            self.assertIn("verify two separate", extra["Still needed"])
+
     def test_overview_has_visible_new_section_under_gem_one(self):
         root = Path(__file__).resolve().parents[1]
         overview = (root / "unified_clinical_trading.py").read_text(encoding="utf-8")
