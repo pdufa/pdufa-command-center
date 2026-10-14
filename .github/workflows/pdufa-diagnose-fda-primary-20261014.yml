@@ -24,7 +24,7 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          from scripts.source_verification import Verifier, read_rows, company_matches, drug_matches, indication_matches, dates, target_dates
+          from scripts.source_verification import Verifier, read_rows, company_matches, drug_matches, indication_matches, dates, target_dates, exact_mapped_primary_target
           events={e['event_key']:e for e in read_rows('data/pdufa_candidates.csv')}
           companies=read_rows('data/company_registry.csv')
           config=json.loads(Path('config/issuer_sources.json').read_text())
@@ -46,6 +46,16 @@ jobs:
                   near=[plain[max(0,m.start()-125):m.end()+165].replace('\n',' ')[:310] for m in markers[:8]]
                   print('ANCHOR_CONTEXT',json.dumps(near))
                   print('DOC_PREFIX',plain[:230])
+                  anchor=verifier.event_sources(event).get('primary_target_anchor','')
+                  import re
+                  normplain=re.sub(r'\\s+',' ',plain)
+                  needle=re.sub(r'\\s+',' ',anchor).strip()
+                  pos=normplain.casefold().find(needle.casefold())
+                  nearby=normplain[max(0,pos-1000):pos+len(needle)+1000] if pos>=0 else ''
+                  print('ANCHOR_DIAG',repr(anchor),'pos',pos,'dates',sorted(dates(anchor)),
+                       'local_drug',drug_matches(event,nearby),'local_indication',indication_matches(event,nearby),
+                       'local_dates',sorted(target_dates(nearby)),
+                       'helper_pass',bool(exact_mapped_primary_target(event,plain,event['pdufa_date'],anchor)))
               except Exception as exc:
                   print('FETCH_FAILED',type(exc).__name__,str(exc)[:170])
           PY
