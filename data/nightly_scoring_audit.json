@@ -1,16 +1,16 @@
 {
-  "generated_at_utc": "2026-10-14T18:18:35.980971+00:00",
-  "status": "SCAN_FAILURE",
+  "generated_at_utc": "2026-10-14T18:31:13.760929+00:00",
+  "status": "REVIEW_REQUIRED",
   "source_scan": {
     "workflow": "PDUFA Nightly FDA SEC Financial Market Issuer Sources",
-    "run_id": 38613653891,
-    "conclusion": "cancelled"
+    "run_id": 38613143425,
+    "conclusion": "success"
   },
   "counts": {
     "models_mapped": 9,
     "overlaps": 6,
     "input_tests": 6,
-    "data_gaps": 2,
+    "data_gaps": 4,
     "reviews": 0
   },
   "checks": [
@@ -22,14 +22,14 @@
     },
     {
       "Test": "Trade Score coverage",
-      "Status": "OBSERVED",
-      "Result": "16/45 stock rows contain trade_score",
+      "Status": "DATA GAP",
+      "Result": "0/45 stock rows contain trade_score",
       "Why it matters": "Missing saved scores must not be replaced by a clinical mean without a distinct label."
     },
     {
       "Test": "Public PoA coverage",
-      "Status": "OBSERVED",
-      "Result": "8/45 stock rows contain public_approval_probability",
+      "Status": "DATA GAP",
+      "Result": "0/45 stock rows contain public_approval_probability",
       "Why it matters": "All-sources PoA requires both estimates; missing does not equal 0%."
     },
     {
