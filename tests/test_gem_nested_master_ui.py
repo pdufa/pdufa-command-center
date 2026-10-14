@@ -83,12 +83,15 @@ class NestedGEMTests(unittest.TestCase):
         self.assertIn('st.download_button("EXPORT COMBINED TRIAL VIEW"', overview)
         self.assertIn('st.download_button("EXPORT PRE3 PROGRAMS"', overview)
         self.assertIn('st.download_button("EXPORT TRADING CANDIDATES"', overview)
-        # GEM belongs inside the existing dashboard panels flow, not before
-        # all the old controls. It opens above the original #2/#3/#4 cards.
+        # GEM is visible FIRST in the existing tab. The original controls
+        # remain unchanged below, and the nested master is only built on click.
         entrypoint = overview.index('def render_combined_overview(')
-        outside = overview[entrypoint:overview.index('    today = datetime.now', entrypoint)]
-        self.assertNotIn("render_gem_nested_master(root=root", outside)
-        self.assertLess(overview.index(block), overview.index('st.markdown("### #2-PIPELINE")'))
+        entry = overview[entrypoint:overview.index('    today = datetime.now', entrypoint)]
+        self.assertIn(block, entry)
+        self.assertIn('render_gem_nested_master(root=root, selections_ready=True)', entry)
+        self.assertIn('value=False, key="overview_show_gem_master"', entry)
+        self.assertLess(entry.index(block), entry.index('if not dashboard:'))
+        self.assertIn('st.markdown("### #2-PIPELINE")', overview)
 
         self.assertIn("### GEM — STOCK → FACTORS → SOURCE INPUTS", ui)
         self.assertIn("_init_browser_selection", ui)
