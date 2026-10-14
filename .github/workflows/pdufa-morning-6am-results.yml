@@ -1,6 +1,6 @@
 name: PDUFA 6 AM Pacific Morning Results
 
-# Read-only publication of the PREVIOUS NIGHT'S saved scan results.
+# Read-only publication of the PREVIOUS DAY'S 1 PM Pacific scan results.
 # No new Phase 3, FDA, SEC, market, or finance collection is triggered.
 on:
   schedule:
