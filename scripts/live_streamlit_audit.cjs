@@ -186,15 +186,21 @@ async function audit() {
     }
     await candidates.first().click({timeout:15000});
     const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
-      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR —") &&
-      text.includes("Trading metric"), 90000);
+      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR —"), 65000);
+    // Streamlit's st.dataframe uses a canvas-backed grid; its column titles
+    // are not necessarily present in body.innerText. Require the actual
+    // rendered research header and inspect Streamlit's dataframe test ID.
+    const tables = await chart.frame.locator('[data-testid="stDataFrame"]').count();
     report.checked.push({screen:"GEM nested stock entry/exit chart",result:"PASS",
-                         source_warnings_visible:chart.text.includes("SOURCE RECHECK PARTIAL / STALE")});
+                         source_warnings_visible:chart.text.includes("SOURCE RECHECK PARTIAL / STALE"),
+                         dataframe_widgets:tables});
     await screenshot(page,"gem-entry-exit-stock");
   });
   // The embedded watchlist is hosted in its own components iframe.
   await safely("WT embedded watchlist", async() => {
-    const selected = await waitFor(page, "WT", (frame) => selectedTab(frame, "WT"));
+    // Previous checks navigate away from WT; deliberately re-open it rather
+    // than assuming the tab left selected at the end of the preceding loop.
+    const selected = await inspectTab(page, "WT", []);
     const inner = [];
     for (const frame of page.frames()) {
       if (frame === selected.frame) continue;
