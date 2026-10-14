@@ -97,9 +97,9 @@
       {
         "capability": "SEC Form 4 open-market insider trading",
         "caveat": "Issuer-capped 90-day P/S transactions; SEC-source gaps and amendments are explicit",
-        "data_coverage_pct": 9.2,
+        "data_coverage_pct": 23.9,
         "key": "insider",
-        "observed_gem_rows": 34,
+        "observed_gem_rows": 88,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -167,7 +167,7 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-14T02:23:51.941177+00:00",
+    "finished_at": "2026-10-14T02:27:45.745956+00:00",
     "matched_posted_results": 93,
     "new_records": 0,
     "stored_results": 2482,
@@ -177,7 +177,7 @@
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-14T02:25:22.264411+00:00",
+  "generated_at_utc": "2026-10-14T02:30:50.932060+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -187,6 +187,14 @@
     "with_manager_accumulation": 115
   },
   "historical_return_edge_validated": false,
+  "insider_form4": {
+    "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
+    "issuers_complete": 32,
+    "issuers_targeted": 35,
+    "matched_program_rows": 88,
+    "source_errors": 3,
+    "with_open_market_purchases": 4
+  },
   "label": "BLOCK 4 \u2014 GEMS",
   "market_source_health": {
     "blocked_records": 0,
@@ -201,8 +209,8 @@
     "Post-Financing": 0
   },
   "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 38500756049,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38500756049",
+  "run_id": 38501096626,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38501096626",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,

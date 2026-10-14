@@ -1,82 +1,94 @@
 {
   "as_of_pacific": "2026-10-13",
   "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-14T02:25:21.657690+00:00",
+  "generated_at_utc": "2026-10-14T02:30:50.552034+00:00",
   "issuer_count": 35,
   "issuer_errors": [
-    {
-      "error": "SEC Form 4 XML document missing or ambiguous",
-      "ticker": "IRD"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "IONS"
-    },
     {
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "ticker": "CYTK"
     },
     {
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "VRTX"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "ticker": "CORT"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "MLYS"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "GILD"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "DYN"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "ARQT"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "APMD"
     },
     {
       "error": "SEC issuer Form 4 amendments require manual reconciliation",
       "ticker": "INBX"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "PHVS"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "IMNM"
-    },
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "BMY"
-    },
-    {
-      "error": "SEC Form 4 XML document missing or ambiguous",
-      "ticker": "ZBIO"
     }
   ],
-  "issuers_complete": 20,
-  "limits": "Issuer filing index capped to 8 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
+  "issuers_complete": 32,
+  "limits": "Issuer filing index capped to 25 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
   "records": [
     {
       "as_of": "2026-10-13",
       "cik": "0001228627",
-      "error": "SEC Form 4 XML document missing or ambiguous",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 8,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
       "ticker": "IRD",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-30",
+          "filed": "2026-10-02",
+          "owner": "Foundation Fighting Blindness Retinal Degeneration Fund; Foundation Fighting Blindness, Inc.",
+          "price": 4.9568,
+          "shares": 556000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000204226626000002/primary_doc.xml",
+          "ticker": "IRD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-03",
+          "filed": "2026-09-08",
+          "owner": "Gagnon Robert E.",
+          "price": 4.5433,
+          "shares": 28000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000114036126035912/form4.xml",
+          "ticker": "IRD"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-23",
+          "filed": "2026-07-27",
+          "owner": "YERXA BENJAMIN R",
+          "price": 2.97,
+          "shares": 7429,
+          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003354/form4.xml",
+          "ticker": "IRD"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-23",
+          "filed": "2026-07-27",
+          "owner": "SCHACHLE JOSEPH K",
+          "price": 2.94,
+          "shares": 4644,
+          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003353/form4.xml",
+          "ticker": "IRD"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-23",
+          "filed": "2026-07-27",
+          "owner": "Magrath George",
+          "price": 2.9473,
+          "shares": 9475,
+          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003352/form4.xml",
+          "ticker": "IRD"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-23",
+          "filed": "2026-07-27",
+          "owner": "Gagnon Robert E.",
+          "price": 2.9477,
+          "shares": 7783,
+          "source": "https://www.sec.gov/Archives/edgar/data/1228627/000090514826003351/form4.xml",
+          "ticker": "IRD"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -90,12 +102,32 @@
     {
       "as_of": "2026-10-13",
       "cik": "0000874015",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 22,
+      "latest_filing": "2026-09-02",
+      "status": "COMPLETE",
       "ticker": "IONS",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "P",
+          "date": "2026-07-30",
+          "filed": "2026-07-31",
+          "owner": "Hayden Michael R",
+          "price": 53.38,
+          "shares": 15000,
+          "source": "https://www.sec.gov/Archives/edgar/data/874015/000087401526000254/edgardoc.xml",
+          "ticker": "IONS"
+        },
+        {
+          "code": "P",
+          "date": "2026-07-31",
+          "filed": "2026-07-31",
+          "owner": "Hayden Michael R",
+          "price": 51.6,
+          "shares": 5000,
+          "source": "https://www.sec.gov/Archives/edgar/data/874015/000087401526000254/edgardoc.xml",
+          "ticker": "IONS"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -297,10 +329,9 @@
     {
       "as_of": "2026-10-13",
       "cik": "0000875320",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 11,
+      "latest_filing": "2026-09-10",
+      "status": "COMPLETE",
       "ticker": "VRTX",
       "transactions": []
     },
@@ -366,22 +397,372 @@
     {
       "as_of": "2026-10-13",
       "cik": "0001933414",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 14,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
       "ticker": "MLYS",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-30",
+          "filed": "2026-10-02",
+          "owner": "Congleton Jon",
+          "price": 25.4622,
+          "shares": 75000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000121/wk-form4_1790978009.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-22",
+          "filed": "2026-09-24",
+          "owner": "Slingsby Brian Taylor",
+          "price": 28.8085,
+          "shares": 104320,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000196390126000003/wk-form4_1790300978.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-21",
+          "filed": "2026-09-22",
+          "owner": "Warren Eric",
+          "price": 28.1172,
+          "shares": 7438,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000014/wk-form4_1790117313.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-17",
+          "owner": "Karydas Daphne",
+          "price": 28.58,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000181695226000005/wk-form4_1789681270.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-21",
+          "filed": "2026-08-25",
+          "owner": "Warren Eric",
+          "price": 25.9767,
+          "shares": 7437,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000012/wk-form4_1787692603.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-10",
+          "filed": "2026-08-12",
+          "owner": "Rodman David Malcom",
+          "price": 27.09,
+          "shares": 2170,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000118/wk-form4_1786577585.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-21",
+          "filed": "2026-07-23",
+          "owner": "Warren Eric",
+          "price": 26.8735,
+          "shares": 7438,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000009/wk-form4_1784846362.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-17",
+          "filed": "2026-07-20",
+          "owner": "Rodman David Malcom",
+          "price": 26.53,
+          "shares": 416,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000167265926000036/wk-form4_1784595624.xml",
+          "ticker": "MLYS"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-15",
+          "filed": "2026-07-15",
+          "owner": "Rodman David Malcom",
+          "price": 26.6112,
+          "shares": 6349,
+          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000099/wk-form4_1784163485.xml",
+          "ticker": "MLYS"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
       "cik": "0000882095",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 19,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
       "ticker": "GILD",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-01",
+          "filed": "2026-10-02",
+          "owner": "O'Day Daniel Patrick",
+          "price": 147.719,
+          "shares": 12000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000035/wk-form4_1790973619.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-10-01",
+          "filed": "2026-10-02",
+          "owner": "O'Day Daniel Patrick",
+          "price": 148.6265,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000035/wk-form4_1790973619.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-16",
+          "owner": "Dickinson Andrew D",
+          "price": 145.29,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000131020426000029/wk-form4_1789590643.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-16",
+          "owner": "Mercier Johanna",
+          "price": 143.6917,
+          "shares": 1600,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000033/wk-form4_1789590469.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-16",
+          "owner": "Mercier Johanna",
+          "price": 144.4569,
+          "shares": 800,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000033/wk-form4_1789590469.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-16",
+          "owner": "Mercier Johanna",
+          "price": 145.29,
+          "shares": 600,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000033/wk-form4_1789590469.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-01",
+          "filed": "2026-09-02",
+          "owner": "O'Day Daniel Patrick",
+          "price": 147.5087,
+          "shares": 1600,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000031/wk-form4_1788379963.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-01",
+          "filed": "2026-09-02",
+          "owner": "O'Day Daniel Patrick",
+          "price": 148.3636,
+          "shares": 7992,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000031/wk-form4_1788379963.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-01",
+          "filed": "2026-09-02",
+          "owner": "O'Day Daniel Patrick",
+          "price": 149.3817,
+          "shares": 5408,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000031/wk-form4_1788379963.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-26",
+          "filed": "2026-08-27",
+          "owner": "WELTERS ANTHONY",
+          "price": 148.3106,
+          "shares": 3118,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000121330726000005/wk-form4_1787870685.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-26",
+          "filed": "2026-08-27",
+          "owner": "WELTERS ANTHONY",
+          "price": 148.824,
+          "shares": 4600,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000121330726000005/wk-form4_1787870685.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-26",
+          "filed": "2026-08-27",
+          "owner": "WELTERS ANTHONY",
+          "price": 148.2353,
+          "shares": 3402,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000121330726000005/wk-form4_1787870685.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-26",
+          "filed": "2026-08-27",
+          "owner": "WELTERS ANTHONY",
+          "price": 148.8227,
+          "shares": 6880,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000121330726000005/wk-form4_1787870685.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-21",
+          "owner": "Bluestone Jeffrey",
+          "price": 143.7543,
+          "shares": 1165,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000177181426000005/wk-form4_1787354535.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-21",
+          "owner": "Bluestone Jeffrey",
+          "price": 144.9248,
+          "shares": 1816,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000177181426000005/wk-form4_1787354535.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-21",
+          "owner": "Bluestone Jeffrey",
+          "price": 145.7286,
+          "shares": 1658,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000177181426000005/wk-form4_1787354535.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-21",
+          "owner": "Bluestone Jeffrey",
+          "price": 146.36,
+          "shares": 26,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000177181426000005/wk-form4_1787354535.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-21",
+          "owner": "Bluestone Jeffrey",
+          "price": 146.26,
+          "shares": 335,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000177181426000005/wk-form4_1787354535.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-17",
+          "filed": "2026-08-18",
+          "owner": "Dickinson Andrew D",
+          "price": 138.36,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000131020426000024/wk-form4_1787094366.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-17",
+          "filed": "2026-08-18",
+          "owner": "Mercier Johanna",
+          "price": 137.365,
+          "shares": 16530,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000028/wk-form4_1787093640.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-17",
+          "filed": "2026-08-18",
+          "owner": "Mercier Johanna",
+          "price": 138.0353,
+          "shares": 11470,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000028/wk-form4_1787093640.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-03",
+          "filed": "2026-08-04",
+          "owner": "O'Day Daniel Patrick",
+          "price": 129.6583,
+          "shares": 6700,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000028/wk-form4_1785879633.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-03",
+          "filed": "2026-08-04",
+          "owner": "O'Day Daniel Patrick",
+          "price": 130.8022,
+          "shares": 7700,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000028/wk-form4_1785879633.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-03",
+          "filed": "2026-08-04",
+          "owner": "O'Day Daniel Patrick",
+          "price": 131.3433,
+          "shares": 600,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000163864326000028/wk-form4_1785879633.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-15",
+          "filed": "2026-07-16",
+          "owner": "Dickinson Andrew D",
+          "price": 129.9256,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000131020426000022/wk-form4_1784239680.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-15",
+          "filed": "2026-07-16",
+          "owner": "Mercier Johanna",
+          "price": 129.9192,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000026/wk-form4_1784235279.xml",
+          "ticker": "GILD"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -425,12 +806,192 @@
     {
       "as_of": "2026-10-13",
       "cik": "0001818794",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 12,
+      "latest_filing": "2026-10-06",
+      "status": "COMPLETE",
       "ticker": "DYN",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "P",
+          "date": "2026-10-02",
+          "filed": "2026-10-06",
+          "owner": "Posner Brian S",
+          "price": 16.0,
+          "shares": 2500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000119312526415584/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-04",
+          "filed": "2026-09-08",
+          "owner": "Friedl-Naderer Johanna",
+          "price": 24.35,
+          "shares": 900,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000191559826000005/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-08",
+          "owner": "Friedl-Naderer Johanna",
+          "price": 18.88,
+          "shares": 185,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000191559826000005/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-04",
+          "filed": "2026-09-08",
+          "owner": "Kerr Douglas",
+          "price": 24.35,
+          "shares": 3745,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000181418926000005/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-08",
+          "owner": "Kerr Douglas",
+          "price": 18.88,
+          "shares": 1290,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000181418926000005/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-08",
+          "owner": "Cox John",
+          "price": 18.88,
+          "shares": 5658,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000149842826000005/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Rhodes Jason P",
+          "price": 26.2,
+          "shares": 268354,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000157701426000016/form4-08172026_050803.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Rhodes Jason P",
+          "price": 26.2,
+          "shares": 94415,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000157701426000016/form4-08172026_050803.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Rhodes Jason P",
+          "price": 26.2,
+          "shares": 63643,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000157701426000016/form4-08172026_050803.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-14",
+          "filed": "2026-08-17",
+          "owner": "Rhodes Jason P",
+          "price": 25.0,
+          "shares": 1359674,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000157701426000016/form4-08172026_050803.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-14",
+          "filed": "2026-08-17",
+          "owner": "Rhodes Jason P",
+          "price": 25.0,
+          "shares": 478377,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000157701426000016/form4-08172026_050803.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-14",
+          "filed": "2026-08-17",
+          "owner": "Rhodes Jason P",
+          "price": 25.0,
+          "shares": 322465,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000157701426000016/form4-08172026_050803.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Friedl-Naderer Johanna",
+          "price": 26.28,
+          "shares": 226,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000191559826000004/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Kerr Douglas",
+          "price": 26.28,
+          "shares": 1556,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000181418926000004/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Cox John",
+          "price": 26.28,
+          "shares": 4986,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000149842826000004/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-17",
+          "owner": "Lucera Erick",
+          "price": 26.28,
+          "shares": 1797,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000169761626000002/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-27",
+          "filed": "2026-07-29",
+          "owner": "Kersten Dirk",
+          "price": 25.5024,
+          "shares": 256072,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000119312526323754/ownership.xml",
+          "ticker": "DYN"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-27",
+          "filed": "2026-07-29",
+          "owner": "Kersten Dirk",
+          "price": 26.0428,
+          "shares": 5388,
+          "source": "https://www.sec.gov/Archives/edgar/data/1818794/000119312526323754/ownership.xml",
+          "ticker": "DYN"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -453,12 +1014,152 @@
     {
       "as_of": "2026-10-13",
       "cik": "0001787306",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 13,
+      "latest_filing": "2026-09-18",
+      "status": "COMPLETE",
       "ticker": "ARQT",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-16",
+          "filed": "2026-09-18",
+          "owner": "Matsuda Masaru",
+          "price": 25.0009,
+          "shares": 3674,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026062732/wk-form4_1789762641.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-17",
+          "owner": "Welgus Howard G.",
+          "price": 24.18,
+          "shares": 4730,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026062490/wk-form4_1789675580.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-10",
+          "owner": "Matsuda Masaru",
+          "price": 25.0261,
+          "shares": 9989,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026061444/wk-form4_1789082678.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-27",
+          "filed": "2026-08-28",
+          "owner": "Curran Terrie",
+          "price": 25.0294,
+          "shares": 11148,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026059444/wk-form4_1787953199.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-27",
+          "filed": "2026-08-28",
+          "owner": "Curran Terrie",
+          "price": 25.0294,
+          "shares": 27052,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026059444/wk-form4_1787953199.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-24",
+          "owner": "Curran Terrie",
+          "price": 26.0376,
+          "shares": 1072,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026058648/wk-form4_1787602781.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-19",
+          "filed": "2026-08-21",
+          "owner": "Burnett Patrick",
+          "price": 27.0,
+          "shares": 1697,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026058420/wk-form4_1787342879.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-17",
+          "filed": "2026-08-19",
+          "owner": "Welgus Howard G.",
+          "price": 26.1807,
+          "shares": 4730,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026058008/wk-form4_1787173021.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-11",
+          "filed": "2026-08-13",
+          "owner": "Burnett Patrick",
+          "price": 26.5216,
+          "shares": 8300,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026056898/wk-form4_1786666006.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-12",
+          "filed": "2026-08-13",
+          "owner": "Burnett Patrick",
+          "price": 26.0847,
+          "shares": 6700,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026056898/wk-form4_1786666006.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-03",
+          "filed": "2026-08-05",
+          "owner": "Burnett Patrick",
+          "price": 26.1168,
+          "shares": 955,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026053755/wk-form4_1785980541.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-03",
+          "filed": "2026-08-05",
+          "owner": "Matsuda Masaru",
+          "price": 26.1168,
+          "shares": 1230,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026053754/wk-form4_1785980535.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-03",
+          "filed": "2026-08-05",
+          "owner": "Watanabe Todd",
+          "price": 26.1168,
+          "shares": 4375,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026053753/wk-form4_1785980527.xml",
+          "ticker": "ARQT"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-15",
+          "filed": "2026-07-17",
+          "owner": "Welgus Howard G.",
+          "price": 26.91,
+          "shares": 4730,
+          "source": "https://www.sec.gov/Archives/edgar/data/1787306/000162828026048641/wk-form4_1784318483.xml",
+          "ticker": "ARQT"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -493,12 +1194,32 @@
     {
       "as_of": "2026-10-13",
       "cik": "0001745648",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 10,
+      "latest_filing": "2026-08-05",
+      "status": "COMPLETE",
       "ticker": "APMD",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "P",
+          "date": "2026-08-03",
+          "filed": "2026-08-05",
+          "owner": "Morningside Venture Investments Ltd",
+          "price": 16.0,
+          "shares": 312500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1745648/000090514826003483/form4.xml",
+          "ticker": "APMD"
+        },
+        {
+          "code": "P",
+          "date": "2026-08-03",
+          "filed": "2026-08-03",
+          "owner": "SEKHRI PAUL J",
+          "price": 16.0,
+          "shares": 12500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526330507/ownership.xml",
+          "ticker": "APMD"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -672,22 +1393,282 @@
     {
       "as_of": "2026-10-13",
       "cik": "0001830487",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 25,
+      "latest_filing": "2026-10-13",
+      "status": "COMPLETE",
       "ticker": "PHVS",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-23",
+          "filed": "2026-09-25",
+          "owner": "Monges Viviane",
+          "price": 33.0457,
+          "shares": 11969,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526402567/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-22",
+          "filed": "2026-09-24",
+          "owner": "Schikan Johannes Gerardus Christiaan Petrus",
+          "price": 36.19,
+          "shares": 800,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526400435/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-21",
+          "filed": "2026-09-23",
+          "owner": "Nassif David W.",
+          "price": 36.4668,
+          "shares": 6000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526398678/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Lu Peng",
+          "price": 35.0,
+          "shares": 100000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526396695/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Schikan Johannes Gerardus Christiaan Petrus",
+          "price": 35.0,
+          "shares": 200000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526396689/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Bjork Elisabeth",
+          "price": 37.8935,
+          "shares": 52500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526396584/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Glassman Robert",
+          "price": 38.5574,
+          "shares": 14493,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526396579/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Lesage Anne",
+          "price": 38.2733,
+          "shares": 20000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526396572/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-17",
+          "owner": "Abele Stefan Andreas",
+          "price": 38.1375,
+          "shares": 45000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526394103/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-17",
+          "owner": "Abele Stefan Andreas",
+          "price": 39.2411,
+          "shares": 1400,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526394103/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-17",
+          "owner": "Glassman Robert",
+          "price": 38.2735,
+          "shares": 8667,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526393860/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-14",
+          "filed": "2026-09-16",
+          "owner": "Souverijns Wim",
+          "price": 39.3063,
+          "shares": 20000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526392895/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-16",
+          "owner": "Souverijns Wim",
+          "price": 38.99,
+          "shares": 6090,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526392895/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-11",
+          "filed": "2026-09-15",
+          "owner": "Lu Peng",
+          "price": 40.1298,
+          "shares": 15000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526391740/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-14",
+          "filed": "2026-09-15",
+          "owner": "Modig Berndt",
+          "price": 39.4046,
+          "shares": 2291,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526391713/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-10",
+          "filed": "2026-09-14",
+          "owner": "Lesage Anne",
+          "price": 38.3028,
+          "shares": 30000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526390119/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-09",
+          "filed": "2026-09-11",
+          "owner": "Glassman Robert",
+          "price": 37.5495,
+          "shares": 8000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526388909/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-09",
+          "owner": "Lu Peng",
+          "price": 40.6756,
+          "shares": 15000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526386096/ownership.xml",
+          "ticker": "PHVS"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-14",
+          "filed": "2026-08-18",
+          "owner": "Modig Berndt",
+          "price": 34.7669,
+          "shares": 2292,
+          "source": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526354965/ownership.xml",
+          "ticker": "PHVS"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
       "cik": "0001472012",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 15,
+      "latest_filing": "2026-09-15",
+      "status": "COMPLETE",
       "ticker": "IMNM",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-11",
+          "filed": "2026-09-15",
+          "owner": "Higgins Jack",
+          "price": 25.32,
+          "shares": 13200,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000199368426000008/form4-09152026_040933.xml",
+          "ticker": "IMNM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-10",
+          "filed": "2026-08-12",
+          "owner": "Barchas Isaac",
+          "price": 26.07,
+          "shares": 10125,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000180834326000010/form4-08122026_090856.xml",
+          "ticker": "IMNM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-11",
+          "filed": "2026-08-12",
+          "owner": "Barchas Isaac",
+          "price": 26.23,
+          "shares": 62291,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000180834326000010/form4-08122026_090856.xml",
+          "ticker": "IMNM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-12",
+          "filed": "2026-08-12",
+          "owner": "Barchas Isaac",
+          "price": 27.25,
+          "shares": 11048,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000180834326000010/form4-08122026_090856.xml",
+          "ticker": "IMNM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-06",
+          "filed": "2026-08-10",
+          "owner": "Barchas Isaac",
+          "price": 26.06,
+          "shares": 20840,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000180834326000009/form4-08102026_040801.xml",
+          "ticker": "IMNM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-07",
+          "filed": "2026-08-10",
+          "owner": "Barchas Isaac",
+          "price": 26.06,
+          "shares": 15248,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000180834326000009/form4-08102026_040801.xml",
+          "ticker": "IMNM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-04",
+          "filed": "2026-08-06",
+          "owner": "Horn Kinney",
+          "price": 25.09,
+          "shares": 90616,
+          "source": "https://www.sec.gov/Archives/edgar/data/1472012/000183121526000005/form4-08062026_100833.xml",
+          "ticker": "IMNM"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
@@ -732,20 +1713,39 @@
     {
       "as_of": "2026-10-13",
       "cik": "0000014272",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 16,
+      "latest_filing": "2026-10-05",
+      "status": "COMPLETE",
       "ticker": "BMY",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-09",
+          "filed": "2026-09-10",
+          "owner": "Massacesi Cristian",
+          "price": 64.57,
+          "shares": 6249,
+          "source": "https://www.sec.gov/Archives/edgar/data/14272/000208017626000006/wk-form4_1789072637.xml",
+          "ticker": "BMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-25",
+          "filed": "2026-08-26",
+          "owner": "Holzer Phil M",
+          "price": 67.5,
+          "shares": 500,
+          "source": "https://www.sec.gov/Archives/edgar/data/14272/000201258826000004/wk-form4_1787775463.xml",
+          "ticker": "BMY"
+        }
+      ]
     },
     {
       "as_of": "2026-10-13",
       "cik": "0001953926",
-      "error": "SEC Form 4 XML document missing or ambiguous",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 1,
+      "latest_filing": "2026-09-02",
+      "status": "COMPLETE",
       "ticker": "ZBIO",
       "transactions": []
     }
