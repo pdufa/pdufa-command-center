@@ -104,8 +104,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         submenu_labels = [item.label for item in app.get("tab") if item.label in
-                          {"UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "PDUFA WORKBENCH"}]
-        self.assertEqual(submenu_labels, ["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
+                          {"GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
                             for item in app.markdown))
@@ -245,7 +245,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception))
         overview = next(item for item in app.get("tab")
-                        if item.label == "UNIFIED OVERVIEW")
+                        if item.label == "GEM")
         self.assertEqual([item for item in overview if item.type != "tab"], [])
         post = next(item for item in app.get("tab")
                     if item.label == "POST PHASE 3")
@@ -320,11 +320,11 @@ class PipelinePageSmokeTests(unittest.TestCase):
         # checks switching between the actual tabs.
         overview_app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         overview_app.session_state["nav"] = "PDUFA"
-        overview_app.session_state["pdufa_subtab"] = "UNIFIED OVERVIEW"
+        overview_app.session_state["pdufa_subtab"] = "GEM"
         overview_app.run()
         self.assertFalse(list(overview_app.exception))
         overview = next(item for item in overview_app.get("tab")
-                        if item.label == "UNIFIED OVERVIEW")
+                        if item.label == "GEM")
         headings = [item.body for item in overview.get("markdown")]
         self.assertFalse(any("#1-DB" in heading for heading in headings))
         for title in ("### #2-PIPELINE",
@@ -334,9 +334,9 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for item in overview.get("download_button")))
         overview_app.selectbox(key="overview_shared_ticker").set_value(ticker).run()
         self.assertFalse(list(overview_app.exception))
-        self.assertEqual(overview_app.session_state["pdufa_subtab"], "UNIFIED OVERVIEW")
+        self.assertEqual(overview_app.session_state["pdufa_subtab"], "GEM")
         overview = next(item for item in overview_app.get("tab")
-                        if item.label == "UNIFIED OVERVIEW")
+                        if item.label == "GEM")
         focused = [item.value for item in overview.get("dataframe")
                    if {"Ticker", "Score /100", "Score type", "F"}
                    .issubset(item.value.columns)]
@@ -357,7 +357,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         overview_app.text_input(key="overview_query").set_value("__NO_MATCH__").run()
         self.assertFalse(list(overview_app.exception))
         overview = next(item for item in overview_app.get("tab")
-                        if item.label == "UNIFIED OVERVIEW")
+                        if item.label == "GEM")
         counts = {item.label: int(item.value) for item in overview.get("metric")
                   if item.label in {"Matching programs", "Matching pre-readout programs",
                                     "Matching candidates"}}
