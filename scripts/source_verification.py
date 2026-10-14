@@ -155,14 +155,14 @@ def exact_mapped_primary_target(event, plain, expected, anchor):
     """
     if not (isinstance(anchor, str) and 24 <= len(anchor) <= 240
             and isinstance(expected, str) and expected in dates(anchor)
-            and re.search(r"(?i)\\bPDUFA\\b|target\\s+action\\s+date", anchor)
+            and re.search(r"(?i)\bPDUFA\b|target\s+action\s+date", anchor)
             and company_matches(event, plain)):
         return ""
     explicit = target_dates(plain)
     if explicit != {expected}:
         return ""
-    clean = re.sub(r"\\s+", " ", plain)
-    phrase = re.sub(r"\\s+", " ", anchor).strip()
+    clean = re.sub(r"\s+", " ", plain)
+    phrase = re.sub(r"\s+", " ", anchor).strip()
     matches = list(re.finditer(re.escape(phrase), clean, re.I))
     for match in matches[:10]:
         # Different release headings may put the named drug and condition
