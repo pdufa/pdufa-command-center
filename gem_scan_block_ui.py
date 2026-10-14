@@ -126,6 +126,13 @@ def render_gem_scan_block_status(report=None, run=None):
                    " categories, Stage 1 GREEN, independently verified second"
                    " financing closure, no unresolved dilution and fresh sources."
                    " It remains a manual due-diligence list, not a buy signal.")
+        runway = report.get("cash_runway") or {}
+        st.caption(
+            "SEC cash runway (minimum 12 months at GEM 2/3): "
+            f"{runway.get('source_backed_pass', 0)} pass, "
+            f"{runway.get('missing_or_stale', 0)} unverified, "
+            f"{runway.get('under_12_months', 0)} below minimum."
+        )
         st.caption("Last audit " + str(report.get("generated_at_utc") or "unknown") +
                    " · action " + str(report.get("action") or "UNKNOWN") +
                    " · archive integrity " + str(report.get("artifact_integrity") or "NOT CHECKED") +
