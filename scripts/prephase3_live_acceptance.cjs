@@ -85,9 +85,6 @@ async function verify(){
         "Priority score coverage",
         "filtered rows have a review-priority score /100",
         "DATED CLINICAL RESEARCH PILOT SCORES",
-        "TRVI · NCT07671911",
-        "LBRX · NCT07363577",
-        "80/100", "72/100",
         "NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS",
         "provisional, source-cited clinical research score(s) /100",
       ];
@@ -95,6 +92,14 @@ async function verify(){
       await sleep(1800);
     }
     await page.screenshot({path:path.join(out,"prephase3-live-scorecards.png"),fullPage:false});
+    // The two dated pilot examples may legitimately expire or be withheld;
+    // their absence is not a broken dashboard and must not be scored as zero.
+    const pilotMatch=body.match(/(\d+) provisional, source-cited clinical research score\(s\) \/100/);
+    const pilotCount=pilotMatch?Number(pilotMatch[1]):null;
+    const pilotCardsVisible=body.includes("PROVISIONAL RESEARCH /100")
+      ||body.includes("REVIEWED RESEARCH /100");
+    const pilotExplicitlyUnavailable=body.includes("NO CURRENT SOURCE-DATED PILOT SCORES");
+    checked.pilotEvidence={reportedCount:pilotCount,pilotCardsVisible,pilotExplicitlyUnavailable};
     const requiredChecks={
       tabSelected:await lastFrame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")==="true",
       sourceHealth:body.includes("SOURCE HEALTH / LAST VERIFIED CHECK"),
@@ -106,10 +111,11 @@ async function verify(){
       priorityClinicalSeparation:body.includes("it is not a clinical strength score or success probability")&&body.includes("Excluded rows have priority 0 and no rank"),
       completionChecklist:body.includes("PRE PHASE 3 COMPLETION CHECKLIST"),
       sourceReviewedPilot:body.includes("fully source-reviewed PRE PHASE 3 score /100"),
-      twoProvisionalPilots:body.includes("2 provisional, source-cited clinical research score(s) /100"),
+      provisionalCountReported:pilotCount!==null,
       scorecardHeading:body.includes("DATED CLINICAL RESEARCH PILOT SCORES"),
-      trvi80:body.includes("TRVI · NCT07671911")&&body.includes("80/100"),
-      lbrx72:body.includes("LBRX · NCT07363577")&&body.includes("72/100"),
+      pilotScoreStateConsistent:pilotCount===0
+        ?pilotExplicitlyUnavailable
+        :pilotCount>0?pilotCardsVisible:false,
       researchWorklist:body.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS"),
       noFalsePoS:body.includes("not independently audited clinical scores")&&body.includes("not a Phase 3 success probability"),
     };
@@ -134,6 +140,8 @@ async function verify(){
     checked.errors=Object.entries(requiredChecks).filter(([,ok])=>!ok).map(([k])=>k+" failed");
     if(checked.readiness.status==="INCOMPLETE")
       checked.notes.push("Clinical source review incomplete; UI acceptance does not imply clinical readiness.");
+    if(pilotCount===0)
+      checked.notes.push("No current dated pilot research scores; browser audit does not invent or demand previous TRVI/LBRX values.");
 
   }finally{
     await browser.close();
