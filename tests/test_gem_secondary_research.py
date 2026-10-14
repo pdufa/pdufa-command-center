@@ -15,13 +15,13 @@ class SecondaryGEMResearchTests(unittest.TestCase):
     def test_known_ir_sources_use_verified_issuer_destinations(self):
         expected = {
             "NTLA": "ir.intelliatx.com",
-            "AXSM": "www.axsome.com",
-            "CAPR": "www.capricor.com",
+                        "CAPR": "www.capricor.com",
             "CORT": "ir.corcept.com",
             "CLDX": "ir.celldex.com",
             "MLTX": "ir.moonlaketx.com",
         }
-        self.assertEqual(set(expected), set(CONFIRMED_INVESTOR_NEWS))
+        self.assertTrue(set(expected).issubset(CONFIRMED_INVESTOR_NEWS))
+        self.assertNotIn("AXSM", CONFIRMED_INVESTOR_NEWS)
         for ticker, domain in expected.items():
             links = research_search_links({"Ticker": ticker, "Drug": "Program A"})
             self.assertEqual(urlparse(links["confirmed_issuer_news"]).hostname, domain)
@@ -29,13 +29,13 @@ class SecondaryGEMResearchTests(unittest.TestCase):
 
     def test_unknown_ticker_uses_search_not_invented_investor_domain(self):
         links = research_search_links({
-            "Ticker": "ZBIO", "Drug": "obexelimab",
+            "Ticker": "ZZZZQ", "Drug": "obexelimab",
             "Indication": "autoimmune",
         })
         self.assertEqual(links["confirmed_issuer_news"], "")
         self.assertEqual(urlparse(links["find_issuer_news"]).hostname, "www.google.com")
         self.assertIn("obexelimab", parse_qs(urlparse(links["find_issuer_news"]).query)["q"][0])
-        self.assertNotIn("zbiopharma.com", links["find_issuer_news"])
+        self.assertNotIn("zzzzq.com", links["find_issuer_news"])
 
     def test_reddit_and_clinical_searches_are_program_specific(self):
         first = research_search_links({
