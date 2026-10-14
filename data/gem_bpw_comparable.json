@@ -1,0 +1,156 @@
+{
+  "as_of_pacific": "2026-10-13",
+  "bpw_access": "PUBLIC FEATURE DESCRIPTIONS ONLY \u2014 NO BPW API KEY OR PRIVATE OUTPUTS",
+  "capability_matrix": [
+    {
+      "capability": "Phase 3 results and trial evidence",
+      "caveat": "Verified trial readout; endpoint depth depends on source adjudication",
+      "data_coverage_pct": 0.3,
+      "key": "clinical",
+      "observed_gem_rows": 1,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Two separate post-Phase-3 financing closes",
+      "caveat": "GEM-specific eligibility rule verified from source attestations",
+      "data_coverage_pct": 0.0,
+      "key": "financing",
+      "observed_gem_rows": 0,
+      "state": "CUSTOM",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "FDA/PDUFA timing and event dates",
+      "caveat": "Source-linked decision date and exit horizon; not BPW historical PoA",
+      "data_coverage_pct": 4.1,
+      "key": "fda",
+      "observed_gem_rows": 15,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "SEC cash runway and burn",
+      "caveat": "Cash-only financial-source estimate; not an independent cash forecast",
+      "data_coverage_pct": 8.2,
+      "key": "runway",
+      "observed_gem_rows": 30,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Financing/dilution risk observations",
+      "caveat": "Source statuses and warnings; incomplete issuer coverage",
+      "data_coverage_pct": 0.3,
+      "key": "dilution",
+      "observed_gem_rows": 1,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Price and volume momentum",
+      "caveat": "Daily market observations; no proprietary options-flow feed",
+      "data_coverage_pct": 10.3,
+      "key": "market",
+      "observed_gem_rows": 38,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Specialist funds' quarterly 13F ownership",
+      "caveat": "Four manager roster, not BPW's wider specialist universe",
+      "data_coverage_pct": 70.7,
+      "key": "hedge",
+      "observed_gem_rows": 260,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Public market-cap reference",
+      "caveat": "Company-level market-cap file; no rNPV/commercial valuation",
+      "data_coverage_pct": 97.3,
+      "key": "market_cap",
+      "observed_gem_rows": 358,
+      "state": "PARTIAL",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "SEC Form 4 open-market insider trading",
+      "caveat": "Requires a separate issuer-insider collector and source matching",
+      "data_coverage_pct": 0.0,
+      "key": "insider",
+      "observed_gem_rows": 0,
+      "state": "NOT VERIFIED",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Options, implied volatility and unusual flow",
+      "caveat": "No licensed options chain/Greeks dataset",
+      "data_coverage_pct": 0.0,
+      "key": "options",
+      "observed_gem_rows": 0,
+      "state": "NOT AVAILABLE",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Probability of FDA approval",
+      "caveat": "No validated indication-specific PoA scorecard",
+      "data_coverage_pct": 0.0,
+      "key": "poa",
+      "observed_gem_rows": 0,
+      "state": "NOT AVAILABLE",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Financing-to-PDUFA historical return backtest",
+      "caveat": "Validated linked event, price and financing history insufficient",
+      "data_coverage_pct": 0.0,
+      "key": "historical",
+      "observed_gem_rows": 0,
+      "state": "NOT VALIDATED",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "Risk-adjusted pipeline valuation",
+      "caveat": "Requires efficacy/indication, commercial and probability inputs",
+      "data_coverage_pct": 0.0,
+      "key": "rnpv",
+      "observed_gem_rows": 0,
+      "state": "NOT AVAILABLE",
+      "total_gem_rows": 368
+    },
+    {
+      "capability": "M&A targeting and deal probabilities",
+      "caveat": "Separate buyout research is not a validated GEM rank input",
+      "data_coverage_pct": 0.0,
+      "key": "ma",
+      "observed_gem_rows": 0,
+      "state": "NOT AVAILABLE",
+      "total_gem_rows": 368
+    }
+  ],
+  "comparison": "GEM SAVED-SOURCE COVERAGE VS BPW ADVERTISED CAPABILITIES",
+  "gem_observed_program_rows": 368,
+  "gem_phase3_results_verified": 1,
+  "gem_second_closings_verified": 0,
+  "gem_two_benchmark_eligible": 0,
+  "generated_at_utc": "2026-10-14T02:19:06.447195+00:00",
+  "hedge_fund_manager_roster": 4,
+  "hedge_fund_managers_complete": 4,
+  "hedge_fund_source_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
+  "historical_linked_event_rows": 0,
+  "historical_price_bar_rows": 0,
+  "policy": "EXACTLY TWO ENTRY BENCHMARKS: VERIFIED PHASE 3 RESULTS RELEASE AND VERIFIED SECOND POST-READOUT FINANCING CLOSE",
+  "ranked_two_benchmark_candidates": [],
+  "same_input_score_comparison_performed": false,
+  "schema_version": 1,
+  "similarity_percentage_supported": false,
+  "strategy_returns_validated": false,
+  "unvalidated_gaps": [
+    "No direct BPW proprietary PoA, options/Greeks, rNPV or conviction-weighted scores",
+    "No SEC Form 4 insider scanner currently integrated",
+    "Only four selected specialist managers currently tracked",
+    "Two-benchmark financing-to-PDUFA backtesting not validated",
+    "A coverage audit cannot establish superiority or prediction accuracy"
+  ]
+}

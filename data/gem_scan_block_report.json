@@ -32,7 +32,7 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Ranked Phase 3 candidates are watch-only until two separately documented post-readout financing closes and all other source gates pass. SEC blocks remain blocks. PDUFA -3 is the planned exit boundary, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-14T01:45:20.454137+00:00",
+    "finished_at": "2026-10-14T02:18:30.294806+00:00",
     "matched_posted_results": 93,
     "new_records": 0,
     "stored_results": 2482,
@@ -42,7 +42,7 @@
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-14T01:45:53.398396+00:00",
+  "generated_at_utc": "2026-10-14T02:19:06.503741+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -66,8 +66,8 @@
     "Post-Financing": 0
   },
   "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 38497357190,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38497357190",
+  "run_id": 38500294141,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38500294141",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
