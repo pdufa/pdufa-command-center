@@ -55,7 +55,13 @@
       "COGT|BEZUCLASTINIB_GIST_20261130": {
         "urls": [
           "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0"
-        ]
+        ],
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
+          "evidence_type": "FIRST_POST_READOUT_DEBT_OFFERING_SINGLE_FUNDED_CLOSE",
+          "note": "SEC 8-K dated November 18 2025 explicitly states offering of $230 million convertible senior notes was completed. November 10 GIST Phase3 PEAK readout precedes first close; no exact subsequent ATM settlement day verified."
+        }
       }
     },
     "hosts": [
