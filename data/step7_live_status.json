@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-14T14:04:02+00:00",
+  "generated_at_utc": "2026-10-14T16:49:06+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -15,15 +15,15 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-14T13:21:17.108429+00:00",
+      "Last checked UTC": "2026-10-14T15:56:17.609792+00:00",
       "Details": "2483 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
     },
     {
       "Source": "Phase 3 primary statistics",
       "Collector status": "COMPLETE",
-      "Freshness": "RECENT",
-      "Health": "RECENT",
+      "Freshness": "STALE",
+      "Health": "STALE",
       "Last checked UTC": "2026-10-11T16:47:00.755695+00:00",
       "Details": "7608 exact-NCT result analysis rows; not adjudicated efficacy",
       "Blocked records": 0
