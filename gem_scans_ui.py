@@ -48,6 +48,8 @@ STAGE_COLUMNS = {
         "PDUFA evidence /15", "Clinical evidence /30",
         "Financing evidence /20", "Cash runway (months)",
         "Cash runway gate", "Cash runway reason", "Cash runway source",
+        "Cash runway as of", "Cash runway trend", "Cash runway previous (months)",
+        "GEM 3 financial alert", "GEM 3 dilution status",
         "PDUFA source",
     ),
 }
@@ -243,7 +245,9 @@ def render_gem_scans(root="data"):
     st.caption(
         "Cash runway requires >=12 months for GEM 2 and GEM 3; GEM 1 remains watch-only. "
         f"{status.get('cash_runway_passing_count', 0)} passes and "
-        f"{status.get('cash_runway_unverified_count', 0)} missing/stale sources. "
+        f"{status.get('cash_runway_unverified_count', 0)} missing/stale sources; "
+        f"{status.get('cash_runway_deteriorating_count', 0)} declining runway trends; "
+        f"{status.get('gem3_dilution_alert_count', 0)} dilution alerts. "
         "Pre-close cash statements, restricted cash and absent SEC filings do not qualify."
     )
     track_metrics = st.columns(2)
@@ -434,7 +438,8 @@ def render_gem_scans(root="data"):
             "GEM strict shortlist rank", "Ticker", "Drug", "Indication",
             "Phase 3 GEM", "Post-Financing GEM", "PDUFA GEM",
             "Verified 2nd financing close date", "Cash runway (months)",
-            "Cash runway gate", "Cash runway source", "Days to PDUFA",
+            "Cash runway gate", "Cash runway source", "Cash runway as of",
+            "Cash runway trend", "GEM 3 financial alert", "Days to PDUFA",
             "PDUFA date", "Planned exit (-3 days)",
             "GEM ALL ENTRY GATES", "GEM trade entry gate", "Exact event",
             "Phase 3 source", "Financing source", "PDUFA source",
@@ -572,5 +577,6 @@ def render_gem_scans(root="data"):
         "Do not place trades from these scores alone: cash-only runway is a historical "
         "SEC estimate, not guaranteed liquidity. Valuation, dilution and "
         "independently backtested return expectations "
-        "still require individual review."
+        "still require individual review. GEM 3 trend warnings compare only "
+        "saved, dated SEC cash quarters; they do not constitute live filing alerts."
     )
