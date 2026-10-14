@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_potential_list import build_potential_list
+from gem_verified_snapshot import source_cleared_gems
 from gem_secondary_research import (
     OPTIONAL_CHECK_TOPICS, optional_check_search_links,
     research_search_links, source_research_policy,
@@ -43,6 +44,55 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
     reinterprets a historical funding claim as an entry authorization.
     """
     potential, timing_hold = build_potential_list(root)
+    source_cleared, historical_cleared, sec_global_current = source_cleared_gems(root)
+    cleared_programs = {x["Exact program"] for x in source_cleared + historical_cleared}
+    potential = [x for x in potential if x["Exact program"] not in cleared_programs]
+    timing_hold = [x for x in timing_hold if x["Exact program"] not in cleared_programs]
+
+    st.markdown("### GEM — TWO BENCHMARKS VERIFIED")
+    st.caption(
+        f"{len(source_cleared)} ACTIVE PROGRAMS VERIFIED · "
+        f"{len(historical_cleared)} HISTORICAL / RESOLVED. "
+        "These are exact-event source-audited research qualifications, "
+        "NOT authorized trade entries."
+    )
+    if source_cleared:
+        for count, lead in enumerate(source_cleared, 1):
+            st.markdown(
+                f"{count}. **{lead['Ticker']} · {lead['Drug']}** "
+                "— Phase 3 and financing #2 VERIFIED"
+            )
+            st.caption(
+                "Phase 3 " + lead["Phase 3 date"] + " · " + lead["NCT ID"] +
+                " · 1st closing " + lead["First close"] +
+                " · 2nd closing " + lead["Second close"]
+            )
+            st.caption(lead["Still needed"])
+        with st.expander("VERIFIED GEM PRIMARY SOURCES — EXACT PROGRAM", expanded=False):
+            st.dataframe(
+                pd.DataFrame(source_cleared), hide_index=True,
+                use_container_width=True, height=265,
+                column_config={
+                    "Phase 3 source": st.column_config.LinkColumn("Phase 3 source"),
+                    "First SEC source": st.column_config.LinkColumn("First SEC source"),
+                    "Second SEC source": st.column_config.LinkColumn("Second SEC source"),
+                },
+            )
+    else:
+        st.caption("No source-cleared two-benchmark GEMs in current saved evidence.")
+    if historical_cleared:
+        with st.expander(
+            f"VERIFIED HISTORICAL GEM EVIDENCE — NOT TRADABLE ({len(historical_cleared)})",
+            expanded=False,
+        ):
+            for lead in historical_cleared:
+                st.markdown("**" + lead["Ticker"] + " · " + lead["Drug"] + "**")
+                st.caption(lead["Still needed"])
+    if not sec_global_current:
+        st.warning(
+            "GLOBAL SEC SOURCE CHECK PARTIAL/STALE — verified program-level "
+            "evidence does not clear fresh all-source trading-entry gates."
+        )
     st.markdown("### POTENTIAL GEMs — PENDING RESEARCH")
     st.caption(
         "Research leads under #1, NOT the verified GEM entry list. "
@@ -67,8 +117,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 "Still needed": st.column_config.TextColumn("Still needed", width="large"),
             },
         )
-    if potential:
-        with st.expander("INVESTOR RELATIONS + SOCIAL RESEARCH — SELECT POTENTIAL GEM",
+    research_universe = source_cleared + potential
+    if research_universe:
+        with st.expander("INVESTOR RELATIONS + SOCIAL RESEARCH — SELECT GEM PROGRAM",
                          expanded=False):
             st.caption(
                 "Investigate non-benchmark checks here: cash/runway, insider "
@@ -77,18 +128,18 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 "Investor Relations/news page; this panel DOES NOT collect, "
                 "verify or automatically score social posts."
             )
-            identifiers = list(range(len(potential)))
+            identifiers = list(range(len(research_universe)))
             choice = st.selectbox(
                 "Research exact stock / drug program",
                 identifiers,
                 format_func=lambda n: (
-                    str(potential[n].get("Ticker") or "?") + " · " +
+                    str(research_universe[n].get("Ticker") or "?") + " · " +
                     str(potential[n].get("Drug") or "?") + " · " +
                     str(potential[n].get("NCT ID") or potential[n].get("Exact program") or "")
                 ),
                 key=namespace + "_source_research_pick",
             )
-            lead = potential[choice]
+            lead = research_universe[choice]
             links = research_search_links(lead)
             if links:
                 st.markdown("**COMPANY SOURCES — FIRST**")
