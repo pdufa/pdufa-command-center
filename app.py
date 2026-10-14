@@ -5,7 +5,32 @@ from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_bo
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
-from post_phase3_workspace import render_post_phase3_workspace
+def render_post_phase3_workspace(*args, **kwargs):
+    """Load the POST3 workspace on demand; retry one module-eviction race."""
+    for attempt in range(2):
+        try:
+            from post_phase3_workspace import render_post_phase3_workspace as render
+        except KeyError as error:
+            # Streamlit hot reload can evict a module while another session is
+            # importing it. CPython then fails at sys.modules.pop(spec.name).
+            # A real KeyError in module code must remain an error, not a retry.
+            import sys
+            trace = error.__traceback__
+            while trace.tb_next is not None:
+                trace = trace.tb_next
+            if (attempt or error.args != ("post_phase3_workspace",)
+                    or "post_phase3_workspace" in sys.modules
+                    or trace.tb_frame.f_code.co_filename != "<frozen importlib._bootstrap>"
+                    or trace.tb_frame.f_code.co_name != "_load_unlocked"):
+                raise
+            import logging
+            logging.getLogger(__name__).warning(
+                "POST3 module was evicted during import; retrying once."
+            )
+            continue
+        # Rendering is outside the catch: data/schema errors are never hidden.
+        return render(*args, **kwargs)
+
 from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid, sort_pdufa_rows,
                                    DISPLAY_ORDER_OPTIONS)
@@ -3198,7 +3223,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-13 · SOURCE SCAN REPAIRS V2 · ALL-TRIAL REVIEW PRIORITY V1 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
+st.caption("BUILD 2026-10-14 · STARTUP FIX V1 · SOURCE SCAN REPAIRS V2 · ALL-TRIAL REVIEW PRIORITY V1 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
