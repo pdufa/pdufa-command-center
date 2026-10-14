@@ -77,7 +77,7 @@ jobs:
           if { { [ "$SCHEDULE_CRON" = '0 20 * * *' ] || [ "$SCHEDULE_CRON" = '15 20 * * *' ] || [ "$SCHEDULE_CRON" = '30 20 * * *' ]; } && [ "$offset" = -0700 ]; } ||
              { { [ "$SCHEDULE_CRON" = '0 21 * * *' ] || [ "$SCHEDULE_CRON" = '15 21 * * *' ] || [ "$SCHEDULE_CRON" = '30 21 * * *' ]; } && [ "$offset" = -0800 ]; }; then
             echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Correct Pacific-night slot; offset $offset"
+            echo "Correct 1 PM Pacific daily start slot; offset $offset"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"
             echo "Skip non-matching UTC slot; offset $offset"
