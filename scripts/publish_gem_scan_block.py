@@ -119,10 +119,11 @@ def make_block_report(readiness, collector_state, *, action,
         "blocking_or_review_flags": risks,
         "errors": errors,
         "research_status": (readiness.get("research_status") if has_audit else "HOLD — AUDIT FAILED"),
-        "caveat": ("GEM is a research-only fourth scan block. Ranked Phase 3"
-                   " candidates are watch-only until two separately documented post-readout"
-                   " financing closes and all other source gates pass. SEC blocks remain"
-                   " blocks. PDUFA -3 is the planned exit boundary, not an executed sale."),
+        "caveat": ("GEM is a research-only fourth scan block. Two entry benchmarks: "
+                   "source-verified Phase 3 results released and independently "
+                   "verified second post-readout financing closed. Financial and "
+                   "market factors are rankings and risk warnings only. "
+                   "PDUFA -3 is a planned exit, not an executed sale."),
     }
 
 
@@ -135,8 +136,23 @@ def main(argv=None):
     parser.add_argument("--report-dir", type=Path, default=Path("reports/gem_daily"))
     parser.add_argument("--output", type=Path, default=Path("data/gem_scan_block_report.json"))
     args = parser.parse_args(argv)
+    readiness = dict_json(args.report_dir / "gem_readiness.json")
+    bpw = dict_json(args.data_dir / "gem_bpw_comparable.json")
+    # Accept only same-day source audit: never publish stale comparison as current.
+    if (bpw.get("schema_version") == 1
+            and bpw.get("as_of_pacific") == readiness.get("as_of_pacific")
+            and isinstance(bpw.get("capability_matrix"), list)
+            and bpw.get("same_input_score_comparison_performed") is False):
+        readiness["bpw_comparable"] = {
+            "as_of_pacific": bpw["as_of_pacific"],
+            "gem_observed_program_rows": bpw.get("gem_observed_program_rows"),
+            "gem_two_benchmark_eligible": bpw.get("gem_two_benchmark_eligible"),
+            "same_input_score_comparison_performed": False,
+            "similarity_percentage_supported": False,
+            "capability_matrix": bpw["capability_matrix"],
+        }
     report = make_block_report(
-        dict_json(args.report_dir / "gem_readiness.json"),
+        readiness,
         dict_json(args.data_dir / "phase3_intake_status.json"),
         action=args.action, collector_outcome=args.collector_outcome,
         audit_outcome=args.audit_outcome,
