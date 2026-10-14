@@ -18,6 +18,7 @@ import streamlit as st
 
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
+from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_checkboxes
 from gem_scans_ui import FILES, _saved_gem_scans
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
 
@@ -250,6 +251,14 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     m1.metric("GEM programs", len(rows))
     m2.metric("Verified 2-benchmark eligible", sum(r["_eligible"] for r in rows))
     m3.metric("Watch / source review", sum(not r["_eligible"] for r in rows))
+    checkbox_rows, checkbox_states = checklist_filters(
+        rows, items,
+        financing_rechecks=load_saved_rechecks(data_path, "gem_two_close_recheck.csv"),
+        clinical_rechecks=load_saved_rechecks(data_path, "gem_phase3_exact_recheck.csv"),
+        status=status, namespace="gem_nested", compact=compact,
+    )
+    with st.expander("ALL GEM CHECKBOX RESULTS BY STOCK", expanded=False):
+        render_checkbox_table(checkbox_rows, checkbox_states, height=380)
     filters = (st, st, st) if compact else st.columns([2, 2, 1])
     view = filters[0].selectbox(
         "Candidate filter", ["All candidates", "Entry-eligible only", "Watch / review"],
@@ -265,7 +274,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         key="gem_nested_stage",
     )
     matching = [
-        r for r in rows
+        r for r in checkbox_rows
         if (view == "All candidates"
             or (view == "Entry-eligible only" and r["_eligible"])
             or (view == "Watch / review" and not r["_eligible"]))
@@ -334,6 +343,11 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                      "Evidence": _value(r.get("Financing Source"))},
                 ])
                 st.dataframe(benchmarks, use_container_width=True, hide_index=True)
+                stock_checkboxes(
+                    r,
+                    checkbox_states.get(str(r.get("Exact Program / Event") or ""), {}),
+                    namespace=f"gem_nested_{uid}",
+                )
                 diagnosis = by_exact_event.get(str(r.get("Exact Program / Event") or ""), {})
                 st.caption(
                     "VERIFICATION: " + str(diagnosis.get("Verification group", "UNVERIFIED"))
