@@ -234,7 +234,18 @@
   "PHVS": {
     "hosts": [
       "ir.pharvaris.com"
-    ]
+    ],
+    "events": {
+      "PHVS|DEUCRICTIBANT_HAE_20270423": {
+        "urls": [],
+        "individual_financing_close": {
+          "date": "2026-05-11",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526216957/d134419d6k.htm",
+          "evidence_type": "SINGLE_FUNDED_TRANSACTION_ONLY",
+          "explanation": "May 11 2026 SEC 6-K says Offering closed and identifies shares/proceeds. Does not establish Phase 3 timeline or second financing."
+        }
+      }
+    }
   },
   "PRAX": {
     "events": {
