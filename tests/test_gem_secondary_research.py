@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from gem_secondary_research import (
-    CONFIRMED_INVESTOR_NEWS, research_search_links, source_research_policy,
+    CONFIRMED_INVESTOR_NEWS, OPTIONAL_CHECK_TOPICS,\n    optional_check_search_links, research_search_links, source_research_policy,
 )
 
 
@@ -69,6 +69,24 @@ class SecondaryGEMResearchTests(unittest.TestCase):
         self.assertNotIn("gem_two_benchmark", engine)
         self.assertNotIn("Two-benchmark eligible", engine)
         self.assertNotIn("build_gem_scans(", engine)
+
+    def test_all_twelve_nonbenchmark_checks_searchable_without_promotion(self):
+        self.assertEqual(len(OPTIONAL_CHECK_TOPICS), 12)
+        keys = {key for key, _, _ in OPTIONAL_CHECK_TOPICS}
+        self.assertNotIn("phase3_verified", keys)
+        self.assertNotIn("financing_verified", keys)
+        for key in keys:
+            urls = optional_check_search_links(
+                {"Ticker": "NTLA", "Drug": "lonvo-z", "NCT ID": "NCT12345678"},
+                key,
+            )
+            self.assertIn("www.reddit.com", urls["reddit"])
+            self.assertIn("www.google.com", urls["primary_records"])
+            self.assertEqual(urls["issuer_ir"],
+                             CONFIRMED_INVESTOR_NEWS["NTLA"])
+            self.assertIn("never PASS", urls["notice"])
+        with self.assertRaises(ValueError):
+            optional_check_search_links({"Ticker": "NTLA"}, "phase3_verified")
 
     def test_missing_ticker_is_fail_closed(self):
         self.assertEqual(research_search_links({"Drug": "something"}), {})
