@@ -101,7 +101,7 @@ def parse_form4(raw, *, ticker, issuer_cik, filed, as_of, source):
     return output
 
 
-def filings_for_issuer(submissions, cik, *, as_of, max_filings=8):
+def filings_for_issuer(submissions, cik, *, as_of, max_filings=25):
     if (not isinstance(submissions,dict)
             or not str(submissions.get("cik") or "").isdigit()
             or int(submissions["cik"])!=int(cik)):
@@ -153,7 +153,19 @@ def xml_for_filing(cik, filing, agent, *, fetch=sec_get):
                  "ownership" in str(x["name"]).lower())
         ]
         if len(choices)!=1:
-            raise ValueError("SEC Form 4 XML document missing or ambiguous")
+            # Some EDGAR filing folders call the raw ownership document
+            # primary_doc.xml or form.xml. A *single* XML can be parsed
+            # and is still validated by root type and exact issuer CIK.
+            all_xml=[
+                str(x.get("name") or "") for x in listing.get("directory",{}).get("item",[])
+                if isinstance(x,dict) and re.fullmatch(
+                    r"[A-Za-z0-9_.\-]{1,100}",str(x.get("name") or "")
+                ) and str(x.get("name") or "").lower().endswith(".xml")
+            ]
+            if len(all_xml)==1:
+                choices=all_xml
+            else:
+                raise ValueError("SEC Form 4 XML document missing or ambiguous")
         name=choices[0]
     time.sleep(0.15)
     uri=folder+"/"+name
@@ -204,7 +216,7 @@ def collect(root, *, as_of, agent, fetch=sec_get, max_tickers=75):
         ),
         "issuer_count":len(tickers),"issuers_complete":complete,
         "issuer_errors":errors, "records":records,
-        "limits":("Issuer filing index capped to 8 Form 4 documents per 105-day "
+        "limits":("Issuer filing index capped to 25 Form 4 documents per 105-day "
                   "window, 90-day transaction window. Source errors and "
                   "amendments require manual review. P/S does not guarantee "
                   "discretionary investment or future returns."),
