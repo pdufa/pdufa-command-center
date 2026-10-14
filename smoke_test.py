@@ -252,10 +252,38 @@ for r in second_financing:
             raise SystemExit(f"second_financing_status.csv: verified row missing source: {r['event_key']}")
         if not (r.get("second_financing_evidence_note") or "").strip():
             raise SystemExit(f"second_financing_status.csv: verified row missing evidence note: {r['event_key']}")
-if verified_second_financing < 17:
+# A past count of 17 included false/uncertain eligibility claims (for example
+# Phase 2 SUMMIT and a GIST ATM with no actual dated second settlement).
+# Quality corrections MUST be permitted to reduce this number. Instead enforce
+# full program coverage and preserve the independently supported core claims.
+if len(second_financing) < 38:
     raise SystemExit(
-        f"second_financing_status.csv: expected at least 17 verified second-financing rows, found {verified_second_financing}"
+        f"second_financing_status.csv: financing research universe shrank below 38 programs; found {len(second_financing)}"
     )
+verified_keys = {
+    (r.get("event_key") or "").strip()
+    for r in second_financing
+    if (r.get("second_financing_audit_status") or "").strip()
+       == "VERIFIED_SECOND_POST_PHASE3_FINANCING"
+}
+core_attested = {
+    "NTLA|LONVOZ_HAE_20270310",
+    "ZBIO|OBEXELIMAB_IGG4RD_20270527",
+    "PRAX|ULIXACALTAMIDE_ET_20270129",
+    "MLYS|LORUNDROSTAT_20261222",
+    "SVRA|MOLBREEVI_PAP_20261122",
+    "SRRK|APITEGROMAB_20260930",
+}
+if not core_attested.issubset(verified_keys):
+    raise SystemExit(
+        "second_financing_status.csv: a core two-close event lost evidence: "
+        + ", ".join(sorted(core_attested - verified_keys))
+    )
+if "COGT|BEZUCLASTINIB_NONADVSM_20261230" in verified_keys:
+    raise SystemExit("Phase 2 SUMMIT incorrectly promoted to GEM financing verification")
+if "COGT|BEZUCLASTINIB_GIST_20261130" in verified_keys:
+    raise SystemExit("GIST ATM with no dated second settlement incorrectly promoted")
+
 unresearched_financing = [
     r["event_key"] for r in second_financing
     if not (r.get("second_financing_audit_status") or "").strip()
