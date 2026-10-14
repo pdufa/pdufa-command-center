@@ -1,0 +1,42 @@
+name: PDUFA Two Issuer Claim Evidence Diagnosis 2026-10-14
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-issuer-two-diagnostic-20261014.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install pypdf
+      - name: Check issuer source identity, dates and exact programs without changing verification
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+          from scripts.source_verification import (Verifier,read_rows,company_matches,drug_matches,indication_matches,publication_dates)
+          config=json.loads(Path('config/issuer_sources.json').read_text())
+          events={x['event_key']:x for x in read_rows('data/pdufa_candidates.csv')}
+          v=Verifier(read_rows('data/company_registry.csv'),issuer_sources=config)
+          for key in ('HRMY|PITOLISANT_GR_20270401','BMY|MEZIGDOMIDE_RRMM_20270513'):
+            e=v.mapped_event(events[key])
+            print('EVENT',key,'drug',repr(e['drug']),'indication',repr(e['indication']))
+            for url in config[e['ticker']]['events'][key]['urls'][:4]:
+              print('URL',url,'primary?',v.primary(e,url))
+              try:
+                raw,plain=v.document(url)
+                print('BODY',len(raw),'company',company_matches(e,plain),'drug',drug_matches(e,plain),'indication',indication_matches(e,plain),'release_marker',bool(re.search(r'(?i)\\b(?:press release|announced|announces|reported|reports)\\b',plain)),'pubdates',sorted(publication_dates(raw,plain)))
+                print('HEAD',plain[:350])
+              except Exception as exc:
+                print('FETCH_ERROR',type(exc).__name__,str(exc)[:220])
+            result=v.issuer(e)
+            print('ISSUER_RESULT',json.dumps(result)[:1200])
+          PY
