@@ -16,6 +16,7 @@ from gem_financing_gate import entry_status, sec_recheck_current
 from gem_runway_gate import assess_runway, load_snapshots, passes as runway_passes, MIN_MONTHS
 from gem_runway_trend import load_history as load_runway_history, assess_trend
 from gem_two_benchmark import assess as assess_two_benchmarks, assign_ranks as rank_two_benchmark
+from gem_hedge_funds import load_signal_records, assess_signal
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -258,6 +259,7 @@ def build_gem_scans(root="data", as_of=None):
     events = _event_map(root)
     runway_snapshots = load_snapshots(root)
     runway_history = load_runway_history(root)
+    hedge_signals = load_signal_records(root, as_of=source_status.get("as_of") or as_of)
     results = []
     for record in records:
         item = dict(record)
@@ -315,6 +317,10 @@ def build_gem_scans(root="data", as_of=None):
                 and not runway_passes(item) and isinstance(days, int)
                 and days > TRADE_EXIT_DAYS_BEFORE_PDUFA):
             item["GEM trade entry gate"] = "HOLD — 12-MONTH CASH RUNWAY NOT VERIFIED"
+        item.update(assess_signal(
+            ticker, hedge_signals.get(ticker),
+            as_of=source_status.get("as_of") or as_of,
+        ))
         # Primary trading-candidate policy: only (1) released source-verified
         # Phase 3 results and (2) the independently verified second financing
         # closing are eligibility benchmarks. All other evidence is advisory
@@ -371,6 +377,14 @@ def build_gem_scans(root="data", as_of=None):
         "SECOND FINANCING CLOSE; OTHER FACTORS RANK / FLAG ONLY"
     )
     details["two_benchmark_ranked"] = len(two_benchmark_shortlist)
+    details["hedge_fund_13f_matched_candidates"] = sum(
+        row.get("Hedge-fund signal") == "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS"
+        for row in results
+    )
+    details["hedge_fund_accumulating_candidates"] = sum(
+        (row.get("Hedge-fund managers adding") or 0) > 0
+        for row in results
+    )
     details["two_benchmark_phase3_count"] = sum(
         row.get("Benchmark 1 — Phase 3 released") == "PASS — VERIFIED RESULTS RELEASE"
         for row in results
