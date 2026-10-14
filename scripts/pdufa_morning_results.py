@@ -33,12 +33,12 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
         raise ValueError("Snapshot time must be timezone aware")
     now = now.astimezone(timezone.utc)
     local = now.astimezone(PACIFIC)
-    # At morning publication, tonight's most recent scheduled window started
-    # 8:30 PM on the preceding calendar day in LA.
+    # The previous daily scan starts at 1:00 PM Pacific on the preceding
+    # calendar day; do not label older results as the new morning report.
     morning = local.replace(hour=6, minute=0, second=0, microsecond=0)
     day_before = morning.date() - timedelta(days=1)
     window_start = datetime(
-        day_before.year, day_before.month, day_before.day, 20, 30,
+        day_before.year, day_before.month, day_before.day, 13, 0,
         tzinfo=PACIFIC,
     )
     cutoff_utc = window_start.astimezone(timezone.utc)
