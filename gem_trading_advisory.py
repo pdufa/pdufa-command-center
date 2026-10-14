@@ -17,6 +17,9 @@ TRADE_COLUMNS = [
     "Trade assessment", "Trading rationale", "EOD as of", "EOD close",
     "SMA 20", "SMA 50", "RSI 14", "RVOL", "20D $ volume",
     "Prior 20D closing low", "Trading data gaps",
+    "Entry Score /100", "Entry Coverage /100", "Entry Score Status",
+    "Exit Risk /100", "Exit Coverage /100", "Exit Risk Status",
+    "Entry Score Breakdown", "Exit Risk Breakdown",
 ]
 
 
@@ -221,11 +224,174 @@ def assess_gem_trade(row, market_rows, status, today):
     }
 
 
+
+def _score_gem_trade(row, profile, status):
+    """Independent *provisional* trading scores, never the GEM quality rank.
+
+    A component without source evidence is not zero; its entire weight stays
+    outside the coverage numerator. Price-only bars cannot furnish an actual
+    stop, ATR, spread or executable reward-to-risk. No observed score is a BUY.
+    """
+    entry, exit_risk = [], []
+
+    def factor(bucket, label, weight, points, evidence):
+        if points is not None and not (0 <= points <= weight):
+            raise ValueError("GEM factor outside its declared weight")
+        bucket.append((label, weight, points, evidence))
+
+    def summary(bucket):
+        coverage = sum(weight for _, weight, points, _ in bucket if points is not None)
+        total = sum(points for _, _, points, _ in bucket if points is not None)
+        # Suppress numeric scores if less than half the weight is auditable.
+        return (int(total) if coverage >= 50 else None, coverage)
+
+    p = profile
+    close, sma20, sma50 = p["close"], p["sma20"], p["sma50"]
+    bars = p["bars"]
+    rv, dv = p["rvol"], p["dollar_volume"]
+    support = p["support"]
+    days = row.get("Days to PDUFA")
+    days_verified = (row.get("PDUFA Date Verified") is True and
+                     isinstance(days, int) and not isinstance(days, bool))
+    risks = str(row.get("Risks / Evidence Gaps") or "").lower()
+    negative = ("verified phase 3 negative outcome" in risks or
+                "conflicting clinical/regulatory evidence" in risks)
+    dilution = "new or unresolved dilution" in risks
+    diluted_unknown = "dilution exposure not independently cleared" in risks
+    low_runway = "under 12 months" in risks
+    resolved = "fda event already resolved" in risks
+    is_exit_warning = (
+        "EXIT / FDA DECISION WARNING" in str(row.get("GEM Status") or "")
+        or (days_verified and days <= 3) or resolved
+    )
+    market_current = bool(p["fresh"] and status.get("feed_current")
+                          and status.get("sec_financing_source_current"))
+    if not market_current:
+        return {
+            "entry": None, "entry_coverage": 0,
+            "entry_status": "UNAVAILABLE — RECHECK EOD / CLINICAL / SEC SOURCES",
+            "exit_risk": None, "exit_coverage": 0,
+            "exit_status": ("HARD EXIT WARNING — REVIEW NOW" if is_exit_warning
+                            else "UNAVAILABLE — RECHECK EOD / CLINICAL / SEC SOURCES"),
+            "entry_factors": [], "exit_factors": [],
+        }
+
+    if close is not None and sma20 is not None and sma50 is not None:
+        trend = (10 if close >= sma20 else 0) + (10 if close >= sma50 else 0)
+        trend += 5 if sma20 >= sma50 else 0
+        factor(entry, "Price trend", 25, trend, "Close vs SMA20/SMA50; SMA20 vs SMA50")
+        factor(exit_risk, "Deteriorating trend", 15,
+               (10 if close < sma20 else 0) + (5 if sma20 < sma50 else 0),
+               "Below SMA20; SMA20 below SMA50")
+    else:
+        factor(entry, "Price trend", 25, None, "Need 50 verified daily closes")
+        factor(exit_risk, "Deteriorating trend", 15, None, "Need SMA20 and SMA50")
+
+    if rv is not None and dv is not None:
+        factor(entry, "Volume / liquidity", 20,
+               (10 if rv >= 1.5 else 0) + (10 if dv >= 5_000_000 else 0),
+               "RVOL >=1.5x; 20D average dollar volume >=$5M")
+        pressure = (len(bars) >= 2 and close is not None and sma20 is not None
+                    and close < bars[-2]["close"] and close < sma20 and rv >= 1.5)
+        factor(exit_risk, "Selling pressure / liquidity", 10,
+               (5 if pressure else 0) + (5 if dv < 5_000_000 else 0),
+               "High-volume downtrend; dollar liquidity <$5M")
+    else:
+        factor(entry, "Volume / liquidity", 20, None, "Missing RVOL or average $ volume")
+        factor(exit_risk, "Selling pressure / liquidity", 10, None,
+               "Missing verified relative / dollar volume")
+
+    if close is not None and support is not None and sma20 is not None and len(bars) >= 21:
+        # Daily-close proxies are NOT an intraday stop, support or fill.
+        prior_high = max(b["close"] for b in bars[-21:-1])
+        location = (10 if support <= close <= support * 1.12 else 0)
+        location += 10 if support <= close <= prior_high * 1.05 else 0
+        factor(entry, "Price location (close proxy)", 20, location,
+               "Within 12% above prior 20D closing low; not >5% above 20D high")
+        factor(exit_risk, "20D closing-support break", 15,
+               15 if close < support else 0,
+               "Latest close below previous 20D closing low")
+    else:
+        factor(entry, "Price location (close proxy)", 20, None,
+               "Need 21 verified daily closes")
+        factor(exit_risk, "20D closing-support break", 15, None,
+               "Need previous 20-session closing low")
+
+    factor(entry, "Trade plan / spread / reward-risk", 20, None,
+           "No validated ATR, quotes, stop and target in saved GEM feed")
+    factor(exit_risk, "Position-specific stop violation", 15, None,
+           "No confirmed held position and broker stop price")
+    if days_verified:
+        timing = (15 if 30 <= days <= 90 else 10 if 91 <= days <= 180
+                  else 7 if 14 <= days <= 29 else 0)
+        factor(entry, "Verified PDUFA timing", 15, timing, f"{days} days until PDUFA")
+        urgency = (25 if days <= 3 else 20 if days <= 7
+                   else 12 if days <= 14 else 5 if days <= 30 else 0)
+        factor(exit_risk, "PDUFA decision proximity", 25, urgency,
+               f"{days} days until source-verified date")
+    elif resolved:
+        factor(entry, "Verified PDUFA timing", 15, None,
+               "Resolved FDA event; not a new entry")
+        factor(exit_risk, "PDUFA decision proximity", 25, 25,
+               "Recorded FDA decision / no pre-event entry")
+    else:
+        factor(entry, "Verified PDUFA timing", 15, None,
+               "Exact PDUFA date unverified or unknown")
+        factor(exit_risk, "PDUFA decision proximity", 25, None,
+               "Exact PDUFA date unverified or unknown")
+
+    if negative:
+        news_points = 20
+    elif dilution:
+        news_points = 15
+    elif low_runway:
+        news_points = 10
+    elif diluted_unknown:
+        news_points = None
+    elif "no flagged issue in saved data" in risks:
+        news_points = 0
+    else:
+        news_points = None
+    factor(exit_risk, "Clinical / financing risk", 20, news_points,
+           "Clinical conflict/failure, dilution or runway risk; unknown stays unscored")
+
+    entry_total, entry_coverage = summary(entry)
+    exit_total, exit_coverage = summary(exit_risk)
+    if row.get("_eligible") is not True or negative:
+        entry_total = None
+        entry_status = "NOT ELIGIBLE — VERIFIED GEM BENCHMARKS / CLINICAL RISK"
+    elif is_exit_warning:
+        entry_total = None
+        entry_status = "NO NEW ENTRY — PDUFA EXIT / FDA DECISION"
+    elif p["recommendation"].startswith("EXIT RISK"):
+        entry_total = None
+        entry_status = "NO NEW ENTRY — PRICE SUPPORT WARNING"
+    elif entry_total is None:
+        entry_status = "UNAVAILABLE — LESS THAN 50/100 SOURCE COVERAGE"
+    else:
+        entry_status = f"PROVISIONAL — {entry_coverage}/100 COVERED; NO BUY SIGNAL"
+
+    if is_exit_warning or p["recommendation"].startswith("EXIT RISK"):
+        exit_status = "HARD EXIT WARNING — REVIEW NOW; SCORE DOES NOT OVERRIDE"
+    elif exit_total is None:
+        exit_status = "UNAVAILABLE — LESS THAN 50/100 SOURCE COVERAGE"
+    else:
+        exit_status = f"PROVISIONAL WATCH RISK — {exit_coverage}/100 COVERED; NO POSITION ASSUMED"
+    return {
+        "entry": entry_total, "entry_coverage": entry_coverage,
+        "entry_status": entry_status,
+        "exit_risk": exit_total, "exit_coverage": exit_coverage,
+        "exit_status": exit_status,
+        "entry_factors": entry, "exit_factors": exit_risk,
+    }
+
+
 def attach_trade_fields(rows, market_rows, status, today):
     """Provide the SAME source-gated assessment for every displayed/exported GEM."""
     enriched = []
     for row in rows:
         profile = assess_gem_trade(row, market_rows, status, today)
+        scores = _score_gem_trade(row, profile, status)
         entry = dict(row)
         entry.update({
             "Trade assessment": profile["recommendation"],
@@ -239,6 +405,18 @@ def attach_trade_fields(rows, market_rows, status, today):
             "20D $ volume": profile["dollar_volume"],
             "Prior 20D closing low": profile["support"],
             "Trading data gaps": profile["gaps"],
+            "Entry Score /100": scores["entry"],
+            "Entry Coverage /100": scores["entry_coverage"],
+            "Entry Score Status": scores["entry_status"],
+            "Exit Risk /100": scores["exit_risk"],
+            "Exit Coverage /100": scores["exit_coverage"],
+            "Exit Risk Status": scores["exit_status"],
+            "Entry Score Breakdown": "; ".join(
+                f"{name}: {value if value is not None else 'N/A'}/{weight}"
+                for name, weight, value, _ in scores["entry_factors"]),
+            "Exit Risk Breakdown": "; ".join(
+                f"{name}: {value if value is not None else 'N/A'}/{weight}"
+                for name, weight, value, _ in scores["exit_factors"]),
         })
         enriched.append(entry)
     return enriched
@@ -250,7 +428,26 @@ def render_gem_trade_panel(row, market_rows, status, today):
     import streamlit as st
 
     p = assess_gem_trade(row, market_rows, status, today)
+    scored = _score_gem_trade(row, p, status)
     st.markdown("**ENTRY / EXIT MONITOR — " + p["recommendation"] + "**")
+    st.markdown(
+        f"**GEM Quality: {row.get('GEM Score /100') if row.get('_eligible') else 'UNSCORED'}/100"
+        f"  ·  Entry: {scored['entry'] if scored['entry'] is not None else 'N/A'}/100"
+        f"  ·  Exit risk: {scored['exit_risk'] if scored['exit_risk'] is not None else 'N/A'}/100**"
+    )
+    st.caption("ENTRY: " + scored["entry_status"] + " · EXIT: " + scored["exit_status"])
+    with st.expander("ENTRY / EXIT SCORING FACTORS + MISSING EVIDENCE", expanded=False):
+        for label, fields in (("Entry strength", scored["entry_factors"]),
+                              ("Exit risk", scored["exit_factors"])):
+            st.markdown("**" + label + "**")
+            st.dataframe(pd.DataFrame([
+                {"Factor": name,
+                 "Earned": points if points is not None else "NOT AVAILABLE",
+                 "Maximum": weight, "Rule / source limitation": evidence}
+                for name, weight, points, evidence in fields
+            ]), hide_index=True, use_container_width=True)
+        st.caption("Coverage measures observable weight, not predictive confidence. "
+                   "No ATR, spread, broker stop or position-sized risk has been inferred.")
     st.caption(p["reason"] + " · Research only; no orders or assumed positions.")
     st.caption("Saved EOD market source: " + (str(p["source"]) if p["source"] else
                                              "unverified / unavailable") +
