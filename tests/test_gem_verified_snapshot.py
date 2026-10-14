@@ -25,6 +25,8 @@ class ExactGEMClearanceTests(unittest.TestCase):
             root, as_of=date(2026, 10, 14))
         self.assertIn("NTLA", {r["Ticker"] for r in active})
         self.assertIn("ZBIO", {r["Ticker"] for r in active})
+        self.assertIn("PRAX", {r["Ticker"] for r in active})
+        self.assertEqual({r["Ticker"] for r in active}, {"NTLA", "ZBIO", "PRAX"})
         self.assertIn("SRRK", {r["Ticker"] for r in historical})
         self.assertNotIn("SRRK", {r["Ticker"] for r in active})
         self.assertFalse(sec_current)
