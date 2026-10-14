@@ -11,6 +11,7 @@ import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
+from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
 from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
 from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
@@ -106,6 +107,61 @@ def render_gem_scans(root="data"):
         "begins at PDUFA −3. Other risk factors only rank or warn."
     )
     master_rows = build_gem_master_list(items)
+    # Disclose precisely why a program is unscored. The standalone source
+    # rechecks below are research observations, never automatic promotions.
+    details = report_rows(
+        master_rows,
+        sec_current=bool(status.get("sec_financing_source_current")),
+        feed_current=bool(status.get("feed_current")),
+        rechecks=load_saved_rechecks(path, "gem_two_close_recheck.csv"),
+        clinical_rechecks=load_saved_rechecks(path, "gem_phase3_exact_recheck.csv"),
+    )
+    counts_by_group = group_counts(details)
+    st.markdown("### GEM ELIGIBILITY — WHY STOCKS ARE ON HOLD")
+    a, b, c, d = st.columns(4)
+    for panel, title in zip((a, b, c, d), GROUPS):
+        panel.metric(title, counts_by_group[title])
+    if not status.get("sec_financing_source_current"):
+        st.warning(
+            "Historical financing records are NOT current SEC confirmations. "
+            "A blocked/stale SEC collector does not prove a transaction failed. "
+            "New source rechecks do not automatically refresh the original "
+            "two-close attestation or upgrade GEM eligibility."
+        )
+    st.caption(
+        "These groups use exactly the two required events, not cash runway, "
+        "market momentum or PDUFA timing. Registry postings are discovery "
+        "only; a dated successful issuer Phase 3 readout still needs verification."
+    )
+    with st.expander("EACH PROGRAM — MISSING VERIFICATION & LATEST SOURCE AUDITS",
+                     expanded=True):
+        audit_columns = [
+            "Ticker", "Drug", "Verification group", "Missing / recheck needed",
+            "Phase 3 Verified", "Second Financing Closed",
+            "Latest Phase 3 registry audit", "Registry audit needed",
+            "Latest SEC transaction audit", "Current SEC source",
+            "Phase 3 Result Date", "Second Financing Close Date",
+            "Phase 3 Source", "Financing Source", "Exact Program / Event",
+        ]
+        table = pd.DataFrame(details).reindex(columns=audit_columns)
+        st.dataframe(table, use_container_width=True, hide_index=True, height=420,
+                     column_config={
+                         "Phase 3 Source": st.column_config.LinkColumn("Phase 3 Source"),
+                         "Financing Source": st.column_config.LinkColumn("Financing Source"),
+                     })
+        st.download_button(
+            "EXPORT GEM VERIFICATION GAPS — ALL STOCKS",
+            table.to_csv(index=False).encode("utf-8"),
+            file_name=f"gem_verification_gaps_{day:%Y%m%d}.csv",
+            mime="text/csv", key="gem_verification_gaps_download",
+        )
+    if not load_saved_rechecks(path, "gem_two_close_recheck.csv"):
+        st.caption("Fresh SEC two-close document recheck not yet published; "
+                   "saved historical attestations remain research only.")
+    if not load_saved_rechecks(path, "gem_phase3_exact_recheck.csv"):
+        st.caption("Exact-NCT Phase 3 source recheck not yet published; "
+                   "registry discovery is not a verified issuer readout.")
+
     gem_view = st.radio(
         "GEM list filter",
         ("All GEM programs", "Entry-eligible only", "Watch / review"),
