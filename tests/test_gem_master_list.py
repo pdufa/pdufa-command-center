@@ -79,7 +79,7 @@ class GemMasterListTests(unittest.TestCase):
         self.assertIn("### GEM — UNIFIED MASTER LIST", code)
         self.assertIn("EXPORT GEM MASTER LIST", code)
         self.assertIn("build_gem_master_list(items)", code)
-        self.assertIn("master_table.head(250)", code)
+        self.assertIn("st.dataframe(master_table, use_container_width=True", code)
         self.assertIn("master_table.to_csv(index=False)", code)
         self.assertNotIn("st.tabs(list(STAGES))", code)
         self.assertNotIn("_gems_table", code)
