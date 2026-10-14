@@ -8,8 +8,10 @@
     "events": {
       "ANAB|IMSIDOLIMAB_GPP_20261212": {
         "urls": [
+          "https://ir.anaptysbio.com/news-releases/news-release-details/anaptys-announces-first-quarter-2026-financial-results-and",
           "https://www.sec.gov/Archives/edgar/data/1370053/000119312526396690/anab-ex99_1.htm"
-        ]
+        ],
+        "primary_target_anchor": "FDA target action date (PDUFA) of Dec. 12, 2026 for imsidolimab in generalized pustular psoriasis (GPP)"
       }
     },
     "hosts": [
@@ -92,7 +94,8 @@
         "urls": [
           "https://ir.exelixis.com/news-releases/news-release-details/exelixis-announces-us-fda-accepted-new-drug-application",
           "https://ir.exelixis.com/node/27136"
-        ]
+        ],
+        "primary_target_anchor": "target action date of December 3, 2026"
       }
     },
     "hosts": [
@@ -126,7 +129,8 @@
       "HRMY|PITOLISANT_GR_20270401": {
         "urls": [
           "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm"
-        ]
+        ],
+        "primary_target_anchor": "target PDUFA date of April 1, 2027"
       }
     },
     "hosts": []
@@ -266,9 +270,11 @@
           "molgramostim"
         ],
         "urls": [
+          "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
           "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
           "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx"
-        ]
+        ],
+        "primary_target_anchor": "three-month extension of the Prescription Drug User Fee Act (\"PDUFA\") target action date to November 22, 2026"
       }
     },
     "hosts": [
