@@ -93,7 +93,7 @@ async function audit() {
   result.checks.potentialHeading = panelText.includes("POTENTIAL GEMs — PENDING RESEARCH");
   result.checks.potentialReason = panelText.includes("Why potential:");
   result.checks.pendingEvidence = panelText.includes("Pending:");
-  result.checks.numberedCandidates = /(?:^|\n)\s*1[.]\s*(?:NTLA|AXSM|[A-Z]{2,5})/.test(panelText);
+  result.checks.numberedCandidates = await app.frame.locator(".st-key-overview_gem_panel ol > li").count() >= 1;
   result.checks.sampleTickers = ["NTLA", "AXSM", "CAPR", "CORT"]
     .every(t => panelText.includes(t));
   result.checks.separateVerifiedList = panelText.includes("NOT the verified GEM entry list");
