@@ -1,6 +1,6 @@
 {
   "source_report_run_id": "38602603100",
-  "generated_at_utc": "2026-10-14T18:13:12.226387+00:00",
+  "generated_at_utc": "2026-10-14T18:15:12.541109+00:00",
   "status": "PARTIAL",
   "execution_status": "COMPLETE",
   "scope": "Targeted recheck of previously unresolved required claims only",
@@ -35,7 +35,7 @@
     "CONFLICT": 5,
     "VERIFIED": 1
   },
-  "recheck_ledger_sha256": "2dca01617d1279471366d0ee062ecd40a1168029356cadb5576dece82f0668d0",
+  "recheck_ledger_sha256": "860f4cace0a59dd63809901cb3f9b6f9e53b4f2574b6c680c3c8895482207889",
   "recheck_ledger": "data/pdufa_targeted_recheck_results.csv",
   "source_baseline_unchanged": true,
   "trade_entry_authorized": false,
