@@ -173,6 +173,21 @@ class PotentialGEMTests(unittest.TestCase):
             self.assertEqual(extra["Evidence type"], "Issuer Phase 3 readout (review)")
             self.assertIn("verify two separate", extra["Still needed"])
 
+    def test_rendered_potential_is_an_ordered_list_with_reason_and_pending(self):
+        from gem_potential_ui import numbered_potential_markdown
+        lines = numbered_potential_markdown([
+            {"Ticker": "NTLA", "Drug": "lonvo-z",
+             "Why potential": "Two source-linked financing transactions",
+             "Still needed": "Exact Phase 3 readout"},
+            {"Ticker": "AXSM", "Drug": "AXS-12",
+             "Why potential": "Clinical registry result observed",
+             "Still needed": "Second financing audit"},
+        ])
+        self.assertIn("1. **NTLA · lonvo-z**", lines)
+        self.assertIn("2. **AXSM · AXS-12**", lines)
+        self.assertIn("**Why potential:** Two source-linked financing", lines)
+        self.assertIn("**Pending:** Second financing audit", lines)
+
     def test_overview_has_visible_new_section_under_gem_one(self):
         root = Path(__file__).resolve().parents[1]
         overview = (root / "unified_clinical_trading.py").read_text(encoding="utf-8")
@@ -183,8 +198,9 @@ class PotentialGEMTests(unittest.TestCase):
         self.assertLess(first, render)
         self.assertLess(render, next_panel)
         self.assertIn('### POTENTIAL GEMs — PENDING RESEARCH', potential_ui)
-        self.assertIn('st.caption("WHY: " + lead["Why potential"])', potential_ui)
-        self.assertIn('st.caption("PENDING: " + lead["Still needed"])', potential_ui)
+        self.assertIn('st.markdown(numbered_potential_markdown(potential))', potential_ui)
+        self.assertIn('**Why potential:**', potential_ui)
+        self.assertIn('**Pending:**', potential_ui)
         self.assertIn("EXPORT POTENTIAL GEMs + REASONS", potential_ui)
 
 
