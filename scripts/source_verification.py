@@ -143,7 +143,7 @@ def attributed_target_dates(event, passage):
     return confirmed
 
 
-def exact_mapped_primary_target(event, plain, expected, anchor):
+def exact_mapped_primary_target(event, plain, expected, anchor, context_chars=1000):
     """Narrow recovery for vetted exact-event issuer target wording.
 
     A manually mapped phrase is a discovery *locator*, never a verification
@@ -153,7 +153,8 @@ def exact_mapped_primary_target(event, plain, expected, anchor):
     PDUFA targets. Source URL, content hash, and observation are preserved by
     Verifier.result. No future FDA approval or trade conclusion is inferred.
     """
-    if not (isinstance(anchor, str) and 24 <= len(anchor) <= 240
+    if not (type(context_chars) is int and 400 <= context_chars <= 2400
+            and isinstance(anchor, str) and 24 <= len(anchor) <= 240
             and isinstance(expected, str) and expected in dates(anchor)
             and re.search(r"(?i)\bPDUFA\b|target\s+action\s+date", anchor)
             and company_matches(event, plain)):
@@ -167,9 +168,16 @@ def exact_mapped_primary_target(event, plain, expected, anchor):
     for match in matches[:10]:
         # Different release headings may put the named drug and condition
         # immediately before OR after the FDA-target sentence.
-        start = max(0, match.start() - 1000)
+        start = max(0, match.start() - context_chars)
         end = min(len(clean), match.end() + 1000)
         around = clean[start:end]
+        if context_chars > 1000:
+            # A broad association is permitted only when the verified issuer's
+            # source explicitly identifies this as its SOLE development program.
+            # Reject a company's multiple-drug pipeline crossing date contexts.
+            sole = re.search(r"(?i)\\bour sole program\\b.{0,120}", around)
+            if not sole or not drug_matches(event, sole.group()):
+                continue
         if drug_matches(event, around) and indication_matches(event, around):
             # Nearby explicit dates must still be the SAME claim. Do not
             # borrow a second program's separate PDUFA action date.
@@ -905,8 +913,11 @@ class Verifier:
                             passages.append(context)
                     observed = set().union(*(attributed_target_dates(event, p) for p in passages)) if passages else set()
                     if not observed and expected:
-                        anchor = self.event_sources(event).get("primary_target_anchor", "")
-                        mapped_passage = exact_mapped_primary_target(event, plain, expected, anchor)
+                        config = self.event_sources(event)
+                        anchor = config.get("primary_target_anchor", "")
+                        window = config.get("primary_target_context_window", 1000)
+                        mapped_passage = exact_mapped_primary_target(
+                            event, plain, expected, anchor, context_chars=window)
                         if mapped_passage:
                             results.append(self.result(
                                 event, "FDA", claim, "VERIFIED",
