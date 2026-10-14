@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh saved SEC Step 4 cash-only runway for eligible GEM research tickers.
+"""Refresh SEC Step 4 cash-only runway for exact-key GEM/PDUFA research tickers.
 
 No finding here verifies a trade entry, a financing close, a prediction or a
 live SEC filing alert. A failed SEC request never reuses stale cash as current.
@@ -33,7 +33,11 @@ def day(raw):
 
 
 def eligible_tickers(rows, registry, *, as_of, limit=75):
-    """A deterministic SEC-registered Phase 3 research subset, never fuzzy-joined."""
+    """Collect corporate finance for source-identified upcoming PDUFA tickers.
+
+    Phase 3 success is NOT inferred by this early financial-data collection.
+    The separate GEM trade gate still requires verified Phase 3 and two closes.
+    """
     eligible = {}
     ambiguous = set()
     events = set()
@@ -47,8 +51,7 @@ def eligible_tickers(rows, registry, *, as_of, limit=75):
                 ambiguous.add(event_key)
             continue
         events.add(event_key)
-        if (str(row.get("phase3_status") or "").strip().upper() not in PHASE3_VERIFIED
-                or not phase3 or phase3 > as_of
+        if (phase3 is not None and phase3 > as_of
                 or not pdufa or pdufa < as_of + timedelta(days=4)
                 or str(row.get("outcome") or "").strip().upper() in RESOLVED
                 or str(row.get("monitor_eligibility") or "").strip().upper() == "EXCLUDED"
@@ -56,12 +59,17 @@ def eligible_tickers(rows, registry, *, as_of, limit=75):
                 or ticker not in registry or registry[ticker].get("conflict")
                 or not registry[ticker].get("cik")):
             continue
-        if ticker not in eligible or pdufa < eligible[ticker][0]:
-            eligible[ticker] = (pdufa, event_key)
+        clinical_verified = (
+            str(row.get("phase3_status") or "").strip().upper() in PHASE3_VERIFIED
+            and phase3 is not None
+        )
+        order = (0 if clinical_verified else 1, pdufa, event_key)
+        if ticker not in eligible or order < eligible[ticker]:
+            eligible[ticker] = order
     eligible = {ticker: pair for ticker, pair in eligible.items()
-                if pair[1] not in ambiguous}
+                if pair[2] not in ambiguous}
     return [ticker for ticker, _ in sorted(
-        eligible.items(), key=lambda x: (x[1][0], x[0])
+        eligible.items(), key=lambda x: (x[1][0], x[1][1], x[0])
     )[:limit]]
 
 
