@@ -513,6 +513,22 @@ def _number(v):
 def render_nightly_scan_report():
     # Single SCANS home for live GitHub execution health, historical results,
     # required evidence gaps, existing GEM, and manual controls.
+    st.markdown("### GEMS — GITHUB SCAN LOGS")
+    direct_gem, finance_gem = st.columns(2)
+    with direct_gem:
+        st.link_button(
+            "GEMS PHASE 3 / RESEARCH SCAN ↗",
+            "https://github.com/" + REPO +
+            "/actions/workflows/gem-research-quality.yml",
+            use_container_width=True,
+        )
+    with finance_gem:
+        st.link_button(
+            "GEMS FINANCING AUDIT SCAN ↗",
+            "https://github.com/" + REPO +
+            "/actions/workflows/gem-financing-full-coverage.yml",
+            use_container_width=True,
+        )
     render_am_results()
     st.divider()
     render_scan_status(published_source_report)
