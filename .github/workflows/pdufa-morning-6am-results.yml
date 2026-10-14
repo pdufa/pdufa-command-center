@@ -1,6 +1,6 @@
 name: PDUFA 6 AM Pacific Morning Results
 
-# Read-only publication of the PREVIOUS NIGHT'S 11 PM Pacific scan results.
+# Read-only publication of the PREVIOUS NIGHT'S 9 PM Pacific scan results.
 # No new Phase 3, FDA, SEC, market, or finance collection is triggered.
 on:
   schedule:
@@ -36,18 +36,25 @@ jobs:
             exit 0
           fi
           local_hour="$(TZ=America/Los_Angeles date +%H)"
-          local_min="$(TZ=America/Los_Angeles date +%M)"
           offset="$(TZ=America/Los_Angeles date +%z)"
-          if [ "$local_hour" != "06" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Outside 6:00-6:59 AM Pacific; delayed cron cannot publish as on-time."
-            exit 0
-          fi
+          # An opposing UTC DST cron is not this Pacific day's slot.
           if { { [ "$CRON_SLOT" = '0 13 * * *' ] || [ "$CRON_SLOT" = '15 13 * * *' ]; } && [ "$offset" = "-0700" ]; } || \
              { { [ "$CRON_SLOT" = '0 14 * * *' ] || [ "$CRON_SLOT" = '15 14 * * *' ]; } && [ "$offset" = "-0800" ]; }; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
+            # A GitHub queued cron can arrive HOURS late. Publish the actual
+            # timestamp and pending/partial evidence; do not silently skip it
+            # just because the original target hour has passed.
+            if [ "$((10#$local_hour))" -ge 6 ] && [ "$((10#$local_hour))" -le 12 ]; then
+              echo "run=true" >> "$GITHUB_OUTPUT"
+              if [ "$local_hour" != "06" ]; then
+                echo "::warning::6 AM Pacific GitHub cron arrived late at local hour $local_hour; report will carry its actual publication time."
+              fi
+            else
+              echo "::error::6 AM Pacific scheduled slot arrived outside the same-morning publication window. No fresh 6 AM report is available."
+              exit 1
+            fi
           else
             echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Ignored nonmatching UTC/Pacific daylight-saving cron slot."
           fi
       - uses: actions/checkout@v4
         if: steps.time.outputs.run == 'true'
@@ -106,6 +113,8 @@ jobs:
               echo "Morning report published."
               exit 0
             fi
+            git rebase --abort || true
             sleep 5
           done
+          echo "::error::Failed to publish the same-morning snapshot after three attempts."
           exit 1
