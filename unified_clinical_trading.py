@@ -100,10 +100,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 
     pre3 = filtered_feed(pre, "PRE PHASE 3")
     post3 = filtered_feed(post, "POST PHASE 3")
-    # GEM first tab hydrates shared W/T exactly once, before both tables.
-    # A duplicate read here could overwrite a newly clicked native W/T button.
-    if not st.session_state.get("_gem_overview_wt_initialized_this_run"):
-        _init_browser_selection("overview_inline")
+    # Shared W/T state was already hydrated by the GEM tab entrypoint.
     st.markdown("""
     <style>
     .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
@@ -286,7 +283,6 @@ def render_combined_overview(root="data", *, dashboard=False):
         # ahead of the legacy #2/#3/#4 clinical source cards.
         # Initialize before rendering GEM W/T buttons; do not rehydrate later.
         _init_browser_selection("overview_inline")
-        st.session_state["_gem_overview_wt_initialized_this_run"] = True
         from gem_nested_master_ui import render_gem_nested_master
         render_gem_nested_master(root=root, selections_ready=True)
         st.divider()
