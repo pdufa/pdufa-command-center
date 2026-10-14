@@ -274,7 +274,8 @@
           "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
           "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx"
         ],
-        "primary_target_anchor": "target action date to November 22, 2026"
+        "primary_target_anchor": "target action date to November 22, 2026",
+        "primary_target_context_window": 2400
       }
     },
     "hosts": [
