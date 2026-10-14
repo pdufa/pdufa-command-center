@@ -23,7 +23,7 @@ API = "https://api.github.com/repos/" + REPO
 RAW = "https://raw.githubusercontent.com/" + REPO + "/main/data/"
 WORKFLOWS = {
     "Clinical #2 → #3 → #4": "pdufa-nightly-clinical.yml",
-    "GEMS · fourth scan block": "gem-research-quality.yml",
+    "GEM · fourth scan block": "gem-research-quality.yml",
     "Clinical report publisher": "pdufa-nightly-report.yml",
     "FDA / SEC / Financial / Market / Issuer": "pdufa-nightly-missing-sources.yml",
     "Scoring → Error check → Repair": "pdufa-nightly-scoring-then-repair.yml",
