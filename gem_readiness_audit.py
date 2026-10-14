@@ -133,7 +133,33 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         if str(row.get("Phase 3 tracking", "")).startswith("TRACKING")
     ]
     qualified = {stage: info[stage]["qualified"] for stage in STAGES}
+    runway_source_status = "NOT PUBLISHED — NO CURRENT SEC COLLECTION"
+    runway_collected = 0
+    runway_target = 0
+    try:
+        saved = json.loads((p / "gem_runway_evidence.json").read_text(encoding="utf-8"))
+        if (isinstance(saved, dict) and saved.get("schema_version") == 1
+                and saved.get("source") == "SEC_STEP4_COMPANYFACTS"
+                and isinstance(saved.get("snapshots"), list)
+                and isinstance(saved.get("failures"), list)):
+            runway_target = saved.get("target_count") if type(saved.get("target_count")) is int else 0
+            runway_collected = len(saved["snapshots"])
+            collected_date = date.fromisoformat(str(saved.get("as_of_pacific") or ""))
+            if collected_date == today and not saved["failures"] and (
+                    saved.get("collector_status") == "COMPLETE"):
+                runway_source_status = "COLLECTED — CURRENT SEC STEP 4 SNAPSHOTS"
+            elif collected_date > today:
+                runway_source_status = "HOLD — FUTURE-DATED FINANCIAL COLLECTION"
+            elif saved["failures"]:
+                runway_source_status = "PARTIAL — SEC RECHECK FAILED FOR SOME TICKERS"
+            else:
+                runway_source_status = "STALE — SEC RUNWAY COLLECTION NOT CURRENT"
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        pass
     runway_counts = {
+        "collector_status": runway_source_status,
+        "target_count": runway_target,
+        "collected_count": runway_collected,
         "minimum_entry_months": MIN_MONTHS,
         "source_backed_pass": sum(r.get("Cash runway gate") == PASS for r in items),
         "under_12_months": sum(r.get("Cash runway gate") == HOLD for r in items),
@@ -151,6 +177,8 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
     missing_required = [n for n, v in inputs.items()
                         if v["state"] != "PRESENT"]
     risks = []
+    if runway_source_status != "COLLECTED — CURRENT SEC STEP 4 SNAPSHOTS":
+        risks.append("GEM_SEC_CASH_RUNWAY_COLLECTION_MISSING_PARTIAL_OR_STALE")
     if source_stale:
         risks.append("CURRENT_RANKING_FEED_STALE_OR_UNVERIFIED")
     if missing_required:
