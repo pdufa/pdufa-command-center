@@ -128,6 +128,56 @@ def render_gem_scan_block_status(report=None, run=None):
                    "a second separate post-readout financing close. "
                    "Runway, dilution, market and timing factors rank or warn; "
                    "they do not impose further entry benchmarks. No buy orders.")
+        # Lazy display of exact-event source gaps; the ordinary SCANS page
+        # stays fast until the user requests the per-stock diagnosis.
+        if st.toggle("SHOW GEM ELIGIBILITY GAPS — EACH STOCK", value=False,
+                     key="gem_block_show_source_gaps"):
+            from datetime import datetime as _datetime
+            from zoneinfo import ZoneInfo
+            from gem_scans_ui import FILES, _saved_gem_scans
+            from gem_master_list import build_gem_master_list
+            from gem_eligibility_diagnostics import (
+                GROUPS, group_counts, load_saved_rechecks, report_rows,
+            )
+            try:
+                local_root = Path("data")
+                source_signature = tuple(
+                    (name, (local_root / name).stat().st_mtime_ns
+                     if (local_root / name).exists() else 0)
+                    for name in FILES
+                )
+                local_day = _datetime.now(ZoneInfo("America/Los_Angeles")).date()
+                research_items, source_state = _saved_gem_scans(
+                    str(local_root), source_signature, local_day
+                )
+                audit = report_rows(
+                    build_gem_master_list(research_items),
+                    sec_current=bool(source_state.get("sec_financing_source_current")),
+                    feed_current=bool(source_state.get("feed_current")),
+                    rechecks=load_saved_rechecks(local_root, "gem_two_close_recheck.csv"),
+                    clinical_rechecks=load_saved_rechecks(
+                        local_root, "gem_phase3_exact_recheck.csv"
+                    ),
+                )
+                counts = group_counts(audit)
+                st.caption(" · ".join(f"{name}: {counts[name]}" for name in GROUPS))
+                fields = [
+                    "Ticker", "Drug", "Verification group", "Missing / recheck needed",
+                    "Latest Phase 3 registry audit", "Latest SEC transaction audit",
+                    "Current SEC source", "Exact Program / Event",
+                    "Phase 3 Source", "Financing Source",
+                ]
+                detail = pd.DataFrame(audit).reindex(columns=fields)
+                st.dataframe(detail, hide_index=True, use_container_width=True,
+                             height=420)
+                st.download_button(
+                    "EXPORT GEM ELIGIBILITY & SOURCE GAPS",
+                    detail.to_csv(index=False).encode("utf-8"),
+                    file_name=f"gem_source_gaps_{local_day:%Y%m%d}.csv",
+                    mime="text/csv", key="gem_block_source_gaps_export",
+                )
+            except (OSError, ValueError, TypeError, KeyError, pd.errors.ParserError):
+                st.error("GEM saved evidence unavailable; no eligibility inferred.")
         runway = report.get("cash_runway") or {}
         st.caption(
             "SEC runway (12-month advisory ranking threshold): "
