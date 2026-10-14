@@ -1,5 +1,5 @@
 name: PDUFA Four Disputed FDA Primary Evidence 2026-10-14
-# Recheck exact Savara SEC language after source anchor refinement.
+# Verify sole-program context in Savara 10-Q after strict length-guard correction.
 on:
   push:
     branches: [main]
