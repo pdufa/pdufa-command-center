@@ -7,7 +7,7 @@ Do not confuse benchmark clearance with market/regulatory/dilution trade gates.
 from __future__ import annotations
 
 import csv
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -86,6 +86,23 @@ def source_cleared_gems(root="data", *, as_of=None):
             or str(event.get("monitor_eligibility") or "").upper() == "EXCLUDED"
             or (pd_date is not None and (pd_date - today).days <= 3)
         )
+        days_to_pdufa = (pd_date - today).days if pd_date else None
+        target_verified = bool(
+            str(event.get("pdufa_confirmation") or "").startswith("VERIFIED")
+            and str(event.get("pdufa_evidence_url") or "").startswith("https://")
+        )
+        if days_to_pdufa is None:
+            timing_window = "PDUFA UNKNOWN — RESEARCH"
+        elif days_to_pdufa <= 3:
+            timing_window = "EXIT / RESOLVED — NO NEW ENTRY"
+        elif days_to_pdufa <= 13:
+            timing_window = "4–13 DAYS — EXIT PREPARATION"
+        elif days_to_pdufa <= 30:
+            timing_window = "14–30 DAYS — LATE WINDOW"
+        elif days_to_pdufa <= 90:
+            timing_window = "31–90 DAYS — PRIMARY MONITOR"
+        else:
+            timing_window = ">90 DAYS — EARLY MONITOR"
         flags = []
         if not global_sec_healthy:
             flags.append("Global SEC collector PARTIAL/STALE; trading entry on HOLD")
@@ -109,6 +126,12 @@ def source_cleared_gems(root="data", *, as_of=None):
             "Second close": close_date or "",
             "Second SEC source": str(funding.get("second_financing_source") or ""),
             "PDUFA saved": str(event.get("pdufa_date") or ""),
+            "PDUFA days left": days_to_pdufa,
+            "PDUFA timing window": timing_window,
+            "PDUFA verified": target_verified,
+            "Planned exit (PDUFA −3)": (
+                (pd_date - timedelta(days=3)).isoformat() if pd_date else ""
+            ),
             "FDA outcome": outcome,
             "Two-benchmark status": "PASS — BOTH BENCHMARKS SOURCE-CLEARED",
             "Trade status": "HISTORICAL / NO NEW ENTRY" if is_historical
@@ -117,5 +140,14 @@ def source_cleared_gems(root="data", *, as_of=None):
             "Source review as of": str(funding.get("verified_as_of") or ""),
         }
         (historical if is_historical else active).append(record)
-    order = lambda row: (row["Ticker"], row["Exact program"])
-    return sorted(active, key=order), sorted(historical, key=order), global_sec_healthy
+    def order(row):
+        days = row["PDUFA days left"]
+        return (
+            0 if isinstance(days, int) and 30 <= days <= 90 else 1,
+            0 if row["PDUFA verified"] else 1,
+            abs(days - 60) if isinstance(days, int) else 1_000_000,
+            row["Ticker"], row["Exact program"],
+        )
+    return sorted(active, key=order), sorted(
+        historical, key=lambda row: (row["Ticker"], row["Exact program"])
+    ), global_sec_healthy
