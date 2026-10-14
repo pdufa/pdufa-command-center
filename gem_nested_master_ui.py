@@ -18,7 +18,7 @@ import streamlit as st
 
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
-from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_checkboxes
+from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_checkboxes, render_research_candidates
 from gem_benchmark_checklist import program_key
 from gem_scans_ui import FILES, _saved_gem_scans
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
@@ -258,11 +258,18 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         clinical_rechecks=load_saved_rechecks(data_path, "gem_phase3_exact_recheck.csv"),
         status=status, namespace="gem_nested", compact=compact,
     )
+    research_leads = render_research_candidates(
+        rows, checkbox_states,
+        financing_rechecks=load_saved_rechecks(data_path, "gem_two_close_recheck.csv"),
+        clinical_rechecks=load_saved_rechecks(data_path, "gem_phase3_exact_recheck.csv"),
+        namespace="gem_nested_research", compact=compact,
+    )
+    lead_event_keys = {item["_event_id"] for item in research_leads}
     with st.expander("ALL GEM CHECKBOX RESULTS BY STOCK", expanded=False):
         render_checkbox_table(checkbox_rows, checkbox_states, height=380)
     filters = (st, st, st) if compact else st.columns([2, 2, 1])
     view = filters[0].selectbox(
-        "Candidate filter", ["All candidates", "Entry-eligible only", "Watch / review"],
+        "Candidate filter", ["Research candidates (source leads)", "All candidates", "Entry-eligible only", "Watch / review"],
         key="gem_nested_view",
     )
     query = filters[1].text_input(
@@ -277,6 +284,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     matching = [
         r for r in checkbox_rows
         if (view == "All candidates"
+            or (view == "Research candidates (source leads)" and program_key(r) in lead_event_keys)
             or (view == "Entry-eligible only" and r["_eligible"])
             or (view == "Watch / review" and not r["_eligible"]))
         and (stage == "All" or r["GEM Stage"] == stage)
@@ -302,7 +310,12 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         "in this browser; they do not place broker orders."
     )
     if not visible:
-        st.info("No GEM programs match the current filters.")
+        if view == "Entry-eligible only" and lead_event_keys:
+            st.info("No two-benchmark GEM entries verified yet. "
+                    "Switch to Research candidates (source leads) to see "
+                    "the program evidence review list shown above.")
+        else:
+            st.info("No GEM programs match the current filters.")
     for offset, r in enumerate(visible):
         ticker = clean_ticker(r.get("Ticker"))
         identity = str(r.get("Exact Program / Event") or
