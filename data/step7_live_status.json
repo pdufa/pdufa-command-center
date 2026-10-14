@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-10-14T18:30:51+00:00",
+  "generated_at_utc": "2026-10-14T18:44:42+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
@@ -31,8 +31,8 @@
     {
       "Source": "Phase 2 primary p intake",
       "Collector status": "COMPLETE",
-      "Freshness": "RECENT",
-      "Health": "RECENT",
+      "Freshness": "STALE",
+      "Health": "STALE",
       "Last checked UTC": "2026-10-11T18:38:43.941503+00:00",
       "Details": "6 PRIMARY p observations; 24 linked Phase 2 NCT IDs checked; no observed p is not a negative study",
       "Blocked records": 0
