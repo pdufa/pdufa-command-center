@@ -72,6 +72,28 @@ class GemAbsoluteEntryTests(unittest.TestCase):
                 self.assertFalse(verified)
                 self.assertTrue(reason)
 
+    def test_stale_historical_close_survives_research_but_never_entry(self):
+        historical = closed(verified_as_of="2026-09-28")
+        recent, _, reason = second_post_phase3_close(
+            EVENT, "2026-01-10", historical, as_of=AS_OF)
+        self.assertFalse(recent)
+        self.assertIn("STALE", reason)
+        archived, close_date, note = second_post_phase3_close(
+            EVENT, "2026-01-10", historical, as_of=AS_OF,
+            require_fresh=False)
+        self.assertTrue(archived)
+        self.assertEqual(close_date, "2026-07-09")
+        self.assertEqual(note, "")
+        self.assertEqual(entry_status(
+            closed=archived, qualified=True, feed_current=False,
+            days_to_pdufa=60),
+            "HOLD — STALE SOURCE EVIDENCE")
+        future = closed(verified_as_of="2026-10-14")
+        no_future, _, _ = second_post_phase3_close(
+            EVENT, "2026-01-10", future, as_of=AS_OF,
+            require_fresh=False)
+        self.assertFalse(no_future)
+
     def test_post_close_is_manual_review_not_execution_or_guaranteed_entry(self):
         self.assertEqual(entry_status(
             closed=True, qualified=True,
