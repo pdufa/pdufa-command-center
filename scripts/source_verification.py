@@ -175,7 +175,7 @@ def exact_mapped_primary_target(event, plain, expected, anchor, context_chars=10
             # A broad association is permitted only when the verified issuer's
             # source explicitly identifies this as its SOLE development program.
             # Reject a company's multiple-drug pipeline crossing date contexts.
-            sole = re.search(r"(?i)\\bour sole program\\b.{0,120}", around)
+            sole = re.search(r"(?i)\bour sole program\b.{0,120}", around)
             if not sole or not drug_matches(event, sole.group()):
                 continue
         if drug_matches(event, around) and indication_matches(event, around):
