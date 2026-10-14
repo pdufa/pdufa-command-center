@@ -51,8 +51,8 @@ class GemTradingScoreTests(unittest.TestCase):
         self.assertIsInstance(result["Entry Score /100"], int)
         self.assertIsInstance(result["Exit Risk /100"], int)
         self.assertTrue(all(column in result for column in TRADE_COLUMNS))
-        self.assertIn("NOT AVAILABLE/20", result["Entry Score Breakdown"])
-        self.assertIn("NOT AVAILABLE/15", result["Exit Risk Breakdown"])
+        self.assertIn("N/A/20", result["Entry Score Breakdown"])
+        self.assertIn("N/A/15", result["Exit Risk Breakdown"])
         self.assertIn("PROVISIONAL", result["Entry Score Status"])
 
     def test_entry_score_responds_to_volume_but_never_auto_buys(self):
@@ -108,8 +108,8 @@ class GemTradingScoreTests(unittest.TestCase):
         found = attach_trade_fields([row], market, status, today)[0]
         self.assertEqual(found["Entry Coverage /100"], 65)
         self.assertEqual(found["Exit Coverage /100"], 60)
-        self.assertIn("NOT AVAILABLE/15", found["Entry Score Breakdown"])
-        self.assertIn("NOT AVAILABLE/25", found["Exit Risk Breakdown"])
+        self.assertIn("N/A/15", found["Entry Score Breakdown"])
+        self.assertIn("N/A/25", found["Exit Risk Breakdown"])
 
 
 if __name__ == "__main__":
