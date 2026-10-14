@@ -18,7 +18,7 @@ class RetiredPredictionNavigationTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception), [str(e.message) for e in app.exception])
         nav = app.radio(key="nav")
-        self.assertEqual(list(nav.options), ["PDUFA", "2. PDUFA CALENDAR"])
+        self.assertEqual(list(nav.options), ["PDUFA", "SCANS", "2. PDUFA CALENDAR"])
         self.assertEqual(nav.value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
         visible = [t.label for t in app.get("tab") if t.label in
