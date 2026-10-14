@@ -96,6 +96,7 @@ def make_block_report(readiness, collector_state, *, action,
         "verified_phase3_tracking": (readiness.get("verified_phase3_tracking") if has_audit else None),
         "awaiting_second_financing": (readiness.get("awaiting_second_financing") if has_audit else None),
         "ranked_research_only": ranked,
+        "cash_runway": (readiness.get("cash_runway") if has_audit else {}),
         "strict_entry_gate_shortlist_count": (
             readiness.get("strict_entry_gate_shortlist_count")
             if has_audit and type(readiness.get("strict_entry_gate_shortlist_count")) is int
