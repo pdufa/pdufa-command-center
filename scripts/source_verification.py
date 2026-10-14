@@ -143,6 +143,42 @@ def attributed_target_dates(event, passage):
     return confirmed
 
 
+def exact_mapped_primary_target(event, plain, expected, anchor):
+    """Narrow recovery for vetted exact-event issuer target wording.
+
+    A manually mapped phrase is a discovery *locator*, never a verification
+    override. The source must be fetched anew by Verifier.document, the exact
+    claim and date must appear, the same nearby text must identify the drug
+    and indication, and the document may not have conflicting explicit dated
+    PDUFA targets. Source URL, content hash, and observation are preserved by
+    Verifier.result. No future FDA approval or trade conclusion is inferred.
+    """
+    if not (isinstance(anchor, str) and 24 <= len(anchor) <= 240
+            and isinstance(expected, str) and expected in dates(anchor)
+            and re.search(r"(?i)\\bPDUFA\\b|target\\s+action\\s+date", anchor)
+            and company_matches(event, plain)):
+        return ""
+    explicit = target_dates(plain)
+    if explicit != {expected}:
+        return ""
+    clean = re.sub(r"\\s+", " ", plain)
+    phrase = re.sub(r"\\s+", " ", anchor).strip()
+    matches = list(re.finditer(re.escape(phrase), clean, re.I))
+    for match in matches[:10]:
+        # Different release headings may put the named drug and condition
+        # immediately before OR after the FDA-target sentence.
+        start = max(0, match.start() - 1000)
+        end = min(len(clean), match.end() + 1000)
+        around = clean[start:end]
+        if drug_matches(event, around) and indication_matches(event, around):
+            # Nearby explicit dates must still be the SAME claim. Do not
+            # borrow a second program's separate PDUFA action date.
+            if target_dates(around) != {expected}:
+                continue
+            return clean[max(0, match.start() - 330):min(len(clean), match.end() + 400)]
+    return ""
+
+
 def documented_fda_signed_approval(event, text):
     """Require an exact signed FDA approval, not an issuer publication date."""
     if (not re.search(r"(?i)\bSUPPLEMENT APPROVAL\b", text)
@@ -868,6 +904,16 @@ class Verifier:
                         if drug_matches(event, context) and indication_matches(event, context):
                             passages.append(context)
                     observed = set().union(*(attributed_target_dates(event, p) for p in passages)) if passages else set()
+                    if not observed and expected:
+                        anchor = self.event_sources(event).get("primary_target_anchor", "")
+                        mapped_passage = exact_mapped_primary_target(event, plain, expected, anchor)
+                        if mapped_passage:
+                            results.append(self.result(
+                                event, "FDA", claim, "VERIFIED",
+                                "Exact-event primary issuer target date and program confirmed; "
+                                "NOT a signed FDA decision", url, expected, expected,
+                                mapped_passage))
+                            continue
                     if not expected or not observed:
                         continue
                     state = "VERIFIED" if observed == {expected} else "CONFLICT"
