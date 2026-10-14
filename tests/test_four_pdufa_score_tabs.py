@@ -11,7 +11,7 @@ from pdufa_display_columns import (FRONT, POST_SCORES, PRE_SCORES,
                                    DISPLAY_ORDER_OPTIONS)
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
-TABS = ("UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3")
+TABS = ("GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3")
 
 
 class FourPdufaScoreTabTests(unittest.TestCase):
@@ -41,7 +41,7 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                      "Days to PDUFA", "2nd Financing Completed"],
                 )
                 sort_key = {
-                    "UNIFIED OVERVIEW": "overview_pdufa_display_order",
+                    "GEM": "overview_pdufa_display_order",
                     "PIPELINE": "pipeline_sort_v9",
                     "PRE PHASE 3": "step7_priority_sort",
                     "POST PHASE 3": "unified_pdufa_display_order",
