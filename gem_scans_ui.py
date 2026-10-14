@@ -29,6 +29,7 @@ FILES = (
     "gem_runway_evidence.json",
     "gem_hedge_fund_13f.json",
     "gem_bpw_comparable.json",
+    "gem_insider_form4.json",
     "gem_hedge_fund_managers.csv",
     "sec_step4_snapshots.sqlite3",
 )
@@ -215,6 +216,9 @@ def render_gem_scans(root="data"):
         "Hedge-fund managers reducing", "Hedge-fund managers new",
         "Hedge-fund quarter end", "Hedge-fund filed as of",
         "Hedge-fund position details", "Hedge-fund source links",
+        "Insider Form 4 signal", "Insider open-market purchases",
+        "Insider open-market sales", "Insider purchase amount USD",
+        "Insider sale amount USD", "Insider source links",
         "Cash runway (months)", "Cash runway trend", "Days to PDUFA",
         "Verified 2nd financing close date", "Two-benchmark risk flags",
         "Exact event", "Phase 3 source", "Financing source",
@@ -268,6 +272,25 @@ def render_gem_scans(root="data"):
                  "Hedge-fund position details", "Hedge-fund source links",
                  "Hedge-fund limitation"]
         st.dataframe(pd.DataFrame(items).reindex(columns=hcols).head(250),
+                     use_container_width=True, hide_index=True)
+    st.markdown("### INSIDER TRADING — SEC FORM 4 SOURCE REVIEW")
+    st.caption(
+        "Reported, priced open-market common-share purchase (P) and sale (S) "
+        "transactions from company-matched Form 4 XML. Grants, exercises "
+        "and unverified filings do not create a buy signal. This is an "
+        "advisory research factor, not a new entry requirement or part of "
+        "the currently unvalidated 100-point weights."
+    )
+    st.metric("Watchlist rows with verified insider source review",
+              status.get("insider_form4_covered_rows", 0))
+    insider_fields = ["Ticker", "Drug", "Insider Form 4 signal",
+                      "Insider open-market purchases", "Insider open-market sales",
+                      "Insider purchase amount USD", "Insider sale amount USD",
+                      "Insider net reported amount USD", "Insider buyers",
+                      "Insider last filing date", "Insider filings reviewed",
+                      "Insider source links", "Insider risk note"]
+    with st.expander("FORM 4 PURCHASES, SALES, SOURCE LINKS AND GAPS", expanded=False):
+        st.dataframe(pd.DataFrame(items).reindex(columns=insider_fields).head(250),
                      use_container_width=True, hide_index=True)
     st.divider()
     # Research confirmations remain visible while the nightly SEC collector
