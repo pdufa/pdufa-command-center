@@ -186,7 +186,11 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     # #1 is a new collapsible block INSIDE the former Unified Overview.
     # Keep all existing overview controls, score-coverage audits, #2/#3/#4 cards,
     # timeline, all-fields table and exports at their original positions.
-    with st.expander("#1 GEM — THREE-LEVEL NESTED MASTER LIST (open to view)", expanded=False):
+    # A toggle, rather than an outer expander, lets individual stock rows
+    # use Streamlit expanders safely: nested expanders are unsupported.
+    # Collapsed by default, so the original #2/#3/#4 layout stays prominent.
+    if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
+                 value=False, key="overview_show_gem_master"):
         from gem_nested_master_ui import render_gem_nested_master
         render_gem_nested_master(root=root, selections_ready=True)
     with st.container(key="overview_panels"):
