@@ -12,7 +12,8 @@ import streamlit as st
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
-from gem_checklist_ui import checklist_filters, render_checkbox_table
+from gem_checklist_ui import checklist_filters, render_checkbox_table, render_research_candidates
+from gem_benchmark_checklist import program_key
 from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
 from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
@@ -169,6 +170,13 @@ def render_gem_scans(root="data"):
         clinical_rechecks=load_saved_rechecks(path, "gem_phase3_exact_recheck.csv"),
         status=status, namespace="gem_scan",
     )
+    source_leads = render_research_candidates(
+        master_rows, checkbox_states,
+        financing_rechecks=load_saved_rechecks(path, "gem_two_close_recheck.csv"),
+        clinical_rechecks=load_saved_rechecks(path, "gem_phase3_exact_recheck.csv"),
+        namespace="gem_scan_research",
+    )
+    research_keys = {item["_event_id"] for item in source_leads}
     with st.expander("GEM BENCHMARK & RISK CHECKBOXES — ALL MATCHING STOCKS",
                      expanded=True):
         checkbox_grid = render_checkbox_table(
@@ -183,7 +191,7 @@ def render_gem_scans(root="data"):
 
     gem_view = st.radio(
         "GEM list filter",
-        ("All GEM programs", "Entry-eligible only", "Watch / review"),
+        ("Research candidates (source leads)", "All GEM programs", "Entry-eligible only", "Watch / review"),
         horizontal=True, key="gem_master_filter",
     )
     f1, f2 = st.columns([2, 1])
@@ -201,6 +209,7 @@ def render_gem_scans(root="data"):
     display_rows = [
         row for row in umbrella_rows
         if ((gem_view == "All GEM programs")
+            or (gem_view == "Research candidates (source leads)" and program_key(row) in research_keys)
             or (gem_view == "Entry-eligible only" and row["_eligible"])
             or (gem_view == "Watch / review" and not row["_eligible"]))
         and (stage_filter == "All stages" or row["GEM Stage"] == stage_filter)
@@ -223,6 +232,10 @@ def render_gem_scans(root="data"):
         file_name=f"gem_master_{day:%Y%m%d}.csv",
         mime="text/csv", key="gem_master_export",
     )
+    if not qualified and gem_view == "Entry-eligible only" and research_keys:
+        st.info("Verified GEM count is zero, but research candidates are "
+                "available above. Choose Research candidates (source leads) "
+                "to display them in the master list.")
     if not qualified:
         st.info(
             "No saved program currently has BOTH required independently verified "
