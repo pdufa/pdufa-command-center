@@ -208,6 +208,25 @@ def render_scans_activity():
         "completed or failed. Times are Pacific. Job success does NOT certify "
         "FDA/SEC evidence, GEMS eligibility or permission to trade."
     )
+    st.markdown("### GEMS SCANS — DIRECT LOG LINKS")
+    st.caption(
+        "These always-visible links open the complete GitHub run history for each "
+        "GEMS workflow, including running, completed and failed jobs. They remain "
+        "available even when GitHub's live run feed is incomplete."
+    )
+    gem_link1, gem_link2 = st.columns(2)
+    with gem_link1:
+        st.link_button(
+            "GEMS — PHASE 3 / RESEARCH SCAN ↗",
+            ACTIONS_URL + "/workflows/gem-research-quality.yml",
+            use_container_width=True,
+        )
+    with gem_link2:
+        st.link_button(
+            "GEMS — FINANCING AUDIT SCAN ↗",
+            ACTIONS_URL + "/workflows/gem-financing-full-coverage.yml",
+            use_container_width=True,
+        )
     left, middle, right = st.columns([2, 2, 3])
     with left:
         span = st.selectbox("Time window", ["Last 24 hours", "Last 7 days"],
