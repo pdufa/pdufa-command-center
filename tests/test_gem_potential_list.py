@@ -1,0 +1,149 @@
+"""Potential GEM watchlist is source-grounded, visible, and research-only."""
+from __future__ import annotations
+
+import csv
+import tempfile
+import unittest
+from datetime import date
+from pathlib import Path
+
+from gem_potential_list import build_potential_list
+
+
+def write(root, name, rows):
+    with (root / name).open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=rows[0])
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+class PotentialGEMTests(unittest.TestCase):
+    def fixture(self, root):
+        events = [
+            {"event_key": "NTLA|HAE", "ticker": "NTLA", "drug": "lonvo-z",
+             "pdufa_date": "2027-03-10", "phase3_status": "UNVERIFIED"},
+            {"event_key": "AXSM|AXS12", "ticker": "AXSM", "drug": "AXS-12",
+             "pdufa_date": "2027-05-01", "phase3_status": "UNVERIFIED"},
+            {"event_key": "CAPR|DMD", "ticker": "CAPR", "drug": "deramiocel",
+             "pdufa_date": "2026-11-22", "phase3_status": "UNVERIFIED"},
+            {"event_key": "CORT|CUSHINGS", "ticker": "CORT", "drug": "relacorilant",
+             "pdufa_date": "2026-12-17", "phase3_status": "UNVERIFIED"},
+            {"event_key": "IRD|PRESBYOPIA", "ticker": "IRD", "drug": "phentolamine",
+             "pdufa_date": "2026-10-17", "phase3_status": "RESULTS_REVIEW",
+             "phase3_date": "2025-06-26",
+             "trial_evidence_url": "https://www.sec.gov/Archives/readout"},
+            {"event_key": "INO|RRP", "ticker": "INO", "drug": "INO-3107",
+             "pdufa_date": "2026-10-30", "phase3_status": "PHASE_1_2_NOT_PHASE_3"},
+            {"event_key": "FIN|RESOLVED", "ticker": "FIN", "drug": "older",
+             "pdufa_date": "2026-12-02", "phase3_status": "UNVERIFIED",
+             "outcome": "APPROVED"},
+        ]
+        clinical = [
+            {"event_key": "AXSM|AXS12", "source_recheck_status":
+             "POSTED_RESULTS_DISCOVERY_ONLY", "nct_results_posted": "NCT03881852",
+             "saved_phase3_status": "UNVERIFIED"},
+            {"event_key": "CAPR|DMD", "source_recheck_status":
+             "POSTED_RESULTS_DISCOVERY_ONLY", "nct_results_posted": "NCT03406780",
+             "saved_phase3_status": "UNVERIFIED"},
+            {"event_key": "CORT|CUSHINGS", "source_recheck_status":
+             "POSTED_RESULTS_DISCOVERY_ONLY", "nct_results_posted": "NCT04308590",
+             "saved_phase3_status": "UNVERIFIED"},
+            {"event_key": "INO|RRP", "source_recheck_status":
+             "POSTED_RESULTS_DISCOVERY_ONLY", "nct_results_posted": "NCT04398433",
+             "saved_phase3_status": "PHASE_1_2_NOT_PHASE_3"},
+        ]
+        financing = [
+            {"event_key": "NTLA|HAE",
+             "historical_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+             "first_sec_status": "VERIFIED", "second_sec_status": "VERIFIED"},
+            {"event_key": "AXSM|AXS12",
+             "historical_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+             "first_sec_status": "REVIEW_REQUIRED", "second_sec_status": "REVIEW_REQUIRED"},
+            {"event_key": "IRD|PRESBYOPIA",
+             "historical_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+             "first_sec_status": "VERIFIED", "second_sec_status": "VERIFIED"},
+            {"event_key": "FIN|RESOLVED",
+             "historical_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+             "first_sec_status": "VERIFIED", "second_sec_status": "VERIFIED"},
+        ]
+        write(root, "pdufa_candidates.csv", events)
+        write(root, "gem_phase3_exact_recheck.csv", clinical)
+        write(root, "gem_two_close_recheck.csv", financing)
+
+    def test_potential_reason_and_verification_gap_for_each_program(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            pending, held = build_potential_list(root, as_of=date(2026, 10, 14))
+            self.assertEqual({x["Ticker"] for x in pending},
+                             {"NTLA", "AXSM", "CAPR", "CORT"})
+            self.assertEqual({x["Ticker"] for x in held}, {"IRD", "FIN"})
+            ntla = next(x for x in pending if x["Ticker"] == "NTLA")
+            self.assertIn("both cited SEC documents rechecked", ntla["Why potential"])
+            self.assertIn("Phase 3 results", ntla["Still needed"])
+            self.assertEqual(ntla["GEM status"], "POTENTIAL — RESEARCH ONLY / NOT QUALIFIED")
+            axsm = next(x for x in pending if x["Ticker"] == "AXSM")
+            self.assertIn("NCT03881852", axsm["Why potential"])
+            self.assertIn("0/2 SEC documents", axsm["Why potential"])
+            capr = next(x for x in pending if x["Ticker"] == "CAPR")
+            self.assertIn("NCT03406780", capr["Why potential"])
+            self.assertIn("two distinct", capr["Still needed"])
+            self.assertNotIn("INO", {x["Ticker"] for x in pending + held})
+            self.assertIn("exit boundary", next(x for x in held if x["Ticker"] == "IRD")
+                          ["Timing / resolution"])
+            self.assertIn("APPROVED", next(x for x in held if x["Ticker"] == "FIN")
+                          ["Timing / resolution"])
+
+    def test_duplicate_exact_event_does_not_borrow_financing_or_study(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            rows = [{"event_key": "AXSM|AXS12", "source_recheck_status":
+                     "POSTED_RESULTS_DISCOVERY_ONLY", "nct_results_posted": "NCT03881852"}]
+            write(root, "gem_phase3_exact_recheck.csv", rows + rows)
+            pending, _ = build_potential_list(root, as_of=date(2026, 10, 14))
+            axsm = next(x for x in pending if x["Ticker"] == "AXSM")
+            self.assertNotIn("NCT03881852", axsm["Why potential"])
+            self.assertIn("Historical two-close", axsm["Why potential"])
+
+    def test_same_ticker_two_programs_preserve_distinct_reasons(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            ev = [
+                {"event_key": "AXSM|ONE", "ticker": "AXSM", "drug": "program one",
+                 "pdufa_date": "2027-01-01", "phase3_status": "UNVERIFIED"},
+                {"event_key": "AXSM|TWO", "ticker": "AXSM", "drug": "program two",
+                 "pdufa_date": "2027-04-02", "phase3_status": "UNVERIFIED"},
+            ]
+            write(root, "pdufa_candidates.csv", ev)
+            write(root, "gem_phase3_exact_recheck.csv", [
+                {"event_key": "AXSM|ONE", "source_recheck_status":
+                 "POSTED_RESULTS_DISCOVERY_ONLY", "nct_results_posted": "NCT11112222"}])
+            write(root, "gem_two_close_recheck.csv", [
+                {"event_key": "AXSM|TWO",
+                 "historical_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+                 "first_sec_status": "VERIFIED", "second_sec_status": "REVIEW_REQUIRED"}])
+            pending, held = build_potential_list(root, as_of=date(2026, 10, 14))
+            self.assertFalse(held)
+            self.assertEqual(len(pending), 2)
+            self.assertNotEqual(pending[0]["Evidence type"], pending[1]["Evidence type"])
+            self.assertFalse(any(r["Evidence type"] == "Phase 3 + financing" for r in pending))
+
+    def test_overview_has_visible_new_section_under_gem_one(self):
+        root = Path(__file__).resolve().parents[1]
+        overview = (root / "unified_clinical_trading.py").read_text(encoding="utf-8")
+        potential_ui = (root / "gem_potential_ui.py").read_text(encoding="utf-8")
+        first = overview.index('st.markdown("### #1-GEM")')
+        render = overview.index('render_gem_potential(root=root, compact=True', first)
+        next_panel = overview.index('with pipeline_col, st.container(', first)
+        self.assertLess(first, render)
+        self.assertLess(render, next_panel)
+        self.assertIn('### POTENTIAL GEMs — PENDING RESEARCH', potential_ui)
+        self.assertIn('st.caption("WHY: " + lead["Why potential"])', potential_ui)
+        self.assertIn('st.caption("PENDING: " + lead["Still needed"])', potential_ui)
+        self.assertIn("EXPORT POTENTIAL GEMs + REASONS", potential_ui)
+
+
+if __name__ == "__main__":
+    unittest.main()
