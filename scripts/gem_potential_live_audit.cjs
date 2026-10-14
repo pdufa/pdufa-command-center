@@ -89,7 +89,7 @@ async function audit() {
   }
   result.evidence.panelText = panelText.slice(0, 11000);
   result.evidence.overviewExcerpt = overview.slice(0, 1200);
-  const count = panelText.match(/(\\d+) active research leads/);
+  const count = panelText.match(/(\d+) active research leads/);
   const currentCount = count ? Number(count[1]) : null;
   const empty = panelText.includes("No currently active potential GEMs supported");
   const numbered = await app.frame.locator(".st-key-overview_gem_panel ol > li").count();
