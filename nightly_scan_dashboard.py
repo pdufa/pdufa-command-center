@@ -70,7 +70,7 @@ def published_am_report():
 def render_am_results():
     st.markdown("## 6:00 AM PACIFIC — MORNING SCAN RESULTS")
     st.caption(
-        "Read-only summary of last night's 8:30 PM clinical, FDA, SEC, "
+        "Read-only summary of the previous day's 1:00 PM clinical, FDA, SEC, "
         "financial, market and issuer checks. The morning summary does not "
         "start a new scan or authorize a trade."
     )
