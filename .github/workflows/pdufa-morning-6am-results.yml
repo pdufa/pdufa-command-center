@@ -9,6 +9,10 @@ on:
     - cron: '0 14 * * *'   # 6:00 AM PST
     - cron: '15 14 * * *'  # 6:15 AM PST backup
   workflow_dispatch:
+  # One-time repair bootstrap on a scheduler-code change; not every app push.
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-morning-6am-results.yml']
 
 permissions:
   contents: write
@@ -31,7 +35,7 @@ jobs:
           CRON_SLOT: ${{ github.event.schedule }}
         run: |
           set -euo pipefail
-          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+          if [ "$EVENT_NAME" = workflow_dispatch ] || [ "$EVENT_NAME" = push ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
