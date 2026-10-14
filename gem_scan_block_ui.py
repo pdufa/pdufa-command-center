@@ -121,11 +121,13 @@ def render_gem_scan_block_status(report=None, run=None):
         c2.metric("Registry observations", _count(clinical.get("stored_results")))
         c3.metric("Phase 3 tracking", _count(report.get("verified_phase3_tracking")))
         c4.metric("Awaiting financing #2", _count(report.get("awaiting_second_financing")))
-        c5.metric("ALL ENTRY GATES", _count(report.get("strict_entry_gate_shortlist_count")))
-        st.caption("ALL ENTRY GATES is the tiny shortlist passing ALL three research"
-                   " categories, Stage 1 GREEN, independently verified second"
-                   " financing closure, no unresolved dilution and fresh sources."
-                   " It remains a manual due-diligence list, not a buy signal.")
+        c5.metric("2-BENCHMARK CANDIDATES",
+                  _count(report.get("two_benchmark_candidate_count")))
+        st.caption("The primary candidate list requires exactly two verified "
+                   "events: published Phase 3 results for the exact trial and "
+                   "a second separate post-readout financing close. "
+                   "Runway, dilution, market and timing factors rank or warn; "
+                   "they do not impose further entry benchmarks. No buy orders.")
         runway = report.get("cash_runway") or {}
         st.caption(
             "SEC cash runway (minimum 12 months at GEM 2/3): "
@@ -149,6 +151,8 @@ def render_gem_scan_block_status(report=None, run=None):
                 for name in STAGES
             ]), hide_index=True, use_container_width=True)
             st.write("Collector:", report.get("collector_status", "NOT REPORTED"))
+            st.write("Optional conservative research subset:",
+                     report.get("strict_entry_gate_shortlist_count", "NOT VERIFIED"))
             st.write("SEC:", (report.get("sec_source_health") or {}).get("status", "UNVERIFIED"))
             st.write("Market:", (report.get("market_source_health") or {}).get("status", "UNVERIFIED"))
             st.write("Blocking source issues:", report.get("blocking_or_review_flags") or "No issues listed")
