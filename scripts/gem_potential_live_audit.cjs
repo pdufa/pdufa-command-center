@@ -81,8 +81,8 @@ async function audit() {
       if (await panel.count()) {
         panelText = await panel.innerText({ timeout: 5000 });
         if (panelText.includes("POTENTIAL GEMs — PENDING RESEARCH") &&
-            panelText.includes("Why potential:") &&
-            panelText.includes("Pending:")) break;
+            ((panelText.includes("Why potential:") && panelText.includes("Pending:")) ||
+             panelText.includes("No currently active potential GEMs supported by the saved source reviews."))) break;
       }
     } catch (_) {}
     await sleep(1000);
