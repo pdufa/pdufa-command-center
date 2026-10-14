@@ -337,7 +337,7 @@ def render_gem_nested_master(root="data"):
                     f"PDUFA: {_value(r.get('PDUFA Date'))} · "
                     f"Planned exit (−3 days): {_value(r.get('Planned Exit (-3 days)'))}"
                 )
-                with st.expander("Additional risk and source observations", expanded=False):
+                if st.checkbox("Show additional risk and source observations", key=f"gem_nested_more_{uid}"):
                     details = pd.DataFrame([
                         {"Observation": name, "Value": _value(r.get(column))}
                         for name, column in (
