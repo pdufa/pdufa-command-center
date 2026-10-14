@@ -56,7 +56,7 @@
         "urls": [
           "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0"
         ],
-        "individual_financing_close": {
+        "first_financing_primary_source": {
           "date": "2025-11-18",
           "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
           "evidence_type": "FIRST_POST_READOUT_DEBT_OFFERING_SINGLE_FUNDED_CLOSE",
