@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_potential_list import build_potential_list
-from gem_secondary_research import research_search_links, source_research_policy
+from gem_secondary_research import (\n    OPTIONAL_CHECK_TOPICS, optional_check_search_links,\n    research_search_links, source_research_policy,\n)
 
 VISIBLE = ("Ticker", "Drug", "Why potential", "Still needed", "Timing / resolution")
 FULL = (
@@ -109,6 +109,23 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                     ") · [Stocktwits ticker](" + links["stocktwits_ticker"] +
                     ") · [X discussions](" + links["x_program"] +
                     ") · [Recent news](" + links["news_program"] + ")"
+                )
+                issues = {key: label for key, label, _ in OPTIONAL_CHECK_TOPICS}
+                check = st.selectbox(
+                    "Optional check requiring investigation",
+                    list(issues),
+                    format_func=lambda k: issues[k],
+                    key=namespace + "_optional_check_search",
+                )
+                targeted = optional_check_search_links(lead, check)
+                st.markdown(
+                    "**SEARCH THIS OPEN CHECK — " + targeted["label"] + "**"
+                )
+                st.markdown(
+                    "[Company Investor Relations](" + targeted["issuer_ir"] +
+                    ") · [Primary public records](" + targeted["primary_records"] +
+                    ") · [Reddit discussion](" + targeted["reddit"] +
+                    ") · [Recent news](" + targeted["news"] + ")"
                 )
                 st.caption(source_research_policy())
                 st.markdown(
