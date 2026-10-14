@@ -175,7 +175,7 @@ def _score_check(row):
 
 def render_gem_nested_master(root="data", *, selections_ready=False):
     """Render in first/renamed GEM tab, above the historical clinical cards."""
-    st.markdown("## #1 GEM — THREE-LEVEL NESTED MASTER LIST")
+    st.markdown("### GEM — STOCK → FACTORS → SOURCE INPUTS")
     st.caption(
         "Stock → six 100-point factors → individual saved inputs, formulas and evidence. "
         "Every saved GEM candidate stays in this single sortable-ranked universe. "
