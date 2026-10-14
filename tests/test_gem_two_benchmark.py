@@ -95,7 +95,7 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
         self.assertTrue(a["Two-benchmark eligible"])
         self.assertEqual(a["Dilution overhang /15"], 0)
         self.assertEqual(a["Trading activity /20"], 0)
-        self.assertEqual(a["PDUFA timing /10"], 0)
+        self.assertEqual(a["PDUFA timing /5"], 0)
         self.assertIn("dilution", a["Two-benchmark risk flags"].lower())
         self.assertIn("SEC rescan", a["Two-benchmark risk flags"])
 
@@ -109,7 +109,7 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
     def test_expired_pdufa_is_warning_not_third_positive_benchmark(self):
         a = assess(sample(days=0), event(), as_of=DATE)
         self.assertTrue(a["Two-benchmark eligible"])
-        self.assertEqual(a["PDUFA timing /10"], 0)
+        self.assertEqual(a["PDUFA timing /5"], 0)
         self.assertIn("pre-decision setup expired", a["Two-benchmark risk flags"])
 
     def test_rank_eligible_candidates_by_scored_quality_not_cash_gate(self):
