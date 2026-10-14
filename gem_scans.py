@@ -17,6 +17,7 @@ from gem_runway_gate import assess_runway, load_snapshots, passes as runway_pass
 from gem_runway_trend import load_history as load_runway_history, assess_trend
 from gem_two_benchmark import assess as assess_two_benchmarks, assign_ranks as rank_two_benchmark
 from gem_hedge_funds import load_signal_records, assess_signal
+from gem_insider import load_records as load_insider_records, assess as assess_insider
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -260,6 +261,7 @@ def build_gem_scans(root="data", as_of=None):
     runway_snapshots = load_snapshots(root)
     runway_history = load_runway_history(root)
     hedge_signals = load_signal_records(root, as_of=source_status.get("as_of") or as_of)
+    insider_signals = load_insider_records(root, as_of=source_status.get("as_of") or as_of)
     results = []
     for record in records:
         item = dict(record)
@@ -321,6 +323,10 @@ def build_gem_scans(root="data", as_of=None):
             ticker, hedge_signals.get(ticker),
             as_of=source_status.get("as_of") or as_of,
         ))
+        item.update(assess_insider(
+            ticker, insider_signals.get(ticker),
+            as_of=source_status.get("as_of") or as_of,
+        ))
         # Primary trading-candidate policy: only (1) released source-verified
         # Phase 3 results and (2) the independently verified second financing
         # closing are eligibility benchmarks. All other evidence is advisory
@@ -377,6 +383,14 @@ def build_gem_scans(root="data", as_of=None):
         "SECOND FINANCING CLOSE; OTHER FACTORS RANK / FLAG ONLY"
     )
     details["two_benchmark_ranked"] = len(two_benchmark_shortlist)
+    details["insider_form4_covered_rows"] = sum(
+        row.get("Insider Form 4 signal") == "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS"
+        for row in results
+    )
+    details["insider_form4_buying_rows"] = sum(
+        (row.get("Insider open-market purchases") or 0) > 0
+        for row in results
+    )
     details["hedge_fund_13f_matched_candidates"] = sum(
         row.get("Hedge-fund signal") == "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS"
         for row in results
