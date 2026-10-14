@@ -17,6 +17,18 @@ class ScanActivityDashboardTests(unittest.TestCase):
         self.assertIn('["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]', src)
         self.assertIn("render_nightly_scan_report()", src)
 
+    def test_both_gems_workflow_logs_are_pinned_in_both_scans_pages(self):
+        activity = (ROOT / "scan_activity_dashboard.py").read_text(encoding="utf-8")
+        nested = (ROOT / "nightly_scan_dashboard.py").read_text(encoding="utf-8")
+        for workflow in ("gem-research-quality.yml", "gem-financing-full-coverage.yml"):
+            self.assertIn('"/workflows/' + workflow + '"', activity)
+            self.assertIn('"/actions/workflows/' + workflow + '"', nested)
+        self.assertIn("GEMS SCANS — DIRECT LOG LINKS", activity)
+        self.assertIn("GEMS — GITHUB SCAN LOGS", nested)
+        self.assertIn("They remain", activity)
+        self.assertIn("GEMS PHASE 3 / RESEARCH SCAN", nested)
+        self.assertIn("GEMS FINANCING AUDIT SCAN", nested)
+
     def test_live_and_finished_statuses_are_not_trade_certifications(self):
         for status, conclusion, expected in (
             ("in_progress", None, "Running"),
