@@ -68,6 +68,15 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 " · 1st closing " + lead["First close"] +
                 " · 2nd closing " + lead["Second close"]
             )
+            st.caption(
+                "PDUFA " + str(lead["PDUFA saved"] or "NOT CONFIRMED") +
+                " · " + (str(lead["PDUFA days left"]) + " DAYS LEFT" if
+                         lead["PDUFA days left"] is not None else "DATE UNKNOWN") +
+                " · " + lead["PDUFA timing window"] +
+                " · " + ("SOURCE VERIFIED" if lead["PDUFA verified"]
+                         else "PDUFA SOURCE NOT VERIFIED") +
+                " · EXIT: " + (lead["Planned exit (PDUFA −3)"] or "UNVERIFIED")
+            )
             st.caption(lead["Still needed"])
         with st.expander("VERIFIED GEM PRIMARY SOURCES — EXACT PROGRAM", expanded=False):
             st.dataframe(
@@ -122,7 +131,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             "Matched Phase 3 source leads", "Phase 3 discovery examples",
             "Phase 3 discovery source",
             "Financing ledger claim", "Financing close #1",
-            "Financing close #2", "Missing evidence / next actions",
+            "Financing close #2", "PDUFA (saved)", "PDUFA days left",
+            "PDUFA window", "PDUFA date verified",
+            "Missing evidence / next actions", "PDUFA primary source",
             "Primary clinical source", "Financing source #1",
             "Financing source #2", "Investor news / source search",
             "SEC program search", "ClinicalTrials.gov search",
@@ -134,7 +145,8 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             column_config={
                 name: st.column_config.LinkColumn(name)
                 for name in (
-                    "Primary clinical source", "Phase 3 discovery source",
+                    "Primary clinical source", "PDUFA primary source",
+                    "Phase 3 discovery source",
                     "Financing source #1",
                     "Financing source #2", "Investor news / source search",
                     "SEC program search", "ClinicalTrials.gov search",
@@ -211,6 +223,7 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                     "[Search this drug on issuer's site](" +
                     links["issuer_program_search"] + ") · " +
                     "[Search SEC filings](" + links["sec_program_search"] + ") · " +
+                    "[Find funded FINANCING CLOSES](" + links["sec_funding_close_search"] + ") · " +
                     "[Search ClinicalTrials.gov](" + links["clinical_trials"] + ")"
                 )
                 st.markdown("**SOCIAL DISCUSSION — LEADS ONLY**")
