@@ -11,15 +11,19 @@
 **Operational boundary:** The new tab and workflows are code-installed, but a successful *live end-to-end scan and email delivery* must still be observed after secrets are configured. Before a first published artifact the page explicitly says that no audited report exists. A clinical `PARTIAL` result means clinical-source collection succeeded, **not** that FDA/SEC/issuer/market data was verified. `VERIFY ALL` revalidates archived clinical JSON, not the missing source families. The automated syntax/unit-test check is in `pdufa-nightly-report-checks.yml`.
 
 
-## Active #2/#3/#4 clinical-source nightly scan schedule
+## Active daily PM scan survey — 11:00 PM Pacific
 
-**Enabled:** `.github/workflows/pdufa-nightly-clinical.yml`. The initial
-`push` on October 11, 2026 triggered all three parallel source collectors
-immediately; independently verified START emails arrived at 9:34 PM PDT.
-Subsequent runs are scheduled with GitHub Actions cron `0 9 * * *`
-(02:00 PDT / 01:00 PST, subject to GitHub Actions scheduling delays).
-Manual `workflow_dispatch` is also available. Future unrelated commits
-do not trigger another scan.
+**Enabled:** `.github/workflows/pdufa-nightly-pacific-start.yml` starts the
+clinical #2 PIPELINE → #3 PRE3 → #4 POST3 scan sequence **daily at 11:00 PM
+Pacific**. GitHub cron uses the following-day UTC date: `0 6 * * *` during
+PDT (UTC−7) and `0 7 * * *` during PST (UTC−8), with 11:15/11:30 PM
+guarded backups. Duplicate detection prevents a second nightly scan.
+After-midnight publisher/source recovery checks do **not** restart scans.
+The GEM research scan is dispatched after POST3; the independent 6 AM
+Pacific read-only report reviews evidence published since the previous night's
+11 PM start. GitHub Actions may delay scheduled jobs. Manual
+`workflow_dispatch` remains available; ordinary app commits do not start
+another clinical collection outside the guarded schedule.
 
 Each collector (#2 all-phase trial inventory and tracked NCT refresh;
 #3 Phase 2/3 clinical pipeline + limited market-cap checks; #4 Phase 3
