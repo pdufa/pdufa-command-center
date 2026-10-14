@@ -16,7 +16,8 @@ import streamlit as st
 from gem_scans_ui import render_gem_scans
 from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
-from scan_status_ui import render_scan_status
+from scan_status_ui import render_scan_status, required_issue_queue
+from scripts.scan_recovery_triage import triage_source_rows
 from scripts.pdufa_morning_results import make_snapshot
 
 REPO = "pdufa/pdufa-command-center"
@@ -203,6 +204,62 @@ def render_extended_source_report():
             st.dataframe(pd.DataFrame([{k:r.get(k) for k in ("ticker", "category", "claim", "verification_status", "reason")} for r in issues]), hide_index=True, use_container_width=True)
     if report.get("optional_findings_unavailable"):
         st.info("Some supplemental market fields are unavailable. Short shares are kept separate from short interest as a percentage of float; options IV and borrow data are not inferred from prices.")
+    # Existing nightly SEC/FDA/ISSUER/FINANCIAL collectors make the next
+    # primary-source rechecks. Show diagnostic actions for every unresolved
+    # exact event, not only the top 24 examples in the JSON summary.
+    st.markdown("### AUTOMATIC RECOVERY / EXCEPTION QUEUE")
+    st.caption(
+        "Rechecks run with the next scheduled source scan; eligible temporary "
+        "CI failures may be retried once. Clinical, SEC and code disagreements "
+        "are diagnosed, not automatically rewritten or approved for trading."
+    )
+    source_queue, queue_notice = required_issue_queue()
+    source_recovery = triage_source_rows(
+        source_queue.to_dict(orient="records"), report
+    )
+    if queue_notice:
+        st.warning(queue_notice)
+    queue_status = source_recovery.get("status", "INCOMPLETE_OR_STALE_QUEUE")
+    if queue_status != "READY_FOR_NEXT_NIGHT_RECHECK":
+        st.warning(
+            "Recovery queue incomplete or not synchronized with the published "
+            "source report. No outstanding source is auto-cleared."
+        )
+    breakdown = source_recovery.get("counts_by_action") or {}
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Unresolved claims in recovery queue",
+              source_recovery.get("findings_count", 0))
+    m2.metric("SEC financing claims to recheck",
+              breakdown.get("RECHECK_CIK_MATCHED_SEC_FINANCING", 0))
+    m3.metric("Conflicting primary evidence on hold",
+              breakdown.get("HOLD_CONFLICT_AND_RECHECK_PRIMARY", 0))
+    if breakdown:
+        with st.expander("Source-recheck actions and outstanding evidence"):
+            st.dataframe(
+                pd.DataFrame([
+                    {"Next automatic check": action.replace("_", " ").title(),
+                     "Pending": count}
+                    for action, count in sorted(breakdown.items())
+                ]), use_container_width=True, hide_index=True
+            )
+            items = source_recovery.get("items") or []
+            st.dataframe(
+                pd.DataFrame(items).reindex(columns=[
+                    "ticker", "event_key", "category", "claim",
+                    "verification_status", "priority", "next_scan_action",
+                    "reason", "gem_trade_entry",
+                ]), use_container_width=True, hide_index=True
+            )
+    st.caption(
+        "Code-test failures remain manual-review holds unless a verified "
+        "transient network error qualifies for one failed-job retry. "
+        "See the nightly scoring → error check → safe repair workflow artifacts."
+    )
+    st.link_button(
+        "VIEW NIGHTLY SCORING AND SELF-RECOVERY",
+        "https://github.com/" + REPO +
+        "/actions/workflows/pdufa-nightly-scoring-then-repair.yml"
+    )
     # Research confirmations remain visible when the subsequent SEC lookup is
     # blocked. Only a fresh, dated issuer-matched SEC document can verify one
     # financing transaction; no row can approve the required second financing.
