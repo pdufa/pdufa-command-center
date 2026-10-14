@@ -187,6 +187,33 @@ def exact_mapped_primary_target(event, plain, expected, anchor, context_chars=10
     return ""
 
 
+def mapped_issuer_release_dateline(event, plain, expected_date):
+    """Verify a mapped issuer's article-header publication date, not PDUFA date.
+
+    Only used for exact-event mapped links when generic metadata is absent.
+    The title/header must independently name the company, drug, indication,
+    and a single dated release before the news body. The mapped date is a
+    candidate to check in fetched primary text, not sufficient proof itself.
+    """
+    if (not isinstance(expected_date, str) or len(expected_date) != 10
+            or not expected_date in dates(plain[:750])):
+        return set()
+    header = plain[:750]
+    found = dates(header)
+    if (found != {expected_date}
+            or not re.search(r"(?i)press release|corporate news details", header[:450])
+            or not company_matches(event, header)
+            or not drug_matches(event, header)
+            or not indication_matches(event, header)):
+        return set()
+    try:
+        if date.fromisoformat(expected_date) > date.today():
+            return set()
+    except ValueError:
+        return set()
+    return {expected_date}
+
+
 def documented_fda_signed_approval(event, text):
     """Require an exact signed FDA approval, not an issuer publication date."""
     if (not re.search(r"(?i)\bSUPPLEMENT APPROVAL\b", text)
@@ -1312,6 +1339,11 @@ class Verifier:
                     if not re.search(r"(?i)\b(?:press release|announced|announces|reported|reports)\b", plain):
                         continue
                     posted = publication_dates(raw, plain)
+                    if len(posted) != 1 and self.primary(event, url) == "ISSUER":
+                        mapping = self.event_sources(event)
+                        if url in mapping.get("urls", []):
+                            posted = mapped_issuer_release_dateline(
+                                event, plain, mapping.get("primary_release_date", ""))
                     if len(posted) != 1:
                         continue
                     published = next(iter(posted))
