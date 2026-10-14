@@ -208,7 +208,7 @@ def place_self_sent_message_in_inbox(settings, message_id, *, imap_factory=None,
             state, matches = client.uid("SEARCH", None, "HEADER", "Message-ID", message_id)
             ids = matches[0].split() if state == "OK" and matches else []
             if ids:
-                state, _ = client.uid("STORE", ids[-1], "+X-GM-LABELS", r"(\\Inbox)")
+                state, _ = client.uid("STORE", ids[-1], "+X-GM-LABELS", r"(\Inbox)")
                 return "INBOX_LABEL_ACCEPTED" if state == "OK" else "INBOX_NOT_CONFIRMED"
             if attempt < 2:
                 sleeper(1)
