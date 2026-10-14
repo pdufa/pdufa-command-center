@@ -65,15 +65,15 @@ jobs:
             fi
             exit 0
           fi
-          # GitHub can delay crons; the Pacific hour and correct UTC offset
-          # must both match. The after-midnight recovery crons never dispatch
-          # the full scan; delayed crons outside the 9 PM hour are ignored.
+          # GitHub scheduled runs sometimes start hours late. Allow the
+          # scheduled 9 PM slot to recover until 2:59 AM Pacific, but keep
+          # after-midnight recovery crons separate and dedupe the scan chain.
           local_hour="$(TZ=America/Los_Angeles date +%H)"
           local_minute="$(TZ=America/Los_Angeles date +%M)"
-          local_minutes=$((10#$local_hour * 60 + 10#$local_minute))
-          if [ "$local_minutes" -lt 1260 ] || [ "$local_minutes" -ge 1320 ]; then
+          hour_num=$((10#$local_hour))
+          if [ "$hour_num" -lt 21 ] && [ "$hour_num" -ge 3 ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skip scheduled start outside 9:00-9:59 PM Pacific"
+            echo "Skip nightly start outside 9 PM–2:59 AM Pacific recovery window"
             exit 0
           fi
           offset="$(TZ=America/Los_Angeles date +%z)"
@@ -97,10 +97,12 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/pdufa-clinical-runs.json"
           if python - "$RUNNER_TEMP/pdufa-clinical-runs.json" <<'PY'
           import json, sys
-          from datetime import datetime, timezone
+          from datetime import datetime, timedelta, timezone
           from zoneinfo import ZoneInfo
           now = datetime.now(timezone.utc)
-          start = now.astimezone(ZoneInfo("America/Los_Angeles")).replace(
+          local = now.astimezone(ZoneInfo("America/Los_Angeles"))
+          night = local - timedelta(days=1) if local.hour < 3 else local
+          start = night.replace(
               hour=21, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
           with open(sys.argv[1], encoding="utf-8") as handle:
               runs = json.load(handle).get("workflow_runs", [])
