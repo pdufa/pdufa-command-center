@@ -204,10 +204,17 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         rechecks=load_saved_rechecks(data_path, "gem_two_close_recheck.csv"),
         clinical_rechecks=load_saved_rechecks(data_path, "gem_phase3_exact_recheck.csv"),
     )
-    by_exact_event = {
-        item["Exact Program / Event"]: item for item in evidence_details
-        if item.get("Exact Program / Event")
-    }
+    by_exact_event, ambiguous_exact = {}, set()
+    for detail in evidence_details:
+        exact = str(detail.get("Exact Program / Event") or "")
+        if not exact:
+            continue
+        if exact in by_exact_event:
+            ambiguous_exact.add(exact)
+        else:
+            by_exact_event[exact] = detail
+    for exact in ambiguous_exact:
+        by_exact_event.pop(exact, None)
     evidence_counts = group_counts(evidence_details)
     if not selections_ready:
         _init_browser_selection("gem_nested_master")
