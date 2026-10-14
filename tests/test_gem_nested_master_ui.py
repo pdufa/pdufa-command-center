@@ -71,8 +71,24 @@ class NestedGEMTests(unittest.TestCase):
         ui = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
         self.assertIn('["GEM", "PIPELINE", "PRE PHASE 3"', app)
         self.assertIn('previous_subtab == "UNIFIED OVERVIEW"', app)
-        self.assertIn("render_gem_nested_master(root=root)", overview)
-        self.assertIn("## #1 GEM — THREE-LEVEL NESTED MASTER LIST", ui)
+        self.assertIn("render_gem_nested_master(root=root, selections_ready=True)", overview)
+        block = '#1 GEM — THREE-LEVEL NESTED MASTER LIST (open to view)'
+        self.assertIn(block, overview)
+        # Existing filters, three equal-height cards and timeline stay untouched.
+        self.assertIn('pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1]', overview)
+        self.assertIn('with st.expander("PDUFA TIMELINE", expanded=True)', overview)
+        self.assertIn('with st.expander("SOURCE MATCH & SCORE COVERAGE AUDIT"', overview)
+        self.assertIn('st.download_button("EXPORT COMBINED TRIAL VIEW"', overview)
+        self.assertIn('st.download_button("EXPORT PRE3 PROGRAMS"', overview)
+        self.assertIn('st.download_button("EXPORT TRADING CANDIDATES"', overview)
+        # GEM belongs inside the existing dashboard panels flow, not before
+        # all the old controls. It opens above the original #2/#3/#4 cards.
+        entrypoint = overview.index('def render_combined_overview(')
+        outside = overview[entrypoint:overview.index('    today = datetime.now', entrypoint)]
+        self.assertNotIn("render_gem_nested_master(root=root", outside)
+        self.assertLess(overview.index(block), overview.index('st.markdown("### #2-PIPELINE")'))
+
+        self.assertIn("### GEM — STOCK → FACTORS → SOURCE INPUTS", ui)
         self.assertIn("_init_browser_selection", ui)
         self.assertIn('args=(ticker, "watch")', ui)
         self.assertIn('args=(ticker, "trade")', ui)
