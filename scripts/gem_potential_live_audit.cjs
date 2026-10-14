@@ -81,21 +81,28 @@ async function audit() {
       if (await panel.count()) {
         panelText = await panel.innerText({ timeout: 5000 });
         if (panelText.includes("POTENTIAL GEMs — PENDING RESEARCH") &&
-            panelText.includes("Why potential:") &&
-            panelText.includes("Pending:")) break;
+            (panelText.includes("Why potential:") ||
+             panelText.includes("No currently active potential GEMs supported"))) break;
       }
     } catch (_) {}
     await sleep(1000);
   }
   result.evidence.panelText = panelText.slice(0, 11000);
   result.evidence.overviewExcerpt = overview.slice(0, 1200);
+  const count = panelText.match(/(\\d+) active research leads/);
+  const currentCount = count ? Number(count[1]) : null;
+  const empty = panelText.includes("No currently active potential GEMs supported");
+  const numbered = await app.frame.locator(".st-key-overview_gem_panel ol > li").count();
+  result.evidence.activeResearchLeadCount = currentCount;
+  result.evidence.renderedNumberedCandidates = numbered;
   result.checks.gemPanelPresent = panelText.includes("#1-GEM");
   result.checks.potentialHeading = panelText.includes("POTENTIAL GEMs — PENDING RESEARCH");
-  result.checks.potentialReason = panelText.includes("Why potential:");
-  result.checks.pendingEvidence = panelText.includes("Pending:");
-  result.checks.numberedCandidates = await app.frame.locator(".st-key-overview_gem_panel ol > li").count() >= 1;
-  result.checks.sampleTickers = ["NTLA", "AXSM", "CAPR", "CORT"]
-    .every(t => panelText.includes(t));
+  result.checks.activeLeadCountReported = currentCount !== null;
+  result.checks.potentialReason = currentCount === 0 ? empty : panelText.includes("Why potential:");
+  result.checks.pendingEvidence = currentCount === 0 ? empty : panelText.includes("Pending:");
+  result.checks.numberedCandidates = currentCount === 0 ? empty && numbered === 0 : numbered > 0;
+  // A changing research list should never fail only because previous sample
+  // tickers are no longer supported by exact-program source evidence.
   result.checks.separateVerifiedList = panelText.includes("NOT the verified GEM entry list");
   await page.screenshot({
     path: path.join(output, "gem-potential-desktop.png"), fullPage: false,
