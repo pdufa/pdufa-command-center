@@ -17,6 +17,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
+from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
 from gem_scans_ui import FILES, _saved_gem_scans
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
 
@@ -196,6 +197,18 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         st.error("GEM source data could not be loaded; no scores or eligibility inferred.")
         return
     sources = _unique_sources(items)
+    evidence_details = report_rows(
+        rows,
+        sec_current=bool(status.get("sec_financing_source_current")),
+        feed_current=bool(status.get("feed_current")),
+        rechecks=load_saved_rechecks(data_path, "gem_two_close_recheck.csv"),
+        clinical_rechecks=load_saved_rechecks(data_path, "gem_phase3_exact_recheck.csv"),
+    )
+    by_exact_event = {
+        item["Exact Program / Event"]: item for item in evidence_details
+        if item.get("Exact Program / Event")
+    }
+    evidence_counts = group_counts(evidence_details)
     if not selections_ready:
         _init_browser_selection("gem_nested_master")
     watch = {clean_ticker(v) for v in st.session_state.get("watchlist", [])}
@@ -204,6 +217,27 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         st.warning(
             "SOURCE RECHECK PARTIAL / STALE: recorded qualifications must be reverified "
             "before acting. A displayed score is research context, not a buy signal."
+        )
+    st.caption(
+        f"GEM evidence: {evidence_counts[GROUPS[0]]} eligible · "
+        f"{evidence_counts[GROUPS[1]]} awaiting financing · "
+        f"{evidence_counts[GROUPS[2]]} awaiting Phase 3 · "
+        f"{evidence_counts[GROUPS[3]]} awaiting both. "
+        "Current source health is listed separately from saved eligibility."
+    )
+    with st.expander("WHY EACH GEM STOCK IS NOT ELIGIBLE", expanded=False):
+        detail_fields = [
+            "Ticker", "Drug", "Verification group", "Missing / recheck needed",
+            "Latest Phase 3 registry audit", "Latest SEC transaction audit",
+            "Phase 3 Source", "Financing Source",
+        ]
+        st.dataframe(
+            pd.DataFrame(evidence_details).reindex(columns=detail_fields),
+            use_container_width=True, hide_index=True, height=300,
+            column_config={
+                "Phase 3 Source": st.column_config.LinkColumn("Phase 3 Source"),
+                "Financing Source": st.column_config.LinkColumn("Financing Source"),
+            },
         )
     m1, m2, m3 = (st, st, st) if compact else st.columns(3)
     m1.metric("GEM programs", len(rows))
@@ -293,6 +327,11 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                      "Evidence": _value(r.get("Financing Source"))},
                 ])
                 st.dataframe(benchmarks, use_container_width=True, hide_index=True)
+                diagnosis = by_exact_event.get(str(r.get("Exact Program / Event") or ""), {})
+                st.caption(
+                    "VERIFICATION: " + str(diagnosis.get("Verification group", "UNVERIFIED"))
+                    + " · " + str(diagnosis.get("Missing / recheck needed", ""))
+                )
                 if not r["_eligible"]:
                     st.info("WATCH / REVIEW — one or both benchmarks not verified. Raw inputs "
                             "are available below, but no GEM rank or score has been assigned.")
