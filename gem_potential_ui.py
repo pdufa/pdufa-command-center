@@ -21,6 +21,19 @@ FULL = (
 )
 
 
+def research_program_label(lead):
+    """Display exact-program identity for either source-cleared or research GEMs.
+
+    Source-cleared records use 'NCT ID' / 'Exact program' just like pending
+    research records; never index a different list from a selector callback.
+    """
+    return (
+        str(lead.get("Ticker") or "?") + " · " +
+        str(lead.get("Drug") or "?") + " · " +
+        str(lead.get("NCT ID") or lead.get("Exact program") or "")
+    )
+
+
 def numbered_potential_markdown(potential):
     """One compact ordered list, with a source-based reason and remaining work."""
     lines = []
@@ -200,11 +213,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             choice = st.selectbox(
                 "Research exact stock / drug program",
                 identifiers,
-                format_func=lambda n: (
-                    str(research_universe[n].get("Ticker") or "?") + " · " +
-                    str(potential[n].get("Drug") or "?") + " · " +
-                    str(potential[n].get("NCT ID") or potential[n].get("Exact program") or "")
-                ),
+                # All options index the combined universe, not just potential.
+                # Source-cleared GEMs can outnumber pending leads (including 0).
+                format_func=lambda n: research_program_label(research_universe[n]),
                 key=namespace + "_source_research_pick",
             )
             lead = research_universe[choice]
