@@ -112,7 +112,7 @@ class GEMVisibleCandidates(unittest.TestCase):
         self.assertIn('"Research candidates (source leads)", "All GEM programs"', scan)
         self.assertIn('render_research_candidates(', nested)
         self.assertIn('render_research_candidates(', scan)
-        self.assertIn('research_preview(root)', overview)
+        self.assertIn('render_gem_potential(root=root, compact=True', overview)
         self.assertIn('Entry-eligible only', nested)
         self.assertIn('Entry-eligible only', scan)
 
