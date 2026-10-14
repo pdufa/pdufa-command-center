@@ -137,7 +137,7 @@ class ScanEmailTests(unittest.TestCase):
         status = place_self_sent_message_in_inbox(
             settings, "<example@localhost>", imap_factory=FakeImap)
         self.assertEqual(status, "INBOX_LABEL_ACCEPTED")
-        self.assertTrue(any(row[0] == "STORE" and row[-1] == r"(\\Inbox)"
+        self.assertTrue(any(row[0] == "STORE" and row[-1] == r"(\Inbox)"
                             for row in calls))
         self.assertNotIn(settings.app_password, str(calls))
 
