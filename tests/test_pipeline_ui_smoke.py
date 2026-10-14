@@ -460,11 +460,13 @@ class PipelinePageSmokeTests(unittest.TestCase):
             "Ticker", "Score /100", "PDUFA Date", "Days to PDUFA", "2nd Financing Completed",
         ])
         app.selectbox(key="step7_priority_sort").set_value("Ticker A–Z")
-        # The dated pilot evidence can expire independently of saved trials.
-        # The UI must hide expired scorecards rather than preserving an old /100.
+        # Expired pilot evidence must stay absent from numeric scorecards,
+        # while the section remains visible with a missing-evidence warning.
         if int(count.group(1)) == 0:
-            self.assertFalse(any("DATED CLINICAL RESEARCH PILOT SCORES" in m.body
-                                 for m in app.markdown))
+            self.assertTrue(any("DATED CLINICAL RESEARCH PILOT SCORES" in m.body
+                                for m in app.markdown))
+            self.assertTrue(any("NO CURRENT SOURCE-DATED PILOT SCORES" in m.message
+                                for m in app.info))
             self.assertFalse(any("· NCT0" in m.label and "RESEARCH /100" in m.label
                                  for m in app.metric))
             source = APP_PATH.read_text(encoding="utf-8")
