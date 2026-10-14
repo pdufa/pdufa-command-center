@@ -185,7 +185,29 @@ async function audit() {
       return;
     }
     await candidates.first().click({timeout:15000});
-    await delay(1800);
+    await delay(750);
+    // The one-quarter-width GEM contains its own 560px scrollable region.
+    // Scroll the STOCK card into that region before asking the browser for
+    // content: Streamlit can defer layout/text on out-of-view descendants.
+    const scrollDetail = await candidates.first().evaluate(el => {
+      let parent = el;
+      while (parent) {
+        const style = getComputedStyle(parent);
+        if (parent.scrollHeight > parent.clientHeight + 50 &&
+            /(scroll|auto)/.test(style.overflowY)) {
+          const before = parent.scrollTop;
+          parent.scrollTop = Math.min(parent.scrollHeight,
+                                      parent.scrollTop + 700);
+          return {found:true, before, after:parent.scrollTop,
+                  scrollHeight:parent.scrollHeight,
+                  clientHeight:parent.clientHeight};
+        }
+        parent = parent.parentElement;
+      }
+      return {found:false};
+    });
+    await delay(1600);
+    report.notes.push("GEM stock internal scroll: " + JSON.stringify(scrollDetail));
     // Preserve diagnostic facts from the opened disclosure; this distinguishes
     // real chart failures from a missing/invisible DOM label in the renderer.
     const probeFrame = await currentFrame(page);
@@ -197,9 +219,21 @@ async function audit() {
       const details = holder?.querySelector("details");
       return details ? (details.open ? "open" : "closed") : (holder ? "found expander" : "expander not found");
     }); } catch (_) {}
+    let chartInDisclosure = "unknown", disclosureSnippet = "";
+    try {
+      const diagnostic = await summary.evaluate(el => {
+        const section=el.closest('[data-testid="stExpander"]');
+        return {hasChart:section?.textContent.includes("ENTRY / EXIT MONITOR"),
+                text:section?.textContent.slice(0,650)};
+      });
+      chartInDisclosure = diagnostic.hasChart;
+      disclosureSnippet = diagnostic.text || "";
+    } catch (_) {}
     report.notes.push("GEM stock probe: header=" +
                       probeText.includes("ENTRY / EXIT MONITOR") +
                       "; disclosure=" + disclosure +
+                      "; chart_dom=" + chartInDisclosure +
+                      "; expander_text=" + disclosureSnippet.slice(0,460) +
                       "; master=" + probeText.includes("GEM — STOCK → FACTORS → SOURCE INPUTS"));
     await screenshot(page,"gem-expander-diagnostic");
     const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
