@@ -27,6 +27,8 @@ FILES = (
     "finance_ir_sec_recheck_targets.csv",
     "finance_ir_sec_recheck.csv",
     "gem_runway_evidence.json",
+    "gem_hedge_fund_13f.json",
+    "gem_hedge_fund_managers.csv",
     "sec_step4_snapshots.sqlite3",
 )
 STAGE_COLUMNS = {
@@ -83,6 +85,7 @@ def _gems_table(items):
         '<thead><tr><th colspan="3">GEMS</th>'
         '<th rowspan="2">Ticker</th><th rowspan="2">Drug / program</th>'
         '<th rowspan="2">Priority rank</th><th rowspan="2">Priority /100</th>'
+        '<th rowspan="2">13F points /10</th>'
         '<th rowspan="2">Runway (mo)</th><th rowspan="2">Runway status</th>'
         '<th rowspan="2">Two-benchmark status</th>'
         '</tr><tr><th>Phase 3</th><th>Post-Financing</th><th>PDUFA</th>'
@@ -108,6 +111,7 @@ def _gems_table(items):
         rows.append("<tr>" + "".join(cells) +
                     f'<td class="ticker">{ticker}</td><td>{drug}</td>'
                     f'<td>{rank_label}</td><td>{score_label}</td>'
+                    f'<td>{html.escape(str(item.get("Hedge-fund accumulation /10", 0)))}</td>'
                     f'<td>{runway_label}</td><td>{runway_status}</td><td>{gate}</td></tr>')
     return style + header + "".join(rows) + "</tbody></table></div>"
 
@@ -118,8 +122,9 @@ def render_gem_scans(root="data"):
         "The only two positive entry benchmarks are (1) dated, source-verified "
         "released Phase 3 results for the exact program, and (2) verified close "
         "of a second separate financing after that readout. Once both pass, "
-        "financial runway, dilution, clinical strength, price/volume activity "
-        "and PDUFA timing PRIORITIZE or WARN; they do not silently become "
+        "financial runway, dilution, clinical strength, price/volume activity, "
+        "PDUFA timing and quarterly SEC hedge-fund holdings PRIORITIZE or WARN; "
+        "they do not silently become "
         "additional entry benchmarks. Scores are research heuristics, not "
         "approval probabilities, stock-return forecasts or trade orders."
     )
@@ -164,8 +169,9 @@ def render_gem_scans(root="data"):
     st.markdown("### PRIORITIZED TRADING CANDIDATES")
     st.caption(
         "Only stocks passing BOTH event benchmarks are ranked. The /100 score "
-        "uses Phase 3 quality (30), runway (25), dilution risk (15), "
-        "price/volume activity (20) and PDUFA timing (10). Missing evidence "
+        "uses Phase 3 quality (30), runway (20), dilution (15), "
+        "price/volume activity (20), PDUFA timing (5) and 13F specialist "
+        "fund accumulation (10). Missing evidence "
         "earns zero points within that factor, NOT automatic exclusion. "
         "Risks may still make a candidate unsuitable; this is manual review only."
     )
@@ -173,8 +179,13 @@ def render_gem_scans(root="data"):
         "Two-benchmark rank", "Ticker", "Drug", "Indication",
         "Benchmark 1 — Phase 3 released", "Benchmark 2 — Financing #2 closed",
         "Two-benchmark priority /100",
-        "Phase 3 quality /30", "Financial runway /25",
-        "Dilution overhang /15", "Trading activity /20", "PDUFA timing /10",
+        "Phase 3 quality /30", "Financial runway /20",
+        "Dilution overhang /15", "Trading activity /20", "PDUFA timing /5",
+        "Hedge-fund accumulation /10", "Hedge-fund signal",
+        "Hedge-fund managers holding", "Hedge-fund managers adding",
+        "Hedge-fund managers reducing", "Hedge-fund managers new",
+        "Hedge-fund quarter end", "Hedge-fund filed as of",
+        "Hedge-fund position details", "Hedge-fund source links",
         "Cash runway (months)", "Cash runway trend", "Days to PDUFA",
         "Verified 2nd financing close date", "Two-benchmark risk flags",
         "Exact event", "Phase 3 source", "Financing source",
@@ -205,6 +216,30 @@ def render_gem_scans(root="data"):
             pd.DataFrame(remaining).reindex(columns=waiting_columns).head(250),
             use_container_width=True, hide_index=True,
         )
+    st.markdown("### HEDGE-FUND OWNERSHIP — SEC 13F QUARTERLY EVIDENCE")
+    h1, h2 = st.columns(2)
+    h1.metric("Candidates with specialist 13F matches",
+              status.get("hedge_fund_13f_matched_candidates", 0))
+    h2.metric("Companies with at least one manager increasing",
+              status.get("hedge_fund_accumulating_candidates", 0))
+    st.caption(
+        "Initial monitored managers: Baker Bros., RA Capital, OrbiMed and "
+        "Perceptive Advisors. 13F shows reported long positions as of quarter "
+        "end; filings can arrive up to 45 days later. Reported changes are "
+        "NOT proof of purchases made today, and absence is not proof of "
+        "zero hedge-fund ownership. These signals never change the two "
+        "entry benchmarks."
+    )
+    with st.expander("ALL WATCHLIST 13F MANAGER DETAILS AND SOURCES", expanded=False):
+        hcols = ["Ticker", "Drug", "Hedge-fund signal",
+                 "Hedge-fund accumulation /10", "Hedge-fund managers holding",
+                 "Hedge-fund managers adding", "Hedge-fund managers reducing",
+                 "Hedge-fund managers new", "Hedge-fund managers no longer reported",
+                 "Hedge-fund quarter end", "Hedge-fund filed as of",
+                 "Hedge-fund position details", "Hedge-fund source links",
+                 "Hedge-fund limitation"]
+        st.dataframe(pd.DataFrame(items).reindex(columns=hcols).head(250),
+                     use_container_width=True, hide_index=True)
     st.divider()
     # Research confirmations remain visible while the nightly SEC collector
     # independently rechecks each dated transaction. Neither the research
@@ -605,7 +640,9 @@ def render_gem_scans(root="data"):
                  "Verified 2nd financing close date",
                  "Cash runway (months)", "Cash runway gate",
                  "Cash runway reason", "Cash runway source",
-                 "Phase 3 result date (source)",
+                 "Hedge-fund accumulation /10", "Hedge-fund signal",
+                 "Hedge-fund managers adding", "Hedge-fund position details",
+                 "Hedge-fund source links", "Phase 3 result date (source)",
                  stage + " qualifier", stage + " missing"]
                 + list(STAGE_COLUMNS[stage])
                 + ["Exact event", "Entry qualification",
