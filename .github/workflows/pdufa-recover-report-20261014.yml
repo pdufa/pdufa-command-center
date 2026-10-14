@@ -1,0 +1,42 @@
+name: PDUFA One-Time Report Handoff Recovery 2026-10-14
+# Complete the user's explicitly requested full scan without duplicating clinical work.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-recover-report-20261014.yml']
+permissions:
+  actions: write
+  contents: read
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Confirm clinical succeeded and do not duplicate publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38570009252" > "$RUNNER_TEMP/source.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" > "$RUNNER_TEMP/all.json"
+          python - "$RUNNER_TEMP/source.json" "$RUNNER_TEMP/all.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1]) as f: src=json.load(f)
+          with open(sys.argv[2]) as f: d=json.load(f)
+          if src.get("name") != "PDUFA Nightly Clinical Scans" or src.get("conclusion") != "success" or src.get("status") != "completed":
+              raise SystemExit("Required successful clinical run not verified")
+          publishers=[r for r in d.get("workflow_runs", []) if r.get("name") == "PDUFA Nightly Scan Report Publisher" and r.get("created_at", "") >= src.get("updated_at", "")]
+          if publishers:
+              print("Publisher already triggered:", [p.get("html_url") for p in publishers])
+              raise SystemExit("Duplicate publisher request blocked; investigate existing published evidence")
+          print("Verified source 38570009252; no publisher since source completed")
+          PY
+      - name: Dispatch existing source-validated report publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/dispatches" \
+            -f ref=main -f 'inputs[source_run_id]=38570009252'
+          echo "Report publisher dispatch accepted; FDA/SEC/Financial/Market/Issuer next via existing workflow_run chain."
+          echo "This is not proof of downstream success."
