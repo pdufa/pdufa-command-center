@@ -1,5 +1,5 @@
 name: PDUFA Reverify 45 Primary Evidence Gaps 2026-10-14
-# Include Cogent's SEC November 18 2025 actual notes closing in exact-event verification.
+# Apply strict exact-CIK SEC closing proof for Cogent after eliminating UNVERIFIED placeholder conflicts.
 on:
   push:
     branches: [main]
