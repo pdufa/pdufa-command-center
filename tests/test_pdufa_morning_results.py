@@ -70,7 +70,7 @@ class MorningResultsTests(unittest.TestCase):
         self.assertEqual(fresh["gem"]["strict_entry_gate_shortlist_count"], 0)
         self.assertEqual(fresh["gem"]["all_source_trade_verification"], "NOT VERIFIED")
         self.assertFalse(fresh["trade_entry_eligible_from_morning_snapshot"])
-        old = make_snapshot({}, {}, gem={**gem, "generated_at_utc": "2026-10-13T20:10:00Z"}, now=now)
+        old = make_snapshot({}, {}, gem={**gem, "generated_at_utc": "2026-10-13T19:10:00Z"}, now=now)
         self.assertFalse(old["gem"]["overnight_report_published"])
         self.assertEqual(old["gem"]["status"], "PENDING_OR_STALE")
         self.assertIsNone(old["gem"]["new_records"])
@@ -79,13 +79,29 @@ class MorningResultsTests(unittest.TestCase):
         not_verified = make_snapshot({}, {}, gem={**gem, "trade_entry_authorized": True}, now=now)
         self.assertFalse(not_verified["gem"]["overnight_report_published"])
 
+    def test_early_afternoon_publications_now_count_as_fresh(self):
+        now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
+        clinical = {"updated_at_utc": "2026-10-13T21:15:00Z"}
+        source = {"updated_at_utc": "2026-10-13T22:15:00Z"}
+        result = make_snapshot(clinical, source, now=now)
+        self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
+        self.assertEqual(result["overnight_scan_window_started_pacific"],
+                         "2026-10-13T13:00:00-07:00")
+
+    def test_old_day_before_one_pm_remains_stale(self):
+        now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
+        old = {"updated_at_utc": "2026-10-13T19:59:00Z"}
+        result = make_snapshot(old, old, now=now)
+        self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
+
     def test_dst_standard_time_keeps_six_am_reporting(self):
         now = datetime(2026, 12, 14, 14, 0, tzinfo=timezone.utc)
         clinical = {"updated_at_utc": "2026-12-14T08:00:00Z"}
         source = {"updated_at_utc": "2026-12-14T09:30:00Z"}
         result = make_snapshot(clinical, source, now=now)
         self.assertEqual(result["snapshot_date_pacific"], "2026-12-14")
-        self.assertIn("-08:00", result["overnight_scan_window_started_pacific"])
+        self.assertEqual(result["overnight_scan_window_started_pacific"],
+                         "2026-12-13T13:00:00-08:00")
         self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
 
 
