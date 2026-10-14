@@ -152,6 +152,8 @@ def render_gem_scan_block_status(report=None, run=None):
         insider = report.get("insider_form4") or {}
         st.caption(
             "SEC Form 4 open-market purchases: "
+            f"{insider.get('issuers_complete', 0)}/"
+            f"{insider.get('issuers_targeted', 0)} issuers source-complete; "
             f"{insider.get('matched_program_rows', 0)} reviewed program rows; "
             f"{insider.get('with_open_market_purchases', 0)} with purchases. "
             "Unverified issuer sources are not assumed to have zero buying."
