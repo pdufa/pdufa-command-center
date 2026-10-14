@@ -52,8 +52,8 @@ async function audit() {
     app = (await frameWithApp(page)) || app;
     if (errorFrom(app.text)) throw new Error("Live Streamlit page reports an application exception");
     try {
-      if (await app.frame.getByRole("tab", { name: "UNIFIED OVERVIEW", exact: true }).count()) {
-        await app.frame.getByRole("tab", { name: "UNIFIED OVERVIEW", exact: true })
+      if (await app.frame.getByRole("tab", { name: "GEM", exact: true }).count()) {
+        await app.frame.getByRole("tab", { name: "GEM", exact: true })
           .click({ timeout: 12000 });
         found = true;
         break;
@@ -65,14 +65,14 @@ async function audit() {
     }
     await sleep(1200);
   }
-  if (!found) throw new Error("UNIFIED OVERVIEW tab not available for GEM list check");
+  if (!found) throw new Error("GEM tab not available for GEM list check");
   let panelText = "", overview = "";
   for (let i = 0; i < 120; i++) {
     app = (await frameWithApp(page)) || app;
     overview = app.text;
-    if (errorFrom(overview)) throw new Error("UNIFIED OVERVIEW reports an application exception");
+    if (errorFrom(overview)) throw new Error("GEM tab reports an application exception");
     try {
-      if (await app.frame.getByRole("tab", { name: "UNIFIED OVERVIEW", exact: true })
+      if (await app.frame.getByRole("tab", { name: "GEM", exact: true })
         .getAttribute("aria-selected") !== "true") {
         await sleep(900);
         continue;
@@ -81,21 +81,26 @@ async function audit() {
       if (await panel.count()) {
         panelText = await panel.innerText({ timeout: 5000 });
         if (panelText.includes("POTENTIAL GEMs — PENDING RESEARCH") &&
-            panelText.includes("Why potential:") &&
-            panelText.includes("Pending:")) break;
+            ((panelText.includes("Why potential:") && panelText.includes("Pending:")) ||
+             panelText.includes("No currently active potential GEMs supported by the saved source reviews."))) break;
       }
     } catch (_) {}
     await sleep(1000);
   }
   result.evidence.panelText = panelText.slice(0, 11000);
   result.evidence.overviewExcerpt = overview.slice(0, 1200);
+  const counts = panelText.match(/(\d+) active research leads/);
+  const activeCount = counts ? Number(counts[1]) : null;
+  const hasList = await app.frame.locator(".st-key-overview_gem_panel ol > li").count() >= 1;
+  const explicitlyEmpty = panelText.includes(
+    "No currently active potential GEMs supported by the saved source reviews.");
+  result.evidence.activeResearchLeads = activeCount;
   result.checks.gemPanelPresent = panelText.includes("#1-GEM");
   result.checks.potentialHeading = panelText.includes("POTENTIAL GEMs — PENDING RESEARCH");
-  result.checks.potentialReason = panelText.includes("Why potential:");
-  result.checks.pendingEvidence = panelText.includes("Pending:");
-  result.checks.numberedCandidates = await app.frame.locator(".st-key-overview_gem_panel ol > li").count() >= 1;
-  result.checks.sampleTickers = ["NTLA", "AXSM", "CAPR", "CORT"]
-    .every(t => panelText.includes(t));
+  result.checks.countFromSavedSource = activeCount !== null;
+  result.checks.potentialReason = activeCount === 0 ? explicitlyEmpty : panelText.includes("Why potential:");
+  result.checks.pendingEvidence = activeCount === 0 ? explicitlyEmpty : panelText.includes("Pending:");
+  result.checks.numberedCandidates = activeCount === 0 ? explicitlyEmpty : hasList;
   result.checks.separateVerifiedList = panelText.includes("NOT the verified GEM entry list");
   await page.screenshot({
     path: path.join(output, "gem-potential-desktop.png"), fullPage: false,

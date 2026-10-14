@@ -84,10 +84,8 @@ async function verify(){
         "ALL-TRIAL REVIEW PRIORITY",
         "Priority score coverage",
         "filtered rows have a review-priority score /100",
-        "DATED CLINICAL RESEARCH PILOT SCORES",
-        "TRVI · NCT07671911",
-        "LBRX · NCT07363577",
-        "80/100", "72/100",
+        // Pilot scores are source-dependent and may be withdrawn/expired.
+        // Require honest coverage disclosure, not invented fixed examples.
         "NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS",
         "provisional, source-cited clinical research score(s) /100",
       ];
@@ -95,6 +93,16 @@ async function verify(){
       await sleep(1800);
     }
     await page.screenshot({path:path.join(out,"prephase3-live-scorecards.png"),fullPage:false});
+    // A zero provisional count is valid only if the UI explicitly says so
+    // and withholds the pilot scorecards. A nonzero count must show them.
+    const provisionalMatch = body.match(/([\d,]+) provisional, source-cited clinical research score\(s\) \/100/);
+    const provisionalCount = provisionalMatch
+      ? Number(provisionalMatch[1].replace(/,/g,"")) : null;
+    checked.evidence = { provisionalCount };
+    const pilotHeading = body.includes("DATED CLINICAL RESEARCH PILOT SCORES");
+    const pilotMetric = /[A-Z]{2,6} · NCT\d{8} · (?:PROVISIONAL|REVIEWED) RESEARCH \/100/.test(body);
+    const pilotStateConsistent = provisionalCount !== null &&
+      (provisionalCount === 0 ? !pilotHeading : pilotHeading && pilotMetric);
     const requiredChecks={
       tabSelected:await lastFrame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")==="true",
       sourceHealth:body.includes("SOURCE HEALTH / LAST VERIFIED CHECK"),
@@ -106,10 +114,8 @@ async function verify(){
       priorityClinicalSeparation:body.includes("it is not a clinical strength score or success probability")&&body.includes("Excluded rows have priority 0 and no rank"),
       completionChecklist:body.includes("PRE PHASE 3 COMPLETION CHECKLIST"),
       sourceReviewedPilot:body.includes("fully source-reviewed PRE PHASE 3 score /100"),
-      twoProvisionalPilots:body.includes("2 provisional, source-cited clinical research score(s) /100"),
-      scorecardHeading:body.includes("DATED CLINICAL RESEARCH PILOT SCORES"),
-      trvi80:body.includes("TRVI · NCT07671911")&&body.includes("80/100"),
-      lbrx72:body.includes("LBRX · NCT07363577")&&body.includes("72/100"),
+      provisionalCountReported:provisionalCount !== null,
+      pilotDisplayMatchesSavedEvidence:pilotStateConsistent,
       researchWorklist:body.includes("NEXT 10 PHASE 3 CLINICAL SCORING REVIEWS"),
       noFalsePoS:body.includes("not independently audited clinical scores")&&body.includes("not a Phase 3 success probability"),
     };

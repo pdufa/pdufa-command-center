@@ -242,7 +242,13 @@ class GemReadinessTests(unittest.TestCase):
     def test_offline_daily_archival_workflow_has_no_brokerage_action(self):
         root = Path(__file__).resolve().parents[1]
         workflow = (root/".github/workflows/gem-research-quality.yml").read_text()
-        self.assertIn("schedule:", workflow)
+        # The 9 PM Pacific parent workflow now owns the only nightly cron.
+        # GEM is invoked and awaited as a reusable subworkflow, not scheduled twice.
+        self.assertIn("workflow_call:", workflow)
+        self.assertNotIn("  schedule:", workflow)
+        parent = (root / ".github/workflows/pdufa-nightly-clinical.yml").read_text()
+        self.assertIn("uses: ./.github/workflows/gem-research-quality.yml", parent)
+        self.assertIn("needs: scan4", parent)
         self.assertIn("contents: write", workflow)
         self.assertIn("--mode backfill", workflow)
         self.assertIn("--mode daily", workflow)

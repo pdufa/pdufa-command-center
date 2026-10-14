@@ -1,6 +1,6 @@
 name: PDUFA 6 AM Pacific Morning Results
 
-# Read-only publication of the PREVIOUS NIGHT'S 11 PM Pacific scan results.
+# Read-only publication of the PREVIOUS NIGHT'S 9 PM Pacific scan results.
 # No new Phase 3, FDA, SEC, market, or finance collection is triggered.
 on:
   schedule:
@@ -9,6 +9,10 @@ on:
     - cron: '0 14 * * *'   # 6:00 AM PST
     - cron: '15 14 * * *'  # 6:15 AM PST backup
   workflow_dispatch:
+  # One-time repair bootstrap on a scheduler-code change; not every app push.
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-morning-6am-results.yml']
 
 permissions:
   contents: write
@@ -31,16 +35,20 @@ jobs:
           CRON_SLOT: ${{ github.event.schedule }}
         run: |
           set -euo pipefail
-          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+          if [ "$EVENT_NAME" = workflow_dispatch ] || [ "$EVENT_NAME" = push ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           local_hour="$(TZ=America/Los_Angeles date +%H)"
           local_min="$(TZ=America/Los_Angeles date +%M)"
           offset="$(TZ=America/Los_Angeles date +%z)"
-          if [ "$local_hour" != "06" ]; then
+          # GitHub can start scheduled workflows hours late. A delayed
+          # morning snapshot is better than a silently missing snapshot:
+          # the JSON records its actual generation timestamp and freshness.
+          # Do not allow a cron delayed into the next nightly window.
+          if [ $((10#$local_hour)) -lt 6 ] || [ $((10#$local_hour)) -ge 21 ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Outside 6:00-6:59 AM Pacific; delayed cron cannot publish as on-time."
+            echo "Outside the 6 AM–8:59 PM Pacific publication/recovery window."
             exit 0
           fi
           if { { [ "$CRON_SLOT" = '0 13 * * *' ] || [ "$CRON_SLOT" = '15 13 * * *' ]; } && [ "$offset" = "-0700" ]; } || \

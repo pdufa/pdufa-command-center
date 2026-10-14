@@ -103,6 +103,30 @@ class MorningResultsTests(unittest.TestCase):
         self.assertEqual(result["overnight_scan_window_started_pacific"],
                          "2026-10-13T21:00:00-07:00")
 
+    def test_delayed_github_cron_will_still_publish_morning_snapshot(self):
+        """A workflow scheduled at 6 AM may only start hours later."""
+        workflow = (Path(__file__).resolve().parents[1] /
+                    ".github/workflows/pdufa-morning-6am-results.yml").read_text()
+        self.assertIn('if [ $((10#$local_hour)) -lt 6 ] || [ $((10#$local_hour)) -ge 21 ]', workflow)
+        self.assertIn('cron: \'0 13 * * *\'', workflow)
+        self.assertIn('cron: \'0 14 * * *\'', workflow)
+        self.assertIn('git add data/pdufa_am_6am_results.json', workflow)
+        # The API snapshot always exposes the actual publication time, not
+        # a fictitious 6 AM execution.
+        out = make_snapshot({}, {}, now=datetime(2026, 10, 14, 18, 0, tzinfo=timezone.utc))
+        self.assertEqual(out["generated_at_pacific"], "2026-10-14T11:00:00-07:00")
+        self.assertEqual(out["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
+
+    def test_delayed_snapshot_does_not_promote_after_six_am_data(self):
+        """Late GitHub runs cannot present afternoon collection as overnight."""
+        now = datetime(2026, 10, 14, 19, 0, tzinfo=timezone.utc)  # noon PDT
+        report = {"updated_at_utc": "2026-10-14T17:00:00Z"}  # 10 AM PDT
+        snapshot = make_snapshot(report, report, now=now)
+        self.assertTrue(snapshot["publication_delayed_after_6am"])
+        self.assertEqual(snapshot["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
+        self.assertFalse(snapshot["clinical"]["overnight_report_published"])
+        self.assertFalse(snapshot["sources"]["overnight_report_published"])
+
     def test_dst_standard_time_keeps_six_am_reporting(self):
         now = datetime(2026, 12, 14, 14, 0, tzinfo=timezone.utc)
         clinical = {"updated_at_utc": "2026-12-14T08:00:00Z"}
