@@ -42,10 +42,14 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
         tzinfo=PACIFIC,
     )
     cutoff_utc = window_start.astimezone(timezone.utc)
+    # A GitHub cron delayed into the afternoon still reports the 6 AM
+    # evidence snapshot. Never backfill the *overnight* result with data
+    # published after 6 AM and misrepresent it as timely.
+    evidence_end_utc = min(now, morning.astimezone(timezone.utc))
     ctime = timestamp(clinical.get("updated_at_utc"))
     stime = timestamp(source.get("updated_at_utc"))
-    clinical_fresh = bool(ctime and cutoff_utc <= ctime <= now)
-    source_fresh = bool(stime and cutoff_utc <= stime <= now)
+    clinical_fresh = bool(ctime and cutoff_utc <= ctime <= evidence_end_utc)
+    source_fresh = bool(stime and cutoff_utc <= stime <= evidence_end_utc)
     if clinical_fresh and source_fresh:
         readiness = "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS"
     elif clinical_fresh:
@@ -68,7 +72,7 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
     gem_fresh = bool(gem.get("scan") == "GEM" and
                      gem.get("trade_entry_authorized") is False and
                      gem.get("status") in ("PARTIAL", "FAILED") and
-                     gem_time and cutoff_utc <= gem_time <= now)
+                     gem_time and cutoff_utc <= gem_time <= evidence_end_utc)
     gem_registry = gem.get("clinical_registry") if gem_fresh else {}
     gem_registry = gem_registry if isinstance(gem_registry, dict) else {}
     cmp = source.get("comparison", {}) if source_fresh else {}
@@ -88,6 +92,7 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
         "snapshot_date_pacific": morning.date().isoformat(),
         "generated_at_utc": now.isoformat(),
         "generated_at_pacific": local.isoformat(),
+        "publication_delayed_after_6am": local > morning,
         "overnight_scan_window_started_pacific": window_start.isoformat(),
         "readiness": readiness,
         "clinical": {
