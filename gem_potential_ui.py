@@ -15,6 +15,23 @@ FULL = (
 )
 
 
+def numbered_potential_markdown(potential):
+    """One compact ordered list, with a source-based reason and remaining work."""
+    lines = []
+    for number, lead in enumerate(potential, 1):
+        ticker = str(lead.get("Ticker") or "UNKNOWN").replace("*", r"\*")
+        drug = str(lead.get("Drug") or "").replace("*", r"\*")
+        reason = str(lead.get("Why potential") or "No documented reason yet")
+        pending = str(lead.get("Still needed") or "Further source verification")
+        lines.extend((
+            f"{number}. **{ticker} · {drug}**",
+            f"   - **Why potential:** {reason}",
+            f"   - **Pending:** {pending}",
+            "",
+        ))
+    return "\n".join(lines)
+
+
 def render_gem_potential(root="data", *, compact=False, namespace="gem_potential"):
     """Keep pending research stocks separate from proven GEM eligibility.
 
@@ -33,15 +50,10 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
     if not potential:
         st.info("No currently active potential GEMs supported by the saved source reviews.")
     elif compact:
-        # In the 4-column overview, show the ticker AND why it is potential,
-        # not a too-wide spreadsheet where the reason would be off-screen.
-        with st.container(height=315, border=False):
-            for lead in potential:
-                st.markdown(
-                    "**" + lead["Ticker"] + " · " + lead["Drug"] + "**"
-                )
-                st.caption("WHY: " + lead["Why potential"])
-                st.caption("PENDING: " + lead["Still needed"])
+        # A single readable, numbered list beats narrow multi-column tables
+        # and disconnected ticker cards inside the one-quarter-width #1 panel.
+        with st.container(height=355, border=False):
+            st.markdown(numbered_potential_markdown(potential))
     else:
         st.dataframe(
             pd.DataFrame(potential).reindex(columns=VISIBLE),
