@@ -1,0 +1,43 @@
+name: PDUFA One-Time Extended Source Recovery 2026-10-14
+# User-requested completion of full source sequence when native handoff did not create a run.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-recover-extended-sources-20261014.yml']
+permissions:
+  actions: write
+  contents: read
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Confirm report publication and avoid duplicate extended scan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38574995981" > "$RUNNER_TEMP/publisher.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" > "$RUNNER_TEMP/runs.json"
+          python - "$RUNNER_TEMP/publisher.json" "$RUNNER_TEMP/runs.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1]) as f: p=json.load(f)
+          with open(sys.argv[2]) as f: data=json.load(f)
+          if p.get("name") != "PDUFA Nightly Scan Report Publisher" or p.get("conclusion") != "success" or p.get("status") != "completed":
+              raise SystemExit("Published clinical report not verified")
+          runs=[r for r in data.get("workflow_runs", [])
+                if r.get("name") == "PDUFA Nightly FDA SEC Financial Market Issuer Sources"
+                and r.get("created_at", "") >= p.get("created_at", "")]
+          if runs:
+              print("Extended source run already exists:", [r.get("html_url") for r in runs])
+              raise SystemExit("Duplicate extended scan blocked")
+          print("Publisher completed and no downstream extended source scan found.")
+          PY
+      - name: Dispatch full extended FDA SEC Financial Market Issuer and reconciliation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-missing-sources.yml/dispatches" -f ref=main
+          echo "Extended sources requested. START/END email requirements, source verification and PARTIAL caveats retained."
+          echo "Scoring and error audit remain downstream steps, not yet confirmed."
