@@ -12,6 +12,7 @@ import streamlit as st
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
+from gem_checklist_ui import checklist_filters, render_checkbox_table
 from gem_phase3_discovery import DISCOVERY_COLUMNS, discover_phase3_results, gem_discrimination_audit
 from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
@@ -162,6 +163,24 @@ def render_gem_scans(root="data"):
         st.caption("Exact-NCT Phase 3 source recheck not yet published; "
                    "registry discovery is not a verified issuer readout.")
 
+    umbrella_rows, checkbox_states = checklist_filters(
+        master_rows, items,
+        financing_rechecks=load_saved_rechecks(path, "gem_two_close_recheck.csv"),
+        clinical_rechecks=load_saved_rechecks(path, "gem_phase3_exact_recheck.csv"),
+        status=status, namespace="gem_scan",
+    )
+    with st.expander("GEM BENCHMARK & RISK CHECKBOXES — ALL MATCHING STOCKS",
+                     expanded=True):
+        checkbox_grid = render_checkbox_table(
+            umbrella_rows, checkbox_states, height=400,
+        )
+        st.download_button(
+            "EXPORT ALL GEM CHECKBOXES",
+            checkbox_grid.to_csv(index=False).encode("utf-8"),
+            mime="text/csv", file_name=f"gem_checklist_{day:%Y%m%d}.csv",
+            key="gem_master_checkbox_export",
+        )
+
     gem_view = st.radio(
         "GEM list filter",
         ("All GEM programs", "Entry-eligible only", "Watch / review"),
@@ -180,7 +199,7 @@ def render_gem_scans(root="data"):
             key="gem_master_stage",
         )
     display_rows = [
-        row for row in master_rows
+        row for row in umbrella_rows
         if ((gem_view == "All GEM programs")
             or (gem_view == "Entry-eligible only" and row["_eligible"])
             or (gem_view == "Watch / review" and not row["_eligible"]))
