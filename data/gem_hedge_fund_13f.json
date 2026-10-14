@@ -1,11 +1,11 @@
 {
   "as_of_pacific": "2026-10-13",
-  "collector_status": "PARTIAL \u2014 MANAGER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-14T01:42:48.440611+00:00",
+  "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
+  "generated_at_utc": "2026-10-14T01:45:53.170061+00:00",
   "limitations": "Selected managers only; exact normalized SEC issuer name and common class CUSIP, not fuzzy ticker matching. Latest and prior distinct report quarters required. Quarterly holdings delayed up to 45 days after quarter end; missing matches are NOT zero ownership.",
   "manager_count": 4,
-  "managers_complete": 3,
-  "matched_ticker_count": 190,
+  "managers_complete": 4,
+  "matched_ticker_count": 217,
   "records": [
     {
       "managers": [
@@ -208,6 +208,24 @@
     {
       "managers": [
         {
+          "cusip": "000899104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 467233,
+          "quarter_end": "2026-06-30",
+          "shares": 113765
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ADMA"
+    },
+    {
+      "managers": [
+        {
           "cusip": "00860C102",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
@@ -218,6 +236,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 192740
+        },
+        {
+          "cusip": "00860C102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 600000,
+          "quarter_end": "2026-06-30",
+          "shares": 600000
         }
       ],
       "quarter_end": "2026-06-30",
@@ -404,6 +434,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 183400
+        },
+        {
+          "cusip": "03237H101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 8284882,
+          "quarter_end": "2026-06-30",
+          "shares": 8334882
         }
       ],
       "quarter_end": "2026-06-30",
@@ -422,6 +464,18 @@
           "prior_shares": 167500,
           "quarter_end": "2026-06-30",
           "shares": 257852
+        },
+        {
+          "cusip": "02157Q109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 2009893,
+          "quarter_end": "2026-06-30",
+          "shares": 1609893
         }
       ],
       "quarter_end": "2026-06-30",
@@ -650,6 +704,18 @@
           "prior_shares": 475165,
           "quarter_end": "2026-06-30",
           "shares": 0
+        },
+        {
+          "cusip": "05338F306",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 139667,
+          "quarter_end": "2026-06-30",
+          "shares": 219813
         }
       ],
       "quarter_end": "2026-06-30",
@@ -668,6 +734,18 @@
           "prior_shares": 213921,
           "quarter_end": "2026-06-30",
           "shares": 117578
+        },
+        {
+          "cusip": "05464T104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 149950,
+          "quarter_end": "2026-06-30",
+          "shares": 118450
         }
       ],
       "quarter_end": "2026-06-30",
@@ -746,6 +824,18 @@
           "prior_shares": 1425200,
           "quarter_end": "2026-06-30",
           "shares": 1852000
+        },
+        {
+          "cusip": "09058V103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 7434033,
+          "quarter_end": "2026-06-30",
+          "shares": 10308888
         }
       ],
       "quarter_end": "2026-06-30",
@@ -782,6 +872,18 @@
           "prior_shares": 61600,
           "quarter_end": "2026-06-30",
           "shares": 61600
+        },
+        {
+          "cusip": "09062X103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 276173
         }
       ],
       "quarter_end": "2026-06-30",
@@ -830,6 +932,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 13300
+        },
+        {
+          "cusip": "07782B104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 151979,
+          "quarter_end": "2026-06-30",
+          "shares": 0
         }
       ],
       "quarter_end": "2026-06-30",
@@ -910,6 +1024,24 @@
     {
       "managers": [
         {
+          "cusip": "G2545C104",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 206942,
+          "quarter_end": "2026-06-30",
+          "shares": 206942
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CBIO"
+    },
+    {
+      "managers": [
+        {
           "cusip": "12529R107",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
@@ -950,6 +1082,18 @@
           "prior_shares": 243006,
           "quarter_end": "2026-06-30",
           "shares": 0
+        },
+        {
+          "cusip": "230031106",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 426478
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1088,10 +1232,40 @@
           "prior_shares": 322100,
           "quarter_end": "2026-06-30",
           "shares": 1681300
+        },
+        {
+          "cusip": "19240Q201",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 121082,
+          "quarter_end": "2026-06-30",
+          "shares": 121082
         }
       ],
       "quarter_end": "2026-06-30",
       "ticker": "COGT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "218352102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 50000,
+          "quarter_end": "2026-06-30",
+          "shares": 398385
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "CORT"
     },
     {
       "managers": [
@@ -1118,6 +1292,18 @@
           "prior_shares": 7165006,
           "quarter_end": "2026-06-30",
           "shares": 7165006
+        },
+        {
+          "cusip": "221015100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 2292441,
+          "quarter_end": "2026-06-30",
+          "shares": 2667441
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1136,6 +1322,18 @@
           "prior_shares": 4975826,
           "quarter_end": "2026-06-30",
           "shares": 4975826
+        },
+        {
+          "cusip": "23284F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 10098824,
+          "quarter_end": "2026-06-30",
+          "shares": 10439185
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1154,6 +1352,18 @@
           "prior_shares": 1420838,
           "quarter_end": "2026-06-30",
           "shares": 0
+        },
+        {
+          "cusip": "21217B100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1255592,
+          "quarter_end": "2026-06-30",
+          "shares": 1255592
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1202,6 +1412,18 @@
           "prior_shares": 1461425,
           "quarter_end": "2026-06-30",
           "shares": 1461425
+        },
+        {
+          "cusip": "23306J309",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 964391,
+          "quarter_end": "2026-06-30",
+          "shares": 1653350
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1250,6 +1472,18 @@
           "prior_shares": 2399310,
           "quarter_end": "2026-06-30",
           "shares": 2399702
+        },
+        {
+          "cusip": "36322Q206",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1223000,
+          "quarter_end": "2026-06-30",
+          "shares": 1223000
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1298,6 +1532,18 @@
           "prior_shares": 40000,
           "quarter_end": "2026-06-30",
           "shares": 93000
+        },
+        {
+          "cusip": "10919W405",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 377544,
+          "quarter_end": "2026-06-30",
+          "shares": 0
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1358,6 +1604,18 @@
           "prior_shares": 2917884,
           "quarter_end": "2026-06-30",
           "shares": 3235684
+        },
+        {
+          "cusip": "26818M108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 4668839,
+          "quarter_end": "2026-06-30",
+          "shares": 2689235
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1380,6 +1638,24 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "EDIT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "27966L306",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 563239,
+          "quarter_end": "2026-06-30",
+          "shares": 563239
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EDSA"
     },
     {
       "managers": [
@@ -1428,6 +1704,60 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "ELVN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "29286X101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 4822169
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ENGN"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "293602504",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 86666,
+          "quarter_end": "2026-06-30",
+          "shares": 86666
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ENSC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "30052C107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1286862,
+          "quarter_end": "2026-06-30",
+          "shares": 2459285
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "EOLS"
     },
     {
       "managers": [
@@ -1520,6 +1850,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 161000
+        },
+        {
+          "cusip": "30054Y107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 448350,
+          "quarter_end": "2026-06-30",
+          "shares": 0
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1562,6 +1904,18 @@
           "prior_shares": 15518492,
           "quarter_end": "2026-06-30",
           "shares": 15518492
+        },
+        {
+          "cusip": "28036F105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 4423974,
+          "quarter_end": "2026-06-30",
+          "shares": 4373974
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1792,6 +2146,24 @@
     {
       "managers": [
         {
+          "cusip": "45719W205",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 2315000,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IKT"
+    },
+    {
+      "managers": [
+        {
           "cusip": "45175G207",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
@@ -1856,6 +2228,18 @@
           "prior_shares": 10916693,
           "quarter_end": "2026-06-30",
           "shares": 9508565
+        },
+        {
+          "cusip": "N44445109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 10383456,
+          "quarter_end": "2026-06-30",
+          "shares": 10383456
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1874,10 +2258,40 @@
           "prior_shares": 5457881,
           "quarter_end": "2026-06-30",
           "shares": 5435220
+        },
+        {
+          "cusip": "45258J102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1597383,
+          "quarter_end": "2026-06-30",
+          "shares": 1357383
         }
       ],
       "quarter_end": "2026-06-30",
       "ticker": "IMVT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "45720N103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1442707,
+          "quarter_end": "2026-06-30",
+          "shares": 1297763
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "INBX"
     },
     {
       "managers": [
@@ -1928,6 +2342,18 @@
           "prior_shares": 2047727,
           "quarter_end": "2026-06-30",
           "shares": 2047727
+        },
+        {
+          "cusip": "462222100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 504000,
+          "quarter_end": "2026-06-30",
+          "shares": 566000
         }
       ],
       "quarter_end": "2026-06-30",
@@ -1950,6 +2376,24 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "IPSC"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "67577R102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1835842,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IRD"
     },
     {
       "managers": [
@@ -1996,6 +2440,24 @@
     {
       "managers": [
         {
+          "cusip": "00534A102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 20859303,
+          "quarter_end": "2026-06-30",
+          "shares": 18490636
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "IVVD"
+    },
+    {
+      "managers": [
+        {
           "cusip": "47103J105",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
@@ -2022,6 +2484,24 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "JANX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "G50871105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 170000,
+          "quarter_end": "2026-06-30",
+          "shares": 170000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "JAZZ"
     },
     {
       "managers": [
@@ -2068,6 +2548,24 @@
     {
       "managers": [
         {
+          "cusip": "485925101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 8200662
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KARD"
+    },
+    {
+      "managers": [
+        {
           "cusip": "G52694109",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
@@ -2100,6 +2598,24 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "KOD"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "49721T507",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 438471
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "KPRX"
     },
     {
       "managers": [
@@ -2242,6 +2758,24 @@
     {
       "managers": [
         {
+          "cusip": "04746L203",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1859322,
+          "quarter_end": "2026-06-30",
+          "shares": 1859322
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "LONA"
+    },
+    {
+      "managers": [
+        {
           "cusip": "52886X107",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1346824/000110465926097251/infotable.xml",
@@ -2348,6 +2882,18 @@
           "prior_shares": 318554,
           "quarter_end": "2026-06-30",
           "shares": 318554
+        },
+        {
+          "cusip": "604749101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 115391
         }
       ],
       "quarter_end": "2026-06-30",
@@ -2464,6 +3010,24 @@
     {
       "managers": [
         {
+          "cusip": "64125C109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 65050,
+          "quarter_end": "2026-06-30",
+          "shares": 0
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NBIX"
+    },
+    {
+      "managers": [
+        {
           "cusip": "64135M105",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
@@ -2528,6 +3092,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 2139882
+        },
+        {
+          "cusip": "640979100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 5104097,
+          "quarter_end": "2026-06-30",
+          "shares": 0
         }
       ],
       "quarter_end": "2026-06-30",
@@ -2546,6 +3122,18 @@
           "prior_shares": 4658556,
           "quarter_end": "2026-06-30",
           "shares": 4658556
+        },
+        {
+          "cusip": "67080M103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 3710877,
+          "quarter_end": "2026-06-30",
+          "shares": 4320422
         }
       ],
       "quarter_end": "2026-06-30",
@@ -2580,6 +3168,42 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "NTLA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "67080T108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 1000000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "NVCT"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "H5870P102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 493827,
+          "quarter_end": "2026-06-30",
+          "shares": 808827
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "OCS"
     },
     {
       "managers": [
@@ -2684,10 +3308,40 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 1554597
+        },
+        {
+          "cusip": "687604108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1395501,
+          "quarter_end": "2026-06-30",
+          "shares": 1345063
         }
       ],
       "quarter_end": "2026-06-30",
       "ticker": "ORKA"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "69012T305",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 3139216
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "OTLK"
     },
     {
       "managers": [
@@ -2744,6 +3398,18 @@
           "prior_shares": 2333000,
           "quarter_end": "2026-06-30",
           "shares": 2333000
+        },
+        {
+          "cusip": "696389402",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 8928149,
+          "quarter_end": "2026-06-30",
+          "shares": 8425065
         }
       ],
       "quarter_end": "2026-06-30",
@@ -2832,6 +3498,24 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "PFE"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "71722W107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 925000,
+          "quarter_end": "2026-06-30",
+          "shares": 532000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "PHAT"
     },
     {
       "managers": [
@@ -2954,6 +3638,18 @@
           "prior_shares": 42100,
           "quarter_end": "2026-06-30",
           "shares": 42100
+        },
+        {
+          "cusip": "74366E102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1230879,
+          "quarter_end": "2026-06-30",
+          "shares": 981879
         }
       ],
       "quarter_end": "2026-06-30",
@@ -2972,6 +3668,18 @@
           "prior_shares": 70000,
           "quarter_end": "2026-06-30",
           "shares": 62124
+        },
+        {
+          "cusip": "696077601",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 61945,
+          "quarter_end": "2026-06-30",
+          "shares": 0
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3010,6 +3718,24 @@
     {
       "managers": [
         {
+          "cusip": "G75226103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 750000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RACC"
+    },
+    {
+      "managers": [
+        {
           "cusip": "75383L102",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
@@ -3032,6 +3758,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 76616
+        },
+        {
+          "cusip": "75383L102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 673923,
+          "quarter_end": "2026-06-30",
+          "shares": 773342
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3094,6 +3832,24 @@
     {
       "managers": [
         {
+          "cusip": "759916109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 280541,
+          "quarter_end": "2026-06-30",
+          "shares": 248212
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "RGEN"
+    },
+    {
+      "managers": [
+        {
           "cusip": "75943R102",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
@@ -3104,6 +3860,18 @@
           "prior_shares": 1160117,
           "quarter_end": "2026-06-30",
           "shares": 2826783
+        },
+        {
+          "cusip": "75943R102",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 9751141,
+          "quarter_end": "2026-06-30",
+          "shares": 14106187
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3170,6 +3938,18 @@
           "prior_shares": 4867723,
           "quarter_end": "2026-06-30",
           "shares": 4716831
+        },
+        {
+          "cusip": "G76279101",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 8285461,
+          "quarter_end": "2026-06-30",
+          "shares": 8085461
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3200,6 +3980,18 @@
           "prior_shares": 52000,
           "quarter_end": "2026-06-30",
           "shares": 70500
+        },
+        {
+          "cusip": "76155X100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 258600,
+          "quarter_end": "2026-06-30",
+          "shares": 527600
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3242,6 +4034,18 @@
           "prior_shares": 314100,
           "quarter_end": "2026-06-30",
           "shares": 322900
+        },
+        {
+          "cusip": "76243J105",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 2373795,
+          "quarter_end": "2026-06-30",
+          "shares": 2586295
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3278,6 +4082,18 @@
           "prior_shares": 4401500,
           "quarter_end": "2026-06-30",
           "shares": 4401500
+        },
+        {
+          "cusip": "78397T202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 6431743,
+          "quarter_end": "2026-06-30",
+          "shares": 6627501
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3386,6 +4202,18 @@
           "prior_shares": 3530702,
           "quarter_end": "2026-06-30",
           "shares": 2555877
+        },
+        {
+          "cusip": "829401108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 658439,
+          "quarter_end": "2026-06-30",
+          "shares": 905000
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3422,6 +4250,18 @@
           "prior_shares": 9339978,
           "quarter_end": "2026-06-30",
           "shares": 12036126
+        },
+        {
+          "cusip": "83422E204",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 11906646,
+          "quarter_end": "2026-06-30",
+          "shares": 11906646
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3524,6 +4364,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 700000
+        },
+        {
+          "cusip": "81221K108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 500000
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3590,6 +4442,18 @@
           "prior_shares": 801144,
           "quarter_end": "2026-06-30",
           "shares": 743944
+        },
+        {
+          "cusip": "869367201",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 715307,
+          "quarter_end": "2026-06-30",
+          "shares": 1304846
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3686,6 +4550,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 186145
+        },
+        {
+          "cusip": "00773J202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 3783225,
+          "quarter_end": "2026-06-30",
+          "shares": 4319496
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3790,6 +4666,24 @@
     {
       "managers": [
         {
+          "cusip": "88032L605",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 1447782,
+          "quarter_end": "2026-06-30",
+          "shares": 1700000
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TENX"
+    },
+    {
+      "managers": [
+        {
           "cusip": "87583X109",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1263508/000110465926097191/infotable.xml",
@@ -3800,6 +4694,18 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 333333
+        },
+        {
+          "cusip": "87583X109",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 808153,
+          "quarter_end": "2026-06-30",
+          "shares": 3377000
         }
       ],
       "quarter_end": "2026-06-30",
@@ -3926,10 +4832,40 @@
           "prior_shares": 0,
           "quarter_end": "2026-06-30",
           "shares": 253000
+        },
+        {
+          "cusip": "89422G107",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 4142551,
+          "quarter_end": "2026-06-30",
+          "shares": 3752574
         }
       ],
       "quarter_end": "2026-06-30",
       "ticker": "TVTX"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "90184D100",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 150000,
+          "quarter_end": "2026-06-30",
+          "shares": 36812
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "TWST"
     },
     {
       "managers": [
@@ -4180,6 +5116,42 @@
     {
       "managers": [
         {
+          "cusip": "98422E103",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 0,
+          "quarter_end": "2026-06-30",
+          "shares": 467013
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "XERS"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "98420X202",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 6737648,
+          "quarter_end": "2026-06-30",
+          "shares": 7933491
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "XFOR"
+    },
+    {
+      "managers": [
+        {
           "cusip": "98422T209",
           "filed": "2026-08-14",
           "filing_url": "https://www.sec.gov/Archives/edgar/data/1055951/000117266126003740/infotable.xml",
@@ -4242,6 +5214,24 @@
       ],
       "quarter_end": "2026-06-30",
       "ticker": "ZNTL"
+    },
+    {
+      "managers": [
+        {
+          "cusip": "98985Y108",
+          "filed": "2026-08-14",
+          "filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+          "manager_cik": "0001224962",
+          "manager_name": "Perceptive Advisors LLC",
+          "match": "EXACT_COMPANY_NAME_AND_COMMON_CLASS_CUSIP",
+          "prior_filing_url": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000499/infotable.xml",
+          "prior_shares": 3510078,
+          "quarter_end": "2026-06-30",
+          "shares": 4182953
+        }
+      ],
+      "quarter_end": "2026-06-30",
+      "ticker": "ZYME"
     }
   ],
   "reports": [
@@ -4274,12 +5264,12 @@
     },
     {
       "cik": "0001224962",
-      "error": "Previous 13F quarter missing; cannot infer share delta",
-      "latest_filing": null,
-      "latest_period": null,
+      "error": "",
+      "latest_filing": "2026-08-14",
+      "latest_period": "2026-06-30",
       "manager": "Perceptive Advisors LLC",
-      "source": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/0001012975-26-000777-index.html",
-      "status": "ERROR"
+      "source": "https://www.sec.gov/Archives/edgar/data/1224962/000101297526000777/infotable.xml",
+      "status": "COMPLETE"
     }
   ],
   "schema_version": 1,
