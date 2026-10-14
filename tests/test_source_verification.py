@@ -193,6 +193,32 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(len(row["source_sha256"]), 64)
         self.assertNotIn("entry", row)
 
+    def test_issuer_article_header_date_requires_exact_primary_program(self):
+        header = (
+            "Bristol Myers Squibb - Press Release U.S. FDA Accepts Mezigdomide "
+            "for relapsed or refractory multiple myeloma July 13, 2026 "
+            "Mezigdomide in combination with carfilzomib and dexamethasone "
+            "was filed for treatment of relapsed or refractory multiple myeloma. "
+            "PRINCETON, N.J. --(BUSINESS WIRE)-- Bristol Myers Squibb announced. "
+        )
+        event = {"event_key": "BMY|COMBO", "ticker": "BMY",
+                 "company": "Bristol Myers Squibb",
+                 "drug": "mezigdomide + carfilzomib + dexamethasone",
+                 "indication": "relapsed/refractory multiple myeloma (RRMM)"}
+        self.assertEqual(verify.mapped_issuer_release_dateline(
+            event, header, "2026-07-13"), {"2026-07-13"})
+        self.assertEqual(verify.mapped_issuer_release_dateline(
+            event, header, "2026-07-14"), set())
+        for wrong in (
+            header.replace("carfilzomib", "AnotherDrug"),
+            header.replace("multiple myeloma", "another cancer"),
+            header.replace("Bristol Myers Squibb", "Another Company"),
+            header.replace("July 13, 2026", "May 13, 2027"),
+            header.replace("Press Release", "Investor Discussion"),
+        ):
+            self.assertEqual(verify.mapped_issuer_release_dateline(
+                event, wrong, "2026-07-13"), set())
+
     def test_primary_target_can_be_verified_without_becoming_a_decision(self):
         event = {**EVENT, "pdufa_evidence_url": SEC_DOC}
         body = b"Test Pharma announced TestDrug for lung cancer. The FDA PDUFA target date is November 1, 2026."
