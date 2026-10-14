@@ -38,6 +38,7 @@ from unified_clinical_trading import _load as load_unified_evidence, render_comb
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
 import nightly_scan_dashboard as nightly_scan_dashboard_module
+from scan_activity_dashboard import render_scans_activity
 def render_nightly_scan_report():
     # Streamlit can rerun app.py while retaining an imported report module.
     # Reload only when that module's tracked file changed, so deployed controls
@@ -3233,7 +3234,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA", "2. PDUFA CALENDAR"]
+nav_options = ["PDUFA", "SCANS", "2. PDUFA CALENDAR"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -4136,6 +4137,10 @@ if page == "PDUFA":
             st.session_state["_ticker_selections_hydrated"] = False
             render_watch_trade_dashboard()
 
+
+elif page == "SCANS":
+    # Separate top navigation activity log; PDUFA → SCANS preserves the audit and controls.
+    render_scans_activity()
 
 elif page == "2. PDUFA CALENDAR":
     st.markdown("## 2. PDUFA CALENDAR — UPCOMING CATALYSTS")
