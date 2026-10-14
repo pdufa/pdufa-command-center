@@ -88,6 +88,15 @@ jobs:
           print(f"Reconciled {actual} posted-result research observations — NOT clinical successes.")
           PY
 
+      - name: Recheck SEC cash runway for source-identified GEM candidates
+        id: runway
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.start_email.outcome == 'success' }}
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+        run: |
+          python scripts/collect_gem_runway.py --data-dir data --max-tickers 75
+
       - name: Audit all saved GEM source gates and research stage scores
         id: gem_audit
         if: always()
@@ -116,6 +125,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/gem_scan_block_report.json
+          # A failed SEC collection publishes empty current records, never
+          # silently continuing to qualify an earlier successful scan.
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_runway_evidence.json ]; then
+            git add -- data/gem_runway_evidence.json
+          fi
           # Source data is published ONLY after a fully reconciled registry run.
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && \
              [ "${{ steps.registry_validation.outcome }}" = "success" ]; then
@@ -153,6 +167,7 @@ jobs:
           path: |
             reports/gem_daily/
             data/gem_scan_block_report.json
+            data/gem_runway_evidence.json
             data/phase3_intake_status.json
             data/phase3_announcements.csv
           retention-days: 90
@@ -164,6 +179,7 @@ jobs:
           START_RESULT: ${{ steps.start_email.outcome }}
           END_RESULT: ${{ steps.end_email.outcome }}
           COLLECT_RESULT: ${{ steps.registry_validation.outcome }}
+          RUNWAY_RESULT: ${{ steps.runway.outcome }}
           AUDIT_RESULT: ${{ steps.gem_audit.outcome }}
           REPORT_RESULT: ${{ steps.block_report.outcome }}
         run: |
@@ -177,6 +193,10 @@ jobs:
           fi
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ "$COLLECT_RESULT" != "success" ]; then
             echo "::error::GEM registry source scan was blocked or incomplete."
+            exit 1
+          fi
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ "$RUNWAY_RESULT" != "success" ]; then
+            echo "::error::GEM SEC financial runway recheck failed or partial; runway sources remain unverified."
             exit 1
           fi
           echo "GEM block execution and notifications completed; trading eligibility remains independently source-gated."
