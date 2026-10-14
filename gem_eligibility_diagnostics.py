@@ -39,7 +39,7 @@ def classify(row, *, sec_current=False, feed_current=False, finance_recheck=None
         missing.append("Exact-program dated Phase 3 results + source / NCT identity")
     if not financed:
         missing.append("Two distinct post-readout financing closes + SEC evidence")
-    if eligible != (group == GROUPS[0]):
+    if (phase3 and financed) != eligible:
         missing.append("Saved eligibility conflicts with the two benchmark markers")
     if not sec_current:
         missing.append("Current SEC recheck unavailable / blocked (source health)")
