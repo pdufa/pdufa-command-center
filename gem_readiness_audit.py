@@ -250,6 +250,13 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
             for row in verified_tracking),
         "ranked": qualified,
         "cash_runway": runway_counts,
+        "two_benchmark_candidate_count": sum(
+            row.get("Two-benchmark eligible") is True for row in items
+        ),
+        "two_benchmark_policy": (
+            "VERIFIED PHASE 3 RESULTS RELEASE + SECOND SEPARATE POST-READOUT "
+            "FINANCING CLOSE; OTHER MEASURES ARE RANKING/RISK ONLY"
+        ),
         "strict_entry_gate_shortlist_count": sum(
             row.get("GEM ALL ENTRY GATES") == "PASS — MANUAL REVIEW ONLY"
             for row in items
