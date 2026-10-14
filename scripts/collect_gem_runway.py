@@ -132,7 +132,9 @@ def collect(data_dir, *, as_of, limit=75, agent=None, scanner=scan_one):
                 if snapshot.get("ticker") != ticker or snapshot.get("as_of") != as_of.isoformat():
                     raise ValueError("SEC scan returned mismatched ticker/as-of")
                 successes.append(snapshot)
-            except (OSError, ValueError, RuntimeError, TypeError, KeyError) as exc:
+            except Exception as exc:
+                # Any per-ticker SEC, source parsing or local DB failure must
+                # remove that ticker from the current verified-source dataset.
                 failures.append({"ticker": ticker, "reason": str(exc)[:300]})
     report = {
         "schema_version": 1,
