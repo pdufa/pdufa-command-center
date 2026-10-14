@@ -121,14 +121,9 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     .st-key-overview_pipeline_panel::before {content:"2";}
     .st-key-overview_pre3_panel::before {content:"3";}
     .st-key-overview_post3_panel::before {content:"4";}
-    /* Keep #1/#2/#3/#4 in one row. Narrow screens scroll sideways rather
-       than moving GEM above the other cards. Nested columns are unaffected. */
-    .st-key-overview_panels {overflow-x:auto;}
+    /* Streamlit 1.65 owns the responsive layout through st.columns(wrap=False).
+       Don't force a CSS grid: it can interfere with native mobile no-wrap scrolling. */
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
-      display:grid !important;
-      width:100% !important;
-      max-width:100% !important;
-      grid-template-columns:repeat(4,minmax(280px,1fr));
       gap:0 !important;
       align-items:stretch !important;
     }
@@ -139,10 +134,10 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
       display:flex !important;
       flex-direction:column !important;
       align-self:stretch !important;
-      flex:none !important;
-      width:100% !important;
-      min-width:0 !important;
-      max-width:100% !important;
+      /* Readable cards at any viewport, without stacking #1 above #2-#4. */
+      flex:1 0 280px !important;
+      min-width:280px !important;
+      max-width:none !important;
       padding-inline:0.375rem !important;
     }
     .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
@@ -178,7 +173,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     </style>
     """, unsafe_allow_html=True)
     with st.container(key="overview_panels"):
-        gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small")
+        gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small", wrap=False)
         with gem_col, st.container(border=True, key="overview_gem_panel"):
             st.markdown("### #1-GEM")
             st.caption("Phase 3 / post-financing / PDUFA · stock, factors and source inputs")
