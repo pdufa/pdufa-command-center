@@ -76,3 +76,49 @@ def source_research_policy():
         "Neither social attention nor an IR link automatically checks a GEM "
         "benchmark or promotes a stock from #2 PIPELINE into verified #1 GEM."
     )
+
+# These mirror the twelve optional GEM due-diligence checks, NOT the two
+# required benchmarks. Searching them produces questions, not checked boxes.
+OPTIONAL_CHECK_TOPICS = (
+    ("clinical_quality", "Clinical endpoints / safety", "Phase 3 primary endpoint safety results"),
+    ("clinical_conflict", "Conflicting clinical / FDA reports", "trial conflict adverse events regulatory"),
+    ("cash_runway", "Cash runway", "10-Q cash equivalents operating cash runway"),
+    ("dilution", "Dilution / new offering", "ATM shelf equity offering dilution"),
+    ("price_base", "Post-readout price base", "post Phase 3 readout share price volume"),
+    ("market_quote", "Volume / market momentum", "stock volume unusual activity"),
+    ("pdufa_source", "FDA PDUFA date source", "FDA accepted NDA BLA PDUFA date"),
+    ("pdufa_window", "PDUFA window changes", "PDUFA date extension FDA"),
+    ("hedge_funds", "Institutional 13F activity", "13F hedge fund institutional ownership"),
+    ("insiders", "Insider Form 4 purchases", "Form 4 insider open market purchase"),
+    ("sec_fresh", "Recent SEC filings", "latest 8-K 10-Q SEC filing"),
+    ("clinical_fresh", "Latest clinical study updates", "trial ClinicalTrials.gov update results"),
+)
+
+
+def optional_check_search_links(row, check_key):
+    """Return search links for one non-benchmark research issue."""
+    lookup = {key: (label, phrase) for key, label, phrase in OPTIONAL_CHECK_TOPICS}
+    if check_key not in lookup:
+        raise ValueError("Only non-benchmark checks can be searched socially")
+    links = research_search_links(row)
+    if not links:
+        return {}
+    ticker = links["ticker"]
+    drug = _words(row.get("Drug"), 85)
+    nct = _words(row.get("NCT ID"), 64)
+    label, phrase = lookup[check_key]
+    base = " ".join(x for x in (ticker, drug, nct, phrase) if x)
+    official_source = "site:sec.gov " + base
+    if check_key.startswith("clinical"):
+        official_source = "site:clinicaltrials.gov " + base
+    elif check_key.startswith("pdufa"):
+        official_source = "site:fda.gov " + base
+    return {
+        "label": label,
+        "issuer_ir": links["confirmed_issuer_news"] or links["find_issuer_news"],
+        "primary_records": SEARCH_HOST + _quote(official_source),
+        "reddit": "https://www.reddit.com/search/?q=" +
+            _quote(base) + "&sort=new&t=month",
+        "news": "https://www.google.com/search?tbm=nws&q=" + _quote(base),
+        "notice": "Unverified social/search results are triage leads, never PASS.",
+    }
