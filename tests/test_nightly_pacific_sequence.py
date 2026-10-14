@@ -27,22 +27,22 @@ def job(text, name):
 class PacificNightlySequenceTests(unittest.TestCase):
     def test_pacific_daylight_and_standard_crons(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        self.assertIn("cron: '0 6 * * *'", scheduler)
-        self.assertIn("cron: '0 7 * * *'", scheduler)
+        self.assertIn("cron: '0 4 * * *'", scheduler)
+        self.assertIn("cron: '0 5 * * *'", scheduler)
         self.assertIn("TZ=America/Los_Angeles date +%z", scheduler)
         self.assertIn('"$offset" = -0700', scheduler)
         self.assertIn('"$offset" = -0800', scheduler)
-        # 11 PM Pacific occurs on the PREVIOUS Pacific date versus UTC.
-        for utc_hour, month in [(6, 7), (7, 1)]:
+        # 9 PM Pacific occurs on the PREVIOUS Pacific date versus UTC.
+        for utc_hour, month in [(4, 7), (5, 1)]:
             date = datetime(2026, month, 15, utc_hour, 0, tzinfo=timezone.utc)
             converted = date.astimezone(ZoneInfo("America/Los_Angeles"))
-            self.assertEqual((converted.hour, converted.minute), (23, 0))
+            self.assertEqual((converted.hour, converted.minute), (21, 0))
             self.assertEqual(converted.day, 14)
         self.assertIn("-f 'inputs[scan]=ALL'", scheduler)
 
     def test_delayed_utc_crons_do_not_restart_scans_next_morning(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        block = scheduler.split("      - name: Accept only matching 11:00 PM Pacific cron slot", 1)[1]
+        block = scheduler.split("      - name: Accept only matching 9:00 PM Pacific cron slot", 1)[1]
         block = block.split("      - name: Dispatch clinical scan to start serial chain", 1)[0]
         script = textwrap.dedent(block.split("        run: |\n", 1)[1])
         with tempfile.TemporaryDirectory() as directory:
@@ -58,17 +58,17 @@ class PacificNightlySequenceTests(unittest.TestCase):
                 "esac\n", encoding="utf-8")
             fake_date.chmod(0o755)
             cases = (
-                ("23", "00", "-0700", "0 6 * * *", "run=true"),
-                ("23", "15", "-0700", "15 6 * * *", "run=true"),
-                ("23", "30", "-0700", "30 6 * * *", "run=true"),
-                ("23", "00", "-0800", "0 7 * * *", "run=true"),
-                ("23", "30", "-0800", "30 7 * * *", "run=true"),
-                ("23", "00", "-0700", "0 7 * * *", "run=false"),
-                ("23", "00", "-0800", "0 6 * * *", "run=false"),
+                ("21", "00", "-0700", "0 4 * * *", "run=true"),
+                ("21", "15", "-0700", "15 4 * * *", "run=true"),
+                ("21", "30", "-0700", "30 4 * * *", "run=true"),
+                ("21", "00", "-0800", "0 5 * * *", "run=true"),
+                ("21", "30", "-0800", "30 5 * * *", "run=true"),
+                ("21", "00", "-0700", "0 5 * * *", "run=false"),
+                ("21", "00", "-0800", "0 4 * * *", "run=false"),
                 ("00", "05", "-0700", "5 7 * * *", "run=false"),
                 ("01", "05", "-0800", "5 9 * * *", "run=false"),
-                ("22", "30", "-0700", "30 6 * * *", "run=false"),
-                ("06", "00", "-0700", "0 6 * * *", "run=false"),
+                ("22", "30", "-0700", "30 4 * * *", "run=false"),
+                ("06", "00", "-0700", "0 4 * * *", "run=false"),
             )
             for hour, minute, offset, cron, expected in cases:
                 with self.subTest(hour=hour, minute=minute, offset=offset, cron=cron):
@@ -85,7 +85,7 @@ class PacificNightlySequenceTests(unittest.TestCase):
 
     def test_fallback_start_never_duplicates_tonights_scans(self):
         scheduler = read("pdufa-nightly-pacific-start.yml")
-        for cron in ("0 6 * * *", "15 6 * * *", "30 6 * * *", "0 7 * * *", "15 7 * * *", "30 7 * * *"):
+        for cron in ("0 4 * * *", "15 4 * * *", "30 4 * * *", "0 5 * * *", "15 5 * * *", "30 5 * * *"):
             self.assertIn(cron, scheduler)
         self.assertIn("pdufa-clinical-runs.json", scheduler)
         self.assertIn("Nightly clinical scan already started today", scheduler)
@@ -97,9 +97,9 @@ class PacificNightlySequenceTests(unittest.TestCase):
         for cron in ("5 7 * * *", "35 7 * * *", "5 8 * * *", "35 8 * * *",
                      "5 9 * * *", "35 9 * * *"):
             self.assertIn(cron, scheduler)
-        # Overnight recovery is anchored to the PREVIOUS night's 11 PM start.
-        self.assertIn("(local - timedelta(days=1)).replace(hour=23", scheduler)
-        self.assertIn("(la - timedelta(days=1)).replace(hour=23", scheduler)
+        # Overnight recovery is anchored to the PREVIOUS night's 9 PM start.
+        self.assertIn("(local - timedelta(days=1)).replace(hour=21", scheduler)
+        self.assertIn("(la - timedelta(days=1)).replace(hour=21", scheduler)
         self.assertIn("Recover missing clinical report publishing handoff", scheduler)
         self.assertIn("Recover missing extended-source verification handoff", scheduler)
         self.assertIn("Report publisher already started after this clinical scan", scheduler)
@@ -123,6 +123,25 @@ class PacificNightlySequenceTests(unittest.TestCase):
             self.assertIn(' --scan "' + scan + '"', part)
             self.assertIn("run_scan_with_email.py", part)
             self.assertIn("actions/upload-artifact", part)
+
+
+    def test_gem_and_financing_are_awaited_in_same_serial_chain(self):
+        clinical = read("pdufa-nightly-clinical.yml")
+        gem = read("gem-research-quality.yml")
+        financing = read("gem-financing-full-coverage.yml")
+        gem_job = job(clinical, "gem_block")
+        financing_job = job(clinical, "gem_financing")
+        self.assertIn("needs: scan4", gem_job)
+        self.assertIn("uses: ./.github/workflows/gem-research-quality.yml", gem_job)
+        self.assertIn("secrets: inherit", gem_job)
+        self.assertIn("needs: gem_block", financing_job)
+        self.assertIn("uses: ./.github/workflows/gem-financing-full-coverage.yml", financing_job)
+        # No fire-and-forget dispatch or competing nightly GEM cron.
+        self.assertNotIn("gem-research-quality.yml/dispatches", gem_job)
+        self.assertIn("workflow_call:", gem)
+        self.assertIn("workflow_call:", financing)
+        self.assertNotIn("  schedule:", gem)
+        self.assertNotIn("  schedule:", financing)
 
     def test_publish_then_five_sources_then_audit(self):
         publisher = read("pdufa-nightly-report.yml")
