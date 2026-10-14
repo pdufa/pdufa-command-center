@@ -87,10 +87,10 @@ def score_factor_inputs(item, row, field, *, feed_current=True):
         rows = [
             _input("Cash runway (months)", row.get("Cash Runway (months)"),
                    "Model brackets: >=24:20; >=18:17; >=12:13; >=6:7; >=0:2; missing:0",
-                   item.get("Cash runway SEC source") or financing_url),
+                   item.get("Cash runway source")),
             _input("Cash runway trend", row.get("Cash Runway Trend"),
                    "Risk warning only; no additional points",
-                   item.get("Cash runway trend source") or financing_url),
+                   item.get("Cash runway source")),
         ]
     elif field == "Trading Activity /20":
         setup = _num(item.get("Trading setup /20"))
@@ -255,7 +255,7 @@ def render_gem_nested_master(root="data"):
         ticker = clean_ticker(r.get("Ticker"))
         identity = str(r.get("Exact Program / Event") or
                        f"{r.get('Ticker')}|{r.get('Drug')}|{r.get('Indication')}|{first + offset}")
-        uid = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:14]
+        uid = hashlib.sha256(f"{identity}|{first + offset}".encode("utf-8")).hexdigest()[:14]
         score = f"{r['GEM Score /100']}/100" if r["_eligible"] else "UNSCORED"
         rank = f"#{r['GEM Rank']}" if r["_eligible"] else "—"
         with st.container(border=True):
