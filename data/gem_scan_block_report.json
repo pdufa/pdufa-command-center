@@ -20,16 +20,19 @@
     "MARKET_PRICE_VOLUME_SOURCE_BLOCKED_OR_STALE"
   ],
   "cash_runway": {
+    "collected_count": 35,
+    "collector_status": "COLLECTED \u2014 CURRENT SEC STEP 4 SNAPSHOTS",
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
-    "missing_or_stale": 368,
-    "source_backed_pass": 0,
-    "under_12_months": 0
+    "missing_or_stale": 338,
+    "source_backed_pass": 13,
+    "target_count": 35,
+    "under_12_months": 17
   },
   "caveat": "GEM is a research-only fourth scan block. Ranked Phase 3 candidates are watch-only until two separately documented post-readout financing closes and all other source gates pass. SEC blocks remain blocks. PDUFA -3 is the planned exit boundary, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-14T00:16:55.810897+00:00",
+    "finished_at": "2026-10-14T00:21:25.654095+00:00",
     "matched_posted_results": 93,
     "new_records": 0,
     "stored_results": 2482,
@@ -39,7 +42,7 @@
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-14T00:16:56.575757+00:00",
+  "generated_at_utc": "2026-10-14T00:21:49.081567+00:00",
   "historical_return_edge_validated": false,
   "label": "BLOCK 4 \u2014 GEMS",
   "market_source_health": {
@@ -55,8 +58,8 @@
     "Post-Financing": 0
   },
   "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 38489198285,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38489198285",
+  "run_id": 38489641676,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38489641676",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
