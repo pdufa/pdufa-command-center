@@ -242,7 +242,15 @@ class GemReadinessTests(unittest.TestCase):
     def test_offline_daily_archival_workflow_has_no_brokerage_action(self):
         root = Path(__file__).resolve().parents[1]
         workflow = (root/".github/workflows/gem-research-quality.yml").read_text()
-        self.assertIn("schedule:", workflow)
+        # GEM is an awaited reusable step in the 9 PM Pacific serial chain,
+        # not a second independently scheduled collector.
+        self.assertIn("workflow_call:", workflow)
+        self.assertNotIn("  schedule:", workflow)
+        clinical = (root/".github/workflows/pdufa-nightly-clinical.yml").read_text()
+        self.assertIn("uses: ./.github/workflows/gem-research-quality.yml", clinical)
+        self.assertIn("needs: scan4", clinical)
+        self.assertIn("needs: gem_block", clinical)
+
         self.assertIn("contents: write", workflow)
         self.assertIn("--mode backfill", workflow)
         self.assertIn("--mode daily", workflow)
