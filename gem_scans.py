@@ -15,6 +15,7 @@ from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 from gem_financing_gate import entry_status, sec_recheck_current
 from gem_runway_gate import assess_runway, load_snapshots, passes as runway_passes, MIN_MONTHS
 from gem_runway_trend import load_history as load_runway_history, assess_trend
+from gem_two_benchmark import assess as assess_two_benchmarks, assign_ranks as rank_two_benchmark
 
 STAGES = ("Phase 3", "Post-Financing", "PDUFA")
 TRADE_EXIT_DAYS_BEFORE_PDUFA = EXIT_DAYS_BEFORE_PDUFA
@@ -314,8 +315,17 @@ def build_gem_scans(root="data", as_of=None):
                 and not runway_passes(item) and isinstance(days, int)
                 and days > TRADE_EXIT_DAYS_BEFORE_PDUFA):
             item["GEM trade entry gate"] = "HOLD — 12-MONTH CASH RUNWAY NOT VERIFIED"
+        # Primary trading-candidate policy: only (1) released source-verified
+        # Phase 3 results and (2) the independently verified second financing
+        # closing are eligibility benchmarks. All other evidence is advisory
+        # ranking / risk context, not hidden third entry requirements.
+        item.update(assess_two_benchmarks(
+            item, event, as_of=source_status.get("as_of") or as_of,
+            feed_current=source_status["feed_current"], sec_current=sec_current,
+        ))
         results.append(item)
 
+    two_benchmark_shortlist = rank_two_benchmark(results)
     for stage in STAGES:
         rated = sorted(
             (item for item in results if item[stage + " score"] is not None),
@@ -355,6 +365,20 @@ def build_gem_scans(root="data", as_of=None):
         item["GEM strict shortlist rank"] = position
 
     details = dict(source_status)
+    details["two_benchmark_candidate_count"] = len(two_benchmark_shortlist)
+    details["two_benchmark_policy"] = (
+        "SOURCE-VERIFIED PHASE 3 RESULTS RELEASE + VERIFIED DISTINCT POST-READOUT "
+        "SECOND FINANCING CLOSE; OTHER FACTORS RANK / FLAG ONLY"
+    )
+    details["two_benchmark_ranked"] = len(two_benchmark_shortlist)
+    details["two_benchmark_phase3_count"] = sum(
+        row.get("Benchmark 1 — Phase 3 released") == "PASS — VERIFIED RESULTS RELEASE"
+        for row in results
+    )
+    details["two_benchmark_financing_count"] = sum(
+        row.get("Benchmark 2 — Financing #2 closed") == "PASS — TWO POST-READOUT CLOSES"
+        for row in results
+    )
     details["strict_entry_gate_shortlist_count"] = len(shortlist)
     details["strict_entry_gate_shortlist_definition"] = (
         "INTERSECTION OF ALL THREE RANKS + STAGE1 GREEN + VERIFIED TWO CLOSES "
