@@ -173,7 +173,7 @@ def _score_check(row):
     return int(sum(_num(value) for value in values)) == row.get("GEM Score /100")
 
 
-def render_gem_nested_master(root="data"):
+def render_gem_nested_master(root="data", *, selections_ready=False):
     """Render in first/renamed GEM tab, above the historical clinical cards."""
     st.markdown("## #1 GEM — THREE-LEVEL NESTED MASTER LIST")
     st.caption(
@@ -196,7 +196,8 @@ def render_gem_nested_master(root="data"):
         st.error("GEM source data could not be loaded; no scores or eligibility inferred.")
         return
     sources = _unique_sources(items)
-    _init_browser_selection("gem_nested_master")
+    if not selections_ready:
+        _init_browser_selection("gem_nested_master")
     watch = {clean_ticker(v) for v in st.session_state.get("watchlist", [])}
     trading = {clean_ticker(v) for v in st.session_state.get("trading_tickers", [])}
     if not status.get("feed_current") or not status.get("sec_financing_source_current"):
