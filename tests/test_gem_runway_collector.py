@@ -91,7 +91,7 @@ class GemRunwayCollectorTests(unittest.TestCase):
         self.assertIn("403", report["failures"][0]["reason"])
 
     def test_no_candidates_does_not_invent_source_coverage(self):
-        self.write_inputs([candidate(phase3_status="RESULTS_REVIEW")])
+        self.write_inputs([candidate(pdufa_date="2026-10-14")])
         report = collect(self.root, as_of=TODAY, agent="")
         self.assertEqual(report["target_count"], 0)
         self.assertEqual(report["snapshots"], [])
