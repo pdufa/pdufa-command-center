@@ -1,0 +1,755 @@
+{
+  "as_of_pacific": "2026-10-13",
+  "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
+  "generated_at_utc": "2026-10-14T02:25:21.657690+00:00",
+  "issuer_count": 35,
+  "issuer_errors": [
+    {
+      "error": "SEC Form 4 XML document missing or ambiguous",
+      "ticker": "IRD"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "IONS"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "CYTK"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "VRTX"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "CORT"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "MLYS"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "GILD"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "DYN"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "ARQT"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "APMD"
+    },
+    {
+      "error": "SEC issuer Form 4 amendments require manual reconciliation",
+      "ticker": "INBX"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "PHVS"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "IMNM"
+    },
+    {
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "ticker": "BMY"
+    },
+    {
+      "error": "SEC Form 4 XML document missing or ambiguous",
+      "ticker": "ZBIO"
+    }
+  ],
+  "issuers_complete": 20,
+  "limits": "Issuer filing index capped to 8 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
+  "records": [
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001228627",
+      "error": "SEC Form 4 XML document missing or ambiguous",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "IRD",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001792044",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
+      "ticker": "VTRS",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0000874015",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "IONS",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001439222",
+      "filings_reviewed": 3,
+      "latest_filing": "2026-08-06",
+      "status": "COMPLETE",
+      "ticker": "AGIO",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-08-04",
+          "filed": "2026-08-06",
+          "owner": "Gheuens Sarah",
+          "price": 30.48,
+          "shares": 30000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1439222/000143922226000120/wk-form4_1786047196.xml",
+          "ticker": "AGIO"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001061983",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "CYTK",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001599298",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "COMPLETE",
+      "ticker": "SMMT",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001133869",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "COMPLETE",
+      "ticker": "CAPR",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001160308",
+      "filings_reviewed": 2,
+      "latest_filing": "2026-09-25",
+      "status": "COMPLETE",
+      "ticker": "SVRA",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001743881",
+      "filings_reviewed": 8,
+      "latest_filing": "2026-09-21",
+      "status": "COMPLETE",
+      "ticker": "BBIO",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Kumar Neil",
+          "price": 69.0136,
+          "shares": 8721,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000897/wk-form4_1790029286.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-21",
+          "owner": "Kumar Neil",
+          "price": 69.5696,
+          "shares": 1279,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000897/wk-form4_1790029286.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-18",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 81.1494,
+          "shares": 1900,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-18",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 82.2104,
+          "shares": 17279,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-18",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 82.9922,
+          "shares": 14602,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-18",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 83.7732,
+          "shares": 1199,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-19",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 83.8588,
+          "shares": 8100,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-19",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 84.6867,
+          "shares": 1800,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-19",
+          "filed": "2026-08-20",
+          "owner": "Kumar Neil",
+          "price": 85.65,
+          "shares": 100,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000848/wk-form4_1787257884.xml",
+          "ticker": "BBIO"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-30",
+          "filed": "2026-08-03",
+          "owner": "Apuli Maricel",
+          "price": 80.06,
+          "shares": 2000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1743881/000147083126000745/wk-form4_1785788451.xml",
+          "ticker": "BBIO"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001622229",
+      "filings_reviewed": 3,
+      "latest_filing": "2026-10-05",
+      "status": "COMPLETE",
+      "ticker": "COGT",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-08-27",
+          "filed": "2026-08-31",
+          "owner": "Morris Arlene",
+          "price": 37.0925,
+          "shares": 42349,
+          "source": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526377001/ownership.xml",
+          "ticker": "COGT"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-27",
+          "filed": "2026-08-31",
+          "owner": "Morris Arlene",
+          "price": 37.5396,
+          "shares": 3161,
+          "source": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526377001/ownership.xml",
+          "ticker": "COGT"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0000875320",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "VRTX",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001704292",
+      "filings_reviewed": 8,
+      "latest_filing": "2026-10-05",
+      "status": "COMPLETE",
+      "ticker": "ZLAB",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0000939767",
+      "filings_reviewed": 1,
+      "latest_filing": "2026-08-12",
+      "status": "COMPLETE",
+      "ticker": "EXEL",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-08-10",
+          "filed": "2026-08-12",
+          "owner": "Beckerle Mary C",
+          "price": 53.66,
+          "shares": 9812,
+          "source": "https://www.sec.gov/Archives/edgar/data/939767/000093976726000101/wk-form4_1786577638.xml",
+          "ticker": "EXEL"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001370053",
+      "filings_reviewed": 4,
+      "latest_filing": "2026-10-02",
+      "status": "COMPLETE",
+      "ticker": "ANAB",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-01",
+          "filed": "2026-10-02",
+          "owner": "RENTON HOLLINGS",
+          "price": 49.8743,
+          "shares": 5000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1370053/000118733326000004/form4-10022026_091051.xml",
+          "ticker": "ANAB"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001088856",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "CORT",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001933414",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "MLYS",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0000882095",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "GILD",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001689548",
+      "filings_reviewed": 1,
+      "latest_filing": "2026-07-08",
+      "status": "COMPLETE",
+      "ticker": "PRAX",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001326110",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-10-06",
+      "status": "COMPLETE",
+      "ticker": "IBRX",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-05",
+          "filed": "2026-10-06",
+          "owner": "Simon Barry J.",
+          "price": 10.7504,
+          "shares": 25000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000085/wk-form4_1791324382.xml",
+          "ticker": "IBRX"
+        },
+        {
+          "code": "S",
+          "date": "2026-10-02",
+          "filed": "2026-10-06",
+          "owner": "Cohen Cheryl",
+          "price": 10.5,
+          "shares": 81056,
+          "source": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000084/wk-form4_1791324339.xml",
+          "ticker": "IBRX"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001818794",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "DYN",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001828316",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "COMPLETE",
+      "ticker": "PHAR",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001889109",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-10-05",
+      "status": "COMPLETE",
+      "ticker": "BLTE",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001787306",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "ARQT",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001789972",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-09-10",
+      "status": "COMPLETE",
+      "ticker": "CGEM",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-10",
+          "owner": "Michaelson Jennifer",
+          "price": 21.57,
+          "shares": 8000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1789972/000119312526387381/ownership.xml",
+          "ticker": "CGEM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-13",
+          "filed": "2026-08-14",
+          "owner": "Michaelson Jennifer",
+          "price": 20.26,
+          "shares": 30000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1789972/000119312526352523/ownership.xml",
+          "ticker": "CGEM"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001745648",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "APMD",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001048477",
+      "filings_reviewed": 3,
+      "latest_filing": "2026-10-01",
+      "status": "COMPLETE",
+      "ticker": "BMRN",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-02",
+          "filed": "2026-09-03",
+          "owner": "Davis George Eric",
+          "price": 66.284,
+          "shares": 17557,
+          "source": "https://www.sec.gov/Archives/edgar/data/1048477/000162828026060572/wk-form4_1788475269.xml",
+          "ticker": "BMRN"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0000873303",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-09-08",
+      "status": "COMPLETE",
+      "ticker": "SRPT",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001652130",
+      "filings_reviewed": 5,
+      "latest_filing": "2026-10-06",
+      "status": "COMPLETE",
+      "ticker": "NTLA",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-02",
+          "filed": "2026-10-06",
+          "owner": "Dube Michael P",
+          "price": 12.43,
+          "shares": 1864,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526415541/ownership.xml",
+          "ticker": "NTLA"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-20",
+          "filed": "2026-08-24",
+          "owner": "LEONARD JOHN M",
+          "price": 12.6,
+          "shares": 19890,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526363567/ownership.xml",
+          "ticker": "NTLA"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-21",
+          "filed": "2026-08-24",
+          "owner": "LEONARD JOHN M",
+          "price": 13.0,
+          "shares": 2785,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526363567/ownership.xml",
+          "ticker": "NTLA"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-22",
+          "filed": "2026-07-24",
+          "owner": "Dulac Edward J III",
+          "price": 11.25,
+          "shares": 8111,
+          "source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526316279/ownership.xml",
+          "ticker": "NTLA"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001802665",
+      "filings_reviewed": 2,
+      "latest_filing": "2026-09-18",
+      "status": "COMPLETE",
+      "ticker": "HRMY",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-16",
+          "filed": "2026-09-18",
+          "owner": "Budur Kumar",
+          "price": 43.0146,
+          "shares": 1800,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000006/form4-09182026_080908.xml",
+          "ticker": "HRMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-17",
+          "filed": "2026-09-18",
+          "owner": "Budur Kumar",
+          "price": 43.0,
+          "shares": 800,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000006/form4-09182026_080908.xml",
+          "ticker": "HRMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-18",
+          "filed": "2026-09-18",
+          "owner": "Budur Kumar",
+          "price": 43.0545,
+          "shares": 35852,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000006/form4-09182026_080908.xml",
+          "ticker": "HRMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-04",
+          "filed": "2026-09-09",
+          "owner": "Budur Kumar",
+          "price": 41.9839,
+          "shares": 5500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000005/form4-09092026_090911.xml",
+          "ticker": "HRMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-09",
+          "owner": "Budur Kumar",
+          "price": 42.2475,
+          "shares": 4500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000005/form4-09092026_090911.xml",
+          "ticker": "HRMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-09",
+          "owner": "Budur Kumar",
+          "price": 42.7947,
+          "shares": 1000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000005/form4-09092026_090911.xml",
+          "ticker": "HRMY"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-09",
+          "owner": "Budur Kumar",
+          "price": 43.1014,
+          "shares": 22954,
+          "source": "https://www.sec.gov/Archives/edgar/data/1802665/000200976226000005/form4-09092026_090911.xml",
+          "ticker": "HRMY"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0002007919",
+      "error": "SEC issuer Form 4 amendments require manual reconciliation",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "INBX",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001830487",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "PHVS",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001472012",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "IMNM",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001579428",
+      "filings_reviewed": 3,
+      "latest_filing": "2026-09-03",
+      "status": "COMPLETE",
+      "ticker": "AXSM",
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-09-03",
+          "filed": "2026-09-03",
+          "owner": "Jacobson Mark L.",
+          "price": 208.65,
+          "shares": 10000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526382277/ownership.xml",
+          "ticker": "AXSM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-05",
+          "filed": "2026-08-07",
+          "owner": "TABUTEAU HERRIOT",
+          "price": 212.01,
+          "shares": 45004,
+          "source": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526340688/ownership.xml",
+          "ticker": "AXSM"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-06",
+          "filed": "2026-08-07",
+          "owner": "TABUTEAU HERRIOT",
+          "price": 213.95,
+          "shares": 4660,
+          "source": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526340688/ownership.xml",
+          "ticker": "AXSM"
+        }
+      ]
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0000014272",
+      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "BMY",
+      "transactions": []
+    },
+    {
+      "as_of": "2026-10-13",
+      "cik": "0001953926",
+      "error": "SEC Form 4 XML document missing or ambiguous",
+      "filings_reviewed": 0,
+      "latest_filing": "",
+      "status": "INCOMPLETE",
+      "ticker": "ZBIO",
+      "transactions": []
+    }
+  ],
+  "schema_version": 1,
+  "source": "SEC_ISSUER_FORM4_XML"
+}

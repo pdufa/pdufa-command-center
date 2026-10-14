@@ -76,11 +76,11 @@
     },
     {
       "capability": "SEC Form 4 open-market insider trading",
-      "caveat": "Requires a separate issuer-insider collector and source matching",
-      "data_coverage_pct": 0.0,
+      "caveat": "Issuer-capped 90-day P/S transactions; SEC-source gaps and amendments are explicit",
+      "data_coverage_pct": 9.2,
       "key": "insider",
-      "observed_gem_rows": 0,
-      "state": "NOT VERIFIED",
+      "observed_gem_rows": 34,
+      "state": "PARTIAL",
       "total_gem_rows": 368
     },
     {
@@ -134,12 +134,14 @@
   "gem_phase3_results_verified": 1,
   "gem_second_closings_verified": 0,
   "gem_two_benchmark_eligible": 0,
-  "generated_at_utc": "2026-10-14T02:19:06.447195+00:00",
+  "generated_at_utc": "2026-10-14T02:25:22.197239+00:00",
   "hedge_fund_manager_roster": 4,
   "hedge_fund_managers_complete": 4,
   "hedge_fund_source_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
   "historical_linked_event_rows": 0,
   "historical_price_bar_rows": 0,
+  "insider_form4_buying_rows": 0,
+  "insider_form4_covered_rows": 34,
   "policy": "EXACTLY TWO ENTRY BENCHMARKS: VERIFIED PHASE 3 RESULTS RELEASE AND VERIFIED SECOND POST-READOUT FINANCING CLOSE",
   "ranked_two_benchmark_candidates": [],
   "same_input_score_comparison_performed": false,
@@ -148,7 +150,7 @@
   "strategy_returns_validated": false,
   "unvalidated_gaps": [
     "No direct BPW proprietary PoA, options/Greeks, rNPV or conviction-weighted scores",
-    "No SEC Form 4 insider scanner currently integrated",
+    "Form 4 issuer coverage is capped; amendments and missing filings require manual review",
     "Only four selected specialist managers currently tracked",
     "Two-benchmark financing-to-PDUFA backtesting not validated",
     "A coverage audit cannot establish superiority or prediction accuracy"
