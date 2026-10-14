@@ -177,6 +177,7 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
         with gem_col, st.container(border=True, key="overview_gem_panel"):
             st.markdown("### #1-GEM")
             st.caption("Phase 3 / post-financing / PDUFA · stock, factors and source inputs")
+            st.caption("Open #1 GEM below to see the TWO entry benchmarks, research-umbrella leads and optional evidence checkboxes. Unverified programs remain visible.")
             # A toggle avoids nested expanders in the stock drill-downs.
             if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
                          value=False, key="overview_show_gem_master"):
