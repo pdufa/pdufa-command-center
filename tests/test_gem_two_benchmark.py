@@ -99,12 +99,18 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
         self.assertIn("dilution", a["Two-benchmark risk flags"].lower())
         self.assertIn("SEC rescan", a["Two-benchmark risk flags"])
 
-    def test_negative_phase3_readout_is_ranked_low_and_flagged_not_suppressed(self):
-        e = event(state="VERIFIED_FAILURE")
-        a = assess(sample(), e, as_of=DATE)
-        self.assertTrue(a["Two-benchmark eligible"])
-        self.assertEqual(a["Phase 3 quality /30"], 0)
-        self.assertIn("negative outcome", a["Two-benchmark risk flags"])
+    def test_negative_or_outcome_unspecified_phase3_never_qualifies_as_gem(self):
+        for state in ("VERIFIED_FAILURE", "PRIMARY_FAILED_VERIFIED",
+                      "VERIFIED_NEGATIVE", "RESULTS_VERIFIED"):
+            with self.subTest(state=state):
+                e = event(state=state)
+                a = assess(sample(), e, as_of=DATE)
+                self.assertFalse(a["Two-benchmark eligible"])
+                self.assertIsNone(a["Two-benchmark priority /100"])
+                self.assertIsNone(a["Two-benchmark rank"])
+                self.assertIn("PENDING", a["Benchmark 1 — Phase 3 released"])
+        self.assertTrue(assess(sample(), event(state="PRIMARY_MET_VERIFIED"),
+                               as_of=DATE)["Two-benchmark eligible"])
 
     def test_expired_pdufa_is_warning_not_third_positive_benchmark(self):
         a = assess(sample(days=0), event(), as_of=DATE)

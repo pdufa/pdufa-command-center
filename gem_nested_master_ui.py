@@ -326,12 +326,22 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                        f"{r.get('Ticker')}|{r.get('Drug')}|{r.get('Indication')}|{first + offset}")
         uid = hashlib.sha256(f"{identity}|{first + offset}".encode("utf-8")).hexdigest()[:14]
         score = f"{r['GEM Score /100']}/100" if r["_eligible"] else "UNSCORED"
+        entry_score = (f"{r['Entry Score /100']}/100" if r.get("Entry Score /100") is not None
+                       else "NOT AVAILABLE")
+        exit_score = (f"{r['Exit Risk /100']}/100" if r.get("Exit Risk /100") is not None
+                      else "NOT AVAILABLE")
         rank = f"#{r['GEM Rank']}" if r["_eligible"] else "—"
         with st.container(border=True):
             head = st.columns([8, 1, 1], gap="small")
             head[0].markdown(
                 f"**{rank} · {_value(ticker)} · {_value(r.get('Drug'))}**  "
-                f"— {_value(r.get('GEM Stage'))} · **GEM {score}**"
+                f"— {_value(r.get('GEM Stage'))} · **GEM {score}** "
+                f"· **ENTRY {entry_score}** · **EXIT RISK {exit_score}**"
+            )
+            st.caption(
+                f"ENTRY COVERAGE {r.get('Entry Coverage /100', 0)}/100"
+                f" · EXIT COVERAGE {r.get('Exit Coverage /100', 0)}/100"
+                " · Provisional source-weight coverage, not a validated trade signal."
             )
             st.caption("TRADING: " + str(r.get("Trade assessment") or "WAIT — NO DATA")
                        + " · " + str(r.get("Trading rationale") or ""))

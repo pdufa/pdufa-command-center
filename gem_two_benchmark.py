@@ -1,7 +1,7 @@
 """Two-benchmark GEM trading-candidate queue with separate, advisory ranking.
 
 The user's only positive eligibility benchmarks:
-  (1) verified, publicly released Phase 3 clinical RESULTS for the exact drug;
+  (1) verified, publicly released SUCCESSFUL Phase 3 results for the exact drug;
   (2) SEC-attested closing of the SECOND separate post-readout financing.
 No cash-runway, market, clinical-success, safety, dilution or FDA-window score
 can silently become a third positive benchmark. Scores rank candidates,
@@ -67,7 +67,9 @@ def phase3_results_released(row, event, *, as_of):
         ticker and nct and key.startswith(ticker + "|")
         and event_ticker == ticker and event_nct == nct
         and observed and released and released <= observed
-        and status in VERIFIED_READOUT_STATES
+        # A published negative or generic "results verified" readout must
+        # never pass the successful-Phase-3 GEM eligibility benchmark.
+        and status in POSITIVE_READOUT_STATES
         and https_source(source)
     )
 

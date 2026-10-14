@@ -365,6 +365,36 @@ and the exchange source appear in the research table and CSV. This clears the
 TBPH quote-coverage blocker without granting a clinical score or trading entry.
 
 
+## GEM candidate profile entry/exit scoring (October 14, 2026)
+
+The #1-GEM nested stock profile and PDUFA → SCANS → GEM master grid now
+show **three distinct values**: the preserved GEM Quality /100 (clinical and
+funding research ranking), a **provisional Entry Score /100** (higher is
+stronger), and a **provisional Exit Risk /100** (higher is more concerning).
+Each trade score has an independent **Coverage /100**, status, and per-factor
+breakdown in the profile and CSV. Coverage means the weight supported by
+current observations; it is NOT predictive confidence. Points for missing
+source inputs stay unearned and unavailable, not treated as negative findings.
+
+Entry rubric: closing-price trend 25; relative-volume and dollar liquidity 20;
+closing-price location proxies 20; actual stop/spread/ATR/reward-risk 20
+(**unavailable in the current close-only saved market feed**); verified PDUFA
+timing 15. Exit risk rubric: closing-support break 15; actual position-specific
+stop 15 (**unavailable**); verified FDA deadline 25; source-documented clinical
+and financing deterioration 20; weakening trend 15; selling pressure/liquidity
+10. Stale saved EOD, partial clinical feed, or non-current SEC source checks
+withhold both scores. Less than 50/100 available weight also withholds a
+numeric value. Unverified two-benchmark research rows have **no Entry Score**,
+though a provisional, no-position-assumed Exit Risk may be visible. The PDUFA
+minus-three-days boundary, actual negative FDA news and support breakdown
+warnings supersede numeric scores. This is a heuristic research display, not
+a validated or backtested trading strategy or permission to buy or sell.
+
+Benchmark 1 is now **source-verified positive Phase 3 results**: negative and
+outcome-unknown published readouts do NOT qualify for Verified GEM ranking.
+Benchmark 2 remains the distinct SEC-documented second post-readout close.
+No third eligibility benchmark was added.
+
 ## GEM per-stock entry/exit monitor and site-health audit (October 14, 2026)
 
 The #1-GEM nested master list and PDUFA → SCANS → GEM table display a separate **Trade assessment**, technical summary, and EOD chart per exact program. The master-table CSV includes those columns. This research-only view uses source-labeled saved close/volume data; it does **not** submit broker orders or treat GEM qualification, RSI, volume or a research rank as an approved BUY. Missing or stale daily bars, 50-day history, OHLC-based ATR, intraday VWAP, bid/ask, and position-specific stop/reward-to-risk remain explicitly unavailable. The original two source-verified GEM benchmarks are unchanged. The existing manual PDUFA −3-calendar-day exit warning remains separate from actual trading fills.
