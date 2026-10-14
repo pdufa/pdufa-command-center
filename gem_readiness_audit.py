@@ -184,6 +184,30 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
                 })
     except (OSError, ValueError, KeyError, AttributeError, TypeError, UnicodeError):
         pass
+    insider_summary = {
+        "collector_status": "NOT PUBLISHED", "issuers_targeted": 0,
+        "issuers_complete": 0, "source_errors": 0,
+        "matched_program_rows": sum(
+            r.get("Insider Form 4 signal") == "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS"
+            for r in items
+        ),
+        "with_open_market_purchases": sum(
+            (r.get("Insider open-market purchases") or 0) > 0 for r in items
+        ),
+    }
+    try:
+        insider_src = json.loads((p / "gem_insider_form4.json").read_text(encoding="utf-8"))
+        if (isinstance(insider_src, dict) and insider_src.get("schema_version") == 1
+                and insider_src.get("source") == "SEC_ISSUER_FORM4_XML"
+                and date.fromisoformat(str(insider_src.get("as_of_pacific") or "")) <= today):
+            insider_summary.update({
+                "collector_status": str(insider_src.get("collector_status") or "UNVERIFIED"),
+                "issuers_targeted": insider_src.get("issuer_count", 0),
+                "issuers_complete": insider_src.get("issuers_complete", 0),
+                "source_errors": len(insider_src.get("issuer_errors") or []),
+            })
+    except (OSError, ValueError, KeyError, AttributeError, TypeError, UnicodeError):
+        pass
     runway_counts = {
         "collector_status": runway_source_status,
         "target_count": runway_target,
@@ -279,15 +303,7 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         "ranked": qualified,
         "cash_runway": runway_counts,
         "hedge_fund_13f": hedge_summary,
-        "insider_form4": {
-            "matched_program_rows": sum(
-                r.get("Insider Form 4 signal") == "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS"
-                for r in items
-            ),
-            "with_open_market_purchases": sum(
-                (r.get("Insider open-market purchases") or 0) > 0 for r in items
-            ),
-        },
+        "insider_form4": insider_summary,
         "two_benchmark_candidate_count": sum(
             row.get("Two-benchmark eligible") is True for row in items
         ),
