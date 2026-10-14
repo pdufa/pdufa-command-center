@@ -1,4 +1,4 @@
-name: PDUFA Nightly 8:30 PM Pacific Start
+name: PDUFA Daily 1:00 PM Pacific Start
 
 # GitHub cron is UTC, not Pacific. Run both candidate UTC slots, then
 # dispatch exactly the one matching the current Los Angeles UTC offset.
@@ -6,15 +6,16 @@ name: PDUFA Nightly 8:30 PM Pacific Start
 # second nightly dispatch during daylight/standard time transitions.
 on:
   schedule:
-    - cron: '30 3 * * *'  # 8:30 PM PDT
-    - cron: '45 3 * * *'  # 8:45 PM PDT fallback if no start
-    - cron: '0 4 * * *'   # 9:00 PM PDT fallback if no start
-    - cron: '30 4 * * *'  # 8:30 PM PST
-    - cron: '45 4 * * *'  # 8:45 PM PST fallback if no start
-    - cron: '0 5 * * *'   # 9:00 PM PST fallback if no start
-    - cron: '15 4 * * *'  # 9:15 PM PDT publisher handoff watchdog
-    - cron: '15 5 * * *'  # 9:15 PM PST publisher handoff watchdog
-    - cron: '30 5 * * *'  # 9:30 PM PST second publisher watchdog
+    - cron: '0 20 * * *'  # 1:00 PM PDT
+    - cron: '15 20 * * *' # 1:15 PM PDT backup
+    - cron: '30 20 * * *' # 1:30 PM PDT backup
+    - cron: '0 21 * * *'  # 1:00 PM PST
+    - cron: '15 21 * * *' # 1:15 PM PST backup
+    - cron: '30 21 * * *' # 1:30 PM PST backup
+    - cron: '5 21 * * *'  # 2:05 PM PDT publisher/source handoff recovery
+    - cron: '35 21 * * *' # 2:35 PM PDT publisher/source handoff recovery
+    - cron: '5 22 * * *'  # 2:05 PM PST publisher/source handoff recovery
+    - cron: '35 22 * * *' # 2:35 PM PST publisher/source handoff recovery
   workflow_dispatch:
   # One-time bootstrap on an explicit scheduler repair (not ordinary app pushes).
   push:
@@ -31,11 +32,11 @@ concurrency:
 
 jobs:
   dispatch:
-    name: Start one serial nightly scan chain
+    name: Start one serial daily scan chain
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Accept only matching 8:30 PM Pacific cron slot
+      - name: Accept only matching 1:00 PM Pacific cron slot
         id: pacific
         shell: bash
         env:
@@ -52,30 +53,29 @@ jobs:
             hour="$(TZ=America/Los_Angeles date +%H)"
             minute="$(TZ=America/Los_Angeles date +%M)"
             now_minutes=$((10#$hour * 60 + 10#$minute))
-            if [ "$now_minutes" -ge 1230 ] && [ "$now_minutes" -lt 1320 ]; then
+            if [ "$now_minutes" -ge 780 ] && [ "$now_minutes" -lt 840 ]; then
               echo "run=true" >> "$GITHUB_OUTPUT"
-              echo "Scheduler repair push during nightly window: guarded bootstrap"
+              echo "Scheduler repair push during 1 PM daily start window: guarded bootstrap"
             else
               echo "run=false" >> "$GITHUB_OUTPUT"
               echo "Scheduler repair outside nightly window: no scan started"
             fi
             exit 0
           fi
-          # GitHub can deliver the 20:30/20:45/21:00 UTC schedules hours
-          # late. Checking only the UTC offset previously admitted a 03:56 AM
-          # execution and three repeat clinical collections the next morning.
-          # Never dispatch scheduled work outside the actual Pacific-night window.
+          # GitHub can delay crons; the Pacific hour and correct UTC offset
+          # must both match. The afternoon recovery crons never dispatch
+          # the full scan, and a late morning/evening cron is ignored.
           local_hour="$(TZ=America/Los_Angeles date +%H)"
           local_minute="$(TZ=America/Los_Angeles date +%M)"
           local_minutes=$((10#$local_hour * 60 + 10#$local_minute))
-          if [ "$local_minutes" -lt 1230 ] || [ "$local_minutes" -ge 1350 ]; then
+          if [ "$local_minutes" -lt 780 ] || [ "$local_minutes" -ge 840 ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skip delayed scheduled trigger outside 8:30-10:30 PM Pacific"
+            echo "Skip scheduled start outside 1:00-1:59 PM Pacific"
             exit 0
           fi
           offset="$(TZ=America/Los_Angeles date +%z)"
-          if { { [ "$SCHEDULE_CRON" = '30 3 * * *' ] || [ "$SCHEDULE_CRON" = '45 3 * * *' ] || [ "$SCHEDULE_CRON" = '0 4 * * *' ]; } && [ "$offset" = -0700 ]; } ||
-             { { [ "$SCHEDULE_CRON" = '30 4 * * *' ] || [ "$SCHEDULE_CRON" = '45 4 * * *' ] || [ "$SCHEDULE_CRON" = '0 5 * * *' ]; } && [ "$offset" = -0800 ]; }; then
+          if { { [ "$SCHEDULE_CRON" = '0 20 * * *' ] || [ "$SCHEDULE_CRON" = '15 20 * * *' ] || [ "$SCHEDULE_CRON" = '30 20 * * *' ]; } && [ "$offset" = -0700 ]; } ||
+             { { [ "$SCHEDULE_CRON" = '0 21 * * *' ] || [ "$SCHEDULE_CRON" = '15 21 * * *' ] || [ "$SCHEDULE_CRON" = '30 21 * * *' ]; } && [ "$offset" = -0800 ]; }; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             echo "Correct Pacific-night slot; offset $offset"
           else
@@ -90,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           # GitHub scheduled starts can be delayed or retried. Do not start a
-          # second nightly chain when a clinical workflow exists after 8:30 PM LA.
+          # second daily chain when a clinical workflow exists after 1 PM LA.
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/pdufa-clinical-runs.json"
           if python - "$RUNNER_TEMP/pdufa-clinical-runs.json" <<'PY'
           import json, sys
@@ -98,7 +98,7 @@ jobs:
           from zoneinfo import ZoneInfo
           now = datetime.now(timezone.utc)
           start = now.astimezone(ZoneInfo("America/Los_Angeles")).replace(
-              hour=20, minute=30, second=0, microsecond=0).astimezone(timezone.utc)
+              hour=13, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
           with open(sys.argv[1], encoding="utf-8") as handle:
               runs = json.load(handle).get("workflow_runs", [])
           exists = any(
@@ -106,7 +106,7 @@ jobs:
               and start <= datetime.fromisoformat(run["created_at"].replace("Z", "+00:00")) <= now
               for run in runs if run.get("created_at")
           )
-          print("Nightly clinical scan already started today" if exists else "No nightly clinical run found since 8:30 PM Pacific")
+          print("Daily clinical scan already started today" if exists else "No daily clinical run found since 1:00 PM Pacific")
           raise SystemExit(0 if exists else 1)
           PY
           then
@@ -125,7 +125,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          # Only act after 9 PM Pacific; the completed clinical run must have
+          # Only act after 2 PM Pacific; the completed clinical run must have
           # had at least three minutes for its normal workflow_run trigger.
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/clinical-runs.json"
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/runs?per_page=100" > "$RUNNER_TEMP/publisher-runs.json"
@@ -136,10 +136,10 @@ jobs:
           from zoneinfo import ZoneInfo
           now = datetime.now(timezone.utc)
           local = now.astimezone(ZoneInfo("America/Los_Angeles"))
-          if not (21 <= local.hour < 23):
-              print("Report handoff recovery disabled outside 9-11 PM Pacific")
+          if not (14 <= local.hour < 17):
+              print("Report handoff recovery disabled outside 2-5 PM Pacific")
               raise SystemExit(0)
-          start = local.replace(hour=20, minute=30, second=0, microsecond=0).astimezone(timezone.utc)
+          start = local.replace(hour=13, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
           def read(index):
               with open(sys.argv[index], encoding="utf-8") as handle:
                   return json.load(handle).get("workflow_runs", [])
@@ -181,7 +181,7 @@ jobs:
         run: |
           set -euo pipefail
           # The publisher's ordinary workflow_run trigger gets first chance.
-          # Fallback only for this Pacific-night window and only after a verified
+          # Fallback only for the Pacific afternoon recovery window and after a verified
           # successful report publishing run; never call incomplete evidence COMPLETE.
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/runs?per_page=100" > "$RUNNER_TEMP/clinical-before-sources.json"
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-report.yml/runs?per_page=100" > "$RUNNER_TEMP/publisher-before-sources.json"
@@ -194,10 +194,10 @@ jobs:
 
           now = datetime.now(timezone.utc)
           la = now.astimezone(ZoneInfo("America/Los_Angeles"))
-          if not (21 <= la.hour < 23):
-              print("Extended-source recovery is limited to 9-11 PM Pacific")
+          if not (14 <= la.hour < 17):
+              print("Extended-source recovery is limited to 2-5 PM Pacific")
               raise SystemExit(0)
-          night_start = la.replace(hour=20, minute=30, second=0, microsecond=0).astimezone(timezone.utc)
+          night_start = la.replace(hour=13, minute=0, second=0, microsecond=0).astimezone(timezone.utc)
 
           def runs(index):
               with open(sys.argv[index], encoding="utf-8") as handle:
@@ -209,7 +209,7 @@ jobs:
           clinical = [r for r in runs(1) if r.get("event") == "workflow_dispatch"
                       and r.get("created_at") and night_start <= moment(r["created_at"]) <= now]
           if not clinical:
-              print("No nightly clinical run; skip extended-source recovery")
+              print("No daily clinical run; skip extended-source recovery")
               raise SystemExit(0)
           latest_clinical = max(clinical, key=lambda r: r["created_at"])
           if latest_clinical.get("status") != "completed" or latest_clinical.get("conclusion") != "success":
