@@ -475,23 +475,21 @@ def render_gem_scans(root="data"):
     strict = [
         item for item in items if item.get("GEM strict shortlist rank") is not None
     ]
-    st.markdown("### 💎 THE FEW GEMS — ALL MANDATORY ENTRY GATES")
-    st.metric("All mandatory entry gates met", len(strict))
+    st.markdown("### OPTIONAL — ADDITIONAL CONSERVATIVE RESEARCH FILTERS")
+    st.metric("Meeting every optional research-quality filter", len(strict))
     st.caption(
-        "STRICT INTERSECTION: verified successful Phase 3 and clinical/safety "
-        "requirements, confirmed price base and normalized volume, both separate "
-        "post-readout financing closings independently attested with SEC sources, "
-        "no unresolved dilution, >=12 months SEC cash-only runway, fresh SEC and market data, "
-        "confirmed future PDUFA "
-        "and at least 4 days before decision. All three GEM stages must qualify "
-        "and Stage 1 must be GREEN. PASS means manual research/entry review ONLY: "
-        "not an order, return prediction or guarantee of approval."
+        "This is the old, stricter comparison screen. It also considers safety, "
+        "price base, volume, dilution, cash runway >=12 months, feed freshness "
+        "and verified future PDUFA timing. NONE of these are additional entry "
+        "benchmarks for the two-benchmark priority list above. Failing this "
+        "optional research screen does not erase two-benchmark eligibility. "
+        "Both screens are research, not orders or return predictions."
     )
     if not strict:
-        st.warning(
-            "NO STOCK currently passes every mandatory GEM entry gate. "
-            "Watchlist remains research only; financing announcements, a "
-            "single-stage rank or inaccessible SEC evidence never qualify."
+        st.info(
+            "No candidate meets every OPTIONAL conservative filter. "
+            "Check the separate two-benchmark priority list above for "
+            "stocks that already met the selected entry benchmarks."
         )
     else:
         shortlisted = sorted(strict, key=lambda row: row["GEM strict shortlist rank"])
@@ -508,14 +506,14 @@ def render_gem_scans(root="data"):
         strict_table = pd.DataFrame(shortlisted).reindex(columns=shortlist_columns)
         st.dataframe(strict_table.head(25), use_container_width=True, hide_index=True)
         st.download_button(
-            "EXPORT STRICT ALL-GATE GEMS",
+            "EXPORT OPTIONAL CONSERVATIVE RESEARCH SUBSET",
             strict_table.to_csv(index=False).encode("utf-8"),
             file_name=f"gem_strict_all_gates_{day:%Y%m%d}.csv",
             mime="text/csv", key="gem_strict_shortlist_export",
         )
     mode = st.radio(
         "GEMS research view",
-        ("All mandatory entry gates passed", "Qualified in any research stage",
+        ("Two benchmarks completed", "Qualified in advanced research rubric",
          "All candidates, including watch/review"),
         horizontal=True, key="gem_scan_row_mode",
     )
@@ -523,21 +521,22 @@ def render_gem_scans(root="data"):
         item for item in items
         if any(item[stage + " rank"] is not None for stage in STAGES)
     ]
-    shown = (strict if mode.startswith("All mandatory") else
-             eligible if mode.startswith("Qualified in any") else items)
+    shown = (qualified if mode == "Two benchmarks completed" else
+             eligible if mode.startswith("Qualified in advanced") else items)
     shown = sorted(
         shown,
         key=lambda r: (
+            r.get("Two-benchmark rank") or 1000000,
             min((r[stage + " rank"] for stage in STAGES
                  if r[stage + " rank"] is not None), default=1000000),
             str(r.get("Ticker") or ""),
             str(r.get("Exact event") or ""),
         ),
     )
-    if not eligible:
+    if not eligible and mode != "Two benchmarks completed":
         st.info(
-            "No candidates currently qualify in any single research ranking. "
-            "Unqualified watchlist rows remain available for evidence review."
+            "No candidates currently qualify in the optional advanced research rubric. "
+            "Check the separate two-benchmark candidates above."
         )
     if shown:
         st.markdown(_gems_table(shown[:75]), unsafe_allow_html=True)
@@ -547,9 +546,11 @@ def render_gem_scans(root="data"):
         st.info("No candidates match the selected GEMS view.")
 
     st.caption(
-        "GEM entry cutoff is PDUFA -3. The original POST PHASE 3 Stage 1 "
-        "workspace still has its legacy -7-day entry gate; its entry status "
-        "is labeled separately in the GEM detail exports to avoid confusion."
+        "Your planned exit remains three days before PDUFA. A decision date "
+        "at or inside that boundary is a serious timing warning, rather than "
+        "a third qualification benchmark. The separate legacy Stage 1 "
+        "workspace still has an older -7 entry filter; it is not the new "
+        "two-benchmark GEM eligibility policy."
     )
     discrimination = gem_discrimination_audit(items, STAGES)
     with st.expander("GEM RANKING QUALITY — TIES & EVIDENCE LIMITS", expanded=False):
@@ -577,7 +578,7 @@ def render_gem_scans(root="data"):
                 "; ".join(f"{column}: {points} points"
                           for column, points in WEIGHTS[stage].items())
             )
-            with st.expander(stage + " — required qualifiers", expanded=False):
+            with st.expander(stage + " — optional advanced research qualifiers", expanded=False):
                 for index, qualifier in enumerate(SCAN_QUALIFIERS[stage], 1):
                     st.write(f"{index}. {qualifier}")
             filter_mode = st.radio(
@@ -597,6 +598,8 @@ def render_gem_scans(root="data"):
             ))
             ordered = (
                 [stage + " GEM", "Ticker", "Drug", "Indication",
+                 "Two-benchmark rank", "Two-benchmark entry status",
+                 "Two-benchmark priority /100", "Two-benchmark risk flags",
                  "GEM ALL ENTRY GATES", "GEM strict shortlist rank",
                  "Phase 3 tracking", "Financing watch", "GEM trade entry gate",
                  "Verified 2nd financing close date",
@@ -613,7 +616,9 @@ def render_gem_scans(root="data"):
                 stage + " GEM": "GEM rank (score)",
                 stage + " qualifier": "Qualification",
                 stage + " missing": "Missing qualifiers",
-                "Entry qualification": "Legacy Stage 1 entry gate (PDUFA -7)",
+                "Entry qualification": "Legacy Stage 1 conservative filter (PDUFA -7)",
+                "GEM ALL ENTRY GATES": "Optional strict research filter",
+                "GEM trade entry gate": "Legacy strict research-entry filter",
             })
             st.caption(
                 f"{len(table):,} rows · {counts[stage]['qualified']:,} "
