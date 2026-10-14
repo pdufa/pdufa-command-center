@@ -130,7 +130,7 @@ def render_gem_scan_block_status(report=None, run=None):
                    "they do not impose further entry benchmarks. No buy orders.")
         runway = report.get("cash_runway") or {}
         st.caption(
-            "SEC cash runway (minimum 12 months at GEM 2/3): "
+            "SEC runway (12-month advisory ranking threshold): "
             f"{runway.get('source_backed_pass', 0)} pass, "
             f"{runway.get('missing_or_stale', 0)} unverified, "
             f"{runway.get('under_12_months', 0)} below minimum; "
@@ -149,6 +149,21 @@ def render_gem_scan_block_status(report=None, run=None):
             f"Status: {hedge.get('collector_status', 'NOT VERIFIED')}. "
             "Quarterly delayed holdings, never a third entry benchmark."
         )
+        comparable = report.get("bpw_comparable") or {}
+        matrix = comparable.get("capability_matrix")
+        if isinstance(matrix, list) and matrix:
+            with st.expander("GEM vs BPW — CAPABILITY COMPARISON", expanded=False):
+                st.caption(
+                    "These are GEM data-coverage measures against BPW's publicly "
+                    "described features, not comparisons of proprietary BPW "
+                    "approval scores or actual stock returns."
+                )
+                st.dataframe(pd.DataFrame(matrix)[
+                    ["capability", "state", "observed_gem_rows",
+                     "total_gem_rows", "data_coverage_pct", "caveat"]
+                ], hide_index=True, use_container_width=True)
+        else:
+            st.caption("GEM vs BPW comparison not yet source-audited in saved scan.")
         st.caption("Last audit " + str(report.get("generated_at_utc") or "unknown") +
                    " · action " + str(report.get("action") or "UNKNOWN") +
                    " · archive integrity " + str(report.get("artifact_integrity") or "NOT CHECKED") +
