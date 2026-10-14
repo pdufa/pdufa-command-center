@@ -101,6 +101,15 @@ jobs:
         run: |
           python scripts/collect_gem_runway.py --data-dir data --max-tickers 75
 
+      - name: Scan quarterly SEC 13F specialist-manager holdings
+        id: hedge_funds
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.start_email.outcome == 'success' }}
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+        run: |
+          python scripts/collect_gem_hedge_funds.py --data-dir data
+
       - name: Audit all saved GEM source gates and research stage scores
         id: gem_audit
         if: always()
@@ -133,6 +142,11 @@ jobs:
           # silently continuing to qualify an earlier successful scan.
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_runway_evidence.json ]; then
             git add -- data/gem_runway_evidence.json
+          fi
+          # 13F is a supplemental ranking source: unavailable managers are
+          # reported as partial and never invent holdings or block base scans.
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_hedge_fund_13f.json ]; then
+            git add -- data/gem_hedge_fund_13f.json
           fi
           # Source data is published ONLY after a fully reconciled registry run.
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && \
@@ -172,6 +186,7 @@ jobs:
             reports/gem_daily/
             data/gem_scan_block_report.json
             data/gem_runway_evidence.json
+            data/gem_hedge_fund_13f.json
             data/phase3_intake_status.json
             data/phase3_announcements.csv
           retention-days: 90
