@@ -1,0 +1,49 @@
+name: PDUFA One-Shot Full Scan Start 2026-10-14
+# User-requested immediate launch. A push touching only this one-time file
+# creates one launch; unrelated future pushes do not retrigger it.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-start-full-sequence-20261014.yml'
+permissions:
+  actions: write
+  contents: read
+concurrency:
+  group: pdufa-one-shot-full-scan-20261014
+  cancel-in-progress: false
+jobs:
+  launch:
+    name: Request existing audited nightly full scan chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Avoid launching over an already active clinical scan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" > "$RUNNER_TEMP/recent-runs.json"
+          python - "$RUNNER_TEMP/recent-runs.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding="utf-8") as f:
+              runs = json.load(f).get("workflow_runs", [])
+          active = [r for r in runs if r.get("name") == "PDUFA Nightly Clinical Scans"
+                    and r.get("status") in ("queued", "in_progress", "waiting", "pending", "requested")]
+          if active:
+              print("Existing active clinical scan(s):", [r.get("html_url") for r in active])
+              raise SystemExit("Duplicate launch blocked")
+          print("No active clinical collector observed in recent GitHub runs")
+          PY
+      - name: Dispatch ALL clinical scans and GEMS fourth block
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/dispatches" \
+            -f ref=main -f 'inputs[scan]=ALL' -f 'inputs[include_gem]=true'
+          echo "Full chain requested: #2 PIPELINE -> #3 PRE3 -> #4 POST3 -> GEMS research."
+          echo "After clinical publisher: FDA -> SEC -> FINANCIAL -> MARKET -> ISSUER -> reconciliation -> scoring -> error audit -> guarded repair."
+          echo "GitHub dispatch acceptance is not proof of source completion; enforce START/END email gate and preserve PARTIAL flags."
