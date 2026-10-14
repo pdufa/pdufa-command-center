@@ -382,7 +382,7 @@ required_ui_contracts = [
     'nav_options = ["PDUFA"',
     'on_change=_on_main_nav_change',
     'key="pdufa_subtab", on_change="rerun"',
-    '["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]',
+    '["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]',
     '"PIPELINE"',
     '## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS',
     'master_with_phase3(df)',
