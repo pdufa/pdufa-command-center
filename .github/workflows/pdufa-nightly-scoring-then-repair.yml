@@ -12,8 +12,10 @@ on:
       - .github/workflows/pdufa-nightly-scoring-then-repair.yml
       - scripts/nightly_scoring_audit.py
       - scripts/post_scan_repair.py
+      - scripts/scan_recovery_triage.py
       - tests/test_nightly_scoring_audit.py
       - tests/test_post_scan_repair.py
+      - tests/test_scan_recovery_triage.py
 
 permissions:
   actions: write
@@ -37,7 +39,7 @@ jobs:
       - name: Install pytest
         run: python -m pip install pytest
       - name: Test nightly audit and safe repair contracts
-        run: python -m pytest -q tests/test_nightly_scoring_audit.py tests/test_post_scan_repair.py tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py
+        run: python -m pytest -q tests/test_nightly_scoring_audit.py tests/test_post_scan_repair.py tests/test_scan_recovery_triage.py tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py
 
   scoring:
     name: 1 — Audit scoring inputs after completed nightly scan
@@ -193,11 +195,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python -m scripts.post_scan_repair
+      - name: Prepare source-conflict and code-error recovery queue
+        if: always()
+        env:
+          PDUFA_SOURCE_RUN_ID: ${{ needs.scoring.outputs.source_run_id }}
+        shell: bash
+        run: |
+          python scripts/scan_recovery_triage.py --source-run-id "$PDUFA_SOURCE_RUN_ID"
+          echo "Published verified source statuses remain unchanged."
       - name: Archive repair decision, including skipped unsafe fixes
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pdufa-nightly-safe-repair-${{ github.run_id }}
-          path: reports/post_scan_repair.json
+          path: |
+            reports/post_scan_repair.json
+            reports/nightly_recovery_triage.json
           if-no-files-found: warn
           retention-days: 30
