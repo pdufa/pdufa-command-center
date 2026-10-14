@@ -163,7 +163,7 @@ def program_key(row):
     ticker = str(row.get("Ticker") or "").strip().upper()
     nct = str(row.get("NCT ID") or "").strip().upper()
     if (re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker)
-            and re.fullmatch(r"NCT\\d{8}", nct)):
+            and re.fullmatch(r"NCT\d{8}", nct)):
         return "TRIAL|" + ticker + "|" + nct
     return ""
 
@@ -178,7 +178,7 @@ def filter_programs(rows, checklists, selected=()):
                 (checklists.get(program_key(row), {})
                  .get(key, {}).get("checked") is True)
                 or (key in dict(UMBRELLA) and
-                    checklists.get(str(row.get("Exact Program / Event") or ""), {})
+                    checklists.get(program_key(row), {})
                     .get(key, {}).get("observed") is True)
                 for key in keys
             )]
