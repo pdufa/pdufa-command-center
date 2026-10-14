@@ -1,0 +1,444 @@
+{
+  "schema_version": 1,
+  "generated_date_utc": "2026-10-14",
+  "source_baseline_run_id": "38602603100",
+  "baseline_required_unverified": 37,
+  "scoped_original_review_items": 37,
+  "latest_targeted_recheck_run_id": "38613252253",
+  "reviewed_count": 37,
+  "focused_new_verified_count": 1,
+  "focused_unresolved_count": 36,
+  "distinct_from_trade_entry_authorization": true,
+  "gem_trade_ready": false,
+  "research_dispositions": {
+    "PROGRAM_MAPPING_REVIEW": 3,
+    "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED": 9,
+    "NO_QUALIFYING_PHASE3": 7,
+    "VERIFIED_SECOND_POST_PHASE3_FINANCING": 6,
+    "ONE_POST_PHASE3_CLOSE_VERIFIED_SECOND_NOT_PROVEN": 1,
+    "ONE_POST_PHASE3_CLOSE_VERIFIED_SECOND_NOT_FOUND": 1,
+    "SECOND_FINANCING_FUNDED_PERIOD_ONLY_EXACT_DATE_PENDING": 1,
+    "NO_RESEARCH_RECORD": 6,
+    "CLAIM_NEWLY_VERIFIED": 1,
+    "REPORTED_FACT_PENDING_CURRENCY_AWARE_CASH_BURN_VALIDATION": 2
+  },
+  "records": [
+    {
+      "event_key": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
+      "ticker": "VTRS",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "PROGRAM_MAPPING_REVIEW",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm ownership/applicant identity; financing cannot be transferred between issuers"
+    },
+    {
+      "event_key": "IONS|BEPIROVIRSEN_CHB_20261026",
+      "ticker": "IONS",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "INO|INO3107_RRP_20261030",
+      "ticker": "INO",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "AGIO|MITAPIVAT_SCD_20261101",
+      "ticker": "AGIO",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "CYTK|MYQORZO_HCM_20261114",
+      "ticker": "CYTK",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Independently re-fetch both dated SEC/issuer closing sources and confirm distinct after readout"
+    },
+    {
+      "event_key": "SMMT|IVONESCIMAB_20261114",
+      "ticker": "SMMT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Independently re-fetch both dated SEC/issuer closing sources and confirm distinct after readout"
+    },
+    {
+      "event_key": "CAPR|DERAMIOCEL_DMD_20261122",
+      "ticker": "CAPR",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "ONE_POST_PHASE3_CLOSE_VERIFIED_SECOND_NOT_PROVEN",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "VRTX|POVETACICEPT_IGAN_20261130",
+      "ticker": "VRTX",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "ZLAB|POVETACICEPT_IGAN_20261130",
+      "ticker": "ZLAB",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "PROGRAM_MAPPING_REVIEW",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm ownership/applicant identity; financing cannot be transferred between issuers"
+    },
+    {
+      "event_key": "ANAB|IMSIDOLIMAB_GPP_20261212",
+      "ticker": "ANAB",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "PROGRAM_MAPPING_REVIEW",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm ownership/applicant identity; financing cannot be transferred between issuers"
+    },
+    {
+      "event_key": "CORT|RELACORILANT_CUSHINGS_20261217",
+      "ticker": "CORT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "MLYS|LORUNDROSTAT_20261222",
+      "ticker": "MLYS",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Independently re-fetch both dated SEC/issuer closing sources and confirm distinct after readout"
+    },
+    {
+      "event_key": "GILD|ANITOCEL_MM_20261223",
+      "ticker": "GILD",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "PRAX|RELUTRIGINE_DEE_20261227",
+      "ticker": "PRAX",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "VTRS|MR107A02_ACUTEPAIN_20261227",
+      "ticker": "VTRS",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "NUVB|IBTROZI_ROS1NSCLC_20270104",
+      "ticker": "NUVB",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "IBRX|ANKTIVA_NMIBC_20270106",
+      "ticker": "IBRX",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Independently re-fetch both dated SEC/issuer closing sources and confirm distinct after readout"
+    },
+    {
+      "event_key": "DYN|ZROSTUDIRSEN_DMD_20270121",
+      "ticker": "DYN",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "ARQT|ZORYVE_AD_20270223",
+      "ticker": "ARQT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "CGEM|ZIPALERTINIB_NSCLC_20270227",
+      "ticker": "CGEM",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "APMD|OXNIMBI_OSA_20270228",
+      "ticker": "APMD",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Independently re-fetch both dated SEC/issuer closing sources and confirm distinct after readout"
+    },
+    {
+      "event_key": "BMRN|VOXZOGO_ACHONDROPLASIA_20270228",
+      "ticker": "BMRN",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "EXEL|ZANZALINTINIB_CRC",
+      "ticker": "EXEL",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "HRMY|PITOLISANT_GR_20270401",
+      "ticker": "HRMY",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_QUALIFYING_PHASE3",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Confirm clinical stage from sponsor primary source and remove from Phase3-only cohort; do not fabricate a financing"
+    },
+    {
+      "event_key": "IMNM|VAREGACESTAT_DESMOID_20270428",
+      "ticker": "IMNM",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "ONE_POST_PHASE3_CLOSE_VERIFIED_SECOND_NOT_FOUND",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "AXSM|AXS12_CATAPLEXY_20270501",
+      "ticker": "AXSM",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Independently re-fetch both dated SEC/issuer closing sources and confirm distinct after readout"
+    },
+    {
+      "event_key": "BMY|MEZIGDOMIDE_RRMM_20270513",
+      "ticker": "BMY",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_SECOND_POST_PHASE3_CLOSE_VERIFIED",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "COGT|BEZUCLASTINIB_GIST_20261130",
+      "ticker": "COGT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "SECOND_FINANCING_FUNDED_PERIOD_ONLY_EXACT_DATE_PENDING",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "PHAR|JOENJA_LOWER_DOSE_APDS_20270130",
+      "ticker": "PHAR",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "BLTE|TINLAREBANT_STGD1_20270212",
+      "ticker": "BLTE",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "SRPT|CASIMERSEN_DMD45_20270228",
+      "ticker": "SRPT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "SRPT|GOLODIRSEN_DMD53_20270228",
+      "ticker": "SRPT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "INBX|OZEKIBART_CHONDROSARCOMA_20270414",
+      "ticker": "INBX",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
+      "ticker": "PHVS",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "SINGLE_CLAIM_VERIFIED_IN_LATEST_FOCUSED_RECHECK",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "No second financing implied; only one SEC-funded close attested"
+    },
+    {
+      "event_key": "COGT|BEZUCLASTINIB_ADVSM_20270629",
+      "ticker": "COGT",
+      "category": "SEC",
+      "claim": "FINANCING_CLOSURE",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Find exact issuer release and CIK matched SEC filing; distinguish pricing, signing, and closing."
+    },
+    {
+      "event_key": "BLTE|TINLAREBANT_STGD1_20270212",
+      "ticker": "BLTE",
+      "category": "FINANCIAL",
+      "claim": "CASH_AND_RUNWAY",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Verify reported cash and aligned operating cash flow in issuer's native currency; do not invent a USD value"
+    },
+    {
+      "event_key": "PHVS|DEUCRICTIBANT_HAE_20270423",
+      "ticker": "PHVS",
+      "category": "FINANCIAL",
+      "claim": "CASH_AND_RUNWAY",
+      "current_claim_status": "REVIEW_REQUIRED",
+      "prior_gems_research_classification": "NO_RESEARCH_RECORD",
+      "source_scope": "The researched two-financing status does not certify the SEC single-transaction source claim",
+      "next_action": "Verify reported cash and aligned operating cash flow in issuer's native currency; do not invent a USD value"
+    }
+  ],
+  "confirmed_primary_corrections": [
+    {
+      "ticker": "MLYS",
+      "note": "September 2 2025 was pricing; actual second distinct public offering closed September 4 2025, first March financing final tranche closed March 18, 2025. Already corrected in financing-status data.",
+      "source_urls": [
+        "https://ir.mineralystx.com/news-events/press-releases/detail/79/mineralys-therapeutics-announces-closing-of-upsized-287-5",
+        "https://ir.mineralystx.com/news-events/press-releases/detail/64/mineralys-therapeutics-announces-closing-of-underwriters"
+      ]
+    },
+    {
+      "ticker": "PHVS",
+      "note": "Single May 11, 2026 financed close SEC 6-K independently verified in targeted recheck. Two post-readout financing closes NOT verified.",
+      "source_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1830487/000119312526216957/d134419d6k.htm"
+      ]
+    },
+    {
+      "ticker": "CYTK",
+      "note": "Issuer IR release May 8, 2026 closing $805m gross; SEC May 2026 8-K separately records net proceeds. Still independently validate two post-readout sequence.",
+      "source_urls": [
+        "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Closing-of-Public-Offering-of-Common-Stock-and-Full-Exercise-of-the-Underwriters-Option-to-Purchase-Additional-Shares-for-Gross-Proceeds-of-805-Million/default.aspx",
+        "https://www.sec.gov/Archives/edgar/data/1061983/000119312526214606/d138544d8k.htm"
+      ]
+    },
+    {
+      "ticker": "SMMT",
+      "note": "2026 10-Q describes completed October 2025 PIPE (~$500 million); an inferred October 31 exact settlement date is NOT by itself validated.",
+      "source_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000068/smmt-20260630.htm"
+      ]
+    },
+    {
+      "ticker": "BLTE",
+      "note": "Company report holds cash and Treasury holdings; independent cash flow and liquidity runway not yet certified.",
+      "source_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1889109/000110465926095218/tm2623018d1_ex99-1.htm"
+      ]
+    },
+    {
+      "ticker": "PHVS",
+      "note": "SEC reports EUR-denominated cash and operating burn. Verifying USD cash from SEC Companyfacts is not applicable without currency-aware IFRS parsing, keep financial gate hold.",
+      "source_urls": [
+        "https://www.sec.gov/Archives/edgar/data/1830487/000119312526345702/phvs-ex99_3.htm"
+      ]
+    }
+  ],
+  "note": "This is a research disposition audit. It does NOT automatically remove missing mandatory evidence or promote a trade. Reconciliation must verify source primary records with timestamps, exact issuer and content hashes. Ineligible-for-Phase3 and ownership mismatches must be reported separately from missing evidence, not rewritten as successful financing closings."
+}
