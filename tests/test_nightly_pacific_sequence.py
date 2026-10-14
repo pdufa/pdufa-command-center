@@ -67,7 +67,10 @@ class PacificNightlySequenceTests(unittest.TestCase):
                 ("21", "00", "-0800", "0 4 * * *", "run=false"),
                 ("00", "05", "-0700", "5 7 * * *", "run=false"),
                 ("01", "05", "-0800", "5 9 * * *", "run=false"),
-                ("22", "30", "-0700", "30 4 * * *", "run=false"),
+                ("22", "30", "-0700", "30 4 * * *", "run=true"),
+                ("00", "45", "-0700", "0 4 * * *", "run=true"),
+                ("02", "55", "-0800", "0 5 * * *", "run=true"),
+                ("03", "00", "-0700", "0 4 * * *", "run=false"),
                 ("06", "00", "-0700", "0 4 * * *", "run=false"),
             )
             for hour, minute, offset, cron, expected in cases:
@@ -90,6 +93,7 @@ class PacificNightlySequenceTests(unittest.TestCase):
         self.assertIn("pdufa-clinical-runs.json", scheduler)
         self.assertIn("Nightly clinical scan already started today", scheduler)
         self.assertIn("No duplicate dispatch", scheduler)
+        self.assertIn("night = local - timedelta(days=1) if local.hour < 3 else local", scheduler)
         self.assertIn('inputs[scan]=ALL', scheduler)
 
     def test_publisher_and_extended_source_watchdogs_are_guarded(self):
