@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "as_of_pacific": "2026-10-14",
+  "interpretation": "Primary-source manual exact-event two-benchmark adjudication; NOT an unblocked SEC collector health report, trading signal, FDA approval prediction or order authorization.",
+  "benchmarks": [
+    "Exact-program, dated, source-linked positive Phase 3 readout",
+    "Two independent actually funded financings, with second close strictly after first and both after Phase 3"
+  ],
+  "source_reviewed_current": [
+    {
+      "ticker": "NTLA",
+      "event_key": "NTLA|LONVOZ_HAE_20270310",
+      "drug": "lonvoguran ziclumeran",
+      "trial_id": "NCT06634420",
+      "phase3_date": "2026-04-27",
+      "primary_endpoint": "MET",
+      "phase3_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526197489/d308328d8k.htm",
+      "first_close_date": "2026-04-30",
+      "first_close_transaction": "Common-stock public offering ~$194.6M net",
+      "first_sec_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526197489/d308328d8k.htm",
+      "second_close_date": "2026-09-04",
+      "second_close_transaction": "Separate OrbiMed credit facility $75M funded on closing",
+      "second_sec_url": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526383645/d110798d8k.htm",
+      "reported_pdufa_date": "2027-03-10",
+      "reported_pdufa_source": "https://www.sec.gov/Archives/edgar/data/1652130/000119312526385194/ntla-ex99_1.htm",
+      "two_benchmark_pass": true,
+      "trade_entry_authorized": false
+    },
+    {
+      "ticker": "ZBIO",
+      "event_key": "ZBIO|OBEXELIMAB_IGG4RD_20270527",
+      "drug": "obexelimab",
+      "trial_id": "NCT05662241",
+      "phase3_date": "2026-01-05",
+      "primary_endpoint": "MET",
+      "phase3_url": "https://investors.zenasbio.com/node/7796/html",
+      "first_close_date": "2026-03-27",
+      "first_close_transaction": "Pharmakon $75M term loan Tranche A funded",
+      "first_sec_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926095448/zbio-20260630x10q.htm",
+      "second_close_date": "2026-03-31",
+      "second_close_transaction": "Separate $200M convertible notes public offering completed",
+      "second_sec_url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926037821/tm2610711d1_8k.htm",
+      "reported_pdufa_date": "2027-05-27",
+      "pdufa_verification": "REPORTED_ONLY — NOT SOURCE VERIFIED",
+      "two_benchmark_pass": true,
+      "trade_entry_authorized": false
+    },
+    {
+      "ticker": "PRAX",
+      "event_key": "PRAX|ULIXACALTAMIDE_ET_20270129",
+      "drug": "ulixacaltamide HCl",
+      "trial_id": "NCT06087276",
+      "phase3_date": "2025-10-16",
+      "primary_endpoint": "MET",
+      "phase3_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000100/prax-20251016.htm",
+      "first_close_date": "2025-10-20",
+      "first_close_transaction": "First separate equity/warrant public offering completed ~$567.1M net",
+      "first_sec_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954825000111/prax-20250930.htm",
+      "second_close_date": "2026-01-07",
+      "second_close_transaction": "Second separate common-stock offering completed ~$621.2M net",
+      "second_sec_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000029/prax-20251231.htm",
+      "prior_finance_date_error_corrected": "First close was wrongly saved as 2025-10-16; that was announcement/readout. Actual close 2025-10-20. Earlier second offering prospectus said expected close 2026-01-08, while later 2025 10-K reports it completed 2026-01-07.",
+      "reported_pdufa_date": "2027-01-29",
+      "pdufa_verification": "REPORTED_ONLY — NOT SOURCE VERIFIED",
+      "two_benchmark_pass": true,
+      "trade_entry_authorized": false
+    }
+  ],
+  "historical_cleared": [
+    {
+      "ticker": "SRRK",
+      "event_key": "SRRK|APITEGROMAB_20260930",
+      "trial_id": "NCT05156320",
+      "phase3_date": "2024-10-07",
+      "phase3_source": "https://www.sec.gov/Archives/edgar/data/1727196/000110465924106461/tm2425688d7_8k.htm",
+      "first_close_date": "2024-10-10",
+      "first_source": "https://www.sec.gov/Archives/edgar/data/1727196/000110465926022551/srrk-20251231x10k.htm",
+      "second_close_date": "2025-09-29",
+      "second_source": "https://www.sec.gov/Archives/edgar/data/1727196/000110465926056667/srrk-20260331x10q.htm",
+      "fda_approval_date": "2026-09-11",
+      "fda_source": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761463Orig1s000ltr.pdf",
+      "two_benchmark_pass": true,
+      "trade_entry_authorized": false,
+      "reason": "FDA approved before current as-of; historical only"
+    }
+  ],
+  "source_health_note": "SEC all-universe collector was PARTIAL/STALE and 38 SEC records blocked as last recorded; this event-specific source audit does not override that gate.",
+  "program_eligibility_count": 3,
+  "historical_verified_count": 1,
+  "trade_entry_authorized_count": 0
+}
