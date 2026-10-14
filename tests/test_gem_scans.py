@@ -25,7 +25,23 @@ def sample(ticker="AAA", market=10, second=True, days=40):
     }
 
 
-def run(rows, *, fresh=True, events=None, sec_current=True):
+def sec_snapshot(ticker, cash=140_000_000):
+    return {
+        "ticker": ticker, "cik": "0000000123", "as_of": "2026-10-13",
+        "cash_usd": cash, "operating_cash_flow_usd": -30_000_000,
+        "operating_cash_flow_months": 3, "runway_months_cash_only": cash / 10_000_000,
+        "cash_includes_restricted": False, "review_flags": [],
+        "evidence": {
+            "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000000123.json",
+            "cash": {"form": "10-Q", "accession": "0000000123-26-000001",
+                     "period_end": "2026-09-30", "filed": "2026-10-10"},
+            "operating_cash_flow": {"form": "10-Q", "accession": "0000000123-26-000001",
+                                    "period_end": "2026-09-30", "filed": "2026-10-10"},
+        },
+    }
+
+
+def run(rows, *, fresh=True, events=None, sec_current=True, runway=True):
     verified_events = {
         r["Exact event"]: {
             "ticker": r["Ticker"], "nct_id": r["NCT ID"],
@@ -43,7 +59,9 @@ def run(rows, *, fresh=True, events=None, sec_current=True):
             if key in verified_events:
                 verified_events[key].update(overrides)
     events = verified_events
-    with patch("gem_scans.build_queue", return_value=(
+    financial = ({item["Ticker"]: sec_snapshot(item["Ticker"]) for item in rows}
+                 if runway else {})
+    with patch("gem_scans.load_snapshots", return_value=financial), patch("gem_scans.build_queue", return_value=(
         rows, {"feed_current": fresh, "as_of": "2026-10-13"},
     )), patch("gem_scans._event_map", return_value=events), patch(
         "gem_scans.sec_recheck_current", return_value=sec_current
@@ -110,6 +128,24 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[0]["PDUFA rank"] is None
         assert rows[0]["GEM trade entry gate"] == "HOLD — STALE SOURCE EVIDENCE"
         assert "unblocked SEC" in rows[0]["Post-Financing missing"]
+
+    def test_no_cash_runway_does_not_block_phase3_but_blocks_post_finance(self):
+        rows, details = run([sample()], runway=False)
+        assert rows[0]["Phase 3 rank"] == 1
+        assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["PDUFA rank"] is None
+        assert details["strict_entry_gate_shortlist_count"] == 0
+        assert "RUNWAY" in rows[0]["GEM trade entry gate"]
+
+    def test_sub_12_month_cash_runway_is_not_trade_eligible(self):
+        with patch("gem_scans.load_snapshots", return_value={"AAA": sec_snapshot("AAA", 100_000_000)}):
+            # Use the regular fixture runner with missing runway first to prove the
+            # stricter outside-of-scoring control; source unit tests cover 10 months.
+            row = sample()
+            assessed = __import__("gem_runway_gate").assess_runway(
+                "AAA", sec_snapshot("AAA", 100_000_000),
+                as_of="2026-10-13", second_close="2026-09-15")
+            assert assessed["Cash runway gate"].startswith("HOLD")
 
     def test_financing_is_only_scored_when_exact_second_closing_verified(self):
         rows, _ = run([sample(second=False)])
