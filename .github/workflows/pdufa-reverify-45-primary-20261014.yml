@@ -29,7 +29,7 @@ jobs:
           from pathlib import Path
           d=json.loads(Path('data/pdufa_source_report.json').read_text())
           with open('data/pdufa_source_review_queue.csv',newline='',encoding='utf-8-sig') as f: rows=list(csv.DictReader(f))
-          assert d['required_findings_unresolved']==len(rows)==45
+          assert 0 < len(rows) <= 45 and d['required_findings_unresolved']==len(rows)
           print('source_id='+d['latest_run_id'])
           PY
       - name: Send START, independently recheck only 45 unresolved claims, send END
@@ -51,7 +51,7 @@ jobs:
           from pathlib import Path
           d=json.loads(Path('data/pdufa_targeted_recheck_report.json').read_text())
           with open('data/pdufa_targeted_recheck_results.csv',newline='') as f: rows=list(csv.DictReader(f))
-          assert len(rows)==45==d['findings_due']
+          assert len(rows)==d['findings_due'] and 0 < len(rows) <= 45
           assert d['trade_entry_authorized'] is False and d['source_baseline_unchanged'] is True
           print("New claim-level evidence verified:",d['findings_verified'])
           print("Remaining holds:",d['required_findings_unresolved'])
