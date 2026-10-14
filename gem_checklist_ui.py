@@ -12,7 +12,7 @@ import streamlit as st
 
 from gem_benchmark_checklist import (
     ADVISORIES, BENCHMARKS, CHECK_LABELS, FILTERABLE, UMBRELLA,
-    build_checklist_map, filter_programs, program_key,
+    build_checklist_map, filter_programs, program_key, research_candidate_rows,
 )
 
 
@@ -135,3 +135,75 @@ def render_checkbox_table(rows, checklists, *, height=360):
         },
     )
     return table
+
+
+def render_research_candidates(master_rows, checklists, *,
+                               clinical_rechecks=(), financing_rechecks=(),
+                               namespace="gem_research", compact=False):
+    """Always-visible exact-program leads, irrespective of eligible-only filters."""
+    leads = research_candidate_rows(
+        master_rows, checklists, clinical_rechecks=clinical_rechecks,
+        financing_rechecks=financing_rechecks,
+    )
+    st.markdown("### GEM RESEARCH CANDIDATES — SOURCE LEADS")
+    st.caption(
+        "Includes Phase 3 data observations OR a historically attested "
+        "financing lead. The TWO verified benchmarks still control eligibility. "
+        "A lead is NOT a qualified GEM or a buy recommendation."
+    )
+    verified = sum(r.get("Status") == "BOTH BENCHMARKS VERIFIED" for r in leads)
+    if compact:
+        st.caption(f"{len(leads)} research leads · {verified} fully verified GEM candidates")
+    else:
+        p, q = st.columns(2)
+        p.metric("Research candidates (unverified leads included)", len(leads))
+        q.metric("Both GEM benchmarks verified", verified)
+    if not leads:
+        st.info(
+            "No source-observed GEM research leads in the current saved dataset. "
+            "This is a source coverage result, not proof that no biotech opportunities exist."
+        )
+        return []
+    for name, group in (
+        ("Both data leads", "Both research leads"),
+        ("Financing lead", "Financing lead — Phase 3 review"),
+        ("Phase 3 lead", "Phase 3 lead — financing review"),
+    ):
+        tickers = list(dict.fromkeys(
+            str(v.get("Ticker") or "") for v in leads
+            if v.get("GEM research group") == group and v.get("Ticker")
+        ))
+        if tickers:
+            st.caption(name + ": " + ", ".join(tickers))
+    fields = (
+        "Ticker", "Drug", "GEM research group", "Status",
+        "Phase 3 data observed", "Financing lead observed",
+        "Phase 3 benchmark verified", "Second financing benchmark verified",
+        "Fresh SEC transactions verified", "Latest clinical review",
+        "Latest SEC review", "NCT ID", "PDUFA Date",
+        "Phase 3 Source", "Financing Source", "Exact Program / Event",
+    )
+    table = pd.DataFrame(leads).reindex(columns=fields)
+    st.dataframe(
+        table, use_container_width=True, hide_index=True,
+        height=255 if compact else 420,
+        column_config={
+            "Phase 3 data observed": st.column_config.CheckboxColumn(
+                "Phase 3 data observed", disabled=True),
+            "Financing lead observed": st.column_config.CheckboxColumn(
+                "Financing lead observed", disabled=True),
+            "Phase 3 benchmark verified": st.column_config.CheckboxColumn(
+                "Phase 3 benchmark verified", disabled=True),
+            "Second financing benchmark verified": st.column_config.CheckboxColumn(
+                "Second financing benchmark verified", disabled=True),
+            "Phase 3 Source": st.column_config.LinkColumn("Phase 3 Source"),
+            "Financing Source": st.column_config.LinkColumn("Financing Source"),
+        },
+    )
+    st.download_button(
+        "EXPORT GEM RESEARCH CANDIDATES",
+        data=table.to_csv(index=False).encode("utf-8"),
+        file_name="gem_research_candidates.csv",
+        mime="text/csv", key=namespace + "_export",
+    )
+    return leads
