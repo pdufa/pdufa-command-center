@@ -6,6 +6,8 @@ Source freshness is displayed separately and can never create an eligible row.
 from __future__ import annotations
 
 from collections import Counter
+import csv
+from pathlib import Path
 
 PHASE3_PASS = "PASS — VERIFIED RESULTS RELEASE"
 FINANCING_PASS = "PASS — TWO POST-READOUT CLOSES"
@@ -37,8 +39,8 @@ def classify(row, *, sec_current=False, feed_current=False, finance_recheck=None
         missing.append("Exact-program dated Phase 3 results + source / NCT identity")
     if not financed:
         missing.append("Two distinct post-readout financing closes + SEC evidence")
-    if eligible and group != GROUPS[0]:
-        missing.append("Saved eligibility conflicts with benchmark markers")
+    if eligible != (group == GROUPS[0]):
+        missing.append("Saved eligibility conflicts with the two benchmark markers")
     if not sec_current:
         missing.append("Current SEC recheck unavailable / blocked (source health)")
     if not feed_current:
@@ -57,7 +59,7 @@ def classify(row, *, sec_current=False, feed_current=False, finance_recheck=None
     }
 
 
-def report_rows(master_rows, *, sec_current=False, feed_current=False, rechecks=()):
+def report_rows(master_rows, *, sec_current=False, feed_current=False, rechecks=(), clinical_rechecks=()):
     """One diagnosis per program. Duplicate audit keys never cross-link trials."""
     by_event, ambiguous = {}, set()
     for record in rechecks or ():
@@ -70,6 +72,17 @@ def report_rows(master_rows, *, sec_current=False, feed_current=False, rechecks=
             by_event[key] = record
     for key in ambiguous:
         by_event.pop(key, None)
+    clinical_by_event, clinical_duplicate = {}, set()
+    for record in clinical_rechecks or ():
+        key = str(record.get("event_key") or "").strip()
+        if not key:
+            continue
+        if key in clinical_by_event:
+            clinical_duplicate.add(key)
+        else:
+            clinical_by_event[key] = record
+    for key in clinical_duplicate:
+        clinical_by_event.pop(key, None)
     result = []
     for row in master_rows:
         event = str(row.get("Exact Program / Event") or "").strip()
@@ -88,6 +101,13 @@ def report_rows(master_rows, *, sec_current=False, feed_current=False, rechecks=
             **detail,
             "Phase 3 Source": row.get("Phase 3 Source"),
             "Financing Source": row.get("Financing Source"),
+            "Latest Phase 3 registry audit": (
+                clinical_by_event.get(event, {}).get("source_recheck_status")
+                or "NOT RUN / NO MATCH"
+            ),
+            "Registry audit needed": (
+                clinical_by_event.get(event, {}).get("verification_needed") or ""
+            ),
         })
     return result
 
@@ -95,3 +115,14 @@ def report_rows(master_rows, *, sec_current=False, feed_current=False, rechecks=
 def group_counts(details):
     counts = Counter(row.get("Verification group") for row in details)
     return {name: counts.get(name, 0) for name in GROUPS}
+
+
+def load_saved_rechecks(root, filename):
+    """Read research-only source checks without treating old files as a PASS."""
+    if filename not in ("gem_two_close_recheck.csv", "gem_phase3_exact_recheck.csv"):
+        raise ValueError("Unsupported GEM audit file")
+    try:
+        with (Path(root) / filename).open(newline="", encoding="utf-8-sig") as handle:
+            return list(csv.DictReader(handle))
+    except (OSError, UnicodeError, csv.Error):
+        return []
