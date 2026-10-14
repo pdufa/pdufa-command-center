@@ -80,8 +80,14 @@ def validate(root="data"):
         as_day(event.get("pdufa_date"), field="pdufa_date", key=key)
         as_day(event.get("phase3_date"), field="phase3_date", key=key)
         nct = event.get("nct_id") or ""
-        if nct and not NCT.fullmatch(nct) and event.get("phase3_status") in POSITIVE:
-            raise ValueError(f"{key}: qualified Phase 3 missing valid exact NCT")
+        # Research-only readout rows may carry conflicting/multiple trial IDs.
+        # Keep them visible for source review; only source-cleared financing
+        # candidates require a single exact-NCT identity.
+        if (event.get("financing_status") ==
+                "TWO_DISTINCT_POST_PHASE3_CLOSES_SOURCE_ATTESTED"
+                and event.get("phase3_status") in POSITIVE
+                and not NCT.fullmatch(nct)):
+            raise ValueError(f"{key}: source-cleared Phase 3 missing valid exact NCT")
         by_event[key] = event
     seen = set()
     pass_keys = set()
