@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from gem_phase3_discovery import gem_discrimination_audit
 from gem_scans import STAGES, TRADE_EXIT_DAYS_BEFORE_PDUFA
+from gem_runway_gate import MIN_MONTHS, PASS, HOLD, REVIEW
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 HISTORY_FILES = (
@@ -132,6 +133,12 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         if str(row.get("Phase 3 tracking", "")).startswith("TRACKING")
     ]
     qualified = {stage: info[stage]["qualified"] for stage in STAGES}
+    runway_counts = {
+        "minimum_entry_months": MIN_MONTHS,
+        "source_backed_pass": sum(r.get("Cash runway gate") == PASS for r in items),
+        "under_12_months": sum(r.get("Cash runway gate") == HOLD for r in items),
+        "missing_or_stale": sum(r.get("Cash runway gate", REVIEW) == REVIEW for r in items),
+    }
     source_stale = scan_status.get("feed_current") is not True
     history_complete = (histories[HISTORY_FILES[0]]["state"] == "PRESENT"
                         and histories[HISTORY_FILES[1]]["state"] == "PRESENT"
@@ -210,6 +217,7 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
             row.get("2nd Financing Completed") != "YES — VERIFIED (HISTORICAL)"
             for row in verified_tracking),
         "ranked": qualified,
+        "cash_runway": runway_counts,
         "strict_entry_gate_shortlist_count": sum(
             row.get("GEM ALL ENTRY GATES") == "PASS — MANUAL REVIEW ONLY"
             for row in items
@@ -233,6 +241,7 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
             "Local saved source feeds are NOT continuous real-time discovery.",
             "A Phase 3 registry posting or issuer topline is not proof of success.",
             "A financing filing announcement is not proof of separate second close.",
+            "Cash-only SEC runway is backward-looking and cannot guarantee future liquidity.",
             "PDUFA -3 is a research exit deadline, not an executed broker sale.",
             "A relative GEM rank is not a forecast of approval or equity return.",
             "No training or weight promotion from unverified or synthetic records.",
