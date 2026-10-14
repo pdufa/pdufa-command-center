@@ -380,14 +380,7 @@ required_ui_contracts = [
     'def run_recheck_worker',
     '"data/recheck_status.csv"',
     'nav_options = ["PDUFA"',
-    'if st.session_state.nav == "10. MATCH OPTIMIZER":',
-    'st.session_state.nav = "9. PREDICTION ENGINE"',
     'on_change=_on_main_nav_change',
-    '["PREDICTIONS", "HISTORICAL MATCH VALIDATION"]',
-    'if prediction_tab.open:',
-    'if validation_tab.open:',
-    'STEP 5 — Lock thresholds and test the untouched holdout',
-    'HISTORICAL MATCH VALIDATION — MODEL IMPROVEMENT',
     'key="pdufa_subtab", on_change="rerun"',
     '["UNIFIED OVERVIEW", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]',
     '"PIPELINE"',
@@ -408,15 +401,8 @@ required_ui_contracts = [
     '"data/fda_review_backfill_queue.csv"',
     'def load_fda_review_backfill_queue',
     '"FDA Backfill"',
-    'FDA-V3 decision-safe benchmark',
-    'Review Complete',
-    'FDA-V3 Match',
     '"FDA Direction"',
-    'Backfill Remaining',
-    'FDA-V3 historical backfill queue',
     'def load_fda_v3_historical_backtest',
-    '### FDA-V3 Review',
-    'V3 Evidence Summary',
     '@media (max-width: 768px)',
     'FDA DECISION ENGINE V3.2',
     'Stats gate',
@@ -438,15 +424,24 @@ required_ui_contracts = [
     '"FDA extensions"',
     'Current PDUFA',
     '"FDA Directional"',
-    '100% Direction',
 ]
 for label in required_ui_contracts:
     if label not in app:
         raise SystemExit(f"app.py missing required audit/UI contract: {label}")
 if ',"10. MATCH OPTIMIZER","11. PLAN"' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
     raise SystemExit("Match Optimizer must not remain a standalone navigation page")
-if app.index('nav_options = ["PDUFA"') > app.index('elif page == "9. PREDICTION ENGINE":'):
-    raise SystemExit("PDUFA navigation must be initialized before secondary research pages")
+# Standalone Prediction Engine and Match Optimizer were intentionally
+# retired. Both archived model inputs and the clinical GEM scans remain.
+if 'nav_options = ["PDUFA", "2. PDUFA CALENDAR"]' not in app:
+    raise SystemExit("Main navigation must contain only PDUFA and its calendar")
+if 'elif page == "9. PREDICTION ENGINE":' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
+    raise SystemExit("Retired Prediction Engine/Match Optimizer page was restored")
+if 'if st.session_state.nav in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):' not in app:
+    raise SystemExit("Legacy prediction bookmarks must redirect safely to PDUFA")
+if app.index('nav_options = ["PDUFA"') > app.index('elif page == "2. PDUFA CALENDAR":'):
+    raise SystemExit("PDUFA navigation must precede the calendar")
+if 'render_nightly_scan_report()' not in app:
+    raise SystemExit("Retiring the Prediction Engine must not remove SCANS")
 
 # Obsolete navigation and the oversized table grid must not return.
 if 'if page == "WATCHLIST":' in app:
