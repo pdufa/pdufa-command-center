@@ -97,6 +97,15 @@ def make_block_report(readiness, collector_state, *, action,
         "awaiting_second_financing": (readiness.get("awaiting_second_financing") if has_audit else None),
         "ranked_research_only": ranked,
         "cash_runway": (readiness.get("cash_runway") if has_audit else {}),
+        "two_benchmark_candidate_count": (
+            readiness.get("two_benchmark_candidate_count")
+            if has_audit and type(readiness.get("two_benchmark_candidate_count")) is int
+            else None
+        ),
+        "two_benchmark_policy": (
+            readiness.get("two_benchmark_policy") if has_audit else
+            "RELEASED PHASE 3 RESULTS + VERIFIED SECOND POST-READOUT FINANCING CLOSE"
+        ),
         "strict_entry_gate_shortlist_count": (
             readiness.get("strict_entry_gate_shortlist_count")
             if has_audit and type(readiness.get("strict_entry_gate_shortlist_count")) is int
