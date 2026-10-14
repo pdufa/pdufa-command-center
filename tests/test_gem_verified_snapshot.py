@@ -19,17 +19,29 @@ def write(root, name, rows):
 
 
 class ExactGEMClearanceTests(unittest.TestCase):
-    def test_repository_has_two_current_programs_and_historical_srrk(self):
+    def test_repository_five_current_gems_and_historical_srrk(self):
         root = Path(__file__).resolve().parents[1] / "data"
         active, historical, sec_current = source_cleared_gems(
             root, as_of=date(2026, 10, 14))
         self.assertIn("NTLA", {r["Ticker"] for r in active})
         self.assertIn("ZBIO", {r["Ticker"] for r in active})
         self.assertIn("PRAX", {r["Ticker"] for r in active})
-        self.assertEqual({r["Ticker"] for r in active}, {"NTLA", "ZBIO", "PRAX"})
+        self.assertIn("MLYS", {r["Ticker"] for r in active})
+        self.assertIn("SVRA", {r["Ticker"] for r in active})
+        self.assertEqual({r["Ticker"] for r in active}, {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA"})
         self.assertIn("SRRK", {r["Ticker"] for r in historical})
         self.assertNotIn("SRRK", {r["Ticker"] for r in active})
         self.assertFalse(sec_current)
+        by_ticker = {r["Ticker"]: r for r in active}
+        self.assertEqual(by_ticker["SVRA"]["PDUFA days left"], 39)
+        self.assertEqual(by_ticker["MLYS"]["PDUFA days left"], 69)
+        self.assertEqual(by_ticker["PRAX"]["PDUFA days left"], 107)
+        self.assertEqual(by_ticker["NTLA"]["PDUFA days left"], 147)
+        self.assertEqual(by_ticker["ZBIO"]["PDUFA days left"], 225)
+        self.assertEqual(by_ticker["SVRA"]["PDUFA timing window"], "31–90 DAYS — PRIMARY MONITOR")
+        self.assertEqual(by_ticker["NTLA"]["PDUFA timing window"], ">90 DAYS — EARLY MONITOR")
+        self.assertTrue(by_ticker["NTLA"]["PDUFA verified"])
+        self.assertFalse(by_ticker["ZBIO"]["PDUFA verified"])
         for row in active:
             self.assertEqual(row["Two-benchmark status"],
                              "PASS — BOTH BENCHMARKS SOURCE-CLEARED")
