@@ -97,6 +97,7 @@ def make_block_report(readiness, collector_state, *, action,
         "awaiting_second_financing": (readiness.get("awaiting_second_financing") if has_audit else None),
         "ranked_research_only": ranked,
         "cash_runway": (readiness.get("cash_runway") if has_audit else {}),
+        "hedge_fund_13f": (readiness.get("hedge_fund_13f") if has_audit else {}),
         "two_benchmark_candidate_count": (
             readiness.get("two_benchmark_candidate_count")
             if has_audit and type(readiness.get("two_benchmark_candidate_count")) is int
