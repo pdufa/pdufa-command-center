@@ -28,6 +28,7 @@
     "events": {
       "BMY|MEZIGDOMIDE_RRMM_20270513": {
         "urls": [
+          "https://news.bms.com/news/details/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx",
           "https://investors.bms.com/iframes/press-releases/press-release-details/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx",
           "https://news.bms.com/news/corporate-financial/2026/U-S--Food-and-Drug-Administration-Accepts-Bristol-Myers-Squibbs-New-Drug-Application-for-Mezigdomide-in-Patients-with-Relapsed-or-Refractory-Multiple-Myeloma/default.aspx"
         ]
@@ -128,12 +129,15 @@
     "events": {
       "HRMY|PITOLISANT_GR_20270401": {
         "urls": [
+          "https://harmonybiosciences.gcs-web.com/news-releases/news-release-details/harmony-biosciences-announces-record-q2-2026-revenue-and-shares",
           "https://www.sec.gov/Archives/edgar/data/1802665/000110465926090086/hrmy-20260804xex99d1.htm"
         ],
         "primary_target_anchor": "target PDUFA date of April 1, 2027"
       }
     },
-    "hosts": []
+    "hosts": [
+      "harmonybiosciences.gcs-web.com"
+    ]
   },
   "INBX": {
     "hosts": [
