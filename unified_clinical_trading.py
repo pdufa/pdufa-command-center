@@ -183,16 +183,6 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
     }
     </style>
     """, unsafe_allow_html=True)
-    # #1 is a new collapsible block INSIDE the former Unified Overview.
-    # Keep all existing overview controls, score-coverage audits, #2/#3/#4 cards,
-    # timeline, all-fields table and exports at their original positions.
-    # A toggle, rather than an outer expander, lets individual stock rows
-    # use Streamlit expanders safely: nested expanders are unsupported.
-    # Collapsed by default, so the original #2/#3/#4 layout stays prominent.
-    if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
-                 value=False, key="overview_show_gem_master"):
-        from gem_nested_master_ui import render_gem_nested_master
-        render_gem_nested_master(root=root, selections_ready=True)
     with st.container(key="overview_panels"):
         pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1], gap="small")
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
@@ -289,8 +279,14 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 def render_combined_overview(root="data", *, dashboard=False):
     """Render linked clinical context and return the shared ticker focus."""
     if dashboard:
-        # Hydrate shared W/T once before either GEM or legacy source-table controls.
+        # #1 GEM is the first visible control. Leave every existing source
+        # audit, filter, #2/#3/#4 panel, timeline and export in place below.
+        # Do not nest expander widgets: stock-level drill-downs have expanders.
         _init_browser_selection("overview_inline")
+        if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
+                     value=False, key="overview_show_gem_master"):
+            from gem_nested_master_ui import render_gem_nested_master
+            render_gem_nested_master(root=root, selections_ready=True)
     if not dashboard:
         st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
         st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
