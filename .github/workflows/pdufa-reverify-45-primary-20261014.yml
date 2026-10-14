@@ -1,5 +1,5 @@
 name: PDUFA Reverify 45 Primary Evidence Gaps 2026-10-14
-# Follow-up exact issuer primary release recheck using verified dated BMS article-header parsing.
+# Extend public-company investor research with exact Pharvaris SEC May 11 funded transaction proof.
 on:
   push:
     branches: [main]
