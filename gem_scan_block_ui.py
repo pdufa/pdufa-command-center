@@ -131,7 +131,11 @@ def render_gem_scan_block_status(report=None, run=None):
             "SEC cash runway (minimum 12 months at GEM 2/3): "
             f"{runway.get('source_backed_pass', 0)} pass, "
             f"{runway.get('missing_or_stale', 0)} unverified, "
-            f"{runway.get('under_12_months', 0)} below minimum."
+            f"{runway.get('under_12_months', 0)} below minimum; "
+            f"{runway.get('deteriorating', 0)} declining, "
+            f"{runway.get('dilution_alerts', 0)} dilution flags. "
+            f"SEC runway recheck: {runway.get('collector_status', 'NOT VERIFIED')} "
+            f"({runway.get('collected_count', 0)}/{runway.get('target_count', 0)} targeted)."
         )
         st.caption("Last audit " + str(report.get("generated_at_utc") or "unknown") +
                    " · action " + str(report.get("action") or "UNKNOWN") +
