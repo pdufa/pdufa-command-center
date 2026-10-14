@@ -200,7 +200,7 @@ def mapped_issuer_release_dateline(event, plain, expected_date):
         return set()
     header = plain[:750]
     found = dates(header)
-    disease = normalized(re.sub(r"\\([^)]*\\)", "", event.get("indication", "")))
+    disease = normalized(re.sub(r"\([^)]*\)", "", event.get("indication", "")))
     required_disease_tokens = {token for token in disease.split()
                                if len(token) >= 4 and token not in {"with", "and", "the", "for", "patients", "adults"}}
     header_tokens = set(normalized(header).split())
