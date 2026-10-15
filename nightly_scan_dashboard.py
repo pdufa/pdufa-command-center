@@ -621,21 +621,14 @@ def _number(v):
 
 
 def render_nightly_scan_report():
-    # One SCANS home. History is read-only, source panels are evidence reviews,
-    # and PIN-protected controls retain their original dispatch behavior.
-    st.markdown("## SCANS — ACTIVITY, EVIDENCE & CONTROLS")
-    st.caption(
-        "Single scanning workspace for PIPELINE → GEM JR → GEM, with SEC/FDA "
-        "source evidence and manual rescans. Opening activity does not start a scan."
-    )
+    # The agency controls lead the merged SCANS page, matching the requested
+    # SEC/FDA scan-control preview. Activity and GEM reports remain below.
+    render_filings_base_amendments()
+    st.divider()
     if st.toggle("SHOW LIVE ACTIVITY & HISTORY", value=False,
                  key="unified_scans_show_activity"):
         render_scans_activity(embedded=True)
         st.divider()
-    # Put the SEC/FDA survey first so the unified SCANS screen matches the
-    # two-column preview rather than burying it below GEM and nightly logs.
-    render_filings_base_amendments()
-    st.divider()
     st.markdown("### GEMS — GITHUB SCAN LOGS")
     direct_gem, finance_gem = st.columns(2)
     with direct_gem:
