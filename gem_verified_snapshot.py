@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from gem_financing_gate import second_post_phase3_close, sec_recheck_current
 from gem_two_benchmark import phase3_results_released
+from pipeline_source_scope import pipeline_origins, gem_pipeline_id
 
 CLOSED_OUTCOMES = {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}
 
@@ -61,6 +62,7 @@ def source_cleared_gems(root="data", *, as_of=None):
         raise ValueError("as_of must be a date")
     events = _unique(_records(root / "pdufa_candidates.csv"))
     finance = _unique(_records(root / "second_financing_status.csv"))
+    pipeline_ids, pipeline_tickers = pipeline_origins(root, today=today)
     global_sec_healthy = sec_recheck_current(root, as_of=today)
     active, historical = [], []
     for key, event in events.items():
@@ -72,6 +74,9 @@ def source_cleared_gems(root="data", *, as_of=None):
         if not ticker or not nct:
             continue
         program = {"Ticker": ticker, "NCT ID": nct, "Exact event": key}
+        pipeline_id = gem_pipeline_id(program, pipeline_ids, pipeline_tickers)
+        if not pipeline_id:
+            continue
         phase3 = phase3_results_released(program, event, as_of=today)
         financed, close_date, note = second_post_phase3_close(
             key, event.get("phase3_date"), funding, as_of=today,
@@ -122,6 +127,7 @@ def source_cleared_gems(root="data", *, as_of=None):
             "Indication": str(event.get("indication") or "").strip(),
             "NCT ID": nct,
             "Exact program": key,
+            "Pipeline ID": pipeline_id,
             "Phase 3 date": str(event.get("phase3_date") or ""),
             "Phase 3 status": str(event.get("phase3_status") or ""),
             "Phase 3 source": str(event.get("trial_evidence_url") or ""),
