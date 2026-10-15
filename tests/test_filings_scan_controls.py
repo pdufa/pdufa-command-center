@@ -38,27 +38,45 @@ class SectionControlTests(unittest.TestCase):
         self.assertEqual(section_run(runs, "SEC_BASE"), runs[1])
         self.assertEqual(section_run(runs, "SEC_AMENDMENTS"), {})
 
-    def test_sec_fda_survey_matches_two_column_preview(self):
+    def test_sec_fda_controls_match_vertical_card_preview(self):
         from pathlib import Path
         root = Path(__file__).resolve().parents[1]
         filings = (root / "filings_base_amendments_ui.py").read_text(encoding="utf-8")
+        controls = (root / "filings_scan_controls.py").read_text(encoding="utf-8")
         scans = (root / "nightly_scan_dashboard.py").read_text(encoding="utf-8")
 
-        self.assertIn('st.markdown("## SEC / FDA — SURVEY RESULTS")', filings)
-        self.assertIn('sec_column, fda_column = st.columns(2, gap="large")', filings)
-        sec = filings.split("    with sec_column:", 1)[1].split("    with fda_column:", 1)[0]
-        fda = filings.split("    with fda_column:", 1)[1].split(
-            '    st.caption("BASE totals reconcile', 1)[0]
-        for panel, agency in ((sec, "SEC"), (fda, "FDA")):
-            self.assertIn(f'st.markdown("### {agency}")', panel)
-            self.assertIn(f'render_section_scan("{agency}_BASE"', panel)
-            self.assertIn(f'render_section_scan("{agency}_AMENDMENTS"', panel)
-            self.assertIn(f'with st.expander("{agency} Base details"', panel)
-            self.assertIn(f'with st.expander("{agency} Amendment details"', panel)
-            self.assertIn(f'render_missing_research(', panel)
-            self.assertIn('with st.container(border=True):', panel if panel == sec else
-                          filings.split("    with fda_column:", 1)[1])
+        self.assertIn('st.markdown("# SEC & FDA SCAN CONTROLS")', filings)
+        self.assertIn('st.markdown("Scan any section whenever needed.")', filings)
+        self.assertNotIn('sec_column, fda_column = st.columns(2, gap="large")', filings)
+        labels = (
+            "pdufa_sec_base_card", "pdufa_sec_amend_card",
+            "pdufa_fda_base_card", "pdufa_fda_amend_card",
+            "pdufa_missing_evidence_card", "pdufa_scan_progress",
+        )
+        locations = [filings.index('with st.container(border=True, key="' + x + '")')
+                     for x in labels]
+        self.assertEqual(locations, sorted(locations))
+        self.assertLess(filings.index('st.markdown("## SEC FINANCING")'),
+                        locations[0])
+        self.assertLess(filings.index('st.markdown("## FDA FILINGS")'),
+                        locations[2])
+        self.assertEqual(filings.count('compact=True)'), 4)
+        self.assertEqual(filings.count('render_section_scan("SEC_BASE"'), 1)
+        self.assertEqual(filings.count('render_section_scan("FDA_BASE"'), 1)
+        self.assertEqual(filings.count('render_section_scan("SEC_AMENDMENTS"'), 1)
+        self.assertEqual(filings.count('render_section_scan("FDA_AMENDMENTS"'), 1)
+        for title in ("SEC Base details", "SEC Amendment details",
+                      "FDA Base details", "FDA Amendment details"):
+            self.assertIn(f'st.expander("{title}"', filings)
+        # Exactly two agency-specific missing evidence dropdowns in one card.
+        gaps = filings[locations[4]:locations[5]]
+        self.assertIn('render_missing_research("SEC"', gaps)
+        self.assertIn('render_missing_research(\n            "FDA"', gaps)
+        self.assertIn("Ready  →  Queued  →  Running  →  Finished", filings)
+        self.assertIn('status_col, button_col = st.columns(', controls)
+        self.assertIn('st.button("▶ Scan this section"', controls)
         self.assertIn("@st.fragment(run_every=60)", filings)
+        self.assertIn('col_a.metric("Pipeline filtered total"', filings)
         self.assertEqual(scans.count("    render_filings_base_amendments()"), 1)
         self.assertLess(scans.index("    render_filings_base_amendments()"),
                         scans.index('    st.markdown("### GEMS — GITHUB SCAN LOGS")'))
