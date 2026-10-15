@@ -5,7 +5,7 @@ universe can appear downstream. Source/issuer evidence never creates a trial.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -15,6 +15,8 @@ from pipeline_universe import load_universe, read_rows
 def pipeline_origins(data_dir, today=None):
     """Read the same canonical Pipeline record IDs as the Pipeline tab."""
     today = today or datetime.now(ZoneInfo("America/Los_Angeles")).date()
+    if isinstance(today, str):
+        today = date.fromisoformat(today[:10])
     frame = load_universe(Path(data_dir), today=today)
     if frame.empty:
         return set(), set()
