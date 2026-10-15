@@ -729,6 +729,38 @@ def documented_released_final_tranche(text, closing_date):
     return ""
 
 
+def documented_completed_public_equity_financing(text, closing_date):
+    """Dated, already-completed public equity financing in an SEC-filed exhibit.
+
+    A company's SEC exhibit may describe completed financing as 'public
+    equity financing' rather than 'public offering'. Demand the same local
+    sentence's exact historical close date and explicit USD gross proceeds.
+    Never infer another separate closing, a second post-readout deal, or GEM
+    eligibility from this single transaction.
+    """
+    month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
+    dated = r"(?:20\\d{2}-\\d{2}-\\d{2}|" + month + r"\\s+\\d{1,2},?\\s+20\\d{2})"
+    pattern = (
+        r"(?i)\\bOn\\s+(" + dated + r")[,\\s]+(?:the\\s+)?(?:Company|we)\\s+"
+        r"(?:completed|closed|consummated)\\s+(?:its\\s+|a\\s+|the\\s+)?"
+        r"(?:public|registered\\s+direct)\\s+equity\\s+financing\\s+"
+        r"for\\s+(?:aggregate\\s+)?gross\\s+proceeds\\s+of\\s+"
+        r"(?:approximately\\s+|about\\s+)?"
+        r"\\$\\s*[\\d,]+(?:\\.\\d+)?\\s*(?:million|billion)\\b"
+    )
+    for found in re.finditer(pattern, text):
+        if dates(found.group(1)) != {closing_date}:
+            continue
+        # Restrict the proof to the dated, past-tense amount-bearing clause;
+        # neighboring dates or proceeds from a different deal cannot qualify.
+        passage = text[found.start():found.end()]
+        if re.search(r"(?i)\\b(?:expected|anticipated|proposed|planned|subject to)\\b",
+                     passage):
+            continue
+        return passage
+    return ""
+
+
 def documented_funded_transaction(text, closing_date):
     """Explicit dated securities sale, actual loan receipt, or closed placement.
 
@@ -1327,7 +1359,8 @@ class Verifier:
                 'Saved closing date is in the future; funds received are not established', url, close)
         try:
             _, plain = self.document(url)
-            completed = documented_funded_transaction(plain, close)
+            completed = (documented_funded_transaction(plain, close)
+                         or documented_completed_public_equity_financing(plain, close))
             if completed:
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
                     "Company-matched SEC document confirms this dated funded transaction only; not the post-Phase-3 second-financing sequence",
