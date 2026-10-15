@@ -12,6 +12,7 @@ from gem_potential_list import build_potential_list
 from gem_trial_hierarchy_ui import render_trial_hierarchy
 from gem_financing_batch_review import build_financing_review
 from gem_verified_snapshot import source_cleared_gems
+from stage_wt_tables import render_stage_wt_tables
 from gem_secondary_research import (
     OPTIONAL_CHECK_TOPICS, optional_check_search_links,
     research_search_links, source_research_policy,
@@ -123,6 +124,10 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             "GLOBAL SEC SOURCE CHECK PARTIAL/STALE — verified program-level "
             "evidence does not clear fresh all-source trading-entry gates."
         )
+    # GEM WT only shows active, exact-program, two-benchmark-cleared leads.
+    # Research leads remain in GEM JR and do not inherit GEM eligibility.
+    render_stage_wt_tables(
+        "GEM", source_cleared, namespace="gem", controls=True)
     # The full financing-stage scope is broader than historical two-close
     # attestations; EVERY distinct exact program stays visible for follow-up.
     financing_worklist, financing_audit = build_financing_review(root)
