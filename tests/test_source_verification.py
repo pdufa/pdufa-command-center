@@ -497,6 +497,64 @@ class VerificationTests(unittest.TestCase):
         body = b"TestDrug lung cancer. On October 10, 2026 Test Pharma expects the FDA may issue a complete response letter."
         self.assertEqual(self.verifier(body).regulatory(event)[0]["verification_status"], "REVIEW_REQUIRED")
 
+    def test_dated_sec_completed_public_equity_financing_requires_same_deal_proceeds(self):
+        real_clause = (
+            "Strengthened Balance Sheet - On September 4, 2025, the Company "
+            "completed a public equity financing for gross proceeds of "
+            "approximately $287.5 million, before deducting fees and expenses."
+        )
+        parse = verify.documented_completed_public_equity_financing
+        self.assertIn("287.5 million", parse(real_clause, "2025-09-04"))
+        self.assertEqual(parse(real_clause, "2025-09-03"), "")
+        self.assertEqual(parse(
+            real_clause.replace("completed", "expects to complete"), "2025-09-04"), "")
+        self.assertEqual(parse(
+            real_clause.replace("$287.5 million", "an undisclosed amount"),
+            "2025-09-04"), "")
+        self.assertEqual(parse(
+            real_clause.replace("public equity financing", "loan commitment"),
+            "2025-09-04"), "")
+        self.assertEqual(parse(
+            real_clause.replace("$287.5 million", "EUR 287.5 million"),
+            "2025-09-04"), "")
+        unrelated = (
+            "On September 4, 2025, the Company completed a public equity "
+            "financing. On November 10, 2025, another financing yielded "
+            "gross proceeds of approximately $287.5 million."
+        )
+        self.assertEqual(parse(unrelated, "2025-09-04"), "")
+
+    def test_mlys_primary_exhibit_verifies_only_single_dated_financing(self):
+        event = {
+            **EVENT,
+            "event_key": "MLYS|LORUNDROSTAT_20261222",
+            "ticker": "MLYS", "company": "Mineralys Therapeutics Inc.",
+            "financing_close_date": "2025-09-04",
+            "financing_evidence_url":
+                "https://www.sec.gov/Archives/edgar/data/1933414/"
+                "000193341425000139/mlys2025q38kex991.htm",
+        }
+        company = {"ticker": "MLYS", "company": "Mineralys Therapeutics Inc.",
+                   "cik10": "0001933414"}
+        primary = (
+            "Strengthened Balance Sheet - On September 4, 2025, the Company "
+            "completed a public equity financing for gross proceeds of "
+            "approximately $287.5 million, before deducting fees and expenses."
+        )
+        verifier = verify.Verifier(
+            [company], fetch=lambda _: primary.encode("utf-8"),
+            as_of=date(2026, 10, 15),
+        )
+        finding = verifier.financing(event)
+        self.assertEqual(finding["verification_status"], "VERIFIED")
+        self.assertEqual(finding["observed"], "2025-09-04")
+        self.assertIn("not the post-Phase-3 second-financing sequence",
+                      finding["reason"])
+        self.assertEqual(len(finding["source_sha256"]), 64)
+        # A new closing DATE without new matching evidence must fail closed.
+        wrong = {**event, "financing_close_date": "2025-09-05"}
+        self.assertNotEqual(verifier.financing(wrong)["verification_status"], "VERIFIED")
+
     def test_exact_mapped_sec_offering_is_only_one_transaction(self):
         sec = "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/ex99-1.htm"
         event = {**EVENT, "financing_close_date": "",
