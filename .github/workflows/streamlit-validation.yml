@@ -31,7 +31,7 @@ jobs:
         run: python -m compileall -q app.py table_groups.py stage_header_overlay.py financing_stage.py stages.py scripts
       - name: Validate GEM source CSV integrity before dashboard tests
         run: python scripts/validate_gem_source_ledgers.py
-      - name: Check GEM and PRE3 browser audit JavaScript syntax
+      - name: Check GEM and PIPELINE early-clinical browser JavaScript syntax
         run: |
           node --check scripts/gem_potential_live_audit.cjs
           node --check scripts/prephase3_live_acceptance.cjs

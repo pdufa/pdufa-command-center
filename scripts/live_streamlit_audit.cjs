@@ -20,7 +20,7 @@ const report = {
     "No broker orders, private accounts or trade-performance claims are inspected."
   ]
 };
-const EXPECTED_TABS = ["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"];
+const EXPECTED_TABS = ["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"];
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let browser;
 
@@ -45,8 +45,8 @@ async function waitFor(page, label, matches, timeoutMs=125000) {
       if (/This app has encountered an error|Traceback \(most recent call last\)/i.test(recent)) {
         throw Error(label + ": Streamlit application exception.");
       }
-      if (recent.includes("Source integration failed.") && label === "PRE PHASE 3") {
-        throw Error("PRE PHASE 3 source cache failed validation in deployed app.");
+      if (recent.includes("Source integration failed.") && label === "PIPELINE") {
+        throw Error("PIPELINE clinical source cache failed validation in deployed app.");
       }
       if (await matches(frame, recent)) {
         await delay(800);
@@ -151,10 +151,9 @@ async function audit() {
 
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
-    ["GEM", ["#1-GEM", "GEM — TWO BENCHMARKS VERIFIED"]],
+    ["GEM", ["3 — GEM", "GEM — TWO BENCHMARKS VERIFIED"]],
     ["SCANS", ["GEMS — GITHUB SCAN LOGS", "GEM — MASTER STOCK LIST", "NIGHTLY SCAN REPORT"]],
-    ["PRE PHASE 3", ["PRE PHASE 3 — LIVE SOURCE MONITOR", "SOURCE HEALTH / LAST VERIFIED CHECK"]],
-    ["POST PHASE 3", ["POST PHASE 3 — TRADING WORKSPACE", "STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH"]],
+    ["GEM JR", ["GEM JR — RESEARCH & QUALIFICATION QUEUE", "Research candidates"]],
     // WT chart/widget content lives in a nested components iframe.
     ["WT", []]
   ];
@@ -164,9 +163,9 @@ async function audit() {
   // Exercise the collapsed GEM master UI, not just its title. The chart and
   // trading assessment require a stock card to open before their code runs.
   await safely("GEM nested stock entry/exit chart", async() => {
-    await inspectTab(page, "GEM", ["#1-GEM", "GEM — TWO BENCHMARKS VERIFIED"]);
+    await inspectTab(page, "GEM", ["3 — GEM", "GEM — TWO BENCHMARKS VERIFIED"]);
     const first = await currentFrame(page);
-    const label = "#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)";
+    const label = "GEM — THREE-LEVEL VERIFIED MASTER (show / hide)";
     await first.getByText(label, {exact:true}).click({timeout:15000});
     const master = await waitFor(page, "GEM nested master", async(f, text) =>
       await selectedTab(f, "GEM") &&
