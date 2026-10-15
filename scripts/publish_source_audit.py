@@ -87,6 +87,40 @@ def publish(artifacts, data_dir, output):
               "supplemental_issue_examples": optional_gaps[:12], **reconciled}
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    # Independently publish filing-index metadata, not funded-closing proof.
+    # If SEC source reconciliation was rejected, keep the previous snapshot and
+    # declare it stale rather than silently updating it.
+    watch = artifacts / "sec_filing_watch.csv"
+    accepted_sec = "SEC" not in reconciled["manifest_rejections"]
+    if accepted_sec and watch.is_file():
+        from scripts.filings_base_amendments import FIELDS as WATCH_FIELDS, SOURCE_SCOPE
+        watch_rows = read_rows(watch)
+        sec_ledger = read_rows(artifacts / "sec_verification.csv")
+        issuer_indexes = {
+            (r["ticker"], r["source_sha256"])
+            for r in sec_ledger
+            if r.get("claim") == "FILINGS_INVENTORY"
+            and r.get("verification_status") == "VERIFIED"
+        }
+        if all(
+            set(row) == set(WATCH_FIELDS)
+            and (row["ticker"], row["source_index_sha256"]) in issuer_indexes
+            and row["evidence_scope"] == SOURCE_SCOPE
+            and row["category"] in {"BASE", "AMENDMENT"}
+            and bool(row["filing_url"].startswith("https://www.sec.gov/Archives/edgar/data/"))
+            for row in watch_rows
+        ) and len({(r["ticker"], r["accession_number"]) for r in watch_rows}) == len(watch_rows):
+            shutil.copyfile(watch, output.with_name("sec_filing_watch.csv"))
+            report["sec_filing_watch_status"] = "PUBLISHED_INDEX_ONLY"
+            report["sec_filing_watch_rows"] = len(watch_rows)
+        else:
+            report["sec_filing_watch_status"] = "REJECTED_UNTRUSTED_METADATA"
+            report["sec_filing_watch_rows"] = None
+    else:
+        report["sec_filing_watch_status"] = "PENDING_SEC_REPORT_OR_INVENTORY"
+        report["sec_filing_watch_rows"] = None
+    # Re-write the report with the SEC watch publication result visible.
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n")
     shutil.copyfile(artifacts / "combined_verification.csv", output.with_name("pdufa_source_verification.csv"))
     from scripts.nightly_missing_sources import write_rows
     from scripts.source_verification import FIELDS
