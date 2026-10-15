@@ -6,6 +6,7 @@ import pandas as pd
 
 from pipeline_filings_alignment import (
     align_baseline, pipeline_scope, reconciliation_counts,
+    candidate_events_outside_pipeline,
 )
 
 
@@ -76,6 +77,23 @@ class PipelineFilingsAlignmentTests(unittest.TestCase):
         self.assertEqual(counts["display_total"], 1)
         self.assertEqual(align_baseline(filtered.to_dict("records"), self.candidates)[0]
                          ["Pipeline ID"], "APPLICATION|ABC|DRUG_A_20261120")
+
+    def test_outside_pipeline_candidates_are_flagged_but_filtered_candidates_are_not(self):
+        selected, _ = pipeline_scope(
+            self.records, {"pipeline_stages_v9": ["Phase 3"]}, date(2026, 10, 15)
+        )
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(candidate_events_outside_pipeline(
+            self.records.to_dict("records"), self.candidates), [])
+        outside = self.candidates + [
+            {"Ticker": "GHI", "Trial / event": "GHI|UNLINKED_20261121",
+             "Agency claim": "PDUFA_TARGET", "Agency verification": "REVIEW_REQUIRED"}
+        ]
+        orphaned = candidate_events_outside_pipeline(
+            self.records.to_dict("records"), outside
+        )
+        self.assertEqual(len(orphaned), 1)
+        self.assertEqual(orphaned[0]["Candidate event"], "GHI|UNLINKED_20261121")
 
     def test_duplicate_or_missing_pipeline_ids_are_never_silently_dropped(self):
         duplicates = [self.records.iloc[0].to_dict()] * 2
