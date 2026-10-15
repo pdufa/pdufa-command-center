@@ -155,10 +155,15 @@ def render_trial_hierarchy(records, *, namespace, title):
             with label:
                 st.markdown("**" + ticker + " · " + _value(r, "Drug") +
                             " · " + _value(r, "Indication") + "**")
+                priority = (" · JR RESEARCH PRIORITY #" +
+                            str(r["Research Priority"])
+                            if junior and r.get("Research Priority") is not None
+                            else "")
                 st.caption("PIPELINE ID " + pid + " · NCT " +
                            _value(r, "NCT ID") + " · FOUND " +
                            _value(r, "Date Found") +
-                           " · PDUFA " + _value(r, "PDUFA saved", "PDUFA date (saved)"))
+                           " · PDUFA " + _value(r, "PDUFA saved", "PDUFA date (saved)") +
+                           priority)
             with w:
                 st.button("W", key=namespace + "_watch_" + uid,
                           type="primary" if ticker in watch else "secondary",
