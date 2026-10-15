@@ -57,6 +57,11 @@ def align_baseline(pipeline_records, candidate_baseline):
         seen.add(record_id)
         key = record_id[len("APPLICATION|"):] if record_id.startswith("APPLICATION|") else ""
         source = candidates.get(key) if key else None
+        ticker_matches = (
+            source is not None and
+            str(source.get("Ticker") or "").strip().upper() ==
+            str(item.get("ticker") or "").strip().upper()
+        )
         row = {
             "Pipeline ID": record_id,
             "Record Type": item.get("record_type", ""),
@@ -73,15 +78,19 @@ def align_baseline(pipeline_records, candidate_baseline):
             "GEM eligibility": "NOT CERTIFIED",
             "Reconciliation": "PIPELINE_ONLY — NO EXACT APPLICATION MATCH",
         }
-        if source is not None:
-            # Only the matched application inherits candidate-specific evidence.
+        if ticker_matches:
+            # Only exact ID + ticker matches inherit candidate-specific evidence.
             row.update(source)
             row["Pipeline ID"] = record_id
             row["Record Type"] = item.get("record_type", "")
             row["Pipeline stage"] = item.get("current_stage", "")
             row["Pipeline source"] = item.get("source_url", "")
+            row["Ticker"] = item.get("ticker", "")
+            row["Drug"] = item.get("drug", "")
             row["Reconciliation"] = "EXACT APPLICATION EVENT MATCH"
             row["Trial NCT"] = source.get("Trial NCT") or item.get("nct_id", "")
+        elif source is not None:
+            row["Reconciliation"] = "TICKER CONFLICT — SOURCE EVIDENCE WITHHELD"
         aligned.append(row)
     if len(aligned) != len(pipeline_records):
         raise ValueError("Pipeline baseline row count diverged from source records")
@@ -106,7 +115,21 @@ def candidate_events_outside_pipeline(pipeline_records, candidate_baseline):
     seen = set()
     for item in candidate_baseline:
         key = str(item.get("Trial / event") or "").strip()
-        if not key or key in seen or "APPLICATION|" + key in known:
+        if not key or key in seen:
+            continue
+        identifier = "APPLICATION|" + key
+        present = identifier in known
+        # A key exists but the issuer may disagree. Report the conflict.
+        identity_row = next(
+            (record for record in pipeline_records
+             if str(record.get("record_id") or "").strip() == identifier), None
+        )
+        ticker_matches = (
+            identity_row is not None and
+            str(identity_row.get("ticker") or "").strip().upper() ==
+            str(item.get("Ticker") or "").strip().upper()
+        )
+        if present and ticker_matches:
             continue
         seen.add(key)
         orphaned.append({
@@ -115,7 +138,10 @@ def candidate_events_outside_pipeline(pipeline_records, candidate_baseline):
             "Agency claim": item.get("Agency claim", ""),
             "Agency verification": item.get("Agency verification", ""),
             "Agency source": item.get("Agency source", ""),
-            "Reconciliation": "CANDIDATE NOT IN CURRENT PIPELINE UNIVERSE",
+            "Reconciliation": (
+                "TICKER CONFLICT — EXACT PIPELINE ID" if present else
+                "CANDIDATE NOT IN CURRENT PIPELINE UNIVERSE"
+            ),
         })
     return orphaned
 
