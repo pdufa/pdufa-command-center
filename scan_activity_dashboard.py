@@ -1,7 +1,7 @@
-"""Top-level read-only 24-hour GitHub scan activity viewer.
+"""Read-only GitHub scan activity embedded within PDUFA → SCANS.
 
-GitHub Actions run status is execution status, NOT trade/evidence readiness.
-The PDUFA SCANS subtab remains the published audit and scan-control surface.
+Live execution is not evidence verification or trade readiness. Source and
+GEM research reports stay on the same unified SCANS tab.
 """
 from __future__ import annotations
 
@@ -203,32 +203,35 @@ def _published_report(url, fallback):
             return {}, "Unavailable"
 
 
-def render_scans_activity():
-    st.markdown("## SCANS — LIVE ACTIVITY & HISTORY")
+def render_scans_activity(*, embedded: bool = False):
+    """Show run history in the unified SCANS tab; keep duplicate links hidden."""
+    if not embedded:
+        st.markdown("## SCANS — LIVE ACTIVITY & HISTORY")
     st.caption(
         "Read-only GitHub Actions status for scans that are running, queued, "
         "completed or failed. Times are Pacific. Job success does NOT certify "
         "FDA/SEC evidence, GEMS eligibility or permission to trade."
     )
-    st.markdown("### GEMS SCANS — DIRECT LOG LINKS")
-    st.caption(
-        "These always-visible links open the complete GitHub run history for each "
-        "GEMS workflow, including running, completed and failed jobs. They remain "
-        "available even when GitHub's live run feed is incomplete."
-    )
-    gem_link1, gem_link2 = st.columns(2)
-    with gem_link1:
-        st.link_button(
-            "GEMS — PHASE 3 / RESEARCH SCAN ↗",
-            ACTIONS_URL + "/workflows/gem-research-quality.yml",
-            use_container_width=True,
+    if not embedded:
+        st.markdown("### GEMS SCANS — DIRECT LOG LINKS")
+        st.caption(
+            "These always-visible links open the complete GitHub run history for each "
+            "GEMS workflow, including running, completed and failed jobs. They remain "
+            "available even when GitHub's live run feed is incomplete."
         )
-    with gem_link2:
-        st.link_button(
-            "GEMS — FINANCING AUDIT SCAN ↗",
-            ACTIONS_URL + "/workflows/gem-financing-full-coverage.yml",
-            use_container_width=True,
-        )
+        gem_link1, gem_link2 = st.columns(2)
+        with gem_link1:
+            st.link_button(
+                "GEMS — PHASE 3 / RESEARCH SCAN ↗",
+                ACTIONS_URL + "/workflows/gem-research-quality.yml",
+                use_container_width=True,
+            )
+        with gem_link2:
+            st.link_button(
+                "GEMS — FINANCING AUDIT SCAN ↗",
+                ACTIONS_URL + "/workflows/gem-financing-full-coverage.yml",
+                use_container_width=True,
+            )
     left, middle, right = st.columns([2, 2, 3])
     with left:
         span = st.selectbox("Time window", ["Last 24 hours", "Last 7 days"],
@@ -360,7 +363,7 @@ def render_scans_activity():
     with links[2]:
         st.link_button("All GitHub Actions", ACTIONS_URL, use_container_width=True)
     st.caption(
-        "For source exception queues, historical clinical changes and secured "
-        "rescan controls, open PDUFA → SCANS. This activity page cannot place orders "
-        "or change scan configuration."
+        "For source exceptions, trial changes and secured rescan controls, use "
+        "the sections below on this same PDUFA → SCANS tab. Run history is "
+        "read-only and never authorizes trading."
     )
