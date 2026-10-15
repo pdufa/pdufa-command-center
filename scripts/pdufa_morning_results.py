@@ -134,6 +134,50 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
     }
 
 
+
+def post_six_final_status(clinical, source, *, now=None):
+    """Show a late completed overnight report separately from the 6 AM snapshot.
+
+    A source report must belong to the SAME nightly workflow run as the
+    clinical report, and its verified publication must be after 6 AM Pacific.
+    This never changes the historically correct as-of-6-AM record.
+    """
+    now = now or datetime.now(timezone.utc)
+    if now.tzinfo is None or not isinstance(clinical, dict) or not isinstance(source, dict):
+        return None
+    local = now.astimezone(PACIFIC)
+    if local.hour < 6 or local.hour >= 22:
+        return None
+    morning = local.replace(hour=6, minute=0, second=0, microsecond=0)
+    prior = morning.date() - timedelta(days=1)
+    night_start = datetime(prior.year, prior.month, prior.day, 22, 0, tzinfo=PACIFIC)
+    clinical_time = timestamp(clinical.get("updated_at_utc"))
+    source_time = timestamp(source.get("updated_at_utc"))
+    run_id = clinical.get("latest_run_id")
+    if (type(run_id) is not int or run_id <= 0
+            or source.get("latest_run_id") != run_id
+            or clinical_time is None or source_time is None):
+        return None
+    if not (night_start.astimezone(timezone.utc) <= clinical_time <= now.astimezone(timezone.utc)):
+        return None
+    if not (morning.astimezone(timezone.utc) < source_time <= now.astimezone(timezone.utc)):
+        return None
+    url = source.get("latest_run_url")
+    if not isinstance(url, str) or url != (
+            "https://github.com/pdufa/pdufa-command-center/actions/runs/" + str(run_id)):
+        url = None
+    return {
+        "run_id": run_id,
+        "status": str(source.get("status") or "UNVERIFIED"),
+        "source_published_pacific": source_time.astimezone(PACIFIC).isoformat(),
+        "clinical_published_pacific": clinical_time.astimezone(PACIFIC).isoformat(),
+        "required_unresolved": _int_or_none(source.get("required_findings_unresolved")),
+        "missing_required_source_families": list(source.get("missing_required_source_families") or []),
+        "run_url": url,
+        "trade_entry_authorized": False,
+    }
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--clinical", type=Path, default=Path("data/nightly_scan_report.json"))

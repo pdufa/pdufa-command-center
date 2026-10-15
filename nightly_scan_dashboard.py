@@ -18,7 +18,7 @@ from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
 from scripts.scan_recovery_triage import triage_source_rows
-from scripts.pdufa_morning_results import make_snapshot
+from scripts.pdufa_morning_results import make_snapshot, post_six_final_status
 
 REPO = "pdufa/pdufa-command-center"
 REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/nightly_scan_report.json"
@@ -181,6 +181,39 @@ def render_am_results():
             "Changed trials": None,
         })
         st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+
+
+    # A late source reconciliation must not rewrite the immutable 6 AM
+    # evidence cutoff. Show it as a SEPARATE, source-matched publication.
+    clinical_latest, _ = published_report()
+    late = post_six_final_status(
+        clinical_latest, published_source_report(), now=now
+    )
+    if late:
+        st.markdown("### LATEST COMPLETED OVERNIGHT CHECK — AFTER 6 AM")
+        st.caption(
+            "New evidence became available after the 6 AM cutoff. "
+            "This is not the 6 AM snapshot and does not authorize trading."
+        )
+        st.write(
+            "Nightly GitHub run #" + str(late["run_id"]) +
+            " · Source verification: **" + late["status"] + "**" +
+            " · Source published (Pacific): " + late["source_published_pacific"]
+        )
+        pending = late.get("required_unresolved")
+        st.metric("Required findings still unresolved",
+                  f"{pending:,}" if type(pending) is int else "Unknown")
+        if late["status"] != "COMPLETE" or pending is None or pending > 0:
+            st.warning(
+                "Source verification remains incomplete. Missing source evidence "
+                "is not a pass; GEM trading stays blocked."
+            )
+        missing = late.get("missing_required_source_families") or []
+        if missing:
+            st.caption("Incomplete source families: " + ", ".join(str(s) for s in missing))
+        if late.get("run_url"):
+            st.link_button("OPEN COMPLETED OVERNIGHT WORKFLOW", late["run_url"])
 
 
 def render_extended_source_report():

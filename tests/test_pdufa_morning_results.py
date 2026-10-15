@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from scripts.pdufa_morning_results import make_snapshot
+from scripts.pdufa_morning_results import make_snapshot, post_six_final_status
 
 
 class MorningResultsTests(unittest.TestCase):
@@ -144,6 +144,43 @@ class MorningResultsTests(unittest.TestCase):
         self.assertEqual(result["overnight_scan_window_started_pacific"],
                          "2026-12-13T22:00:00-08:00")
         self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
+
+
+    def test_late_publication_does_not_change_six_am_snapshot(self):
+        now = datetime(2026, 10, 15, 14, 0, tzinfo=timezone.utc)
+        clinical = {"latest_run_id": 38685204322,
+                    "updated_at_utc": "2026-10-15T05:20:34Z"}
+        source = {"latest_run_id": 38685204322,
+                  "updated_at_utc": "2026-10-15T13:40:07Z",
+                  "status": "PARTIAL", "required_findings_unresolved": 36,
+                  "missing_required_source_families": ["SEC", "FINANCIAL"],
+                  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322"}
+        morning = make_snapshot(clinical, source, now=now)
+        self.assertFalse(morning["sources"]["overnight_report_published"])
+        late = post_six_final_status(clinical, source, now=now)
+        self.assertEqual(late["required_unresolved"], 36)
+        self.assertEqual(late["status"], "PARTIAL")
+        self.assertFalse(late["trade_entry_authorized"])
+
+    def test_late_report_rejects_mismatched_run_and_stale_sources(self):
+        now = datetime(2026, 10, 15, 14, 0, tzinfo=timezone.utc)
+        clinical = {"latest_run_id": 100, "updated_at_utc": "2026-10-15T05:20:00Z"}
+        source = {"latest_run_id": 101, "updated_at_utc": "2026-10-15T13:40:00Z"}
+        self.assertIsNone(post_six_final_status(clinical, source, now=now))
+        source["latest_run_id"] = 100
+        source["updated_at_utc"] = "2026-10-15T12:50:00Z"
+        self.assertIsNone(post_six_final_status(clinical, source, now=now))
+        source["updated_at_utc"] = "2026-10-15T13:40:00Z"
+        clinical["updated_at_utc"] = "2026-10-14T04:20:00Z"
+        self.assertIsNone(post_six_final_status(clinical, source, now=now))
+
+    def test_late_report_blocks_early_morning_and_next_scan_window(self):
+        clinical = {"latest_run_id": 100, "updated_at_utc": "2026-10-15T05:20:00Z"}
+        source = {"latest_run_id": 100, "updated_at_utc": "2026-10-15T13:40:00Z"}
+        self.assertIsNone(post_six_final_status(
+            clinical, source, now=datetime(2026, 10, 15, 12, 0, tzinfo=timezone.utc)))
+        self.assertIsNone(post_six_final_status(
+            clinical, source, now=datetime(2026, 10, 16, 5, 0, tzinfo=timezone.utc)))
 
 
 if __name__ == "__main__":
