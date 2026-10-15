@@ -48,16 +48,16 @@ class GemsFourthBlockTests(unittest.TestCase):
         )
 
     def test_fourth_block_is_distinct_from_existing_post3_scan_four(self):
-        self.assertEqual(label("4"), "#4 POST3")
-        self.assertEqual(label("GEM"), "BLOCK 4 — GEM")
+        self.assertEqual(label("4"), "GEM JR — Phase 3 readout")
+        self.assertEqual(label("GEM"), "GEM — verified research")
         self.assertEqual(self.block()["scan"], "GEM")
         at = datetime(2026, 10, 13, tzinfo=timezone.utc)
         subject, body = compose_start("GEM", "DELTA", "run-test", at)
-        self.assertIn("START - BLOCK 4 — GEM", subject)
+        self.assertIn("START - GEM — verified research", subject)
         self.assertIn("Run ID: run-test", body)
         end_subject, end_body = compose_end("GEM", "DELTA", "run-test", at,
                                             "PARTIAL", "source-gated", 300)
-        self.assertIn("END - BLOCK 4 — GEM", end_subject)
+        self.assertIn("END - GEM — verified research", end_subject)
         self.assertIn("PARTIAL", end_subject)
         self.assertIn("source-gated", end_body)
 
@@ -78,7 +78,7 @@ class GemsFourthBlockTests(unittest.TestCase):
                       item["blocking_or_review_flags"])
         self.assertEqual(gem_block_summary_row(item)["New records"], 4)
         self.assertEqual(gem_block_summary_row(item)["Changed trials"], None)
-        self.assertEqual(gem_block_summary_row(item)["Scan"], "BLOCK 4 — GEM")
+        self.assertEqual(gem_block_summary_row(item)["Scan"], "GEM — verified research")
 
     def test_verify_only_never_invents_collection_or_new_results(self):
         item = self.block("VERIFY_ALL", collector="skipped")
@@ -131,13 +131,13 @@ class GemsFourthBlockTests(unittest.TestCase):
         nightly = (root / "nightly_scan_dashboard.py").read_text(encoding="utf-8")
         control = (root / ".github/workflows/pdufa-scan-control.yml").read_text(encoding="utf-8")
         workflow = (root / ".github/workflows/gem-research-quality.yml").read_text(encoding="utf-8")
-        self.assertIn('"GEM": "BLOCK 4 — GEM"', nightly)
-        self.assertIn('options=["2", "3", "4", "GEM"]', nightly)
+        self.assertIn('"GEM": "GEM"', nightly)
+        self.assertIn('options=["PIPELINE", "GEM_JR", "GEM"]', nightly)
         self.assertIn('rows.append(gem_block_summary_row(gem_report))', nightly)
         self.assertIn('render_gem_scan_block_status(gem_report, gem_running)', nightly)
         self.assertIn('VERIFY SAVED SOURCES', nightly)
         self.assertIn('RESCAN SELECTED', nightly)
-        self.assertIn("options: [ALL, '2', '3', '4', GEM]", control)
+        self.assertIn("options: [ALL, PIPELINE, GEM_JR, GEM]", control)
         self.assertIn("gem-research-quality.yml/dispatches", control)
         self.assertIn('scan = os.environ["CONTROL_SCAN"]', control)
         self.assertIn('action not in ("VERIFY_ALL", "REVERIFY_PARTIAL", "RESCAN_ALL")', control)

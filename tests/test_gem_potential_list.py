@@ -193,9 +193,9 @@ class PotentialGEMTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         overview = (root / "unified_clinical_trading.py").read_text(encoding="utf-8")
         potential_ui = (root / "gem_potential_ui.py").read_text(encoding="utf-8")
-        first = overview.index('st.markdown("### #1-GEM")')
+        first = overview.index('st.markdown("### 3 — GEM")')
         render = overview.index('render_gem_potential(root=root, compact=True', first)
-        next_panel = overview.index('with pipeline_col, st.container(', first)
+        next_panel = overview.index('with st.expander("PDUFA TIMELINE"', first)
         self.assertLess(first, render)
         self.assertLess(render, next_panel)
         self.assertIn('### POTENTIAL GEMs — PENDING RESEARCH', potential_ui)

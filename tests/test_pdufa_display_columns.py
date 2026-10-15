@@ -77,9 +77,8 @@ class PdufaGridTests(unittest.TestCase):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
         for name, label in (
-            ("overview_pipeline_panel", "#2-PIPELINE"),
-            ("overview_pre3_panel", "#3-PRE3"),
-            ("overview_post3_panel", "#4-POST3"),
+            ("overview_pipeline_panel", "1 — PIPELINE"),
+            ("overview_gemjr_panel", "2 — GEM JR"),
         ):
             with self.subTest(panel=name):
                 start = source.index(f'key="{name}"')
