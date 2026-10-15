@@ -148,6 +148,12 @@ jobs:
         continue-on-error: true
         run: python scripts/run_gem_daily_readiness.py --output-dir reports/gem_daily
 
+      - name: Record GEM JR / GEM first-found and left-listing dates
+        id: stage_membership
+        # Never infer a trial exit from an incomplete scan or a verify-only run.
+        if: ${{ env.GEM_ACTION != 'VERIFY_ALL' && steps.registry_validation.outcome == 'success' && steps.exact_phase3.outcome == 'success' && steps.two_closes.outcome == 'success' }}
+        run: python scripts/update_gem_membership.py --data-dir data
+
       - name: Publishable fourth-block status — distinguish partial and failed
         id: block_report
         if: always()
@@ -170,6 +176,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/gem_scan_block_report.json
+          # Store audited membership transitions across nightly runs.
+          # On failed/partial scans there is no update, so no false exits.
+          if [ -f data/gem_stage_membership.json ]; then
+            git add -- data/gem_stage_membership.json
+          fi
           # A failed SEC collection publishes empty current records, never
           # silently continuing to qualify an earlier successful scan.
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_runway_evidence.json ]; then
@@ -228,6 +239,7 @@ jobs:
           path: |
             reports/gem_daily/
             data/gem_scan_block_report.json
+            data/gem_stage_membership.json
             data/gem_runway_evidence.json
             data/gem_hedge_fund_13f.json
             data/gem_insider_form4.json
@@ -249,6 +261,7 @@ jobs:
           REPORT_RESULT: ${{ steps.block_report.outcome }}
           EXACT_PHASE3_RESULT: ${{ steps.exact_phase3.outcome }}
           TWO_CLOSE_RESULT: ${{ steps.two_closes.outcome }}
+          MEMBERSHIP_RESULT: ${{ steps.stage_membership.outcome }}
         run: |
           if [ "$START_RESULT" != "success" ] || [ "$END_RESULT" != "success" ]; then
             echo "::error::GEM START/END Gmail messages were not both acknowledged."
@@ -261,6 +274,14 @@ jobs:
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && {
                [ "$EXACT_PHASE3_RESULT" != "success" ] || [ "$TWO_CLOSE_RESULT" != "success" ]; }; then
             echo "::error::GEM exact-program Phase 3 or two-financing source review did not execute."
+            exit 1
+          fi
+          if [ "$GEM_ACTION" != "VERIFY_ALL" ] && \
+             [ "$COLLECT_RESULT" = "success" ] && \
+             [ "$EXACT_PHASE3_RESULT" = "success" ] && \
+             [ "$TWO_CLOSE_RESULT" = "success" ] && \
+             [ "$MEMBERSHIP_RESULT" != "success" ]; then
+            echo "::error::Validated GEM research scan did not persist the stage membership ledger."
             exit 1
           fi
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ "$COLLECT_RESULT" != "success" ]; then
