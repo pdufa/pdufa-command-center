@@ -463,3 +463,16 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         "not independently invented subweights. Quarterly 13F data are delayed. "
         "Source gaps are not positive evidence."
     )
+    st.markdown("### GEM — PREVIOUS CANDIDATES")
+    st.caption("Separate exact-Pipeline-ID found and left dates. Exits include "
+               "PDUFA expiry, early FDA resolution, or another verified "
+               "stage-membership change. The PDUFA −3 trading warning does not "
+               "remove a trial from its research listing.")
+    departed = departed_stage_rows(read_history(data_path), "GEM")
+    with st.expander(f"OPEN PREVIOUS GEM CANDIDATES ({len(departed)})",
+                     expanded=False):
+        if departed:
+            st.dataframe(pd.DataFrame(departed), hide_index=True,
+                         use_container_width=True)
+        else:
+            st.caption("No historical GEM departures recorded by a complete scan yet.")
