@@ -78,8 +78,7 @@ def section_run(runs, section):
     return max(matches, key=lambda r: r.get("created_at", ""), default={})
 
 
-@st.fragment(run_every=30)
-def render_section_scan(section):
+def render_section_scan(section, *, published_report=None):
     _, mode = section_config(section)
     token, pin = secret("PDUFA_GITHUB_TOKEN"), secret("PDUFA_SCAN_CONTROL_PIN")
     supplied = st.session_state.get("filings_scan_control_pin", "")
@@ -117,13 +116,15 @@ def render_section_scan(section):
     if notice:
         st.caption(notice)
     folder = DATA / SNAPSHOTS / section.lower()
-    if (folder / "report.json").is_file():
+    report = published_report
+    if report is None and (folder / "report.json").is_file():
         try:
             report = load_snapshot(folder, DATA, section)["report"]
-            st.caption("Last published check: " + pacific_time(report["finished_at"]) +
-                       " · " + report["evidence_status"] + " · " +
-                       str(report["required_findings_unresolved"]) + " evidence gaps remaining.")
         except (OSError, ValueError, KeyError, TypeError):
             st.caption("Previous section results need a fresh scan for the current candidate list.")
+    if report:
+        st.caption("Last published check: " + pacific_time(report["finished_at"]) +
+                   " · " + report["evidence_status"] + " · " +
+                   str(report["required_findings_unresolved"]) + " evidence gaps remaining.")
     st.link_button("View section scan results", run_link(current) or WORKFLOW_URL,
                    key="section_results_" + section)

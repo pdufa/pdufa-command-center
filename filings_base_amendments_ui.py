@@ -10,9 +10,11 @@ import csv
 import re
 from pathlib import Path
 from datetime import datetime
+from tempfile import TemporaryDirectory
 from zoneinfo import ZoneInfo
 
-from scan_status_ui import required_issue_queue
+from scan_status_ui import required_issue_queue, pacific_time
+from filings_live_data import published_filings_files
 from filings_scan_controls import render_section_scan, render_section_scan_unlock
 from scripts.filings_section_scan import (
     SECTIONS, SNAPSHOTS, extension_observations, load_snapshot, overlay_findings, timestamp,
@@ -71,6 +73,64 @@ def apply_section_snapshots(sec_rows, verification, extensions, data_dir):
         verification = overlay_findings(verification, fresh)
         manual_findings = overlay_findings(manual_findings, fresh)
     return sec_rows, verification, extensions, manual_findings, notes
+
+
+def section_details(data_dir, queue_rows=None, queue_notice=""):
+    """Build all six detail lists from the same available publication."""
+    sec, verified, extensions, manual, notes = apply_section_snapshots(
+        read_csv(data_dir / FILINGS.name), read_csv(data_dir / VERIFICATION.name),
+        read_csv(data_dir / EXTENSIONS.name), data_dir,
+    )
+    bases = program_base_rows(
+        read_csv(data_dir / CANDIDATES.name), read_csv(data_dir / PHASE3_CHECKS.name),
+        read_csv(data_dir / SEC_PAIR_CHECKS.name), read_csv(data_dir / FINANCING_HISTORY.name), verified,
+    )
+    queue = read_csv(data_dir / RESEARCH_QUEUE.name) if queue_rows is None else queue_rows
+    reports = {}
+    for section in SECTIONS:
+        folder = data_dir / SNAPSHOTS / section.lower()
+        if (folder / "report.json").is_file():
+            try:
+                reports[section] = load_snapshot(folder, data_dir, section)["report"]
+            except (OSError, ValueError, KeyError, TypeError):
+                pass
+    return {"sec": sec, "verified": verified, "extensions": extensions, "bases": bases,
+            "tables": table_rows(sec, verified, extensions),
+            "queue": overlay_findings(queue, manual), "queue_notice": queue_notice,
+            "registry": read_csv(data_dir / REGISTRY.name), "notes": notes, "reports": reports}
+
+
+def load_section_details():
+    files, notice = published_filings_files()
+    if files is not None:
+        st.session_state["last_published_filings_files"] = files
+    else:
+        files = st.session_state.get("last_published_filings_files")
+    if files is not None:
+        with TemporaryDirectory() as temporary:
+            data_dir = Path(temporary)
+            for relative, body in files.items():
+                path = data_dir / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(body)
+            result = section_details(data_dir)
+    else:
+        queue, queue_notice = required_issue_queue()
+        result = section_details(ROOT / "data", queue.to_dict("records"), queue_notice)
+    result["refresh_notice"] = notice
+    return result
+
+
+def last_checked_caption(category, verified):
+    times = []
+    for row in verified:
+        if row.get("category") == category and row.get("checked_at"):
+            try:
+                times.append(timestamp(row["checked_at"]))
+            except (ValueError, TypeError):
+                continue
+    latest = max(times).isoformat() if times else ""
+    st.caption("Last published " + category + " evidence check: " + pacific_time(latest))
 
 
 def table_rows(sec_filings, verification, extensions):
@@ -401,7 +461,8 @@ def render_missing_research(category, queue, notice, registry, *, extensions=Non
     records = missing_research_rows(queue, category, registry, fda_extensions=extensions, benchmarks=benchmarks)
     incomplete = bool(notice and ("unavailable" in notice.lower() or "local" in notice.lower()))
     count = str(len(records)) if not incomplete else str(len(records)) + "+ (partial)"
-    with st.expander(f"🔎 {category} MISSING ITEMS ({count}) — Research checklist", expanded=False):
+    with st.expander(f"🔎 {category} MISSING EVIDENCE ({count}) — Research checklist",
+                     expanded=False, key=f"filings_{category.lower()}_missing_details"):
         st.caption("Unresolved exact-program evidence and source discrepancies. "
                    "Neither a missing item nor a filing-index result is proof of "
                    "a completed financing or FDA decision.")
@@ -441,56 +502,46 @@ def render_missing_research(category, queue, notice, registry, *, extensions=Non
 
 
 
+@st.fragment(run_every=60)
 def render_filings_base_amendments():
     """Independent SEC and FDA views with exact-program clinical/funding context."""
-    sec_rows = read_csv(FILINGS)
-    verification = read_csv(VERIFICATION)
-    extension_history = read_csv(EXTENSIONS)
-    sec_rows, verification, extension_history, manual_findings, section_notes = apply_section_snapshots(
-        sec_rows, verification, extension_history, ROOT / "data",
-    )
-    candidate_rows = read_csv(CANDIDATES)
-    bases = program_base_rows(
-        candidate_rows, read_csv(PHASE3_CHECKS), read_csv(SEC_PAIR_CHECKS),
-        read_csv(FINANCING_HISTORY), verification,
-    )
-    source_tables = table_rows(sec_rows, verification, extension_history)
+    details = load_section_details()
+    sec_rows, verification, extension_history = details["sec"], details["verified"], details["extensions"]
+    bases, source_tables = details["bases"], details["tables"]
     today = datetime.now(PACIFIC).date().isoformat()
     today_changes = today_amendments(
         sec_rows, source_tables["FDA Amendments"], extension_history, today=today,
     )
-    queue_frame, queue_notice = required_issue_queue()
-    queue_rows = overlay_findings(queue_frame.to_dict("records"), manual_findings)
-    registry_rows = read_csv(REGISTRY)
+    queue_rows, queue_notice, registry_rows = details["queue"], details["queue_notice"], details["registry"]
 
     st.markdown("## SEC FILINGS")
     render_section_scan_unlock()
-    for note in section_notes:
+    st.caption("Details refresh automatically every minute from published scan results. "
+               "Last display refresh: " + datetime.now(PACIFIC).strftime("%b %d, %I:%M %p %Z"))
+    if details["refresh_notice"]:
+        st.warning(details["refresh_notice"])
+    for note in details["notes"]:
         st.warning(note)
     st.caption("PIPELINE → GEM JR → GEM · Original Phase 3 and two-financing "
                "claims shown as saved evidence, not automatic GEM qualification. "
                "Weekday changed/new scan; Sunday full 10 PM Pacific.")
     st.markdown(f"#### SEC BASE ({len(bases['SEC'])}) — Phase 3 + 1st and 2nd financing")
-    render_section_scan("SEC_BASE")
-    st.caption("One row per exact drug/trial event. The 2nd financing date can "
-               "be historical/reported while the independent SEC deal-sequence "
-               "check remains under review.")
-    if bases["SEC"]:
-        st.dataframe(
-            pd.DataFrame(bases["SEC"]), use_container_width=True, hide_index=True,
-            column_config={
-                "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
-                "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
-                "Agency source": st.column_config.LinkColumn("SEC claim source"),
-            },
-        )
-    else:
-        st.info("No exact-event SEC baseline candidates are available.")
-
-    with st.expander(
-        f"Original SEC EDGAR index filings ({len(source_tables['SEC Base']) if sec_rows else 'PENDING'})",
-        expanded=False,
-    ):
+    render_section_scan("SEC_BASE", published_report=details["reports"].get("SEC_BASE", {}))
+    with st.expander("SEC Base details", expanded=False, key="filings_sec_base_details"):
+        last_checked_caption("SEC", verification)
+        st.caption("One row per exact drug/trial event. The 2nd financing date can "
+                   "be historical/reported while the independent SEC deal-sequence "
+                   "check remains under review.")
+        if bases["SEC"]:
+            st.dataframe(pd.DataFrame(bases["SEC"]), use_container_width=True, hide_index=True,
+                column_config={
+                    "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
+                    "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
+                    "Agency source": st.column_config.LinkColumn("SEC claim source"),
+                })
+        else:
+            st.info("No exact-event SEC baseline candidates are available.")
+        st.markdown(f"**Original SEC EDGAR index filings ({len(source_tables['SEC Base']) if sec_rows else 'PENDING'})**")
         if source_tables["SEC Base"]:
             st.dataframe(pd.DataFrame(source_tables["SEC Base"]),
                          use_container_width=True, hide_index=True,
@@ -500,23 +551,18 @@ def render_filings_base_amendments():
 
     today_sec = today_changes["SEC"]
     sec_total = str(len(today_sec)) if sec_rows else "PENDING"
-    st.markdown(f"#### SEC AMENDMENTS FOUND TODAY ({sec_total})")
-    render_section_scan("SEC_AMENDMENTS")
-    st.caption("EDGAR /A filing dates for " + today +
-               " (Pacific calendar). These are original filing dates, not proof "
-               "that an amendment was first discovered in today's scan.")
-    if today_sec:
-        st.dataframe(pd.DataFrame([
-            {"Ticker": x.get("ticker", ""), "Form": x.get("filing_type", ""),
-             "Filed": x.get("filed_at", ""), "Accession": x.get("accession_number", ""),
-             "Status": "INDEX ONLY — review amendment",
-             "Primary source": x.get("filing_url", "")} for x in today_sec
-        ]), use_container_width=True, hide_index=True,
-           column_config={"Primary source": st.column_config.LinkColumn("EDGAR amendment")})
-    else:
-        st.caption("No SEC /A filing dated today in the published index."
-                   if sec_rows else
-                   "SEC index snapshot has not published; today's amendment count is pending.")
+    st.markdown(f"#### SEC AMENDMENTS ({len(source_tables['SEC Amendments'])}) · DATED TODAY ({sec_total})")
+    render_section_scan("SEC_AMENDMENTS", published_report=details["reports"].get("SEC_AMENDMENTS", {}))
+    with st.expander("SEC Amendment details", expanded=False, key="filings_sec_amendment_details"):
+        last_checked_caption("SEC", verification)
+        st.caption("All saved EDGAR amendments, including " + sec_total + " dated " + today +
+                   " (Pacific calendar). Filing dates do not establish first discovery or financing closure.")
+        if source_tables["SEC Amendments"]:
+            st.dataframe(pd.DataFrame(source_tables["SEC Amendments"]), use_container_width=True,
+                         hide_index=True, column_config={
+                             "Primary source": st.column_config.LinkColumn("EDGAR amendment")})
+        else:
+            st.info("No published SEC amendment inventory is available yet.")
     render_missing_research("SEC", queue_rows, queue_notice, registry_rows,
                             benchmarks=bases["SEC"])
 
@@ -526,34 +572,33 @@ def render_filings_base_amendments():
                "Phase 3 and financing benchmarks. A regulatory PDUFA extension "
                "is not necessarily a formal NDA/BLA application amendment.")
     st.markdown(f"#### FDA BASE ({len(bases['FDA'])}) — Phase 3 + 1st and 2nd financing")
-    render_section_scan("FDA_BASE")
-    if bases["FDA"]:
-        st.dataframe(
-            pd.DataFrame(bases["FDA"]), use_container_width=True, hide_index=True,
-            column_config={
-                "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
-                "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
-                "Agency source": st.column_config.LinkColumn("FDA primary evidence"),
-            },
-        )
-    else:
-        st.info("No exact-event FDA baseline candidates are available.")
+    render_section_scan("FDA_BASE", published_report=details["reports"].get("FDA_BASE", {}))
+    with st.expander("FDA Base details", expanded=False, key="filings_fda_base_details"):
+        last_checked_caption("FDA", verification)
+        if bases["FDA"]:
+            st.dataframe(pd.DataFrame(bases["FDA"]), use_container_width=True, hide_index=True,
+                column_config={
+                    "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
+                    "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
+                    "Agency source": st.column_config.LinkColumn("FDA primary evidence"),
+                })
+        else:
+            st.info("No exact-event FDA baseline candidates are available.")
 
     fda_today = today_changes["FDA"]
-    st.markdown(f"#### FDA AMENDMENTS FOUND TODAY ({len(fda_today)})")
-    render_section_scan("FDA_AMENDMENTS")
-    st.caption("Counted by first-detected PDUFA extension timestamp converted "
-               "to Pacific time (" + today + "), not a routine last-updated time. "
-               "Unobserved formal NDA/BLA amendments cannot be inferred.")
-    if fda_today:
-        st.dataframe(pd.DataFrame(fda_today), use_container_width=True,
-                     hide_index=True,
-                     column_config={
-                         "Primary source": st.column_config.LinkColumn("Extension evidence"),
-                     })
-    else:
-        st.caption("No newly detected PDUFA extensions today in the saved extension ledger. "
-                   "This does not rule out unreported application amendments.")
+    st.markdown(f"#### FDA AMENDMENTS ({len(source_tables['FDA Amendments'])}) · NEW TODAY ({len(fda_today)})")
+    render_section_scan("FDA_AMENDMENTS", published_report=details["reports"].get("FDA_AMENDMENTS", {}))
+    with st.expander("FDA Amendment details", expanded=False, key="filings_fda_amendment_details"):
+        last_checked_caption("FDA", verification)
+        st.caption("All saved PDUFA extensions; " + str(len(fda_today)) + " first detected on " + today +
+                   " (Pacific calendar). Routine refreshes do not create new detections. "
+                   "Unobserved formal NDA/BLA amendments cannot be inferred.")
+        if source_tables["FDA Amendments"]:
+            st.dataframe(pd.DataFrame(source_tables["FDA Amendments"]), use_container_width=True,
+                         hide_index=True, column_config={
+                             "Primary source": st.column_config.LinkColumn("Extension evidence")})
+        else:
+            st.info("No saved PDUFA extensions are available. Unreported application amendments remain unobserved.")
     render_missing_research(
         "FDA", queue_rows, queue_notice, registry_rows,
         extensions=source_tables["FDA Amendments"],
