@@ -32,6 +32,7 @@ WORKFLOWS = {
     "Streamlit tests": "streamlit-validation.yml",
     "Source verification tests": "pdufa-extended-source-tests.yml",
     "Gmail + GitHub ad hoc audit": "pdufa-adhoc-error-check.yml",
+    "Manual SEC / FDA section scan": "pdufa-filings-section-scan.yml",
 }
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 FAMILIES = ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER")

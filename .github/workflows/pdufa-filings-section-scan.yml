@@ -1,0 +1,64 @@
+name: PDUFA SEC FDA Section Scan
+run-name: '${{ inputs.section }} — manual filings scan'
+
+on:
+  workflow_dispatch:
+    inputs:
+      section:
+        description: 'Run only this agency section; BASE is FULL and AMENDMENTS is DELTA'
+        type: choice
+        required: true
+        options: [SEC_BASE, SEC_AMENDMENTS, FDA_BASE, FDA_AMENDMENTS]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-filings-section-${{ inputs.section }}
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      SCAN_SECTION: ${{ inputs.section }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install primary PDF verification dependency
+        run: python -m pip install 'pypdf>=5,<7'
+      - name: Scan the requested agency and mode
+        run: >-
+          python scripts/filings_section_scan.py scan
+          --section "$SCAN_SECTION"
+          --artifacts-dir "$RUNNER_TEMP/filings-section-result"
+      - name: Publish section research evidence without changing other source reports
+        run: |
+          git pull --ff-only origin main
+          python scripts/filings_section_scan.py publish \
+            --section "$SCAN_SECTION" \
+            --artifacts-dir "$RUNNER_TEMP/filings-section-result"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "data/filings_section_scans/$(printf '%s' "$SCAN_SECTION" | tr '[:upper:]' '[:lower:]')"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish $SCAN_SECTION manual research scan"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+      - name: Archive requested section evidence and source gaps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: filings-section-${{ inputs.section }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/filings-section-result/
+          if-no-files-found: warn
+          retention-days: 30
