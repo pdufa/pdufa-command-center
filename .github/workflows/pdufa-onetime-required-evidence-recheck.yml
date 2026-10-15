@@ -1,0 +1,158 @@
+name: PDUFA One-Time Live Required Evidence Recheck
+
+# Kick off immediately when this reviewed workflow first reaches main.
+# This is a comparison against the latest canonical review queue, NOT a
+# replacement for the 9 PM Pacific fully sequential FDA/SEC/clinical scan.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-onetime-required-evidence-recheck.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-focused-required-evidence-recheck
+  cancel-in-progress: false
+
+jobs:
+  recheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 125
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - name: Checkout latest source verifier and saved evidence queue
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install primary PDF parser
+        run: python -m pip install pypdf
+
+      - name: Verify complete mandatory queue identity without assuming fixed count
+        id: baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import csv, json
+          from pathlib import Path
+          report=json.loads(Path("data/pdufa_source_report.json").read_text())
+          with Path("data/pdufa_source_review_queue.csv").open(newline="",encoding="utf-8-sig") as f:
+              rows=list(csv.DictReader(f))
+          run=str(report.get("latest_run_id",""))
+          assert run.isdigit() and int(run)>0, "Canonical source run identity missing"
+          assert report.get("full_coverage_verified") is False, "No unresolved scan needed"
+          assert 0<len(rows)<=200, "Mandatory queue unexpectedly empty/oversized"
+          assert len(rows)==report.get("required_findings_unresolved"), "Queue/report mismatch"
+          assert len({(x["event_key"],x["category"],x["claim"]) for x in rows})==len(rows), "Duplicate exact claims"
+          assert all(x["verification_required"]=="YES"
+                     and x["verification_status"] not in ("VERIFIED","NOT_APPLICABLE")
+                     for x in rows), "Queue contains already-verified evidence"
+          print("source_id="+run)
+          print("findings_due="+str(len(rows)))
+          PY
+
+      - name: Send START, independently check FDA then SEC then FINANCIAL then ISSUER, send END
+        shell: bash
+        run: |
+          set +e
+          python scripts/run_scan_with_email.py \
+            --scan "REVERIFY_REQUIRED" --mode RECONCILE \
+            --status-file "reports/required_source_recheck.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python -m scripts.targeted_verification_repair \
+              --source-run-id "${{ steps.baseline.outputs.source_id }}" \
+              --scan-report "reports/required_source_recheck.json"
+          result=$?
+          if [ "$result" -eq 3 ]; then
+            echo "::warning::Evidence recheck returned PARTIAL; no trading gate may be changed."
+            exit 0
+          fi
+          exit "$result"
+
+      - name: Validate complete claim-by-claim comparison and evidence hashes
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, hashlib, json
+          from pathlib import Path
+          source=json.loads(Path("data/pdufa_source_report.json").read_text())
+          report=json.loads(Path("data/pdufa_targeted_recheck_report.json").read_text())
+          ledger=Path("data/pdufa_targeted_recheck_results.csv")
+          with ledger.open(newline="",encoding="utf-8") as f:
+              checked=list(csv.DictReader(f))
+          with Path("data/pdufa_source_review_queue.csv").open(newline="",encoding="utf-8-sig") as f:
+              prior=list(csv.DictReader(f))
+          def key(r): return (r["event_key"],r["category"],r["claim"])
+          assert len(checked)==len(prior)==report["findings_due"]==source["required_findings_unresolved"]
+          assert set(map(key,checked))==set(map(key,prior)), "Missing/duplicate exact source claim"
+          assert report["source_report_run_id"]==source["latest_run_id"]
+          assert report["recheck_ledger_sha256"]==hashlib.sha256(ledger.read_bytes()).hexdigest()
+          assert report["source_baseline_unchanged"] is True
+          assert report["trade_entry_authorized"] is False
+          assert report["gem_financing_sequence_verified"] is False
+          assert all(row["resolution"]=="HOLD_UNRESOLVED" or
+                     (row["resolution"]=="NEW_SOURCE_VERIFIED_FOR_THIS_CLAIM_ONLY"
+                      and row["source_url"] and len(row["source_sha256"])==64
+                      and row["checked_at"] and row["evidence"])
+                     for row in checked), "Cannot publish unsubstantiated claim promotion"
+          print("Compared",len(checked),"exact claims; research leads confirmed:",
+                report["findings_verified"],"; still blocked:",report["required_findings_unresolved"])
+          PY
+
+      - name: Publish research-only comparisons if the full source baseline is still current
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/source-review"
+          cp data/pdufa_targeted_recheck_report.json data/pdufa_targeted_recheck_results.csv "$RUNNER_TEMP/source-review/"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git checkout -B focused-source-recheck-publish origin/main
+            python - "${{ steps.baseline.outputs.source_id }}" <<'PY'
+          import json,sys
+          from pathlib import Path
+          current=json.loads(Path("data/pdufa_source_report.json").read_text())
+          if current.get("latest_run_id")!=sys.argv[1]:
+              raise SystemExit("A fresh five-source audit superseded the queue; do not overwrite it")
+          PY
+            cp "$RUNNER_TEMP/source-review/"* data/
+            git add data/pdufa_targeted_recheck_report.json data/pdufa_targeted_recheck_results.csv
+            if git diff --cached --quiet; then
+              echo "Research results already published."
+              exit 0
+            fi
+            git commit -m "Publish independently rechecked unresolved PDUFA source research"
+            if git push origin HEAD:main; then
+              echo "Recheck comparison is published, NOT canonical trading verification."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Could not safely publish the evidence-only comparison"
+          exit 1
+
+      - name: Preserve evidence, even on failed or partial source collection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-required-recheck-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            data/pdufa_targeted_recheck_report.json
+            data/pdufa_targeted_recheck_results.csv
+            reports/required_source_recheck.json
+            reports/scan_notifications/
