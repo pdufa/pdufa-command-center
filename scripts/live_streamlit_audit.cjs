@@ -159,6 +159,42 @@ async function audit() {
   for (const [name, labels] of tabs) {
     await safely("PDUFA tab " + name, () => inspectTab(page, name, labels));
   }
+  // Production acceptance: the three SEC/FDA baseline counts must be the
+  // same Pipeline record IDs after STAGES, DATES and search filtering.
+  // Amendments/missing-evidence are claims/filings, not additional trials.
+  await safely("Pipeline SEC FDA live count parity", async() => {
+    const found = await inspectTab(page, "SCANS", [
+      "PIPELINE ↔ SEC / FDA — TRIAL RECONCILIATION",
+      "SEC BASE", "FDA BASE",
+      "SEC Base details", "SEC Amendment details",
+      "FDA Base details", "FDA Amendment details",
+      "SEC MISSING EVIDENCE", "FDA MISSING EVIDENCE",
+    ]);
+    const metrics = await found.frame.locator('[data-testid="stMetric"]').allInnerTexts();
+    const readCount = label => {
+      const matches = metrics.filter(value => value.includes(label));
+      if (matches.length !== 1) throw Error(label + ": expected one metric, found " + matches.length);
+      const numbers = matches[0].match(/\b\d[\d,]*\b/g) || [];
+      if (numbers.length !== 1) throw Error(label + ": ambiguous count " + matches[0]);
+      return Number(numbers[0].replace(/,/g, ""));
+    };
+    const pipeline = readCount("Pipeline filtered total");
+    const sec = readCount("SEC baseline rows");
+    const fda = readCount("FDA baseline rows");
+    if (pipeline !== sec || pipeline !== fda) {
+      throw Error("Pipeline/SEC/FDA trial count mismatch: " +
+                  JSON.stringify({pipeline, sec, fda}));
+    }
+    const scanButtons = found.frame.getByRole("button", {name:"▶ Scan this section",exact:true});
+    if (await scanButtons.count() !== 4) throw Error("Expected four agency-specific manual scan buttons.");
+    report.checked.push({
+      screen:"Pipeline SEC FDA live count parity", result:"PASS",
+      pipeline_trial_records:pipeline, sec_baseline_rows:sec, fda_baseline_rows:fda,
+      scan_buttons:4, dropdowns:6
+    });
+    await screenshot(page, "pipeline-sec-fda-count-parity");
+  });
+
   // Exercise the collapsed GEM master UI, not just its title. The chart and
   // trading assessment require a stock card to open before their code runs.
   await safely("GEM nested stock entry/exit chart", async() => {
