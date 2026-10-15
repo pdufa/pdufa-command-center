@@ -11,6 +11,8 @@ on:
       - 'tests/test_sec_financing_gap_triage.py'
       - '.github/workflows/pdufa-sec-gap-triage.yml'
       - 'config/issuer_sources.json'
+      - 'data/pdufa_source_review_queue.csv'
+      - 'data/pdufa_source_report.json'
   pull_request:
     branches: [main]
     paths:
