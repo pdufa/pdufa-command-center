@@ -19,7 +19,11 @@ def decision(event, cron, runs, *, now=None):
     local = now.astimezone(PACIFIC)
     night = local if local.hour >= 22 else local - timedelta(days=1)
     start = night.replace(hour=22, minute=0, second=0, microsecond=0)
-    result = {"run": False, "night_date_pacific": start.date().isoformat(), "reason": ""}
+    weekly_full = start.weekday() == 6  # Sunday night in Los Angeles, including after-midnight recovery
+    result = {"run": False, "night_date_pacific": start.date().isoformat(),
+              "scan_mode": "FULL" if weekly_full else "DELTA",
+              "gem_action": "RESCAN_ALL" if weekly_full else "REVERIFY_PARTIAL",
+              "reason": ""}
     in_window = local.hour >= 22 or local.hour < 3
     primary_hour = start.astimezone(timezone.utc).hour
     primary = {f"{minute} {primary_hour} * * *" for minute in (0, 15, 30)}
@@ -47,7 +51,8 @@ def decision(event, cron, runs, *, now=None):
         if run.get("status") in ACTIVE or start.astimezone(timezone.utc) <= created <= now:
             result["reason"] = f"Full nightly chain already recorded or active (run {run.get('id')})"
             return result
-    result.update(run=True, reason="No full chain for this Pacific night; start ALL scans including GEM")
+    result.update(run=True, reason=("Sunday FULL reconciliation" if weekly_full else
+                                     "Weekday DELTA changes/new-trial check") + "; start awaited chain including GEM")
     return result
 
 
