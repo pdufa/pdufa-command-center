@@ -968,6 +968,65 @@ class DatedIssuerCompletedOfferingTests(unittest.TestCase):
                 ))
 
 
+
+class GoogleFoundSecDocumentTests(unittest.TestCase):
+    """Google results only locate SEC documents; live content must prove closure."""
+
+    def test_named_issuer_sec_eight_k_completed_convertible_notes(self):
+        source = ('On November 17, 2025, Ionis Pharmaceuticals, Inc. '
+                  '(the “Company”) completed its previously announced private '
+                  'offering of $770.0 million aggregate principal amount of '
+                  '0.00% Convertible Senior Notes due 2030.')
+        observed = verify.documented_funded_transaction(source, "2025-11-17")
+        self.assertIn("completed its previously announced", observed)
+        self.assertFalse(verify.documented_funded_transaction(
+            source, "2025-11-18"))
+
+    def test_nuvation_completed_registered_underwritten_notes(self):
+        source = ('On June 30, 2026, Nuvation Bio Inc. (the “Company”) completed '
+                  'its registered underwritten public offering of $250.0 million '
+                  'aggregate principal amount of 0.75% Convertible Senior Notes '
+                  'due 2032, pursuant to the underwriting agreement.')
+        self.assertTrue(verify.documented_funded_transaction(source, "2026-06-30"))
+        self.assertFalse(verify.documented_funded_transaction(
+            source, "2026-06-29"))
+
+    def test_inovio_q2_two_separate_closings_with_specific_proceeds(self):
+        source = ('On July 31, 2026, the Company closed an underwritten public '
+                  'offering relating to the issuance and sale of 21,052,632 shares '
+                  'of its common stock and accompanying warrants. '
+                  'On July 29, 2026, the underwriter exercised an option with '
+                  'respect to additional warrants. '
+                  'The net proceeds to the Company from the July 2026 Offering '
+                  'were approximately $18.3 million, after deductions. '
+                  'On April 6, 2026, the Company closed an underwritten public '
+                  'offering relating to 12,500,000 shares of common stock. '
+                  'The net proceeds to the Company from the April 2026 Offering '
+                  'were approximately $16.1 million.')
+        jul = verify.documented_funded_transaction(source, "2026-07-31")
+        apr = verify.documented_funded_transaction(source, "2026-04-06")
+        self.assertIn("$18.3 million", jul)
+        self.assertNotIn("$16.1 million", jul)
+        self.assertIn("$16.1 million", apr)
+
+    def test_cannot_borrow_proceeds_from_next_completed_transaction(self):
+        source = ('On January 8, 2026, Acme Therapeutics (the “Company”) '
+                  'completed its public offering of common shares. '
+                  'On April 6, 2026, the Company completed an underwritten '
+                  'public offering of shares. The net proceeds were $18.3 million.')
+        self.assertFalse(verify.documented_funded_transaction(
+            source, "2026-01-08"))
+        self.assertTrue(verify.documented_funded_transaction(
+            source, "2026-04-06"))
+
+    def test_planned_issuer_offering_never_passes(self):
+        source = ('On June 30, 2026, Nuvation Bio Inc. (the “Company”) '
+                  'expects to close a public offering of $250 million '
+                  'aggregate principal amount of Convertible Senior Notes.')
+        self.assertFalse(verify.documented_funded_transaction(
+            source, "2026-06-30"))
+
+
 if __name__ == "__main__":
     unittest.main()
 
