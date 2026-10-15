@@ -4,6 +4,10 @@ No record is promoted or scored as an eligible GEM here. All underlying
 clinical readout, SEC financing and historical backtesting modules are retained.
 """
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+from gem_trading_advisory import load_market_rows, render_base_chart_for_ticker
 import pandas as pd
 import streamlit as st
 from gem_potential_list import build_potential_list
@@ -43,6 +47,18 @@ def render_gem_jr(root="data"):
                            key="gem_jr_research_export")
     else:
         st.info("No active source-linked Phase 3 / financing leads in the saved research evidence.")
+    if active:
+        with st.expander("GEM JR — OPEN STOCK BASE / SUPPORT CHART", expanded=False):
+            tickers = sorted({str(x.get("Ticker") or "").upper().strip()
+                              for x in active if x.get("Ticker")})
+            chosen = st.selectbox("Research stock to chart", tickers,
+                                  key="gem_jr_base_stock")
+            render_base_chart_for_ticker(
+                chosen, load_market_rows(root),
+                datetime.now(ZoneInfo("America/Los_Angeles")).date(),
+            )
+            st.caption("GEM JR candidates remain UNVERIFIED research leads. "
+                       "Chart data availability never clears Phase 3 or financing benchmarks.")
     if held:
         with st.expander("RESOLVED EVENTS / PDUFA TIMING HOLDS", expanded=False):
             pdufa_dataframe(pd.DataFrame(held).reindex(columns=fields).fillna(""),
