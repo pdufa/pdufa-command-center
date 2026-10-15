@@ -165,11 +165,17 @@ async function audit() {
   await safely("Pipeline SEC FDA live count parity", async() => {
     const found = await inspectTab(page, "SCANS", [
       "PIPELINE ↔ SEC / FDA — TRIAL RECONCILIATION",
-      "SEC BASE", "FDA BASE",
+      "SEC / FDA — SURVEY RESULTS",
       "SEC Base details", "SEC Amendment details",
       "FDA Base details", "FDA Amendment details",
       "SEC MISSING EVIDENCE", "FDA MISSING EVIDENCE",
     ]);
+    // SEC and FDA are distinct side-by-side cards on desktop, each
+    // with Base, Amendments and Missing Evidence expandable details.
+    const headings = (await found.frame.locator("h3").allInnerTexts()).map(s=>s.trim());
+    if (!headings.includes("SEC") || !headings.includes("FDA")) {
+      throw Error("SEC/FDA two-column agency headings are missing.");
+    }
     const metrics = await found.frame.locator('[data-testid="stMetric"]').allInnerTexts();
     const readCount = label => {
       const matches = metrics.filter(value => value.includes(label));
