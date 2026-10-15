@@ -99,8 +99,10 @@ def source_cleared_gems(root="data", *, as_of=None):
         )
         if days_to_pdufa is None:
             timing_window = "PDUFA UNKNOWN — RESEARCH"
+        elif days_to_pdufa < 0:
+            timing_window = "PDUFA EXPIRED — PREVIOUS CANDIDATES"
         elif days_to_pdufa <= 3:
-            timing_window = "EXIT / RESOLVED — NO NEW ENTRY"
+            timing_window = "PDUFA −3 TRADING WARNING — STAYS LISTED UNTIL EXPIRY"
         elif days_to_pdufa <= 13:
             timing_window = "4–13 DAYS — EXIT PREPARATION"
         elif days_to_pdufa <= 30:
@@ -145,7 +147,9 @@ def source_cleared_gems(root="data", *, as_of=None):
             "FDA outcome": outcome,
             "Two-benchmark status": "PASS — BOTH BENCHMARKS SOURCE-CLEARED",
             "Trade status": "HISTORICAL / NO NEW ENTRY" if is_historical
-                            else "RESEARCH-QUALIFIED / ENTRY GATES ON HOLD",
+                            else ("NO NEW ENTRY — PDUFA −3 / RESEARCH LISTING ACTIVE"
+                                  if days_to_pdufa is not None and days_to_pdufa <= 3
+                                  else "RESEARCH-QUALIFIED / ENTRY GATES ON HOLD"),
             "Still needed": "; ".join(flags),
             "Source review as of": str(funding.get("verified_as_of") or ""),
         }
