@@ -78,7 +78,7 @@ class GemsFourthBlockTests(unittest.TestCase):
                       item["blocking_or_review_flags"])
         self.assertEqual(gem_block_summary_row(item)["New records"], 4)
         self.assertEqual(gem_block_summary_row(item)["Changed trials"], None)
-        self.assertEqual(gem_block_summary_row(item)["Scan"], "GEM — verified research")
+        self.assertEqual(gem_block_summary_row(item)["Scan"], "BLOCK 4 — GEM")
 
     def test_verify_only_never_invents_collection_or_new_results(self):
         item = self.block("VERIFY_ALL", collector="skipped")
