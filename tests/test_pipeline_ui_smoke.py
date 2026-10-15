@@ -3,6 +3,8 @@ import unittest
 import re
 import pandas as pd
 from pathlib import Path
+from unittest.mock import patch
+from step7_cached_snapshot import load_current_snapshot as load_saved_snapshot
 
 from streamlit.testing.v1 import AppTest
 from pdufa_display_columns import FRONT
@@ -315,7 +317,18 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for item in app.markdown))
 
 
-    def test_pre_phase3_full_priority_order_and_separate_clinical_pilots(self):
+    @patch('step7_cached_snapshot.load_current_snapshot')
+    def test_pre_phase3_full_priority_order_and_separate_clinical_pilots(self, load_snapshot):
+        # Exercise the actual saved grid at its generation time. Expiry is
+        # tested separately; yesterday's scan must not break this layout test.
+        import json
+        from datetime import datetime, timedelta
+        import streamlit as st
+        manifest = json.loads((APP_PATH.parent / 'data/step7_live_status.json').read_text())
+        fixture_now = datetime.fromisoformat(manifest['generated_at_utc']) + timedelta(minutes=1)
+        load_snapshot.side_effect = lambda root, now: load_saved_snapshot(root, fixture_now)
+        st.cache_data.clear()
+        self.addCleanup(st.cache_data.clear)
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.run()

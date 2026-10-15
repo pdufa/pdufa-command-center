@@ -280,6 +280,29 @@
           "explanation": "May 11 2026 SEC 6-K says Offering closed and identifies shares/proceeds. Does not establish Phase 3 timeline or second financing."
         }
       }
+    },
+    "financial_report": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526345702/phvs-ex99_3.htm",
+      "start": "2026-01-01",
+      "end": "2026-06-30",
+      "scale": 1,
+      "period_text": "For the six months ended June 30, 2026",
+      "currency": "EUR",
+      "currency_text": "€",
+      "ordered_headers": [
+        "2026",
+        "2025",
+        "€",
+        "€"
+      ],
+      "cash": {
+        "label": "Cash and cash equivalents at the end of the period",
+        "number_index": 1
+      },
+      "flow": {
+        "label": "Net cash flows used in operating activities",
+        "number_index": 0
+      }
     }
   },
   "PRAX": {

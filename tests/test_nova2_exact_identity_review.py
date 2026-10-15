@@ -3,9 +3,10 @@ import json
 import unittest
 from datetime import date,datetime,timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from pre_phase3_pilot_scores import reviewed_program_identity
-from step7_live import build_snapshot
+from step7_live import build_snapshot, read_csv
 
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -49,7 +50,17 @@ class ReviewedIdentityTests(unittest.TestCase):
 
     def test_prod_snapshot_scores_only_exact_nova2_and_expires(self):
         now=datetime(2026,10,11,14,30,tzinfo=timezone.utc)
-        trials,_,_=build_snapshot(ROOT/"data",now=now)
+        # Freeze collector timestamps for this historical expiry fixture. A new
+        # nightly scan must not make the October 11 evidence future-dated here.
+        def historical_rows(path):
+            records = read_csv(path)
+            if path.name == 'phase_pipeline.csv':
+                return [{**row, 'checked_at': now.isoformat()} for row in records]
+            if path.name == 'phase_pipeline_market_caps.csv':
+                return [{**row, 'market_cap_checked_at': now.isoformat()} for row in records]
+            return records
+        with patch('step7_live.read_csv', side_effect=historical_rows):
+            trials,_,_=build_snapshot(ROOT/"data",now=now)
         lbrx={x["NCT ID"]:x for x in trials if x["Ticker"]=="LBRX"}
         pivotal=lbrx["NCT07363577"]
         safety=lbrx["NCT07369154"]
@@ -61,7 +72,8 @@ class ReviewedIdentityTests(unittest.TestCase):
         self.assertFalse(safety["Company identity review source"])
         self.assertIsNone(safety["Pre-readout research score /100"])
         self.assertIsNone(safety["Preliminary clinical score /100"])
-        later,_,_=build_snapshot(ROOT/"data",now=datetime(2026,10,12,8,30,tzinfo=timezone.utc))
+        with patch('step7_live.read_csv', side_effect=historical_rows):
+            later,_,_=build_snapshot(ROOT/"data",now=datetime(2026,10,12,8,30,tzinfo=timezone.utc))
         pivotal_later=next(x for x in later if x["Ticker"]=="LBRX" and x["NCT ID"]=="NCT07363577")
         self.assertIsNone(pivotal_later["Pre-readout research score /100"],
                           "Issuer review from Oct 11 must expire in Pacific on Oct 12")

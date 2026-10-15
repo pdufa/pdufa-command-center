@@ -1,7 +1,8 @@
 """Extract reviewed primary financial statement layouts without saved values.
 
-This fallback verifies dated USD statements when Companyfacts omits interim
-facts. Layout mappings contain labels/columns only, never numeric balances.
+This fallback verifies dated statements when Companyfacts omits interim facts.
+Currency is retained without conversion. Layout mappings contain labels and
+columns only, never numeric balances.
 """
 import html
 import math
@@ -53,8 +54,14 @@ def report_snapshot(raw, spec, as_of):
     plain = html.unescape(re.sub(r'<[^>]+>', ' ', raw))
     if norm(spec['period_text']) not in norm(plain):
         raise ValueError('Reviewed statement period is absent')
-    if spec['currency'] != 'USD' or norm(spec['currency_text']) not in norm(plain):
-        raise ValueError('A USD claim requires explicit USD units; foreign currency is not converted')
+    currency_markers = {
+        'USD': {'US$', 'USD', 'US Dollars', 'U.S. dollars'},
+        'EUR': {'€', 'EUR', 'euros'},
+    }
+    markers = {norm(value) for value in currency_markers.get(spec['currency'], set())}
+    if (norm(spec['currency_text']) not in markers
+            or norm(spec['currency_text']) not in norm(plain)):
+        raise ValueError('Statement currency must match explicit reviewed units; no currency conversion')
     parser = Tables(); parser.feed(raw)
     found = []
     for table in parser.tables:
@@ -82,4 +89,4 @@ def report_snapshot(raw, spec, as_of):
                     found.append(values)
     if len(found) != 1:
         raise ValueError('No unique cash-flow statement with reviewed rows and current/prior columns')
-    return {**found[0], 'currency': 'USD', 'start': start.isoformat(), 'end': end.isoformat(), 'flow_days': days}
+    return {**found[0], 'currency': spec['currency'], 'start': start.isoformat(), 'end': end.isoformat(), 'flow_days': days}

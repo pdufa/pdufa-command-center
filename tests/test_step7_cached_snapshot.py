@@ -31,9 +31,11 @@ class SavedFeedTests(unittest.TestCase):
                 loaded = load_current_snapshot(root, NOW + timedelta(minutes=5))
             self.assertIsNotNone(loaded)
             trials, financing, status = loaded
-            self.assertEqual(len(trials), 3105)
+            self.assertEqual(len(trials), len(self.trials))
+            self.assertEqual({(r['Ticker'], r['NCT ID']) for r in trials},
+                             {(r['Ticker'], r['NCT ID']) for r in self.trials})
             self.assertEqual(len(financing), len(self.finance))
-            self.assertEqual(status["review_priority_ranked"] + status["review_priority_excluded"], 3105)
+            self.assertEqual(status["review_priority_ranked"] + status["review_priority_excluded"], len(self.trials))
             self.assertTrue(all(type(r["Review priority /100"]) is int for r in trials))
             self.assertTrue(all(type(r["Review priority rank"]) is int for r in trials if r["Review priority rank"] is not None))
 

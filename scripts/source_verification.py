@@ -1275,7 +1275,8 @@ class Verifier:
                 raise
             except ValueError:
                 # Use an explicitly reviewed interim SEC layout only after
-                # Companyfacts identity was checked. No guessed currency,
+                # Companyfacts identity was checked. Retain the reported
+                # currency; do not relabel a native balance as USD. No guessed
                 # reporting column, balance or operating cash flow is allowed.
                 spec = self.issuer_sources.get(event['ticker'].upper(), {}).get('financial_report')
                 if not spec or not sec_url_matches(spec.get('url', ''), cik):
@@ -1287,18 +1288,19 @@ class Verifier:
                 native = report_snapshot(raw, spec, self.as_of)
                 accession = re.search(r'/data/\d+/(\d{18})/', spec['url']).group(1)
                 accession = accession[:10] + '-' + accession[10:12] + '-' + accession[12:]
-                cash_row = {'val': native['cash'], 'end': native['end'], 'accn': accession, 'currency': 'USD'}
-                flow_row = {'val': native['flow'], 'start': native['start'], 'end': native['end'], 'accn': accession, 'currency': 'USD'}
+                cash_row = {'val': native['cash'], 'end': native['end'], 'accn': accession, 'currency': native['currency']}
+                flow_row = {'val': native['flow'], 'start': native['start'], 'end': native['end'], 'accn': accession, 'currency': native['currency']}
                 snapshot = {'cash': cash_row, 'flow': flow_row, 'flow_days': native['flow_days'],
-                            'cash_basis': 'CASH_EQUIVALENTS', 'taxonomy': 'PRIMARY_USD_INTERIM_STATEMENT',
+                            'cash_basis': 'CASH_EQUIVALENTS', 'taxonomy': 'PRIMARY_' + native['currency'] + '_INTERIM_STATEMENT',
                             'cash_tag': spec['cash']['label']}
                 url = spec['url']
             cash, flow = snapshot["cash"], snapshot["flow"]
             exact = snapshot["cash_basis"] == "CASH_EQUIVALENTS"
-            expected = event.get("cash", "") if exact else ""
+            currency = cash.get("currency", "USD")
+            expected = event.get("cash", "") if exact and currency == "USD" else ""
             state = "CONFLICT" if expected and abs(float(expected) - cash["val"]) > 1 else "VERIFIED"
             result = [self.result(event, "FINANCIAL", "CASH_FACT" if exact else "LIQUIDITY_FACT", state,
-                "Current USD fact checked: " + snapshot["cash_basis"] + "; period and filing accession retained",
+                "Current " + currency + " fact checked: " + snapshot["cash_basis"] + "; period and filing accession retained; no currency conversion",
                 url, expected, cash["val"], json.dumps(snapshot, sort_keys=True))]
             if flow is None:
                 result.append(self.result(event, "FINANCIAL", "RUNWAY_ESTIMATE", "REVIEW_REQUIRED",

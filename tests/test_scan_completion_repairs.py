@@ -232,5 +232,34 @@ class ScanRepairs(unittest.TestCase):
                                    (html.replace('<td>2026</td><td>2025</td>','<td>2025</td><td>2026</td>'),spec,date(2026,10,13))]:
             with self.assertRaises(ValueError):report_snapshot(raw,settings,as_of)
 
+    def test_native_currency_runway_preserves_units_and_never_compares_to_usd_cash(self):
+        from scripts.financial_report_evidence import report_snapshot
+        spec = {'url': DOC, 'start': '2026-01-01', 'end': '2026-06-30',
+                'scale': 1, 'period_text': 'six months ended June 30, 2026',
+                'currency': 'EUR', 'currency_text': '€',
+                'ordered_headers': ['2026', '2025', '€', '€'],
+                'cash': {'label': 'Cash at end of period', 'number_index': 1},
+                'flow': {'label': 'Net cash used in operations', 'number_index': 0}}
+        raw = ('Test Pharma six months ended June 30, 2026 <table>'
+               '<tr><td></td><td>2026</td><td>2025</td></tr>'
+               '<tr><td>Notes</td><td>€</td><td>€</td></tr>'
+               '<tr><td>Net cash used in operations</td><td>(25)</td><td>(10)</td></tr>'
+               '<tr><td>Cash at end of period</td><td>12</td><td>100</td><td>50</td></tr></table>')
+        snapshot = report_snapshot(raw, spec, date(2026, 10, 12))
+        self.assertEqual((snapshot['cash'], snapshot['flow'], snapshot['currency']), (100, -25, 'EUR'))
+        def fetch(url):
+            return (json.dumps({'cik': 1, 'facts': {}}).encode()
+                    if 'companyfacts' in url else raw.encode())
+        verifier = v.Verifier([COMPANY], fetch=fetch, as_of=date(2026, 10, 12),
+                              issuer_sources={'ABC': {'financial_report': spec}})
+        cash, runway = verifier.financial({**EVENT, 'cash': '999999'})
+        self.assertEqual([cash['verification_status'], runway['verification_status']], ['VERIFIED', 'VERIFIED'])
+        self.assertEqual(cash['expected'], '')
+        self.assertIn('EUR', cash['reason'])
+        self.assertEqual(json.loads(cash['evidence'])['cash']['currency'], 'EUR')
+        self.assertAlmostEqual(float(runway['observed']), 100 / (25 / (181 / 30.4375)), places=4)
+        with self.assertRaises(ValueError):
+            report_snapshot(raw, {**spec, 'currency': 'USD'}, date(2026, 10, 12))
+
 
 if __name__ == "__main__": unittest.main()
