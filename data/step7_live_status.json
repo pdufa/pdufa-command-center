@@ -1,13 +1,13 @@
 {
-  "generated_at_utc": "2026-10-14T18:44:42+00:00",
+  "generated_at_utc": "2026-10-15T05:33:15+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
       "Collector status": "COMPLETE",
-      "Freshness": "STALE",
-      "Health": "STALE",
-      "Last checked UTC": "2026-10-11T17:48:53.761656+00:00",
-      "Details": "3105 exact ticker+NCT records; scope is not exhaustive",
+      "Freshness": "RECENT",
+      "Health": "RECENT",
+      "Last checked UTC": "2026-10-15T05:14:58.863257+00:00",
+      "Details": "3109 exact ticker+NCT records; scope is not exhaustive",
       "Blocked records": 0
     },
     {
@@ -15,7 +15,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-14T15:56:17.609792+00:00",
+      "Last checked UTC": "2026-10-15T05:16:44.251088+00:00",
       "Details": "2483 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
     },
@@ -49,9 +49,9 @@
     {
       "Source": "Market capitalization",
       "Collector status": "COMPLETE",
-      "Freshness": "STALE",
-      "Health": "STALE",
-      "Last checked UTC": "2026-10-11T17:48:53.402060+00:00",
+      "Freshness": "RECENT",
+      "Health": "RECENT",
+      "Last checked UTC": "2026-10-15T05:14:58.367659+00:00",
       "Details": "383 provider-labeled quotes; price/volume not included",
       "Blocked records": 0
     },
@@ -67,18 +67,18 @@
     {
       "Source": "Market EOD price / volume",
       "Collector status": "COMPLETE",
-      "Freshness": "STALE",
-      "Health": "STALE",
-      "Last checked UTC": "2026-10-11T03:55:34.228255+00:00",
+      "Freshness": "RECENT",
+      "Health": "RECENT",
+      "Last checked UTC": "2026-10-15T05:32:47.888723+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
     }
   ],
-  "trial_rows": 3105,
+  "trial_rows": 3109,
   "financing_events": 38,
-  "review_priority_rows": 3105,
+  "review_priority_rows": 3109,
   "review_priority_ranked": 1819,
-  "review_priority_excluded": 1286,
+  "review_priority_excluded": 1290,
   "review_priority_rubric": "REVIEW-PRIORITY-V1",
   "market_eod_rows": 34,
   "listing_exclusions": [
