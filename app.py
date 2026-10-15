@@ -39,7 +39,6 @@ from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
 from alpaca_connection import render_alpaca_connection_panel
 import nightly_scan_dashboard as nightly_scan_dashboard_module
-from scan_activity_dashboard import render_scans_activity
 def render_nightly_scan_report():
     # Streamlit can rerun app.py while retaining an imported report module.
     # Reload only when that module's tracked file changed, so deployed controls
@@ -3235,7 +3234,7 @@ if "_pending_nav" in st.session_state:
     if st.session_state.nav == "PDUFA":
         st.session_state["pdufa_subtab"] = "PIPELINE"
 
-nav_options = ["PDUFA", "SCANS", "2. PDUFA CALENDAR"]
+nav_options = ["PDUFA", "2. PDUFA CALENDAR"]
 # Existing sessions and saved detail links may still refer to removed pages.
 # The primary landing route is PDUFA → PIPELINE, not the historical validator.
 if "pdufa_subtab" not in st.session_state:
@@ -3256,6 +3255,13 @@ if st.session_state.nav in ("PRE PHASE 3", "POST PHASE 3"):
 if st.session_state.nav == "PIPELINE":
     st.session_state.nav = "PDUFA"
     st.session_state["pdufa_subtab"] = "PIPELINE"
+# Migrate bookmarked former top-level SCANS into the single PDUFA SCANS tab.
+# Keep the detailed source audit, manual scan controls and run activity together.
+if st.session_state.nav == "SCANS":
+    st.session_state.nav = "PDUFA"
+    st.session_state["pdufa_subtab"] = "SCANS"
+if st.session_state.detail_return_page == "SCANS":
+    st.session_state.detail_return_page = "PDUFA"
 if st.session_state.detail_return_page in ("PIPELINE", "PRE PHASE 3"):
     st.session_state.detail_return_page = "PDUFA"
 if st.session_state.nav not in nav_options:
@@ -4163,10 +4169,6 @@ if page == "PDUFA":
             render_alpaca_connection_panel()
             render_watch_trade_dashboard()
 
-
-elif page == "SCANS":
-    # Separate top navigation activity log; PDUFA → SCANS preserves the audit and controls.
-    render_scans_activity()
 
 elif page == "2. PDUFA CALENDAR":
     st.markdown("## 2. PDUFA CALENDAR — UPCOMING CATALYSTS")
