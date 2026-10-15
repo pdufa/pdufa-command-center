@@ -203,7 +203,12 @@ class AwaitedWorkflowTests(unittest.TestCase):
         for first,second in zip(expected,expected[1:]):
             self.assertIn('needs: source_'+first, job(source,'source_'+second))
         self.assertIn('needs: reconcile', job(source,'publish-source-report'))
-        self.assertIn('needs: publish-source-report', job(source,'refresh-prephase3'))
+        eod = job(source, 'refresh-step7-market-eod')
+        self.assertIn('needs: publish-source-report', eod)
+        self.assertIn('scripts/step7_market_refresh.py', eod)
+        self.assertIn('data/step7_market_status.csv data/step7_market_status.json', eod)
+        self.assertIn('needs: refresh-step7-market-eod', job(source,'refresh-prephase3'))
+        self.assertIn('Refresh source-labeled Step 7 EOD market snapshots', (ROOT / 'scripts/nightly_sequence.py').read_text())
         self.assertNotIn('ref: ${{ github.sha }}',source)
         scoring = read('pdufa-nightly-scoring-then-repair.yml')
         self.assertIn('completed_source_stage(', scoring)

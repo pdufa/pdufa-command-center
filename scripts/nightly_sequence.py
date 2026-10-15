@@ -8,6 +8,7 @@ SOURCE_JOBS = tuple(f"Live PDUFA {family} source check" for family in
                     ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER"))
 SOURCE_TAILS = ("Combined coverage / missing source audit",
                 "Publish reconciled source verification to SCANS",
+                "Refresh source-labeled Step 7 EOD market snapshots",
                 "Refresh validated PRE PHASE 3 display feed after sources / publish")
 TERMINAL = {"success", "failure", "timed_out", "cancelled", "skipped"}
 
