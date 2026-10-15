@@ -26,8 +26,8 @@ def rows_from_submissions(*, ticker, cik10, recent, index_sha256, as_of=None, li
     SEC form names determine Base versus Amendment. A 424B5 prospectus
     supplement is not automatically an /A form or a funded transaction.
     """
-    if not (re.fullmatch(r"\\d{10}", cik10 or "") and
-            re.fullmatch(r"[A-Z][A-Z0-9.\\-]{0,14}", ticker or "") and
+    if not (re.fullmatch(r"\d{10}", cik10 or "") and
+            re.fullmatch(r"[A-Z][A-Z0-9.-]{0,14}", ticker or "") and
             re.fullmatch(r"[a-f0-9]{64}", index_sha256 or "")):
         raise ValueError("A verified issuer index identity/hash is required")
     if not isinstance(limit, int) or limit < 1:
@@ -40,7 +40,7 @@ def rows_from_submissions(*, ticker, cik10, recent, index_sha256, as_of=None, li
             recent["primaryDocument"]):
         if form not in FORMS or filed > cutoff:
             continue
-        if not re.fullmatch(r"\\d{10}-\\d{2}-\\d{6}", accession):
+        if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession):
             continue
         base = ("https://www.sec.gov/Archives/edgar/data/" + str(int(cik10))
                 + "/" + accession.replace("-", "") + "/")
