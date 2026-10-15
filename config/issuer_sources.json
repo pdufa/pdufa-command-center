@@ -198,7 +198,13 @@
         "urls": [
           "https://ir.inovio.com/news/news-details/2025/FDA-Accepts-for-Review-INOVIOs-BLA-for-INO-3107-for-the-Treatment-of-Adults-with-Recurrent-Respiratory-Papillomatosis-RRP/default.aspx"
         ],
-        "primary_target_anchor": "The FDA assigned INO-3107 a Prescription Drug User Fee Act (PDUFA) review goal date of October 30, 2026"
+        "primary_target_anchor": "The FDA assigned INO-3107 a Prescription Drug User Fee Act (PDUFA) review goal date of October 30, 2026",
+        "individual_financing_close": {
+          "date": "2026-07-31",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1055726/000105572626000023/ino-20260630.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "SEC Form 10-Q states that the July 31 2026 registered common-stock/warrant offering closed, with net proceeds of $18.3m. Separate April 6 offering is also disclosed. Specific transaction only; no Phase 3 sequencing/entry authorization."
+        }
       }
     },
     "hosts": [
@@ -208,7 +214,17 @@
   "IONS": {
     "hosts": [
       "ir.ionis.com"
-    ]
+    ],
+    "events": {
+      "IONS|BEPIROVIRSEN_CHB_20261026": {
+        "individual_financing_close": {
+          "date": "2025-11-17",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/874015/000119312525284609/d31230d8k.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "Same-issuer SEC 8-K states $770m aggregate principal amount convertible-notes private offering completed November 17, 2025. Initial purchasers' $70m option is part of the same financing. Specific transaction only."
+        }
+      }
+    }
   },
   "IRD": {
     "events": {
@@ -246,7 +262,13 @@
         "urls": [
           "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219713Orig1s004ltr.pdf",
           "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-FDA-Approval-of-Supplemental-New-Drug-Application-for-IBTROZI-taletrectinib-with-Updated-Duration-of-Response-in-TKI-Nave-Advanced-ROS1-Positive-Non-Small-Cell-Lung-Cancer/default.aspx"
-        ]
+        ],
+        "individual_financing_close": {
+          "date": "2026-06-30",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1811063/000119312526290823/d81296d8k.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "Same-issuer SEC 8-K states June 30, 2026 closing of registered $250m convertible notes offering. July underwriters option is same issuance, not a distinct second financing."
+        }
       }
     },
     "hosts": [
