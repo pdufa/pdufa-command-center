@@ -70,6 +70,16 @@ class PrimaryIssuerEventTests(unittest.TestCase):
         self.assertEqual(proof["source_url"], CAPR_URL)
         self.assertTrue(proof["source_sha256"])
         self.assertIn("extension", proof["reason"].lower())
+        # The issuer's live release writes "Food and Drug Administration
+        # (FDA) has extended" rather than "the FDA has extended".
+        live_syntax = text.replace(
+            "the FDA has extended",
+            "the U.S. Food and Drug Administration (FDA) has extended",
+        )
+        self.assertEqual(
+            self.verifier(live_syntax).regulatory(CAPR)[0]["verification_status"],
+            "VERIFIED",
+        )
 
         for wrong in (
             text.replace("November 22, 2026", "December 22, 2026"),
