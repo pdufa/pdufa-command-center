@@ -1,5 +1,35 @@
 # PDUFA Command Center
 
+## Alpaca Paper Trading connection (read-only)
+
+In Streamlit Community Cloud, open this app's **Settings → Secrets** and
+save the following TOML using your **paper** API credentials (never commit
+these credentials to GitHub):
+
+```toml
+ALPACA_API_KEY = "YOUR_PAPER_API_KEY_ID"
+ALPACA_SECRET_KEY = "YOUR_PAPER_SECRET_KEY"
+ALPACA_PAPER = true
+```
+
+Open **PDUFA → WT**, expand **ALPACA — PAPER CONNECTION STATUS**, then click
+**TEST PAPER CONNECTION** and **TEST SPY MARKET DATA (IEX)**. Both checks are
+operator-initiated; the first makes a read-only paper-account request, and
+the second requests one SPY IEX latest-minute bar. No account number,
+balance, position, key, secret, or raw API exception is displayed. A
+successful connection requires a live test in the deployed app; code
+installation alone does **not** verify valid secrets or network access.
+
+The Market Data test uses **IEX**, not consolidated SIP market data. Neither
+test is integrated into GEM scoring, overnight scans, or order placement.
+The TradingView watch/trade screen is preserved; no real or paper trades
+are submitted by this module. A live-mode flag is explicitly rejected.
+If secrets are updated, restarting the Streamlit app may be necessary.
+`.streamlit/secrets.toml` is excluded by `.gitignore`. See
+[Alpaca SDK](https://alpaca.markets/sdks/python/trading.html) and
+[Streamlit Secrets](https://docs.streamlit.io/develop/concepts/connections/secrets-management).
+
+
 ## Nightly Scan Report subtab (October 12, 2026)
 
 **PDUFA → NIGHTLY SCAN REPORT**, directly before **WATCHLIST / TRADING**, reads the published `data/nightly_scan_report.json` audit. The 9 PM Pacific scheduler starts `pdufa-overnight-sequential.yml`, which awaits the clinical collectors, both GEM tasks, report publication, source verification, scoring and repair in one run. The publisher downloads the same run’s archived per-scan JSON/status files, checks consistency and writes the displayed report. Standalone manual clinical runs retain their completion-triggered publisher. Prior scan results are revalidated from their own archived run when a targeted collection occurs; missing or expired artifacts remain UNVERIFIED. The UI does not invent missing new-record or changed-trial totals.
