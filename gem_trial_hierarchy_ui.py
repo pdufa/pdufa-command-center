@@ -50,6 +50,11 @@ def render_trial_hierarchy(records, *, namespace, title):
         output.append({
             "Trial ID": _value(row, "NCT ID", "Trial ID"),
             "Exact program": _value(row, "Exact program"),
+            "Pipeline ID": _value(row, "Pipeline ID"),
+            "Date Found": _value(row, "Date Found"),
+            "Date Left": str(row.get("Date Left") or "CURRENT / NOT EXITED"),
+            "Date Re-entered": str(row.get("Date Re-entered") or ""),
+            "Listing status": _value(row, "Listing status"),
             "Evidence / status": _value(row, "Evidence type", "GEM status", "Review status"),
             "Phase 3 readout": _value(row, "Phase 3 date", "Phase 3 readout date"),
             "Clinical source": _value(row, "Clinical source", "Phase 3 source", "Primary clinical source"),
