@@ -339,7 +339,7 @@ async function audit() {
       throw Error("Obsolete duplicate top-level SCANS navigation is still visible.");
     }
     const found = await inspectTab(page, "SCANS", [
-      "SCANS — ACTIVITY, EVIDENCE & CONTROLS",
+      "SEC & FDA SCAN CONTROLS",
       "SHOW LIVE ACTIVITY & HISTORY",
       "GEMS — GITHUB SCAN LOGS",
       "NIGHTLY SCAN REPORT",
