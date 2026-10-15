@@ -40,6 +40,14 @@ class BaseFormationTests(unittest.TestCase):
         self.assertLessEqual(base["volume_ratio"], .85)
         self.assertFalse(base["confirmed_breakout"])
 
+    def test_consecutive_days_at_support_are_one_test_not_multiple(self):
+        h = history()
+        for item in h[:-1]:
+            item["close"] = 10.0
+        observed = detect_closing_base(h, fresh=True)
+        self.assertEqual(observed["touches"], 1)
+        self.assertNotIn("BASE FORMING", observed["status"])
+
     def test_bull_breakout_requires_close_above_prior_resistance_and_volume(self):
         h = history()
         h[-1].update(close=11, volume=2_000_000)
