@@ -135,6 +135,9 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
         row = sample()
         e = event()
         with (
+            patch("gem_scans.pipeline_origins", return_value=(
+                {"APPLICATION|" + row["Exact event"]}, set()
+            )),
             patch("gem_scans.build_queue", return_value=(
                 [row], {"feed_current": True, "as_of": DATE},
             )),
