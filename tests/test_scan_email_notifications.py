@@ -54,7 +54,7 @@ class ScanEmailTests(unittest.TestCase):
 
     def test_start_and_end_content(self):
         at = datetime(2026, 10, 12, 1, 0, tzinfo=timezone.utc)
-        for key, label in [("2", "#2 PIPELINE"), ("3", "#3 PRE3"), ("4", "#4 POST3")]:
+        for key, label in [("2", "PIPELINE — inventory"), ("3", "PIPELINE — clinical enrichment"), ("4", "GEM JR — Phase 3 readout")]:
             subj, body = compose_start(key, "BASELINE", "abc123", at)
             self.assertIn("START", subj)
             self.assertIn(label, subj)
