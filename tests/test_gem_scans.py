@@ -61,7 +61,9 @@ def run(rows, *, fresh=True, events=None, sec_current=True, runway=True):
     events = verified_events
     financial = ({item["Ticker"]: sec_snapshot(item["Ticker"]) for item in rows}
                  if runway else {})
-    with patch("gem_scans.load_snapshots", return_value=financial), patch("gem_scans.build_queue", return_value=(
+    origin_ids = {"APPLICATION|" + str(row["Exact event"]) for row in rows}
+    with patch("gem_scans.pipeline_origins", return_value=(origin_ids, set())), \
+            patch("gem_scans.load_snapshots", return_value=financial), patch("gem_scans.build_queue", return_value=(
         rows, {"feed_current": fresh, "as_of": "2026-10-13"},
     )), patch("gem_scans._event_map", return_value=events), patch(
         "gem_scans.sec_recheck_current", return_value=sec_current
