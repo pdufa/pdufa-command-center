@@ -95,7 +95,7 @@ class PipelineDisplayTests(unittest.TestCase):
         self.assertIn('render_pre_phase3()', section)
         self.assertNotIn('elif page == "PRE PHASE 3":', source)
         self.assertNotIn('"PDUFA WORKBENCH"', section)
-        self.assertEqual(section.count('with pipeline_tab:'), 2)
+        self.assertEqual(section.count('with pipeline_tab:'), 3)
         self.assertNotIn('"TRIALS AND DATES"', section)
         self.assertIn('## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS', section)
         self.assertIn('if pipeline_tab.open:', section)
