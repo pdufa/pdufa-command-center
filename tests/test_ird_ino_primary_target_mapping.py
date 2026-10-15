@@ -59,9 +59,7 @@ class ExactPrimaryTargetsTests(unittest.TestCase):
                 self.assertEqual(len(outcome["source_sha256"]), 64)
                 for bad in (
                     issuer_text.replace(indication, "an unrelated condition"),
-                    issuer_text.replace(target[-4:], "2099") if False else issuer_text.replace(
-                        anchor, anchor.replace("2026", "2027")
-                    ),
+                    issuer_text.replace(anchor, anchor.replace("2026", "2027")),
                     f"Another issuer: {drug} for {indication}. {anchor}.",
                     f"{name}: {drug} for {indication}, but the actual PDUFA date was not disclosed.",
                 ):
