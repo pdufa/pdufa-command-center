@@ -35,6 +35,14 @@ class SundayScheduleTests(unittest.TestCase):
         self.assertEqual(r["scan_mode"], "DELTA")
         self.assertEqual(r["gem_action"], "REVERIFY_PARTIAL")
 
+    def test_manual_full_sunday_but_monday_manual_is_delta(self):
+        sun = decision("workflow_dispatch", "", [],
+                       now=stamp("2026-10-18T18:00:00Z"))
+        mon = decision("workflow_dispatch", "", [],
+                       now=stamp("2026-10-19T18:00:00Z"))
+        self.assertEqual(sun["scan_mode"], "FULL")
+        self.assertEqual(mon["scan_mode"], "DELTA")
+
 
 class SecCarryForwardTests(unittest.TestCase):
     def setUp(self):
