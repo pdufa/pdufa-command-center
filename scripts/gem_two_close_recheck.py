@@ -101,9 +101,10 @@ def recheck_records(verifier, events, financing_records, *, mode="FULL", prior=N
         # One lightweight issuer SEC index check on weekdays; reopen a
         # previously supported pair if any filing/amendment or trial identity
         # changed. No SEC access or hash => cannot reuse historical proof.
-        inventory = verifier.registry({"ticker": ticker})
-        if inventory.get("verification_status") == "VERIFIED":
-            row["issuer_sec_registry_sha256"] = inventory.get("source_sha256", "")
+        if mode == "DELTA":
+            inventory = verifier.registry({"ticker": ticker})
+            if inventory.get("verification_status") == "VERIFIED":
+                row["issuer_sec_registry_sha256"] = inventory.get("source_sha256", "")
         prior_row = previous.get(key, {})
         matching = all(prior_row.get(k, "") == row.get(k, "") for k in (
             "event_key", "ticker", "phase3_readout_date", "phase3_status",
