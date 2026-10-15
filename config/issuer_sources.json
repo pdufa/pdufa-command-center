@@ -348,6 +348,14 @@
           "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-fda-acceptance-new-drug",
           "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-fda-acceptance-new-drug"
         ]
+      },
+      "PRAX|RELUTRIGINE_DEE_20261227": {
+        "individual_financing_close": {
+          "date": "2026-01-07",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000047/prax-20260331.htm",
+          "evidence_type": "EXACT_DATED_SEC_DISCOVERY_REQUIRES_LIVE_VERIFICATION",
+          "explanation": "Issuer SEC March 2026 10-Q states January 7 2026 public offering completed with $621.2m net proceeds. Underwriter option is part of same closing. This is one transaction only; Phase3 sequencing and trading permission remain separately blocked."
+        }
       }
     },
     "hosts": [
