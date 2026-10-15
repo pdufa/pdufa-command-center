@@ -88,6 +88,20 @@
           "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
           "evidence_type": "FIRST_POST_READOUT_DEBT_OFFERING_SINGLE_FUNDED_CLOSE",
           "note": "SEC 8-K dated November 18 2025 explicitly states offering of $230 million convertible senior notes was completed. November 10 GIST Phase3 PEAK readout precedes first close; no exact subsequent ATM settlement day verified."
+        },
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
+          "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      },
+      "COGT|BEZUCLASTINIB_ADVSM_20270629": {
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312525286158/d888858d8k.htm",
+          "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
         }
       }
     },
@@ -396,6 +410,45 @@
       "ZLAB|POVETACICEPT_IGAN_20261130": {
         "urls": [
           "https://www.sec.gov/Archives/edgar/data/1704292/000162828026053791/zlab-202686x8kex991.htm"
+        ]
+      }
+    }
+  },
+  "IMNM": {
+    "events": {
+      "IMNM|VAREGACESTAT_DESMOID_20270428": {
+        "individual_financing_close": {
+          "date": "2025-01-31",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1472012/000155837025003302/tmb-20241231x10k.htm",
+          "evidence_type": "SINGLE_FUNDED_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      }
+    }
+  },
+  "BMRN": {
+    "events": {
+      "BMRN|VOXZOGO_ACHONDROPLASIA_20270228": {
+        "individual_financing_close": {
+          "date": "2026-02-12",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1048477/000119312526048736/d63881d8k.htm",
+          "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
+          "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
+        }
+      }
+    }
+  },
+  "CYTK": {
+    "events": {
+      "CYTK|MYQORZO_HCM_20261114": {
+        "individual_financing_close": {
+          "date": "2026-05-08",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
+          "evidence_type": "EXACT_DATE_SEC_RECHECK_CANDIDATE_ONLY",
+          "explanation": "Issuer SEC Q2 2026 10-Q says May 8 2026 offering closed and net proceeds; must still pass fresh strict source-verification parser before VERIFIED. Same offering's underwriter option is not a second financing."
+        },
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm"
         ]
       }
     }
