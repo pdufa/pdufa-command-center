@@ -922,6 +922,52 @@ class ReconciliationTests(unittest.TestCase):
             self.assertIn("FDA", scan.coverage(folder, folder)["manifest_rejections"])
 
 
+class DatedIssuerCompletedOfferingTests(unittest.TestCase):
+    def test_periodic_sec_report_explicit_completed_close(self):
+        text = (
+            "On May 8, 2026, the Company closed an underwritten public offering "
+            "of 11,338,028 shares of common stock at a public offering price of "
+            "$71.00 per share, which included the exercise in full of the underwriters' "
+            "option. The net proceeds to the Company from the offering were approximately "
+            "$760.1 million after underwriting discounts and offering expenses."
+        )
+        evidence = verify.documented_funded_transaction(text, "2026-05-08")
+        self.assertIn("closed an underwritten public offering", evidence)
+        self.assertIn("$760.1 million", evidence)
+        self.assertFalse(verify.documented_funded_transaction(text, "2026-05-09"))
+
+        sources = {"ABC": {"events": {EVENT["event_key"]: {
+            "individual_financing_close": {"date": "2026-05-08", "sec_url": SEC_DOC}
+        }}}}
+        verifier = verify.Verifier(
+            [COMPANY], fetch=lambda url: text.encode("utf-8"),
+            as_of=date(2026, 10, 15), issuer_sources=sources
+        )
+        row = verifier.financing(EVENT)
+        self.assertEqual(row["verification_status"], "VERIFIED")
+        self.assertEqual(row["source_url"], SEC_DOC)
+        self.assertEqual(len(row["source_sha256"]), 64)
+
+    def test_expectation_or_no_proceeds_cannot_verify_a_closing(self):
+        planned = (
+            "On May 8, 2026, the Company expects to close an underwritten public "
+            "offering of 11 million shares, yielding net proceeds of $760 million."
+        )
+        no_proceeds = (
+            "On May 8, 2026, the Company closed an underwritten public offering "
+            "of 11 million common shares at $71 per share."
+        )
+        future_language = (
+            "On May 8, 2026, the Company closed an underwritten public offering "
+            "of shares. The net proceeds are expected to be $760 million."
+        )
+        for passage in (planned, no_proceeds, future_language):
+            with self.subTest(passage=passage[:40]):
+                self.assertFalse(verify.documented_funded_transaction(
+                    passage, "2026-05-08"
+                ))
+
+
 if __name__ == "__main__":
     unittest.main()
 

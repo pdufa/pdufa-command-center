@@ -7,6 +7,8 @@ on:
       - 'scripts/provisional_financing_sec_recheck.py'
       - 'config/issuer_sources.json'
       - 'scripts/targeted_verification_repair.py'
+      - 'scripts/source_verification.py'
+      - 'tests/test_source_verification.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
       - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
   push:
@@ -15,6 +17,8 @@ on:
       - 'scripts/provisional_financing_sec_recheck.py'
       - 'config/issuer_sources.json'
       - 'scripts/targeted_verification_repair.py'
+      - 'scripts/source_verification.py'
+      - 'tests/test_source_verification.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
       - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
   workflow_dispatch:

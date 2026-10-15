@@ -696,6 +696,26 @@ def documented_funded_transaction(text, closing_date):
     """
     month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
     date_rx = r"(?:20\d{2}-\d{2}-\d{2}|" + month + r"\s+\d{1,2},?\s+20\d{2})"
+    # SEC periodic reports also use "On <date>, the Company closed an
+    # underwritten public offering." A priced/expected offering is not proof:
+    # require past-tense completion, issued securities and actual proceeds.
+    for match in re.finditer(
+        r"(?i)\bOn\s+(" + date_rx + r")[,\s]+(?:the\s+)?(?:Company|we)\s+"
+        r"(?:closed|completed|consummated)\s+(?:(?:its|the|an?)\s+)?"
+        r"(?:(?:underwritten|upsized|public|private|registered\s+direct)\s+){0,4}"
+        r"(?:offering|placement)\b", text
+    ):
+        if dates(match.group(1)) != {closing_date}:
+            continue
+        passage = text[match.start():match.end() + 520]
+        if re.search(r"(?i)\b(?:expects?|expected|anticipated|planned|proposed|will|"
+                     r"would|may|might|subject to)\b", passage[match.end()-match.start():200]):
+            continue
+        if (re.search(r"(?i)\b(?:shares|stock|notes|securities)\b", passage)
+                and re.search(r"(?i)\b(?:net|gross)\s+proceeds\b", passage)
+                and re.search(r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b", passage)):
+            return passage
+
     for match in re.finditer(r"(?i)\bOn\s+(" + date_rx + r")[,\s]+(?:the\s+)?(?:Company|we)\s+(received|sold)\b", text):
         passage = text[match.start():match.end() + 450]
         if dates(match.group(1)) != {closing_date}:
