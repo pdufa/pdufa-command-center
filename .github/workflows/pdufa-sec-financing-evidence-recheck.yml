@@ -5,12 +5,16 @@ on:
     branches: [main]
     paths:
       - 'scripts/provisional_financing_sec_recheck.py'
+      - 'config/issuer_sources.json'
+      - 'scripts/targeted_verification_repair.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
       - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
   push:
     branches: [main]
     paths:
       - 'scripts/provisional_financing_sec_recheck.py'
+      - 'config/issuer_sources.json'
+      - 'scripts/targeted_verification_repair.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
       - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
   workflow_dispatch:
@@ -85,3 +89,45 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
           path: reports/missing_sources/sec_financing_ir_recheck.csv
+
+  unresolved-claim-recheck:
+    needs: [offline-tests, live-recheck]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install primary document extraction
+        run: python -m pip install pypdf
+      - name: Verify SEC researcher identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$SEC_USER_AGENT" != *"@"* ]]; then
+            echo "::error::SEC_USER_AGENT must include a real contact email"
+            exit 1
+          fi
+      - name: Fresh recheck of all 36 unresolved exact-event source claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_RUN_ID=$(python -c 'import json;print(json.load(open("data/pdufa_source_report.json"))["latest_run_id"])')
+          python scripts/targeted_verification_repair.py \
+            --source-run-id "$SOURCE_RUN_ID" \
+            --output reports/missing_sources/targeted_required_recheck.json \
+            --csv-output reports/missing_sources/targeted_required_recheck.csv
+      - name: Archive evidence-backed unresolved source comparison
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-required-claim-recheck-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            reports/missing_sources/targeted_required_recheck.json
+            reports/missing_sources/targeted_required_recheck.csv
