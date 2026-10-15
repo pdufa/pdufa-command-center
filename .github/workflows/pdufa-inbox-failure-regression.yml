@@ -1,0 +1,98 @@
+name: PDUFA Inbox Failure Regression Recheck
+
+# One-time follow-up to failures reported inside the Gmail PDUFA folder.
+# GitHub sends a notification if an issue persists. This does NOT schedule
+# data scans or weaken the separate 9 PM Pacific serial scan chain.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-inbox-failure-regression.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-inbox-failure-regression
+  cancel-in-progress: false
+
+jobs:
+  recheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: main}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - name: Install current application and Playwright dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          npm install --no-save playwright-core
+      - name: Locate real Chrome browser
+        run: |
+          if [ -x /usr/bin/google-chrome ]; then
+            echo "CHROME_PATH=/usr/bin/google-chrome" >> "$GITHUB_ENV"
+          elif [ -x /usr/bin/google-chrome-stable ]; then
+            echo "CHROME_PATH=/usr/bin/google-chrome-stable" >> "$GITHUB_ENV"
+          else
+            echo "::error::Chrome missing on runner"
+            exit 1
+          fi
+      - name: Recheck GEM financing malformed/exact-NCT source ledger
+        id: financing
+        continue-on-error: true
+        run: |
+          python scripts/validate_gem_source_ledgers.py
+          python scripts/gem_financing_batch_export.py --output-dir reports/gem_financing_batch
+      - name: Recheck deployed PRE PHASE 3 scores and source-cache display
+        id: pre3
+        continue-on-error: true
+        run: node scripts/prephase3_live_acceptance.cjs
+      - name: Recheck deployed GEM potential numbered-list navigation
+        id: gem
+        continue-on-error: true
+        run: node scripts/gem_potential_live_audit.cjs
+      - name: Recheck deployed Streamlit tabs and SCANS navigation
+        id: streamlit
+        continue-on-error: true
+        run: node scripts/live_streamlit_audit.cjs
+      - name: Upload all failure evidence and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-inbox-live-regression-${{ github.run_id }}
+          path: |
+            reports/gem_financing_batch/
+            prephase3-acceptance-artifacts/
+            gem-potential-live-artifacts/
+            live-audit-artifacts/
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Report any remaining genuine failures (never misreport as fixed)
+        if: always()
+        env:
+          FINANCING: ${{ steps.financing.outcome }}
+          PRE3: ${{ steps.pre3.outcome }}
+          GEM: ${{ steps.gem.outcome }}
+          STREAMLIT: ${{ steps.streamlit.outcome }}
+        run: |
+          python - <<'PY'
+          import os
+          names = {
+            "GEM financing exact-NCT/source ledger": os.environ["FINANCING"],
+            "PRE PHASE 3 live acceptance": os.environ["PRE3"],
+            "GEM potential live browser": os.environ["GEM"],
+            "Streamlit SCANS/navigation": os.environ["STREAMLIT"],
+          }
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
+              print("## PDUFA Gmail failure regression follow-up", file=out)
+              print("Old failure emails are historical; these are CURRENT results.", file=out)
+              for name, status in names.items():
+                  print(f"- {name}: **{status}**", file=out)
+              print("UI test success is not a Phase 3, FDA, SEC, or trade-entry attestation.",file=out)
+          if any(status!="success" for status in names.values()):
+              raise SystemExit("At least one PDUFA inbox issue persists; review archived evidence")
+          PY
