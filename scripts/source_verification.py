@@ -389,6 +389,22 @@ def indication_matches(event, text):
             return False
     if not qualifiers <= body:
         return False
+    # Reject contradictory parenthetical expansions BEFORE generic token
+    # overlap can certify the wrong disease (e.g. spinal atrophy (DMD)).
+    for acronym in re.findall(
+        r"\(([A-Za-z][A-Za-z0-9/-]{2,12})\)",
+        str(event.get("indication", "")),
+    ):
+        expansions = re.findall(
+            r"(?i)\b((?:[A-Za-z]+\s+){1,7}[A-Za-z]+)\s*\(\s*"
+            + re.escape(acronym) + r"\s*\)",
+            raw_source,
+        )
+        if expansions and not any(
+            len(tokens & set(normalized(expansion).split()))
+            >= min(2, len(tokens)) for expansion in expansions
+        ):
+            return False
     if bool(tokens) and len(tokens & body) >= min(2, len(tokens)):
         return True
     # A program's explicit parenthetical indication abbreviation is a
