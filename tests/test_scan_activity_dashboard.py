@@ -14,7 +14,7 @@ class ScanActivityDashboardTests(unittest.TestCase):
         self.assertIn('nav_options = ["PDUFA", "SCANS", "2. PDUFA CALENDAR"]', src)
         self.assertIn('elif page == "SCANS":\n    # Separate top navigation', src)
         self.assertIn('    render_scans_activity()\n\nelif page == "2. PDUFA CALENDAR":', src)
-        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', src)
+        self.assertIn('["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]', src)
         self.assertIn("render_nightly_scan_report()", src)
 
     def test_both_gems_workflow_logs_are_pinned_in_both_scans_pages(self):

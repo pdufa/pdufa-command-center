@@ -22,8 +22,8 @@ class RetiredPredictionNavigationTests(unittest.TestCase):
         self.assertEqual(nav.value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
         visible = [t.label for t in app.get("tab") if t.label in
-                   {"PIPELINE", "GEM JR", "GEM", "SCANS", "PRE PHASE 3", "POST PHASE 3"}]
-        self.assertEqual(visible, ["PIPELINE", "GEM JR", "GEM", "SCANS"])
+                   {"PIPELINE", "GEM JR + GEM", "SCANS", "PRE PHASE 3", "POST PHASE 3"}]
+        self.assertEqual(visible, ["PIPELINE", "GEM JR + GEM", "SCANS"])
 
     def test_old_prediction_and_optimizer_bookmarks_redirect_to_pipeline(self):
         for legacy in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):
