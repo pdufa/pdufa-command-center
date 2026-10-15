@@ -8,7 +8,8 @@ def report(run, checked, unresolved, scope="SCOPE_A"):
     return {"latest_run_id": str(run), "source_checked_at_utc": checked,
             "required_findings_due": 984,
             "required_findings_unresolved": unresolved,
-            "verification_scope_sha256": scope, "status": "PARTIAL"}
+            "verification_scope_sha256": scope, "status": "PARTIAL",
+            "execution_status": "COMPLETE", "manifest_rejections": {}}
 
 
 def queue(*names):
@@ -70,6 +71,28 @@ class SourceAuditDeltaTests(unittest.TestCase):
     def test_incoming_queue_mismatch_rejected(self):
         with self.assertRaisesRegex(ValueError, "does not match"):
             compare({}, {}, report(2, "2026-10-13T15:00:00Z", 10), queue("A"))
+
+    def test_omitted_source_families_never_count_as_resolved_findings(self):
+        previous = report(1, "2026-10-13T14:00:00Z", 2)
+        partial = report(2, "2026-10-13T15:00:00Z", 1)
+        partial.update(execution_status="INCOMPLETE",
+                       manifest_rejections={"FDA": "Different attempt"})
+        for before, after in ((previous, partial), (partial, previous)):
+            before = {**before, "source_checked_at_utc": "2026-10-13T14:00:00Z"}
+            after = {**after, "source_checked_at_utc": "2026-10-13T15:00:00Z"}
+            old_rows = queue("A", "B") if before["required_findings_unresolved"] == 2 else queue("A")
+            new_rows = queue("A", "B") if after["required_findings_unresolved"] == 2 else queue("A")
+            action, updated = compare(before, old_rows, after, new_rows)
+            self.assertEqual(action, "PUBLISH")
+            self.assertFalse(updated["comparison"]["available"])
+            self.assertNotIn("resolved_count", updated["comparison"])
+
+    def test_rejected_manifest_blocks_resolution_even_with_complete_label(self):
+        previous = report(1, "2026-10-13T14:00:00Z", 2)
+        incoming = report(2, "2026-10-13T15:00:00Z", 1)
+        incoming["manifest_rejections"] = {"SEC": "Different attempt"}
+        _, updated = compare(previous, queue("A", "B"), incoming, queue("A"))
+        self.assertFalse(updated["comparison"]["available"])
 
     def test_audit_history_is_bounded_and_contains_each_run_once(self):
         old = report(31, "2026-10-13T14:00:00Z", 1)

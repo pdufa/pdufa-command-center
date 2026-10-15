@@ -77,7 +77,12 @@ def compare(prior_report, prior_rows, incoming_report, incoming_rows):
         old_count = int(prior_report["required_findings_unresolved"])
     except (KeyError, ValueError, TypeError):
         old_count = -1
-    comparable = (old_count >= 0 and len(prior_rows) == old_count
+    complete_executions = all(
+        report.get("execution_status") == "COMPLETE"
+        and not report.get("manifest_rejections")
+        for report in (prior_report, incoming_report)
+    )
+    comparable = (complete_executions and old_count >= 0 and len(prior_rows) == old_count
                   and bool(prior_report.get("verification_scope_sha256"))
                   and prior_report.get("verification_scope_sha256") ==
                   incoming_report.get("verification_scope_sha256"))
@@ -102,7 +107,7 @@ def compare(prior_report, prior_rows, incoming_report, incoming_rows):
     else:
         out["comparison"] = {
             "available": False,
-            "reason": "Prior issue queue unavailable, inconsistent or event scope changed",
+            "reason": "Source coverage incomplete, prior issue queue unavailable/inconsistent, or event scope changed",
             "previous_run_id": str(prior_report.get("latest_run_id") or ""),
         }
     history = list(prior_report.get("verification_history") or [])
