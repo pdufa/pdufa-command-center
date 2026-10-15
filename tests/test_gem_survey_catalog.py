@@ -51,6 +51,56 @@ class GemSurveyDirectoryTests(unittest.TestCase):
         self.assertEqual(record["Verified coverage"],
                          "13F: 3 / 8 program rows · Form 4: NOT VERIFIED")
 
+    def test_daily_seven_surveys_use_saved_pipeline_scoped_gem_rows(self):
+        sample = [
+            {"Benchmark 1 — Phase 3 released": "PASS — VERIFIED RESULTS RELEASE",
+             "Benchmark 2 — Financing #2 closed": "PASS — TWO POST-READOUT CLOSES",
+             "Cash runway (months)": 14,
+             "Cash runway gate": "PASS — 12 MONTHS",
+             "GEM 3 dilution status": "ALERT — FINANCING TERMS NEED REVIEW",
+             "Hedge-fund signal": "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS",
+             "Insider Form 4 signal": "",
+             "Market activity /10": 6,
+             "Rating status": "RATED",
+             "PDUFA verification": "VERIFIED — SOURCE LINKED"},
+            {"Benchmark 1 — Phase 3 released": "PENDING",
+             "Benchmark 2 — Financing #2 closed": "PENDING",
+             "Hedge-fund signal": "", "Insider Form 4 signal":
+             "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS"},
+        ]
+        rows = survey_rows({}, scans=sample, feed_current=True)
+        self.assertEqual(len(rows), 7)
+        self.assertEqual(rows[0]["Verified coverage"], "1 / 2 program rows")
+        self.assertEqual(rows[1]["Verified coverage"], "1 / 2 program rows")
+        self.assertEqual(rows[3]["Verified coverage"], "1 / 2 program rows")
+        self.assertEqual(rows[4]["Verified coverage"],
+                         "13F: 1 / 2 program rows · Form 4: 1 / 2 program rows")
+        self.assertEqual(rows[6]["Verified coverage"], "1 / 2 program rows")
+        self.assertEqual(rows[4]["Role"], "Advisory / ranking")
+        stale = survey_rows({}, scans=sample, feed_current=False)
+        self.assertIn("STALE SOURCE FEED", stale[0]["Source status"])
+        self.assertEqual(survey_rows({}, scans=[], feed_current=True)[0]
+                         ["Source status"], "NOT VERIFIED / NO MATCHED OBSERVATIONS")
+
+    def test_research_diagnostics_have_no_nightly_critical_path(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1]
+        main = (root / ".github/workflows/gem-research-quality.yml").read_text()
+        optional = (root / ".github/workflows/gem-research-diagnostics.yml").read_text()
+        ui = (root / "gem_scans_ui.py").read_text()
+        self.assertNotIn("run_gem_bpw_comparable.py", main)
+        self.assertNotIn("steps.bpw_comparable.outcome", main)
+        self.assertIn("collect_gem_hedge_funds.py", main)
+        self.assertIn("collect_gem_insider_form4.py", main)
+        self.assertIn("run_gem_bpw_comparable.py", optional)
+        self.assertIn("workflow_dispatch:", optional)
+        self.assertNotIn("schedule:", optional)
+        self.assertIn("GEM SURVEY DIRECTORY — 7 PRIMARY SURVEYS", ui)
+        self.assertIn("OWNERSHIP & INSIDER ACTIVITY — ADVISORY", ui)
+        self.assertIn("SHOW HISTORICAL GEM BACKTEST / CALIBRATION", ui)
+        self.assertIn("SHOW BIOPHARMAWATCH FEATURE-COVERAGE DIAGNOSTIC", ui)
+        self.assertIn("survey_rows({}, scans=items,", ui)
+
     def test_unverified_diagnostic_does_not_assert_current_survey_coverage(self):
         rows = survey_rows({})
         self.assertEqual(len(rows), 7)
