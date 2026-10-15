@@ -144,7 +144,13 @@ def report_summary(report, exit_code, fresh, *, full_scope=False):
     if report.get("execution_status"):
         lines.insert(0, "Scan execution: " + str(report["execution_status"]))
     if isinstance(errors, list) and errors:
-        lines.append(f"Errors: {len(errors)}")
+        if isinstance(report.get("errors_count"), int):
+            # The count already appears above; these are explanations, not
+            # another number of independent errors. Never display "Errors: 4"
+            # followed by a contradictory "Errors: 1" in the same email.
+            lines.append("Error details: " + "; ".join(str(e)[:180] for e in errors[:3]))
+        else:
+            lines.append(f"Errors: {len(errors)}")
     breakdown = report.get("source_issue_breakdown")
     if isinstance(breakdown, dict) and breakdown:
         lines.append("Issue categories (source:status = checks):")
