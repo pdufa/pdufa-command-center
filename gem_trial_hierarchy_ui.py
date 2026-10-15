@@ -55,6 +55,7 @@ def render_trial_hierarchy(records, *, namespace, title):
             "Date Left": str(row.get("Date Left") or "CURRENT / NOT EXITED"),
             "Date Re-entered": str(row.get("Date Re-entered") or ""),
             "Listing status": _value(row, "Listing status"),
+            "Leave Reason": str(row.get("Leave Reason") or ""),
             "Evidence / status": _value(row, "Evidence type", "GEM status", "Review status"),
             "Phase 3 readout": _value(row, "Phase 3 date", "Phase 3 readout date"),
             "Clinical source": _value(row, "Clinical source", "Phase 3 source", "Primary clinical source"),
