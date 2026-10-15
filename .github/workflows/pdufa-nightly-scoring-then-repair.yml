@@ -18,6 +18,9 @@ on:
     branches: [main]
     paths:
       - .github/workflows/pdufa-nightly-scoring-then-repair.yml
+      - app.py
+      - site_scorecard.py
+      - score_input_audit.py
       - scripts/nightly_scoring_audit.py
       - scripts/post_scan_repair.py
       - scripts/scan_recovery_triage.py
