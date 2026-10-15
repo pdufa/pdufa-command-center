@@ -739,14 +739,14 @@ def documented_completed_public_equity_financing(text, closing_date):
     eligibility from this single transaction.
     """
     month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
-    dated = r"(?:20\\d{2}-\\d{2}-\\d{2}|" + month + r"\\s+\\d{1,2},?\\s+20\\d{2})"
+    dated = r"(?:20\d{2}-\d{2}-\d{2}|" + month + r"\s+\d{1,2},?\s+20\d{2})"
     pattern = (
-        r"(?i)\\bOn\\s+(" + dated + r")[,\\s]+(?:the\\s+)?(?:Company|we)\\s+"
-        r"(?:completed|closed|consummated)\\s+(?:its\\s+|a\\s+|the\\s+)?"
-        r"(?:public|registered\\s+direct)\\s+equity\\s+financing\\s+"
-        r"for\\s+(?:aggregate\\s+)?gross\\s+proceeds\\s+of\\s+"
-        r"(?:approximately\\s+|about\\s+)?"
-        r"\\$\\s*[\\d,]+(?:\\.\\d+)?\\s*(?:million|billion)\\b"
+        r"(?i)\bOn\s+(" + dated + r")[,\s]+(?:the\s+)?(?:Company|we)\s+"
+        r"(?:completed|closed|consummated)\s+(?:its\s+|a\s+|the\s+)?"
+        r"(?:public|registered\s+direct)\s+equity\s+financing\s+"
+        r"for\s+(?:aggregate\s+)?gross\s+proceeds\s+of\s+"
+        r"(?:approximately\s+|about\s+)?"
+        r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b"
     )
     for found in re.finditer(pattern, text):
         if dates(found.group(1)) != {closing_date}:
@@ -754,7 +754,7 @@ def documented_completed_public_equity_financing(text, closing_date):
         # Restrict the proof to the dated, past-tense amount-bearing clause;
         # neighboring dates or proceeds from a different deal cannot qualify.
         passage = text[found.start():found.end()]
-        if re.search(r"(?i)\\b(?:expected|anticipated|proposed|planned|subject to)\\b",
+        if re.search(r"(?i)\b(?:expected|anticipated|proposed|planned|subject to)\b",
                      passage):
             continue
         return passage
