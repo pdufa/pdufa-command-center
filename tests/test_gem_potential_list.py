@@ -149,6 +149,12 @@ class PotentialGEMTests(unittest.TestCase):
                  "readout_date": "2026-08-10",
                  "source_url": "https://issuer.example/izar"},
             ])
+            # Independent issuer leads must FIRST exist as exact Pipeline trials.
+            write(root, "phase_pipeline.csv", [
+                {"ticker": "CLDX", "nct_id": "NCT06445023", "phase": "PHASE3"},
+                {"ticker": "CLDX", "nct_id": "NCT06455202", "phase": "PHASE3"},
+                {"ticker": "MLTX", "nct_id": "NCT06641076", "phase": "PHASE3"},
+            ])
             pending, held = build_potential_list(root, as_of=date(2026, 10, 14))
             self.assertEqual(sum(x["Ticker"] == "CLDX" for x in pending), 2)
             self.assertEqual(sum(x["Ticker"] == "MLTX" for x in pending), 1)
@@ -168,11 +174,50 @@ class PotentialGEMTests(unittest.TestCase):
                  "readout_date": "2026-08-12",
                  "source_url": "https://issuer.example/other"}
             ])
+            write(root, "phase_pipeline.csv", [
+                {"ticker": "NTLA", "nct_id": "NCT11111111", "phase": "PHASE3"},
+            ])
             pending, _ = build_potential_list(root, as_of=date(2026, 10, 14))
             extra = next(x for x in pending if x["Exact program"] == "TRIAL|NTLA|NCT11111111")
+            self.assertEqual(extra["Pipeline ID"], "TRIAL|NCT11111111")
             self.assertEqual(extra["SEC documents rechecked"], 0)
             self.assertEqual(extra["Evidence type"], "Issuer Phase 3 readout (review)")
             self.assertIn("verify two separate", extra["Still needed"])
+
+    def test_orphan_independent_source_leads_do_not_enter_gem_jr(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            write(root, "post_phase3_discoveries.csv", [
+                {"ticker": "ORPH", "drug": "unmapped", "indication": "test",
+                 "nct_id": "NCT33333333", "readout_date": "2026-09-22",
+                 "source_url": "https://issuer.example/orphan"},
+                {"ticker": "WRONG", "drug": "issuer mismatch", "indication": "test",
+                 "nct_id": "NCT44444444", "readout_date": "2026-09-22",
+                 "source_url": "https://issuer.example/conflict"},
+            ])
+            write(root, "phase_pipeline.csv", [
+                {"ticker": "RIGHT", "nct_id": "NCT44444444", "phase": "PHASE3"},
+            ])
+            active, held = build_potential_list(root, as_of=date(2026, 10, 14))
+            self.assertFalse(any(x["Ticker"] in {"ORPH", "WRONG"}
+                                 for x in active + held))
+            self.assertTrue(all(x.get("Pipeline ID") for x in active + held))
+
+    def test_without_regulatory_candidates_pipeline_trial_lead_still_allowed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            write(root, "phase_pipeline.csv", [
+                {"ticker": "NEW", "nct_id": "NCT55555555", "phase": "PHASE3"},
+            ])
+            write(root, "post_phase3_discoveries.csv", [
+                {"ticker": "NEW", "drug": "trial-only", "indication": "test",
+                 "nct_id": "NCT55555555", "readout_date": "2026-09-22",
+                 "source_url": "https://issuer.example/new"},
+            ])
+            active, held = build_potential_list(root, as_of=date(2026, 10, 14))
+            self.assertEqual([r["Pipeline ID"] for r in active], ["TRIAL|NCT55555555"])
+            self.assertEqual(held, [])
 
     def test_rendered_potential_is_an_ordered_list_with_reason_and_pending(self):
         from gem_potential_ui import numbered_potential_markdown
