@@ -11,6 +11,9 @@ from datetime import date
 from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
+from pipeline_source_scope import pipeline_origins, gem_pipeline_id
+from post_phase3_priority import assign_priority_ranks
+from post_phase3_review_priority import assign_review_ranks
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 from gem_financing_gate import entry_status, sec_recheck_current
 from gem_runway_gate import assess_runway, load_snapshots, passes as runway_passes, MIN_MONTHS
@@ -256,6 +259,36 @@ def build_gem_scans(root="data", as_of=None):
     out-of-window records stay visible as REVIEW rows with no score or rank.
     """
     records, source_status = build_queue(root, as_of=as_of)
+    # Source leads enrich Pipeline identities; they cannot mint GEM records.
+    pipeline_ids, _pipeline_tickers = pipeline_origins(root, today=as_of)
+    valid_rows = []
+    rejected_rows = []
+    for row in records:
+        pipeline_id = gem_pipeline_id(row, pipeline_ids)
+        if pipeline_id:
+            valid_rows.append({**row, "Pipeline ID": pipeline_id})
+        else:
+            rejected_rows.append(row)
+    records = valid_rows
+    assign_review_ranks(records)
+    assign_priority_ranks(records)
+    source_status = {
+        **source_status,
+        "count": len(records),
+        "research_leads": sum(
+            r.get("Source lane") != "SAVED REGULATORY PIPELINE" for r in records
+        ),
+        "research_ranked": sum(r.get("Research rank") is not None for r in records),
+        "strict_evidence_rated": sum(r.get("Evidence score /100") is not None for r in records),
+        "green_count": sum(
+            str(r.get("Entry qualification") or "").startswith("GREEN") for r in records
+        ),
+        "review_count": sum(
+            str(r.get("Entry qualification") or "").startswith("REVIEW") for r in records
+        ),
+        "pipeline_origin_total": len(pipeline_ids),
+        "excluded_outside_pipeline": len(rejected_rows),
+    }
     sec_current = sec_recheck_current(root, as_of=source_status.get("as_of") or as_of)
     events = _event_map(root)
     runway_snapshots = load_snapshots(root)
