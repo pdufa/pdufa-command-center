@@ -136,7 +136,7 @@ def pacific_date(value):
     raw = str(value or "").strip()
     if not raw:
         return ""
-    if re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", raw):
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw):
         return raw
     try:
         when = datetime.fromisoformat(raw.replace("Z", "+00:00"))
@@ -254,7 +254,7 @@ def today_amendments(source_rows, fda_amendments, extension_history, *, today):
     return {"SEC": sec, "FDA": fda}
 
 
-def missing_research_rows(queue, category, registry, *, fda_extensions=None):
+def missing_research_rows(queue, category, registry, *, fda_extensions=None, benchmarks=None):
     """Separate outstanding source claims; never turn gaps into verified rows.
 
     A research link is a navigation starting point, not the source of
@@ -298,6 +298,40 @@ def missing_research_rows(queue, category, registry, *, fda_extensions=None):
             "Research portal": edgar_link if category == "SEC" else fda_portal,
             "Checked": str(item.get("checked_at", "")).strip(),
         })
+    # The same two GEM research benchmarks appear under each agency, clearly
+    # distinct from regulator-specific primary evidence.
+    for item in benchmarks or []:
+        ticker = str(item.get("Ticker", "")).strip().upper()
+        event = str(item.get("Trial / event", "")).strip()
+        for gap in str(item.get("Research gaps", "")).split(" | "):
+            if gap not in {"PHASE3_EXACT_EVIDENCE", "TWO_FINANCING_DOCUMENTS",
+                           "TWO_FINANCING_SEQUENCE"}:
+                continue
+            key = (event, gap)
+            if key in seen:
+                continue
+            seen.add(key)
+            source = (item.get("Phase 3 source", "") if gap == "PHASE3_EXACT_EVIDENCE"
+                      else item.get("Finance evidence", ""))
+            detail = (
+                "Confirm exact Phase 3 program, readout date, results and trial ID"
+                if gap == "PHASE3_EXACT_EVIDENCE" else
+                "Find two independent SEC documents proving actual completed fundings"
+                if gap == "TWO_FINANCING_DOCUMENTS" else
+                "Adjudicate distinct fundings strictly after the exact Phase 3 readout"
+            )
+            cik = cik_by_ticker.get(ticker, "")
+            edgar_link = ("https://www.sec.gov/edgar/browse/?CIK=" + cik
+                          if re.fullmatch(r"\d{10}", cik) else "")
+            records.append({
+                "Ticker": ticker, "Trial / event": event,
+                "Missing item": gap, "Why research is needed": detail,
+                "Verification": "REVIEW_REQUIRED",
+                "Expected": "", "Observed": "",
+                "Primary source": source if str(source).startswith("https://") else "",
+                "Research portal": edgar_link if category == "SEC" else fda_portal,
+                "Checked": "",
+            })
     # An unverified FDA extension is itself an item for research even when
     # the official source-verification queue has no separate extension claim.
     if category == "FDA":
@@ -327,11 +361,11 @@ def missing_research_rows(queue, category, registry, *, fda_extensions=None):
     return records
 
 
-def render_missing_research(category, queue, notice, registry, *, extensions=None):
-    records = missing_research_rows(queue, category, registry, fda_extensions=extensions)
+def render_missing_research(category, queue, notice, registry, *, extensions=None, benchmarks=None):
+    records = missing_research_rows(queue, category, registry, fda_extensions=extensions, benchmarks=benchmarks)
     incomplete = bool(notice and ("unavailable" in notice.lower() or "local" in notice.lower()))
     count = str(len(records)) if not incomplete else str(len(records)) + "+ (partial)"
-    with st.expander(f"🔎 Missing {category} items to research — {count}", expanded=False):
+    with st.expander(f"🔎 {category} MISSING ITEMS ({count}) — Research checklist", expanded=False):
         st.caption("Unresolved exact-program evidence and source discrepancies. "
                    "Neither a missing item nor a filing-index result is proof of "
                    "a completed financing or FDA decision.")
