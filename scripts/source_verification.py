@@ -400,9 +400,13 @@ def indication_matches(event, text):
             + re.escape(acronym) + r"\s*\)",
             raw_source,
         )
-        if expansions and not any(
-            len(tokens & set(normalized(expansion).split()))
-            >= min(2, len(tokens)) for expansion in expansions
+        # The acronym is not part of its own spelled-out disease name.
+        # IgAN has one informative full-name token ("nephropathy"),
+        # while DMD has three ("duchenne muscular dystrophy").
+        disease_tokens = tokens - {normalized(acronym)}
+        if expansions and disease_tokens and not any(
+            len(disease_tokens & set(normalized(expansion).split()))
+            >= min(2, len(disease_tokens)) for expansion in expansions
         ):
             return False
     if bool(tokens) and len(tokens & body) >= min(2, len(tokens)):
