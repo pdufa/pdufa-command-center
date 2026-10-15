@@ -696,25 +696,63 @@ def documented_funded_transaction(text, closing_date):
     """
     month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
     date_rx = r"(?:20\d{2}-\d{2}-\d{2}|" + month + r"\s+\d{1,2},?\s+20\d{2})"
-    # SEC periodic reports also use "On <date>, the Company closed an
-    # underwritten public offering." A priced/expected offering is not proof:
-    # require past-tense completion, issued securities and actual proceeds.
+    # A checked SEC 8-K may identify the issuer by corporate name followed by
+    # "(the Company)" instead of spelling out "the Company" before its close.
+    # The caller independently verifies the SEC archive CIK against the
+    # requested ticker. Never promote a Google snippet or an SEC filing index.
+    named_issuer = (
+        r"(?:[A-Za-z][A-Za-z,.&\s-]{1,90}"
+        r"\(\s*the\s+[\"'“”]?Company[\"'“”]?\s*\))"
+    )
     for match in re.finditer(
-        r"(?i)\bOn\s+(" + date_rx + r")[,\s]+(?:the\s+)?(?:Company|we)\s+"
+        r"(?i)\bOn\s+(" + date_rx + r")[,\s]+"
+        r"(?:(?:the\s+)?(?:Company|we)|" + named_issuer + r")\s+"
         r"(?:closed|completed|consummated)\s+(?:(?:its|the|an?)\s+)?"
-        r"(?:(?:underwritten|upsized|public|private|registered\s+direct)\s+){0,4}"
+        r"(?:(?:previously\s+announced|underwritten|upsized|public|private|"
+        r"registered\s+direct|registered)\s+){0,6}"
         r"(?:offering|placement)\b", text
     ):
         if dates(match.group(1)) != {closing_date}:
             continue
-        passage = text[match.start():match.end() + 520]
-        if re.search(r"(?i)\b(?:expects?|expected|anticipated|planned|proposed|will|"
-                     r"would|may|might|subject to)\b", passage[match.end()-match.start():200]):
+        # Look only at the transaction being closed. When a periodic report
+        # describes multiple dated completed offerings, don't borrow the next
+        # offering's proceeds to validate the previous one.
+        passage = text[match.start():match.end() + 1800]
+        following = passage[match.end() - match.start():]
+        next_close = re.search(
+            r"(?i)\bOn\s+" + date_rx +
+            r"[,\s]+.{0,140}?\b(?:closed|completed|consummated)\b", following
+        )
+        if next_close:
+            passage = passage[:match.end() - match.start() + next_close.start()]
+        if not re.search(r"(?i)\b(?:shares|stock|notes|securities)\b", passage):
             continue
-        if (re.search(r"(?i)\b(?:shares|stock|notes|securities)\b", passage)
-                and re.search(r"(?i)\b(?:net|gross)\s+proceeds\b", passage)
-                and re.search(r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b", passage)):
-            return passage
+        # Explicit dollar-denominated net/gross proceeds or issued note
+        # principal amount, not shares outstanding or an announced capacity.
+        actual_proceeds = re.search(
+            r"(?i)\b(?:net|gross)\s+proceeds\b.{0,300}?"
+            r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b", passage
+        )
+        issued_principal = re.search(
+            r"(?i)\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\s+"
+            r"aggregate\s+principal\s+amount\s+of\s+"
+            r"(?:[\d.]+%\s+)?(?:convertible\s+)?(?:senior\s+)?notes\b", passage
+        )
+        if not (actual_proceeds or issued_principal):
+            continue
+        if re.search(
+            r"(?i)\b(?:net|gross)\s+proceeds\s+"
+            r"(?:are|were|will\s+be)\s+expected\b", passage[:700]
+        ):
+            continue
+        if re.search(
+            r"(?i)\b(?:expects?\s+to|expected\s+to|subject\s+to)\s+"
+            r"(?:close|complete|consummate)\b",
+            passage[:match.end() - match.start()]
+        ):
+            continue
+        return passage
+
 
     for match in re.finditer(r"(?i)\bOn\s+(" + date_rx + r")[,\s]+(?:the\s+)?(?:Company|we)\s+(received|sold)\b", text):
         passage = text[match.start():match.end() + 450]

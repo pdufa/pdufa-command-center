@@ -1,0 +1,26 @@
+name: PDUFA SEC Google Evidence One-Shot Reconciliation
+
+# A code/evidence change triggers one explicitly scoped source reconciliation.
+# The established overnight workflow remains schedule-only and sequential.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'config/issuer_sources.json'
+      - 'scripts/source_verification.py'
+      - '.github/workflows/pdufa-sec-evidence-one-shot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: pdufa-sec-evidence-one-shot
+  cancel-in-progress: false
+
+jobs:
+  source-audit:
+    name: Fresh five-source SEC evidence reconciliation
+    uses: ./.github/workflows/pdufa-nightly-missing-sources.yml
+    secrets: inherit
