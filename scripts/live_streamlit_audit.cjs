@@ -304,8 +304,23 @@ async function audit() {
     report.checked.push({screen:"WT embedded Watchlist and Trading",result:"PASS"});
   });
 
-  await safely("Main SCANS", async() => {
-    await inspectRadio(page,"SCANS",["SCANS — LIVE ACTIVITY & HISTORY"]);
+  // Exactly one SCANS destination: the PDUFA subtab. The former global
+  // SCANS radio is intentionally removed; its read-only activity history
+  // is now a toggle in the richer PDUFA evidence/controls screen.
+  await safely("Unified PDUFA SCANS", async() => {
+    const frame = await currentFrame(page);
+    if (!frame) throw Error("Unified SCANS: app iframe missing.");
+    if (await frame.getByRole("radio", {name:"SCANS", exact:true}).count() !== 0) {
+      throw Error("Obsolete duplicate top-level SCANS navigation is still visible.");
+    }
+    const found = await inspectTab(page, "SCANS", [
+      "SCANS — ACTIVITY, EVIDENCE & CONTROLS",
+      "SHOW LIVE ACTIVITY & HISTORY",
+      "GEMS — GITHUB SCAN LOGS",
+      "NIGHTLY SCAN REPORT",
+    ]);
+    report.checked.push({screen:"One consolidated SCANS navigation",result:"PASS",
+                         live_activity_toggle:found.text.includes("SHOW LIVE ACTIVITY & HISTORY")});
   });
   await safely("PDUFA CALENDAR", async() => {
     await inspectRadio(page,"2. PDUFA CALENDAR",["2. PDUFA CALENDAR — UPCOMING CATALYSTS"]);
