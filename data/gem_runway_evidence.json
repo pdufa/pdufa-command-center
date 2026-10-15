@@ -4,7 +4,7 @@
   "collected_count": 34,
   "collector_status": "COMPLETE",
   "failures": [],
-  "generated_at_utc": "2026-10-14T20:10:54.229681+00:00",
+  "generated_at_utc": "2026-10-15T05:17:22.962671+00:00",
   "history": [
     {
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
@@ -4050,6 +4050,272 @@
       "shares_outstanding": null,
       "short_term_investments_usd": 118022000.0,
       "ticker": "HRMY"
+    },
+    {
+      "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
+      "as_of": "2026-10-14",
+      "cash_includes_restricted": false,
+      "cash_runway_risk": "HIGH \u2014 UNDER 6 MONTHS",
+      "cash_usd": 75670000.0,
+      "cik": "0001326110",
+      "company": "ImmunityBio, Inc.",
+      "company_revenue_usd": 51240000.0,
+      "current_debt_usd": null,
+      "evidence": {
+        "cash": {
+          "accession": "0001326110-26-000079",
+          "basis": "INSTANT",
+          "filed": "2026-08-04",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "CashAndCashEquivalentsAtCarryingValue"
+        },
+        "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001326110.json",
+        "current_debt": null,
+        "noncurrent_debt": null,
+        "operating_cash_flow": {
+          "accession": "0001326110-26-000079",
+          "basis": "YTD LESS PRIOR YTD",
+          "filed": "2026-08-04",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "NetCashProvidedByUsedInOperatingActivities"
+        },
+        "prior_shares": null,
+        "revenue": {
+          "accession": "0001326110-26-000079",
+          "basis": "DIRECT QUARTER",
+          "filed": "2026-08-04",
+          "form": "10-Q",
+          "period_end": "2026-06-30",
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax"
+        },
+        "shares": null,
+        "short_term_investments": null,
+        "submissions_url": "https://data.sec.gov/submissions/CIK0001326110.json"
+      },
+      "filing_review_queue": [
+        {
+          "accession": "0001326110-26-000077",
+          "close_verified": false,
+          "filed": "2026-08-04",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000077/ibrx-20260804.htm"
+        },
+        {
+          "accession": "0001326110-26-000071",
+          "close_verified": false,
+          "filed": "2026-07-30",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000071/ibrx-20260729.htm"
+        },
+        {
+          "accession": "0001326110-26-000064",
+          "close_verified": false,
+          "filed": "2026-06-10",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000064/ibrx-20260609.htm"
+        },
+        {
+          "accession": "0001193125-26-229153",
+          "close_verified": false,
+          "filed": "2026-05-18",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312526229153/d75270d8k.htm"
+        },
+        {
+          "accession": "0001326110-26-000057",
+          "close_verified": false,
+          "filed": "2026-05-07",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000057/ibrx-20260507.htm"
+        },
+        {
+          "accession": "0001326110-26-000036",
+          "close_verified": false,
+          "filed": "2026-04-09",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000036/ibrx-20260409.htm"
+        },
+        {
+          "accession": "0001193125-26-142932",
+          "close_verified": false,
+          "filed": "2026-04-06",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312526142932/d70606d8k.htm"
+        },
+        {
+          "accession": "0001193125-26-133363",
+          "close_verified": false,
+          "filed": "2026-03-31",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312526133363/d139829d8k.htm"
+        },
+        {
+          "accession": "0001326110-26-000025",
+          "close_verified": false,
+          "filed": "2026-02-23",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000025/ibrx-20260223.htm"
+        },
+        {
+          "accession": "0001326110-26-000018",
+          "close_verified": false,
+          "filed": "2026-02-18",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000018/ibrx-20260218.htm"
+        },
+        {
+          "accession": "0001326110-26-000014",
+          "close_verified": false,
+          "filed": "2026-01-26",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000014/ibrx-20260123.htm"
+        },
+        {
+          "accession": "0001326110-26-000008",
+          "close_verified": false,
+          "filed": "2026-01-15",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000008/ibrx-20260115.htm"
+        },
+        {
+          "accession": "0001326110-26-000004",
+          "close_verified": false,
+          "filed": "2026-01-14",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000004/ibrx-20260114.htm"
+        },
+        {
+          "accession": "0001193125-25-331244",
+          "close_verified": false,
+          "filed": "2025-12-29",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312525331244/d61833d8k.htm"
+        },
+        {
+          "accession": "0001193125-25-331242",
+          "close_verified": false,
+          "filed": "2025-12-29",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312525331242/d19212d424b5.htm"
+        },
+        {
+          "accession": "0001326110-25-000146",
+          "close_verified": false,
+          "filed": "2025-12-15",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611025000146/ibrx-20251210.htm"
+        },
+        {
+          "accession": "0001326110-25-000143",
+          "close_verified": false,
+          "filed": "2025-12-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611025000143/ibrx-20251212.htm"
+        },
+        {
+          "accession": "0001326110-25-000138",
+          "close_verified": false,
+          "filed": "2025-11-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611025000138/ibrx-20251104.htm"
+        },
+        {
+          "accession": "0001193125-25-177024",
+          "close_verified": false,
+          "filed": "2025-08-08",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312525177024/d29656d8k.htm"
+        },
+        {
+          "accession": "0001326110-25-000112",
+          "close_verified": false,
+          "filed": "2025-08-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611025000112/ibrx-20250805.htm"
+        },
+        {
+          "accession": "0001193125-25-165807",
+          "close_verified": false,
+          "filed": "2025-07-28",
+          "form": "424B5",
+          "review_note": "Prospectus supplement: possible offering, NOT proof of closing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312525165807/d941601d424b5.htm"
+        },
+        {
+          "accession": "0001193125-25-164789",
+          "close_verified": false,
+          "filed": "2025-07-25",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312525164789/d20571d8k.htm"
+        },
+        {
+          "accession": "0001326110-25-000084",
+          "close_verified": false,
+          "filed": "2025-06-20",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611025000084/ibrx-20250618.htm"
+        },
+        {
+          "accession": "0001326110-25-000069",
+          "close_verified": false,
+          "filed": "2025-05-12",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000132611025000069/ibrx-20250512.htm"
+        },
+        {
+          "accession": "0001193125-25-112057",
+          "close_verified": false,
+          "filed": "2025-05-05",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312525112057/d949868d8k.htm"
+        }
+      ],
+      "financial_score_0_100": null,
+      "financial_score_note": "NOT SCORED \u2014 no independently validated composite weighting or offering-close evidence",
+      "financing_closed": "NOT VERIFIED \u2014 document-level review required",
+      "method": "Trailing reported operating cash flow / months; cash-only estimate, no financing assumed",
+      "monthly_operating_burn_usd": 22164666.67,
+      "noncurrent_debt_usd": null,
+      "operating_cash_flow_months": 3,
+      "operating_cash_flow_usd": -66494000.0,
+      "previous_shares_outstanding": null,
+      "product_revenue_note": "NOT VERIFIED \u2014 company revenue does not prove approved product sales",
+      "product_revenue_usd": null,
+      "review_flags": [],
+      "runway_months_cash_only": 3.41,
+      "runway_risk_index_0_100": 85,
+      "runway_risk_index_note": "Heuristic cash-runway risk only; larger means greater risk, NOT total financial risk",
+      "shares_change_note": "Change may reflect splits or corporate actions; not proof of offering/dilution",
+      "shares_change_pct": null,
+      "shares_outstanding": null,
+      "short_term_investments_usd": null,
+      "ticker": "IBRX"
     },
     {
       "active_atm": "NOT VERIFIED \u2014 8-K/prospectus metadata cannot prove active sales",
@@ -12616,6 +12882,14 @@
         "submissions_url": "https://data.sec.gov/submissions/CIK0001326110.json"
       },
       "filing_review_queue": [
+        {
+          "accession": "0001193125-26-421820",
+          "close_verified": false,
+          "filed": "2026-10-14",
+          "form": "8-K",
+          "review_note": "Current report; contents require review to identify any actual financing",
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312526421820/d188887d8k.htm"
+        },
         {
           "accession": "0001326110-26-000077",
           "close_verified": false,

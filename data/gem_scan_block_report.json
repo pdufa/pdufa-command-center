@@ -14,6 +14,7 @@
   "artifact_integrity": "NOT INDEPENDENTLY CHECKED",
   "awaiting_second_financing": 0,
   "blocking_or_review_flags": [
+    "DISCOVERY_SOURCE_TIMESTAMPS_REQUIRE_REVIEW",
     "UNVALIDATED_HISTORICAL_STOCK_RETURNS",
     "SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE",
     "MARKET_PRICE_VOLUME_SOURCE_BLOCKED_OR_STALE"
@@ -24,9 +25,9 @@
       {
         "capability": "Phase 3 results and trial evidence",
         "caveat": "Verified trial readout; endpoint depth depends on source adjudication",
-        "data_coverage_pct": 2.2,
+        "data_coverage_pct": 1.9,
         "key": "clinical",
-        "observed_gem_rows": 8,
+        "observed_gem_rows": 7,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -87,9 +88,9 @@
       {
         "capability": "Public market-cap reference",
         "caveat": "Company-level market-cap file; no rNPV/commercial valuation",
-        "data_coverage_pct": 97.3,
+        "data_coverage_pct": 0.0,
         "key": "market_cap",
-        "observed_gem_rows": 358,
+        "observed_gem_rows": 0,
         "state": "PARTIAL",
         "total_gem_rows": 368
       },
@@ -166,17 +167,17 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-14T20:10:22.058562+00:00",
-    "matched_posted_results": 95,
+    "finished_at": "2026-10-15T05:16:44.251088+00:00",
+    "matched_posted_results": 94,
     "new_records": 0,
     "stored_results": 2483,
-    "studies_checked": 3959
+    "studies_checked": 3931
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-14T20:12:50.936565+00:00",
+  "generated_at_utc": "2026-10-15T05:19:36.071785+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -208,8 +209,8 @@
     "Post-Financing": 0
   },
   "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 38629704130,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38629704130",
+  "run_id": 38685204322,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
