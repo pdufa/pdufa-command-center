@@ -315,6 +315,7 @@ def drug_matches(event, text):
 
 
 def indication_matches(event, text):
+    raw_source = str(text)
     stop = {"patients", "adults", "adult", "children", "treatment", "therapy",
             "with", "and", "the", "for", "age", "years", "including"}
     indication = re.sub(r"\bnonadvanced\b", "non advanced", normalized(event.get("indication", "")))
@@ -344,8 +345,25 @@ def indication_matches(event, text):
     if any(len(normalized(alias)) >= 6 and normalized(alias) in text for alias in explicit if alias.strip()):
         return True
     aliases = re.findall(r"\(([A-Za-z][A-Za-z0-9/-]{2,12})\)", str(event.get("indication", "")))
-    return any(normalized(alias) in body for alias in aliases
-               if len(normalized(alias)) >= 3 and normalized(alias) not in {"fda", "usa"})
+    for alias in aliases:
+        clean_alias = normalized(alias)
+        if (len(clean_alias) < 3 or clean_alias in {"fda", "usa"}
+                or clean_alias not in body):
+            continue
+        # A source that explicitly expands an acronym to a *different*
+        # disease is contradictory, not a positive indication match.
+        # Abbreviations used independently (without an expansion) retain
+        # their established exact-token matching behavior.
+        expansions = re.findall(
+            r"(?i)\b((?:[A-Za-z]+\s+){1,7}[A-Za-z]+)\s*\(\s*"
+            + re.escape(alias) + r"\s*\)", raw_source)
+        if expansions and not any(
+            len(tokens & set(normalized(expansion).split()))
+            >= min(2, len(tokens)) for expansion in expansions
+        ):
+            continue
+        return True
+    return False
 
 
 def company_matches(event, text):
