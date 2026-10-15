@@ -32,7 +32,7 @@ If secrets are updated, restarting the Streamlit app may be necessary.
 
 ## Nightly Scan Report subtab (October 12, 2026)
 
-**PDUFA → NIGHTLY SCAN REPORT**, directly before **WATCHLIST / TRADING**, reads the published `data/nightly_scan_report.json` audit. The 9 PM Pacific scheduler starts `pdufa-overnight-sequential.yml`, which awaits the clinical collectors, both GEM tasks, report publication, source verification, scoring and repair in one run. The publisher downloads the same run’s archived per-scan JSON/status files, checks consistency and writes the displayed report. Standalone manual clinical runs retain their completion-triggered publisher. Prior scan results are revalidated from their own archived run when a targeted collection occurs; missing or expired artifacts remain UNVERIFIED. The UI does not invent missing new-record or changed-trial totals.
+**PDUFA → NIGHTLY SCAN REPORT**, directly before **WATCHLIST / TRADING**, reads the published `data/nightly_scan_report.json` audit. The 10 PM Pacific scheduler starts `pdufa-overnight-sequential.yml`, which awaits the clinical collectors, both GEM tasks, report publication, source verification, scoring and repair in one run. The publisher downloads the same run’s archived per-scan JSON/status files, checks consistency and writes the displayed report. Standalone manual clinical runs retain their completion-triggered publisher. Prior scan results are revalidated from their own archived run when a targeted collection occurs; missing or expired artifacts remain UNVERIFIED. The UI does not invent missing new-record or changed-trial totals.
 
 **Three controls** are available: **REVERIFY PARTIAL** recollects the clinical scans and publishes a new audit, **VERIFY ALL** rechecks their archived clinical source evidence, and **RESCAN ALL** reruns the three clinical collectors. An additional target selector can recollect only #2, #3 or #4. The buttons dispatch `pdufa-scan-control.yml`. ALL collection requests use the same complete serial workflow, including GEM; targeted requests retain their individual collectors. The report and control buttons are separate from trading tags; no order placement occurs.
 
@@ -41,10 +41,10 @@ If secrets are updated, restarting the Streamlit app may be necessary.
 **Operational boundary:** The new tab and workflows are code-installed, but a successful *live end-to-end scan and email delivery* must still be observed after secrets are configured. Before a first published artifact the page explicitly says that no audited report exists. A clinical `PARTIAL` result means clinical-source collection succeeded, **not** that FDA/SEC/issuer/market data was verified. `VERIFY ALL` revalidates archived clinical JSON, not the missing source families. The automated syntax/unit-test check is in `pdufa-nightly-report-checks.yml`.
 
 
-## Active daily PM scan survey — 9:00 PM Pacific
+## Active daily PM scan survey — 10:00 PM Pacific
 
 **Enabled:** `.github/workflows/pdufa-nightly-pacific-start.yml` starts the
-strictly ordered **daily 9:00 PM Pacific** sequence:
+strictly ordered **daily 10:00 PM Pacific** sequence:
 **#2 PIPELINE → #3 PRE3 → #4 POST3 → GEM research → GEM financing
 full-coverage audit → nightly report → FDA → SEC → FINANCIAL → MARKET →
 ISSUER → source reconciliation → source report → PRE3 display refresh →
@@ -52,8 +52,8 @@ scoring → error check → guarded repair**.
 Each main research step waits for the prior one to finish, even on a
 recorded failure. Morning results are a separate read-only report.
 
-GitHub UTC cron uses `0 4 * * *` during PDT (UTC−7) and
-`0 5 * * *` during PST (UTC−8), with 9:15/9:30 PM guarded backups.
+GitHub UTC cron uses `0 5 * * *` during PDT (UTC−7) and
+`0 6 * * *` during PST (UTC−8), with 10:15/10:30 PM guarded backups.
 After-midnight recovery crons can start a missed nightly run until 2:59 AM Pacific.
 Duplicate detection checks only the complete workflow, so a targeted manual
 clinical scan cannot suppress the full overnight run. An active older full run
@@ -66,7 +66,7 @@ the downstream publisher does not start until both GEM tasks finish.
 Their former independent daily schedules are disabled; explicit manual
 `workflow_dispatch` remains supported. The independent 6 AM
 Pacific read-only report checks evidence since the previous night's
-9 PM start. GitHub Actions scheduling can be delayed; the configured
+10 PM start. GitHub Actions scheduling can be delayed; the configured
 clock time is a target, not a guaranteed start or completion time.
 No scanner result automatically authorizes trading.
 
