@@ -13,6 +13,7 @@ from ticker_toggle_panel import clean_ticker, render_ticker_toggle_panel
 
 FIELDS = (
     "Ticker", "Drug", "Trial / Program", "Stage", "PDUFA",
+    "Date Found", "Date Left", "Listing status",
     "Evidence / Qualification", "Missing / Next action",
 )
 
@@ -63,6 +64,9 @@ def stage_rows(records, stage):
             "Drug": drug,
             "Trial / Program": trial or program,
             "Stage": stage,
+            "Date Found": _value(item, "Date Found"),
+            "Date Left": _value(item, "Date Left"),
+            "Listing status": _value(item, "Listing status"),
             "PDUFA": _value(item, "PDUFA saved", "PDUFA date (saved)",
                             "PDUFA Date", "pdufa_date", "PDUFA Target"),
             "Evidence / Qualification": (
