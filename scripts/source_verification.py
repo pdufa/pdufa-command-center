@@ -264,7 +264,7 @@ def documented_pdufa_extension(event, text):
         prefix = text[start:match.start()]
         # Hypothetical wording such as "FDA might extend" is NOT an action.
         # Require an asserted past-tense FDA extension before using new dates.
-        if (not re.search(r"(?i)\b(?:the\s+)?FDA\s+(?:has\s+)?extended\b", prefix)
+        if (not re.search(r"(?i)\b(?:the\s+)?FDA\)?\s+(?:has\s+)?extended\b", prefix)
                 or not re.search(r"(?i)\bPDUFA\b|Prescription Drug User Fee Act", prefix)
                 or not drug_matches(event, passage)
                 or not indication_matches(event, passage)):
