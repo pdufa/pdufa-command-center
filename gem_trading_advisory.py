@@ -12,11 +12,16 @@ import math
 from datetime import date, timedelta
 from pathlib import Path
 
+from gem_base_analysis import detect_closing_base, base_chart_frame
+
 
 TRADE_COLUMNS = [
     "Trade assessment", "Trading rationale", "EOD as of", "EOD close",
     "SMA 20", "SMA 50", "RSI 14", "RVOL", "20D $ volume",
     "Prior 20D closing low", "Trading data gaps",
+    "Base status", "Base support", "Base resistance", "Base support touches",
+    "Base width %", "Base contraction ratio", "Base volume ratio",
+    "Base breakout RVOL",
     "Entry Score /100", "Entry Coverage /100", "Entry Score Status",
     "Exit Risk /100", "Exit Coverage /100", "Exit Risk Status",
     "Entry Score Breakdown", "Exit Risk Breakdown",
@@ -151,6 +156,7 @@ def assess_gem_trade(row, market_rows, status, today):
                        and abs(_number(record["last_close_usd"]) - closes[-1]) < 0.02)
     lag = _days_since_session(eod, today)
     fresh = bool(consistency and lag is not None and lag <= 2)
+    base = detect_closing_base(bars if consistency else [], fresh=fresh)
     price = closes[-1] if consistency else None
     sma20 = sum(closes[-20:]) / 20 if consistency and len(closes) >= 20 else None
     sma50 = sum(closes[-50:]) / 50 if consistency and len(closes) >= 50 else None
@@ -219,6 +225,7 @@ def assess_gem_trade(row, market_rows, status, today):
         "fresh": fresh, "close": price, "sma20": sma20, "sma50": sma50,
         "rsi": rsi, "rvol": rvol, "dollar_volume": dollar_volume,
         "support": support, "macd": macd, "bars": bars if consistency else [],
+        "base": base,
         "source": record.get("market_source") if consistency else None,
         "gaps": "; ".join(gaps),
     }
@@ -405,6 +412,14 @@ def attach_trade_fields(rows, market_rows, status, today):
             "20D $ volume": profile["dollar_volume"],
             "Prior 20D closing low": profile["support"],
             "Trading data gaps": profile["gaps"],
+            "Base status": profile["base"]["status"],
+            "Base support": profile["base"]["support"],
+            "Base resistance": profile["base"]["resistance"],
+            "Base support touches": profile["base"]["touches"],
+            "Base width %": profile["base"]["width_pct"],
+            "Base contraction ratio": profile["base"]["contraction"],
+            "Base volume ratio": profile["base"]["volume_ratio"],
+            "Base breakout RVOL": profile["base"]["breakout_rvol"],
             "Entry Score /100": scores["entry"],
             "Entry Coverage /100": scores["entry_coverage"],
             "Entry Score Status": scores["entry_status"],
@@ -420,6 +435,73 @@ def attach_trade_fields(rows, market_rows, status, today):
         })
         enriched.append(entry)
     return enriched
+
+
+def render_base_formation_chart(profile, *, compact=False):
+    """Visible support/resistance, SMA20/SMA50, volume and fail-closed base status."""
+    import pandas as pd
+    import streamlit as st
+
+    base = profile["base"]
+    st.markdown("**20-SESSION BASE FORMATION — DAILY-CLOSE OBSERVATIONS**")
+    state = base["status"]
+    if state.startswith("SUPPORT BREAK"):
+        st.warning(state)
+    elif state.startswith("STALE") or state.startswith("NOT AVAILABLE"):
+        st.info(state)
+    else:
+        st.caption("BASE STATUS: " + state + " — screen only, not confirmed accumulation or an entry signal")
+    bars = profile["bars"]
+    if not bars:
+        st.info("No consistent source-linked saved daily close/volume series. Base chart withheld.")
+        return
+    frame = pd.DataFrame(base_chart_frame(bars, base)).set_index("date")
+    st.line_chart(
+        frame[["Close", "SMA 20", "SMA 50",
+               "Base support (closing)", "Base resistance (closing)"]],
+        height=240 if compact else 285, use_container_width=True,
+    )
+    st.caption(
+        "Horizontal levels use the PREVIOUS 20 daily closes only (not today's close). "
+        "They appear only in the most recent 21 sessions. "
+        "These are closing-price proxies, not intraday support/resistance or executable stops."
+    )
+    money = lambda value: "$" + format(value, ",.2f") if value is not None else "NOT AVAILABLE"
+    scalar = lambda value, unit="": format(value, ",.2f") + unit if value is not None else "NOT AVAILABLE"
+    measurements = [
+        {"Check": "Closing support / resistance", "Observed": money(base["support"]) + " / " + money(base["resistance"]),
+         "Interpretation": "20 previous sessions; approximate zone rather than exact intraday level"},
+        {"Check": "Separated support tests", "Observed": str(base["touches"]) if base["touches"] is not None else "NOT AVAILABLE",
+         "Interpretation": "Touches within 3% of the closing low, at least 3 sessions apart; prefer 2+"},
+        {"Check": "Range width", "Observed": scalar(base["width_pct"], "%"),
+         "Interpretation": "Illustrative tighter range <=18%; not a validated threshold"},
+        {"Check": "Price-range contraction", "Observed": scalar(base["contraction"], "×"),
+         "Interpretation": "Latest 5 close-range vs preceding 10; <=0.75× suggests contraction"},
+        {"Check": "Volume dry-up", "Observed": scalar(base["volume_ratio"], "×"),
+         "Interpretation": "Latest 5 average volume vs prior 15; <=0.85× suggests declining participation"},
+        {"Check": "Breakout volume", "Observed": scalar(base["breakout_rvol"], "×"),
+         "Interpretation": "Current day's volume vs previous 20 sessions; 1.5× is illustrative"},
+    ]
+    st.dataframe(pd.DataFrame(measurements), hide_index=True, use_container_width=True,
+                 height=245 if compact else 270)
+    with st.expander("SHOW SAVED DAILY VOLUME BARS", expanded=False):
+        st.bar_chart(frame[["Volume"]], height=150, use_container_width=True)
+    st.caption(
+        "Data: " + (str(profile["source"]) if profile["source"] else "UNVERIFIED") +
+        " · EOD: " + (str(profile["date"]) if profile["date"] else "UNKNOWN") +
+        (" · RECENT" if profile["fresh"] else " · STALE / UNVERIFIED") +
+        ". True ATR needs high/low/close, VWAP needs appropriate intraday data, "
+        "and genuine support tests require reviewing the TradingView candlesticks. "
+        "A potential base never overrides clinical, SEC, or entry-risk gates."
+    )
+
+
+def render_base_chart_for_ticker(ticker, market_rows, today, *, compact=True):
+    """Same base view for GEM JR and GEM, without claiming benchmark eligibility."""
+    profile = assess_gem_trade(
+        {"Ticker": ticker, "_eligible": False}, market_rows, {}, today,
+    )
+    render_base_formation_chart(profile, compact=compact)
 
 
 def render_gem_trade_panel(row, market_rows, status, today):
@@ -453,13 +535,7 @@ def render_gem_trade_panel(row, market_rows, status, today):
                                              "unverified / unavailable") +
                " · As of: " + (str(p["date"]) if p["date"] else "unknown") +
                (" · STALE / CHECK SOURCE" if not p["fresh"] else " · recent saved EOD"))
-    if p["bars"]:
-        data = pd.DataFrame(p["bars"]).set_index("date")[["close"]].rename(
-            columns={"close": "Closing price"})
-        data["SMA 20"] = data["Closing price"].rolling(20).mean()
-        st.line_chart(data, height=210, use_container_width=True)
-    else:
-        st.info("No consistent saved EOD series for this ticker; chart withheld.")
+    render_base_formation_chart(p)
     fmt = lambda v, d=2: f"{v:,.{d}f}" if v is not None else "NOT AVAILABLE"
     rows = [
         ("Latest saved close", "$" + fmt(p["close"]) if p["close"] is not None else "NOT AVAILABLE",
@@ -474,6 +550,8 @@ def render_gem_trade_panel(row, market_rows, status, today):
          "Prefer ≥ $5M for tradability; not a hard GEM gate"),
         ("Previous 20-day closing low", "$" + fmt(p["support"]) if p["support"] is not None
          else "NOT AVAILABLE", "Closing-price support proxy, not intraday support/stop"),
+        ("Base formation status", p["base"]["status"],
+         "Research-only detection from validated daily close/volume"),
         ("MACD / signal", ("BULLISH" if p["macd"]["bullish"] else "BEARISH")
          if p["macd"] is not None else "NOT AVAILABLE", "60+ sessions needed for indicator warm-up"),
         ("VWAP / ATR / spread", "NOT AVAILABLE", "No intraday bars, highs/lows or bid/ask; cannot infer"),
