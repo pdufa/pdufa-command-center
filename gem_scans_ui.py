@@ -12,6 +12,7 @@ import streamlit as st
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
 from pipeline_universe import SOURCE_FILES as PIPELINE_SOURCE_FILES
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
+from gem_membership_history import read_history, enrich_gem_master_rows, departed_stage_rows
 from gem_trading_advisory import (TRADE_COLUMNS, attach_trade_fields,
                                   load_market_rows, render_gem_trade_panel)
 from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_rechecks, report_rows
@@ -121,7 +122,8 @@ def render_gem_scans(root="data"):
         "a verified date within 90 calendar days; the trading exit warning "
         "begins at PDUFA −3. Other risk factors only rank or warn."
     )
-    master_rows = build_gem_master_list(items)
+    membership = read_history(path)
+    master_rows = enrich_gem_master_rows(build_gem_master_list(items), membership)
     # Disclose precisely why a program is unscored. The standalone source
     # rechecks below are research observations, never automatic promotions.
     details = report_rows(
@@ -241,6 +243,13 @@ def render_gem_scans(root="data"):
     )
     st.dataframe(master_table, use_container_width=True, height=650,
                  hide_index=True)
+    with st.expander("GEM — HISTORICAL LISTING DEPARTURES", expanded=False):
+        departed = departed_stage_rows(membership, "GEM")
+        if departed:
+            st.dataframe(pd.DataFrame(departed), hide_index=True,
+                         use_container_width=True)
+        else:
+            st.caption("No recorded GEM exits since membership tracking began.")
     st.download_button(
         "EXPORT GEM MASTER LIST",
         master_table.to_csv(index=False).encode("utf-8"),
