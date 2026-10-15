@@ -118,6 +118,12 @@ jobs:
           cp data/pdufa_targeted_recheck_report.json data/pdufa_targeted_recheck_results.csv "$RUNNER_TEMP/source-review/"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Save locally generated tracked files before moving to latest main.
+          # Checkout otherwise refuses if a concurrent scan changed its copies.
+          git add data/pdufa_targeted_recheck_report.json data/pdufa_targeted_recheck_results.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Prepare independent required evidence recheck comparison"
+          fi
           for attempt in 1 2 3; do
             git fetch origin main
             git checkout -B focused-source-recheck-publish origin/main
