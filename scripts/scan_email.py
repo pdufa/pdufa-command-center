@@ -50,9 +50,9 @@ class EmailSettings:
 
 
 def label(scan):
-    return {"2": "#2 PIPELINE", "3": "#3 PRE3",
-            "4": "#4 POST3", "GEM": "BLOCK 4 — GEM",
-            "ALL": "#2/#3/#4"}.get(str(scan).upper(), str(scan)[:36])
+    return {"2": "PIPELINE — inventory", "3": "PIPELINE — clinical enrichment",
+            "4": "GEM JR — Phase 3 readout", "GEM": "GEM — verified research",
+            "ALL": "PIPELINE → GEM JR → GEM"}.get(str(scan).upper(), str(scan)[:36])
 
 
 def when_pacific(when: datetime):

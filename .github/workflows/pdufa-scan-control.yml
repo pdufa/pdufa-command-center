@@ -19,7 +19,7 @@ on:
         description: "Source scan for targeted recheck"
         required: true
         type: choice
-        options: [ALL, '2', '3', '4', GEM]
+        options: [ALL, PIPELINE, GEM_JR, GEM]
         default: ALL
 
 permissions:

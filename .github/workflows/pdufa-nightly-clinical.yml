@@ -17,9 +17,9 @@ on:
   workflow_dispatch:
     inputs:
       scan:
-        description: 'Clinical scan to collect (#2, #3, #4, or all)'
+        description: 'Clinical stage to collect (PIPELINE, GEM JR, or full chain)'
         type: choice
-        options: ['ALL', '2', '3', '4']
+        options: ['ALL', 'PIPELINE', 'GEM_JR']
         default: 'ALL'
         required: true
       include_gem:
@@ -37,11 +37,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  scan2:
-    name: 'PDUFA #2 PIPELINE — notified scan'
-    if: ${{ inputs.scan == 'ALL' || inputs.scan == '2' }}
+  pipeline:
+    name: 'PIPELINE — trial inventory and early-clinical evidence'
+    if: ${{ inputs.scan == 'ALL' || inputs.scan == 'PIPELINE' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 125
+    timeout-minutes: 300
     env:
       PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
       PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
@@ -117,39 +117,8 @@ jobs:
             data/phase_pipeline.csv
             data/phase_pipeline_market_caps.csv
             data/phase3_announcements.csv
-
-  scan3:
-    name: 'PDUFA #3 PRE3 — notified scan'
-    needs: scan2
-    if: ${{ always() && (inputs.scan == 'ALL' || inputs.scan == '3') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 125
-    env:
-      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
-      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
-      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
-    steps:
-      - name: Checkout saved clinical source snapshots
-        uses: actions/checkout@v4
-        with:
-          ref: main
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install ClinicalTrials.gov collector dependency
-        run: python -m pip install requests
-      - name: Verify email settings exist before any scanning
-        shell: bash
-        run: |
-          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
-            if [ -z "${!key}" ]; then
-              echo "::error::Missing required GitHub Actions secret ${key}; scan will not start."
-              exit 1
-            fi
-          done
-      - name: Submit START email, scan evidence, submit END email
-        id: scan
+      - name: PIPELINE — enrich tracked Phase 2/3 trials
+        id: clinical_enrichment
         shell: bash
         run: |
           set +e
@@ -168,7 +137,7 @@ jobs:
             exit 0
           fi
           exit "$exit_code"
-      - name: Publish completed clinical snapshot before the next scan
+      - name: Publish verified PIPELINE early-clinical snapshot
         run: |
           set -euo pipefail
           python scripts/validate_clinical_snapshot.py --scan 3
@@ -184,7 +153,7 @@ jobs:
           done
           echo "::error::Clinical snapshot could not be published; source artifacts retained."
           exit 1
-      - name: Archive scan results, source status and notification audit
+      - name: Archive PIPELINE early-clinical source audit
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -200,10 +169,10 @@ jobs:
             data/phase_pipeline_market_caps.csv
             data/phase3_announcements.csv
 
-  scan4:
-    name: 'PDUFA #4 POST3 — notified scan'
-    needs: scan3
-    if: ${{ always() && (inputs.scan == 'ALL' || inputs.scan == '4') }}
+  gem_jr:
+    name: 'GEM JR — Phase 3 results and qualification research'
+    needs: pipeline
+    if: ${{ (inputs.scan == 'GEM_JR' || (inputs.scan == 'ALL' && needs.pipeline.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 125
     env:
@@ -283,9 +252,9 @@ jobs:
             data/phase3_announcements.csv
 
   gem_block:
-    name: 'BLOCK 4 GEMS — wait for entire research scan after POST3'
-    needs: scan4
-    if: ${{ always() && inputs.scan == 'ALL' && inputs.include_gem }}
+    name: 'GEM — research after GEM JR'
+    needs: gem_jr
+    if: ${{ inputs.scan == 'ALL' && inputs.include_gem && needs.gem_jr.result == 'success' }}
     permissions:
       contents: write
       actions: read
@@ -297,7 +266,7 @@ jobs:
   gem_financing:
     name: 'GEM financing full coverage — wait after GEM research'
     needs: gem_block
-    if: ${{ always() && inputs.scan == 'ALL' && inputs.include_gem }}
+    if: ${{ inputs.scan == 'ALL' && inputs.include_gem && needs.gem_block.result == 'success' }}
     permissions:
       contents: read
     uses: ./.github/workflows/gem-financing-full-coverage.yml
