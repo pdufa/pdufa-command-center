@@ -34,12 +34,16 @@ def detect_closing_base(bars, *, fresh=False):
     if support <= 0 or any(v < 0 for v in volumes) or now_volume < 0:
         return empty
     width = (resistance - support) / support * 100
-    # Multiple touches must be spaced apart; repeated adjacent days count once.
-    touch_indices = [i for i, price in enumerate(closes) if price <= support * 1.03]
+    # Distinct support TESTS require leaving the 3% band and then
+    # re-entering at least three sessions later. Consecutive days parked at
+    # support are one test, not several independent buyer defenses.
     separated = []
-    for i in touch_indices:
-        if not separated or i - separated[-1] >= 3:
+    in_zone_before = False
+    for i, price in enumerate(closes):
+        in_zone = price <= support * 1.03
+        if in_zone and not in_zone_before and (not separated or i - separated[-1] >= 3):
             separated.append(i)
+        in_zone_before = in_zone
     recent = closes[-5:]
     earlier = closes[-15:-5]
     recent_range = max(recent) - min(recent)
