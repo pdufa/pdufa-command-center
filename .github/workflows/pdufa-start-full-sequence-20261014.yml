@@ -29,21 +29,21 @@ jobs:
           import json, sys
           with open(sys.argv[1], encoding="utf-8") as f:
               runs = json.load(f).get("workflow_runs", [])
-          active = [r for r in runs if r.get("name") == "PDUFA Nightly Clinical Scans"
+          active = [r for r in runs if r.get("name") in ("PDUFA Nightly Clinical Scans", "PDUFA Overnight Sequential Scans")
                     and r.get("status") in ("queued", "in_progress", "waiting", "pending", "requested")]
           if active:
               print("Existing active clinical scan(s):", [r.get("html_url") for r in active])
               raise SystemExit("Duplicate launch blocked")
           print("No active clinical collector observed in recent GitHub runs")
           PY
-      - name: Dispatch ALL clinical scans and GEMS fourth block
+      - name: Dispatch full awaited overnight sequence
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-nightly-clinical.yml/dispatches" \
-            -f ref=main -f 'inputs[scan]=ALL' -f 'inputs[include_gem]=true'
-          echo "Full chain requested: #2 PIPELINE -> #3 PRE3 -> #4 POST3 -> GEMS research."
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
+            -f ref=main
+          echo "Full awaited overnight sequence requested: PIPELINE -> GEM JR -> GEM, then source, scoring, and repair stages."
           echo "After clinical publisher: FDA -> SEC -> FINANCIAL -> MARKET -> ISSUER -> reconciliation -> scoring -> error audit -> guarded repair."
           echo "GitHub dispatch acceptance is not proof of source completion; enforce START/END email gate and preserve PARTIAL flags."
