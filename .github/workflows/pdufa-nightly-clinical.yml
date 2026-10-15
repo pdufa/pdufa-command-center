@@ -80,12 +80,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "2" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
+            --scan "2" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-2.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "2" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
+              --scan "2" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
               --report "reports/nightly-clinical-2.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -131,12 +131,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "3" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
+            --scan "3" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-3.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "3" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
+              --scan "3" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
               --report "reports/nightly-clinical-3.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -213,12 +213,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "4" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
+            --scan "4" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-4.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "4" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
+              --scan "4" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
               --report "reports/nightly-clinical-4.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
