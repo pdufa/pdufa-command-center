@@ -65,6 +65,9 @@
       "CAPR|DERAMIOCEL_DMD_20261122": {
         "urls": [
           "https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target"
+        ],
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1133869/000110465926097294/capr-20260630x10q.htm"
         ]
       }
     },
@@ -129,6 +132,9 @@
         "urls": [
           "https://www.dyne-tx.com/fda-accepts-bla-for-z-rostudirsen/",
           "https://investors.dyne-tx.com/news-releases/news-release-details/dyne-therapeutics-announces-us-fda-acceptance-biologics-license/"
+        ],
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1818794/000119312526323940/dyn-ex99_1.htm"
         ]
       }
     },
@@ -248,6 +254,9 @@
         "urls": [
           "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys202603068kex991.htm",
           "https://ir.mineralystx.com/news-events/press-releases/detail/111/mineralys-therapeutics-reports-second-quarter-2026"
+        ],
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000142/mlys-20250930.htm"
         ]
       }
     },
@@ -485,6 +494,15 @@
         },
         "financing_urls": [
           "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm"
+        ]
+      }
+    }
+  },
+  "APMD": {
+    "events": {
+      "APMD|OXNIMBI_OSA_20270228": {
+        "financing_research_documents": [
+          "https://www.sec.gov/Archives/edgar/data/1745648/000119312526385356/apmd-20260630.htm"
         ]
       }
     }
