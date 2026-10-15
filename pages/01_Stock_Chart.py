@@ -1,6 +1,9 @@
 import json
 import re
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from gem_trading_advisory import load_market_rows, render_base_chart_for_ticker
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
@@ -44,7 +47,12 @@ if programs:
     grouped_dataframe(stage_display, use_container_width=True, hide_index=True)
 else:
     grouped_dataframe(pd.DataFrame([{"Ticker": ticker, "STAGE": "UNKNOWN — REVIEW"}]), use_container_width=True, hide_index=True)
-st.caption("Interactive candlestick chart. Default technical studies: VWAP and 20-day EMA.")
+st.caption(
+    "TradingView candlesticks with volume, VWAP, SMA, EMA and ATR. "
+    "Use the chart's drawing toolbar to outline a possible base (rectangle) and "
+    "mark support/resistance; set the moving-average periods to 20 and 50 in TradingView. "
+    "A separately computed close-only base overlay appears below when verified EOD data exists."
+)
 
 symbol = f"NASDAQ:{ticker}"
 widget = {
@@ -60,13 +68,16 @@ widget = {
     "allow_symbol_change": False,
     "calendar": False,
     "hide_side_toolbar": False,
+    "hide_volume": False,
     "withdateranges": True,
     "details": True,
     "hotlist": False,
     "support_host": "https://www.tradingview.com",
     "studies": [
         "VWAP@tv-basicstudies",
-        "MAExp@tv-basicstudies"
+        "MAExp@tv-basicstudies",
+        "MASimple@tv-basicstudies",
+        "ATR@tv-basicstudies"
     ]
 }
 html = f"""
@@ -79,5 +90,16 @@ html = f"""
 """
 components.html(html, height=800, scrolling=False)
 
-st.info("PDUFA-specific event markers (Phase 3, financing, NDA/BLA, PDUFA and FDA decision) are the next overlay layer; they will use the Command Center's verified event data.")
+with st.expander("BASE FORMATION — VERIFIED SAVED DAILY CLOSE & VOLUME", expanded=True):
+    render_base_chart_for_ticker(
+        ticker, load_market_rows(Path(__file__).resolve().parents[1] / "data"),
+        datetime.now(ZoneInfo("America/Los_Angeles")).date(),
+        compact=False,
+    )
+st.caption(
+    "TradingView's intraday candles, ATR and VWAP are provided by TradingView and may differ "
+    "from delayed saved EOD closing-price proxies. Automatically injecting Pine Script "
+    "or drawing rectangles into this public TradingView embed is not supported. "
+    "PDUFA-specific event markers await independently verified event overlays."
+)
 
