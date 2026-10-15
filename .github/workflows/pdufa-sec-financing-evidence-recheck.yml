@@ -117,7 +117,7 @@ jobs:
         run: |
           set -euo pipefail
           SOURCE_RUN_ID=$(python -c 'import json;print(json.load(open("data/pdufa_source_report.json"))["latest_run_id"])')
-          python scripts/targeted_verification_repair.py \
+          python -m scripts.targeted_verification_repair \
             --source-run-id "$SOURCE_RUN_ID" \
             --output reports/missing_sources/targeted_required_recheck.json \
             --csv-output reports/missing_sources/targeted_required_recheck.csv
