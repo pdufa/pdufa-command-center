@@ -50,7 +50,9 @@ def render_gem_jr(root="data"):
         "Pipeline ID", "Date Found", "Date Left", "Date Re-entered",
         "Leave Reason", "Listing status",
     )
-    render_trial_hierarchy(active + held, namespace="gem_jr", title="GEM JR")
+    # A resolved or expired program must not remain in the ACTIVE trial cards.
+    # Archived programs are below, with actual dated scan-observed exits.
+    render_trial_hierarchy(active, namespace="gem_jr", title="GEM JR")
     if active:
         st.markdown("### CANDIDATES REQUIRING VERIFICATION")
         frame = pd.DataFrame(active).reindex(columns=fields).fillna("")
@@ -82,7 +84,10 @@ def render_gem_jr(root="data"):
             st.caption("GEM JR candidates remain UNVERIFIED research leads. "
                        "Chart data availability never clears Phase 3 or financing benchmarks.")
     if held:
-        with st.expander("RESOLVED EVENTS / PDUFA TIMING HOLDS", expanded=False):
+        with st.expander("RECONCILIATION HOLDS — NOT ACTIVE GEM JR", expanded=False):
+            st.caption("These expired/resolved source leads are not in active GEM JR. "
+                       "A dated PREVIOUS entry appears only if a validated scan "
+                       "actually observed the program in GEM JR and later saw it leave.")
             pdufa_dataframe(pd.DataFrame(held).reindex(columns=fields).fillna(""),
                             hide_index=True, use_container_width=True)
     st.caption(
