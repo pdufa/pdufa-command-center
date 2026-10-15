@@ -119,57 +119,63 @@ def table_rows(sec_filings, verification, extensions):
 
 
 def render_filings_base_amendments():
-    st.markdown("### SEC & FDA — Base filings and amendments")
-    st.caption(
-        "Read-only source evidence. Weekdays: new/changed filings, trial events and "
-        "unresolved cases; Sundays: full reconciliation at 10 PM Pacific. "
-        "Filings-index metadata does not certify a financing close, and an "
-        "FDA target-date extension is not proof of a formal NDA amendment.")
+    """Two independent, simultaneously visible SEC and FDA sections."""
     sec_rows = read_csv(FILINGS)
-    source_exists = bool(sec_rows)
+    has_sec_inventory = bool(sec_rows)
     tables = table_rows(sec_rows, read_csv(VERIFICATION), read_csv(EXTENSIONS))
-    metrics = pd.DataFrame([
-        {"Agency": "SEC · EDGAR", "Base filings": len(tables["SEC Base"]) if source_exists else "PENDING",
-         "Amendments": len(tables["SEC Amendments"]) if source_exists else "PENDING",
-         "Scope": "Latest indexed SEC forms"},
-        {"Agency": "FDA · regulatory cases", "Base filings": len(tables["FDA Base"]),
-         "Amendments": len(tables["FDA Amendments"]),
-         "Scope": "Primary target/decision claims + PDUFA extensions"},
-    ])
-    st.dataframe(metrics, use_container_width=True, hide_index=True)
-    agency_sec, agency_fda = st.tabs(["SEC filings", "FDA actions and updates"])
-    with agency_sec:
-        if not source_exists:
-            st.info("SEC form-level filing inventory has not been published yet. "
-                    "It will populate from the next successful SEC index scan; "
-                    "no missing amendments are assumed to be zero.")
-        st.caption("SEC form /A (or POS AM) identifies a filing amendment. "
-                   "Prospectus supplements and signed financing closings require "
-                   "their own document-level checks.")
-        base, amendments = st.tabs(["Base filings", "Amendments /A"])
-        for tab, key in ((base, "SEC Base"), (amendments, "SEC Amendments")):
-            with tab:
-                records = tables[key]
-                if records:
-                    st.dataframe(pd.DataFrame(records), use_container_width=True,
-                                 hide_index=True,
-                                 column_config={"Primary source": st.column_config.LinkColumn(
-                                     "EDGAR filing")})
-                else:
-                    st.caption("No classified index records available for this section.")
-    with agency_fda:
-        st.caption("FDA base rows are event-specific source checks. FDA amendment "
-                   "rows represent documented/reported target-date extensions; "
-                   "they do not represent an FDA-published application amendment register.")
-        base, updates = st.tabs(["Base FDA claims", "Amendments / extensions"])
-        for tab, key in ((base, "FDA Base"), (updates, "FDA Amendments")):
-            with tab:
-                records = tables[key]
-                if records:
-                    st.dataframe(pd.DataFrame(records), use_container_width=True,
-                                 hide_index=True,
-                                 column_config={"Primary source": st.column_config.LinkColumn(
-                                     "Primary evidence")})
-                else:
-                    st.caption("No recorded primary evidence for this section; "
-                               "a blank table does not establish no changes.")
+
+    st.markdown("## SEC FILINGS")
+    st.caption("SEC EDGAR · Monday–Saturday amendments/new filings · Sunday full rescan "
+               "at 10 PM Pacific. Indexed forms are not proof that financing closed.")
+    sec_base_count = str(len(tables["SEC Base"])) if has_sec_inventory else "PENDING"
+    sec_amend_count = str(len(tables["SEC Amendments"])) if has_sec_inventory else "PENDING"
+    first, second = st.columns(2)
+    first.metric("SEC base filings", sec_base_count)
+    second.metric("SEC amendments", sec_amend_count)
+    if not has_sec_inventory:
+        st.info("The SEC filing inventory is awaiting its first published source scan. "
+                "No missing filings or amendments are interpreted as zero.")
+
+    st.markdown("#### SEC — Base filings")
+    if tables["SEC Base"]:
+        st.dataframe(pd.DataFrame(tables["SEC Base"]), use_container_width=True,
+                     hide_index=True,
+                     column_config={"Primary source": st.column_config.LinkColumn("EDGAR filing")})
+    else:
+        st.caption("No SEC base filing records available yet.")
+    st.markdown("#### SEC — Amendments (/A)")
+    if tables["SEC Amendments"]:
+        st.dataframe(pd.DataFrame(tables["SEC Amendments"]), use_container_width=True,
+                     hide_index=True,
+                     column_config={"Primary source": st.column_config.LinkColumn("EDGAR amendment")})
+    else:
+        st.caption("No SEC amendments in the available filing inventory.")
+    st.caption("An 8-K/A or S-3/A is an amended SEC filing. Prospectus supplements "
+               "and independently verified funded closings are separate claims.")
+
+    st.divider()
+    st.markdown("## FDA FILINGS & REGULATORY ACTIONS")
+    st.caption("FDA event-specific applications/targets/decisions and separately tracked "
+               "PDUFA-date extensions. An extension does not necessarily represent "
+               "a formal NDA/BLA amendment.")
+    first, second = st.columns(2)
+    first.metric("FDA base regulatory claims", len(tables["FDA Base"]))
+    second.metric("FDA extensions / updates", len(tables["FDA Amendments"]))
+
+    st.markdown("#### FDA — Base application / decision evidence")
+    if tables["FDA Base"]:
+        st.dataframe(pd.DataFrame(tables["FDA Base"]), use_container_width=True,
+                     hide_index=True,
+                     column_config={"Primary source": st.column_config.LinkColumn("FDA / primary source")})
+    else:
+        st.caption("No primary FDA source claims have been published yet.")
+    st.markdown("#### FDA — Amendments / PDUFA extensions")
+    if tables["FDA Amendments"]:
+        st.dataframe(pd.DataFrame(tables["FDA Amendments"]), use_container_width=True,
+                     hide_index=True,
+                     column_config={"Primary source": st.column_config.LinkColumn("Extension evidence")})
+    else:
+        st.caption("No FDA extension evidence available yet. "
+                   "This does not prove no amendments occurred.")
+    st.caption("Verified source evidence is kept separate from review-only updates. "
+               "Neither table independently authorizes GEM trade entry.")
