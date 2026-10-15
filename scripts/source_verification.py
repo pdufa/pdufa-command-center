@@ -1650,6 +1650,8 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
                       r.get("category") == "SEC" and r.get("claim") == "FINANCING_CLOSURE"
                       and r.get("verification_status") == "VERIFIED"}
     current_registry = {}
+    sec_watch_rows = []
+    sec_watch_errors = 0
 
     def safe_sec_retry(row, recheck):
         nonlocal sec_auto_retries, sec_auto_recovered
@@ -1673,6 +1675,18 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
             checked = safe_sec_retry(first, lambda company=company: verifier.registry(company))
             results.append(checked)
             current_registry[company["ticker"].upper()] = checked
+            if checked["verification_status"] == "VERIFIED":
+                try:
+                    from scripts.filings_base_amendments import rows_from_submissions
+                    _, _, recent = verifier.submissions({
+                        "ticker": company["ticker"],
+                        "event_key": "REGISTRY:" + company["ticker"]})
+                    sec_watch_rows.extend(rows_from_submissions(
+                        ticker=company["ticker"].upper(), cik10=verifier.cik(company),
+                        recent=recent, index_sha256=checked["source_sha256"],
+                        as_of=verifier.as_of))
+                except (ValueError, KeyError, TypeError):
+                    sec_watch_errors += 1
     for event in events:
         event = {**event, "_financing_review": financing_reviews.get(event["event_key"], {})}
         if source == "FDA":
@@ -1750,6 +1764,9 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
                 }
 
     out.mkdir(parents=True, exist_ok=True)
+    if source == "SEC":
+        from scripts.filings_base_amendments import write_rows as write_sec_watch
+        write_sec_watch(out / "sec_filing_watch.csv", sec_watch_rows)
     path = out / (source.lower() + "_verification.csv")
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDS)
@@ -1768,7 +1785,10 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
                 if source == "SEC" else {})
     return {**totals, **inventory, **recovery, **provisional_recheck, "scan_mode": mode,
             "sec_closures_carried_forward": sec_carried_forward,
-            "sec_financing_closures_live_checked": sec_financing_live_checked, "verification_version": VERSION, "verification_run_id": run_identity(),
+            "sec_financing_closures_live_checked": sec_financing_live_checked,
+            "sec_filing_watch_rows": len(sec_watch_rows),
+            "sec_filing_watch_index_errors": sec_watch_errors,
+            "verification_version": VERSION, "verification_run_id": run_identity(),
             "verification_scope_sha256": scope_hash(events, companies),
             "verification_ledger": path.name, "verification_ledger_sha256": digest(path.read_bytes()),
             "verification_events_due": len(events), "verification_events_checked": len({r["event_key"] for r in results if not r["event_key"].startswith("REGISTRY:")}),
