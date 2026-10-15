@@ -231,6 +231,36 @@ a:active,a:focus{color:#ff8a00 !important}
  .st-key-pipeline_date_chart_card,.st-key-pipeline_trials_card,
  .st-key-pipeline_workbench_card {padding:10px 12px !important;}
 }
+/* GEM JR, GEM and every stage's WT tables follow the same SEC/FDA cards. */
+.st-key-gem_jr_shared_block, .st-key-gem_shared_block,
+.st-key-stage_wt_pipeline, .st-key-stage_wt_gem_jr,
+.st-key-stage_wt_gem {
+  background:#fff !important;
+  color:#111 !important;
+  border:2px solid #171f19 !important;
+  border-radius:12px !important;
+  padding:18px 22px !important;
+  margin-bottom:14px !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.st-key-gem_jr_shared_block h2, .st-key-gem_shared_block h2,
+.st-key-stage_wt_pipeline h3, .st-key-stage_wt_gem_jr h3,
+.st-key-stage_wt_gem h3 {
+  color:#111 !important;
+  font-weight:900 !important;
+}
+.st-key-stage_wt_pipeline [data-testid="stDataFrame"],
+.st-key-stage_wt_gem_jr [data-testid="stDataFrame"],
+.st-key-stage_wt_gem [data-testid="stDataFrame"] {
+  background:#fff !important;
+  border:2px solid #171f19 !important;
+  border-radius:10px !important;
+}
+@media(max-width:768px) {
+ .st-key-gem_jr_shared_block,.st-key-gem_shared_block,
+ .st-key-stage_wt_pipeline,.st-key-stage_wt_gem_jr,
+ .st-key-stage_wt_gem {padding:10px 12px !important;}
+}
 /* iPhone / mobile web-app layout */
 @media (max-width: 768px){
   :root{--font-main:15px;--font-small:12px;--font-title:24px;--font-h2:20px;--font-h3:17px}
