@@ -77,8 +77,8 @@ class PotentialGEMTests(unittest.TestCase):
             self.fixture(root)
             pending, held = build_potential_list(root, as_of=date(2026, 10, 14))
             self.assertEqual({x["Ticker"] for x in pending},
-                             {"NTLA", "AXSM", "CAPR", "CORT"})
-            self.assertEqual({x["Ticker"] for x in held}, {"IRD", "FIN"})
+                             {"NTLA", "AXSM", "CAPR", "CORT", "IRD"})
+            self.assertEqual({x["Ticker"] for x in held}, {"FIN"})
             ntla = next(x for x in pending if x["Ticker"] == "NTLA")
             self.assertIn("both cited SEC documents rechecked", ntla["Why potential"])
             self.assertIn("Phase 3 results", ntla["Still needed"])
@@ -90,9 +90,26 @@ class PotentialGEMTests(unittest.TestCase):
             self.assertIn("NCT03406780", capr["Why potential"])
             self.assertIn("two distinct", capr["Still needed"])
             self.assertNotIn("INO", {x["Ticker"] for x in pending + held})
-            self.assertIn("exit boundary", next(x for x in held if x["Ticker"] == "IRD")
+            self.assertIn("NO NEW ENTRY", next(x for x in pending if x["Ticker"] == "IRD")
                           ["Timing / resolution"])
             self.assertIn("APPROVED", next(x for x in held if x["Ticker"] == "FIN")
+                          ["Timing / resolution"])
+
+    def test_pdufa_three_day_warning_keeps_candidate_until_actual_expiry(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.fixture(root)
+            # IRD has saved PDUFA 2026-10-17.
+            before, held = build_potential_list(root, as_of=date(2026, 10, 14))
+            self.assertIn("IRD", {x["Ticker"] for x in before})
+            self.assertNotIn("IRD", {x["Ticker"] for x in held})
+            on_day, held_on_day = build_potential_list(root, as_of=date(2026, 10, 17))
+            self.assertIn("IRD", {x["Ticker"] for x in on_day})
+            self.assertNotIn("IRD", {x["Ticker"] for x in held_on_day})
+            expired, held_expired = build_potential_list(root, as_of=date(2026, 10, 18))
+            self.assertNotIn("IRD", {x["Ticker"] for x in expired})
+            self.assertIn("PDUFA date expired",
+                          next(x for x in held_expired if x["Ticker"] == "IRD")
                           ["Timing / resolution"])
 
     def test_duplicate_exact_event_does_not_borrow_financing_or_study(self):
