@@ -204,8 +204,8 @@ class AwaitedWorkflowTests(unittest.TestCase):
         for name in ('pdufa-nightly-clinical.yml','pdufa-nightly-report.yml',
                      'pdufa-nightly-missing-sources.yml','pdufa-nightly-scoring-then-repair.yml',
                      'gem-research-quality.yml','gem-financing-full-coverage.yml'):
-            self.assertIn('\\n  workflow_call:', read(name))
-            self.assertNotIn('\\n  schedule:', read(name))
+            self.assertIn('\n  workflow_call:', read(name))
+            self.assertNotIn('\n  schedule:', read(name))
 
     def test_all_sources_publication_feed_scoring_and_repair_are_serial(self):
         source = read('pdufa-nightly-missing-sources.yml')
