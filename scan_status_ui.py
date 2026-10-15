@@ -23,7 +23,7 @@ API = "https://api.github.com/repos/" + REPO
 RAW = "https://raw.githubusercontent.com/" + REPO + "/main/data/"
 WORKFLOWS = {
     "Entire overnight sequence · ALL + GEM": "pdufa-overnight-sequential.yml",
-    "Clinical #2 → #3 → #4": "pdufa-nightly-clinical.yml",
+    "PIPELINE → GEM JR": "pdufa-nightly-clinical.yml",
     "GEM · fourth scan block": "gem-research-quality.yml",
     "Clinical report publisher": "pdufa-nightly-report.yml",
     "FDA / SEC / Financial / Market / Issuer": "pdufa-nightly-missing-sources.yml",
@@ -201,7 +201,7 @@ def render_scan_status(published_report_loader):
                            str(r.get("path") or "").split("/")[-1] == source_path and
                            r.get("status") == "in_progress"), {})
     validation = latest.get(WORKFLOWS["Code validation"], {})
-    clinical = latest.get(WORKFLOWS["Clinical #2 → #3 → #4"], {})
+    clinical = latest.get(WORKFLOWS["PIPELINE → GEM JR"], {})
 
     c1, c2, c3 = st.columns(3)
     source_label = (("RUNNING + QUEUED" if sources.get("status") in ACTIVE and
@@ -278,7 +278,7 @@ def render_scan_status(published_report_loader):
     # Keep recent history visible without conflating a prior successful run
     # with a currently active new run. Older runs may be beyond the API page.
     history_paths = {
-        WORKFLOWS["Clinical #2 → #3 → #4"],
+        WORKFLOWS["PIPELINE → GEM JR"],
         WORKFLOWS["FDA / SEC / Financial / Market / Issuer"],
         WORKFLOWS["Scoring → Error check → Repair"],
     }
