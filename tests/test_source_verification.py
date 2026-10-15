@@ -555,6 +555,48 @@ class VerificationTests(unittest.TestCase):
         wrong = {**event, "financing_close_date": "2025-09-05"}
         self.assertNotEqual(verifier.financing(wrong)["verification_status"], "VERIFIED")
 
+    def test_vtrs_eur_note_offering_is_one_completed_debt_refinancing(self):
+        text = (
+            "On June 17, 2026, Viatris Inc. (\"Viatris\" or the \"Company\") "
+            "completed a public offering of €650,000,000 aggregate principal "
+            "amount of its 4.250% Senior Notes due 2033. The Company intends "
+            "to use proceeds to fund the repayment of existing senior notes."
+        )
+        parser = verify.documented_completed_eur_senior_notes
+        self.assertIn("€650,000,000", parser(text, "2026-06-17"))
+        for changed in (
+            text.replace("completed", "announced"),
+            text.replace("€650,000,000", "$650,000,000"),
+            text.replace("the repayment of existing", "other activities unrelated to"),
+            text.replace("June 17, 2026", "June 18, 2026"),
+            text.replace("Senior Notes", "shares of Common Stock"),
+        ):
+            self.assertEqual(parser(changed, "2026-06-17"), "", changed)
+        event = {
+            **EVENT, "ticker": "VTRS", "company": "Viatris Inc.",
+            "financing_close_date": "2026-06-17",
+            "financing_evidence_url":
+                "https://www.sec.gov/Archives/edgar/data/1792044/"
+                "000114036126025744/ef20076340_8k.htm",
+        }
+        company = {"ticker": "VTRS", "company": "Viatris Inc.",
+                   "cik10": "0001792044"}
+        verifier = verify.Verifier(
+            [company], fetch=lambda _: text.encode(),
+            as_of=date(2026, 10, 15),
+        )
+        result = verifier.financing(event)
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertIn("EUR-denominated", result["reason"])
+        self.assertIn("NOT a second", result["reason"])
+        self.assertEqual(result["observed"], "2026-06-17")
+        # Same SEC issuer/transaction cannot be converted to an unrelated
+        # issuer's verified financing simply by copying its URL.
+        wrong_cik = verify.Verifier(
+            [{**company, "cik10": "0000000001"}],
+            fetch=lambda _: text.encode(), as_of=date(2026, 10, 15))
+        self.assertNotEqual(wrong_cik.financing(event)["verification_status"], "VERIFIED")
+
     def test_exact_mapped_sec_offering_is_only_one_transaction(self):
         sec = "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/ex99-1.htm"
         event = {**EVENT, "financing_close_date": "",
