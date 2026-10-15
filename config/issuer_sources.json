@@ -1,5 +1,13 @@
 {
   "AGIO": {
+    "events": {
+      "AGIO|MITAPIVAT_SCD_20261101": {
+        "urls": [
+          "https://investor.agios.com/news-releases/news-release-details/us-fda-grants-priority-review-agios-snda-mitapivat-sickle-cell"
+        ],
+        "primary_target_anchor": "FDA’s PDUFA goal date is November 1, 2026"
+      }
+    },
     "hosts": [
       "investor.agios.com"
     ]
