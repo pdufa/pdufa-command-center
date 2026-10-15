@@ -13,6 +13,7 @@ import streamlit as st
 from gem_potential_list import build_potential_list
 from gem_trial_hierarchy_ui import render_trial_hierarchy
 from pdufa_table_headers import pdufa_dataframe
+from stage_wt_tables import render_stage_wt_tables
 
 
 def render_gem_jr(root="data"):
@@ -49,6 +50,8 @@ def render_gem_jr(root="data"):
                            key="gem_jr_research_export")
     else:
         st.info("No active source-linked Phase 3 / financing leads in the saved research evidence.")
+    render_stage_wt_tables(
+        "GEM JR", active + held, namespace="gem_jr", controls=True)
     if active:
         with st.expander("GEM JR — OPEN STOCK BASE / SUPPORT CHART", expanded=False):
             tickers = sorted({str(x.get("Ticker") or "").upper().strip()
