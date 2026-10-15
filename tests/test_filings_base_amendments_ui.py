@@ -3,7 +3,7 @@ import unittest
 from datetime import date
 
 from scripts.filings_base_amendments import rows_from_submissions
-from filings_base_amendments_ui import table_rows
+from filings_base_amendments_ui import table_rows, missing_research_rows
 
 
 class SecFilingMetadataTests(unittest.TestCase):
@@ -86,6 +86,72 @@ class BaseAmendmentTableTests(unittest.TestCase):
         tables = table_rows([], [base], [])
         self.assertEqual(len(tables["FDA Amendments"]), 1)
         self.assertEqual(tables["FDA Amendments"][0]["Prior date"], "2026-10-18")
+
+
+
+
+class MissingResearchQueueTests(unittest.TestCase):
+    def setUp(self):
+        self.registry = [{"ticker": "ABC", "cik10": "0000000001"},
+                         {"ticker": "XYZ", "cik10": "bad"}]
+        self.queue = [
+            {"ticker": "ABC", "event_key": "ABC|TRIAL", "category": "SEC",
+             "claim": "FINANCING_CLOSURE", "verification_status": "REVIEW_REQUIRED",
+             "verification_required": "YES", "reason": "Second closing date missing",
+             "expected": "2026-10-10", "source_url": ""},
+            {"ticker": "ABC", "event_key": "ABC|TRIAL", "category": "FDA",
+             "claim": "PDUFA_TARGET", "verification_status": "CONFLICT",
+             "verification_required": "YES", "reason": "New FDA target differs",
+             "source_url": "https://www.fda.gov/abc"},
+            {"ticker": "XYZ", "event_key": "XYZ|TRIAL", "category": "SEC",
+             "claim": "FINANCING_CLOSURE", "verification_status": "VERIFIED",
+             "verification_required": "YES", "reason": "Done"},
+            {"ticker": "ABC", "event_key": "ABC|TRIAL", "category": "SEC",
+             "claim": "RUNWAY_ESTIMATE", "verification_status": "REVIEW_REQUIRED",
+             "verification_required": "NO", "reason": "Optional"},
+        ]
+
+    def test_sec_queue_uses_separate_unresolved_claims_and_official_edgar_link(self):
+        sec = missing_research_rows(self.queue, "SEC", self.registry)
+        self.assertEqual(len(sec), 1)
+        self.assertEqual(sec[0]["Ticker"], "ABC")
+        self.assertEqual(sec[0]["Missing item"], "FINANCING_CLOSURE")
+        self.assertIn("Second closing date missing", sec[0]["Why research is needed"])
+        self.assertIn("0000000001", sec[0]["Research portal"])
+        self.assertEqual(sec[0]["Primary source"], "")
+
+    def test_fda_queue_does_not_inherit_verified_target_for_unverified_extension(self):
+        extension = {"Ticker": "ABC", "Trial / event": "ABC|TRIAL",
+                     "Verification": "REVIEW_REQUIRED", "Prior date": "2026-10-10",
+                     "Revised date": "2026-12-10"}
+        fda = missing_research_rows(self.queue, "FDA", self.registry,
+                                    fda_extensions=[extension])
+        self.assertEqual(len(fda), 2)
+        self.assertEqual({r["Missing item"] for r in fda},
+                         {"PDUFA_TARGET", "PDUFA_EXTENSION"})
+        self.assertTrue(all(r["Verification"] != "VERIFIED" for r in fda))
+        self.assertEqual(next(r for r in fda if r["Missing item"] == "PDUFA_EXTENSION")
+                         ["Primary source"], "")
+        self.assertTrue(all("fda.gov" in r["Research portal"] for r in fda))
+
+    def test_published_verified_extension_does_not_enter_missing_list(self):
+        verified_extension = {"Ticker": "ABC", "Trial / event": "ABC|TRIAL",
+                              "Verification": "VERIFIED", "Prior date": "2026-10-10",
+                              "Revised date": "2026-12-10"}
+        fda = missing_research_rows([], "FDA", self.registry,
+                                    fda_extensions=[verified_extension])
+        self.assertEqual(fda, [])
+
+    def test_unverified_source_url_does_not_become_invented_primary_proof(self):
+        item = {**self.queue[0], "source_url": "file:///tmp/forged.pdf"}
+        sec = missing_research_rows([item], "SEC", self.registry)
+        self.assertEqual(sec[0]["Primary source"], "")
+        self.assertEqual(sec[0]["Verification"], "REVIEW_REQUIRED")
+
+    def test_invalid_cik_has_no_edgar_research_link(self):
+        row = {**self.queue[0], "ticker": "XYZ", "event_key": "XYZ|TRIAL"}
+        sec = missing_research_rows([row], "SEC", self.registry)
+        self.assertEqual(sec[0]["Research portal"], "")
 
 
 if __name__ == "__main__":
