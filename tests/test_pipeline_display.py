@@ -88,10 +88,10 @@ class PipelineDisplayTests(unittest.TestCase):
         section = source[start:end]
         self.assertIn('with pipeline_tab:', section)
         self.assertIn('pipeline_tab, gem_jr_tab, unified_tab, nightly_report_tab, watch_trade_tab = st.tabs(', section)
-        self.assertIn('["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]', section)
+        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', section)
         self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
-        self.assertIn('with pre_phase3_tab:', section)
-        self.assertIn('if pre_phase3_tab.open:', section)
+        self.assertIn('with gem_jr_tab:', section)
+        self.assertIn('if gem_jr_tab.open:', section)
         self.assertIn('render_pre_phase3()', section)
         self.assertNotIn('elif page == "PRE PHASE 3":', source)
         self.assertNotIn('"PDUFA WORKBENCH"', section)
