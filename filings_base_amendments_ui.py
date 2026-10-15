@@ -152,7 +152,7 @@ def missing_research_rows(queue, category, registry, *, fda_extensions=None):
         seen.add(key)
         cik = cik_by_ticker.get(ticker, "")
         edgar_link = ("https://www.sec.gov/edgar/browse/?CIK=" + cik
-                      if re.fullmatch(r"\\d{10}", cik) else "")
+                      if re.fullmatch(r"\d{10}", cik) else "")
         primary = str(item.get("source_url", "")).strip()
         records.append({
             "Ticker": ticker,
