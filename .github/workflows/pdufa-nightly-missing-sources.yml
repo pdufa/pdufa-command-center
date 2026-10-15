@@ -459,11 +459,12 @@ jobs:
         run: |
           mkdir -p /tmp/pdufa-source-publish
           cp data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv /tmp/pdufa-source-publish/
+          if [ -f data/sec_filing_watch.csv ]; then cp data/sec_filing_watch.csv /tmp/pdufa-source-publish/; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Save generated tracked/untracked outputs before switching to the
           # latest main branch, which may already contain an earlier snapshot.
-          git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv
+          git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv data/sec_filing_watch.csv
           if ! git diff --cached --quiet; then
             git commit -m "Prepare source verification snapshot"
           fi
@@ -490,7 +491,7 @@ jobs:
             fi
             exit "$status"
           fi
-          git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv
+          git add data/pdufa_source_report.json data/pdufa_source_verification.csv data/pdufa_source_review_queue.csv data/sec_filing_watch.csv
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish verified extended source scan summary"
           for attempt in 1 2 3; do
