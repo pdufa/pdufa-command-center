@@ -295,16 +295,18 @@ def render_gem_scans(root="data"):
             "unvalidated historical returns and BPW comparison are RESEARCH "
             "DIAGNOSTICS, not daily surveys."
         )
-        if comparison_current:
-            st.caption("Optional source-coverage snapshot dated " +
-                       str(comparison.get("as_of_pacific")) +
-                       " — it does not certify current nightly scan completion.")
-        else:
-            st.caption("No same-day optional coverage audit. Source coverage "
-                       "is NOT VERIFIED in this directory; primary scans and "
-                       "their evidence statuses are shown separately.")
+        st.caption(
+            f"Saved-source observations: {len(items):,} exact Pipeline-linked "
+            "GEM research programs. Survey coverage uses the GEM data directly "
+            "(not BPW). Missing/late evidence is not an automatic PASS; "
+            "one company may have multiple exact programs."
+        )
+        if not status.get("feed_current"):
+            st.warning("GEM source feed stale/partial — survey observations "
+                       "require a current source recheck before trading review.")
         st.dataframe(
-            pd.DataFrame(survey_rows(comparison if comparison_current else {})),
+            pd.DataFrame(survey_rows({}, scans=items,
+                                     feed_current=status.get("feed_current"))),
             use_container_width=True, hide_index=True,
         )
 
