@@ -39,6 +39,9 @@ class GemMembershipHistoryTests(unittest.TestCase):
         self.assertEqual(departed_stage_rows(promoted, "GEM_JR")[0]["Leave Reason"],
                          "PROMOTED_TO_GEM")
         self.assertEqual(departed_stage_rows(promoted, "GEM"), [])
+        archive = departed_stage_rows(promoted, "GEM_JR")[0]
+        self.assertEqual(archive["Days in List"], 5)
+        self.assertEqual(archive["Current Location"], "GEM ACTIVE")
 
     def test_pdufa_three_days_before_is_not_expired(self):
         pid = "APPLICATION|ABC|ONE"
@@ -75,6 +78,8 @@ class GemMembershipHistoryTests(unittest.TestCase):
             self.assertEqual(row["Date Left"], "2026-10-18")
             self.assertEqual(row["PDUFA Date"], "2026-10-17")
             self.assertEqual(row["Leave Reason"], "PDUFA_EXPIRED")
+            self.assertEqual(row["Days in List"], 5)
+            self.assertEqual(row["Current Location"], "EXPIRED / PREVIOUS")
 
     def test_two_trials_same_ticker_do_not_share_membership(self):
         first, second = "TRIAL|NCT00000001", "TRIAL|NCT00000002"
