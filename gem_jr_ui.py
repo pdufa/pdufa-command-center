@@ -35,6 +35,10 @@ def render_gem_jr(root="data"):
     # Dates come from a committed scan ledger, never from trial readout dates.
     membership = read_history(root)
     active = enrich_stage_rows(active, "GEM_JR", membership)
+    # Preserve the candidate research ordering computed from actual readout
+    # and separate SEC evidence leads; this is NOT a buy/approval probability.
+    active = [{**row, "Research Priority": i}
+              for i, row in enumerate(active, 1)]
     held = enrich_stage_rows(held, "GEM_JR", membership)
     st.caption("DATE FOUND = first GEM JR detection in the membership tracker. "
                "DATE LEFT = departure from the active GEM JR listing after a "
@@ -43,7 +47,7 @@ def render_gem_jr(root="data"):
     a.metric("Research candidates", len(active))
     b.metric("Timing / resolved holds", len(held))
     fields = (
-        "Ticker", "Drug", "Indication", "NCT ID", "Evidence type",
+        "Research Priority", "Ticker", "Drug", "Indication", "NCT ID", "Evidence type",
         "SEC documents rechecked", "Why potential", "Still needed",
         "Clinical source", "Financing SEC source", "Source review date",
         "PDUFA date (saved)", "Timing / resolution", "Exact program", "GEM status",
