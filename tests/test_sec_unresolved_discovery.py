@@ -121,5 +121,62 @@ class SECDiscoveryTests(unittest.TestCase):
         self.assertIn("1234567", url)
 
 
+    def test_month_only_completion_is_research_never_verified(self):
+        text = ("In July 2026, we completed an underwritten public offering "
+                "of 21,045,000 shares of common stock. The net proceeds from "
+                "the offering were approximately $405.0 million.")
+        found = mod.monthly_completed_clauses(text, date(2026, 10, 15))
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0][0], "2026-07")
+        self.assertIn("$405.0 million", found[0][1])
+        self.assertEqual(mod.monthly_completed_clauses(
+            text.replace("completed", "expect to complete"),
+            date(2026, 10, 15)), [])
+        self.assertEqual(mod.monthly_completed_clauses(
+            text.replace("July", "December"),
+            date(2026, 10, 15)), [])
+
+        class MonthOnly(FakeVerifier):
+            def document(self, url):
+                return "", text if url.endswith("quarterly.htm") else ""
+            def financing(self, event):
+                self.probes.append(event)
+                raise AssertionError("A month-only description cannot run exact-day verification")
+        v = MonthOnly()
+        rows = mod.discover(v, [issue(EVENT_A["event_key"])],
+                            [EVENT_A], sleep=lambda _: None)
+        research = [r for r in rows if r["discovery_status"] == "MONTH_ONLY_FINANCING_REVIEW"]
+        self.assertEqual(len(research), 1)
+        self.assertEqual(research[0]["candidate_close_date"], "")
+        self.assertEqual(research[0]["period_hint"], "2026-07")
+        self.assertEqual(research[0]["date_precision"], "MONTH_ONLY")
+        self.assertEqual(research[0]["trade_entry_authorized"], "NO")
+        self.assertEqual(v.probes, [])
+
+    def test_same_exact_close_repeated_in_multiple_filings_is_one_research_row(self):
+        class RepeatedVerifier(FakeVerifier):
+            def document(self, url):
+                return "", ("On June 1, 2026, the Company closed an "
+                            "underwritten public offering of common stock "
+                            "with net proceeds of $125.0 million.")
+            def financing(self, event):
+                self.probes.append(event)
+                return {"verification_status": "VERIFIED",
+                        "source_url": event["financing_evidence_url"],
+                        "source_sha256": "c" * 64,
+                        "evidence": "On June 1, 2026, closed $125m offering",
+                        "reason": "Exact completed transaction only"}
+        rows = mod.discover(RepeatedVerifier(),
+                            [issue(EVENT_A["event_key"]), issue(EVENT_B["event_key"])],
+                            [EVENT_A, EVENT_B], sleep=lambda _: None)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({r["candidate_close_date"] for r in rows}, {"2026-06-01"})
+        self.assertTrue(all(r["discovery_status"] == "VERIFIED_TRANSACTION_ONLY"
+                            for r in rows))
+        self.assertTrue(all(r["date_precision"] == "EXACT_DAY"
+                            for r in rows))
+
+
+
 if __name__ == "__main__":
     unittest.main()
