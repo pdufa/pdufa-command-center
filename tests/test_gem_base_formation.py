@@ -88,6 +88,8 @@ class BaseFormationTests(unittest.TestCase):
         plotted = base_chart_frame(h, detect_closing_base(h, fresh=True))
         self.assertTrue(all(x["Base support (closing)"] is None
                             for x in plotted[:-21]))
+        # Earliest displayed level sees only prior bars, not the late $10 support.
+        self.assertLess(plotted[-21]["Base support (closing)"], 10)
         self.assertEqual(plotted[-1]["Base support (closing)"], 10)
         self.assertTrue(any(x["SMA 50"] is not None for x in plotted))
 
