@@ -328,8 +328,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
                         if item.label == "GEM")
         headings = [item.body for item in overview.get("markdown")]
         self.assertFalse(any("#1-DB" in heading for heading in headings))
-        for title in ("### #2-PIPELINE",
-                      "### #3-PRE3", "### #4-POST3"):
+        for title in ("### 1 — PIPELINE",
+                      "### 2 — GEM JR", "### 3 — GEM"):
             self.assertTrue(any(title in heading for heading in headings), title)
         self.assertTrue(any(item.key == "overview_export"
                             for item in overview.get("download_button")))
@@ -360,11 +360,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         overview = next(item for item in overview_app.get("tab")
                         if item.label == "GEM")
         counts = {item.label: int(item.value) for item in overview.get("metric")
-                  if item.label in {"Matching programs", "Matching pre-readout programs",
-                                    "Matching candidates"}}
-        self.assertEqual(counts, {"Matching programs": 0,
-                                 "Matching pre-readout programs": 0,
-                                 "Matching candidates": 0})
+                  if item.label in {"Matching programs", "Matching source leads"}}
+        self.assertEqual(counts, {"Matching programs": 0, "Matching source leads": 0})
         overview_app.text_input(key="overview_query").set_value("").run()
         overview_app.selectbox(key="overview_shared_ticker").set_value("All tickers").run()
         self.assertFalse(list(overview_app.exception))
