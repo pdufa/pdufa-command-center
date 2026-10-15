@@ -18,7 +18,8 @@ from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
 from scripts.scan_recovery_triage import triage_source_rows
-from scripts.pdufa_morning_results import make_snapshot, post_six_final_status
+from scripts.pdufa_morning_results import make_snapshot
+import scripts.pdufa_morning_results as morning_results_module
 
 REPO = "pdufa/pdufa-command-center"
 REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/nightly_scan_report.json"
@@ -187,9 +188,21 @@ def render_am_results():
     # A late source reconciliation must not rewrite the immutable 6 AM
     # evidence cutoff. Show it as a SEPARATE, source-matched publication.
     clinical_latest, _ = published_report()
-    late = post_six_final_status(
-        clinical_latest, published_source_report(), now=now
-    )
+    # Streamlit Cloud may hot-reload the dashboard module before it refreshes
+    # the imported morning helper. Missing optional post-6AM support must not
+    # crash the entire PDUFA app while the deployment catches up.
+    post_six = getattr(morning_results_module, "post_six_final_status", None)
+    if not callable(post_six):
+        import importlib
+        try:
+            importlib.reload(morning_results_module)
+        except (ImportError, OSError, KeyError, SyntaxError):
+            pass
+        post_six = getattr(morning_results_module, "post_six_final_status", None)
+    late = (post_six(clinical_latest, published_source_report(), now=now)
+            if callable(post_six) else None)
+    if not callable(post_six):
+        st.caption("Post-6AM final report is waiting for Cloud deployment synchronization.")
     if late:
         st.markdown("### LATEST COMPLETED OVERNIGHT CHECK — AFTER 6 AM")
         st.caption(
