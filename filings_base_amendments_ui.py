@@ -125,11 +125,13 @@ def render_filings_base_amendments():
         "unresolved cases; Sundays: full reconciliation at 10 PM Pacific. "
         "Filings-index metadata does not certify a financing close, and an "
         "FDA target-date extension is not proof of a formal NDA amendment.")
-    source_exists = FILINGS.is_file()
-    tables = table_rows(read_csv(FILINGS), read_csv(VERIFICATION), read_csv(EXTENSIONS))
+    sec_rows = read_csv(FILINGS)
+    source_exists = bool(sec_rows)
+    tables = table_rows(sec_rows, read_csv(VERIFICATION), read_csv(EXTENSIONS))
     metrics = pd.DataFrame([
-        {"Agency": "SEC · EDGAR", "Base filings": len(tables["SEC Base"]),
-         "Amendments": len(tables["SEC Amendments"]), "Scope": "Latest indexed SEC forms"},
+        {"Agency": "SEC · EDGAR", "Base filings": len(tables["SEC Base"]) if source_exists else "PENDING",
+         "Amendments": len(tables["SEC Amendments"]) if source_exists else "PENDING",
+         "Scope": "Latest indexed SEC forms"},
         {"Agency": "FDA · regulatory cases", "Base filings": len(tables["FDA Base"]),
          "Amendments": len(tables["FDA Amendments"]),
          "Scope": "Primary target/decision claims + PDUFA extensions"},
