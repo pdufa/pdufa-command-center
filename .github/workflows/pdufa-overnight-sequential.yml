@@ -61,7 +61,7 @@ jobs:
       scan: ALL
       include_gem: true
       gem_action: ${{ inputs.gem_action || 'REVERIFY_PARTIAL' }}
-      scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
+      scan_mode: ${{ inputs.gem_action == 'RESCAN_ALL' && 'FULL' || inputs.scan_mode || 'DELTA' }}
     secrets: inherit
 
   report:
@@ -76,7 +76,7 @@ jobs:
     if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.report.result != 'skipped'
     uses: ./.github/workflows/pdufa-nightly-missing-sources.yml
     with:
-      scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
+      scan_mode: ${{ inputs.gem_action == 'RESCAN_ALL' && 'FULL' || inputs.scan_mode || 'DELTA' }}
     secrets: inherit
 
   scoring-and-repair:
