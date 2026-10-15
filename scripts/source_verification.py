@@ -709,7 +709,7 @@ def documented_funded_transaction(text, closing_date):
             continue
         passage = text[match.start():match.end() + 520]
         if re.search(r"(?i)\b(?:expects?|expected|anticipated|planned|proposed|will|"
-                     r"would|may|might|subject to)\b", passage[:200]):
+                     r"would|may|might|subject to)\b", passage[match.end()-match.start():200]):
             continue
         if (re.search(r"(?i)\b(?:shares|stock|notes|securities)\b", passage)
                 and re.search(r"(?i)\b(?:net|gross)\s+proceeds\b", passage)
