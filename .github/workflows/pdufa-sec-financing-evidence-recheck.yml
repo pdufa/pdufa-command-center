@@ -1,0 +1,87 @@
+name: PDUFA SEC Financing Evidence Recheck
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/provisional_financing_sec_recheck.py'
+      - 'tests/test_provisional_financing_sec_recheck.py'
+      - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/provisional_financing_sec_recheck.py'
+      - 'tests/test_provisional_financing_sec_recheck.py'
+      - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify financing evidence stays fail-closed
+        run: python -m unittest discover -s tests -p 'test_provisional_financing_sec_recheck.py' -v
+
+  live-recheck:
+    needs: offline-tests
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check SEC researcher identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$SEC_USER_AGENT" != *"@"* ]]; then
+            echo "::error::SEC_USER_AGENT must include a real contact email. No verification was performed."
+            exit 1
+          fi
+      - name: Independently recheck dated issuer financing leads against SEC
+        run: |
+          python scripts/provisional_financing_sec_recheck.py \
+            --targets data/finance_ir_sec_recheck_targets.csv \
+            --output reports/missing_sources/sec_financing_ir_recheck.csv
+      - name: Publish research-only result summary
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import collections
+          import csv
+          import os
+          from pathlib import Path
+          p = Path('reports/missing_sources/sec_financing_ir_recheck.csv')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as out:
+              out.write('## SEC financing research leads\n\n')
+              if not p.is_file():
+                  out.write('No report: SEC recheck did not finish. **No evidence promoted.**\n')
+              else:
+                  rows = list(csv.DictReader(p.open(newline='', encoding='utf-8')))
+                  counts = collections.Counter(r['sec_recheck_status'] for r in rows)
+                  out.write(f'Rechecked {len(rows)} dated issuer leads.\n\n')
+                  for status, count in sorted(counts.items()):
+                      out.write(f'- {status}: {count}\n')
+                  out.write('\nNo second post-Phase-3 financing or trade-entry gate is automatically verified.\n')
+          PY
+      - name: Archive SEC source recheck evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sec-financing-issuer-recheck-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: reports/missing_sources/sec_financing_ir_recheck.csv

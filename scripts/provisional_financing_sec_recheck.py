@@ -24,8 +24,8 @@ FIELDS = (
     "gem_entry_authorized",
 )
 FORMS = {"8-K", "8-K/A", "6-K", "10-Q", "10-K"}
-MAX_FILINGS = 8
-MAX_DOCUMENTS = 6
+MAX_FILINGS = 16
+MAX_DOCUMENTS = 8
 
 
 def safe_document(name):
@@ -35,7 +35,12 @@ def safe_document(name):
 
 
 def _filings(verifier, event, close):
-    """Use *fresh* SEC submissions, validated by issuer CIK and ticker."""
+    """Find bounded, date-matched filings for the exact registered issuer.
+
+    Look beyond the first eight filings: a later 8-K can disclose a closing
+    that was announced only as an expected transaction in earlier filings.
+    No filing date is itself treated as a closing date.
+    """
     _, _, recent = verifier.submissions(event)
     cutoff = min(close + timedelta(days=180), verifier.as_of)
     matched = []
@@ -43,38 +48,55 @@ def _filings(verifier, event, close):
         recent["form"], recent["filingDate"],
         recent["accessionNumber"], recent["primaryDocument"]
     ):
-        if form not in FORMS or not safe_document(primary):
+        if (form not in FORMS or not safe_document(primary)
+                or not isinstance(accession, str)
+                or not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession)):
             continue
         try:
             day = date.fromisoformat(filed)
         except (ValueError, TypeError):
             continue
         if close <= day <= cutoff:
-            matched.append((day, accession, primary))
-    return sorted(matched, key=lambda r: (r[0], r[1]))[:MAX_FILINGS]
+            # Prefer a current report over a periodic filing on the same date.
+            priority = 0 if form in {"8-K", "8-K/A", "6-K"} else 1
+            matched.append((day, priority, accession, primary))
+    matched.sort(key=lambda r: (r[0], r[1], r[2]))
+    return [(day, accession, primary)
+            for day, _, accession, primary in matched[:MAX_FILINGS]]
 
 
 def _sec_documents(verifier, cik, accession, primary):
-    if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession):
+    """Only indexed documents from the issuer's SEC archive; no guessed URLs.
+
+    Include the filing itself and actual Exhibit 99 press releases, Exhibit
+    10 agreements, Exhibit 4 securities instruments and Exhibit 2 agreements.
+    These are search candidates, NEVER independent evidence of a closing.
+    """
+    if not re.fullmatch(r"\d{10}-\d{2}-\d{6}", str(accession)):
         return []
-    # EDGAR accession prefixes may identify a filing agent, not the issuer.
-    # The validated issuer CIK determines the SEC archive directory.
-    if not safe_document(primary):
+    if not safe_document(primary) or not str(cik).isdigit() or not int(cik):
         return []
+    # An accession prefix may belong to the filing agent rather than issuer.
     base = ("https://www.sec.gov/Archives/edgar/data/" +
             str(int(cik)) + "/" + accession.replace("-", "") + "/")
-    # Only an actual SEC index supplies source document names; never assume
-    # an issuer website article is part of an SEC archive.
     index = json.loads(verifier.body(base + "index.json"))
-    names = []
-    for doc in index.get("directory", {}).get("item", []):
+    items = index.get("directory", {}).get("item", [])
+    if not isinstance(items, list):
+        raise ValueError("SEC index directory list is malformed")
+    exhibits = []
+    for doc in items:
+        if not isinstance(doc, dict):
+            continue
         name = doc.get("name", "")
         if safe_document(name) and re.search(
-            r"(?i)(?:ex[-_]?99|exhibit[-_]?99)", name
+            r"(?i)(?:^|[^a-z0-9])(?:ex|exhibit)[-_.]?(?:99|10|4|2)(?=[^a-z0-9]|\d)",
+            name,
         ):
-            names.append(name)
-    return [base + name for name in list(dict.fromkeys(names[:MAX_DOCUMENTS-1] + [primary]))]
-
+            exhibits.append(name)
+    # The listed primary document must always be reviewed, even if the index
+    # is full of exhibits. Deduplicate without exceeding SEC request limits.
+    names = list(dict.fromkeys([primary] + exhibits))[:MAX_DOCUMENTS]
+    return [base + name for name in names]
 
 def _result(lead, status, reason, sec=None):
     sec = sec or {}
