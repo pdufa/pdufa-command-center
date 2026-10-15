@@ -61,7 +61,8 @@ def numbered_potential_markdown(potential):
     return "\n".join(lines)
 
 
-def render_gem_potential(root="data", *, compact=False, namespace="gem_potential"):
+def render_gem_potential(root="data", *, compact=False, namespace="gem_potential",
+                         show_previous=True):
     """Keep pending research stocks separate from proven GEM eligibility.
 
     This view updates from saved review files, never launches a scan or
@@ -78,8 +79,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
     potential = enrich_stage_rows(potential, "GEM_JR", membership)
     timing_hold = enrich_stage_rows(timing_hold, "GEM_JR", membership)
 
-    render_trial_hierarchy(source_cleared + historical_cleared + potential + timing_hold,
-                           namespace=namespace, title="GEM")
+    # GEM active cards are TWO-BENCHMARK cleared only. JR research,
+    # expired/resolved items and historical holds do not appear in active GEM.
+    render_trial_hierarchy(source_cleared, namespace=namespace, title="GEM")
     st.markdown("### GEM — TWO BENCHMARKS VERIFIED")
     st.caption(
         f"{len(source_cleared)} ACTIVE PROGRAMS VERIFIED · "
@@ -327,19 +329,20 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             for row in timing_hold:
                 st.markdown("**" + row["Ticker"] + " · " + row["Drug"] + "**")
                 st.caption(row["Why potential"] + " — " + row["Timing / resolution"])
-    # Previous candidates belong below the entire GEM stage listing.
-    departed = departed_stage_rows(membership, "GEM")
-    st.markdown("### GEM — PREVIOUS CANDIDATES")
-    st.caption(
-        "Individual exact-Pipeline-ID history: date GEM first found the trial, "
-        "date it left, and recorded departure reason. PDUFA −3 is a trading "
-        "warning, not an early removal from this research listing."
-    )
-    with st.expander(f"OPEN PREVIOUS GEM CANDIDATES ({len(departed)})",
-                     expanded=False):
-        if departed:
-            st.dataframe(pd.DataFrame(departed), use_container_width=True,
-                         hide_index=True)
-        else:
-            st.caption("No GEM departure has been recorded by a complete scan yet.")
+    if show_previous:
+        # Previous candidates belong below the entire GEM stage listing.
+        departed = departed_stage_rows(membership, "GEM")
+        st.markdown("### GEM — PREVIOUS CANDIDATES")
+        st.caption(
+            "Individual exact-Pipeline-ID history: date GEM first found the trial, "
+            "date it left, and recorded departure reason. PDUFA −3 is a trading "
+            "warning, not an early removal from this research listing."
+        )
+        with st.expander(f"OPEN PREVIOUS GEM CANDIDATES ({len(departed)})",
+                         expanded=False):
+            if departed:
+                st.dataframe(pd.DataFrame(departed), use_container_width=True,
+                             hide_index=True)
+            else:
+                st.caption("No GEM departure has been recorded by a complete scan yet.")
     return potential
