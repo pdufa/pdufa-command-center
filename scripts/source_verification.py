@@ -645,6 +645,49 @@ def documented_preferred_share_purchase(text, closing_date):
 
 
 
+
+def documented_closed_preferred_placement(text, closing_date):
+    """A completed preferred placement in a dated SEC-filed proxy statement.
+
+    Some issuers file a proxy AFTER closing an earlier announced placement,
+    saying 'the closing of the Private Placement occurred on DATE'. Require
+    the same local passage to name issued preferred shares and actual gross
+    proceeds. An agreement to issue, forecast closing, subscription, ATM or
+    option alone never qualifies. The SEC issuer CIK is checked by the caller.
+    """
+    month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
+    date_rx = r"(?:20\d{2}-\d{2}-\d{2}|" + month + r"\s+\d{1,2},?\s+20\d{2})"
+    pattern = (
+        r"(?i)\bthe\s+closing\s+of\s+the\s+private\s+placement\s+"
+        r"occurred\s+on\s+(" + date_rx + r")\b"
+    )
+    for match in re.finditer(pattern, text):
+        if dates(match.group(1)) != {closing_date}:
+            continue
+        # Look back only to the most recent description of THIS named placement.
+        start = max(0, match.start() - 1300)
+        passage = text[start:match.end()]
+        paragraph = passage.rsplit("Private Placement", 3)
+        if len(paragraph) < 2:
+            continue
+        # Important: the most recent term-definition of Private Placement
+        # may be 'the Private Placement' in the matched completion assertion.
+        # Search the bounded source context, but require a single explicit
+        # issuer capitalization statement, not arbitrary nearby dollar signs.
+        if not re.search(r"(?i)\b(?:preferred\s+shares|class\s+a\s+preferred\s+stock)\b", passage):
+            continue
+        if not re.search(
+            r"(?i)\baggregate\s+gross\s+proceeds\s+(?:to\s+(?:us|the\s+company)\s+)?"
+            r"(?:of|were)\s+\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b",
+            passage
+        ):
+            continue
+        if not re.search(r"(?i)\bfor\s+the\s+issuance\s+and\s+sale\b", passage):
+            continue
+        return passage[-1150:]
+    return ""
+
+
 def documented_released_final_tranche(text, closing_date):
     """Verify a final tranche actually released at a dated SEC-documented close.
 
@@ -1249,13 +1292,17 @@ class Verifier:
             close = review.get("second_financing_date", "")
         mapped_event = self.event_sources(event)
         mapped_exact = mapped_event.get("individual_financing_close", {})
-        if (close.strip().upper() in {"", "UNVERIFIED", "UNKNOWN", "REVIEW", "PENDING"}
-                and not url and isinstance(mapped_exact, dict)
+        if (not event.get("financing_evidence_url")
+                and not event.get("_recheck_exact_sec_url")
+                and isinstance(mapped_exact, dict)
                 and mapped_exact.get("date") and mapped_exact.get("sec_url")
                 and sec_url_matches(mapped_exact["sec_url"], self.cik(event))):
-            # Exact, event-mapped SEC financing is a primary-source discovery
-            # candidate. It verifies ONE completed transaction only, never the
-            # second post-Phase-3 financing sequence or eligibility to trade.
+            # Prefer a dated independently discovered SEC transaction when the
+            # candidate itself has no explicit financing evidence. A *prior*
+            # second-financing review can refer to a DIFFERENT, older deal and
+            # must not hide this fresh primary-source candidate. This verifies
+            # only this one exact transaction, never the older ledger's
+            # closing day, its Phase-3 ordering or trade eligibility.
             close, url = mapped_exact["date"], mapped_exact["sec_url"]
         mapped = mapped_event.get("financing_urls", [])
         if isinstance(mapped, list) and mapped and close and not event.get("_recheck_exact_sec_url"):
@@ -1282,6 +1329,11 @@ class Verifier:
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
                     "Company-matched SEC document confirms this dated funded transaction only; not the post-Phase-3 second-financing sequence",
                     url, close, close, completed)
+            preferred_placement = documented_closed_preferred_placement(plain, close)
+            if preferred_placement:
+                return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                    "Same-issuer SEC proxy confirms one dated, completed preferred placement with gross proceeds; separate older financing ledgers, post-Phase-3 ordering and trade permission remain unverified",
+                    url, close, close, preferred_placement)
             passages = [plain[max(0, m.start()-100):m.end()+350] for m in re.finditer(
                 r"(?i)\b(?:closed|completed|consummated)\s+(?:its\s+|the\s+|a\s+)?(?:previously[-\s]+announced\s+)?(?:\$[\d,.]+\s+million\s+)?(?:public\s+|registered\s+direct\s+|private\s+)?(?:offering|financing|placement)\b", plain)]
             if not any(close in dates(p) for p in passages):
