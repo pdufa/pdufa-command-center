@@ -97,14 +97,17 @@ def base_chart_frame(bars, base):
     rows = []
     for i, bar in enumerate(bars):
         history = [float(x["close"]) for x in bars[max(0, i - 49):i + 1]]
-        in_range = i >= len(bars) - 21
+        # Draw a continuously updated zone with ONLY past bars at each date.
+        # Restrict the zone to the most recent 21 days for legibility.
+        earlier = [float(x["close"]) for x in bars[max(0, i - 20):i]]
+        show_zone = i >= len(bars) - 21 and len(earlier) == 20
         rows.append({
             "date": bar["date"],
             "Close": bar["close"],
             "SMA 20": mean(history[-20:]) if len(history) >= 20 else None,
             "SMA 50": mean(history[-50:]) if len(history) >= 50 else None,
-            "Base support (closing)": base["support"] if in_range else None,
-            "Base resistance (closing)": base["resistance"] if in_range else None,
+            "Base support (closing)": min(earlier) if show_zone else None,
+            "Base resistance (closing)": max(earlier) if show_zone else None,
             "Volume": bar["volume"],
         })
     return rows
