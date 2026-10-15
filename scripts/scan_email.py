@@ -224,7 +224,7 @@ def file_pdufa_notification(settings, message_id, *, imap_factory=None,
                 if label_state != "OK":
                     return "FILING_NOT_CONFIRMED"
                 inbox_state, _ = client.uid("STORE", uid, "-X-GM-LABELS",
-                                            r"(\\Inbox)")
+                                            r"(\Inbox)")
                 return ("PDUFA_LABEL_AND_ARCHIVE_ACCEPTED"
                         if inbox_state == "OK" else "LABEL_APPLIED_ARCHIVE_NOT_CONFIRMED")
             if attempt < 4:
