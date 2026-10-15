@@ -1,6 +1,10 @@
 """Always-visible #1 GEM potential list with specific, source-grounded reasons."""
 from __future__ import annotations
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from gem_trading_advisory import load_market_rows, render_base_chart_for_ticker
+
 import pandas as pd
 import streamlit as st
 
@@ -199,6 +203,18 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             },
         )
     research_universe = source_cleared + potential
+    if compact and research_universe:
+        with st.expander("GEM — OPEN STOCK BASE / SUPPORT CHART", expanded=False):
+            tickers = sorted({str(x.get("Ticker") or "").upper().strip()
+                              for x in research_universe if x.get("Ticker")})
+            chosen = st.selectbox("GEM stock to chart", tickers,
+                                  key=namespace + "_base_stock")
+            render_base_chart_for_ticker(
+                chosen, load_market_rows(root),
+                datetime.now(ZoneInfo("America/Los_Angeles")).date(),
+            )
+            st.caption("Both research-only leads and verified two-benchmark programs "
+                       "are shown here; a technical base cannot establish GEM eligibility.")
     if research_universe:
         with st.expander("INVESTOR RELATIONS + SOCIAL RESEARCH — SELECT GEM PROGRAM",
                          expanded=False):
