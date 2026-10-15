@@ -243,13 +243,6 @@ def render_gem_scans(root="data"):
     )
     st.dataframe(master_table, use_container_width=True, height=650,
                  hide_index=True)
-    with st.expander("GEM — HISTORICAL LISTING DEPARTURES", expanded=False):
-        departed = departed_stage_rows(membership, "GEM")
-        if departed:
-            st.dataframe(pd.DataFrame(departed), hide_index=True,
-                         use_container_width=True)
-        else:
-            st.caption("No recorded GEM exits since membership tracking began.")
     st.download_button(
         "EXPORT GEM MASTER LIST",
         master_table.to_csv(index=False).encode("utf-8"),
@@ -686,3 +679,14 @@ def render_gem_scans(root="data"):
         "still require individual review. GEM 3 trend warnings compare only "
         "saved, dated SEC cash quarters; they do not constitute live filing alerts."
     )
+    st.markdown("### GEM — PREVIOUS CANDIDATES")
+    st.caption("Each prior GEM program keeps its exact Pipeline ID, first-found "
+               "date, date left, PDUFA date, and actual departure reason. "
+               "A PDUFA −3 trading warning does not end stage membership.")
+    with st.expander("OPEN PREVIOUS GEM CANDIDATES", expanded=False):
+        departed = departed_stage_rows(membership, "GEM")
+        if departed:
+            st.dataframe(pd.DataFrame(departed), hide_index=True,
+                         use_container_width=True)
+        else:
+            st.caption("No previous GEM candidates recorded by a complete scan yet.")
