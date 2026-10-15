@@ -30,7 +30,7 @@ MAX_FILINGS_PER_ISSUER = 16
 MAX_EXHIBITS_PER_8K = 2
 MAX_CLOSING_CANDIDATES_PER_DOCUMENT = 5
 FIELDS = ("event_key", "ticker", "issuer_cik", "discovery_status",
-          "sec_form", "filed_at", "candidate_close_date", "sec_url",
+          "sec_form", "filed_at", "candidate_close_date", "period_hint", "date_precision", "sec_url",
           "sec_sha256", "evidence_excerpt", "reason",
           "google_sec_query_url", "checked_at_utc",
           "second_post_phase3_verified", "trade_entry_authorized")
@@ -171,6 +171,58 @@ def candidate_clauses(plain, as_of):
     return clauses
 
 
+MONTHLY_COMPLETED = re.compile(
+    r"(?i)\bIn\s+(January|February|March|April|May|June|July|August|"
+    r"September|October|November|December)\s+(20\d{2})[,\s]+"
+    r"(?:(?:the\s+)?Company|we)\s+(?:completed|closed|consummated)\b"
+    r"[^.;]{0,140}?\b(?:offering|placement|financing|IPO)\b"
+)
+
+
+def monthly_completed_clauses(plain, as_of):
+    """Completed offerings described only by month, NEVER an exact close day.
+
+    A separate strict dated closing verifier cannot validate a month-only
+    reference. These findings help researchers find a subsequent 8-K or issuer
+    release; the original source gap stays unresolved.
+    """
+    out = []
+    for match in MONTHLY_COMPLETED.finditer(plain):
+        try:
+            period = datetime.strptime(
+                f"{match.group(1)} {match.group(2)}", "%B %Y"
+            ).date()
+        except ValueError:
+            continue
+        if period > as_of:
+            continue
+        # A nearby later transaction cannot lend its proceeds to this one.
+        excerpt = plain[match.start():match.end() + 760]
+        boundary = re.search(
+            r"(?i)\bIn\s+(?:January|February|March|April|May|June|July|"
+            r"August|September|October|November|December)\s+20\d{2}[,\s]+"
+            r"(?:(?:the\s+)?Company|we)\s+(?:completed|closed|consummated)\b",
+            excerpt[match.end()-match.start():]
+        )
+        if boundary:
+            excerpt = excerpt[:match.end()-match.start()+boundary.start()]
+        if (not re.search(r"(?i)\b(?:net|gross)\s+proceeds\b", excerpt)
+                or not re.search(
+                    r"\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b", excerpt
+                )
+                or not re.search(
+                    r"(?i)\b(?:shares|stock|notes|securities)\b", excerpt
+                )):
+            continue
+        period_str = period.strftime("%Y-%m")
+        if any(x[0] == period_str for x in out):
+            continue
+        out.append((period_str, re.sub(r"\s+", " ", excerpt).strip()[:700]))
+        if len(out) >= 3:
+            break
+    return out
+
+
 def discover(verifier, queue, events, max_issuers=None, sleep=time.sleep):
     """Fresh, bounded evidence discovery; repeat event identities without mixing."""
     event_map = {x["event_key"]: x for x in events}
@@ -230,21 +282,55 @@ def discover(verifier, queue, events, max_issuers=None, sleep=time.sleep):
                         "discovery_status": ("VERIFIED_TRANSACTION_ONLY" if verified
                                              else "POTENTIAL_CLOSING_REVIEW"),
                         "sec_form": form, "filed_at": filed.isoformat(),
-                        "candidate_close_date": day, "sec_url": url,
+                        "candidate_close_date": day, "period_hint": day[:7],
+                        "date_precision": "EXACT_DAY", "sec_url": url,
                         "sec_sha256": decision.get("source_sha256", ""),
                         "evidence_excerpt": (decision.get("evidence") or snippet)[:700],
                         "reason": (decision.get("reason") or
                                    "Date and financing keywords discovered; strict verifier did not pass"),
                     })
+                for period, snippet in monthly_completed_clauses(plain, verifier.as_of):
+                    leads.append({
+                        "discovery_status": "MONTH_ONLY_FINANCING_REVIEW",
+                        "sec_form": form, "filed_at": filed.isoformat(),
+                        "candidate_close_date": "",
+                        "period_hint": period, "date_precision": "MONTH_ONLY",
+                        "sec_url": url, "sec_sha256": "",
+                        "evidence_excerpt": snippet,
+                        "reason": "SEC filing describes a completed offering in this month, "
+                                  "but does not independently prove the exact closing day. "
+                                  "Research-only; no automatic verification.",
+                    })
         # Replicate company financing research under each exact trial identity.
         # It does not imply the financing occurred after THAT program's Phase 3.
         if leads:
-            leads.sort(key=lambda x: (x["discovery_status"] != "VERIFIED_TRANSACTION_ONLY",
-                                      x["candidate_close_date"], x["sec_url"]),
-                       reverse=False)
+            # The same historical close can appear in an 8-K, 10-Q and 10-K.
+            # Count a dated transaction ONCE per issuer/event/date, not once
+            # per document. Keep verified evidence ahead of weaker snippets.
+            priority = {"VERIFIED_TRANSACTION_ONLY": 0,
+                        "POTENTIAL_CLOSING_REVIEW": 1,
+                        "MONTH_ONLY_FINANCING_REVIEW": 2}
+            leads.sort(key=lambda x: (priority.get(x["discovery_status"], 9),
+                                      x["candidate_close_date"] or x["period_hint"],
+                                      x["sec_url"]))
+            actual_months = {x["period_hint"] for x in leads
+                             if x["date_precision"] == "EXACT_DAY"}
+            unique = {}
+            for finding in leads:
+                if (finding["date_precision"] == "MONTH_ONLY"
+                        and finding["period_hint"] in actual_months):
+                    continue
+                # A strict VERIFIED result supersedes the same date found in
+                # another document as an unverified research snippet.
+                key = finding["candidate_close_date"] or finding["period_hint"]
+                if key not in unique:
+                    unique[key] = finding
             for e in issuer_events:
-                results.extend(row(e, cik, x["discovery_status"],
-                                   x.pop("reason"), **x) for x in [dict(y) for y in leads[:14]])
+                for finding in list(unique.values())[:14]:
+                    item = dict(finding)
+                    explanation = item.pop("reason")
+                    results.append(row(e, cik, item["discovery_status"],
+                                       explanation, **item))
         else:
             outcome = ("SEC_SOURCE_PARTIAL" if failures
                        else "NO_MATCHING_DOCUMENT_IN_BOUNDED_SEARCH")
@@ -291,6 +377,11 @@ def main(argv=None):
                "output_research_rows": len(rows),
                "distinct_issuers": len({r["ticker"] for r in rows}),
                "status_counts": dict(counts),
+               "distinct_verified_issuer_closings": len({
+                   (r["ticker"], r["candidate_close_date"]) for r in rows
+                   if r["discovery_status"] == "VERIFIED_TRANSACTION_ONLY"
+               }),
+               "month_only_research_rows": counts.get("MONTH_ONLY_FINANCING_REVIEW", 0),
                "second_post_phase3_verified": 0,
                "trade_entry_authorized": 0,
                "canonical_ledger_modified": False,
