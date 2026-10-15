@@ -1,15 +1,15 @@
-name: PDUFA Daily 9:00 PM Pacific Start
+name: PDUFA Daily 10:00 PM Pacific Start
 
 # One clock dispatches the WHOLE awaited chain. Recovery slots can start a
 # missed night; a recorded or active full chain prevents duplicate dispatch.
 on:
   schedule:
-    - cron: '0 4 * * *'   # 9:00 PM PDT
-    - cron: '15 4 * * *'
-    - cron: '30 4 * * *'
-    - cron: '0 5 * * *'   # 9:00 PM PST
+    - cron: '0 5 * * *'   # 10:00 PM PDT
     - cron: '15 5 * * *'
     - cron: '30 5 * * *'
+    - cron: '0 6 * * *'   # 10:00 PM PST
+    - cron: '15 6 * * *'
+    - cron: '30 6 * * *'
     - cron: '5 7 * * *'
     - cron: '35 7 * * *'
     - cron: '5 8 * * *'
