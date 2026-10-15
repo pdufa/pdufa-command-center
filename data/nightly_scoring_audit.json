@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-10-14T18:45:04.893847+00:00",
+  "generated_at_utc": "2026-10-15T05:33:32.472294+00:00",
   "status": "REVIEW_REQUIRED",
   "source_scan": {
-    "workflow": "PDUFA Nightly FDA SEC Financial Market Issuer Sources",
-    "run_id": 38613805573,
+    "workflow": "PDUFA Overnight Sequential Scans",
+    "run_id": 38685204322,
     "conclusion": "success"
   },
   "counts": {
@@ -83,6 +83,6 @@
       "saved_records": 34
     }
   ],
-  "scope": "Read-only saved-input column/overlap checks after a completed nightly scan",
-  "provenance_note": "Checked-in scoring datasets are inspected after the workflow completed. They are not necessarily the fresh artifacts of that workflow. Missing data is not a negative clinical result; shared inputs are not independent votes."
+  "scope": "Read-only saved-input column/overlap checks after completed nightly source jobs",
+  "provenance_note": "Checked-in scoring datasets are inspected after the source jobs completed. They are not necessarily the fresh artifacts of that workflow. Missing data is not a negative clinical result; shared inputs are not independent votes."
 }
