@@ -247,6 +247,57 @@ def documented_fda_signed_approval(event, text):
         return None
 
 
+
+def documented_fda_signed_original_bla_approval(event, url, text):
+    """Accept an original BLA only with a signed, exact-product FDA letter.
+
+    A page about approval, a public release date, or a pending PDUFA date is
+    never proof. Tie the PDF application number to its letter header, the
+    issuer and therapeutic indication to its LICENSING section, and the
+    approval effective date to its unique electronic FDA signature.
+    """
+    path = urllib.parse.urlsplit(url).path
+    app = re.fullmatch(
+        r"/drugsatfda_docs/appletter/20\d{2}/(\d{6})Orig1s000ltr\.pdf",
+        path, re.I)
+    if not app or not re.search(r"(?i)\bBLA\s+" + re.escape(app.group(1)) + r"\b", text[:350]):
+        return None
+    header = text[:1300]
+    if (not re.search(r"(?i)\bBLA APPROVAL\b", header)
+            or not company_matches(event, header)
+            or not drug_matches(event, header)):
+        return None
+    # Original BLA letters place the licensed drug and indication within
+    # the actual LICENSING paragraph; never borrow mentions elsewhere in a
+    # long letter or an unrelated supplement.
+    match = re.search(
+        r"(?is)\bLICENSING\b(.{1,2800}?)\bMANUFACTURING LOCATIONS\b", text)
+    licensing = match.group(1) if match else ""
+    if (not licensing
+            or not company_matches(event, licensing)
+            or not drug_matches(event, licensing)
+            or not indication_matches(event, licensing)
+            or not re.search(r"(?i)\b(?:license authorizes|authorized to manufacture)\b", licensing)
+            or not re.search(r"(?is)\bAPPROVAL\s*&\s*LABELING\b.{0,500}"
+                             r"\bit is approved,\s*effective\s+on\s+the\s+date\s+of\s+this\s+letter\b", text)):
+        return None
+    if len(re.findall(r"(?i)\bSignature Page\s+1\s+of\s+1\b", text)) != 1:
+        return None
+    signature = text.rsplit("Signature Page", 1)[-1]
+    if not re.search(r"(?is)electronic\s+record.{0,140}\bsigned\s+electronically\b", signature):
+        return None
+    matches = re.findall(
+        r"\b(0[1-9]|1[0-2])/([0-2]\d|3[01])/(20\d{2})\s+"
+        r"\d{1,2}:\d{2}:\d{2}\s*(?:AM|PM)\b", signature, re.I)
+    if len(matches) != 1:
+        return None
+    month, day, year = matches[0]
+    try:
+        return datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d").date().isoformat()
+    except ValueError:
+        return None
+
+
 def documented_pdufa_extension(event, text):
     """Require one issuer-documented FDA extension from a prior date to a new date.
 
@@ -967,9 +1018,11 @@ class Verifier:
                 else:
                     # Official FDA-signed supplement letters state approval is
                     # effective on the date of the signed letter, not a press date.
-                    signed_action = (documented_fda_signed_approval(event, plain)
-                                     if self.primary(event, url) == "FDA"
-                                     and url.lower().endswith(".pdf") else None)
+                    signed_action = (
+                        (documented_fda_signed_approval(event, plain)
+                         or documented_fda_signed_original_bla_approval(event, url, plain))
+                        if self.primary(event, url) == "FDA"
+                        and url.lower().endswith(".pdf") else None)
                     if signed_action:
                         state = ("VERIFIED" if expected_outcome == "APPROVED"
                                  and (not expected or signed_action == expected) else "CONFLICT")
