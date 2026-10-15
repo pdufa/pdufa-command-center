@@ -667,19 +667,18 @@ def documented_closed_preferred_placement(text, closing_date):
         # Look back only to the most recent description of THIS named placement.
         start = max(0, match.start() - 1300)
         passage = text[start:match.end()]
-        paragraph = passage.rsplit("Private Placement", 3)
-        if len(paragraph) < 2:
-            continue
-        # Important: the most recent term-definition of Private Placement
-        # may be 'the Private Placement' in the matched completion assertion.
-        # Search the bounded source context, but require a single explicit
-        # issuer capitalization statement, not arbitrary nearby dollar signs.
+        # Constrain the amount to the same local preferred-share placement,
+        # never an unrelated financing elsewhere in a long proxy statement.
         if not re.search(r"(?i)\b(?:preferred\s+shares|class\s+a\s+preferred\s+stock)\b", passage):
             continue
-        if not re.search(
+        funded = re.search(
             r"(?i)\baggregate\s+gross\s+proceeds\s+(?:to\s+(?:us|the\s+company)\s+)?"
             r"(?:of|were)\s+\$\s*[\d,]+(?:\.\d+)?\s*(?:million|billion)\b",
             passage
+        )
+        if not funded or re.search(
+            r"(?i)\b(?:expected|estimated|projected|potential)\s+$",
+            passage[max(0, (funded.start() if funded else 0) - 25):(funded.start() if funded else 0)]
         ):
             continue
         if not re.search(r"(?i)\bfor\s+the\s+issuance\s+and\s+sale\b", passage):
