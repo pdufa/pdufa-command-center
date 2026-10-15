@@ -632,6 +632,10 @@ def render_nightly_scan_report():
                  key="unified_scans_show_activity"):
         render_scans_activity(embedded=True)
         st.divider()
+    # Put the SEC/FDA survey first so the unified SCANS screen matches the
+    # two-column preview rather than burying it below GEM and nightly logs.
+    render_filings_base_amendments()
+    st.divider()
     st.markdown("### GEMS — GITHUB SCAN LOGS")
     direct_gem, finance_gem = st.columns(2)
     with direct_gem:
@@ -657,7 +661,6 @@ def render_nightly_scan_report():
     st.markdown("## NIGHTLY SCAN REPORT")
     st.caption("Three qualification stages: PIPELINE / GEM JR / GEM. Three underlying clinical collectors still preserve their separate evidence audits; verify/recheck/rescan targets are consolidated. A finished workflow is not full FDA, SEC, issuer or market verification.")
     render_extended_source_report()
-    render_filings_base_amendments()
 
     report, loading_note = published_report()
     running = latest_run()
