@@ -25,6 +25,13 @@ def render_gem_jr(root="data"):
         "two independently SEC-confirmed financing closures after the readout."
     )
     active, held = build_potential_list(Path(root))
+    # Promotion is an exact Pipeline ID transition; no ticker-only joins.
+    from gem_verified_snapshot import source_cleared_gems
+    cleared, historical_gems, _ = source_cleared_gems(root)
+    cleared_ids = {str(r.get("Pipeline ID") or "")
+                   for r in cleared + historical_gems}
+    active = [r for r in active if r.get("Pipeline ID") not in cleared_ids]
+    held = [r for r in held if r.get("Pipeline ID") not in cleared_ids]
     # Dates come from a committed scan ledger, never from trial readout dates.
     membership = read_history(root)
     active = enrich_stage_rows(active, "GEM_JR", membership)
@@ -40,7 +47,8 @@ def render_gem_jr(root="data"):
         "SEC documents rechecked", "Why potential", "Still needed",
         "Clinical source", "Financing SEC source", "Source review date",
         "PDUFA date (saved)", "Timing / resolution", "Exact program", "GEM status",
-        "Pipeline ID", "Date Found", "Date Left", "Date Re-entered", "Listing status",
+        "Pipeline ID", "Date Found", "Date Left", "Date Re-entered",
+        "Leave Reason", "Listing status",
     )
     render_trial_hierarchy(active + held, namespace="gem_jr", title="GEM JR")
     if active:
@@ -60,14 +68,7 @@ def render_gem_jr(root="data"):
     else:
         st.info("No active source-linked Phase 3 / financing leads in the saved research evidence.")
     render_stage_wt_tables(
-        "GEM JR", active + held, namespace="gem_jr", controls=True)
-    departed = departed_stage_rows(membership, "GEM_JR")
-    with st.expander(f"GEM JR — LEFT LISTING HISTORY ({len(departed)})",
-                     expanded=False):
-        if departed:
-            st.dataframe(pd.DataFrame(departed), use_container_width=True, hide_index=True)
-        else:
-            st.caption("No GEM JR exits have been recorded since membership tracking began.")
+        "GEM JR", active, namespace="gem_jr", controls=True)
     if active:
         with st.expander("GEM JR — OPEN STOCK BASE / SUPPORT CHART", expanded=False):
             tickers = sorted({str(x.get("Ticker") or "").upper().strip()
@@ -89,3 +90,14 @@ def render_gem_jr(root="data"):
         "Registry postings, claimed financings, stale evidence and these research leads "
         "do not independently clear either benchmark."
     )
+    departed = departed_stage_rows(membership, "GEM_JR")
+    st.markdown("### GEM JR — PREVIOUS CANDIDATES")
+    st.caption("Permanent stage history: exact Pipeline ID, first found, "
+               "date left, and reason. PDUFA −3 warns traders but candidates "
+               "remain listed until actual PDUFA expiry or FDA resolution.")
+    with st.expander(f"OPEN PREVIOUS GEM JR CANDIDATES ({len(departed)})",
+                     expanded=False):
+        if departed:
+            st.dataframe(pd.DataFrame(departed), use_container_width=True, hide_index=True)
+        else:
+            st.caption("No GEM JR departure has been recorded by a complete scan yet.")
