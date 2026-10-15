@@ -1027,6 +1027,86 @@ class GoogleFoundSecDocumentTests(unittest.TestCase):
             source, "2026-06-30"))
 
 
+
+class ProxyPreferredPlacementSourceTests(unittest.TestCase):
+    def setUp(self):
+        self.link = "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/proxy.htm"
+        self.body = (
+            "On September 28, 2026, we entered into a securities purchase "
+            "agreement for the issuance and sale by us of 108,955 shares "
+            "(the Preferred Shares) of Class A Preferred Stock at a price "
+            "of $18,356 per Preferred Share, for aggregate gross proceeds "
+            "to us of $2.0 billion (the Private Placement). "
+            "Each share of Class A Preferred Stock is convertible into shares "
+            "of common stock. The closing of the Private Placement occurred "
+            "on October 5, 2026. These shares were issued and sold."
+        )
+
+    def test_completed_same_transaction_date_and_funds(self):
+        claim = verify.documented_closed_preferred_placement(
+            self.body, "2026-10-05")
+        self.assertIn("gross proceeds to us of $2.0 billion", claim)
+        self.assertIn("occurred on October 5, 2026", claim)
+        self.assertFalse(verify.documented_closed_preferred_placement(
+            self.body, "2025-10-31"))
+
+    def test_future_agreement_or_wrong_transaction_must_not_pass(self):
+        for body in (
+            self.body.replace("occurred on", "is expected to occur on"),
+            self.body.replace("gross proceeds to us of $2.0 billion",
+                              "expected gross proceeds to us of $2.0 billion"),
+            self.body.replace("Preferred Shares", "Units").replace(
+                "Class A Preferred Stock", "Common Stock"),
+            self.body.replace("for the issuance and sale", "for an authorization"),
+        ):
+            with self.subTest(source=body[-140:]):
+                self.assertFalse(verify.documented_closed_preferred_placement(
+                    body, "2026-10-05"))
+
+    def test_exact_mapping_does_not_borrow_prior_second_financing(self):
+        conf = {"ABC": {"events": {EVENT["event_key"]: {
+            "individual_financing_close": {
+                "date": "2026-10-05", "sec_url": self.link,
+            }
+        }}}}
+        prior_review = {
+            "second_financing_audit_status": "VERIFIED_SECOND_POST_PHASE3_FINANCING",
+            "second_financing_date": "2025-10-31",
+            "second_financing_source": "https://www.sec.gov/Archives/edgar/data/1/000000000126000001/old.htm",
+        }
+        event = {**EVENT, "financing_close_date": "",
+                 "financing_evidence_url": "", "_financing_review": prior_review}
+        verifier = verify.Verifier(
+            [COMPANY], fetch=lambda url: self.body.encode("utf-8"),
+            as_of=date(2026, 10, 15), issuer_sources=conf
+        )
+        result = verifier.financing(event)
+        self.assertEqual(result["verification_status"], "VERIFIED")
+        self.assertEqual(result["source_url"], self.link)
+        self.assertEqual(result["expected"], "2026-10-05")
+        self.assertIn("post-Phase-3 ordering", result["reason"])
+        self.assertNotEqual(result["expected"], prior_review["second_financing_date"])
+        # Explicit candidate financial evidence must retain authority over
+        # a separate mapped lead; do not silently overwrite an exact source.
+        event["financing_close_date"] = "2025-10-31"
+        event["financing_evidence_url"] = prior_review["second_financing_source"]
+        result = verifier.financing(event)
+        self.assertNotEqual(result["source_url"], self.link)
+
+    def test_source_cik_mismatch_can_never_verify(self):
+        config = {"ABC": {"events": {EVENT["event_key"]: {
+            "individual_financing_close": {
+                "date": "2026-10-05",
+                "sec_url": self.link.replace("/data/1/", "/data/2/")
+            }
+        }}}}
+        v = verify.Verifier([COMPANY], fetch=lambda url: self.body.encode(),
+                            as_of=date(2026, 10, 15), issuer_sources=config)
+        r = v.financing({**EVENT, "financing_close_date": "",
+                         "financing_evidence_url": ""})
+        self.assertNotEqual(r["verification_status"], "VERIFIED")
+
+
 if __name__ == "__main__":
     unittest.main()
 
