@@ -462,8 +462,9 @@ def render_base_formation_chart(profile, *, compact=False):
         height=240 if compact else 285, use_container_width=True,
     )
     st.caption(
-        "Horizontal levels use the PREVIOUS 20 daily closes only (not today's close). "
-        "They appear only in the most recent 21 sessions. "
+        "Support and resistance are rolling levels computed from the preceding "
+        "20 daily closes at each plotted session (no future-price lookahead). "
+        "They appear only over the most recent 21 sessions. "
         "These are closing-price proxies, not intraday support/resistance or executable stops."
     )
     money = lambda value: "$" + format(value, ",.2f") if value is not None else "NOT AVAILABLE"
