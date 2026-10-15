@@ -95,7 +95,7 @@ def table_rows(sec_filings, verification, extensions):
         if (item.get("claim") != "PDUFA_TARGET" or
                 item.get("verification_status") != "VERIFIED"):
             continue
-        pattern = r"^Explicit dated FDA PDUFA extension supersedes (\\d{4}-\\d{2}-\\d{2})$"
+        pattern = r"^Explicit dated FDA PDUFA extension supersedes (\d{4}-\d{2}-\d{2})$"
         found = re.match(pattern, item.get("reason", ""))
         if not found:
             continue
