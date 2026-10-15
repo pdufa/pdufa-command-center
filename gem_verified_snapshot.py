@@ -90,7 +90,7 @@ def source_cleared_gems(root="data", *, as_of=None):
             outcome in CLOSED_OUTCOMES
             or str(event.get("check_status") or "").upper().startswith("RESOLVED_")
             or str(event.get("monitor_eligibility") or "").upper() == "EXCLUDED"
-            or (pd_date is not None and (pd_date - today).days <= 3)
+            or (pd_date is not None and pd_date < today)
         )
         days_to_pdufa = (pd_date - today).days if pd_date else None
         target_verified = bool(
