@@ -46,10 +46,17 @@ class SectionControlTests(unittest.TestCase):
         app.secrets["PDUFA_SCAN_CONTROL_PIN"] = "1234"
         empty = pd.DataFrame(columns=["event_key", "ticker", "category", "claim"])
         with patch("filings_scan_controls.section_runs", return_value=([], "")), \
+                patch("filings_base_amendments_ui.published_filings_files", return_value=(None, "")), \
                 patch("filings_base_amendments_ui.required_issue_queue", return_value=(empty, "")), \
                 patch("filings_scan_controls.dispatch_section_scan") as submit:
             app.run()
             self.assertFalse(app.exception)
+            labels = [item.label for item in app.expander]
+            self.assertEqual(len(labels), 6)
+            for label in ("SEC Base details", "SEC Amendment details", "FDA Base details", "FDA Amendment details"):
+                self.assertIn(label, labels)
+            self.assertTrue(any("SEC MISSING EVIDENCE" in label for label in labels))
+            self.assertTrue(any("FDA MISSING EVIDENCE" in label for label in labels))
             self.assertEqual(len([b for b in app.button if b.label == "▶ Scan this section"]), 4)
             self.assertTrue(all(app.button(key="scan_section_" + s).disabled for s in SECTIONS))
             submit.assert_not_called()
