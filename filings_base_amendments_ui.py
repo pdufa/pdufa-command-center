@@ -589,7 +589,6 @@ def render_filings_base_amendments():
                          hide_index=True, column_config={
                              "Agency source": st.column_config.LinkColumn("Agency evidence")
                          })
-    st.markdown("## SEC FILINGS")
     render_section_scan_unlock()
     st.caption("Details refresh automatically every minute from published scan results. "
                "Last display refresh: " + datetime.now(PACIFIC).strftime("%b %d, %I:%M %p %Z"))
@@ -597,102 +596,111 @@ def render_filings_base_amendments():
         st.warning(details["refresh_notice"])
     for note in details["notes"]:
         st.warning(note)
-    st.caption("PIPELINE → GEM JR → GEM · Original Phase 3 and two-financing "
-               "claims shown as saved evidence, not automatic GEM qualification. "
-               "Weekday changed/new scan; Sunday full 10 PM Pacific.")
-    sec_reconciled = reconciliation_counts(bases["SEC"])
-    st.markdown(f"#### SEC BASE ({len(bases['SEC']):,} Pipeline records) — Phase 3 + financings")
-    st.caption(f'{sec_reconciled["matched"]:,} exact candidate applications matched · '
-               f'{sec_reconciled["unassessed"]:,} Pipeline records without an exact '
-               'application match (NOT_CHECKED). Filing inventory is separate.')
-    render_section_scan("SEC_BASE", published_report=details["reports"].get("SEC_BASE", {}))
-    with st.expander("SEC Base details", expanded=False, key="filings_sec_base_details"):
-        last_checked_caption("SEC", verification)
-        st.caption("One row per Pipeline record ID. Exact application events only "
-                   "inherit clinical and financing evidence from the candidate scan. "
-                   "Unmatched registered trials remain NOT_CHECKED. A second financing "
-                   "date can be historical/reported while independent SEC deal-sequence "
-                   "verification remains under review.")
-        if bases["SEC"]:
-            st.dataframe(pd.DataFrame(bases["SEC"]), use_container_width=True, hide_index=True,
-                column_config={
-                    "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
-                    "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
-                    "Agency source": st.column_config.LinkColumn("SEC claim source"),
-                    "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
-                })
-        else:
-            st.info("No exact-event SEC baseline candidates are available.")
-        st.markdown(f"**Original SEC EDGAR index filings ({len(source_tables['SEC Base']) if sec_rows else 'PENDING'})**")
-        if source_tables["SEC Base"]:
-            st.dataframe(pd.DataFrame(source_tables["SEC Base"]),
-                         use_container_width=True, hide_index=True,
-                         column_config={"Primary source": st.column_config.LinkColumn("EDGAR filing")})
-        else:
-            st.info("No published original-form SEC index inventory yet.")
+    st.markdown("## SEC / FDA — SURVEY RESULTS")
+    st.caption("Each agency has Base, Amendments and Missing Evidence dropdowns. "
+               "SEC/FDA Base trial counts are linked to the same Pipeline records; "
+               "amendments and evidence gaps are separate counts.")
+    sec_column, fda_column = st.columns(2, gap="large")
+    with sec_column:
+        with st.container(border=True):
+            st.markdown("### SEC")
+            st.caption("PIPELINE → GEM JR → GEM · Original Phase 3 and two-financing "
+                       "claims shown as saved evidence, not automatic GEM qualification. "
+                       "Weekday changed/new scan; Sunday full 10 PM Pacific.")
+            sec_reconciled = reconciliation_counts(bases["SEC"])
+            st.markdown(f"#### BASE — {len(bases['SEC']):,} Pipeline records")
+            st.caption(f'{sec_reconciled["matched"]:,} exact candidate applications matched · '
+                       f'{sec_reconciled["unassessed"]:,} Pipeline records without an exact '
+                       'application match (NOT_CHECKED). Filing inventory is separate.')
+            render_section_scan("SEC_BASE", published_report=details["reports"].get("SEC_BASE", {}))
+            with st.expander("SEC Base details", expanded=False, key="filings_sec_base_details"):
+                last_checked_caption("SEC", verification)
+                st.caption("One row per Pipeline record ID. Exact application events only "
+                           "inherit clinical and financing evidence from the candidate scan. "
+                           "Unmatched registered trials remain NOT_CHECKED. A second financing "
+                           "date can be historical/reported while independent SEC deal-sequence "
+                           "verification remains under review.")
+                if bases["SEC"]:
+                    st.dataframe(pd.DataFrame(bases["SEC"]), use_container_width=True, hide_index=True,
+                        column_config={
+                            "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
+                            "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
+                            "Agency source": st.column_config.LinkColumn("SEC claim source"),
+                            "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
+                        })
+                else:
+                    st.info("No exact-event SEC baseline candidates are available.")
+                st.markdown(f"**Original SEC EDGAR index filings ({len(source_tables['SEC Base']) if sec_rows else 'PENDING'})**")
+                if source_tables["SEC Base"]:
+                    st.dataframe(pd.DataFrame(source_tables["SEC Base"]),
+                                 use_container_width=True, hide_index=True,
+                                 column_config={"Primary source": st.column_config.LinkColumn("EDGAR filing")})
+                else:
+                    st.info("No published original-form SEC index inventory yet.")
 
-    today_sec = today_changes["SEC"]
-    sec_total = str(len(today_sec)) if sec_rows else "PENDING"
-    st.markdown(f"#### SEC AMENDMENTS ({len(source_tables['SEC Amendments']):,} filings) · DATED TODAY ({sec_total})")
-    st.caption("Counts are issuer-level EDGAR forms, not additional Pipeline trials.")
-    render_section_scan("SEC_AMENDMENTS", published_report=details["reports"].get("SEC_AMENDMENTS", {}))
-    with st.expander("SEC Amendment details", expanded=False, key="filings_sec_amendment_details"):
-        last_checked_caption("SEC", verification)
-        st.caption("All saved EDGAR amendments, including " + sec_total + " dated " + today +
-                   " (Pacific calendar). Filing dates do not establish first discovery or financing closure.")
-        if source_tables["SEC Amendments"]:
-            st.dataframe(pd.DataFrame(source_tables["SEC Amendments"]), use_container_width=True,
-                         hide_index=True, column_config={
-                             "Primary source": st.column_config.LinkColumn("EDGAR amendment")})
-        else:
-            st.info("No published SEC amendment inventory is available yet.")
-    render_missing_research("SEC", queue_rows, queue_notice, registry_rows,
-                            benchmarks=bases["SEC"])
+            today_sec = today_changes["SEC"]
+            sec_total = str(len(today_sec)) if sec_rows else "PENDING"
+            st.markdown(f"#### AMENDMENTS — {len(source_tables['SEC Amendments']):,} filings · TODAY {sec_total}")
+            st.caption("Counts are issuer-level EDGAR forms, not additional Pipeline trials.")
+            render_section_scan("SEC_AMENDMENTS", published_report=details["reports"].get("SEC_AMENDMENTS", {}))
+            with st.expander("SEC Amendment details", expanded=False, key="filings_sec_amendment_details"):
+                last_checked_caption("SEC", verification)
+                st.caption("All saved EDGAR amendments, including " + sec_total + " dated " + today +
+                           " (Pacific calendar). Filing dates do not establish first discovery or financing closure.")
+                if source_tables["SEC Amendments"]:
+                    st.dataframe(pd.DataFrame(source_tables["SEC Amendments"]), use_container_width=True,
+                                 hide_index=True, column_config={
+                                     "Primary source": st.column_config.LinkColumn("EDGAR amendment")})
+                else:
+                    st.info("No published SEC amendment inventory is available yet.")
+            render_missing_research("SEC", queue_rows, queue_notice, registry_rows,
+                                    benchmarks=bases["SEC"])
 
-    st.divider()
-    st.markdown("## FDA FILINGS & REGULATORY ACTIONS")
-    st.caption("Application/decision primary claims plus the same program-specific "
-               "Phase 3 and financing benchmarks. A regulatory PDUFA extension "
-               "is not necessarily a formal NDA/BLA application amendment.")
-    fda_reconciled = reconciliation_counts(bases["FDA"])
-    st.markdown(f"#### FDA BASE ({len(bases['FDA']):,} Pipeline records) — Phase 3 + financings")
-    st.caption(f'{fda_reconciled["matched"]:,} exact candidate applications matched · '
-               f'{fda_reconciled["unassessed"]:,} Pipeline records without an exact '
-               'application match (NOT_CHECKED).')
-    render_section_scan("FDA_BASE", published_report=details["reports"].get("FDA_BASE", {}))
-    with st.expander("FDA Base details", expanded=False, key="filings_fda_base_details"):
-        last_checked_caption("FDA", verification)
-        if bases["FDA"]:
-            st.dataframe(pd.DataFrame(bases["FDA"]), use_container_width=True, hide_index=True,
-                column_config={
-                    "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
-                    "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
-                    "Agency source": st.column_config.LinkColumn("FDA primary evidence"),
-                    "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
-                })
-        else:
-            st.info("No exact-event FDA baseline candidates are available.")
+    with fda_column:
+        with st.container(border=True):
+            st.markdown("### FDA")
+            st.caption("Application/decision primary claims plus the same program-specific "
+                       "Phase 3 and financing benchmarks. A regulatory PDUFA extension "
+                       "is not necessarily a formal NDA/BLA application amendment.")
+            fda_reconciled = reconciliation_counts(bases["FDA"])
+            st.markdown(f"#### BASE — {len(bases['FDA']):,} Pipeline records")
+            st.caption(f'{fda_reconciled["matched"]:,} exact candidate applications matched · '
+                       f'{fda_reconciled["unassessed"]:,} Pipeline records without an exact '
+                       'application match (NOT_CHECKED).')
+            render_section_scan("FDA_BASE", published_report=details["reports"].get("FDA_BASE", {}))
+            with st.expander("FDA Base details", expanded=False, key="filings_fda_base_details"):
+                last_checked_caption("FDA", verification)
+                if bases["FDA"]:
+                    st.dataframe(pd.DataFrame(bases["FDA"]), use_container_width=True, hide_index=True,
+                        column_config={
+                            "Phase 3 source": st.column_config.LinkColumn("Phase 3 evidence"),
+                            "Finance evidence": st.column_config.LinkColumn("2nd funding document"),
+                            "Agency source": st.column_config.LinkColumn("FDA primary evidence"),
+                            "Pipeline source": st.column_config.LinkColumn("Pipeline source"),
+                        })
+                else:
+                    st.info("No exact-event FDA baseline candidates are available.")
 
-    fda_today = today_changes["FDA"]
-    st.markdown(f"#### FDA AMENDMENTS ({len(source_tables['FDA Amendments']):,} extensions) · NEW TODAY ({len(fda_today)})")
-    st.caption("PDUFA extension observations are not additional Pipeline trials or necessarily NDA/BLA amendments.")
-    render_section_scan("FDA_AMENDMENTS", published_report=details["reports"].get("FDA_AMENDMENTS", {}))
-    with st.expander("FDA Amendment details", expanded=False, key="filings_fda_amendment_details"):
-        last_checked_caption("FDA", verification)
-        st.caption("All saved PDUFA extensions; " + str(len(fda_today)) + " first detected on " + today +
-                   " (Pacific calendar). Routine refreshes do not create new detections. "
-                   "Unobserved formal NDA/BLA amendments cannot be inferred.")
-        if source_tables["FDA Amendments"]:
-            st.dataframe(pd.DataFrame(source_tables["FDA Amendments"]), use_container_width=True,
-                         hide_index=True, column_config={
-                             "Primary source": st.column_config.LinkColumn("Extension evidence")})
-        else:
-            st.info("No saved PDUFA extensions are available. Unreported application amendments remain unobserved.")
-    render_missing_research(
-        "FDA", queue_rows, queue_notice, registry_rows,
-        extensions=source_tables["FDA Amendments"],
-        benchmarks=bases["FDA"],
-    )
+            fda_today = today_changes["FDA"]
+            st.markdown(f"#### AMENDMENTS — {len(source_tables['FDA Amendments']):,} extensions · NEW TODAY {len(fda_today)}")
+            st.caption("PDUFA extension observations are not additional Pipeline trials or necessarily NDA/BLA amendments.")
+            render_section_scan("FDA_AMENDMENTS", published_report=details["reports"].get("FDA_AMENDMENTS", {}))
+            with st.expander("FDA Amendment details", expanded=False, key="filings_fda_amendment_details"):
+                last_checked_caption("FDA", verification)
+                st.caption("All saved PDUFA extensions; " + str(len(fda_today)) + " first detected on " + today +
+                           " (Pacific calendar). Routine refreshes do not create new detections. "
+                           "Unobserved formal NDA/BLA amendments cannot be inferred.")
+                if source_tables["FDA Amendments"]:
+                    st.dataframe(pd.DataFrame(source_tables["FDA Amendments"]), use_container_width=True,
+                                 hide_index=True, column_config={
+                                     "Primary source": st.column_config.LinkColumn("Extension evidence")})
+                else:
+                    st.info("No saved PDUFA extensions are available. Unreported application amendments remain unobserved.")
+            render_missing_research(
+                "FDA", queue_rows, queue_notice, registry_rows,
+                extensions=source_tables["FDA Amendments"],
+                benchmarks=bases["FDA"],
+            )
     st.caption("BASE totals reconcile to Pipeline records. Amendment and Missing Evidence "
                "totals count separate filings, extensions, or outstanding claims—not trials. "
                "No Phase 3, financing or FDA filing row independently authorizes a GEM entry.")
