@@ -118,3 +118,50 @@ def candidate_events_outside_pipeline(pipeline_records, candidate_baseline):
             "Reconciliation": "CANDIDATE NOT IN CURRENT PIPELINE UNIVERSE",
         })
     return orphaned
+
+
+def scope_evidence_tables(tables, pipeline_records):
+    """Show issuer filings or application claims only within the Pipeline view.
+
+    SEC forms are issuer-level and may relate to multiple trial programs;
+    filtering by ticker must never count them as trial-specific verification.
+    FDA claims/extensions instead require exact APPLICATION|event keys.
+    """
+    ids = {str(row.get("record_id") or "").strip() for row in pipeline_records}
+    tickers = {str(row.get("ticker") or "").strip().upper()
+               for row in pipeline_records if str(row.get("ticker") or "").strip()}
+    scoped = {}
+    for name, items in tables.items():
+        output = []
+        for row in items:
+            if name.startswith("SEC"):
+                if str(row.get("Ticker") or "").strip().upper() not in tickers:
+                    continue
+                output.append({**row, "Scope": "Pipeline issuer — filing, not trial proof"})
+            else:
+                event = str(row.get("Trial / event") or "").strip()
+                pipeline_id = "APPLICATION|" + event
+                if pipeline_id not in ids:
+                    continue
+                output.append({**row, "Pipeline ID": pipeline_id})
+        scoped[name] = output
+    return scoped
+
+
+def scope_research_queue(queue, pipeline_records):
+    """No independent source-review event outside the current Pipeline view."""
+    ids = {str(row.get("record_id") or "").strip() for row in pipeline_records}
+    tickers = {str(row.get("ticker") or "").strip().upper()
+               for row in pipeline_records if str(row.get("ticker") or "").strip()}
+    result = []
+    for row in queue:
+        event = str(row.get("event_key") or "").strip()
+        ticker = str(row.get("ticker") or "").strip().upper()
+        linked = (
+            ("APPLICATION|" + event in ids)
+            or (event.startswith("REGISTRY:") and ticker in tickers)
+            or (event in ids)
+        )
+        if linked:
+            result.append(row)
+    return result
