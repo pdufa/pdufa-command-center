@@ -1,7 +1,8 @@
 name: GEM Research Quality Snapshot
 
 # 13F specialist holdings: SEC 13F-HR XML + restatement-only 13F-HR/A.
-# BPW-comparable research coverage: SEC 13F, Form4, runway, financing and market,
+# Seven primary GEM survey categories. Historical/BPW diagnostics run on demand;
+# core 13F, Form 4, runway, financing and market evidence still runs normally.
 # with missing proprietary PoA/options/return evidence explicitly unverified.
 # Primary ranked candidate list: verified Phase 3 release + verified second
 # separate post-readout financing closing; other dimensions rank/flag only.
@@ -147,12 +148,6 @@ jobs:
         continue-on-error: true
         run: python scripts/run_gem_daily_readiness.py --output-dir reports/gem_daily
 
-      - name: Build BPW-style feature comparison from verified GEM source data
-        id: bpw_comparable
-        if: always()
-        continue-on-error: true
-        run: python scripts/run_gem_bpw_comparable.py --data-dir data --output-dir reports/gem_daily
-
       - name: Publishable fourth-block status — distinguish partial and failed
         id: block_report
         if: always()
@@ -175,11 +170,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- data/gem_scan_block_report.json
-          # Deterministic comparison report: public BPW feature descriptions
-          # versus GEM coverage; no proprietary BPW scores are presumed.
-          if [ -f data/gem_bpw_comparable.json ]; then
-            git add -- data/gem_bpw_comparable.json
-          fi
           # A failed SEC collection publishes empty current records, never
           # silently continuing to qualify an earlier successful scan.
           if [ "$GEM_ACTION" != "VERIFY_ALL" ] && [ -f data/gem_runway_evidence.json ]; then
@@ -241,7 +231,6 @@ jobs:
             data/gem_runway_evidence.json
             data/gem_hedge_fund_13f.json
             data/gem_insider_form4.json
-            data/gem_bpw_comparable.json
             data/phase3_intake_status.json
             data/phase3_announcements.csv
             data/gem_phase3_exact_recheck.csv
@@ -257,17 +246,12 @@ jobs:
           COLLECT_RESULT: ${{ steps.registry_validation.outcome }}
           RUNWAY_RESULT: ${{ steps.runway.outcome }}
           AUDIT_RESULT: ${{ steps.gem_audit.outcome }}
-          BPW_COMPARABLE_RESULT: ${{ steps.bpw_comparable.outcome }}
           REPORT_RESULT: ${{ steps.block_report.outcome }}
           EXACT_PHASE3_RESULT: ${{ steps.exact_phase3.outcome }}
           TWO_CLOSE_RESULT: ${{ steps.two_closes.outcome }}
         run: |
           if [ "$START_RESULT" != "success" ] || [ "$END_RESULT" != "success" ]; then
             echo "::error::GEM START/END Gmail messages were not both acknowledged."
-            exit 1
-          fi
-          if [ "$BPW_COMPARABLE_RESULT" != "success" ]; then
-            echo "::error::GEM vs BPW comparison report could not be calculated."
             exit 1
           fi
           if [ "$AUDIT_RESULT" != "success" ] || [ "$REPORT_RESULT" != "success" ]; then
