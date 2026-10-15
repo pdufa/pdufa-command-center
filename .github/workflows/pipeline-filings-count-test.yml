@@ -11,6 +11,9 @@ on:
       - 'gem_scans_ui.py'
       - 'filings_base_amendments_ui.py'
       - 'scripts/filings_section_scan.py'
+      - 'scripts/source_verification.py'
+      - 'config/issuer_sources.json'
+      - 'tests/test_source_verification.py'
       - 'tests/test_pipeline_source_scope.py'
       - 'tests/test_pipeline_filings_alignment.py'
       - 'tests/test_gem_scans.py'
@@ -26,6 +29,9 @@ on:
       - 'gem_scans_ui.py'
       - 'filings_base_amendments_ui.py'
       - 'scripts/filings_section_scan.py'
+      - 'scripts/source_verification.py'
+      - 'config/issuer_sources.json'
+      - 'tests/test_source_verification.py'
       - 'tests/test_pipeline_source_scope.py'
       - 'tests/test_pipeline_filings_alignment.py'
       - 'tests/test_gem_scans.py'
@@ -55,3 +61,5 @@ jobs:
           python -m unittest discover -s tests -p 'test_gem_two_benchmark.py' -v
       - name: Check SEC FDA scan scope and evidence signatures
         run: python -m unittest discover -s tests -p 'test_filings_section_scan.py' -v
+      - name: Check official SEC financing evidence parsing
+        run: python -m unittest discover -s tests -p 'test_source_verification.py' -v
