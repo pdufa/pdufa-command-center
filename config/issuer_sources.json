@@ -369,7 +369,13 @@
         "urls": [
           "https://smmttx.com/news/press-releases/news-details/2026/Summit-Therapeutics-Announces-U-S--FDA-Acceptance-of-Biologics-License-Application-BLA-Seeking-Approval-for-Ivonescimab-in-Combination-with-Chemotherapy-in-Treatment-of-Patients-with-EGFRm-NSCLC-Post-TKI-Therapy/default.aspx",
           "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000006/a2026_prx0129xfdablaacce.htm"
-        ]
+        ],
+        "individual_financing_close": {
+          "date": "2026-10-05",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1599298/000119312526415755/d126889dpre14a.htm",
+          "evidence_type": "SINGLE_COMPLETED_2026_PREFERRED_PRIVATE_PLACEMENT_ONLY",
+          "explanation": "SEC PRE 14A filed 2026-10-06 explicitly says $2.0B Class A preferred-stock private placement closed 2026-10-05. This is separate from October 2025 $500m PIPE in the historical second-financing ledger; this 2026 transaction is NOT proof that the old ledger's 2025-10-31 day is correct or that two qualifying post-Phase3 closings occurred."
+        }
       }
     },
     "hosts": [
