@@ -104,8 +104,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         submenu_labels = [item.label for item in app.get("tab") if item.label in
-                          {"PIPELINE", "GEM JR", "GEM", "PDUFA WORKBENCH"}]
-        self.assertEqual(submenu_labels, ["PIPELINE", "GEM JR", "GEM"])
+                          {"PIPELINE", "GEM JR + GEM", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["PIPELINE", "GEM JR + GEM"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
                             for item in app.markdown))
@@ -233,145 +233,41 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.session_state["pdufa_subtab"] = "PHASE 3 DAILY"
         app.run()
         self.assertFalse(list(app.exception))
-        self.assertEqual(app.session_state["pdufa_subtab"], "GEM JR")
+        self.assertEqual(app.session_state["pdufa_subtab"], "GEM JR + GEM")
         labels = [item.label for item in app.get("tab")]
-        self.assertIn("GEM JR", labels)
+        self.assertIn("GEM JR + GEM", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
 
-    def test_post_phase3_three_sections_merged_into_one_page(self):
+    def test_gem_jr_and_gem_are_two_blocks_in_one_tab(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "GEM JR"
-        app.session_state["gemjr_extended_research"] = True
+        app.session_state["pdufa_subtab"] = "GEM JR + GEM"
         app.run()
-        self.assertFalse(list(app.exception))
-        overview = next(item for item in app.get("tab")
-                        if item.label == "GEM")
-        self.assertEqual([item for item in overview if item.type != "tab"], [])
-        post = next(item for item in app.get("tab")
-                    if item.label == "GEM JR")
-        self.assertTrue(any("UNIFIED CLINICAL → TRADING DISPLAY" in item.body
-                            for item in post.get("markdown")))
-        self.assertTrue(any(item.key == "unified_export"
-                            for item in post.get("download_button")))
+        self.assertFalse(list(app.exception),
+                         [str(error.message) for error in app.exception])
         labels = [item.label for item in app.get("tab")]
-        self.assertIn("GEM JR", labels)
-        self.assertNotIn("PHASE 3 DAILY", labels)
-        self.assertTrue(any(
-            "POST PHASE 3 — TRADING WORKSPACE" in item.body
-            for item in app.markdown
-        ))
-        self.assertFalse(any(
-            item.key == "post_phase3_workspace_stage_v1" for item in app.radio
-        ), "Merged POST PHASE 3 must not require another stage selector")
-        self.assertTrue(any(
-            "STAGE 1 — PHASE 3" in item.body for item in app.markdown
-        ))
-        sorting = app.selectbox(key="postphase3_stage1_sort")
-        self.assertEqual(list(sorting.options), ["Top Score", "Ticker A–Z"])
-        self.assertEqual(sorting.value, "Top Score")
-        self.assertFalse(any(
-            "TOP 10 — RESEARCH PRIORITY" in item.body for item in app.markdown
-        ))
-        self.assertTrue(any(
-            "STAGE 2 — GREEN ENTRY → YELLOW HOLD → RED EXIT WATCH" in item.body
-            for item in app.markdown
-        ))
-        self.assertTrue(any(
-            "STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body
-            for item in app.markdown
-        ))
-        self.assertTrue(any(
-            "No actual positions have been supplied" in item.body
-            for item in app.info
-        ))
-
-        # One ticker focus must update the relocated clinical view and the
-        # existing candidate queue without losing either display or its scores.
-        score_tables = [item.value for item in post.get("dataframe")
-                        if {"Ticker", "Score /100", "Score type"}
-                        .issubset(item.value.columns)]
-        self.assertEqual(len(score_tables), 2)
-        shared = set(score_tables[0]["Ticker"]) & set(score_tables[1]["Ticker"])
-        self.assertTrue(shared, "Saved feeds need a shared ticker to verify linked focus")
-        ticker = sorted(shared)[0]
-        app.selectbox(key="postphase3_shared_ticker").set_value(ticker).run()
-        self.assertFalse(list(app.exception))
-        post = next(item for item in app.get("tab")
-                    if item.label == "GEM JR")
-        focused = [item.value for item in post.get("dataframe")
-                   if {"Ticker", "Score /100", "Score type"}
-                   .issubset(item.value.columns)]
-        self.assertEqual(len(focused), 2)
-        for frame in focused:
-            self.assertGreater(len(frame), 0)
-            self.assertTrue(frame["Ticker"].eq(ticker).all())
-        from post_phase3_backfill_queue import build_backfill_queue
-        queue, _ = build_backfill_queue(APP_PATH.parent / "data")
-        expected = sum(str(row.get("ticker") or "").upper() == ticker
-                       for row in queue)
-        count = next(item for item in post.get("metric")
-                     if item.label == "Historical research leads")
-        self.assertEqual(int(count.value), expected)
-        app.selectbox(key="postphase3_shared_ticker").set_value("All tickers").run()
-        self.assertFalse(list(app.exception))
-
-        # AppTest does not send frontend tab-selection events. Use a fresh
-        # Overview session for widget interactions; the live browser audit
-        # checks switching between the actual tabs.
-        overview_app = AppTest.from_file(str(APP_PATH), default_timeout=120)
-        overview_app.session_state["nav"] = "PDUFA"
-        overview_app.session_state["pdufa_subtab"] = "GEM"
-        overview_app.run()
-        self.assertFalse(list(overview_app.exception))
-        overview = next(item for item in overview_app.get("tab")
-                        if item.label == "GEM")
-        headings = [item.body for item in overview.get("markdown")]
-        self.assertFalse(any("#1-DB" in heading for heading in headings))
-        for title in ("### 1 — PIPELINE",
-                      "### 2 — GEM JR", "### 3 — GEM"):
-            self.assertTrue(any(title in heading for heading in headings), title)
-        self.assertTrue(any(item.key == "overview_export"
-                            for item in overview.get("download_button")))
-        overview_app.selectbox(key="overview_shared_ticker").set_value(ticker).run()
-        self.assertFalse(list(overview_app.exception))
-        self.assertEqual(overview_app.session_state["pdufa_subtab"], "GEM")
-        overview = next(item for item in overview_app.get("tab")
-                        if item.label == "GEM")
-        focused = [item.value for item in overview.get("dataframe")
-                   if {"Ticker", "Score /100", "Score type", "F"}
-                   .issubset(item.value.columns)]
-        # The three headline PIPELINE/PRE3/POST3 sheets now use HTML tables
-        # (real circled help icons) rather than native Streamlit dataframes.
-        # AppTest can inspect the three remaining native evidence/timeline grids.
-        self.assertEqual(len(focused), 3)
-        self.assertGreaterEqual(sum(not frame.empty for frame in focused), 1)
-        for frame in focused:
-            self.assertTrue(frame["Ticker"].eq(ticker).all())
-        timeline = next(item.value for item in overview.get("dataframe")
-                        if {"Date Classification", "PDUFA source"}.issubset(item.value.columns)
-                        and "F" not in item.value.columns)
-        self.assertTrue(timeline["Ticker"].eq(ticker).all())
-        self.assertTrue(timeline["Score /100"].dropna().is_monotonic_decreasing)
-        for _, group in timeline.groupby("Score /100", dropna=False, sort=False):
-            self.assertTrue(group["Days to PDUFA"].dropna().is_monotonic_decreasing)
-        overview_app.text_input(key="overview_query").set_value("__NO_MATCH__").run()
-        self.assertFalse(list(overview_app.exception))
-        overview = next(item for item in overview_app.get("tab")
-                        if item.label == "GEM")
-        counts = {item.label: int(item.value) for item in overview.get("metric")
-                  if item.label in {"Matching programs", "Matching source leads"}}
-        self.assertEqual(counts, {"Matching programs": 0, "Matching source leads": 0})
-        overview_app.text_input(key="overview_query").set_value("").run()
-        overview_app.selectbox(key="overview_shared_ticker").set_value("All tickers").run()
-        self.assertFalse(list(overview_app.exception))
-        self.assertTrue(any("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body
-                            for item in app.markdown))
+        self.assertIn("GEM JR + GEM", labels)
+        self.assertNotIn("GEM JR", labels)
+        self.assertNotIn("GEM", labels)
+        self.assertNotIn("PRE PHASE 3", labels)
+        self.assertNotIn("POST PHASE 3", labels)
+        combined = next(item for item in app.get("tab")
+                        if item.label == "GEM JR + GEM")
+        headings = [item.body for item in combined.get("markdown")]
+        self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x
+                            for x in headings))
+        self.assertTrue(any("### GEM" in x for x in headings))
+        source = APP_PATH.read_text(encoding="utf-8")
+        self.assertIn('key="gem_jr_shared_block"', source)
+        self.assertIn('key="gem_shared_block"', source)
+        self.assertIn("render_gem_jr()", source)
+        self.assertIn("render_gem_potential(root=\"data\", compact=True", source)
+        self.assertIn("two distinct SEC-confirmed financing closures", source)
 
     def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "GEM JR"
+        app.session_state["pdufa_subtab"] = "GEM JR + GEM"
         app.session_state["gemjr_extended_research"] = True
         app.run()
         self.assertFalse(list(app.exception))

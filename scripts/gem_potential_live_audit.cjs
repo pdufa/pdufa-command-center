@@ -52,8 +52,8 @@ async function audit() {
     app = (await frameWithApp(page)) || app;
     if (errorFrom(app.text)) throw new Error("Live Streamlit page reports an application exception");
     try {
-      if (await app.frame.getByRole("tab", { name: "GEM", exact: true }).count()) {
-        await app.frame.getByRole("tab", { name: "GEM", exact: true })
+      if (await app.frame.getByRole("tab", { name: "GEM JR + GEM", exact: true }).count()) {
+        await app.frame.getByRole("tab", { name: "GEM JR + GEM", exact: true })
           .click({ timeout: 12000 });
         found = true;
         break;
@@ -65,19 +65,19 @@ async function audit() {
     }
     await sleep(1200);
   }
-  if (!found) throw new Error("GEM tab not available for GEM list check");
+  if (!found) throw new Error("GEM JR + GEM tab not available for GEM list check");
   let panelText = "", overview = "";
   for (let i = 0; i < 120; i++) {
     app = (await frameWithApp(page)) || app;
     overview = app.text;
     if (errorFrom(overview)) throw new Error("GEM tab reports an application exception");
     try {
-      if (await app.frame.getByRole("tab", { name: "GEM", exact: true })
+      if (await app.frame.getByRole("tab", { name: "GEM JR + GEM", exact: true })
         .getAttribute("aria-selected") !== "true") {
         await sleep(900);
         continue;
       }
-      const panel = app.frame.locator(".st-key-overview_gem_panel").first();
+      const panel = app.frame.locator(".st-key-gem_shared_block").first();
       if (await panel.count()) {
         panelText = await panel.innerText({ timeout: 5000 });
         if (panelText.includes("POTENTIAL GEMs — PENDING RESEARCH") &&
@@ -91,11 +91,11 @@ async function audit() {
   result.evidence.overviewExcerpt = overview.slice(0, 1200);
   const counts = panelText.match(/(\d+) active research leads/);
   const activeCount = counts ? Number(counts[1]) : null;
-  const hasList = await app.frame.locator(".st-key-overview_gem_panel ol > li").count() >= 1;
+  const hasList = await app.frame.locator(".st-key-gem_shared_block ol > li").count() >= 1;
   const explicitlyEmpty = panelText.includes(
     "No currently active potential GEMs supported by the saved source reviews.");
   result.evidence.activeResearchLeads = activeCount;
-  result.checks.gemPanelPresent = panelText.includes("#1-GEM");
+  result.checks.gemPanelPresent = panelText.includes("GEM");
   result.checks.potentialHeading = panelText.includes("POTENTIAL GEMs — PENDING RESEARCH");
   result.checks.countFromSavedSource = activeCount !== null;
   result.checks.potentialReason = activeCount === 0 ? explicitlyEmpty : panelText.includes("Why potential:");

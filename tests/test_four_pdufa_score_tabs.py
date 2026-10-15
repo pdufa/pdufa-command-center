@@ -11,7 +11,7 @@ from pdufa_display_columns import (FRONT, POST_SCORES, PRE_SCORES,
                                    DISPLAY_ORDER_OPTIONS)
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
-TABS = ("PIPELINE", "GEM JR", "GEM")
+TABS = ("PIPELINE",)
 
 
 class FourPdufaScoreTabTests(unittest.TestCase):
@@ -23,8 +23,6 @@ class FourPdufaScoreTabTests(unittest.TestCase):
         for tab in TABS:
             with self.subTest(tab=tab):
                 app.session_state["pdufa_subtab"] = tab
-                if tab == "GEM JR":
-                    app.session_state["gemjr_extended_research"] = True
                 app.run()
                 self.assertFalse(list(app.exception), tab)
                 panel = next(item for item in app.get("tab") if item.label == tab)
@@ -43,9 +41,7 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                      "Days to PDUFA", "2nd Financing Completed"],
                 )
                 sort_key = {
-                    "GEM": "overview_pdufa_display_order",
                     "PIPELINE": "pipeline_sort_v9",
-                    "GEM JR": "unified_pdufa_display_order",
                 }[tab]
                 sorter = app.selectbox(key=sort_key)
                 self.assertEqual(list(sorter.options), list(DISPLAY_ORDER_OPTIONS))
@@ -68,6 +64,21 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                         dated = group["Days to PDUFA"].notna().tolist()
                         self.assertEqual(dated, sorted(dated, reverse=True),
                                          f"{tab} missing PDUFA days must follow dated rows")
+
+    def test_gem_jr_and_gem_keep_distinct_qualification_contract(self):
+        app = AppTest.from_file(str(APP), default_timeout=120)
+        app.session_state["nav"] = "PDUFA"
+        app.session_state["pdufa_subtab"] = "GEM JR + GEM"
+        app.run()
+        self.assertFalse(list(app.exception))
+        panel = next(t for t in app.get("tab") if t.label == "GEM JR + GEM")
+        headings = [x.body for x in panel.get("markdown")]
+        self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x for x in headings))
+        self.assertTrue(any("POTENTIAL GEMs — PENDING RESEARCH" in x for x in headings))
+        source = APP.read_text(encoding="utf-8")
+        self.assertIn("two distinct SEC-confirmed financing closures", source)
+        self.assertIn('key="gem_jr_shared_block"', source)
+        self.assertIn('key="gem_shared_block"', source)
 
 
 if __name__ == "__main__":

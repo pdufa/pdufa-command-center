@@ -20,7 +20,7 @@ const report = {
     "No broker orders, private accounts or trade-performance claims are inspected."
   ]
 };
-const EXPECTED_TABS = ["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"];
+const EXPECTED_TABS = ["PIPELINE", "GEM JR + GEM", "SCANS", "WT"];
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let browser;
 
@@ -151,9 +151,8 @@ async function audit() {
 
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
-    ["GEM", ["3 — GEM", "GEM — TWO BENCHMARKS VERIFIED"]],
+    ["GEM JR + GEM", ["GEM JR — RESEARCH & QUALIFICATION QUEUE", "POTENTIAL GEMs — PENDING RESEARCH"]],
     ["SCANS", ["GEMS — GITHUB SCAN LOGS", "GEM — MASTER STOCK LIST", "NIGHTLY SCAN REPORT"]],
-    ["GEM JR", ["GEM JR — RESEARCH & QUALIFICATION QUEUE", "Research candidates"]],
     // WT chart/widget content lives in a nested components iframe.
     ["WT", []]
   ];
@@ -163,12 +162,12 @@ async function audit() {
   // Exercise the collapsed GEM master UI, not just its title. The chart and
   // trading assessment require a stock card to open before their code runs.
   await safely("GEM nested stock entry/exit chart", async() => {
-    await inspectTab(page, "GEM", ["3 — GEM", "GEM — TWO BENCHMARKS VERIFIED"]);
+    await inspectTab(page, "GEM JR + GEM", ["GEM JR — RESEARCH & QUALIFICATION QUEUE", "POTENTIAL GEMs — PENDING RESEARCH"]);
     const first = await currentFrame(page);
     const label = "GEM — THREE-LEVEL VERIFIED MASTER (show / hide)";
     await first.getByText(label, {exact:true}).click({timeout:15000});
     const master = await waitFor(page, "GEM nested master", async(f, text) =>
-      await selectedTab(f, "GEM") &&
+      await selectedTab(f, "GEM JR + GEM") &&
       text.includes("GEM — STOCK → FACTORS → SOURCE INPUTS") &&
       text.includes("GEM programs"));
     if (/This app has encountered an error|Traceback \(most recent call last\)/i.test(master.text)) {
@@ -236,7 +235,7 @@ async function audit() {
                       "; master=" + probeText.includes("GEM — STOCK → FACTORS → SOURCE INPUTS"));
     await screenshot(page,"gem-expander-diagnostic");
     const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
-      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR"), 35000);
+      await selectedTab(f, "GEM JR + GEM") && text.includes("ENTRY / EXIT MONITOR"), 35000);
     // Streamlit's st.dataframe uses a canvas-backed grid; its column titles
     // are not necessarily present in body.innerText. Require the actual
     // rendered research header and inspect Streamlit's dataframe test ID.

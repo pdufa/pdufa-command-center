@@ -3225,7 +3225,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-14 · PIPELINE → GEM JR → GEM · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · verified clinical and financing evidence retained · 9 PM Pacific sequential scans")
+st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR + GEM (two blocks, one tab) · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 9 PM Pacific sequential scans")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3252,7 +3252,7 @@ if st.session_state.detail_return_page in ("9. PREDICTION ENGINE", "10. MATCH OP
 if st.session_state.nav in ("PRE PHASE 3", "POST PHASE 3"):
     legacy_stage = st.session_state.nav
     st.session_state.nav = "PDUFA"
-    st.session_state["pdufa_subtab"] = "PIPELINE" if legacy_stage == "PRE PHASE 3" else "GEM JR"
+    st.session_state["pdufa_subtab"] = "PIPELINE" if legacy_stage == "PRE PHASE 3" else "GEM JR + GEM"
 if st.session_state.nav == "PIPELINE":
     st.session_state.nav = "PDUFA"
     st.session_state["pdufa_subtab"] = "PIPELINE"
@@ -3279,27 +3279,23 @@ else:
 if page == "PDUFA":
     # Preserve saved subtab selection after older labels are removed or renamed.
     previous_subtab = st.session_state.get("pdufa_subtab")
-    if previous_subtab in ("PHASE 3 DAILY", "POST PHASE 3"):
-        st.session_state["pdufa_subtab"] = "GEM JR"
+    if previous_subtab in ("PHASE 3 DAILY", "POST PHASE 3", "GEM JR",
+                           "GEM", "UNIFIED OVERVIEW"):
+        st.session_state["pdufa_subtab"] = "GEM JR + GEM"
     elif previous_subtab == "PRE PHASE 3":
         st.session_state["pdufa_subtab"] = "PIPELINE"
     elif previous_subtab == "WATCHLIST / TRADING":
         st.session_state["pdufa_subtab"] = "WT"
     elif previous_subtab == "NIGHTLY SCAN REPORT":
         st.session_state["pdufa_subtab"] = "SCANS"
-    elif previous_subtab == "UNIFIED OVERVIEW":
-        st.session_state["pdufa_subtab"] = "GEM"
     elif previous_subtab in ("SCORE AUDIT", "SCORING TESTS"):
         st.session_state["pdufa_subtab"] = "PIPELINE"
-    # Clinical and financing collectors remain; only redundant navigation is retired.
-    # The tab order is the qualification progression, not a claim of eligibility.
-    pipeline_tab, gem_jr_tab, unified_tab, nightly_report_tab, watch_trade_tab = st.tabs(
-        ["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"],
+    # Clinical evidence and SEC financing eligibility retain their separate source checks.
+    # GEM JR and GEM share one tab but remain independent qualification blocks.
+    pipeline_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(
+        ["PIPELINE", "GEM JR + GEM", "SCANS", "WT"],
         key="pdufa_subtab", on_change="rerun",
     )
-    with unified_tab:
-        if unified_tab.open:
-            render_combined_overview(dashboard=True)
     with pipeline_tab:
         if pipeline_tab.open:
             st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
@@ -4126,12 +4122,34 @@ if page == "PDUFA":
             if st.toggle("SHOW EARLY CLINICAL RESEARCH / READINESS", value=False, key="pipeline_early_research"):
                 render_pre_phase3()
 
-    with gem_jr_tab:
-        if gem_jr_tab.open:
-            from gem_jr_ui import render_gem_jr
-            render_gem_jr()
-            if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH", value=False, key="gemjr_extended_research"):
-                render_post_phase3_workspace()
+    with gem_tab:
+        if gem_tab.open:
+            st.markdown("## GEM JR + GEM — CANDIDATE QUALIFICATION")
+            st.caption(
+                "Two independent blocks on one page. GEM JR is a research queue; "
+                "GEM status requires source-verified successful Phase 3 results and "
+                "two distinct SEC-confirmed financing closures after the readout. "
+                "Research alone never promotes a stock or authorizes a trade."
+            )
+            gem_jr_col, gem_col = st.columns([1, 1], gap="medium")
+            with gem_jr_col, st.container(border=True, key="gem_jr_shared_block"):
+                st.markdown("### GEM JR")
+                from gem_jr_ui import render_gem_jr
+                render_gem_jr()
+                if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH",
+                             value=False, key="gemjr_extended_research"):
+                    render_post_phase3_workspace()
+            with gem_col, st.container(border=True, key="gem_shared_block"):
+                st.markdown("### GEM")
+                from gem_potential_ui import render_gem_potential
+                render_gem_potential(root="data", compact=True,
+                                     namespace="gem_shared_potential")
+                if st.toggle("GEM — THREE-LEVEL VERIFIED MASTER (show / hide)",
+                             value=False, key="gem_shared_show_master"):
+                    from gem_nested_master_ui import render_gem_nested_master
+                    with st.container(height=600, border=False,
+                                      key="gem_shared_master_content"):
+                        render_gem_nested_master(root="data", selections_ready=True, compact=True)
 
     with nightly_report_tab:
         if nightly_report_tab.open:
