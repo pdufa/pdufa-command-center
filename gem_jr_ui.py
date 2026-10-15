@@ -12,6 +12,7 @@ import pandas as pd
 import streamlit as st
 from gem_potential_list import build_potential_list
 from gem_trial_hierarchy_ui import render_trial_hierarchy
+from gem_membership_history import read_history, enrich_stage_rows, departed_stage_rows
 from pdufa_table_headers import pdufa_dataframe
 from stage_wt_tables import render_stage_wt_tables
 
@@ -24,6 +25,13 @@ def render_gem_jr(root="data"):
         "two independently SEC-confirmed financing closures after the readout."
     )
     active, held = build_potential_list(Path(root))
+    # Dates come from a committed scan ledger, never from trial readout dates.
+    membership = read_history(root)
+    active = enrich_stage_rows(active, "GEM_JR", membership)
+    held = enrich_stage_rows(held, "GEM_JR", membership)
+    st.caption("DATE FOUND = first GEM JR detection in the membership tracker. "
+               "DATE LEFT = departure from the active GEM JR listing after a "
+               "validated scan. Earlier history cannot be inferred.")
     a, b = st.columns(2)
     a.metric("Research candidates", len(active))
     b.metric("Timing / resolved holds", len(held))
@@ -32,6 +40,7 @@ def render_gem_jr(root="data"):
         "SEC documents rechecked", "Why potential", "Still needed",
         "Clinical source", "Financing SEC source", "Source review date",
         "PDUFA date (saved)", "Timing / resolution", "Exact program", "GEM status",
+        "Pipeline ID", "Date Found", "Date Left", "Date Re-entered", "Listing status",
     )
     render_trial_hierarchy(active + held, namespace="gem_jr", title="GEM JR")
     if active:
@@ -52,6 +61,13 @@ def render_gem_jr(root="data"):
         st.info("No active source-linked Phase 3 / financing leads in the saved research evidence.")
     render_stage_wt_tables(
         "GEM JR", active + held, namespace="gem_jr", controls=True)
+    departed = departed_stage_rows(membership, "GEM_JR")
+    with st.expander(f"GEM JR — LEFT LISTING HISTORY ({len(departed)})",
+                     expanded=False):
+        if departed:
+            st.dataframe(pd.DataFrame(departed), use_container_width=True, hide_index=True)
+        else:
+            st.caption("No GEM JR exits have been recorded since membership tracking began.")
     if active:
         with st.expander("GEM JR — OPEN STOCK BASE / SUPPORT CHART", expanded=False):
             tickers = sorted({str(x.get("Ticker") or "").upper().strip()
