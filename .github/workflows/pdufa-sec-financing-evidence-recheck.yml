@@ -10,6 +10,9 @@ on:
       - 'scripts/source_verification.py'
       - 'tests/test_source_verification.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
+      - 'sec_search_discovery.py'
+      - 'sec_financing_closure_ui.py'
+      - 'tests/test_sec_search_discovery.py'
       - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
   push:
     branches: [main]
@@ -20,6 +23,9 @@ on:
       - 'scripts/source_verification.py'
       - 'tests/test_source_verification.py'
       - 'tests/test_provisional_financing_sec_recheck.py'
+      - 'sec_search_discovery.py'
+      - 'sec_financing_closure_ui.py'
+      - 'tests/test_sec_search_discovery.py'
       - '.github/workflows/pdufa-sec-financing-evidence-recheck.yml'
   workflow_dispatch:
 
@@ -37,6 +43,8 @@ jobs:
           python-version: '3.12'
       - name: Verify financing evidence stays fail-closed
         run: python -m unittest discover -s tests -p 'test_provisional_financing_sec_recheck.py' -v
+      - name: Check Yahoo and Bing discovery link safety
+        run: python -m unittest discover -s tests -p 'test_sec_search_discovery.py' -v
 
   live-recheck:
     needs: offline-tests
