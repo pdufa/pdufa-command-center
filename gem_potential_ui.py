@@ -9,6 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_potential_list import build_potential_list
+from gem_trial_hierarchy_ui import render_trial_hierarchy
 from gem_financing_batch_review import build_financing_review
 from gem_verified_snapshot import source_cleared_gems
 from gem_secondary_research import (
@@ -67,6 +68,8 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
     potential = [x for x in potential if x["Exact program"] not in cleared_programs]
     timing_hold = [x for x in timing_hold if x["Exact program"] not in cleared_programs]
 
+    render_trial_hierarchy(source_cleared + historical_cleared + potential + timing_hold,
+                           namespace=namespace, title="GEM")
     st.markdown("### GEM — TWO BENCHMARKS VERIFIED")
     st.caption(
         f"{len(source_cleared)} ACTIVE PROGRAMS VERIFIED · "
