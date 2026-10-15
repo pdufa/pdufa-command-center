@@ -12,7 +12,7 @@ FINANCING_OK = "PASS — TWO POST-READOUT CLOSES"
 
 MASTER_COLUMNS = [
     "GEM Rank", "GEM Score /100", "GEM Stage", "GEM Status",
-    "Ticker", "Drug", "Indication", "NCT ID",
+    "Ticker", "Drug", "Indication", "NCT ID", "Pipeline ID",
     "Phase 3 Verified", "Second Financing Closed",
     "Phase 3 Result Date", "Second Financing Close Date",
     "PDUFA Date", "Days to PDUFA", "PDUFA Date Verified", "Planned Exit (-3 days)",
@@ -93,6 +93,7 @@ def build_gem_master_list(items):
             "Drug": item.get("Drug"),
             "Indication": item.get("Indication"),
             "NCT ID": item.get("NCT ID"),
+            "Pipeline ID": item.get("Pipeline ID", ""),
             "Phase 3 Verified": item.get("Benchmark 1 — Phase 3 released"),
             "Second Financing Closed": item.get("Benchmark 2 — Financing #2 closed"),
             "Phase 3 Result Date": item.get("Phase 3 result date (source)"),
