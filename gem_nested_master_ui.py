@@ -23,6 +23,7 @@ from gem_eligibility_diagnostics import GROUPS, group_counts, load_saved_recheck
 from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_checkboxes, render_research_candidates
 from gem_benchmark_checklist import program_key
 from gem_scans_ui import FILES, _saved_gem_scans
+from gem_membership_history import read_history, enrich_gem_master_rows, departed_stage_rows
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
 
 
@@ -196,7 +197,8 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     day = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:
         items, status = _saved_gem_scans(str(data_path), signature, day)
-        rows = build_gem_master_list(items)
+        rows = enrich_gem_master_rows(
+            build_gem_master_list(items), read_history(data_path))
     except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
         st.error("GEM source data could not be loaded; no scores or eligibility inferred.")
         return
@@ -337,6 +339,11 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                 f"**{rank} · {_value(ticker)} · {_value(r.get('Drug'))}**  "
                 f"— {_value(r.get('GEM Stage'))} · **GEM {score}** "
                 f"· **ENTRY {entry_score}** · **EXIT RISK {exit_score}**"
+            )
+            st.caption(
+                "GEM found: " + str(r.get("Date Found") or "NOT TRACKED") +
+                " · GEM left: " + str(r.get("Date Left") or "STILL ACTIVE / NOT APPLICABLE") +
+                " · GEM re-entered: " + str(r.get("Date Re-entered") or "—")
             )
             st.caption(
                 f"ENTRY COVERAGE {r.get('Entry Coverage /100', 0)}/100"
