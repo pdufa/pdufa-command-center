@@ -56,7 +56,8 @@ jobs:
           scan = os.environ["CONTROL_SCAN"]  # target one block or ALL without remapping
           workflow = ("pdufa-overnight-sequential.yml" if scan == "ALL"
                       else "pdufa-nightly-clinical.yml")
-          inputs = {"gem_action": action} if scan == "ALL" else {"scan": scan}
+          inputs = ({"gem_action": action, "scan_mode": "FULL" if action == "RESCAN_ALL" else "DELTA"}
+                    if scan == "ALL" else {"scan": scan, "scan_mode": "FULL" if action == "RESCAN_ALL" else "DELTA"})
           url = ("https://api.github.com/repos/" + os.environ["GITHUB_REPOSITORY"]
                  + "/actions/workflows/" + workflow + "/dispatches")
           body = json.dumps({"ref": "main", "inputs": inputs}).encode()
