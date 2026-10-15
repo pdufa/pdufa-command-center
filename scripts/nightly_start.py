@@ -17,7 +17,9 @@ ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 def decision(event, cron, runs, *, now=None):
     now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     local = now.astimezone(PACIFIC)
-    night = local if local.hour >= 22 else local - timedelta(days=1)
+    # Scheduled after-midnight recovery belongs to the preceding night.
+    # A manual dispatch should reflect the actual requested Pacific date.
+    night = local if (event == "workflow_dispatch" or local.hour >= 22) else local - timedelta(days=1)
     start = night.replace(hour=22, minute=0, second=0, microsecond=0)
     weekly_full = start.weekday() == 6  # Sunday night in Los Angeles, including after-midnight recovery
     result = {"run": False, "night_date_pacific": start.date().isoformat(),
