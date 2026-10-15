@@ -6,7 +6,7 @@ import pandas as pd
 
 from pipeline_filings_alignment import (
     align_baseline, pipeline_scope, reconciliation_counts,
-    candidate_events_outside_pipeline,
+    candidate_events_outside_pipeline, scope_evidence_tables, scope_research_queue,
 )
 
 
@@ -94,6 +94,33 @@ class PipelineFilingsAlignmentTests(unittest.TestCase):
         )
         self.assertEqual(len(orphaned), 1)
         self.assertEqual(orphaned[0]["Candidate event"], "GHI|UNLINKED_20261121")
+
+    def test_agency_evidence_obeys_pipeline_selected_scope(self):
+        # The Phase 3 trial shares ABC with an application but cannot inherit
+        # an FDA claim or extension by ticker.
+        stage, _ = pipeline_scope(
+            self.records,
+            {"pipeline_stages_v9": ["Phase 3"]}, date(2026, 10, 15)
+        )
+        only_trial = stage.to_dict("records")
+        source_rows = {
+            "SEC Base": [{"Ticker": "ABC", "Form": "10-K"},
+                         {"Ticker": "OUTSIDE", "Form": "8-K"}],
+            "SEC Amendments": [{"Ticker": "ABC", "Form": "10-Q/A"}],
+            "FDA Base": [{"Ticker": "ABC", "Trial / event": "ABC|DRUG_A_20261120"}],
+            "FDA Amendments": [{"Ticker": "ABC", "Trial / event": "ABC|DRUG_A_20261120"}],
+        }
+        results = scope_evidence_tables(source_rows, only_trial)
+        self.assertEqual(len(results["SEC Base"]), 1)
+        self.assertIn("issuer", results["SEC Base"][0]["Scope"])
+        self.assertEqual(len(results["FDA Base"]), 0)
+        self.assertEqual(len(results["FDA Amendments"]), 0)
+        queue = [{"category": "FDA", "event_key": "ABC|DRUG_A_20261120", "ticker": "ABC"},
+                 {"category": "SEC", "event_key": "REGISTRY:ABC", "ticker": "ABC"},
+                 {"category": "FDA", "event_key": "OTHER|DRUG", "ticker": "ABC"}]
+        scoped = scope_research_queue(queue, only_trial)
+        self.assertEqual(len(scoped), 1)
+        self.assertEqual(scoped[0]["event_key"], "REGISTRY:ABC")
 
     def test_duplicate_or_missing_pipeline_ids_are_never_silently_dropped(self):
         duplicates = [self.records.iloc[0].to_dict()] * 2
