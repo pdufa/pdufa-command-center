@@ -16,7 +16,10 @@ from zoneinfo import ZoneInfo
 from scan_status_ui import required_issue_queue, pacific_time
 from filings_live_data import published_filings_files
 from pipeline_universe import SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe
-from pipeline_filings_alignment import pipeline_scope, align_baseline, reconciliation_counts
+from pipeline_filings_alignment import (
+    pipeline_scope, align_baseline, reconciliation_counts,
+    candidate_events_outside_pipeline,
+)
 from filings_scan_controls import render_section_scan, render_section_scan_unlock
 from scripts.filings_section_scan import (
     SECTIONS, SNAPSHOTS, extension_observations, load_snapshot, overlay_findings, timestamp,
@@ -526,6 +529,13 @@ def render_filings_base_amendments():
         universe = current_pipeline_universe(pipeline_signature, now.date())
         scoped, counts = pipeline_scope(universe, st.session_state, now.date())
         trial_records = scoped.to_dict("records")
+        whole_pipeline_records = universe.to_dict("records")
+        orphans = {
+            agency: candidate_events_outside_pipeline(
+                whole_pipeline_records, candidate_bases[agency]
+            )
+            for agency in ("SEC", "FDA")
+        }
         bases = {
             agency: align_baseline(trial_records, candidate_bases[agency])
             for agency in ("SEC", "FDA")
@@ -556,6 +566,17 @@ def render_filings_base_amendments():
     )
     st.caption('One row represents one Pipeline trial, result, or regulatory program, '
                'not one SEC filing. Unmatched records are NOT_CHECKED, not verified.')
+    unlinked = [{"Agency": agency, **item} for agency in ("SEC", "FDA")
+                for item in orphans[agency]]
+    if unlinked:
+        st.warning(f"{len(unlinked):,} saved candidate/agency rows have no matching "
+                   "Pipeline application event. These are excluded from trial totals "
+                   "and listed below for reconciliation, never matched by ticker.")
+        with st.expander("Saved candidate events absent from Pipeline", expanded=False):
+            st.dataframe(pd.DataFrame(unlinked), use_container_width=True,
+                         hide_index=True, column_config={
+                             "Agency source": st.column_config.LinkColumn("Agency evidence")
+                         })
     st.markdown("## SEC FILINGS")
     render_section_scan_unlock()
     st.caption("Details refresh automatically every minute from published scan results. "
