@@ -24,6 +24,8 @@ on:
       - tests/test_nightly_scoring_audit.py
       - tests/test_post_scan_repair.py
       - tests/test_scan_recovery_triage.py
+      - tests/test_score_input_audit.py
+      - tests/test_scoring_tab_navigation.py
 
 permissions:
   actions: write

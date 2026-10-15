@@ -4,13 +4,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_six_pdufa_subtabs_keep_scans_and_trading():
+def test_consolidated_pdufa_subtabs_keep_scans_and_trading():
     source = (ROOT / "app.py").read_text(encoding="utf-8")
     start = source.index('if page == "PDUFA":')
     end = source.index('elif page == "2. PDUFA CALENDAR":', start)
     pdufa = source[start:end]
-    assert '["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"]' in pdufa
-    assert 'nightly_report_tab, watch_trade_tab = st.tabs(' in pdufa
+    assert '["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]' in pdufa
+    assert 'pipeline_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(' in pdufa
+    assert 'with pipeline_tab:' in pdufa
+    assert 'with gem_tab:' in pdufa
+    assert 'render_gem_jr()' in pdufa
+    assert 'render_gem_potential(' in pdufa
+    assert 'render_gem_nested_master(' in pdufa
     assert 'with nightly_report_tab:' in pdufa
     assert 'render_nightly_scan_report()' in pdufa
     assert 'with watch_trade_tab:' in pdufa
