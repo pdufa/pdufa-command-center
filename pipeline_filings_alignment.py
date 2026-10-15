@@ -107,8 +107,8 @@ def reconciliation_counts(records):
 
 def candidate_events_outside_pipeline(pipeline_records, candidate_baseline):
     """Report orphan candidate events; filters must not manufacture 'orphans'."""
-    known = {
-        str(row.get("record_id") or "").strip()
+    by_pipeline_id = {
+        str(row.get("record_id") or "").strip(): row
         for row in pipeline_records
     }
     orphaned = []
@@ -118,12 +118,9 @@ def candidate_events_outside_pipeline(pipeline_records, candidate_baseline):
         if not key or key in seen:
             continue
         identifier = "APPLICATION|" + key
-        present = identifier in known
         # A key exists but the issuer may disagree. Report the conflict.
-        identity_row = next(
-            (record for record in pipeline_records
-             if str(record.get("record_id") or "").strip() == identifier), None
-        )
+        identity_row = by_pipeline_id.get(identifier)
+        present = identity_row is not None
         ticker_matches = (
             identity_row is not None and
             str(identity_row.get("ticker") or "").strip().upper() ==
