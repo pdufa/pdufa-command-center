@@ -293,6 +293,16 @@
       "investorrelations.sarepta.com"
     ]
   },
+  "SRRK": {
+    "events": {
+      "SRRK|APITEGROMAB_20260930": {
+        "urls": [
+          "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761463Orig1s000ltr.pdf"
+        ]
+      }
+    },
+    "hosts": []
+  },
   "SVRA": {
     "events": {
       "SVRA|MOLBREEVI_PAP_20261122": {
