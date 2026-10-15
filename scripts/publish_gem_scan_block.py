@@ -99,7 +99,7 @@ def make_block_report(readiness, collector_state, *, action,
         "cash_runway": (readiness.get("cash_runway") if has_audit else {}),
         "hedge_fund_13f": (readiness.get("hedge_fund_13f") if has_audit else {}),
         "insider_form4": (readiness.get("insider_form4") if has_audit else {}),
-        "bpw_comparable": (readiness.get("bpw_comparable") if has_audit else {}),
+        "bpw_comparable": {},  # Backwards-compatible field; diagnostic is separate.
         "two_benchmark_candidate_count": (
             readiness.get("two_benchmark_candidate_count")
             if has_audit and type(readiness.get("two_benchmark_candidate_count")) is int
@@ -138,20 +138,8 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, default=Path("data/gem_scan_block_report.json"))
     args = parser.parse_args(argv)
     readiness = dict_json(args.report_dir / "gem_readiness.json")
-    bpw = dict_json(args.data_dir / "gem_bpw_comparable.json")
-    # Accept only same-day source audit: never publish stale comparison as current.
-    if (bpw.get("schema_version") == 1
-            and bpw.get("as_of_pacific") == readiness.get("as_of_pacific")
-            and isinstance(bpw.get("capability_matrix"), list)
-            and bpw.get("same_input_score_comparison_performed") is False):
-        readiness["bpw_comparable"] = {
-            "as_of_pacific": bpw["as_of_pacific"],
-            "gem_observed_program_rows": bpw.get("gem_observed_program_rows"),
-            "gem_two_benchmark_eligible": bpw.get("gem_two_benchmark_eligible"),
-            "same_input_score_comparison_performed": False,
-            "similarity_percentage_supported": False,
-            "capability_matrix": bpw["capability_matrix"],
-        }
+    # BPW feature coverage is now a separate on-demand research diagnostic.
+    # Do not fold a manual comparison into a nightly eligibility report.
     report = make_block_report(
         readiness,
         dict_json(args.data_dir / "phase3_intake_status.json"),
