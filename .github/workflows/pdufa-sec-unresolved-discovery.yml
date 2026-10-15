@@ -1,0 +1,98 @@
+name: PDUFA Unresolved SEC Evidence Discovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/sec_unresolved_discovery.py'
+      - 'tests/test_sec_unresolved_discovery.py'
+      - '.github/workflows/pdufa-sec-unresolved-discovery.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sec_unresolved_discovery.py'
+      - 'tests/test_sec_unresolved_discovery.py'
+      - '.github/workflows/pdufa-sec-unresolved-discovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-sec-unresolved-discovery
+  cancel-in-progress: false
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify SEC discovery keeps trading safeguards intact
+        run: python -m unittest discover -s tests -p 'test_sec_unresolved_discovery.py' -v
+
+  fresh-sec-discovery:
+    needs: offline-tests
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    env:
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate identifying SEC User-Agent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$SEC_USER_AGENT" != *"@"* ]]; then
+            echo "::error::SEC researcher identity missing; no live verification performed."
+            exit 1
+          fi
+      - name: Discover original SEC filing evidence for unresolved issuers
+        run: |
+          python -m scripts.sec_unresolved_discovery \
+            --output reports/missing_sources/sec_unresolved_discovery.csv
+      - name: Summary and zero-authorization guarantee
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv
+          import collections
+          import os
+          from pathlib import Path
+          p = Path('reports/missing_sources/sec_unresolved_discovery.csv')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('## Open SEC financing research avenues\n\n')
+              if not p.is_file():
+                  out.write('No output; **nothing verified**.\n')
+              else:
+                  rows = list(csv.DictReader(p.open(newline='', encoding='utf-8')))
+                  if not rows or any(
+                      r['trade_entry_authorized'] != 'NO'
+                      or r['second_post_phase3_verified'] != 'NO' for r in rows
+                  ):
+                      raise SystemExit('Unsafe or empty SEC discovery result')
+                  out.write(f'Research rows: {len(rows)}, '
+                            f'distinct issuers: {len(set(r["ticker"] for r in rows))}.\n\n')
+                  for status, count in sorted(collections.Counter(
+                      r['discovery_status'] for r in rows).items()
+                  ):
+                      out.write(f'- {status}: {count}\n')
+                  out.write('\n**No GEM entry authorized.** Results are '
+                            'discovery-only; reconcile the canonical source audit separately.\n')
+          PY
+      - name: Archive issuer-matched SEC research ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unresolved-sec-avenues-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: reports/missing_sources/sec_unresolved_discovery.csv
