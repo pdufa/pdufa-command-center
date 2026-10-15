@@ -13,7 +13,7 @@ import hashlib
 import json
 import os
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from scripts.source_verification import (
@@ -64,9 +64,23 @@ def fresh_result(verifier, event, row):
         # an asserted transaction date. It is not conflicting primary evidence.
         if old_expected.upper() in {"UNVERIFIED", "UNKNOWN", "PENDING", "REVIEW"}:
             old_expected = ""
+        if category == "FDA" and claim == "PDUFA_TARGET":
+            # Historical FDA queue rows store the indication in expected,
+            # while the fresh verifier stores the target date in expected.
+            # Comparing disease text to an ISO date produced false conflicts.
+            try:
+                old_expected = date.fromisoformat(old_expected).isoformat()
+            except (TypeError, ValueError):
+                old_expected = ""
         if old_expected and result.get("expected") and old_expected != result["expected"]:
             result["verification_status"] = "CONFLICT"
-            result["reason"] = "Expected evidence changed between saved review queue and fresh verification"
+            result["reason"] = "Comparable expected evidence changed between saved queue and fresh verification"
+        if (category == "FDA" and claim == "PDUFA_TARGET"
+                and row.get("verification_status") == "CONFLICT"
+                and result.get("verification_status") == "VERIFIED"):
+            # One new matching release cannot erase an old source conflict.
+            result["verification_status"] = "CONFLICT"
+            result["reason"] = "Previously conflicting primary target sources require separate reconciliation"
         return result
     # A previous generic cash-and-runway gap may resolve into two individually
     # evidenced claims. Only classify the generic gap as verified if both are
