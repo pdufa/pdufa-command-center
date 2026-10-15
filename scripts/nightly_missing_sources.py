@@ -383,6 +383,7 @@ def main(argv=None):
         "FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER", "AUDIT"])
     p.add_argument("--data-dir", type=Path, default=DATA)
     p.add_argument("--report", required=True, type=Path)
+    p.add_argument("--mode", choices=["DELTA", "FULL"], default="FULL")
     p.add_argument("--artifacts-dir", type=Path, default=OUT)
     args = p.parse_args(argv)
     args.artifacts_dir.mkdir(parents=True, exist_ok=True)
@@ -403,7 +404,7 @@ def main(argv=None):
                 # The verifier now performs the full, identity-checked inventory.
                 # Avoid fetching all 717 submissions twice in the same source job.
         if args.source != "AUDIT":
-            evidence.update(verify_source(args.source, args.data_dir, args.artifacts_dir))
+            evidence.update(verify_source(args.source, args.data_dir, args.artifacts_dir, mode=args.mode))
     except Exception as exc:
         problem = type(exc).__name__
         print("Source scan failed: " + problem, file=sys.stderr)
@@ -432,6 +433,7 @@ def main(argv=None):
             "inspect the primary evidence review queue")
     report = {
         "scan": args.source, "started_at": first, "finished_at": now(),
+        "verification_mode": args.mode,
         "status": status, "source": args.source,
         "scope": "PDUFA event-specific live sources; SEC also inventories company registry",
         "scan_kind": "VERIFIED_EXTENDED_SOURCE_CHECKS",
