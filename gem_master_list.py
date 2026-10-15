@@ -13,6 +13,7 @@ FINANCING_OK = "PASS — TWO POST-READOUT CLOSES"
 MASTER_COLUMNS = [
     "GEM Rank", "GEM Score /100", "GEM Stage", "GEM Status",
     "Ticker", "Drug", "Indication", "NCT ID", "Pipeline ID",
+    "Date Found", "Date Left", "Date Re-entered", "Listing status",
     "Phase 3 Verified", "Second Financing Closed",
     "Phase 3 Result Date", "Second Financing Close Date",
     "PDUFA Date", "Days to PDUFA", "PDUFA Date Verified", "Planned Exit (-3 days)",
