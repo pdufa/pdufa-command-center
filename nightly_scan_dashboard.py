@@ -17,6 +17,7 @@ from gem_scans_ui import render_gem_scans
 from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
+from filings_base_amendments_ui import render_filings_base_amendments
 from scripts.scan_recovery_triage import triage_source_rows
 from sec_search_discovery import financing_discovery_links
 from scripts.pdufa_morning_results import make_snapshot
@@ -646,6 +647,7 @@ def render_nightly_scan_report():
     st.markdown("## NIGHTLY SCAN REPORT")
     st.caption("Three qualification stages: PIPELINE / GEM JR / GEM. Three underlying clinical collectors still preserve their separate evidence audits; verify/recheck/rescan targets are consolidated. A finished workflow is not full FDA, SEC, issuer or market verification.")
     render_extended_source_report()
+    render_filings_base_amendments()
 
     report, loading_note = published_report()
     running = latest_run()
