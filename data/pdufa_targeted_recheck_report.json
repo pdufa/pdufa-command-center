@@ -1,23 +1,23 @@
 {
-  "source_report_run_id": "38602603100",
-  "generated_at_utc": "2026-10-14T18:16:20.215439+00:00",
+  "source_report_run_id": "38613805573",
+  "generated_at_utc": "2026-10-15T02:21:14.249777+00:00",
   "status": "PARTIAL",
   "execution_status": "COMPLETE",
   "scope": "Targeted recheck of previously unresolved required claims only",
-  "findings_due": 37,
-  "findings_verified": 1,
-  "required_findings_unresolved": 36,
-  "source_observations": 37,
+  "findings_due": 98,
+  "findings_verified": 30,
+  "required_findings_unresolved": 68,
+  "source_observations": 98,
   "by_source": {
     "FDA": {
-      "rechecked": 0,
-      "newly_supported": 0,
-      "still_unresolved": 0
+      "rechecked": 29,
+      "newly_supported": 1,
+      "still_unresolved": 28
     },
     "SEC": {
-      "rechecked": 35,
-      "newly_supported": 1,
-      "still_unresolved": 34
+      "rechecked": 41,
+      "newly_supported": 3,
+      "still_unresolved": 38
     },
     "FINANCIAL": {
       "rechecked": 2,
@@ -25,17 +25,17 @@
       "still_unresolved": 2
     },
     "ISSUER": {
-      "rechecked": 0,
-      "newly_supported": 0,
+      "rechecked": 26,
+      "newly_supported": 26,
       "still_unresolved": 0
     }
   },
   "states": {
-    "REVIEW_REQUIRED": 31,
-    "CONFLICT": 5,
-    "VERIFIED": 1
+    "VERIFIED": 30,
+    "CONFLICT": 31,
+    "REVIEW_REQUIRED": 37
   },
-  "recheck_ledger_sha256": "d773f31e4c25fdb5ecedb5e99187a930c9a126348d68937d28b91aa1b384aea4",
+  "recheck_ledger_sha256": "cf03559a8dd7146d456a4538ae57c27f93a6e9d6f6e95cd5db5731d913bd7e44",
   "recheck_ledger": "data/pdufa_targeted_recheck_results.csv",
   "source_baseline_unchanged": true,
   "trade_entry_authorized": false,
@@ -43,124 +43,124 @@
   "caveat": "New claim evidence is a recheck comparison, not an update to canonical source verification, a certified financing sequence or permission to trade. Independent full-source reconciliation is required before promoting any claims.",
   "unresolved_examples": [
     {
-      "ticker": "VTRS",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
-    },
-    {
-      "ticker": "IONS",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "ticker": "IRD",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "INO",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "AGIO",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
-    },
-    {
-      "ticker": "CYTK",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "No completed transaction clause matches the stored closing date"
-    },
-    {
-      "ticker": "SMMT",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "No completed transaction clause matches the stored closing date"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "CAPR",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
-      "ticker": "VRTX",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
-    },
-    {
-      "ticker": "ZLAB",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "ticker": "BBIO",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "ANAB",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
-    },
-    {
-      "ticker": "CORT",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "MLYS",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
       "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "GILD",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "PRAX",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
-      "ticker": "VTRS",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
-    },
-    {
-      "ticker": "NUVB",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "ticker": "COGT",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "IBRX",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
       "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "DYN",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
+    },
+    {
+      "ticker": "PRAX",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "ARQT",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     },
     {
       "ticker": "CGEM",
-      "category": "SEC",
-      "claim": "FINANCING_CLOSURE",
-      "reason": "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence"
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
+    },
+    {
+      "ticker": "APMD",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
+    },
+    {
+      "ticker": "EXEL",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
+    },
+    {
+      "ticker": "NTLA",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
+    },
+    {
+      "ticker": "HRMY",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
+    },
+    {
+      "ticker": "AXSM",
+      "category": "FDA",
+      "claim": "PDUFA_TARGET",
+      "reason": "Expected evidence changed between saved review queue and fresh verification"
     }
   ]
 }
