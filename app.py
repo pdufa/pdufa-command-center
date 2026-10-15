@@ -2748,7 +2748,7 @@ def _step7_snapshot(signature):
 
 def render_pre_phase3():
     """Step 7: collector-synced Phase 1–3 research + exact-event financing review."""
-    st.markdown("## PRE PHASE 3 — LIVE SOURCE MONITOR")
+    st.markdown("## PIPELINE — EARLY CLINICAL SOURCE MONITOR")
     st.caption(
         "Source-dated scanner snapshots from scheduled jobs. This is not a real-time "
         "price service, a confirmed corporate readout calendar, or a trade recommendation."
@@ -3225,7 +3225,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-14 · STARTUP FIX V1 · SOURCE SCAN REPAIRS V2 · ALL-TRIAL REVIEW PRIORITY V1 · DATED ISSUER CHECKS V1 · PDUFA PIPELINE PRIMARY · PRE PHASE 3 TRIALS FIRST V4 · PRE PHASE 3 SCORE COLUMN V1 · PRE PHASE 3 TRADE RESEARCH V1 · MOBILE PLAN NAV FIX V1 · PRE PHASE 3 TAB V1 · PRE-READOUT INPUT AUDIT V1 · NAVIGATION V19 — POST PHASE 3 SUBMENU BESIDE PRE PHASE 3 · FDA DECISION ENGINE V3.2 STRICT + DIRECTIONAL V1.9 · FINANCING CACHE FIX · GEM CHART DEPLOY CHECK 20261014")
+st.caption("BUILD 2026-10-14 · PIPELINE → GEM JR → GEM · verified clinical and financing evidence retained · 9 PM Pacific sequential scans")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3249,10 +3249,10 @@ if st.session_state.nav in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):
 if st.session_state.detail_return_page in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):
     st.session_state.detail_return_page = "PDUFA"
 # Backwards compatibility: old saved sessions used PIPELINE as the page ID.
-if st.session_state.nav == "PRE PHASE 3":
-    # Migrate existing sessions to the new PDUFA submenu without losing the selected view.
+if st.session_state.nav in ("PRE PHASE 3", "POST PHASE 3"):
+    legacy_stage = st.session_state.nav
     st.session_state.nav = "PDUFA"
-    st.session_state["pdufa_subtab"] = "PRE PHASE 3"
+    st.session_state["pdufa_subtab"] = "PIPELINE" if legacy_stage == "PRE PHASE 3" else "GEM JR"
 if st.session_state.nav == "PIPELINE":
     st.session_state.nav = "PDUFA"
     st.session_state["pdufa_subtab"] = "PIPELINE"
@@ -3279,8 +3279,10 @@ else:
 if page == "PDUFA":
     # Preserve saved subtab selection after older labels are removed or renamed.
     previous_subtab = st.session_state.get("pdufa_subtab")
-    if previous_subtab == "PHASE 3 DAILY":
-        st.session_state["pdufa_subtab"] = "POST PHASE 3"
+    if previous_subtab in ("PHASE 3 DAILY", "POST PHASE 3"):
+        st.session_state["pdufa_subtab"] = "GEM JR"
+    elif previous_subtab == "PRE PHASE 3":
+        st.session_state["pdufa_subtab"] = "PIPELINE"
     elif previous_subtab == "WATCHLIST / TRADING":
         st.session_state["pdufa_subtab"] = "WT"
     elif previous_subtab == "NIGHTLY SCAN REPORT":
@@ -3289,10 +3291,10 @@ if page == "PDUFA":
         st.session_state["pdufa_subtab"] = "GEM"
     elif previous_subtab in ("SCORE AUDIT", "SCORING TESTS"):
         st.session_state["pdufa_subtab"] = "PIPELINE"
-    # Pipeline, PRE PHASE 3 and the installed post-readout trading workspace.
-    # Track the selected tab to avoid running the pre-readout evidence screen in the background.
-    unified_tab, pipeline_tab, pre_phase3_tab, intake_tab, nightly_report_tab, watch_trade_tab = st.tabs(
-        ["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "SCANS", "WT"],
+    # Clinical and financing collectors remain; only redundant navigation is retired.
+    # The tab order is the qualification progression, not a claim of eligibility.
+    pipeline_tab, gem_jr_tab, unified_tab, nightly_report_tab, watch_trade_tab = st.tabs(
+        ["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"],
         key="pdufa_subtab", on_change="rerun",
     )
     with unified_tab:
@@ -4119,13 +4121,17 @@ if page == "PDUFA":
                             st.info("No loaded records.")
             st.caption("Master-source records remain available for Watchlist, Analysis and Invest. Missing evidence is not treated as verified.")
 
-    with pre_phase3_tab:
-        if pre_phase3_tab.open:
-            render_pre_phase3()
+    with pipeline_tab:
+        if pipeline_tab.open:
+            if st.toggle("SHOW EARLY CLINICAL RESEARCH / READINESS", value=False, key="pipeline_early_research"):
+                render_pre_phase3()
 
-    with intake_tab:
-        if intake_tab.open:
-            render_post_phase3_workspace()
+    with gem_jr_tab:
+        if gem_jr_tab.open:
+            from gem_jr_ui import render_gem_jr
+            render_gem_jr()
+            if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH", value=False, key="gemjr_extended_research"):
+                render_post_phase3_workspace()
 
     with nightly_report_tab:
         if nightly_report_tab.open:
