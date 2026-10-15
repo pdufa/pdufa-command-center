@@ -286,81 +286,75 @@ def render_gem_scans(root="data"):
         and comparison.get("as_of_pacific") == day.isoformat()
         and isinstance(comparison.get("capability_matrix"), list)
     )
-    with st.expander("GEM SURVEY DIRECTORY — 11 SURVEYS", expanded=False):
+    with st.expander("GEM SURVEY DIRECTORY — 7 PRIMARY SURVEYS", expanded=False):
         st.caption(
-            "Survey 11 is the BPW research-quality comparison. The former FDA "
-            "approval-probability survey and its standalone Prediction Engine "
-            "page are retired. Only surveys 1 and 2 are entry benchmarks."
+            "Seven GEM survey categories covering Pipeline-origin programs. "
+            "Only 1 (Phase 3) and 2 (second financing) determine GEM research "
+            "qualification. 13F and Form 4 evidence share one advisory category "
+            "but retain distinct sources. Market cap stays in Pipeline; "
+            "unvalidated historical returns and BPW comparison are RESEARCH "
+            "DIAGNOSTICS, not daily surveys."
         )
+        if comparison_current:
+            st.caption("Optional source-coverage snapshot dated " +
+                       str(comparison.get("as_of_pacific")) +
+                       " — it does not certify current nightly scan completion.")
+        else:
+            st.caption("No same-day optional coverage audit. Source coverage "
+                       "is NOT VERIFIED in this directory; primary scans and "
+                       "their evidence statuses are shown separately.")
         st.dataframe(
             pd.DataFrame(survey_rows(comparison if comparison_current else {})),
             use_container_width=True, hide_index=True,
         )
-    with st.expander("GEM vs BPW — REAL DATA COVERAGE COMPARISON", expanded=False):
-        if not comparison_current:
-            st.info("A same-day BPW-style source coverage comparison is not yet published.")
-        else:
-            st.caption(
-                "Comparison is of GEM's source-data COVERAGE against BPW's advertised "
-                "capabilities, not a head-to-head performance test or proprietary "
-                "PoA score comparison. Missing data is reported, never fabricated."
-            )
-            st.dataframe(
-                pd.DataFrame(comparison["capability_matrix"])[
-                    ["capability", "state", "observed_gem_rows",
-                     "total_gem_rows", "data_coverage_pct", "caveat"]
-                ], use_container_width=True, hide_index=True
-            )
-            st.download_button(
-                "DOWNLOAD GEM vs BPW COMPARISON",
-                json.dumps(comparison, indent=2).encode("utf-8"),
-                file_name=f"gem_bpw_comparable_{day:%Y%m%d}.json",
-                mime="application/json", key="gem_bpw_comparable_json_export",
-            )
 
-    st.markdown("### HEDGE-FUND OWNERSHIP — SEC 13F QUARTERLY EVIDENCE")
-    h1, h2 = st.columns(2)
-    h1.metric("Candidates with specialist 13F matches",
-              status.get("hedge_fund_13f_matched_candidates", 0))
-    h2.metric("Companies with at least one manager increasing",
-              status.get("hedge_fund_accumulating_candidates", 0))
-    st.caption(
-        "Initial monitored managers: Baker Bros., RA Capital, OrbiMed and "
-        "Perceptive Advisors. 13F shows reported long positions as of quarter "
-        "end; filings can arrive up to 45 days later. Reported changes are "
-        "NOT proof of purchases made today, and absence is not proof of "
-        "zero hedge-fund ownership. These signals never change the two "
-        "entry benchmarks."
-    )
-    with st.expander("ALL WATCHLIST 13F MANAGER DETAILS AND SOURCES", expanded=False):
-        hcols = ["Ticker", "Drug", "Hedge-fund signal",
-                 "Hedge-fund accumulation /10", "Hedge-fund managers holding",
-                 "Hedge-fund managers adding", "Hedge-fund managers reducing",
-                 "Hedge-fund managers new", "Hedge-fund managers no longer reported",
-                 "Hedge-fund quarter end", "Hedge-fund filed as of",
-                 "Hedge-fund position details", "Hedge-fund source links",
-                 "Hedge-fund limitation"]
-        st.dataframe(pd.DataFrame(items).reindex(columns=hcols).head(250),
-                     use_container_width=True, hide_index=True)
-    st.markdown("### INSIDER TRADING — SEC FORM 4 SOURCE REVIEW")
-    st.caption(
-        "Reported, priced open-market common-share purchase (P) and sale (S) "
-        "transactions from company-matched Form 4 XML. Grants, exercises "
-        "and unverified filings do not create a buy signal. This is an "
-        "advisory research factor, not a new entry requirement or part of "
-        "the currently unvalidated 100-point weights."
-    )
-    st.metric("Watchlist rows with verified insider source review",
-              status.get("insider_form4_covered_rows", 0))
-    insider_fields = ["Ticker", "Drug", "Insider Form 4 signal",
-                      "Insider open-market purchases", "Insider open-market sales",
-                      "Insider purchase amount USD", "Insider sale amount USD",
-                      "Insider net reported amount USD", "Insider buyers",
-                      "Insider last filing date", "Insider filings reviewed",
-                      "Insider source links", "Insider risk note"]
-    with st.expander("FORM 4 PURCHASES, SALES, SOURCE LINKS AND GAPS", expanded=False):
-        st.dataframe(pd.DataFrame(items).reindex(columns=insider_fields).head(250),
-                     use_container_width=True, hide_index=True)
+    with st.container(border=True, key="gem_ownership_insider_card"):
+        st.markdown("### OWNERSHIP & INSIDER ACTIVITY — ADVISORY")
+        st.caption("A single survey category, with SEC 13F holdings and Form 4 "
+                   "insider reports checked and displayed independently.")
+        st.markdown("#### HEDGE-FUND OWNERSHIP — SEC 13F")
+        h1, h2 = st.columns(2)
+        h1.metric("Candidates with specialist 13F matches",
+                  status.get("hedge_fund_13f_matched_candidates", 0))
+        h2.metric("Companies with at least one manager increasing",
+                  status.get("hedge_fund_accumulating_candidates", 0))
+        st.caption(
+            "Initial monitored managers: Baker Bros., RA Capital, OrbiMed and "
+            "Perceptive Advisors. 13F shows reported long positions as of quarter "
+            "end; filings can arrive up to 45 days later. Reported changes are "
+            "NOT proof of purchases made today, and absence is not proof of "
+            "zero hedge-fund ownership. These signals never change the two "
+            "entry benchmarks."
+        )
+        with st.expander("ALL WATCHLIST 13F MANAGER DETAILS AND SOURCES", expanded=False):
+            hcols = ["Ticker", "Drug", "Hedge-fund signal",
+                     "Hedge-fund accumulation /10", "Hedge-fund managers holding",
+                     "Hedge-fund managers adding", "Hedge-fund managers reducing",
+                     "Hedge-fund managers new", "Hedge-fund managers no longer reported",
+                     "Hedge-fund quarter end", "Hedge-fund filed as of",
+                     "Hedge-fund position details", "Hedge-fund source links",
+                     "Hedge-fund limitation"]
+            st.dataframe(pd.DataFrame(items).reindex(columns=hcols).head(250),
+                         use_container_width=True, hide_index=True)
+        st.markdown("#### INSIDER TRADING — SEC FORM 4 SOURCE REVIEW")
+        st.caption(
+            "Reported, priced open-market common-share purchase (P) and sale (S) "
+            "transactions from company-matched Form 4 XML. Grants, exercises "
+            "and unverified filings do not create a buy signal. This is an "
+            "advisory research factor, not a new entry requirement or part of "
+            "the currently unvalidated 100-point weights."
+        )
+        st.metric("Watchlist rows with verified insider source review",
+                  status.get("insider_form4_covered_rows", 0))
+        insider_fields = ["Ticker", "Drug", "Insider Form 4 signal",
+                          "Insider open-market purchases", "Insider open-market sales",
+                          "Insider purchase amount USD", "Insider sale amount USD",
+                          "Insider net reported amount USD", "Insider buyers",
+                          "Insider last filing date", "Insider filings reviewed",
+                          "Insider source links", "Insider risk note"]
+        with st.expander("FORM 4 PURCHASES, SALES, SOURCE LINKS AND GAPS", expanded=False):
+            st.dataframe(pd.DataFrame(items).reindex(columns=insider_fields).head(250),
+                         use_container_width=True, hide_index=True)
     st.divider()
     # Research confirmations remain visible while the nightly SEC collector
     # independently rechecks each dated transaction. Neither the research
@@ -639,7 +633,40 @@ def render_gem_scans(root="data"):
             "calibration must be validated before changing master-score weights."
         )
     st.divider()
-    render_gem_calibration(root)
+    st.markdown("### RESEARCH DIAGNOSTICS — NOT NIGHTLY SURVEYS")
+    st.caption(
+        "Optional source-coverage comparison and historical score calibration "
+        "are available for manual review. They do not create Pipeline records, "
+        "GEM eligibility, trading returns, or nightly scan pass requirements."
+    )
+    if st.toggle("SHOW BIOPHARMAWATCH FEATURE-COVERAGE DIAGNOSTIC",
+                 value=False, key="gem_show_bpw_diagnostic"):
+        if not comparison_current:
+            st.info("A same-day BPW-style source coverage comparison is not yet published.")
+        else:
+            st.caption(
+                "Comparison is of GEM's source-data COVERAGE against BPW's advertised "
+                "capabilities, not a head-to-head performance test or proprietary "
+                "PoA score comparison. Missing data is reported, never fabricated."
+            )
+            st.dataframe(
+                pd.DataFrame(comparison["capability_matrix"])[
+                    ["capability", "state", "observed_gem_rows",
+                     "total_gem_rows", "data_coverage_pct", "caveat"]
+                ], use_container_width=True, hide_index=True
+            )
+            st.download_button(
+                "DOWNLOAD GEM vs BPW COMPARISON",
+                json.dumps(comparison, indent=2).encode("utf-8"),
+                file_name=f"gem_bpw_comparable_{day:%Y%m%d}.json",
+                mime="application/json", key="gem_bpw_comparable_json_export",
+            )
+
+        st.link_button("RUN OPTIONAL BPW RESEARCH DIAGNOSTIC",
+                       "https://github.com/pdufa/pdufa-command-center/actions/workflows/gem-research-diagnostics.yml")
+    if st.toggle("SHOW HISTORICAL GEM BACKTEST / CALIBRATION",
+                 value=False, key="gem_show_historical_diagnostic"):
+        render_gem_calibration(root)
     st.caption(
         "Qualification here means a source-supported research ranking only. "
         "Do not place trades from these scores alone: cash-only runway is a historical "
