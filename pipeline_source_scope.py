@@ -30,10 +30,12 @@ def pipeline_origins(data_dir, today=None):
 def source_scope(data_dir, today=None):
     """Enumerate scan targets only after Pipeline has minted their identity."""
     root = Path(data_dir)
-    record_ids, _pipeline_tickers = pipeline_origins(root, today=today)
+    record_ids, ticker_by_id = pipeline_origins(root, today=today)
     events = [
         row for row in read_rows(root / "pdufa_candidates.csv")
         if "APPLICATION|" + str(row.get("event_key") or "").strip() in record_ids
+        and str(row.get("ticker") or "").strip().upper() ==
+        ticker_by_id.get("APPLICATION|" + str(row.get("event_key") or "").strip())
     ]
     # Only issuer rows connected to Pipeline application events being scanned.
     # Other Pipeline stages are displayed NOT_CHECKED until an application exists.
