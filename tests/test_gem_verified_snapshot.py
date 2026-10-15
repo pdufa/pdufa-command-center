@@ -113,9 +113,19 @@ class ExactGEMClearanceTests(unittest.TestCase):
                 "verified_as_of": "2026-10-14",
             }])
             active, historical, _ = source_cleared_gems(root, as_of=date(2026, 10, 14))
-            self.assertEqual(active, [])
-            self.assertEqual(len(historical), 1)
-            self.assertEqual(historical[0]["Trade status"], "HISTORICAL / NO NEW ENTRY")
+            self.assertEqual(len(active), 1)
+            self.assertEqual(historical, [])
+            self.assertIn("NO NEW ENTRY — PDUFA −3", active[0]["Trade status"])
+            # The program is tracked as research even on PDUFA day itself.
+            event_day, event_history, _ = source_cleared_gems(
+                root, as_of=date(2026, 10, 16))
+            self.assertEqual(len(event_day), 1)
+            self.assertEqual(event_history, [])
+            expired, archived, _ = source_cleared_gems(
+                root, as_of=date(2026, 10, 17))
+            self.assertEqual(expired, [])
+            self.assertEqual(len(archived), 1)
+            self.assertEqual(archived[0]["Trade status"], "HISTORICAL / NO NEW ENTRY")
 
     def test_overview_presents_clearances_while_separating_candidates(self):
         root = Path(__file__).resolve().parents[1]
