@@ -103,3 +103,39 @@ python -m unittest discover -s tests -p 'test_sec_recheck_fail_closed.py' -v
 The reconciled five-source summary, full ledger, and required review queue are published to `data/pdufa_source_report.json`, `data/pdufa_source_verification.csv`, and `data/pdufa_source_review_queue.csv`. SCANS shows scan execution separately from required-evidence verification, source counts, and unavailable supplemental data. A fresh hash/scope/run audit is required before publishing. This publication does not promote trading gates or manufacture missing FDA/financing/borrow evidence.
 
 The extended-source workflow also runs after changes to its collectors or issuer source mapping, so a collector repair receives a fresh live check and the existing START/END notifications. Checkouts are pinned to the workflow commit. `tests/test_scan_completion_repairs.py` covers the observed legacy SEC, transition-report, cash-period, issuer, funding handoff, and supplemental-data failures.
+
+## FDA primary filings: weekday DELTA / Sunday FULL
+
+The scheduled 10:00 PM America/Los_Angeles overnight chain uses the existing
+DELTA mode on Monday through Saturday and FULL on Sunday. This applies to the
+FDA primary-evidence verification stage as well as SEC/clinical.
+
+* Every night the source collector still inventories **all active tracked
+  exact drug/indication events**, including new applications, target dates,
+  reported submissions, and decisions. The FDA primary verifier makes a
+  lightweight same-issuer CIK SEC filings-index check for each distinct tracked
+  issuer. An index is a **change signal**, never proof of any FDA filing or
+  decision.
+* A previously **VERIFIED** FDA claim is carried forward only if its exact-event
+  identity, application and clinical fields, expected date or outcome, source
+  mapping, and the issuer's validated SEC index fingerprint all agree with the
+  last independently verified record. No missing/error index permits reuse.
+* A new or amended SEC filing, changed FDA target, new approval/CRL outcome,
+  changed identity/source, unsupported prior result, or PDUFA date within
+  **45 days** triggers a fresh detailed primary-source verification.
+* Every Sunday FULL reopens **all** tracked FDA claim documents, including
+  historical ones. Unverified or conflicting claims remain under review.
+* Every carried-forward FDA claim retains the **original source document
+  SHA-256**, the program fingerprint, and a new check time with an explicit
+  CARRIED_FORWARD reason. This only means the issuer-index watch was unchanged,
+  **not** that the FDA source itself was freshly downloaded or that a new
+  application/approval was established.
+
+**Coverage limit:** the FDA verifier checks the *tracked PDUFA event universe*.
+A company's SEC index cannot capture every FDA action, unpublished regulatory
+letter, or issuer-only website amendment. The next Sunday primary source audit
+can catch changed pages, but it cannot guarantee detection of FDA changes in
+untracked applications. Do not describe this as complete FDA submission
+surveillance. FDA approval requires the independent appropriate official
+source; an SEC filing is not FDA approval. Trade entry/financing qualification
+remains separately gated.
