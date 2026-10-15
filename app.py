@@ -4248,13 +4248,32 @@ if page == "PDUFA":
                 st.markdown("### GEM")
                 from gem_potential_ui import render_gem_potential
                 render_gem_potential(root="data", compact=True,
-                                     namespace="gem_shared_potential")
+                                     namespace="gem_shared_potential",
+                                     show_previous=False)
+                # Prioritize per-program GEM factor/entry/exit detail rather than
+                # hiding the six-factor master behind a closed toggle.
                 if st.toggle("GEM — THREE-LEVEL VERIFIED MASTER (show / hide)",
-                             value=False, key="gem_shared_show_master"):
+                             value=True, key="gem_shared_show_master"):
                     from gem_nested_master_ui import render_gem_nested_master
                     with st.container(height=600, border=False,
                                       key="gem_shared_master_content"):
-                        render_gem_nested_master(root="data", selections_ready=True, compact=True)
+                        render_gem_nested_master(root="data", selections_ready=True,
+                                                 compact=True, show_previous=False)
+                # ONE previous archive at the bottom of the GEM stage, after
+                # both verified lists and detailed priority/score tables.
+                from gem_membership_history import read_history, departed_stage_rows
+                previous_gem = departed_stage_rows(read_history("data"), "GEM")
+                with st.container(border=True, key="gem_previous_candidates"):
+                    st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
+                    st.caption("First found, left date, days in GEM and reason. "
+                               "PDUFA −3 is a trading warning, not list expiry.")
+                    with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
+                                     expanded=False):
+                        if previous_gem:
+                            st.dataframe(pd.DataFrame(previous_gem),
+                                         hide_index=True, use_container_width=True)
+                        else:
+                            st.caption("No GEM departures recorded by a validated scan yet.")
 
     with nightly_report_tab:
         if nightly_report_tab.open:
