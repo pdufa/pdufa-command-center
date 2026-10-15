@@ -761,6 +761,37 @@ def documented_completed_public_equity_financing(text, closing_date):
     return ""
 
 
+def documented_completed_eur_senior_notes(text, closing_date):
+    """Completed EUR senior-note offering with same-dated SEC text and debt use.
+
+    This is ONE issuer financing transaction. Original euros are retained;
+    unrelated USD disclosures, pricing terms and senior-note forecasts never
+    count. This is not proof of the second post-Phase-3 financing.
+    """
+    month = r"(?:January|February|March|April|May|June|July|August|September|October|November|December)"
+    dated = r"(?:20\d{2}-\d{2}-\d{2}|" + month + r"\s+\d{1,2},?\s+20\d{2})"
+    pattern = (
+        r"(?i)\bOn\s+(" + dated + r")[,\s]+"
+        r"(?P<issuer>[A-Za-z][A-Za-z.,&\s-]{2,90}\s*\([^)]{0,105}\))\s+"
+        r"completed\s+a\s+public\s+offering\s+of\s+€\s*[\d,]+\s+"
+        r"aggregate\s+principal\s+amount\s+of\s+(?:its|the)\s+"
+        r"\d+(?:\.\d+)?%\s+Senior\s+Notes\s+due\s+20\d{2}\b"
+    )
+    for match in re.finditer(pattern, text):
+        if dates(match.group(1)) != {closing_date}:
+            continue
+        passage = text[match.start():match.end() + 700]
+        if re.search(r"(?i)\b(?:expected|anticipated|proposed|planned|will\s+complete)\b",
+                     text[match.start():match.end()]):
+            continue
+        # Explicit planned debt-repayment use identifies this as refinancing
+        # context rather than a program-specific equity infusion.
+        if not re.search(r"(?i)\b(?:repayment|refinancing|refinance|repay)\b", passage):
+            continue
+        return passage[:1000]
+    return ""
+
+
 def documented_funded_transaction(text, closing_date):
     """Explicit dated securities sale, actual loan receipt, or closed placement.
 
@@ -1365,6 +1396,11 @@ class Verifier:
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
                     "Company-matched SEC document confirms this dated funded transaction only; not the post-Phase-3 second-financing sequence",
                     url, close, close, completed)
+            eur_notes = documented_completed_eur_senior_notes(plain, close)
+            if eur_notes:
+                return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
+                    "SEC issuer matches one completed EUR-denominated senior-notes offering in debt-refinancing context; NOT a second post-Phase-3 clinical-program financing",
+                    url, close, close, eur_notes)
             preferred_placement = documented_closed_preferred_placement(plain, close)
             if preferred_placement:
                 return self.result(event, "SEC", "FINANCING_CLOSURE", "VERIFIED",
