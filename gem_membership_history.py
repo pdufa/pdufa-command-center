@@ -177,15 +177,35 @@ def departed_stage_rows(state, stage):
     for entry in slot["entries"].values():
         for period in entry.get("periods", []):
             if period.get("left"):
+                reason = period.get("reason") or entry.get("left_reason", "NOT RECORDED")
+                from_date, to_date = period["found"], period["left"]
+                # Dates are actual first-observed and departed SCAN dates,
+                # never clinical/financing/PDUFA dates inferred as membership.
+                duration = (date.fromisoformat(to_date) -
+                            date.fromisoformat(from_date)).days
+                active_gem = state["stages"]["GEM"]["entries"].get(
+                    entry["pipeline_id"], {})
+                if entry["status"] == "ACTIVE":
+                    location = "RETURNED TO " + stage.replace("_", " ")
+                elif (stage == "GEM_JR" and
+                      active_gem.get("status") == "ACTIVE"):
+                    location = "GEM ACTIVE"
+                elif reason == "PDUFA_EXPIRED":
+                    location = "EXPIRED / PREVIOUS"
+                elif reason.startswith("FDA_RESOLVED_"):
+                    location = "FDA RESOLVED / PREVIOUS"
+                else:
+                    location = "PREVIOUS " + stage.replace("_", " ")
                 records.append({
                     "Pipeline ID": entry["pipeline_id"],
                     "Ticker": entry["ticker"],
                     "Drug": entry.get("drug", ""),
                     "NCT ID": entry.get("nct_id", ""),
-                    "Date Found": period["found"],
-                    "Date Left": period["left"],
-                    "Leave Reason": period.get("reason") or
-                                    entry.get("left_reason", "NOT RECORDED"),
+                    "Date Found": from_date,
+                    "Date Left": to_date,
+                    "Days in List": duration,
+                    "Leave Reason": reason,
+                    "Current Location": location,
                     "PDUFA Date": entry.get("pdufa_date", ""),
                     "Listing status": (
                         "RETURNED / ACTIVE" if entry["status"] == "ACTIVE"
