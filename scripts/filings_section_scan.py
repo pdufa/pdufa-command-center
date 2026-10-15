@@ -14,6 +14,7 @@ from pathlib import Path
 if __package__ in ("", None):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from pipeline_source_scope import source_scope
 from scripts.source_verification import (
     FIELDS, STATES, VERSION, digest, read_rows, scope_hash, summary, verify_source,
 )
@@ -88,8 +89,8 @@ def load_snapshot(folder, data_dir, section):
     """Reject stale scope, missing evidence, altered hashes and incomplete ledgers."""
     source, mode = section_config(section)
     report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
-    events = read_rows(data_dir / "pdufa_candidates.csv")
-    companies = read_rows(data_dir / "company_registry.csv")
+    # A scan cannot invent candidates or issuers outside Pipeline intake.
+    events, companies = source_scope(data_dir)
     if (report.get("schema_version") != 1 or report.get("verification_version") != VERSION
             or report.get("section") != section or report.get("source") != source
             or report.get("scan_mode") != mode
@@ -135,6 +136,17 @@ def collect(section, data_dir, out):
         working = Path(temporary)
         for path in data_dir.glob("*.csv"):
             shutil.copyfile(path, working / path.name)
+        events, companies = source_scope(data_dir)
+        if not events:
+            raise ValueError("No exact Pipeline application events eligible for SEC/FDA scanning")
+        # Downstream source verification may enrich ONLY these Pipeline events.
+        original_candidates = read_rows(data_dir / "pdufa_candidates.csv")
+        original_registry = read_rows(data_dir / "company_registry.csv")
+        if not original_registry:
+            raise ValueError("Company registry unavailable; cannot verify sources")
+        write_csv(working / "pdufa_candidates.csv", events, list(original_candidates[0]))
+        write_csv(working / "company_registry.csv", companies,
+                  list(original_registry[0]))
         saved = read_rows(data_dir / "pdufa_source_verification.csv")
         for name, (agency, _) in SECTIONS.items():
             if agency != source:
