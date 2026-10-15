@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
+import re
 from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -27,7 +29,7 @@ FIELDS = (
     "phase3_status", "nct_id", "first_close_date", "second_close_date",
     "first_sec_status", "second_sec_status", "first_sec_url", "second_sec_url",
     "first_sec_sha256", "second_sec_sha256", "recheck_status",
-    "recheck_note", "checked_at_utc", "gem_entry_authorized",
+    "recheck_note", "checked_at_utc", "issuer_sec_registry_sha256", "gem_entry_authorized",
 )
 
 
@@ -53,7 +55,10 @@ def unique_event_map(rows):
     return events, duplicate
 
 
-def recheck_records(verifier, events, financing_records):
+def recheck_records(verifier, events, financing_records, *, mode="FULL", prior=None):
+    if mode not in {"FULL", "DELTA"}:
+        raise ValueError("Unsupported financing recheck mode")
+    previous = {r.get("event_key"): r for r in (prior or [])}
     """Exactly one research result per previously attested financing event."""
     events_by_key, duplicate = unique_event_map(events)
     now = datetime.now(timezone.utc).isoformat()
@@ -80,7 +85,8 @@ def recheck_records(verifier, events, financing_records):
             "second_sec_url": finance.get("second_financing_source", ""),
             "first_sec_sha256": "", "second_sec_sha256": "",
             "recheck_status": "NOT_VERIFIED", "recheck_note": "",
-            "checked_at_utc": now, "gem_entry_authorized": "NO",
+            "checked_at_utc": now, "issuer_sec_registry_sha256": "",
+            "gem_entry_authorized": "NO",
         }
         if key in duplicate or not event or str(event.get("ticker") or "").upper() != ticker:
             row["recheck_status"] = "EXACT_EVENT_MISSING_OR_CONFLICTED"
@@ -90,6 +96,36 @@ def recheck_records(verifier, events, financing_records):
         if not first or not second or not first < second <= verifier.as_of:
             row["recheck_status"] = "CLOSE_DATES_INVALID"
             row["recheck_note"] = "Two separate, nonfuture funding dates not established"
+            results.append(row)
+            continue
+        # One lightweight issuer SEC index check on weekdays; reopen a
+        # previously supported pair if any filing/amendment or trial identity
+        # changed. No SEC access or hash => cannot reuse historical proof.
+        inventory = verifier.registry({"ticker": ticker})
+        if inventory.get("verification_status") == "VERIFIED":
+            row["issuer_sec_registry_sha256"] = inventory.get("source_sha256", "")
+        prior_row = previous.get(key, {})
+        matching = all(prior_row.get(k, "") == row.get(k, "") for k in (
+            "event_key", "ticker", "phase3_readout_date", "phase3_status",
+            "nct_id", "first_close_date", "second_close_date",
+            "first_sec_url", "second_sec_url"))
+        carry = (mode == "DELTA" and matching
+                 and prior_row.get("recheck_status") == "TRANSACTIONS_RECHECKED_REVIEW"
+                 and prior_row.get("first_sec_status") == "VERIFIED"
+                 and prior_row.get("second_sec_status") == "VERIFIED"
+                 and row["issuer_sec_registry_sha256"]
+                 and row["issuer_sec_registry_sha256"] == prior_row.get("issuer_sec_registry_sha256")
+                 and all(re.fullmatch(r"[a-f0-9]{64}", prior_row.get(k, "")) for k in (
+                     "first_sec_sha256", "second_sec_sha256")))
+        if carry:
+            for k in ("first_sec_status", "second_sec_status",
+                      "first_sec_sha256", "second_sec_sha256", "recheck_status"):
+                row[k] = prior_row[k]
+            row["recheck_note"] = (
+                "CARRIED_FORWARD: issuer SEC index and exact program/closing details "
+                "unchanged since prior document verification at "
+                + prior_row.get("checked_at_utc", "unknown")
+                + "; no trading eligibility or new SEC document verification implied.")
             results.append(row)
             continue
         results_for_closes = []
@@ -139,6 +175,7 @@ def recheck_records(verifier, events, financing_records):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
+    parser.add_argument("--mode", choices=("FULL", "DELTA"), default="FULL")
     parser.add_argument("--output", type=Path, default=Path("data/gem_two_close_recheck.csv"))
     parser.add_argument("--summary", type=Path,
                         default=Path("reports/gem_daily/gem_two_close_recheck_summary.json"))
@@ -149,7 +186,9 @@ def main(argv=None):
     if not financing or not events or not companies:
         parser.error("Mandatory financing, event, or company source file missing")
     verifier = Verifier(companies)
-    records = recheck_records(verifier, events, financing)
+    prior_path = args.data_dir / "gem_two_close_recheck.csv"
+    prior = read_rows(prior_path) if args.mode == "DELTA" and prior_path.is_file() else []
+    records = recheck_records(verifier, events, financing, mode=args.mode, prior=prior)
     if not records:
         parser.error("No historically attested second financing records to recheck")
     if len(records) != sum(r.get("second_financing_audit_status") == ATTESTED for r in financing):
@@ -161,7 +200,10 @@ def main(argv=None):
         writer.writerows(records)
     summary = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "saved_attestations_rechecked": len(records),
+        "scan_mode": args.mode,
+        "saved_attestations_reviewed": len(records),
+        "prior_sec_pairs_carried_forward": sum("CARRIED_FORWARD" in x["recheck_note"] for x in records),
+        "saved_attestations_rechecked": sum("CARRIED_FORWARD" not in x["recheck_note"] for x in records),
         "status_counts": dict(Counter(x["recheck_status"] for x in records)),
         "source_complete_eligibility_certified": False,
         "gem_entries_authorized": 0,
