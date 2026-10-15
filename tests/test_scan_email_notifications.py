@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 from scripts.scan_email import (
     EmailSettings, EmailSetupError, EmailSendError,
     compose_start, compose_end, report_summary, send_email,
-    place_self_sent_message_in_inbox,
+    file_pdufa_notification,
 )
 from scripts.run_scan_with_email import run_scan
 
@@ -116,7 +116,7 @@ class ScanEmailTests(unittest.TestCase):
         self.assertEqual(sent[0]["To"], settings.recipient)
         self.assertNotIn(settings.app_password, str(result))
 
-    def test_self_sent_notification_is_labeled_inbox_when_gmail_accepts(self):
+    def test_pdufa_notification_is_labeled_and_archived_without_resend(self):
         settings = EmailSettings("sample@gmail.com", "private-value", "sample@gmail.com")
         calls = []
         class FakeImap:
@@ -134,19 +134,83 @@ class ScanEmailTests(unittest.TestCase):
                 return "OK", [b""]
             def logout(self):
                 calls.append(("logout",))
-        status = place_self_sent_message_in_inbox(
+        result = file_pdufa_notification(
             settings, "<example@localhost>", imap_factory=FakeImap)
-        self.assertEqual(status, "INBOX_LABEL_ACCEPTED")
-        self.assertTrue(any(row[0] == "STORE" and row[-1] == r"(\Inbox)"
-                            for row in calls))
+        self.assertEqual(result, "PDUFA_LABEL_AND_ARCHIVE_ACCEPTED")
+        stores = [c for c in calls if c[0] == "STORE"]
+        self.assertEqual(stores, [
+            ("STORE", b"101", "+X-GM-LABELS", "(PDUFA)"),
+            ("STORE", b"101", "-X-GM-LABELS", r"(\Inbox)"),
+        ])
         self.assertNotIn(settings.app_password, str(calls))
 
-    def test_non_self_addressed_mail_never_accesses_imap(self):
-        self.assertEqual(
-            place_self_sent_message_in_inbox(
-                self.settings(), "<external@test>",
-                imap_factory=lambda *a, **kw: self.fail("IMAP must not start")),
-            "EXTERNAL_RECIPIENT_NOT_CHECKED")
+    def test_pdufa_label_is_added_to_script_sent_copy_with_external_recipient(self):
+        # The sender's PDUFA folder also retains notifications to other recipients.
+        settings = self.settings()
+        class FakeImap:
+            def __init__(self, *args, **kwargs):
+                self.commands = []
+            def login(self, *args):
+                pass
+            def select(self, *args):
+                return "OK", [b"1"]
+            def uid(self, command, *args):
+                self.commands.append((command, *args))
+                return ("OK", [b"12"] if command == "SEARCH" else [b""])
+            def logout(self):
+                pass
+        imap = FakeImap()
+        result = file_pdufa_notification(
+            settings, "<outbound@sample>", imap_factory=lambda *a, **kw: imap)
+        self.assertEqual(result, "PDUFA_LABEL_AND_ARCHIVE_ACCEPTED")
+        self.assertIn(("STORE", b"12", "+X-GM-LABELS", "(PDUFA)"), imap.commands)
+
+    def test_imap_filing_failure_does_not_resend_or_claim_archived(self):
+        settings = self.settings()
+        class FailedImap:
+            def __init__(self, *args, **kwargs):
+                self.store_calls = []
+            def login(self, *args):
+                pass
+            def select(self, *args):
+                return "OK", [b"1"]
+            def uid(self, command, *args):
+                if command == "SEARCH":
+                    return "OK", [b"88"]
+                self.store_calls.append((command, *args))
+                if len(self.store_calls) == 2:
+                    return "NO", [b"archive denied"]
+                return "OK", [b""]
+            def logout(self):
+                pass
+        imap = FailedImap()
+        status = file_pdufa_notification(
+            settings, "<justsent@sample>", imap_factory=lambda *a, **kw: imap)
+        self.assertEqual(status, "LABEL_APPLIED_ARCHIVE_NOT_CONFIRMED")
+
+    def test_actual_smtp_success_invokes_immediate_filing_once(self):
+        settings = EmailSettings("sample@gmail.com", "secret", "sample@gmail.com")
+        outgoing = []
+        class FakeSMTP:
+            def __init__(self, *args, **kwargs):
+                pass
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+            def login(self, *args):
+                pass
+            def send_message(self, message):
+                outgoing.append(message["Message-ID"])
+                return {}
+        with patch("scripts.scan_email.smtplib.SMTP_SSL", FakeSMTP), \
+                patch("scripts.scan_email.file_pdufa_notification",
+                      return_value="PDUFA_LABEL_AND_ARCHIVE_ACCEPTED") as filed:
+            response = send_email(settings, "[PDUFA] END - SEC", "done")
+        self.assertEqual(len(outgoing), 1)
+        filed.assert_called_once_with(settings, outgoing[0])
+        self.assertEqual(response["filing_status"], "PDUFA_LABEL_AND_ARCHIVE_ACCEPTED")
+        self.assertEqual(response["status"], "submitted_not_delivered")
 
     def test_two_emails_on_success_and_audit(self):
         with tempfile.TemporaryDirectory() as folder:
