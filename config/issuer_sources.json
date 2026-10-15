@@ -257,7 +257,16 @@
         ],
         "financing_research_documents": [
           "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000142/mlys-20250930.htm"
-        ]
+        ],
+        "financing_urls": [
+          "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000139/mlys2025q38kex991.htm"
+        ],
+        "individual_financing_close": {
+          "date": "2025-09-04",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341425000139/mlys2025q38kex991.htm",
+          "evidence_type": "SINGLE_COMPLETED_EQUITY_FINANCING_FROM_EXACT_DATED_SEC_EXHIBIT",
+          "explanation": "SEC-filed Nov 10, 2025 Exhibit 99.1 states Sept 4, 2025 public equity financing completed, gross proceeds approx $287.5M. ONE transaction only; distinct post-Phase-3 second closing and GEM eligibility still require separate verification."
+        }
       }
     },
     "hosts": [
