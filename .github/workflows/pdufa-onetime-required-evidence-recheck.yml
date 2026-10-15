@@ -1,6 +1,9 @@
 name: PDUFA One-Time Live Required Evidence Recheck
 
 # Kick off immediately when this reviewed workflow first reaches main.
+# Follow-up run after the FDA indication-versus-date comparison correction.
+# A push changing only this reviewed workflow reruns the exact queued claims;
+# the original baseline identity, hash and trade-eligibility guards still apply.
 # This is a comparison against the latest canonical review queue, NOT a
 # replacement for the 9 PM Pacific fully sequential FDA/SEC/clinical scan.
 on:
