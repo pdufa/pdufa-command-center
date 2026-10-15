@@ -18,6 +18,7 @@ from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
 from filings_base_amendments_ui import render_filings_base_amendments
+from scan_activity_dashboard import render_scans_activity
 from scripts.scan_recovery_triage import triage_source_rows
 from sec_search_discovery import financing_discovery_links
 from scripts.pdufa_morning_results import make_snapshot
@@ -620,8 +621,17 @@ def _number(v):
 
 
 def render_nightly_scan_report():
-    # Single SCANS home for live GitHub execution health, historical results,
-    # required evidence gaps, existing GEM, and manual controls.
+    # One SCANS home. History is read-only, source panels are evidence reviews,
+    # and PIN-protected controls retain their original dispatch behavior.
+    st.markdown("## SCANS — ACTIVITY, EVIDENCE & CONTROLS")
+    st.caption(
+        "Single scanning workspace for PIPELINE → GEM JR → GEM, with SEC/FDA "
+        "source evidence and manual rescans. Opening activity does not start a scan."
+    )
+    if st.toggle("SHOW LIVE ACTIVITY & HISTORY", value=False,
+                 key="unified_scans_show_activity"):
+        render_scans_activity(embedded=True)
+        st.divider()
     st.markdown("### GEMS — GITHUB SCAN LOGS")
     direct_gem, finance_gem = st.columns(2)
     with direct_gem:
