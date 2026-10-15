@@ -1,5 +1,6 @@
 name: PDUFA One-Time Live Required Evidence Recheck
 
+# Run corrected FDA indication/date comparison on the current reviewed source queue.
 # Kick off immediately when this reviewed workflow first reaches main.
 # Follow-up run after the FDA indication-versus-date comparison correction.
 # A push changing only this reviewed workflow reruns the exact queued claims;
