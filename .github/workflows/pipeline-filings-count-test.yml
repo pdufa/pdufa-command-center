@@ -1,21 +1,35 @@
-name: Pipeline and filings count reconciliation
+name: Pipeline origin and SEC FDA GEM lineage checks
 
 on:
   push:
     paths:
+      - 'pipeline_source_scope.py'
       - 'pipeline_filings_alignment.py'
       - 'pipeline_display.py'
       - 'pipeline_universe.py'
+      - 'gem_scans.py'
+      - 'gem_scans_ui.py'
       - 'filings_base_amendments_ui.py'
+      - 'scripts/filings_section_scan.py'
+      - 'tests/test_pipeline_source_scope.py'
       - 'tests/test_pipeline_filings_alignment.py'
+      - 'tests/test_gem_scans.py'
+      - 'tests/test_gem_two_benchmark.py'
       - '.github/workflows/pipeline-filings-count-test.yml'
   pull_request:
     paths:
+      - 'pipeline_source_scope.py'
       - 'pipeline_filings_alignment.py'
       - 'pipeline_display.py'
       - 'pipeline_universe.py'
+      - 'gem_scans.py'
+      - 'gem_scans_ui.py'
       - 'filings_base_amendments_ui.py'
+      - 'scripts/filings_section_scan.py'
+      - 'tests/test_pipeline_source_scope.py'
       - 'tests/test_pipeline_filings_alignment.py'
+      - 'tests/test_gem_scans.py'
+      - 'tests/test_gem_two_benchmark.py'
 
 permissions:
   contents: read
@@ -23,13 +37,21 @@ permissions:
 jobs:
   reconcile:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install pandas
-        run: python -m pip install 'pandas>=2.0'
-      - name: Verify exact Pipeline count and event joins
-        run: python -m unittest discover -s tests -p 'test_pipeline_filings_alignment.py' -v
+      - name: Install test dependencies
+        run: python -m pip install 'pandas>=2.0' 'pypdf>=5,<7'
+      - name: Check Pipeline identity and SEC FDA totals
+        run: |
+          python -m unittest discover -s tests -p 'test_pipeline_source_scope.py' -v
+          python -m unittest discover -s tests -p 'test_pipeline_filings_alignment.py' -v
+      - name: Check GEM and GEM JR source lineage
+        run: |
+          python -m unittest discover -s tests -p 'test_gem_scans.py' -v
+          python -m unittest discover -s tests -p 'test_gem_two_benchmark.py' -v
+      - name: Check SEC FDA scan scope and evidence signatures
+        run: python -m unittest discover -s tests -p 'test_filings_section_scan.py' -v
