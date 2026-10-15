@@ -18,7 +18,7 @@ class RetiredPredictionNavigationTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception), [str(e.message) for e in app.exception])
         nav = app.radio(key="nav")
-        self.assertEqual(list(nav.options), ["PDUFA", "SCANS", "2. PDUFA CALENDAR"])
+        self.assertEqual(list(nav.options), ["PDUFA", "2. PDUFA CALENDAR"])
         self.assertEqual(nav.value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
         visible = [t.label for t in app.get("tab") if t.label in
@@ -37,6 +37,19 @@ class RetiredPredictionNavigationTests(unittest.TestCase):
                 self.assertEqual(app.radio(key="nav").value, "PDUFA")
                 self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
                 self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
+
+    def test_saved_standalone_scans_navigation_migrates_to_nested_scans(self):
+        app = AppTest.from_file(str(APP), default_timeout=120)
+        app.session_state["nav"] = "SCANS"
+        app.session_state["detail_return_page"] = "SCANS"
+        app.run()
+        self.assertFalse(list(app.exception), [str(e.message) for e in app.exception])
+        self.assertEqual(app.radio(key="nav").value, "PDUFA")
+        self.assertEqual(app.session_state["pdufa_subtab"], "SCANS")
+        self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
+        self.assertIn("SHOW LIVE ACTIVITY & HISTORY",
+                      [item.label for item in app.get("toggle")])
+        self.assertEqual(len([t for t in app.get("tab") if t.label == "SCANS"]), 1)
 
     def test_prediction_ui_retired_but_saved_model_sources_untouched(self):
         source = APP.read_text(encoding="utf-8")
