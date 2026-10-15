@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 from gem_verified_snapshot import source_cleared_gems
 
@@ -55,6 +56,14 @@ class ExactGEMClearanceTests(unittest.TestCase):
         self.assertEqual(
             next(r for r in active if r["Ticker"] == "ZBIO")["NCT ID"],
             "NCT05662241")
+
+    def test_source_cleared_gem_summary_cannot_bypass_pipeline_origin(self):
+        root = Path(__file__).resolve().parents[1] / "data"
+        with patch("gem_verified_snapshot.pipeline_origins", return_value=(set(), {})):
+            active, historical, _ = source_cleared_gems(
+                root, as_of=date(2026, 10, 14))
+        self.assertEqual(active, [])
+        self.assertEqual(historical, [])
 
     def test_no_cross_program_financing_borrow(self):
         with tempfile.TemporaryDirectory() as directory:
