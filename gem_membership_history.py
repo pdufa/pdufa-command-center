@@ -56,6 +56,9 @@ def update_history(old, stage_members, *, observed_on, exit_reasons=None):
         raise ValueError("Both complete stage snapshots are required")
     result = json.loads(json.dumps(old))
     exit_reasons = exit_reasons or {}
+    # Evaluate promotions against THIS scan's GEM membership, not a program
+    # that merely appeared in GEM at some point in archived history.
+    currently_in_gem = {_identity(row)[0] for row in stage_members["GEM"]}
     for stage in STAGES:
         slot = result["stages"][stage]
         prior = slot.get("last_complete_snapshot")
@@ -114,7 +117,7 @@ def update_history(old, stage_members, *, observed_on, exit_reasons=None):
                     expiry = None
                 if expiry and expiry < date.fromisoformat(day):
                     reason = "PDUFA_EXPIRED"
-                elif stage == "GEM_JR" and identifier in result["stages"]["GEM"]["entries"]:
+                elif stage == "GEM_JR" and identifier in currently_in_gem:
                     reason = "PROMOTED_TO_GEM"
                 else:
                     reason = "NO_LONGER_IN_VERIFIED_STAGE_SNAPSHOT"
