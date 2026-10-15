@@ -180,7 +180,7 @@ class MorningResultsTests(unittest.TestCase):
         self.assertIsNone(post_six_final_status(
             clinical, source, now=datetime(2026, 10, 15, 12, 0, tzinfo=timezone.utc)))
         self.assertIsNone(post_six_final_status(
-            clinical, source, now=datetime(2026, 10, 16, 05, 0, tzinfo=timezone.utc)))
+            clinical, source, now=datetime(2026, 10, 16, 5, 0, tzinfo=timezone.utc)))
 
 
 if __name__ == "__main__":
