@@ -503,6 +503,7 @@ def render_missing_research(category, queue, notice, registry, *, extensions=Non
 
 
 @st.fragment(run_every=60)
+@st.fragment(run_every="60s")
 def render_filings_base_amendments():
     """Independent SEC and FDA views with exact-program clinical/funding context."""
     details = load_section_details()
