@@ -120,7 +120,7 @@ def publish(artifacts, data_dir, output):
         report["sec_filing_watch_status"] = "PENDING_SEC_REPORT_OR_INVENTORY"
         report["sec_filing_watch_rows"] = None
     # Re-write the report with the SEC watch publication result visible.
-    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n")
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     shutil.copyfile(artifacts / "combined_verification.csv", output.with_name("pdufa_source_verification.csv"))
     from scripts.nightly_missing_sources import write_rows
     from scripts.source_verification import FIELDS
