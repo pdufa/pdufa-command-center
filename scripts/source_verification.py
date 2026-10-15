@@ -27,7 +27,7 @@ STATES = ("VERIFIED", "NOT_APPLICABLE", "UNAVAILABLE", "REVIEW_REQUIRED", "CONFL
 FIELDS = ["event_key", "ticker", "category", "claim", "verification_status",
           "verification_required",
           "expected", "observed", "reason", "source_url", "source_sha256",
-          "checked_at", "evidence"]
+          "checked_at", "evidence", "claim_input_sha256", "monitor_index_sha256"]
 MAX_BODY = 8_000_000
 AGENT = "PDUFACommandCenter/1.0 source-verification"
 
@@ -1642,6 +1642,22 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
     sec_auto_recovered = 0
     sec_carried_forward = 0
     sec_financing_live_checked = 0
+    fda_carried_forward = 0
+    fda_live_checked = 0
+    fda_indices_checked = 0
+    fda_indices_blocked = 0
+    # Persisted source-ledger values can seed DELTA only after a real prior
+    # primary-source verification that also stored exact-event and SEC-index
+    # fingerprints. Older published rows lack these fields, so they are
+    # reverified once instead of being assumed safe.
+    prior_fda_rows = (read_rows(data_dir / "pdufa_source_verification.csv")
+                      if source == "FDA" and mode == "DELTA" and
+                      (data_dir / "pdufa_source_verification.csv").is_file() else [])
+    prior_fda = {r["event_key"]: r for r in prior_fda_rows
+                 if r.get("category") == "FDA" and r.get("verification_status") == "VERIFIED"}
+    fda_issuer_indexes = {}
+    fda_company_cik = {r["ticker"].upper(): r.get("cik10", "")
+                       for r in companies}
     prior = read_rows(data_dir / "pdufa_source_verification.csv") if source == "SEC" and mode == "DELTA" else []
     prior_registry = {r["event_key"]: r for r in prior if
                       r.get("category") == "SEC" and r.get("claim") == "FILINGS_INVENTORY"
@@ -1676,7 +1692,77 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
     for event in events:
         event = {**event, "_financing_review": financing_reviews.get(event["event_key"], {})}
         if source == "FDA":
-            results += verifier.regulatory(event)
+            # A stable exact-program fingerprint is necessary: any saved
+            # application, outcome, target date, clinical identity or evidence
+            # mapping change forces a primary-document review.
+            signed_fields = (
+                "event_key", "ticker", "company", "drug", "indication", "pdufa_date",
+                "decision_date", "outcome", "application_type", "application_number",
+                "nda_submission_date", "fda_acceptance_date", "nct_id",
+                "phase3_date", "phase3_status", "pdufa_evidence_url",
+                "issuer_evidence_url", "trial_evidence_url", "financing_evidence_url",
+                "evidence_summary", "regulatory_summary")
+            signature = digest(json.dumps(
+                {"event": {k: event.get(k, "") for k in signed_fields},
+                 "cik": fda_company_cik.get(event["ticker"].upper(), ""),
+                 "source_config": verifier.event_sources(event)},
+                sort_keys=True, separators=(",", ":")).encode())
+            ticker = event["ticker"].upper()
+            if ticker not in fda_issuer_indexes:
+                index = verifier.registry({"ticker": ticker})
+                fda_issuer_indexes[ticker] = (
+                    index.get("source_sha256", "") if
+                    index.get("verification_status") == "VERIFIED" else "")
+                if fda_issuer_indexes[ticker]:
+                    fda_indices_checked += 1
+                else:
+                    fda_indices_blocked += 1
+            index_hash = fda_issuer_indexes[ticker]
+            old = prior_fda.get(event["event_key"], {})
+            resolved = event.get("outcome", "").strip().upper() in {"APPROVED", "CRL"}
+            claim = "FDA_DECISION" if resolved else "PDUFA_TARGET"
+            expected = event.get("decision_date", "") if resolved else event.get("pdufa_date", "")
+            near_catalyst = False
+            if not resolved:
+                try:
+                    target_day = date.fromisoformat(str(expected))
+                    near_catalyst = target_day <= verifier.as_of + timedelta(days=45)
+                except (TypeError, ValueError):
+                    near_catalyst = True
+            carry = (
+                mode == "DELTA" and not near_catalyst
+                and old.get("ticker") == event["ticker"]
+                and old.get("claim") == claim
+                and old.get("expected") == (
+                    event.get("outcome", "").strip().upper() + " " + expected
+                    if resolved else expected)
+                and old.get("claim_input_sha256") == signature
+                and bool(index_hash)
+                and old.get("monitor_index_sha256") == index_hash
+                and re.fullmatch(r"[a-f0-9]{64}", old.get("source_sha256", "")) is not None
+                and old.get("source_url") and verifier.primary(event, old["source_url"])
+            )
+            if carry:
+                retained = dict(old)
+                retained["checked_at"] = utcnow()
+                retained["reason"] = (
+                    "CARRIED_FORWARD: unchanged exact FDA event and SEC issuer-filings "
+                    "index; historical primary claim originally reviewed "
+                    + str(old.get("checked_at", "unknown"))
+                    + ". This is not a fresh FDA action check; Sunday FULL or "
+                    "any new filing/amendment reopens the primary document.")
+                results.append(retained)
+                fda_carried_forward += 1
+            else:
+                current = verifier.regulatory(event)
+                for row in current:
+                    # Never cache a REVIEW, CONFLICT or transport failure as
+                    # verified; a new exact-event status must be proved anew.
+                    if row.get("verification_status") == "VERIFIED":
+                        row["claim_input_sha256"] = signature
+                        row["monitor_index_sha256"] = index_hash
+                results += current
+                fda_live_checked += 1
         elif source == "SEC":
             old = prior_closures.get(event["event_key"], {})
             old_index = prior_registry.get("REGISTRY:" + event["ticker"], {})
@@ -1767,6 +1853,10 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
                  "sec_auto_retry_limit": SEC_AUTO_RECOVERY_LIMIT}
                 if source == "SEC" else {})
     return {**totals, **inventory, **recovery, **provisional_recheck, "scan_mode": mode,
+            "fda_claims_carried_forward": fda_carried_forward,
+            "fda_claims_live_checked": fda_live_checked,
+            "fda_issuer_indices_checked": fda_indices_checked,
+            "fda_issuer_indices_unavailable": fda_indices_blocked,
             "sec_closures_carried_forward": sec_carried_forward,
             "sec_financing_closures_live_checked": sec_financing_live_checked, "verification_version": VERSION, "verification_run_id": run_identity(),
             "verification_scope_sha256": scope_hash(events, companies),
