@@ -10,6 +10,7 @@ import streamlit as st
 
 from gem_potential_list import build_potential_list
 from gem_trial_hierarchy_ui import render_trial_hierarchy
+from gem_membership_history import read_history, enrich_stage_rows, departed_stage_rows
 from gem_financing_batch_review import build_financing_review
 from gem_verified_snapshot import source_cleared_gems
 from stage_wt_tables import render_stage_wt_tables
@@ -18,12 +19,14 @@ from gem_secondary_research import (
     research_search_links, source_research_policy,
 )
 
-VISIBLE = ("Ticker", "Drug", "Why potential", "Still needed", "Timing / resolution")
+VISIBLE = ("Ticker", "Drug", "Pipeline ID", "Date Found", "Date Left",
+           "Why potential", "Still needed", "Timing / resolution")
 FULL = (
     "Ticker", "Drug", "Indication", "Why potential", "Still needed",
     "Evidence type", "GEM status", "SEC documents rechecked", "NCT ID",
     "PDUFA date (saved)", "Timing / resolution", "Exact program",
     "Clinical source", "Financing SEC source", "Source review date",
+    "Pipeline ID", "Date Found", "Date Left", "Date Re-entered", "Listing status",
 )
 
 
@@ -68,6 +71,11 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
     cleared_programs = {x["Exact program"] for x in source_cleared + historical_cleared}
     potential = [x for x in potential if x["Exact program"] not in cleared_programs]
     timing_hold = [x for x in timing_hold if x["Exact program"] not in cleared_programs]
+    membership = read_history(root)
+    source_cleared = enrich_stage_rows(source_cleared, "GEM", membership)
+    historical_cleared = enrich_stage_rows(historical_cleared, "GEM", membership)
+    potential = enrich_stage_rows(potential, "GEM_JR", membership)
+    timing_hold = enrich_stage_rows(timing_hold, "GEM_JR", membership)
 
     render_trial_hierarchy(source_cleared + historical_cleared + potential + timing_hold,
                            namespace=namespace, title="GEM")
@@ -98,6 +106,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                          else "PDUFA SOURCE NOT VERIFIED") +
                 " · EXIT: " + (lead["Planned exit (PDUFA −3)"] or "UNVERIFIED")
             )
+            st.caption("GEM first found: " + lead["Date Found"] +
+                       " · Left: " + (lead["Date Left"] or "CURRENTLY LISTED") +
+                       " · Re-entered: " + (lead["Date Re-entered"] or "—"))
             st.caption(lead["Still needed"])
         with st.expander("VERIFIED GEM PRIMARY SOURCES — EXACT PROGRAM", expanded=False):
             st.dataframe(
@@ -124,6 +135,14 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             "GLOBAL SEC SOURCE CHECK PARTIAL/STALE — verified program-level "
             "evidence does not clear fresh all-source trading-entry gates."
         )
+    departed = departed_stage_rows(membership, "GEM")
+    with st.expander(f"GEM — LEFT LISTING HISTORY ({len(departed)})",
+                     expanded=False):
+        if departed:
+            st.dataframe(pd.DataFrame(departed), use_container_width=True,
+                         hide_index=True)
+        else:
+            st.caption("No GEM exits have been recorded since membership tracking began.")
     # GEM WT only shows active, exact-program, two-benchmark-cleared leads.
     # Research leads remain in GEM JR and do not inherit GEM eligibility.
     render_stage_wt_tables(
