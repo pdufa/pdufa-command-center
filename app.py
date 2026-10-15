@@ -37,6 +37,7 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
+from stage_wt_tables import render_stage_wt_tables
 from alpaca_connection import render_alpaca_connection_panel
 import nightly_scan_dashboard as nightly_scan_dashboard_module
 def render_nightly_scan_report():
@@ -3631,6 +3632,8 @@ if page == "PDUFA":
                     load_pipeline_universe_data.clear()
                     _clear_pipeline_results_v9()
                     st.rerun()
+                render_stage_wt_tables(
+                    "PIPELINE", prepared, namespace="pipeline", controls=False)
 
     # Re-enter the same Streamlit tab: former Workbench features remain inside
     # PIPELINE, without an independent or duplicate navigation submenu.
@@ -4202,15 +4205,16 @@ if page == "PDUFA":
                 "two distinct SEC-confirmed financing closures after the readout. "
                 "Research alone never promotes a stock or authorizes a trade."
             )
-            gem_jr_col, gem_col = st.columns([1, 1], gap="medium")
-            with gem_jr_col, st.container(border=True, key="gem_jr_shared_block"):
+            # Full-width stacked sections match the SEC/FDA card design and
+            # give nested evidence tables and WT lists readable column widths.
+            with st.container(border=True, key="gem_jr_shared_block"):
                 st.markdown("### GEM JR")
                 from gem_jr_ui import render_gem_jr
                 render_gem_jr()
                 if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH",
                              value=False, key="gemjr_extended_research"):
                     render_post_phase3_workspace()
-            with gem_col, st.container(border=True, key="gem_shared_block"):
+            with st.container(border=True, key="gem_shared_block"):
                 st.markdown("### GEM")
                 from gem_potential_ui import render_gem_potential
                 render_gem_potential(root="data", compact=True,
