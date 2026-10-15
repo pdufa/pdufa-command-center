@@ -38,6 +38,31 @@ class SectionControlTests(unittest.TestCase):
         self.assertEqual(section_run(runs, "SEC_BASE"), runs[1])
         self.assertEqual(section_run(runs, "SEC_AMENDMENTS"), {})
 
+    def test_sec_fda_survey_matches_two_column_preview(self):
+        from pathlib import Path
+        root = Path(__file__).resolve().parents[1]
+        filings = (root / "filings_base_amendments_ui.py").read_text(encoding="utf-8")
+        scans = (root / "nightly_scan_dashboard.py").read_text(encoding="utf-8")
+
+        self.assertIn('st.markdown("## SEC / FDA — SURVEY RESULTS")', filings)
+        self.assertIn('sec_column, fda_column = st.columns(2, gap="large")', filings)
+        sec = filings.split("    with sec_column:", 1)[1].split("    with fda_column:", 1)[0]
+        fda = filings.split("    with fda_column:", 1)[1].split(
+            '    st.caption("BASE totals reconcile', 1)[0]
+        for panel, agency in ((sec, "SEC"), (fda, "FDA")):
+            self.assertIn(f'st.markdown("### {agency}")', panel)
+            self.assertIn(f'render_section_scan("{agency}_BASE"', panel)
+            self.assertIn(f'render_section_scan("{agency}_AMENDMENTS"', panel)
+            self.assertIn(f'with st.expander("{agency} Base details"', panel)
+            self.assertIn(f'with st.expander("{agency} Amendment details"', panel)
+            self.assertIn(f'render_missing_research(', panel)
+            self.assertIn('with st.container(border=True):', panel if panel == sec else
+                          filings.split("    with fda_column:", 1)[1])
+        self.assertIn("@st.fragment(run_every=60)", filings)
+        self.assertEqual(scans.count("    render_filings_base_amendments()"), 1)
+        self.assertLess(scans.index("    render_filings_base_amendments()"),
+                        scans.index('    st.markdown("### GEMS — GITHUB SCAN LOGS")'))
+
     def test_render_and_click_do_not_launch_any_other_scan(self):
         app = AppTest.from_string(
             "from filings_base_amendments_ui import render_filings_base_amendments\n"
