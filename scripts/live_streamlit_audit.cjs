@@ -164,17 +164,36 @@ async function audit() {
   // Amendments/missing-evidence are claims/filings, not additional trials.
   await safely("Pipeline SEC FDA live count parity", async() => {
     const found = await inspectTab(page, "SCANS", [
+      "SEC & FDA SCAN CONTROLS",
+      "SEC FINANCING",
+      "FDA FILINGS",
+      "MISSING EVIDENCE",
       "PIPELINE ↔ SEC / FDA — TRIAL RECONCILIATION",
-      "SEC / FDA — SURVEY RESULTS",
       "SEC Base details", "SEC Amendment details",
       "FDA Base details", "FDA Amendment details",
       "SEC MISSING EVIDENCE", "FDA MISSING EVIDENCE",
     ]);
-    // SEC and FDA are distinct side-by-side cards on desktop, each
-    // with Base, Amendments and Missing Evidence expandable details.
-    const headings = (await found.frame.locator("h3").allInnerTexts()).map(s=>s.trim());
-    if (!headings.includes("SEC") || !headings.includes("FDA")) {
-      throw Error("SEC/FDA two-column agency headings are missing.");
+    // Image-contract acceptance: four independent stacked agency cards
+    // followed by one joint missing-evidence card and a progress legend.
+    const cardClasses = [
+      "pdufa_sec_base_card", "pdufa_sec_amend_card",
+      "pdufa_fda_base_card", "pdufa_fda_amend_card",
+      "pdufa_missing_evidence_card", "pdufa_scan_progress",
+    ];
+    for (const key of cardClasses) {
+      if (await found.frame.locator(".st-key-" + key).count() !== 1) {
+        throw Error("Expected one stacked SEC/FDA survey card: " + key);
+      }
+    }
+    const sections = ["SEC FINANCING", "FDA FILINGS", "MISSING EVIDENCE"];
+    const offsets = sections.map(s => found.text.indexOf(s));
+    if (offsets.some(x => x < 0) || offsets[0] >= offsets[1] || offsets[1] >= offsets[2]) {
+      throw Error("SEC financing / FDA filings / missing evidence are not in visual order.");
+    }
+    for (const key of cardClasses.slice(0, 4)) {
+      const count = await found.frame.locator(".st-key-" + key)
+        .getByRole("button", {name:"▶ Scan this section",exact:true}).count();
+      if (count !== 1) throw Error("Expected section scan control inside " + key);
     }
     const metrics = await found.frame.locator('[data-testid="stMetric"]').allInnerTexts();
     const readCount = label => {
@@ -194,7 +213,7 @@ async function audit() {
     const scanButtons = found.frame.getByRole("button", {name:"▶ Scan this section",exact:true});
     if (await scanButtons.count() !== 4) throw Error("Expected four agency-specific manual scan buttons.");
     report.checked.push({
-      screen:"Pipeline SEC FDA live count parity", result:"PASS",
+      screen:"Stacked SEC FDA controls and Pipeline count parity", result:"PASS",
       pipeline_trial_records:pipeline, sec_baseline_rows:sec, fda_baseline_rows:fda,
       scan_buttons:4, dropdowns:6
     });
