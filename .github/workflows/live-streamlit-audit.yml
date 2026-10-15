@@ -8,6 +8,8 @@ on:
       - ".github/workflows/live-streamlit-audit.yml"
       - "scripts/live_streamlit_audit.cjs"
       - "app.py"
+      - "nightly_scan_dashboard.py"
+      - "scan_activity_dashboard.py"
       - "pre_readout.py"
       - "pre_readout_score.py"
       - "pre_phase3_priority.py"
