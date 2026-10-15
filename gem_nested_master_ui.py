@@ -276,7 +276,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         render_checkbox_table(checkbox_rows, checkbox_states, height=380)
     filters = (st, st, st) if compact else st.columns([2, 2, 1])
     view = filters[0].selectbox(
-        "Candidate filter", ["Research candidates (source leads)", "All candidates", "Entry-eligible only", "Watch / review"],
+        "Candidate filter", ["All candidates", "Entry-eligible only", "Research candidates (source leads)", "Watch / review"],
         key="gem_nested_view",
     )
     query = filters[1].text_input(
