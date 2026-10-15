@@ -489,10 +489,46 @@ jobs:
           done
           exit 1
 
-  refresh-prephase3:
-    name: 'Refresh validated PRE PHASE 3 display feed after sources'
+  refresh-step7-market-eod:
+    name: 'Refresh source-labeled Step 7 EOD market snapshots'
     needs: publish-source-report
     if: ${{ always() && needs.publish-source-report.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install bounded quote collector dependencies
+        run: python -m pip install pandas
+      - name: Refresh saved event-level EOD prices and retain unavailable flags
+        run: python scripts/step7_market_refresh.py
+      - name: Publish dated EOD status before rebuilding PRE PHASE 3 cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/step7_market_status.csv data/step7_market_status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Refresh source-labeled Step 7 daily EOD quotes"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::Could not publish Step 7 EOD snapshot"
+          exit 1
+
+  refresh-prephase3:
+    name: 'Refresh validated PRE PHASE 3 display feed after sources'
+    needs: refresh-step7-market-eod
+    if: ${{ always() && needs.refresh-step7-market-eod.result != 'skipped' }}
     permissions:
       contents: write
     uses: ./.github/workflows/step7-live-feed.yml
