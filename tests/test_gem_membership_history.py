@@ -144,7 +144,7 @@ class GemMembershipHistoryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "phase3_announcements.csv").write_text(
-                "nct_id,phase3_status\\nNCT11111111,RESULTS_REVIEW\\n",
+                "nct_id,phase3_status\nNCT11111111,RESULTS_REVIEW\n",
                 encoding="utf-8")
             status = {
                 "status": "COMPLETE", "complete": True, "errors": [],
