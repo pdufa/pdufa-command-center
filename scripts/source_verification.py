@@ -1100,10 +1100,17 @@ class Verifier:
         if not sec_url_matches(url, self.cik(event)) or not close:
             return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                 "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence", url, close)
+        # A saved status or malformed date is missing proof, not a transport/parser
+        # error. Fail closed before fetching SEC or attempting a technical retry.
         try:
-            if date.fromisoformat(close) > self.as_of:
-                return self.result(event, 'SEC', 'FINANCING_CLOSURE', 'REVIEW_REQUIRED',
-                    'Saved closing date is in the future; funds received are not established', url, close)
+            closed_on = date.fromisoformat(close)
+        except (TypeError, ValueError):
+            return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
+                "Saved financing close date is not a valid calendar date; dated funded closing remains unverified", url, close)
+        if closed_on > self.as_of:
+            return self.result(event, 'SEC', 'FINANCING_CLOSURE', 'REVIEW_REQUIRED',
+                'Saved closing date is in the future; funds received are not established', url, close)
+        try:
             _, plain = self.document(url)
             completed = documented_funded_transaction(plain, close)
             if completed:

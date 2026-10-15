@@ -526,6 +526,25 @@ class VerificationTests(unittest.TestCase):
                                  as_of=date(2026, 10, 12), issuer_sources=wrong)
         self.assertNotEqual(second.financing(event)["verification_status"], "VERIFIED")
 
+    def test_missing_or_malformed_financing_close_is_review_not_technical_failure(self):
+        # Scanner statuses, incomplete dates, and impossible dates must never
+        # be mistaken for SEC document failures or evidence of a funded close.
+        for raw in ("UNVERIFIED", "TWO_DISTINCT_POST_PHASE3_CLOSES_SOURCE_ATTESTED",
+                    "2026-02-30", "not-a-date"):
+            with self.subTest(raw=raw):
+                event = {**EVENT, "financing_evidence_url": SEC_DOC,
+                         "financing_close_date": raw}
+                verifier = verify.Verifier(
+                    [COMPANY],
+                    fetch=lambda _: self.fail("Invalid date must not fetch SEC"),
+                    as_of=date(2026, 10, 12),
+                )
+                result = verifier.financing(event)
+                self.assertEqual(result["verification_status"], "REVIEW_REQUIRED")
+                self.assertEqual(result["expected"], raw)
+                self.assertEqual(result["source_sha256"], "")
+                self.assertIn("valid calendar date", result["reason"])
+
     def test_financing_keyword_and_date_never_certify_financing_number_two(self):
         event = {**EVENT, "financing_evidence_url": SEC_DOC, "financing_close_date": "2026-10-10"}
         result = self.verifier(b"On October 10, 2026, the company completed its public offering.").financing(event)
