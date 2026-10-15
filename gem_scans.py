@@ -260,11 +260,11 @@ def build_gem_scans(root="data", as_of=None):
     """
     records, source_status = build_queue(root, as_of=as_of)
     # Source leads enrich Pipeline identities; they cannot mint GEM records.
-    pipeline_ids, _pipeline_tickers = pipeline_origins(root, today=as_of)
+    pipeline_ids, pipeline_tickers = pipeline_origins(root, today=as_of)
     valid_rows = []
     rejected_rows = []
     for row in records:
-        pipeline_id = gem_pipeline_id(row, pipeline_ids)
+        pipeline_id = gem_pipeline_id(row, pipeline_ids, pipeline_tickers)
         if pipeline_id:
             valid_rows.append({**row, "Pipeline ID": pipeline_id})
         else:
