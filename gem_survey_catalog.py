@@ -34,12 +34,59 @@ def _coverage(info):
     return "NOT VERIFIED"
 
 
-def survey_rows(comparison):
+def _numeric(value):
+    """A saved numeric observation is not itself a verified entry signal."""
+    if value is None or isinstance(value, bool):
+        return False
+    try:
+        return str(value).strip() != "" and float(value) == float(value)
+    except (ValueError, TypeError, OverflowError):
+        return False
+
+
+def _saved_source_observations(scans):
+    """Conservative source evidence counts from the exact Pipeline-scoped GEM rows.
+
+    These are per-program observations, not validated true/false outcomes,
+    complete issuer coverage, or extra eligibility gates.
+    """
+    rows = [r for r in scans if isinstance(r, dict)]
+    total = len(rows)
+    counts = {
+        "clinical": sum(r.get("Benchmark 1 — Phase 3 released") ==
+                        "PASS — VERIFIED RESULTS RELEASE" for r in rows),
+        "financing": sum(r.get("Benchmark 2 — Financing #2 closed") ==
+                         "PASS — TWO POST-READOUT CLOSES" for r in rows),
+        "runway": sum(_numeric(r.get("Cash runway (months)")) and
+                      str(r.get("Cash runway gate") or "").startswith(("PASS", "HOLD"))
+                      for r in rows),
+        "dilution": sum(str(r.get("GEM 3 dilution status") or "").startswith(
+                            ("NO NEW DILUTION FLAG", "ALERT", "WARNING"))
+                        for r in rows),
+        "hedge": sum(r.get("Hedge-fund signal") ==
+                     "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS" for r in rows),
+        "insider": sum(r.get("Insider Form 4 signal") ==
+                       "SOURCE-VERIFIED SEC FORM 4 OBSERVATIONS" for r in rows),
+        "market": sum(_numeric(r.get("Market activity /10")) and
+                      float(r.get("Market activity /10")) >= 4 and
+                      r.get("Rating status") != "NOT RATED — SNAPSHOT STALE"
+                      for r in rows),
+        "fda": sum(r.get("PDUFA verification") ==
+                   "VERIFIED — SOURCE LINKED" for r in rows),
+    }
+    return {
+        key: {"observed_gem_rows": count, "total_gem_rows": total}
+        for key, count in counts.items()
+    }
+
+
+def survey_rows(comparison, *, scans=None, feed_current=None):
     """Display optional dated source-coverage observations, not new eligibility.
 
     A 13F row and a Form 4 row may cover the same program; never add their
     observation counts together or claim combined unique-program coverage.
-    Missing or stale comparison data never implies successful live collection.
+    Optional saved-source scan rows replace diagnostic comparison observations
+    in the primary directory; neither input implies complete live collection.
     """
     valid = (
         isinstance(comparison, dict) and comparison.get("schema_version") == 1
@@ -50,6 +97,11 @@ def survey_rows(comparison):
         r.get("key"): r for r in comparison["capability_matrix"]
         if isinstance(r, dict) and r.get("key")
     } if valid else {}
+    if scans is not None:
+        # Live directory coverage is sourced from the GEM scan's exact
+        # Pipeline-origin program rows, NEVER the optional BPW diagnostic.
+        data = _saved_source_observations(scans)
+        valid = True
     result = []
     for number, title, role, key in SURVEYS:
         if isinstance(key, tuple):
@@ -68,6 +120,17 @@ def survey_rows(comparison):
             info = data.get(key, {})
             state = info.get("state", "NOT VERIFIED")
             coverage = _coverage(info)
+        if scans is not None:
+            # Expose evidence freshness without claiming all sources verified.
+            seen = ([data.get(k, {}) for k in key]
+                    if isinstance(key, tuple) else [data.get(key, {})])
+            observed = sum(int(x.get("observed_gem_rows") or 0) for x in seen)
+            if not observed:
+                state = "NOT VERIFIED / NO MATCHED OBSERVATIONS"
+            elif feed_current is False:
+                state = "STALE SOURCE FEED — SAVED OBSERVATIONS"
+            else:
+                state = "SAVED EVIDENCE — CHECK INDIVIDUAL SOURCE DATES"
         result.append({
             "#": number,
             "GEM survey": title,
