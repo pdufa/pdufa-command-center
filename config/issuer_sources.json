@@ -27,6 +27,18 @@
       "ir.anaptysbio.com"
     ]
   },
+  "BBIO": {
+    "events": {
+      "BBIO|BBP418_LGMD2IR9_20261127": {
+        "urls": [
+          "https://investor.bridgebio.com/news/news-details/2026/BridgeBio-Announces-FDA-Acceptance-and-Priority-Review-of-NDA-for-BBP-418-for-LGMD2IR9/default.aspx"
+        ]
+      }
+    },
+    "hosts": [
+      "investor.bridgebio.com"
+    ]
+  },
   "BLTE": {
     "hosts": [
       "investors.belitebio.com"
@@ -49,6 +61,13 @@
     ]
   },
   "CAPR": {
+    "events": {
+      "CAPR|DERAMIOCEL_DMD_20261122": {
+        "urls": [
+          "https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target"
+        ]
+      }
+    },
     "hosts": [
       "www.capricor.com"
     ]

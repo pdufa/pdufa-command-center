@@ -317,11 +317,23 @@ def documented_pdufa_extension(event, text):
         start = max(0, match.start() - 480)
         passage = text[start:match.end() + 80]
         prefix = text[start:match.start()]
-        if (not re.search(r"(?i)\bextend(?:ed|s|ing)?\b", prefix)
+        # Hypothetical wording such as "FDA might extend" is NOT an action.
+        # Require an asserted past-tense FDA extension before using new dates.
+        if (not re.search(r"(?i)\b(?:the\s+)?FDA\)?\s+(?:has\s+)?extended\b", prefix)
                 or not re.search(r"(?i)\bPDUFA\b|Prescription Drug User Fee Act", prefix)
                 or not drug_matches(event, passage)
                 or not indication_matches(event, passage)):
             continue
+        # Parenthetical disease acronyms cannot override a different spelled-
+        # out diagnosis (e.g., "spinal muscular atrophy (DMD)" is not Duchenne).
+        # A changed FDA target requires the expanded disease name in the same
+        # local passage; acronym-only claims remain REVIEW/CONFLICT.
+        raw_indication = str(event.get("indication", ""))
+        if re.search(r"\([A-Za-z][A-Za-z0-9/-]{2,12}\)", raw_indication):
+            expanded = normalized(re.sub(r"\([^)]*\)", "", raw_indication)).strip()
+            if expanded and not re.search(
+                    r"(?<!\w)" + re.escape(expanded) + r"(?!\w)", normalized(passage)):
+                continue
         old, new = dates(match.group(1)), dates(match.group(2))
         if len(old) == len(new) == 1 and next(iter(old)) < next(iter(new)):
             return next(iter(old)), next(iter(new)), passage
@@ -358,6 +370,7 @@ def drug_matches(event, text):
 
 
 def indication_matches(event, text):
+    raw_source = str(text)
     stop = {"patients", "adults", "adult", "children", "treatment", "therapy",
             "with", "and", "the", "for", "age", "years", "including"}
     indication = re.sub(r"\bnonadvanced\b", "non advanced", normalized(event.get("indication", "")))
@@ -387,8 +400,25 @@ def indication_matches(event, text):
     if any(len(normalized(alias)) >= 6 and normalized(alias) in text for alias in explicit if alias.strip()):
         return True
     aliases = re.findall(r"\(([A-Za-z][A-Za-z0-9/-]{2,12})\)", str(event.get("indication", "")))
-    return any(normalized(alias) in body for alias in aliases
-               if len(normalized(alias)) >= 3 and normalized(alias) not in {"fda", "usa"})
+    for alias in aliases:
+        clean_alias = normalized(alias)
+        if (len(clean_alias) < 3 or clean_alias in {"fda", "usa"}
+                or clean_alias not in body):
+            continue
+        # A source that explicitly expands an acronym to a *different*
+        # disease is contradictory, not a positive indication match.
+        # Abbreviations used independently (without an expansion) retain
+        # their established exact-token matching behavior.
+        expansions = re.findall(
+            r"(?i)\b((?:[A-Za-z]+\s+){1,7}[A-Za-z]+)\s*\(\s*"
+            + re.escape(alias) + r"\s*\)", raw_source)
+        if expansions and not any(
+            len(tokens & set(normalized(expansion).split()))
+            >= min(2, len(tokens)) for expansion in expansions
+        ):
+            continue
+        return True
+    return False
 
 
 def company_matches(event, text):
