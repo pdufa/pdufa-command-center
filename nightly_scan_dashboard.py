@@ -18,6 +18,7 @@ from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
 from scripts.scan_recovery_triage import triage_source_rows
+from sec_search_discovery import financing_discovery_links
 from scripts.pdufa_morning_results import make_snapshot
 import scripts.pdufa_morning_results as morning_results_module
 
@@ -319,6 +320,61 @@ def render_extended_source_report():
         "every SEC scan re-opens matching issuer filings. A verified SEC transaction "
         "is NOT proof of two distinct closes after Phase 3, nor a trade signal."
     )
+    # Search engines expose additional SEC leads but can never clear a source
+    # alert themselves. The exact CIK comes from the saved company registry.
+    with st.expander("SEARCH MISSING SEC FINANCING: YAHOO / BING / GOOGLE"):
+        st.caption(
+            "Search the original SEC archive for an unresolved company. "
+            "A Yahoo Finance article may suggest a date. Only a freshly "
+            "fetched, company-matched SEC document confirming that dated "
+            "completed transaction can clear its SEC evidence claim."
+        )
+        unresolved_sec = sorted({
+            str(row.get("ticker") or "").upper().strip()
+            for row in source_queue.to_dict(orient="records")
+            if row.get("category") == "SEC" and row.get("ticker")
+        })
+        registry_path = Path("data/company_registry.csv")
+        try:
+            registry = pd.read_csv(registry_path, dtype=str, keep_default_na=False)
+            issuer_map = {
+                str(r["ticker"]).upper(): r
+                for r in registry.to_dict(orient="records")
+            }
+        except (OSError, KeyError, ValueError, pd.errors.ParserError) as exc:
+            st.warning(
+                "Company registry unavailable: " + type(exc).__name__ +
+                ". No unvalidated company lookup is permitted."
+            )
+            issuer_map = {}
+        options = [t for t in unresolved_sec if t in issuer_map]
+        if not options:
+            st.info("No unresolved SEC claims with a matched issuer registry CIK.")
+        else:
+            chosen_ticker = st.selectbox(
+                "Unresolved issuer", options, key="scans_sec_discovery_ticker"
+            )
+            chosen_form = st.selectbox(
+                "Look for SEC document", ("8-K", "10-Q", "10-K", "EX-99.1", "EX-10"),
+                key="scans_sec_discovery_form",
+            )
+            company = issuer_map[chosen_ticker]
+            try:
+                links = financing_discovery_links(
+                    chosen_ticker, company["company"], company["cik10"], chosen_form
+                )
+            except (ValueError, KeyError) as exc:
+                st.warning("Cannot create exact-issuer SEC search: " + str(exc))
+            else:
+                buttons = st.columns(4)
+                for col, (label, url) in zip(buttons, links.items()):
+                    with col:
+                        st.link_button(label, url, use_container_width=True)
+                st.caption(
+                    "Search results are discovery only. Open sec.gov, check the "
+                    "issuer CIK, explicit close date, transaction and proceeds; "
+                    "the verified source ledger must be refreshed before deleting alerts."
+                )
     a, b = st.columns(2)
     a.metric("Public/IR closing leads rechecked", ir.get("leads_checked", 0))
     b.metric("Individual SEC transactions confirmed", ir.get("sec_transactions_verified", 0))

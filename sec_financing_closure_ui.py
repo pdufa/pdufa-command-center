@@ -13,6 +13,8 @@ from sec_financing_closure import (
     candidates, fetch_sec_document, financing_gate, read_reviews, review_closure, save_review,
 )
 
+from sec_search_discovery import financing_discovery_links
+
 
 def render_financing_closure(ticker, identity, snapshot, user_agent, sec_ready):
     st.markdown("### Verified financing closure — Step 4 upgrade")
@@ -27,6 +29,36 @@ def render_financing_closure(ticker, identity, snapshot, user_agent, sec_ready):
         "An open ATM, another raise, post-readout staging, and trading entry readiness "
         "remain separate mandatory checks. The ledger alone never marks ENTRY READY."
     )
+    st.markdown("#### Search Yahoo, Bing and Google for original SEC filings")
+    st.caption(
+        "These links find potential 8-K, 10-Q, 10-K and SEC exhibits for the "
+        "selected company's exact CIK. Yahoo Finance headlines can suggest "
+        "an offering date, but search hits and press releases DO NOT verify "
+        "a close. Open the original sec.gov document and independently check "
+        "the dated completed financing before recording evidence."
+    )
+    discovery_form = st.selectbox(
+        "SEC document to look for",
+        ("8-K", "10-Q", "10-K", "EX-99.1", "EX-10"),
+        key=f"sec_discovery_form_{ticker}",
+    )
+    try:
+        discovery = financing_discovery_links(
+            ticker, identity["company"], identity["cik"], discovery_form
+        )
+    except (ValueError, KeyError) as exc:
+        st.warning(f"Cannot create issuer-matched search links: {exc}")
+    else:
+        cols = st.columns(4)
+        for col, (label, url) in zip(cols, discovery.items()):
+            with col:
+                st.link_button(label, url, use_container_width=True)
+        st.caption(
+            "Follow the SEC result to its filing or exhibit; a dated announcement "
+            "on Yahoo/Bing is only a lead. Never approve a financing solely from "
+            "a search page or a price/prospectus announcement."
+        )
+
     rows = [r for r in snapshot.get("filing_review_queue", []) or []
             if r.get("form") in {"8-K", "8-K/A"}]
     if not rows:
