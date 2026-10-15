@@ -273,7 +273,11 @@ def documented_fda_signed_original_bla_approval(event, url, text):
     match = re.search(
         r"(?is)\bLICENSING\b(.{1,2800}?)\bMANUFACTURING LOCATIONS\b", text)
     licensing = match.group(1) if match else ""
-    if (not licensing
+    # Two shared support-treatment tokens (e.g. "SMN2 targeted") cannot
+    # substitute for the disease named on the actual authorization.
+    disease = normalized(str(event.get("indication", "")).split(";", 1)[0]).strip()
+    if (not licensing or len(disease) < 4
+            or disease not in normalized(licensing)
             or not company_matches(event, licensing)
             or not drug_matches(event, licensing)
             or not indication_matches(event, licensing)
