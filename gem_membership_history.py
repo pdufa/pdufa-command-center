@@ -44,7 +44,7 @@ def _identity(row):
     return identifier, ticker
 
 
-def update_history(old, stage_members, *, observed_on):
+def update_history(old, stage_members, *, observed_on, exit_reasons=None):
     """Record one complete, evidence-reconciled snapshot for EACH stage.
 
     Stage lists may differ. A candidate leaving GEM JR for GEM gets two
@@ -55,6 +55,7 @@ def update_history(old, stage_members, *, observed_on):
     if set(stage_members) != set(STAGES):
         raise ValueError("Both complete stage snapshots are required")
     result = json.loads(json.dumps(old))
+    exit_reasons = exit_reasons or {}
     for stage in STAGES:
         slot = result["stages"][stage]
         prior = slot.get("last_complete_snapshot")
@@ -70,6 +71,8 @@ def update_history(old, stage_members, *, observed_on):
                 "drug": str(row.get("Drug") or "").strip(),
                 "nct_id": str(row.get("NCT ID") or "").strip(),
                 "exact_program": str(row.get("Exact program") or "").strip(),
+                "pdufa_date": str(row.get("PDUFA saved") or
+                                  row.get("PDUFA date (saved)") or "").strip(),
             }
         history = slot["entries"]
         for identifier, record in active.items():
@@ -77,27 +80,50 @@ def update_history(old, stage_members, *, observed_on):
                 history[identifier] = {
                     "pipeline_id": identifier, **record,
                     "first_found": day, "latest_found": day,
-                    "last_seen": day, "left_date": None, "status": "ACTIVE",
-                    "periods": [{"found": day, "left": None}],
+                    "last_seen": day, "left_date": None, "left_reason": "",
+                    "status": "ACTIVE",
+                    "periods": [{"found": day, "left": None, "reason": ""}],
                 }
             else:
                 entry = history[identifier]
                 if entry["ticker"] != record["ticker"]:
                     raise ValueError("Pipeline ID changed issuer across snapshots")
+                # Do not erase a previously sourced PDUFA date if a later
+                # observation omits it. Keep individual Pipeline ID history.
+                if not record["pdufa_date"]:
+                    record["pdufa_date"] = entry.get("pdufa_date", "")
                 entry.update(record)
                 if entry["status"] == "LEFT":
                     entry["latest_found"] = day
                     entry["left_date"] = None
-                    entry["periods"].append({"found": day, "left": None})
+                    entry["left_reason"] = ""
+                    entry["periods"].append({"found": day, "left": None, "reason": ""})
                 entry["status"] = "ACTIVE"
                 entry["last_seen"] = day
         for identifier, entry in history.items():
             if identifier in active or entry["status"] != "ACTIVE":
                 continue
+            reason = str(exit_reasons.get(stage, {}).get(identifier) or "").strip()
+            if not reason:
+                # A complete stage scan can still lose a candidate for reasons
+                # other than PDUFA. Never falsely label a missing row expired.
+                prior_pdufa = entry.get("pdufa_date") or ""
+                try:
+                    expiry = date.fromisoformat(prior_pdufa[:10])
+                except ValueError:
+                    expiry = None
+                if expiry and expiry < date.fromisoformat(day):
+                    reason = "PDUFA_EXPIRED"
+                elif stage == "GEM_JR" and identifier in result["stages"]["GEM"]["entries"]:
+                    reason = "PROMOTED_TO_GEM"
+                else:
+                    reason = "NO_LONGER_IN_VERIFIED_STAGE_SNAPSHOT"
             entry["status"] = "LEFT"
             entry["left_date"] = day
+            entry["left_reason"] = reason
             if entry["periods"] and entry["periods"][-1]["left"] is None:
                 entry["periods"][-1]["left"] = day
+                entry["periods"][-1]["reason"] = reason
         slot["last_complete_snapshot"] = day
     return result
 
@@ -107,11 +133,13 @@ def membership_fields(state, stage, pipeline_id):
     entry = slot.get("entries", {}).get(str(pipeline_id or ""), {})
     if not entry:
         return {"Date Found": "NOT YET TRACKED", "Date Left": "",
-                "Date Re-entered": "", "Listing status": "NOT YET TRACKED"}
+                "Date Re-entered": "", "Leave Reason": "",
+                "Listing status": "NOT YET TRACKED"}
     periods = entry.get("periods", [])
     return {
         "Date Found": entry.get("first_found") or "NOT YET TRACKED",
         "Date Left": entry.get("left_date") or "",
+        "Leave Reason": entry.get("left_reason") or "",
         "Date Re-entered": (entry.get("latest_found") or "")
                             if len(periods) > 1 else "",
         "Listing status": entry.get("status", "UNKNOWN"),
@@ -136,7 +164,8 @@ def enrich_gem_master_rows(rows, state):
             fields = membership_fields(state, "GEM", pid)
         else:
             fields = {"Date Found": "NOT GEM-QUALIFIED", "Date Left": "",
-                      "Date Re-entered": "", "Listing status": "RESEARCH ONLY"}
+                      "Date Re-entered": "", "Leave Reason": "",
+                      "Listing status": "RESEARCH ONLY"}
         result.append({**row, **fields})
     return result
 
@@ -155,6 +184,9 @@ def departed_stage_rows(state, stage):
                     "NCT ID": entry.get("nct_id", ""),
                     "Date Found": period["found"],
                     "Date Left": period["left"],
+                    "Leave Reason": period.get("reason") or
+                                    entry.get("left_reason", "NOT RECORDED"),
+                    "PDUFA Date": entry.get("pdufa_date", ""),
                     "Listing status": (
                         "RETURNED / ACTIVE" if entry["status"] == "ACTIVE"
                         else "LEFT"
