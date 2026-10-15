@@ -11,6 +11,7 @@ from gem_trading_advisory import load_market_rows, render_base_chart_for_ticker
 import pandas as pd
 import streamlit as st
 from gem_potential_list import build_potential_list
+from gem_trial_hierarchy_ui import render_trial_hierarchy
 from pdufa_table_headers import pdufa_dataframe
 
 
@@ -31,6 +32,7 @@ def render_gem_jr(root="data"):
         "Clinical source", "Financing SEC source", "Source review date",
         "PDUFA date (saved)", "Timing / resolution", "Exact program", "GEM status",
     )
+    render_trial_hierarchy(active + held, namespace="gem_jr", title="GEM JR")
     if active:
         st.markdown("### CANDIDATES REQUIRING VERIFICATION")
         frame = pd.DataFrame(active).reindex(columns=fields).fillna("")
