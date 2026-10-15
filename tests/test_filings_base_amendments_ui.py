@@ -3,7 +3,8 @@ import unittest
 from datetime import date
 
 from scripts.filings_base_amendments import rows_from_submissions
-from filings_base_amendments_ui import table_rows, missing_research_rows
+from filings_base_amendments_ui import (table_rows, missing_research_rows,
+    program_base_rows, today_amendments, pacific_date)
 
 
 class SecFilingMetadataTests(unittest.TestCase):
@@ -153,6 +154,101 @@ class MissingResearchQueueTests(unittest.TestCase):
         sec = missing_research_rows([row], "SEC", self.registry)
         self.assertEqual(sec[0]["Research portal"], "")
 
+
+
+
+class ThreeBlockAgencyTests(unittest.TestCase):
+    def setUp(self):
+        self.event = {"event_key": "ABC|P3_DRUG", "ticker": "ABC",
+                      "drug": "ABC-01", "phase3_date": "2026-01-10",
+                      "phase3_status": "PRIMARY_MET_VERIFIED",
+                      "trial_evidence_url": "https://clinicaltrials.gov/study/NCT00000001",
+                      "nct_id": "NCT00000001"}
+        self.p3 = {"event_key": "ABC|P3_DRUG",
+                   "saved_phase3_date": "2026-01-10",
+                   "saved_phase3_status": "PRIMARY_MET_VERIFIED",
+                   "saved_trial_source": "https://www.sec.gov/Archives/fake",
+                   "nct_ids": "NCT00000001",
+                   "source_recheck_status": "NO_POSTED_REGISTRY_RESULTS"}
+        self.pair = {"event_key": "ABC|P3_DRUG",
+                     "first_close_date": "2026-03-04",
+                     "second_close_date": "2026-05-06",
+                     "first_sec_status": "VERIFIED",
+                     "second_sec_status": "VERIFIED",
+                     "recheck_status": "TRANSACTIONS_RECHECKED_REVIEW",
+                     "second_sec_url": "https://www.sec.gov/second"}
+        self.fda = {"event_key": "ABC|P3_DRUG", "category": "FDA",
+                    "claim": "PDUFA_TARGET", "verification_status": "VERIFIED",
+                    "source_url": "https://www.fda.gov/target"}
+        self.sec = {"event_key": "ABC|P3_DRUG", "category": "SEC",
+                    "claim": "FINANCING_CLOSURE", "verification_status": "VERIFIED",
+                    "source_url": "https://www.sec.gov/second"}
+
+    def test_both_bases_show_exact_trial_phase3_and_two_financings(self):
+        base = program_base_rows(
+            [self.event], [self.p3], [self.pair], [], [self.fda, self.sec])
+        self.assertEqual(len(base["SEC"]), 1)
+        self.assertEqual(len(base["FDA"]), 1)
+        for agency in ("SEC", "FDA"):
+            row = base[agency][0]
+            self.assertEqual(row["Phase 3 readout"], "2026-01-10")
+            self.assertEqual(row["2nd finance close"], "2026-05-06")
+            self.assertEqual(row["1st finance close"], "2026-03-04")
+            self.assertEqual(row["Trial NCT"], "NCT00000001")
+            self.assertEqual(row["2nd finance status"],
+                             "BOTH_DOCUMENTS_VERIFIED_SEQUENCE_REVIEW")
+            self.assertEqual(row["GEM eligibility"], "NOT CERTIFIED")
+            self.assertIn("TWO_FINANCING_SEQUENCE", row["Research gaps"])
+        self.assertEqual(base["SEC"][0]["Agency claim"], "FINANCING_CLOSURE")
+        self.assertEqual(base["FDA"][0]["Agency claim"], "PDUFA_TARGET")
+
+    def test_historical_second_close_remains_review_only(self):
+        history = {"event_key": "ABC|P3_DRUG",
+                   "first_financing_date": "2026-03-04",
+                   "second_financing_date": "2026-05-06"}
+        base = program_base_rows([self.event], [self.p3], [], [history], [])
+        self.assertEqual(base["SEC"][0]["2nd finance status"],
+                         "SECOND_FINANCING_REVIEW_REQUIRED")
+        self.assertEqual(base["FDA"][0]["2nd finance status"],
+                         "SECOND_FINANCING_REVIEW_REQUIRED")
+
+    def test_both_missing_lists_include_phase3_and_financing_sequence(self):
+        base = program_base_rows([self.event], [self.p3], [self.pair],
+                                 [], [self.fda, self.sec])
+        for agency in ("SEC", "FDA"):
+            missing = missing_research_rows(
+                [], agency, [{"ticker": "ABC", "cik10": "0000000001"}],
+                benchmarks=base[agency])
+            self.assertEqual({r["Missing item"] for r in missing},
+                             {"PHASE3_EXACT_EVIDENCE", "TWO_FINANCING_SEQUENCE"})
+
+    def test_sec_today_only_amendments_with_actual_filing_date(self):
+        sec = [{"category": "AMENDMENT", "filed_at": "2026-10-15",
+                "ticker": "ABC", "filing_type": "8-K/A"},
+               {"category": "AMENDMENT", "filed_at": "2026-10-14",
+                "ticker": "ABC", "filing_type": "S-3/A"},
+               {"category": "BASE", "filed_at": "2026-10-15",
+                "ticker": "ABC", "filing_type": "8-K"}]
+        result = today_amendments(sec, [], [], today="2026-10-15")
+        self.assertEqual(len(result["SEC"]), 1)
+        self.assertEqual(result["SEC"][0]["filing_type"], "8-K/A")
+
+    def test_fda_today_only_first_detected_extension_not_updated_today(self):
+        extension = {"Trial / event": "ABC|P3_DRUG", "Ticker": "ABC",
+                     "Prior date": "2026-10-18",
+                     "Revised date": "2026-11-18", "Verification": "REVIEW_REQUIRED"}
+        old = {"event_key": "ABC|P3_DRUG",
+               "prior_pdufa_date": "2026-10-18",
+               "current_pdufa_date": "2026-11-18",
+               "extension_detected_at": "2026-10-14T17:00:00Z",
+               "last_updated_at": "2026-10-15T20:00:00Z"}
+        result = today_amendments([], [extension], [old], today="2026-10-15")
+        self.assertEqual(result["FDA"], [])
+        fresh = {**old, "extension_detected_at": "2026-10-15T18:00:00Z"}
+        result = today_amendments([], [extension], [fresh], today="2026-10-15")
+        self.assertEqual(result["FDA"], [extension])
+        self.assertEqual(pacific_date("2026-10-16T02:00:00Z"), "2026-10-15")
+        self.assertEqual(pacific_date("2026-10-16T02:00:00"), "")
 
 if __name__ == "__main__":
     unittest.main()
