@@ -1,0 +1,66 @@
+name: PDUFA Unresolved SEC Financing Research Triage
+
+# Research-only queue of still unresolved SEC/financial claims.
+# Does not dispatch the 10 PM Pacific overnight sequence or publish
+# unverifiable closings to the canonical source ledger.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sec_financing_gap_triage.py'
+      - 'tests/test_sec_financing_gap_triage.py'
+      - '.github/workflows/pdufa-sec-gap-triage.yml'
+      - 'config/issuer_sources.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/sec_financing_gap_triage.py'
+      - 'tests/test_sec_financing_gap_triage.py'
+      - '.github/workflows/pdufa-sec-gap-triage.yml'
+      - 'config/issuer_sources.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test that discovery never grants GEM trading eligibility
+        run: |
+          python -m unittest discover -s tests -p 'test_sec_financing_gap_triage.py' -v
+      - name: Produce latest exact-issuer SEC discovery queries and document leads
+        run: |
+          python -m scripts.sec_financing_gap_triage \
+            --output-csv reports/sec_financing_gap_triage.csv \
+            --output-json reports/sec_financing_gap_triage.json
+      - name: Write evidence-research summary, not a verification status
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          x=json.loads(Path("reports/sec_financing_gap_triage.json").read_text())
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
+              out.write("## Still-unresolved SEC and financial research\n\n")
+              out.write("Research-only leads: " + str(x["findings_scoped"]) + "\n\n")
+              for reason,n in sorted(x["by_class"].items()):
+                  out.write("- " + reason + ": " + str(n) + "\n")
+              out.write("\nNo source claims automatically verified or trade entry authorized.\n")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unresolved-sec-research-queue-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            reports/sec_financing_gap_triage.csv
+            reports/sec_financing_gap_triage.json
