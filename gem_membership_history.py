@@ -126,6 +126,21 @@ def enrich_stage_rows(rows, stage, state):
     } for row in rows]
 
 
+def enrich_gem_master_rows(rows, state):
+    """Expose GEM listing dates without implying unqualified programs entered GEM."""
+    history = state["stages"]["GEM"]["entries"]
+    result = []
+    for row in rows:
+        pid = row.get("Pipeline ID")
+        if pid in history or row.get("_eligible") is True:
+            fields = membership_fields(state, "GEM", pid)
+        else:
+            fields = {"Date Found": "NOT GEM-QUALIFIED", "Date Left": "",
+                      "Date Re-entered": "", "Listing status": "RESEARCH ONLY"}
+        result.append({**row, **fields})
+    return result
+
+
 def departed_stage_rows(state, stage):
     """Retain all past exits, even after a later re-entry."""
     slot = state["stages"][stage]
