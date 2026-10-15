@@ -145,6 +145,42 @@ class MissingSourceTests(unittest.TestCase):
             self.assertFalse(state["full_coverage_verified"])
             self.assertEqual(state["sources_passed"], 0)
 
+    def test_email_separates_completed_collection_from_technical_source_failures(self):
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root)
+            report = folder / "audit.json"
+            evidence = {
+                "scope_coverage_verified": False,
+                "verification_technical_failure_count": 4,
+                "required_findings_unresolved": 4,
+                "findings_unresolved": 0,
+                "findings_conflicted": 0,
+            }
+            with patch.object(scan, "coverage", return_value=evidence):
+                result = scan.main(["--source", "AUDIT",
+                                    "--data-dir", str(folder),
+                                    "--artifacts-dir", str(folder),
+                                    "--report", str(report)])
+            saved = json.loads(report.read_text())
+            self.assertEqual(result, 0)
+            self.assertEqual(saved["status"], "PARTIAL")
+            self.assertEqual(saved["execution_status"], "COMPLETE_WITH_VERIFICATION_ERRORS")
+            self.assertEqual(saved["errors_count"], 4)
+            self.assertIn("4 technical source verification failure", saved["errors"][0])
+            self.assertFalse(saved["full_coverage_verified"])
+            # Research gaps alone do not falsely claim a transport failure.
+            clean = dict(evidence, verification_technical_failure_count=0)
+            with patch.object(scan, "coverage", return_value=clean):
+                scan.main(["--source", "AUDIT",
+                           "--data-dir", str(folder),
+                           "--artifacts-dir", str(folder),
+                           "--report", str(report)])
+            saved = json.loads(report.read_text())
+            self.assertEqual(saved["status"], "PARTIAL")
+            self.assertEqual(saved["execution_status"], "COMPLETE")
+            self.assertEqual(saved["errors_count"], 0)
+            self.assertEqual(saved["errors"], [])
+
     def test_stale_recheck_rows_do_not_count_as_current_collection(self):
         with tempfile.TemporaryDirectory() as root:
             folder = Path(root)
