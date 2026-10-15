@@ -208,21 +208,11 @@ def render_gem_scan_block_status(report=None, run=None):
             f"{insider.get('with_open_market_purchases', 0)} with purchases. "
             "Unverified issuer sources are not assumed to have zero buying."
         )
-        comparable = report.get("bpw_comparable") or {}
-        matrix = comparable.get("capability_matrix")
-        if isinstance(matrix, list) and matrix:
-            with st.expander("GEM vs BPW — CAPABILITY COMPARISON", expanded=False):
-                st.caption(
-                    "These are GEM data-coverage measures against BPW's publicly "
-                    "described features, not comparisons of proprietary BPW "
-                    "approval scores or actual stock returns."
-                )
-                st.dataframe(pd.DataFrame(matrix)[
-                    ["capability", "state", "observed_gem_rows",
-                     "total_gem_rows", "data_coverage_pct", "caveat"]
-                ], hide_index=True, use_container_width=True)
-        else:
-            st.caption("GEM vs BPW comparison not yet source-audited in saved scan.")
+        st.caption(
+            "BiopharmaWatch feature comparison is now an OPTIONAL research "
+            "diagnostic, outside the nightly GEM source-gate scan. Open the "
+            "Research Diagnostics section in the GEM master survey view."
+        )
         st.caption("Last audit " + str(report.get("generated_at_utc") or "unknown") +
                    " · action " + str(report.get("action") or "UNKNOWN") +
                    " · archive integrity " + str(report.get("artifact_integrity") or "NOT CHECKED") +
