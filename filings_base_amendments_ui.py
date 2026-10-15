@@ -9,6 +9,8 @@ from __future__ import annotations
 import csv
 import re
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from scan_status_ui import required_issue_queue
 
@@ -21,6 +23,11 @@ VERIFICATION = ROOT / "data" / "pdufa_source_verification.csv"
 EXTENSIONS = ROOT / "data" / "fda_pdufa_extension_ledger.csv"
 RESEARCH_QUEUE = ROOT / "data" / "pdufa_source_review_queue.csv"
 REGISTRY = ROOT / "data" / "company_registry.csv"
+CANDIDATES = ROOT / "data" / "pdufa_candidates.csv"
+PHASE3_CHECKS = ROOT / "data" / "gem_phase3_exact_recheck.csv"
+SEC_PAIR_CHECKS = ROOT / "data" / "gem_two_close_recheck.csv"
+FINANCING_HISTORY = ROOT / "data" / "second_financing_status.csv"
+PACIFIC = ZoneInfo("America/Los_Angeles")
 
 
 def read_csv(path):
@@ -121,6 +128,130 @@ def table_rows(sec_filings, verification, extensions):
     return {"SEC Base": sec_base, "SEC Amendments": sec_amend,
             "FDA Base": fda_base, "FDA Amendments": fda_amend}
 
+
+
+
+def pacific_date(value):
+    """Interpret actual timestamps in Pacific time; date-only values are dates."""
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    if re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", raw):
+        return raw
+    try:
+        when = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if when.tzinfo is None:
+            return ""  # Never silently guess a timezone for a detection.
+        return when.astimezone(PACIFIC).date().isoformat()
+    except (ValueError, OverflowError, TypeError):
+        return ""
+
+
+def program_base_rows(candidates, phase3_checks, finance_checks, financing_history,
+                      verification):
+    """Exact-event clinical + BOTH financing benchmarks alongside each agency claim.
+
+    Prior 'second-financing verified' history is *not* live SEC verification,
+    nor does a primary clinical status imply GEM gate eligibility.
+    """
+    p3 = {r.get("event_key"): r for r in phase3_checks if r.get("event_key")}
+    sec_pairs = {r.get("event_key"): r for r in finance_checks if r.get("event_key")}
+    hist = {r.get("event_key"): r for r in financing_history if r.get("event_key")}
+    agency = {
+        (r.get("event_key"), r.get("category")): r for r in verification
+        if r.get("category") in {"SEC", "FDA"} and
+        r.get("claim") in {"FINANCING_CLOSURE", "PDUFA_TARGET", "FDA_DECISION"}
+    }
+    sec, fda = [], []
+    for event in candidates:
+        key = str(event.get("event_key", "")).strip()
+        ticker = str(event.get("ticker", "")).strip().upper()
+        if not key or not ticker:
+            continue
+        p = p3.get(key, {})
+        pair = sec_pairs.get(key, {})
+        history = hist.get(key, {})
+        readout_date = p.get("saved_phase3_date") or event.get("phase3_date", "")
+        clinical_status = p.get("saved_phase3_status") or event.get("phase3_status", "UNVERIFIED")
+        trial_url = p.get("saved_trial_source") or event.get("trial_evidence_url", "")
+        nct = p.get("nct_ids") or event.get("nct_id", "")
+        p3_review = p.get("source_recheck_status", "NOT_RECHECKED")
+        # Documented readout and exact trial match can be reviewed separately.
+        phase3_supported = (
+            clinical_status in {"PRIMARY_MET_VERIFIED", "RESULTS_VERIFIED"}
+            and bool(readout_date) and bool(trial_url) and bool(nct)
+        )
+        first_close = pair.get("first_close_date") or history.get("first_financing_date", "")
+        second_close = pair.get("second_close_date") or history.get("second_financing_date", "")
+        first_sec = pair.get("first_sec_status", "NOT_CHECKED")
+        second_sec = pair.get("second_sec_status", "NOT_CHECKED")
+        two_docs = (first_sec == "VERIFIED" and second_sec == "VERIFIED" and
+                    pair.get("recheck_status") == "TRANSACTIONS_RECHECKED_REVIEW")
+        # Both SEC docs may be independently verified but separate financing
+        # identity and exact post-readout sequence can remain adjudication gaps.
+        funding_status = ("BOTH_DOCUMENTS_VERIFIED_SEQUENCE_REVIEW" if two_docs
+                          else "SECOND_FINANCING_REVIEW_REQUIRED")
+        gap_flags = []
+        if not phase3_supported or p3_review != "EXACT_PROGRAM_VERIFIED":
+            gap_flags.append("PHASE3_EXACT_EVIDENCE")
+        if not two_docs:
+            gap_flags.append("TWO_FINANCING_DOCUMENTS")
+        else:
+            gap_flags.append("TWO_FINANCING_SEQUENCE")
+        common = {
+            "Ticker": ticker, "Trial / event": key,
+            "Drug": event.get("drug", ""),
+            "Phase 3 readout": readout_date or "NOT ESTABLISHED",
+            "Phase 3 evidence status": clinical_status or "UNVERIFIED",
+            "Phase 3 exact recheck": p3_review,
+            "Phase 3 source": trial_url if str(trial_url).startswith("https://") else "",
+            "Trial NCT": nct,
+            "1st finance close": first_close or "NOT ESTABLISHED",
+            "2nd finance close": second_close or "NOT ESTABLISHED",
+            "2nd finance status": funding_status,
+            "Finance evidence": pair.get("second_sec_url") or history.get("second_financing_source", ""),
+            "Research gaps": " | ".join(gap_flags),
+            "GEM eligibility": "NOT CERTIFIED",
+        }
+        sec_claim = agency.get((key, "SEC"), {})
+        sec.append({
+            **common,
+            "Agency verification": sec_claim.get("verification_status", "NOT_CHECKED"),
+            "Agency claim": sec_claim.get("claim", "FINANCING_CLOSURE"),
+            "Agency source": sec_claim.get("source_url", ""),
+        })
+        fda_claim = agency.get((key, "FDA"), {})
+        fda.append({
+            **common,
+            "Agency verification": fda_claim.get("verification_status", "NOT_CHECKED"),
+            "Agency claim": fda_claim.get("claim", "PDUFA_TARGET"),
+            "Agency source": fda_claim.get("source_url", ""),
+        })
+    sec.sort(key=lambda r: (r["Ticker"], r["Trial / event"]))
+    fda.sort(key=lambda r: (r["Ticker"], r["Trial / event"]))
+    return {"SEC": sec, "FDA": fda}
+
+
+def today_amendments(source_rows, fda_amendments, extension_history, *, today):
+    """Never mistake an old extension refreshed today for a new amendment."""
+    sec = [
+        r for r in source_rows
+        if r.get("category") == "AMENDMENT"
+        and pacific_date(r.get("filed_at")) == today
+    ]
+    # Only first-detected extension events count. The FDA extension ledger's
+    # last_updated_at changes routinely and cannot establish first detection.
+    history_dates = {
+        (r.get("event_key"), r.get("prior_pdufa_date"), r.get("current_pdufa_date")):
+        pacific_date(r.get("extension_detected_at"))
+        for r in extension_history
+    }
+    fda = [
+        r for r in fda_amendments
+        if history_dates.get((r.get("Trial / event"), r.get("Prior date"),
+                              r.get("Revised date"))) == today
+    ]
+    return {"SEC": sec, "FDA": fda}
 
 
 def missing_research_rows(queue, category, registry, *, fda_extensions=None):
