@@ -1,6 +1,6 @@
 name: PDUFA Nightly Clinical Scans
 
-# Called and awaited by the single 9 PM Pacific overnight workflow.
+# Called and awaited by the single 10 PM Pacific overnight workflow.
 # Ad-hoc workflow_dispatch remains available; only one clinical scan runs at a time.
 on:
   workflow_call:

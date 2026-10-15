@@ -17,18 +17,18 @@ ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 def decision(event, cron, runs, *, now=None):
     now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     local = now.astimezone(PACIFIC)
-    night = local if local.hour >= 21 else local - timedelta(days=1)
-    start = night.replace(hour=21, minute=0, second=0, microsecond=0)
+    night = local if local.hour >= 22 else local - timedelta(days=1)
+    start = night.replace(hour=22, minute=0, second=0, microsecond=0)
     result = {"run": False, "night_date_pacific": start.date().isoformat(), "reason": ""}
-    in_window = local.hour >= 21 or local.hour < 3
+    in_window = local.hour >= 22 or local.hour < 3
     primary_hour = start.astimezone(timezone.utc).hour
     primary = {f"{minute} {primary_hour} * * *" for minute in (0, 15, 30)}
     allowed = (event == "workflow_dispatch" or
-               event == "push" and local.hour == 21 or
+               event == "push" and local.hour == 22 or
                event == "schedule" and in_window and
                (cron in primary or local.hour < 3 and cron in RECOVERY_CRONS))
     if not allowed:
-        result["reason"] = "Outside the matching 9 PM–2:59 AM Pacific start/recovery window"
+        result["reason"] = "Outside the matching 10 PM–2:59 AM Pacific start/recovery window"
         return result
     for run in runs:
         if (run.get("path", "").split("@", 1)[0] != WORKFLOW or

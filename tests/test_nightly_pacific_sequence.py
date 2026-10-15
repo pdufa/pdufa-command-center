@@ -35,20 +35,29 @@ def clock(value):
 class PacificAdmissionTests(unittest.TestCase):
     def test_daylight_standard_and_wrong_offset_slots(self):
         for at, cron, expected in (
-            ('2026-10-15T04:00:00Z', '0 4 * * *', True),
-            ('2026-01-15T05:00:00Z', '0 5 * * *', True),
-            ('2026-10-15T05:00:00Z', '0 5 * * *', False),
-            ('2026-01-15T05:00:00Z', '0 4 * * *', False),
-            ('2026-10-15T06:00:00Z', '0 4 * * *', True),
-            ('2026-10-15T07:45:00Z', '0 4 * * *', True),
-            ('2026-10-15T09:59:00Z', '0 4 * * *', True),
-            ('2026-10-15T10:00:00Z', '0 4 * * *', False),
-            ('2026-10-15T13:00:00Z', '0 4 * * *', False),
+            ('2026-10-15T04:00:00Z', '0 4 * * *', False),  # retired 9 PM PDT
+            ('2026-10-15T05:00:00Z', '0 5 * * *', True),   # 10 PM PDT
+            ('2026-01-15T05:00:00Z', '0 5 * * *', False),  # retired 9 PM PST
+            ('2026-01-15T06:00:00Z', '0 6 * * *', True),   # 10 PM PST
+            ('2026-10-15T06:00:00Z', '0 6 * * *', False),  # wrong DST
+            ('2026-01-15T06:00:00Z', '0 5 * * *', False),  # wrong DST
+            ('2026-10-15T07:00:00Z', '0 5 * * *', True),
+            ('2026-10-15T07:45:00Z', '0 5 * * *', True),
+            ('2026-10-15T09:59:00Z', '0 5 * * *', True),
+            ('2026-10-15T10:00:00Z', '0 5 * * *', False),
+            ('2026-10-15T13:00:00Z', '0 5 * * *', False),
         ):
             with self.subTest(at=at, cron=cron):
                 result = decision('schedule', cron, [], now=clock(at))
                 self.assertEqual(result['run'], expected)
-                self.assertEqual(result['night_date_pacific'], at[:10].replace('-15', '-14'))
+                if expected:
+                    self.assertEqual(result['night_date_pacific'], at[:10].replace('-15', '-14'))
+        scheduler = read('pdufa-nightly-pacific-start.yml')
+        self.assertIn('name: PDUFA Daily 10:00 PM Pacific Start', scheduler)
+        for minute in ('0', '15', '30'):
+            for hour in ('5', '6'):
+                self.assertIn(f"cron: '{minute} {hour} * * *'", scheduler)
+        self.assertNotIn("cron: '0 4 * * *'", scheduler)
 
     def test_recovery_crons_start_a_missed_night(self):
         for at, cron in (('2026-10-15T07:05:00Z', '5 7 * * *'),
@@ -59,15 +68,15 @@ class PacificAdmissionTests(unittest.TestCase):
         self.assertFalse(decision('schedule', '5 7 * * *', [], now=clock('2026-10-15T04:30:00Z'))['run'])
 
     def test_dst_fall_back_uses_the_offset_at_that_nights_start(self):
-        # The 9 PM start was PDT; by this retry Los Angeles has switched to PST.
-        result = decision('schedule', '0 4 * * *', [], now=clock('2026-11-01T09:30:00Z'))
+        # The 10 PM start was PDT; by this retry Los Angeles has switched to PST.
+        result = decision('schedule', '0 5 * * *', [], now=clock('2026-11-01T09:30:00Z'))
         self.assertTrue(result['run'])
         self.assertEqual(result['night_date_pacific'], '2026-10-31')
 
     def test_only_actual_full_runs_suppress_a_night(self):
         now = clock('2026-10-15T08:00:00Z')
         run = dict(id=7, path=WORKFLOW, head_branch='main', event='workflow_dispatch',
-                   display_title=RUN_TITLE, created_at='2026-10-15T04:01:00Z',
+                   display_title=RUN_TITLE, created_at='2026-10-15T05:01:00Z',
                    status='completed', conclusion='success')
         for status in ('queued', 'in_progress', 'completed'):
             for conclusion in ('success', 'failure'):
@@ -88,7 +97,8 @@ class PacificAdmissionTests(unittest.TestCase):
         now = clock('2026-10-14T23:00:00Z')
         self.assertTrue(decision('workflow_dispatch', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=now)['run'])
-        self.assertTrue(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
+        self.assertFalse(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
+        self.assertTrue(decision('push', '', [], now=clock('2026-10-15T05:30:00Z'))['run'])
 
 
 class SourceStageTests(unittest.TestCase):

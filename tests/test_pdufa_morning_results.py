@@ -79,35 +79,43 @@ class MorningResultsTests(unittest.TestCase):
         not_verified = make_snapshot({}, {}, gem={**gem, "trade_entry_authorized": True}, now=now)
         self.assertFalse(not_verified["gem"]["overnight_report_published"])
 
-    def test_previous_night_after_9pm_publications_count_as_fresh(self):
+    def test_previous_night_after_10pm_publications_count_as_fresh(self):
         now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
         clinical = {"updated_at_utc": "2026-10-14T06:15:00Z"}
         source = {"updated_at_utc": "2026-10-14T07:15:00Z"}
         result = make_snapshot(clinical, source, now=now)
         self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
         self.assertEqual(result["overnight_scan_window_started_pacific"],
-                         "2026-10-13T21:00:00-07:00")
+                         "2026-10-13T22:00:00-07:00")
 
-    def test_previous_night_pre_9pm_remains_stale(self):
+    def test_previous_night_pre_10pm_remains_stale(self):
         now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
-        old = {"updated_at_utc": "2026-10-14T03:59:00Z"}
+        old = {"updated_at_utc": "2026-10-14T04:59:00Z"}
         result = make_snapshot(old, old, now=now)
         self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
 
-    def test_9pm_pacific_publication_counts_as_fresh(self):
+    def test_10pm_pacific_publication_counts_as_fresh(self):
         now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
-        clinical = {"updated_at_utc": "2026-10-14T04:01:00Z"}
-        source = {"updated_at_utc": "2026-10-14T04:30:00Z"}
+        clinical = {"updated_at_utc": "2026-10-14T05:01:00Z"}
+        source = {"updated_at_utc": "2026-10-14T05:30:00Z"}
         result = make_snapshot(clinical, source, now=now)
         self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
         self.assertEqual(result["overnight_scan_window_started_pacific"],
-                         "2026-10-13T21:00:00-07:00")
+                         "2026-10-13T22:00:00-07:00")
+
+    def test_9pm_pacific_publications_are_not_from_the_new_10pm_scan(self):
+        now = datetime(2026, 10, 14, 13, 0, tzinfo=timezone.utc)
+        early = {"updated_at_utc": "2026-10-14T04:59:00Z"}
+        result = make_snapshot(early, early, now=now)
+        self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PENDING_OR_STALE")
+        self.assertEqual(result["overnight_scan_window_started_pacific"],
+                         "2026-10-13T22:00:00-07:00")
 
     def test_delayed_github_cron_will_still_publish_morning_snapshot(self):
         """A workflow scheduled at 6 AM may only start hours later."""
         workflow = (Path(__file__).resolve().parents[1] /
                     ".github/workflows/pdufa-morning-6am-results.yml").read_text()
-        self.assertIn('if [ $((10#$local_hour)) -lt 6 ] || [ $((10#$local_hour)) -ge 21 ]', workflow)
+        self.assertIn('if [ $((10#$local_hour)) -lt 6 ] || [ $((10#$local_hour)) -ge 22 ]', workflow)
         self.assertIn('cron: \'0 13 * * *\'', workflow)
         self.assertIn('cron: \'0 14 * * *\'', workflow)
         self.assertIn('git add data/pdufa_am_6am_results.json', workflow)
@@ -134,7 +142,7 @@ class MorningResultsTests(unittest.TestCase):
         result = make_snapshot(clinical, source, now=now)
         self.assertEqual(result["snapshot_date_pacific"], "2026-12-14")
         self.assertEqual(result["overnight_scan_window_started_pacific"],
-                         "2026-12-13T21:00:00-08:00")
+                         "2026-12-13T22:00:00-08:00")
         self.assertEqual(result["readiness"], "OVERNIGHT_REPORTS_PUBLISHED_WITH_EVIDENCE_GAPS")
 
 
