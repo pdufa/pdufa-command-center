@@ -248,7 +248,7 @@ class GemReadinessTests(unittest.TestCase):
         self.assertNotIn("  schedule:", workflow)
         parent = (root / ".github/workflows/pdufa-nightly-clinical.yml").read_text()
         self.assertIn("uses: ./.github/workflows/gem-research-quality.yml", parent)
-        self.assertIn("needs: scan4", parent)
+        self.assertIn("needs: gem_jr", parent)
         self.assertIn("contents: write", workflow)
         self.assertIn("--mode backfill", workflow)
         self.assertIn("--mode daily", workflow)

@@ -1,4 +1,4 @@
-name: PRE PHASE 3 Live Acceptance
+name: PIPELINE Early Clinical Live Acceptance
 
 on:
   workflow_dispatch:
@@ -48,7 +48,7 @@ jobs:
             echo "::error::Google Chrome not available on runner"
             exit 1
           fi
-      - name: Verify live PRE PHASE 3 checklist and pilot scores
+      - name: Verify PIPELINE early-clinical checklist and pilot scores
         run: node scripts/prephase3_live_acceptance.cjs
       - name: Upload screenshot and acceptance checks
         if: always()

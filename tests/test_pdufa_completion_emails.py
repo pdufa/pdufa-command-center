@@ -40,7 +40,7 @@ class ClinicalEndEmailTests(unittest.TestCase):
         status, subject, body = _completion("2", self.RUN, job, report)
         self.assertEqual(status, "PARTIAL")
         self.assertIn("END", subject)
-        self.assertIn("#2 PIPELINE", subject)
+        self.assertIn("PIPELINE — inventory", subject)
         self.assertIn("Companies checked: 717/717", body)
         self.assertIn("Registry studies checked: 15342", body)
         self.assertIn("FDA regulatory decisions", body)
@@ -52,7 +52,7 @@ class ClinicalEndEmailTests(unittest.TestCase):
         status, subject, body = _completion("3", self.RUN, job, None)
         self.assertEqual(status, "FAILED")
         self.assertIn("Fresh collector report unavailable", body)
-        self.assertIn("#3 PRE3", subject)
+        self.assertIn("PIPELINE — clinical enrichment", subject)
 
     def test_successful_run_missing_report_is_unverified(self):
         status, subject, body = _completion("4", self.RUN,

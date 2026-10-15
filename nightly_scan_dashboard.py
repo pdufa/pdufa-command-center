@@ -26,8 +26,9 @@ SOURCE_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pd
 API = "https://api.github.com/repos/" + REPO
 WORKFLOW = "pdufa-scan-control.yml"
 AM_REPORT_URL = "https://raw.githubusercontent.com/" + REPO + "/main/data/pdufa_am_6am_results.json"
-LABELS = {"2": "#2 PIPELINE", "3": "#3 PRE3", "4": "#4 POST3",
-          "GEM": "BLOCK 4 — GEM"}
+LABELS = {"2": "PIPELINE · trial inventory", "3": "PIPELINE · clinical enrichment",
+          "4": "GEM JR · Phase 3 readout", "PIPELINE": "PIPELINE",
+          "GEM_JR": "GEM JR", "GEM": "GEM"}
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -359,7 +360,7 @@ def dashboard_secret(key):
 def dispatch_action(action, scan, token):
     if action not in {"VERIFY_ALL", "REVERIFY_PARTIAL", "RESCAN_ALL"}:
         raise ValueError("Invalid control action")
-    if scan not in {"ALL", "2", "3", "4", "GEM"}:
+    if scan not in {"ALL", "PIPELINE", "GEM_JR", "GEM"}:
         raise ValueError("Invalid scan")
     body = json.dumps({"ref": "main", "inputs": {
         "action": action, "scan": scan,
@@ -383,7 +384,7 @@ def _run_request(action, scan, token):
         dispatch_action(action, scan, token)
         latest_run.clear()
         st.success("GitHub accepted " + action.replace("_", " ") +
-                   (" for " + LABELS.get(scan, scan) if scan != "ALL" else " for #2/#3/#4 and GEM") +
+                   (" for " + LABELS.get(scan, scan) if scan != "ALL" else " for PIPELINE → GEM JR → GEM") +
                    ". Results appear after the workflow finishes and publishes its audit.")
     except urllib.error.HTTPError as exc:
         st.error("GitHub rejected the request (HTTP " + str(exc.code) +
@@ -438,7 +439,7 @@ def render_adhoc_error_check_controls():
     """Protected direct dispatch when configured; otherwise honest GitHub fallback."""
     st.markdown("### AD HOC — GMAIL + GITHUB ERROR CHECK")
     st.caption(
-        "Checks automatically after completed nightly clinical, FDA/SEC, report and PRE3 runs. "
+        "Checks automatically after completed nightly clinical, FDA/SEC, report and PIPELINE clinical feed refreshes. "
         "You can also check GitHub failures and Gmail alert headers immediately. "
         "The audit does not rescan clinical/FDA/SEC data, change evidence, "
         "send emails, or change your automatic schedule."
@@ -541,7 +542,7 @@ def render_nightly_scan_report():
     render_gem_scans()
     st.divider()
     st.markdown("## NIGHTLY SCAN REPORT")
-    st.caption("Four scan blocks: #2 PIPELINE / #3 PRE3 / #4 POST3 / BLOCK 4 GEM. Each has automatic collection, audit details and manual verification/recheck/rescan controls. A finished workflow is not full FDA, SEC, issuer or market verification.")
+    st.caption("Three qualification stages: PIPELINE / GEM JR / GEM. Three underlying clinical collectors still preserve their separate evidence audits; verify/recheck/rescan targets are consolidated. A finished workflow is not full FDA, SEC, issuer or market verification.")
     render_extended_source_report()
 
     report, loading_note = published_report()
@@ -563,7 +564,7 @@ def render_nightly_scan_report():
         if len(scan_rows) == 3 and len(completed_collectors) == 3:
             warnings = sum(r.get("collector_status") == "COMPLETE WITH WARNINGS"
                            for r in completed_collectors)
-            st.success(f"Clinical scans #2, #3, #4: 3/3 completed; {warnings} with source warnings. "
+            st.success(f"PIPELINE + GEM JR clinical collectors: 3/3 completed; {warnings} with source warnings. "
                        "Overall PDUFA-source verification remains separate.")
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Overall source coverage", str(report.get("status", "UNVERIFIED")))
@@ -634,7 +635,7 @@ def render_nightly_scan_report():
     st.markdown("### Scan controls")
     st.link_button("OPEN SCAN CONTROLS IN GITHUB ACTIONS",
                    "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-scan-control.yml")
-    st.caption("VERIFY ALL audits saved clinical #2/#3/#4 archives and GEM source gates. REVERIFY PARTIAL rechecks selected clinical/GEM sources, and RESCAN ALL requests all three clinical collectors plus GEM full registry backfill. No action certifies trading readiness or executes an order.")
+    st.caption("VERIFY ALL audits the three preserved clinical collectors and GEM source gates. REVERIFY PARTIAL rechecks selected stages; RESCAN ALL requests both PIPELINE collectors, GEM JR readouts and GEM full registry research. No action certifies trading readiness or executes an order.")
     token = dashboard_secret("PDUFA_GITHUB_TOKEN")
     pin = dashboard_secret("PDUFA_SCAN_CONTROL_PIN")
     supplied = st.text_input("Scan controls PIN", type="password",
@@ -659,7 +660,7 @@ def render_nightly_scan_report():
                      key="nightly_rescan_all"):
             _run_request("RESCAN_ALL", "ALL", token)
     scan_choice = st.selectbox("Target one scan block",
-                               options=["2", "3", "4", "GEM"],
+                               options=["PIPELINE", "GEM_JR", "GEM"],
                                format_func=lambda x: LABELS[x],
                                key="nightly_target_scan")
     target_reverify, target_verify, target_rescan = st.columns(3)
@@ -675,7 +676,7 @@ def render_nightly_scan_report():
         if st.button("RESCAN SELECTED", disabled=not authorized,
                      use_container_width=True, key="nightly_rescan_selected"):
             _run_request("RESCAN_ALL", scan_choice, token)
-    st.caption("VERIFY SAVED SOURCES runs the established ALL clinical-archive audit for #2/#3/#4, or the GEM-only saved-source audit when GEM is selected. REVERIFY and RESCAN honor the selected target. All requests run on GitHub Actions: acceptance is not completion.")
+    st.caption("VERIFY SAVED SOURCES audits all preserved clinical artifacts for PIPELINE or GEM JR; GEM uses its own saved-source audit. REVERIFY and RESCAN use the selected stage. All requests run on GitHub Actions: acceptance is not completion.")
     st.divider()
     # Keep the existing read-only Gmail/GitHub audit accessible after the
     # former top-level SCANS page was removed. The function applies its own

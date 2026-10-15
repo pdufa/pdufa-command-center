@@ -11,7 +11,7 @@ from pdufa_display_columns import (FRONT, POST_SCORES, PRE_SCORES,
                                    DISPLAY_ORDER_OPTIONS)
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
-TABS = ("GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3")
+TABS = ("PIPELINE", "GEM JR", "GEM")
 
 
 class FourPdufaScoreTabTests(unittest.TestCase):
@@ -23,6 +23,8 @@ class FourPdufaScoreTabTests(unittest.TestCase):
         for tab in TABS:
             with self.subTest(tab=tab):
                 app.session_state["pdufa_subtab"] = tab
+                if tab == "GEM JR":
+                    app.session_state["gemjr_extended_research"] = True
                 app.run()
                 self.assertFalse(list(app.exception), tab)
                 panel = next(item for item in app.get("tab") if item.label == tab)
@@ -43,8 +45,7 @@ class FourPdufaScoreTabTests(unittest.TestCase):
                 sort_key = {
                     "GEM": "overview_pdufa_display_order",
                     "PIPELINE": "pipeline_sort_v9",
-                    "PRE PHASE 3": "step7_priority_sort",
-                    "POST PHASE 3": "unified_pdufa_display_order",
+                    "GEM JR": "unified_pdufa_display_order",
                 }[tab]
                 sorter = app.selectbox(key=sort_key)
                 self.assertEqual(list(sorter.options), list(DISPLAY_ORDER_OPTIONS))

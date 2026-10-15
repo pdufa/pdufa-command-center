@@ -37,7 +37,7 @@ class Step5UiIntegrationTests(unittest.TestCase):
         b = main.index("\nquery_event =", a)
         handler = main[a:b]
         self.assertIn("_step7_snapshot(signature)", handler)
-        self.assertIn('st.markdown("## PRE PHASE 3 — LIVE SOURCE MONITOR")', handler)
+        self.assertIn('st.markdown("## PIPELINE — EARLY CLINICAL SOURCE MONITOR")', handler)
         self.assertNotIn("render_clinical_review()", handler)
         self.assertNotIn("market_step5", handler)
         self.assertNotIn("render_pre_phase3(", src)

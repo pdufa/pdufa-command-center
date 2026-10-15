@@ -189,17 +189,28 @@ class AwaitedWorkflowTests(unittest.TestCase):
         for stage in stages: self.assertIn(stage, final)
         self.assertIn("item['result'] != 'success'", final)
 
-    def test_clinical_publication_and_both_gem_jobs_finish_before_report(self):
+    def test_clinical_pipeline_gemjr_and_gem_jobs_are_sequential(self):
         clinical = read('pdufa-nightly-clinical.yml')
-        for previous, current in [('scan2','scan3'),('scan3','scan4'),
-                                  ('scan4','gem_block'),('gem_block','gem_financing')]:
-            self.assertIn('needs: '+previous, job(clinical,current))
-            self.assertIn('always()', job(clinical,current))
-        for scan in '234':
-            part = job(clinical, 'scan'+scan)
-            self.assertIn('ref: main', part)
-            self.assertIn('validate_clinical_snapshot.py --scan '+scan, part)
-            self.assertLess(part.index('Publish completed clinical snapshot'), part.index('Archive scan results'))
+        self.assertNotIn('  scan3:', clinical)
+        self.assertNotIn('  scan4:', clinical)
+        self.assertIn("options: ['ALL', 'PIPELINE', 'GEM_JR']", clinical)
+        pipeline = job(clinical, 'pipeline')
+        junior = job(clinical, 'gem_jr')
+        gem = job(clinical, 'gem_block')
+        financing = job(clinical, 'gem_financing')
+        self.assertIn('ref: main', pipeline)
+        self.assertIn('ref: main', junior)
+        for scan in ('2', '3'):
+            self.assertIn('validate_clinical_snapshot.py --scan ' + scan, pipeline)
+            self.assertIn('nightly-clinical-' + scan, pipeline)
+        self.assertLess(pipeline.index('--scan 2'), pipeline.index('--scan 3'))
+        self.assertIn('needs: pipeline', junior)
+        self.assertIn("needs.pipeline.result == 'success'", junior)
+        self.assertIn('validate_clinical_snapshot.py --scan 4', junior)
+        self.assertIn('needs: gem_jr', gem)
+        self.assertIn("needs.gem_jr.result == 'success'", gem)
+        self.assertIn('needs: gem_block', financing)
+        self.assertIn("needs.gem_block.result == 'success'", financing)
         for name in ('pdufa-nightly-clinical.yml','pdufa-nightly-report.yml',
                      'pdufa-nightly-missing-sources.yml','pdufa-nightly-scoring-then-repair.yml',
                      'gem-research-quality.yml','gem-financing-full-coverage.yml'):
@@ -218,7 +229,7 @@ class AwaitedWorkflowTests(unittest.TestCase):
         self.assertIn('scripts/step7_market_refresh.py', eod)
         self.assertIn('data/step7_market_status.csv data/step7_market_status.json', eod)
         self.assertIn('needs: refresh-step7-market-eod', job(source,'refresh-prephase3'))
-        self.assertIn('Refresh source-labeled Step 7 EOD market snapshots', (ROOT / 'scripts/nightly_sequence.py').read_text())
+        self.assertIn('Refresh validated PIPELINE early-clinical feed after sources / publish', (ROOT / 'scripts/nightly_sequence.py').read_text())
         self.assertNotIn('ref: ${{ github.sha }}',source)
         scoring = read('pdufa-nightly-scoring-then-repair.yml')
         self.assertIn('completed_source_stage(', scoring)

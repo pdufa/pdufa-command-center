@@ -104,8 +104,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         submenu_labels = [item.label for item in app.get("tab") if item.label in
-                          {"GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3", "PDUFA WORKBENCH"}]
-        self.assertEqual(submenu_labels, ["GEM", "PIPELINE", "PRE PHASE 3", "POST PHASE 3"])
+                          {"PIPELINE", "GEM JR", "GEM", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["PIPELINE", "GEM JR", "GEM"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
                             for item in app.markdown))
@@ -233,28 +233,29 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.session_state["pdufa_subtab"] = "PHASE 3 DAILY"
         app.run()
         self.assertFalse(list(app.exception))
-        self.assertEqual(app.session_state["pdufa_subtab"], "POST PHASE 3")
+        self.assertEqual(app.session_state["pdufa_subtab"], "GEM JR")
         labels = [item.label for item in app.get("tab")]
-        self.assertIn("POST PHASE 3", labels)
+        self.assertIn("GEM JR", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
 
     def test_post_phase3_three_sections_merged_into_one_page(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "POST PHASE 3"
+        app.session_state["pdufa_subtab"] = "GEM JR"
+        app.session_state["gemjr_extended_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
         overview = next(item for item in app.get("tab")
                         if item.label == "GEM")
         self.assertEqual([item for item in overview if item.type != "tab"], [])
         post = next(item for item in app.get("tab")
-                    if item.label == "POST PHASE 3")
+                    if item.label == "GEM JR")
         self.assertTrue(any("UNIFIED CLINICAL → TRADING DISPLAY" in item.body
                             for item in post.get("markdown")))
         self.assertTrue(any(item.key == "unified_export"
                             for item in post.get("download_button")))
         labels = [item.label for item in app.get("tab")]
-        self.assertIn("POST PHASE 3", labels)
+        self.assertIn("GEM JR", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
         self.assertTrue(any(
             "POST PHASE 3 — TRADING WORKSPACE" in item.body
@@ -297,7 +298,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.selectbox(key="postphase3_shared_ticker").set_value(ticker).run()
         self.assertFalse(list(app.exception))
         post = next(item for item in app.get("tab")
-                    if item.label == "POST PHASE 3")
+                    if item.label == "GEM JR")
         focused = [item.value for item in post.get("dataframe")
                    if {"Ticker", "Score /100", "Score type"}
                    .issubset(item.value.columns)]
@@ -327,8 +328,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
                         if item.label == "GEM")
         headings = [item.body for item in overview.get("markdown")]
         self.assertFalse(any("#1-DB" in heading for heading in headings))
-        for title in ("### #2-PIPELINE",
-                      "### #3-PRE3", "### #4-POST3"):
+        for title in ("### 1 — PIPELINE",
+                      "### 2 — GEM JR", "### 3 — GEM"):
             self.assertTrue(any(title in heading for heading in headings), title)
         self.assertTrue(any(item.key == "overview_export"
                             for item in overview.get("download_button")))
@@ -359,11 +360,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         overview = next(item for item in overview_app.get("tab")
                         if item.label == "GEM")
         counts = {item.label: int(item.value) for item in overview.get("metric")
-                  if item.label in {"Matching programs", "Matching pre-readout programs",
-                                    "Matching candidates"}}
-        self.assertEqual(counts, {"Matching programs": 0,
-                                 "Matching pre-readout programs": 0,
-                                 "Matching candidates": 0})
+                  if item.label in {"Matching programs", "Matching source leads"}}
+        self.assertEqual(counts, {"Matching programs": 0, "Matching source leads": 0})
         overview_app.text_input(key="overview_query").set_value("").run()
         overview_app.selectbox(key="overview_shared_ticker").set_value("All tickers").run()
         self.assertFalse(list(overview_app.exception))
@@ -373,7 +371,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
     def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "POST PHASE 3"
+        app.session_state["pdufa_subtab"] = "GEM JR"
+        app.session_state["gemjr_extended_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
         self.assertTrue(any(
@@ -398,10 +397,12 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertNotIn("PRE PHASE 3", nav.options)
         self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
 
-        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.session_state["pdufa_subtab"] = "PIPELINE"
+
+        app.session_state["pipeline_early_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
-        self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
+        self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
         self.assertFalse(any(item.label == "Phase 1–3 company–trial leads"
                              for item in app.metric))
         self.assertFalse(any("PRE PHASE 3 — Clinical Trial Evaluation" in item.body
@@ -422,7 +423,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.run()
-        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.session_state["pdufa_subtab"] = "PIPELINE"
+        app.session_state["pipeline_early_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
         clinical = [t.value for t in app.dataframe
@@ -452,7 +454,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertTrue(any("filtered rows have a review-priority score /100" in c.value for c in app.get("caption")))
         self.assertTrue(any("ALL-TRIAL REVIEW PRIORITY" in m.body for m in app.markdown))
         app.selectbox(key="step7_priority_sort").set_value("Top Score")
-        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.session_state["pdufa_subtab"] = "PIPELINE"
+        app.session_state["pipeline_early_research"] = True
         app.run()
         ordered = next(t.value for t in app.dataframe if "Review priority factors" in t.value.columns)
         self.assertTrue(ordered["Score /100"].dropna().is_monotonic_decreasing)
@@ -489,7 +492,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.text_input(key="step7_trial_search").set_value("TRVI")
         # AppTest does not submit the active keyed-tab widget along with text
         # inputs; preserve the tab explicitly when simulating a rerun.
-        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.session_state["pdufa_subtab"] = "PIPELINE"
+        app.session_state["pipeline_early_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
         trvi_grid = next(t.value for t in app.dataframe
@@ -498,7 +502,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(len(trvi), 1)
         self.assertEqual(float(trvi.iloc[0]["Preliminary clinical score /100"]), 80.0)
         app.text_input(key="step7_trial_search").set_value("LBRX")
-        app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+        app.session_state["pdufa_subtab"] = "PIPELINE"
+        app.session_state["pipeline_early_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
         lbrx_grid = next(t.value for t in app.dataframe
@@ -537,7 +542,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         local_day = datetime.now(ZoneInfo("America/Los_Angeles")).date()
         if local_day in {date(2026,10,10), date(2026,10,11)}:
             app.text_input(key="step7_trial_search").set_value("TRVI")
-            app.session_state["pdufa_subtab"] = "PRE PHASE 3"
+            app.session_state["pdufa_subtab"] = "PIPELINE"
+            app.session_state["pipeline_early_research"] = True
             app.run()
             reviewed_grid = next(t.value for t in app.dataframe
                                  if {"NCT ID", "Pre-readout research score /100", "Review priority rank"}.issubset(t.value.columns))
@@ -566,7 +572,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.run()
         self.assertFalse(list(app.exception))
         self.assertEqual(app.radio(key="nav").value, "PDUFA")
-        self.assertEqual(app.session_state["pdufa_subtab"], "PRE PHASE 3")
+        self.assertEqual(app.session_state["pdufa_subtab"], "PIPELINE")
         self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
         self.assertFalse(any(item.label == "Phase 1–3 company–trial leads"
                              for item in app.metric))

@@ -69,28 +69,28 @@ class NestedGEMTests(unittest.TestCase):
         app = (ROOT / "app.py").read_text(encoding="utf-8")
         overview = (ROOT / "unified_clinical_trading.py").read_text(encoding="utf-8")
         ui = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
-        self.assertIn('["GEM", "PIPELINE", "PRE PHASE 3"', app)
+        self.assertIn('["PIPELINE", "GEM JR", "GEM"', app)
         self.assertIn('previous_subtab == "UNIFIED OVERVIEW"', app)
         self.assertIn("render_gem_nested_master(root=root, selections_ready=True, compact=True)", overview)
-        block = '#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)'
+        block = 'GEM — THREE-LEVEL VERIFIED MASTER (show / hide)'
         self.assertIn(block, overview)
         self.assertIn('if st.toggle(', overview)
         self.assertIn('key="overview_show_gem_master"', overview)
         # GEM is the first sibling of the three existing cards.
-        self.assertIn('gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1]', overview)
+        self.assertIn('pipeline_col, gemjr_col, gem_col = st.columns([1, 1, 1]', overview)
         self.assertIn('with st.expander("PDUFA TIMELINE", expanded=True)', overview)
         self.assertIn('with st.expander("SOURCE MATCH & SCORE COVERAGE AUDIT"', overview)
         self.assertIn('st.download_button("EXPORT COMBINED TRIAL VIEW"', overview)
-        self.assertIn('st.download_button("EXPORT PRE3 PROGRAMS"', overview)
-        self.assertIn('st.download_button("EXPORT TRADING CANDIDATES"', overview)
+        self.assertIn('st.download_button("EXPORT EARLY CLINICAL PROGRAMS"', overview)
+        self.assertIn('st.download_button("EXPORT GEM JR RESEARCH"', overview)
         # The show/hide control and drill-down live inside #1, next to #2–#4.
         entrypoint = overview.index('with gem_col, st.container(')
-        entry = overview[entrypoint:overview.index('with pipeline_col, st.container(', entrypoint)]
+        entry = overview[entrypoint:overview.index('with st.expander("PDUFA TIMELINE"', entrypoint)]
         self.assertIn(block, entry)
         self.assertIn('render_gem_nested_master(root=root, selections_ready=True, compact=True)', entry)
         self.assertIn('value=False, key="overview_show_gem_master"', entry)
         self.assertIn('key="overview_gem_panel"', entry)
-        self.assertIn('st.markdown("### #2-PIPELINE")', overview)
+        self.assertIn('st.markdown("### 1 — PIPELINE")', overview)
 
         self.assertIn("### GEM — STOCK → FACTORS → SOURCE INPUTS", ui)
         self.assertIn("_init_browser_selection", ui)

@@ -59,11 +59,11 @@ class RealCircledHelpTests(unittest.TestCase):
     def test_all_three_panels_use_real_circled_help_renderer(self):
         source = (Path(__file__).resolve().parents[1]
                   / "unified_clinical_trading.py").read_text(encoding="utf-8")
-        for name in ("overview_pipeline_panel", "overview_pre3_panel",
-                     "overview_post3_panel"):
+        for name in ("overview_pipeline_panel", "overview_gemjr_panel"):
             at = source.index(f'key="{name}"')
             self.assertIn("render_dashboard_sheet(", source[at:at + 1800])
-        self.assertEqual(source.count("render_dashboard_sheet("), 3)
+        self.assertEqual(source.count("render_dashboard_sheet("), 2)
+        self.assertIn("render_gem_potential(root=root, compact=True", source)
 
 
 if __name__ == "__main__":

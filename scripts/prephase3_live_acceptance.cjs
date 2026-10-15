@@ -1,5 +1,5 @@
-// Focused browser acceptance for PRE PHASE 3 only.
-// No POST PHASE 3 report, finance drilldowns or other heavy navigation pages.
+// Focused browser acceptance for PIPELINE early-clinical research.
+// No GEM JR or GEM drilldowns are needed for this source-integrity check.
 const {chromium}=require("playwright-core");
 const fs=require("fs");
 const path=require("path");
@@ -53,7 +53,7 @@ async function verify(){
           }catch(_){lastFrameTexts.push({url:frame.url(),text:"FRAME UNAVAILABLE"});}
         }
       }
-      if(observed&&observed.text.includes("PIPELINE")&&observed.text.includes("PRE PHASE 3")){
+      if(observed&&observed.text.includes("PIPELINE")&&observed.text.includes("GEM JR")){
         match=observed;
         break;
       }
@@ -65,8 +65,10 @@ async function verify(){
     }
     checked.frameDiagnostics=lastFrameTexts;
     if(!match)throw Error("Live application still unavailable after navigation retry; see frameDiagnostics");
-    const tab=match.frame.getByRole("tab",{name:"PRE PHASE 3",exact:true});
+    const tab=match.frame.getByRole("tab",{name:"PIPELINE",exact:true});
     await tab.click({timeout:20000});
+    await match.frame.getByText("SHOW EARLY CLINICAL RESEARCH / READINESS",{exact:true})
+      .click({timeout:20000});
     let body="";
     let lastFrame=match.frame;
     // Streamlit may replace the app frame while rerunning the Python script.
@@ -77,7 +79,7 @@ async function verify(){
          body.includes("Traceback (most recent call last)"))
         throw Error("Deployed Streamlit shows application exception");
       const required=[
-        "PRE PHASE 3 — LIVE SOURCE MONITOR",
+        "PIPELINE — EARLY CLINICAL SOURCE MONITOR",
         "PRE PHASE 3 COMPLETION CHECKLIST",
         "SOURCE HEALTH / LAST VERIFIED CHECK",
         "PRE PHASE 3 CLINICAL RESEARCH QUEUE",
@@ -104,7 +106,7 @@ async function verify(){
     const pilotStateConsistent = provisionalCount !== null &&
       (provisionalCount === 0 ? !pilotHeading : pilotHeading && pilotMetric);
     const requiredChecks={
-      tabSelected:await lastFrame.getByRole("tab",{name:"PRE PHASE 3",exact:true}).getAttribute("aria-selected")==="true",
+      tabSelected:await lastFrame.getByRole("tab",{name:"PIPELINE",exact:true}).getAttribute("aria-selected")==="true",
       sourceHealth:body.includes("SOURCE HEALTH / LAST VERIFIED CHECK"),
       researchTable:body.includes("PRE PHASE 3 CLINICAL RESEARCH QUEUE"),
       allTrialPriority:body.includes("ALL-TRIAL REVIEW PRIORITY")&&body.includes("Priority score coverage"),
@@ -147,6 +149,6 @@ async function verify(){
 }
 verify().catch(e=>checked.errors.push(String(e.stack||e).slice(0,1400))).finally(()=>{
   fs.writeFileSync(path.join(out,"prephase3-acceptance.json"),JSON.stringify(checked,null,2));
-  process.stdout.write("PRE PHASE 3 BROWSER ACCEPTANCE\n"+JSON.stringify(checked,null,2)+"\n");
+  process.stdout.write("PIPELINE EARLY CLINICAL BROWSER ACCEPTANCE\n"+JSON.stringify(checked,null,2)+"\n");
   process.exitCode=checked.errors.length?1:0;
 });

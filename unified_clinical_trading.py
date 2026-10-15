@@ -100,97 +100,22 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
 
     pre3 = filtered_feed(pre, "PRE PHASE 3")
     post3 = filtered_feed(post, "POST PHASE 3")
-    # Shared W/T state was already hydrated by the GEM tab entrypoint.
+    # Keep the evidence feeds separate internally: PRE results never prove GEM eligibility.
+    # Three visual stages replace the former four-card PRE3/POST3 layout.
     st.markdown("""
     <style>
-    .st-key-overview_gem_panel, .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
-    .st-key-overview_post3_panel {
-      background:#ffffff; border:2px solid #000000 !important;
-      border-radius:14px; padding:14px; color:#111111;
-      position:relative; isolation:isolate;
-    }
-    .st-key-overview_gem_panel::before,
-    .st-key-overview_pipeline_panel::before,
-    .st-key-overview_pre3_panel::before,
-    .st-key-overview_post3_panel::before {
-      position:absolute; top:2px; right:16px; z-index:-1;
-      font-size:120px; font-weight:900; line-height:1;
-      color:rgba(17,17,17,.10); pointer-events:none; user-select:none;
-    }
-    .st-key-overview_gem_panel::before {content:"1";}
-    .st-key-overview_pipeline_panel::before {content:"2";}
-    .st-key-overview_pre3_panel::before {content:"3";}
-    .st-key-overview_post3_panel::before {content:"4";}
-    /* Streamlit 1.65 owns the responsive layout through st.columns(wrap=False).
-       Don't force a CSS grid: it can interfere with native mobile no-wrap scrolling. */
-    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) {
-      gap:0 !important;
-      align-items:stretch !important;
-    }
-    /* Stretch each Streamlit column's vertical content to the tallest card
-       in its grid row, without forcing a fixed height or hiding content. */
-    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] {
-      box-sizing:border-box !important;
-      display:flex !important;
-      flex-direction:column !important;
-      align-self:stretch !important;
-      /* Readable cards at any viewport, without stacking #1 above #2-#4. */
-      flex:1 0 280px !important;
-      min-width:280px !important;
-      max-width:none !important;
-      padding-inline:0.375rem !important;
-    }
-    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"] > [data-testid="stVerticalBlock"] {
-      display:flex !important;
-      flex-direction:column !important;
-      flex:1 1 auto !important;
-      height:100% !important;
-    }
-    /* Streamlit's bordered st.container adds another wrapper inside each
-       column. Stretch that wrapper too, or the visible black outlines may
-       stop at different vertical positions despite equal grid-row heights. */
-    .st-key-overview_panels [data-testid="stHorizontalBlock"]:has(.st-key-overview_pipeline_panel) > [data-testid="stColumn"]
-    [data-testid="stVerticalBlockBorderWrapper"]:has(.st-key-overview_gem_panel, .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel, .st-key-overview_post3_panel) {
-      display:flex !important;
-      flex-direction:column !important;
-      flex:1 1 auto !important;
-      height:100% !important;
-    }
-    .st-key-overview_gem_panel, .st-key-overview_pipeline_panel, .st-key-overview_pre3_panel,
-    .st-key-overview_post3_panel {
-      box-sizing:border-box;
-      flex:1 1 auto;
-      height:100%;
-      min-width:0;
-      width:100%;
-    }
-    @media (max-width:800px) {
-      .st-key-overview_gem_panel::before,
-      .st-key-overview_pipeline_panel::before,
-      .st-key-overview_pre3_panel::before,
-      .st-key-overview_post3_panel::before {font-size:100px; right:12px;}
+    .st-key-overview_pipeline_panel, .st-key-overview_gemjr_panel, .st-key-overview_gem_panel {
+      background:#fff; border:2px solid #000 !important;
+      border-radius:14px; padding:14px; color:#111;
+      box-sizing:border-box; min-width:0; width:100%;
     }
     </style>
     """, unsafe_allow_html=True)
     with st.container(key="overview_panels"):
-        gem_col, pipeline_col, pre3_col, post3_col = st.columns([1, 1, 1, 1], gap="small", wrap=False)
-        with gem_col, st.container(border=True, key="overview_gem_panel"):
-            st.markdown("### #1-GEM")
-            st.caption("Clinical Phase 3 → post-readout financing → FDA/PDUFA research")
-            from gem_potential_ui import render_gem_potential
-            render_gem_potential(root=root, compact=True, namespace="gem_overview_potential")
-            st.caption("Expand the master list below for the two GEM benchmarks "
-                       "and all risk/source checkboxes.")
-
-            # A toggle avoids nested expanders in the stock drill-downs.
-            if st.toggle("#1 GEM — THREE-LEVEL NESTED MASTER LIST (show / hide)",
-                         value=False, key="overview_show_gem_master"):
-                from gem_nested_master_ui import render_gem_nested_master
-                with st.container(height=560, border=False, key="overview_gem_content"):
-                    render_gem_nested_master(root=root, selections_ready=True, compact=True)
+        pipeline_col, gemjr_col, gem_col = st.columns([1, 1, 1], gap="small", wrap=False)
         with pipeline_col, st.container(border=True, key="overview_pipeline_panel"):
-            st.markdown("### #2-PIPELINE")
-            st.caption("Clinical programs · stage, scores and financing cycle")
+            st.markdown("### 1 — PIPELINE")
+            st.caption("Clinical programs, including early and pre-readout Phase 3 research.")
             st.metric("Matching programs", len(df))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if df.empty:
@@ -200,59 +125,53 @@ def _render_command_center(df, pre, post, *, today, ticker, phase, stage, search
                 ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
                  "2nd Financing Completed", "Cash Runway (months)",
                  "Score type", "Pipeline stage", "F", "Drug", "NCT ID"],
-                height=310,
-                ticker_controls=True,
+                height=310, ticker_controls=True,
                 watchlist=st.session_state.get("watchlist", []),
-                trading_tickers=st.session_state.get("trading_tickers", []),
-            )
-            st.caption("Expand ALL FIELDS below for every clinical field, score component and source link.")
-        with pre3_col, st.container(border=True, key="overview_pre3_panel"):
-            st.markdown("### #3-PRE3")
-            st.caption("Pre-readout Phase 3 programs · clinical evidence, scores and review priority")
-            st.metric("Matching pre-readout programs", len(pre3))
-            st.markdown(_timing_legend_html(), unsafe_allow_html=True)
-            if pre3.empty:
-                st.info("No current pre-readout programs match these filters.")
-            render_dashboard_sheet(
-                pre3.head(150),
-                ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
-                 "2nd Financing Completed", "Cash Runway (months)",
-                 "Score type", "Score status", "F", "Drug", "NCT ID"],
-                height=310,
-                ticker_controls=True,
-                watchlist=st.session_state.get("watchlist", []),
-                trading_tickers=st.session_state.get("trading_tickers", []),
-            )
-            with st.expander("ALL PRE3 FIELDS & EVIDENCE"):
-                pdufa_dataframe(finance_style(pre3.head(350)), hide_index=True,
-                             use_container_width=True)
-            st.download_button("EXPORT PRE3 PROGRAMS", pre3.to_csv(index=False).encode(),
-                               file_name="unified_pre3_programs.csv", mime="text/csv",
-                               key="overview_pre3_export")
-
-        with post3_col, st.container(border=True, key="overview_post3_panel"):
-            st.markdown("### #4-POST3")
-            st.caption("Post-readout candidates · qualification, scores and financing evidence")
-            st.metric("Matching candidates", len(post3))
+                trading_tickers=st.session_state.get("trading_tickers", []))
+            st.caption(f"Pre-readout source matches: {len(pre3)} (research only).")
+            with st.expander("EARLY CLINICAL EVIDENCE / ALL FIELDS", expanded=False):
+                if pre3.empty:
+                    st.info("No matching early clinical records.")
+                else:
+                    pdufa_dataframe(finance_style(pre3.head(350)),
+                                    hide_index=True, use_container_width=True)
+                    st.download_button("EXPORT EARLY CLINICAL PROGRAMS",
+                                       pre3.to_csv(index=False).encode(),
+                                       file_name="pipeline_early_clinical.csv", mime="text/csv",
+                                       key="overview_pre3_export")
+        with gemjr_col, st.container(border=True, key="overview_gemjr_panel"):
+            st.markdown("### 2 — GEM JR")
+            st.caption("Post-readout research leads: trial identity, clinical outcomes and financing verification. Not trade-qualified.")
+            st.metric("Matching source leads", len(post3))
             st.markdown(_timing_legend_html(), unsafe_allow_html=True)
             if post3.empty:
-                st.info("No current trading candidates match these filters.")
+                st.info("No matching post-readout leads.")
             render_dashboard_sheet(
                 post3.head(150),
                 ["Ticker", "Score /100", "PDUFA Date", "Days to PDUFA",
                  "2nd Financing Completed", "Cash Runway (months)",
                  "Score type", "Entry qualification", "F", "Drug", "NCT ID"],
-                height=310,
-                ticker_controls=True,
+                height=310, ticker_controls=True,
                 watchlist=st.session_state.get("watchlist", []),
-                trading_tickers=st.session_state.get("trading_tickers", []),
-            )
-            with st.expander("ALL TRADING FIELDS & EVIDENCE"):
-                pdufa_dataframe(finance_style(post3.head(350)), hide_index=True,
-                             use_container_width=True)
-            st.download_button("EXPORT TRADING CANDIDATES", post3.to_csv(index=False).encode(),
-                               file_name="unified_trading_candidates.csv", mime="text/csv",
-                               key="overview_trading_export")
+                trading_tickers=st.session_state.get("trading_tickers", []))
+            with st.expander("PHASE 3 / FINANCING SOURCE DETAILS", expanded=False):
+                if not post3.empty:
+                    pdufa_dataframe(finance_style(post3.head(350)),
+                                    hide_index=True, use_container_width=True)
+                    st.download_button("EXPORT GEM JR RESEARCH",
+                                       post3.to_csv(index=False).encode(),
+                                       file_name="gem_jr_research.csv", mime="text/csv",
+                                       key="overview_trading_export")
+        with gem_col, st.container(border=True, key="overview_gem_panel"):
+            st.markdown("### 3 — GEM")
+            st.caption("Only source-verified Phase 3 success and two post-readout financing closures permit GEM qualification.")
+            from gem_potential_ui import render_gem_potential
+            render_gem_potential(root=root, compact=True, namespace="gem_overview_potential")
+            if st.toggle("GEM — THREE-LEVEL VERIFIED MASTER (show / hide)",
+                         value=False, key="overview_show_gem_master"):
+                from gem_nested_master_ui import render_gem_nested_master
+                with st.container(height=560, border=False, key="overview_gem_content"):
+                    render_gem_nested_master(root=root, selections_ready=True, compact=True)
     # Cross-panel timeline belongs below the equal-height cards, not inside #4.
     with st.expander("PDUFA TIMELINE", expanded=True):
         st.caption("Program-specific dates and countdowns · reported dates retain their evidence status")
@@ -286,7 +205,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         _init_browser_selection("overview_inline")
     if not dashboard:
         st.markdown("### UNIFIED CLINICAL → TRADING DISPLAY")
-        st.caption("Pipeline + pre-readout Phase 3 + post-readout trading evidence in one view. No ordinal ranks, Top 10, or automatic orders. Clinical and financing status are not inferred from trial stage.")
+        st.caption("PIPELINE → GEM JR → GEM. Early clinical and Phase 3 readout evidence remain separate and source-labeled. No automatic trading or eligibility inferred from stage.")
     today = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     try:
         with st.spinner("Loading saved pipeline, clinical and PDUFA evidence…"):
@@ -430,7 +349,7 @@ def render_combined_overview(root="data", *, dashboard=False):
         st.session_state[focus_key] = "All tickers"
     focus = st.selectbox("Focus ticker", focus_options, key=focus_key)
     ticker = None if focus == "All tickers" else focus
-    st.caption("One ticker selection updates #2-PIPELINE, #3-PRE3, #4-POST3 and the PDUFA Timeline." if dashboard else
+    st.caption("One ticker selection updates PIPELINE, GEM JR, GEM research and the PDUFA Timeline." if dashboard else
                "This ticker selection links the clinical/pipeline display, PDUFA dates, "
                "candidate qualification, reported positions, and historical research below.")
     if ticker:

@@ -9,7 +9,7 @@ SOURCE_JOBS = tuple(f"Live PDUFA {family} source check" for family in
 SOURCE_TAILS = ("Combined coverage / missing source audit",
                 "Publish reconciled source verification to SCANS",
                 "Refresh source-labeled Step 7 EOD market snapshots",
-                "Refresh validated PRE PHASE 3 display feed after sources / publish")
+                "Refresh validated PIPELINE early-clinical feed after sources / publish")
 TERMINAL = {"success", "failure", "timed_out", "cancelled", "skipped"}
 
 
@@ -28,7 +28,7 @@ def completed_source_stage(run, jobs, *, current_run_id, conclusion, repository)
         if len(matches) != 1 or matches[0].get("status") != "completed":
             raise ValueError("Source stage is missing, ambiguous or still running: " + name)
     if not source_jobs or any(job.get("status") != "completed" for job in source_jobs):
-        raise ValueError("Source publication or PRE3 refresh has not finished")
+        raise ValueError("Source publication or PIPELINE early-clinical refresh has not finished")
     if conclusion == "success" and any(job.get("conclusion") != "success" for job in source_jobs):
         raise ValueError("Failed or skipped source jobs cannot be reported as successful")
     failed_jobs = [{"id": job.get("id"), "name": job.get("name"),
