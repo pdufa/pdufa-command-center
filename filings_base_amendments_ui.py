@@ -18,7 +18,7 @@ from filings_live_data import published_filings_files
 from pipeline_universe import SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe
 from pipeline_filings_alignment import (
     pipeline_scope, align_baseline, reconciliation_counts,
-    candidate_events_outside_pipeline,
+    candidate_events_outside_pipeline, scope_evidence_tables, scope_research_queue,
 )
 from filings_scan_controls import render_section_scan, render_section_scan_unlock
 from scripts.filings_section_scan import (
@@ -542,6 +542,18 @@ def render_filings_base_amendments():
         }
         if not (len(bases["SEC"]) == len(bases["FDA"]) == counts["chart_total"]):
             raise ValueError("Pipeline to SEC/FDA baseline count mismatch")
+        source_tables = scope_evidence_tables(source_tables, trial_records)
+        sec_rows = [
+            item for item in sec_rows
+            if str(item.get("ticker") or "").strip().upper()
+            in {str(record.get("ticker") or "").strip().upper() for record in trial_records}
+        ]
+        queue_rows = scope_research_queue(details["queue"], trial_records)
+        extension_history = [
+            item for item in extension_history
+            if "APPLICATION|" + str(item.get("event_key") or "").strip()
+            in {str(record.get("record_id") or "").strip() for record in trial_records}
+        ]
     except (OSError, ValueError, TypeError, KeyError, AttributeError) as error:
         st.error("Pipeline trial reconciliation unavailable. The SEC/FDA baseline "
                  "totals are not displayed because they cannot be confirmed.")
@@ -550,7 +562,7 @@ def render_filings_base_amendments():
     today_changes = today_amendments(
         sec_rows, source_tables["FDA Amendments"], extension_history, today=today,
     )
-    queue_rows, queue_notice, registry_rows = details["queue"], details["queue_notice"], details["registry"]
+    queue_notice, registry_rows = details["queue_notice"], details["registry"]
 
     st.markdown("## PIPELINE ↔ SEC / FDA — TRIAL RECONCILIATION")
     col_a, col_b, col_c = st.columns(3)
