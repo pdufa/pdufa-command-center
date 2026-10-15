@@ -26,7 +26,8 @@ FULL = (
     "Evidence type", "GEM status", "SEC documents rechecked", "NCT ID",
     "PDUFA date (saved)", "Timing / resolution", "Exact program",
     "Clinical source", "Financing SEC source", "Source review date",
-    "Pipeline ID", "Date Found", "Date Left", "Date Re-entered", "Listing status",
+    "Pipeline ID", "Date Found", "Date Left", "Date Re-entered",
+    "Leave Reason", "Listing status",
 )
 
 
@@ -135,14 +136,6 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             "GLOBAL SEC SOURCE CHECK PARTIAL/STALE — verified program-level "
             "evidence does not clear fresh all-source trading-entry gates."
         )
-    departed = departed_stage_rows(membership, "GEM")
-    with st.expander(f"GEM — LEFT LISTING HISTORY ({len(departed)})",
-                     expanded=False):
-        if departed:
-            st.dataframe(pd.DataFrame(departed), use_container_width=True,
-                         hide_index=True)
-        else:
-            st.caption("No GEM exits have been recorded since membership tracking began.")
     # GEM WT only shows active, exact-program, two-benchmark-cleared leads.
     # Research leads remain in GEM JR and do not inherit GEM eligibility.
     render_stage_wt_tables(
@@ -334,4 +327,19 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             for row in timing_hold:
                 st.markdown("**" + row["Ticker"] + " · " + row["Drug"] + "**")
                 st.caption(row["Why potential"] + " — " + row["Timing / resolution"])
+    # Previous candidates belong below the entire GEM stage listing.
+    departed = departed_stage_rows(membership, "GEM")
+    st.markdown("### GEM — PREVIOUS CANDIDATES")
+    st.caption(
+        "Individual exact-Pipeline-ID history: date GEM first found the trial, "
+        "date it left, and recorded departure reason. PDUFA −3 is a trading "
+        "warning, not an early removal from this research listing."
+    )
+    with st.expander(f"OPEN PREVIOUS GEM CANDIDATES ({len(departed)})",
+                     expanded=False):
+        if departed:
+            st.dataframe(pd.DataFrame(departed), use_container_width=True,
+                         hide_index=True)
+        else:
+            st.caption("No GEM departure has been recorded by a complete scan yet.")
     return potential
