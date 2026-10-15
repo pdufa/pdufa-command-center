@@ -142,12 +142,19 @@ def build_potential_list(root="data", *, as_of=None):
         pdufa = _parse_date(event.get("pdufa_date"))
         outcome = str(event.get("outcome") or "").strip().upper()
         resolved = outcome in RESOLVED
-        window_end = bool(pdufa is not None and (pdufa - today).days <= 3)
-        on_hold = resolved or window_end
+        expired = bool(pdufa is not None and pdufa < today)
+        trading_exit = bool(pdufa is not None and
+                            (pdufa - today).days <= 3)
+        # PDUFA -3 is a trading warning, NOT a reason to erase a candidate
+        # from the stage listing. Archive only after the actual PDUFA date
+        # has passed, or if the FDA already resolved the program.
+        on_hold = resolved or expired
         if resolved:
             timing_note = "FDA outcome already recorded: " + outcome
-        elif window_end:
-            timing_note = "At/past planned PDUFA −3 exit boundary; not a new-entry research setup"
+        elif expired:
+            timing_note = "PDUFA date expired — retain in previous candidates"
+        elif trading_exit:
+            timing_note = "PDUFA −3 trading boundary reached — NO NEW ENTRY; keep stage listing"
         else:
             timing_note = "Timing unresolved / check dated PDUFA source"
             if pdufa:
