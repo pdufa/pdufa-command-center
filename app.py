@@ -169,6 +169,67 @@ a:active,a:focus{color:#ff8a00 !important}
 .merged-pdufa-table td.provision-unknown{color:#7a7a7a;font-style:italic}
 .merged-pdufa-table a,.merged-pdufa-table a:link,.merged-pdufa-table a:visited{color:#0b57d0 !important;text-decoration:underline !important}
 
+/* PIPELINE cards share the SEC/FDA scan-control language, never alter data. */
+.st-key-pipeline_filters_card, .st-key-pipeline_stage_chart_card,
+.st-key-pipeline_date_chart_card, .st-key-pipeline_trials_card,
+.st-key-pipeline_workbench_card {
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #171f19 !important;
+  border-radius:12px !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);
+  padding:16px 20px !important;
+  margin-bottom:12px;
+}
+.st-key-pipeline_filters_card [data-testid="stWidgetLabel"] p {
+  color:#111111 !important;font-weight:800 !important;
+}
+.st-key-pipeline_stage_chart_card h4,
+.st-key-pipeline_date_chart_card h4,
+.st-key-pipeline_trials_card h3 {
+  color:#111111 !important;font-weight:900 !important;
+}
+.st-key-pipeline_stage_chart_card .pipeline-count-chart,
+.st-key-pipeline_date_chart_card .pipeline-count-chart {
+  background:#ffffff !important;
+  border:1px solid #d4ddd5 !important;
+  border-radius:8px !important;
+}
+.st-key-pipeline_stage_chart_card .pipeline-count-bar,
+.st-key-pipeline_date_chart_card .pipeline-count-bar {
+  background:#006633 !important;
+}
+.st-key-pipeline_trials_card [data-testid="stDataFrame"],
+.st-key-pipeline_workbench_card [data-testid="stDataFrame"],
+.st-key-pipeline_workbench_card [data-testid="stDataEditor"] {
+  background:#fff !important;
+  border:2px solid #171f19 !important;
+  border-radius:10px !important;
+}
+.st-key-pipeline_filters_card .stButton button[kind="primary"],
+.st-key-pipeline_filters_card .stButton button[data-testid="stBaseButton-primary"],
+.st-key-pipeline_trials_card .stButton button[kind="primary"],
+.st-key-pipeline_workbench_card .stButton button[kind="primary"] {
+  background:#006633 !important;
+  color:#fff !important;
+  border:1px solid #00532a !important;
+  font-weight:800 !important;
+  border-radius:9px !important;
+}
+.st-key-pipeline_filters_card .stButton button[kind="primary"]:disabled {
+  opacity:.47;
+}
+.st-key-pipeline_trials_card [data-testid="stMetric"],
+.st-key-pipeline_stage_chart_card [data-testid="stMetric"],
+.st-key-pipeline_date_chart_card [data-testid="stMetric"] {
+  border:1px solid #131f17 !important;
+  border-radius:9px !important;
+}
+@media (max-width:768px) {
+ .st-key-pipeline_filters_card,.st-key-pipeline_stage_chart_card,
+ .st-key-pipeline_date_chart_card,.st-key-pipeline_trials_card,
+ .st-key-pipeline_workbench_card {padding:10px 12px !important;}
+}
 /* iPhone / mobile web-app layout */
 @media (max-width: 768px){
   :root{--font-main:15px;--font-small:12px;--font-title:24px;--font-h2:20px;--font-h3:17px}
@@ -3320,62 +3381,65 @@ if page == "PDUFA":
                 st.session_state["pipeline_sort_v9"] = DISPLAY_ORDER_OPTIONS[0]
                 _clear_pipeline_results_v9()
 
-            # Compact widgets: both STAGES and DATES stay in view on desktop and mobile.
-            stage_col, date_col = st.columns(2, gap="medium")
-            with stage_col:
-                selected_stages = st.multiselect(
-                    "STAGES",
-                    options=list(PIPELINE_STAGES), default=[],
-                    placeholder="Select stage (e.g. PDUFA Decision)",
-                    key="pipeline_stages_v9",
-                    on_change=_clear_pipeline_results_v9,
-                    help="Select CURRENT stage, not any historical milestone.",
-                )
-            with date_col:
-                selected_dates = st.multiselect(
-                    "DATES",
-                    options=list(PIPELINE_DATE_BANDS), default=[],
-                    placeholder="Select PDUFA date window",
-                    key="pipeline_dates_v9",
-                    on_change=_clear_pipeline_results_v9,
-                    help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
-                )
-            # Separate chart columns from selector columns. On iPhone, Streamlit
-            # stacks each column vertically; reusing stage_col/date_col here hid
-            # the DATES selector behind the tall STAGE COUNTS chart.
+            # The filters are one white/black Pipeline control card; retain every key.
+            with st.container(border=True, key="pipeline_filters_card"):
+                st.markdown("### PIPELINE FILTERS")
+                st.caption("Choose stages and dates, then display only matching trial records.")
+                stage_col, date_col = st.columns(2, gap="medium")
+                with stage_col:
+                    selected_stages = st.multiselect(
+                        "STAGES",
+                        options=list(PIPELINE_STAGES), default=[],
+                        placeholder="Select stage (e.g. PDUFA Decision)",
+                        key="pipeline_stages_v9",
+                        on_change=_clear_pipeline_results_v9,
+                        help="Select CURRENT stage, not any historical milestone.",
+                    )
+                with date_col:
+                    selected_dates = st.multiselect(
+                        "DATES",
+                        options=list(PIPELINE_DATE_BANDS), default=[],
+                        placeholder="Select PDUFA date window",
+                        key="pipeline_dates_v9",
+                        on_change=_clear_pipeline_results_v9,
+                        help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
+                    )
+                # Separate chart columns from selector columns. On iPhone, Streamlit
+                # stacks each column vertically; reusing stage_col/date_col here hid
+                # the DATES selector behind the tall STAGE COUNTS chart.
+                search_col, sort_col = st.columns([2, 1], gap="medium")
+                with search_col:
+                    query = st.text_input(
+                        "Find ticker, drug, indication or NCT ID",
+                        key="pipeline_query_v9",
+                        on_change=_clear_pipeline_results_v9,
+                        placeholder="Optional search",
+                    ).strip()
+                with sort_col:
+                    sort_mode = st.selectbox(
+                        "Display order", options=DISPLAY_ORDER_OPTIONS,
+                        key="pipeline_sort_v9",
+                        on_change=_clear_pipeline_results_v9,
+                    )
+
+                button_col, reset_col = st.columns([2, 1], gap="medium")
+                with button_col:
+                    show_clicked = st.button(
+                        "SHOW MATCHING TRIALS", type="primary", use_container_width=True,
+                        disabled=not (selected_stages and selected_dates),
+                        key="pipeline_show_v9",
+                    )
+                with reset_col:
+                    st.button(
+                        "CLEAR STAGE / DATE", on_click=_reset_pipeline_filters_v9,
+                        use_container_width=True, key="pipeline_clear_v9",
+                    )
+
             stage_chart_col, date_chart_col = st.columns(2, gap="medium")
             with stage_chart_col:
-                stage_count_slot = st.container()
+                stage_count_slot = st.container(border=True, key="pipeline_stage_chart_card")
             with date_chart_col:
-                date_count_slot = st.container()
-            search_col, sort_col = st.columns([2, 1], gap="medium")
-            with search_col:
-                query = st.text_input(
-                    "Find ticker, drug, indication or NCT ID",
-                    key="pipeline_query_v9",
-                    on_change=_clear_pipeline_results_v9,
-                    placeholder="Optional search",
-                ).strip()
-            with sort_col:
-                sort_mode = st.selectbox(
-                    "Display order", options=DISPLAY_ORDER_OPTIONS,
-                    key="pipeline_sort_v9",
-                    on_change=_clear_pipeline_results_v9,
-                )
-
-            button_col, reset_col = st.columns([2, 1], gap="medium")
-            with button_col:
-                show_clicked = st.button(
-                    "SHOW MATCHING TRIALS", type="primary", use_container_width=True,
-                    disabled=not (selected_stages and selected_dates),
-                    key="pipeline_show_v9",
-                )
-            with reset_col:
-                st.button(
-                    "CLEAR STAGE / DATE", on_click=_reset_pipeline_filters_v9,
-                    use_container_width=True, key="pipeline_clear_v9",
-                )
-
+                date_count_slot = st.container(border=True, key="pipeline_date_chart_card")
             selection_signature = (
                 tuple(selected_stages), tuple(selected_dates), query, sort_mode
             )
@@ -3482,90 +3546,91 @@ if page == "PDUFA":
             _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES, "PHASE TOTAL")
             _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS, "DATE TOTAL")
 
-            st.markdown("### PDUFA TRIALS / PROGRAMS")
-            render_ticker_toggle_panel("pipeline_2", prepared, title="TICKER WATCH / TRADE")
-            st.caption("Displayed count always equals the exact number of table rows.")
-            empty_chart = prepare_pdufa_grid(
-                pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values())),
-                view="PIPELINE", as_of=pipeline_today,
-            )
-            if not applied:
-                st.metric("Trials / programs displayed", 0)
-                pdufa_dataframe(
-                    finance_style(empty_chart), hide_index=True, use_container_width=True, height=220,
-                    survey_source=prepared,
+            with st.container(border=True, key="pipeline_trials_card"):
+                st.markdown("### PDUFA TRIALS / PROGRAMS")
+                render_ticker_toggle_panel("pipeline_2", prepared, title="TICKER WATCH / TRADE")
+                st.caption("Displayed count always equals the exact number of table rows.")
+                empty_chart = prepare_pdufa_grid(
+                    pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values())),
+                    view="PIPELINE", as_of=pipeline_today,
                 )
-                if not selected_stages or not selected_dates:
-                    st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
-                else:
-                    st.info("Click SHOW MATCHING TRIALS to populate the chart.")
-            else:
-                filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
-                shown = chart_rows(filtered, sort_mode)
-                try:
-                    _, post_links, post_health, pre_links, pre_fresh = load_unified_evidence(pipeline_today)
-                    shown = enrich_exact_trials(
-                        shown,
-                        pre=pre_links if pre_fresh else [],
-                        post=post_links if post_health.get("feed_current") else [],
+                if not applied:
+                    st.metric("Trials / programs displayed", 0)
+                    pdufa_dataframe(
+                        finance_style(empty_chart), hide_index=True, use_container_width=True, height=220,
+                        survey_source=prepared,
                     )
-                except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
-                    pass  # Keep original Pipeline records; missing evidence stays blank.
-                shown = sort_pdufa_grid(
-                    prepare_pdufa_grid(shown, view="PIPELINE", as_of=pipeline_today),
-                    sort_mode,
-                )
-                st.metric("Trials / programs displayed", len(shown))
-                pdufa_dataframe(
-                    finance_style(shown), hide_index=True, use_container_width=True, height=540,
-                    column_config={
-                        "Source": st.column_config.LinkColumn("Source"),
-                        "F": st.column_config.TextColumn("F", width="small"),
-                    },
-                )
-                if shown.empty:
-                    st.info("No matching programs for that STAGES + DATES selection.")
-                else:
-                    unique_ids = (
-                        filtered["nct_id"].replace("", pd.NA).dropna().nunique()
-                        if "nct_id" in filtered else 0
-                    )
-                    st.caption(
-                        f"{len(shown):,} displayed rows · {unique_ids:,} unique linked trial IDs. "
-                        "Saved dates are not all FDA-verified."
-                    )
-                with st.expander("STAGES / DATES count audit", expanded=False):
-                    stage_counts = (
-                        filtered["current_stage"].value_counts().to_dict()
-                        if "current_stage" in filtered else {}
-                    )
-                    date_counts = (
-                        filtered["DATES"].value_counts().to_dict()
-                        if "DATES" in filtered else {}
-                    )
-                    col_a, col_b = st.columns(2)
-                    with col_a:
-                        stage_table = pd.DataFrame(
-                            [{"Stage": stage, "Count": int(stage_counts.get(stage, 0))}
-                             for stage in PIPELINE_STAGES]
-                            + [{"Stage": "TOTAL", "Count": len(shown)}]
-                        )
-                        pdufa_dataframe(stage_table, hide_index=True, use_container_width=True, height=250, survey_source=filtered)
-                    with col_b:
-                        date_table = pd.DataFrame(
-                            [{"DATES": band, "Count": int(date_counts.get(band, 0))}
-                             for band in PIPELINE_DATE_BANDS]
-                            + [{"DATES": "TOTAL", "Count": len(shown)}]
-                        )
-                        pdufa_dataframe(date_table, hide_index=True, use_container_width=True, height=250, survey_source=filtered)
-                    if sum(stage_counts.values()) != len(shown) or sum(date_counts.values()) != len(shown):
-                        st.error("COUNT MISMATCH: displayed count and audit disagree.")
+                    if not selected_stages or not selected_dates:
+                        st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
                     else:
-                        st.caption("COUNT AUDIT PASSED: each chart row counted once.")
-            if st.button("REFRESH PDUFA DATA", key="pipeline_refresh_v9"):
-                load_pipeline_universe_data.clear()
-                _clear_pipeline_results_v9()
-                st.rerun()
+                        st.info("Click SHOW MATCHING TRIALS to populate the chart.")
+                else:
+                    filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
+                    shown = chart_rows(filtered, sort_mode)
+                    try:
+                        _, post_links, post_health, pre_links, pre_fresh = load_unified_evidence(pipeline_today)
+                        shown = enrich_exact_trials(
+                            shown,
+                            pre=pre_links if pre_fresh else [],
+                            post=post_links if post_health.get("feed_current") else [],
+                        )
+                    except (OSError, ValueError, KeyError, TypeError, pd.errors.ParserError):
+                        pass  # Keep original Pipeline records; missing evidence stays blank.
+                    shown = sort_pdufa_grid(
+                        prepare_pdufa_grid(shown, view="PIPELINE", as_of=pipeline_today),
+                        sort_mode,
+                    )
+                    st.metric("Trials / programs displayed", len(shown))
+                    pdufa_dataframe(
+                        finance_style(shown), hide_index=True, use_container_width=True, height=540,
+                        column_config={
+                            "Source": st.column_config.LinkColumn("Source"),
+                            "F": st.column_config.TextColumn("F", width="small"),
+                        },
+                    )
+                    if shown.empty:
+                        st.info("No matching programs for that STAGES + DATES selection.")
+                    else:
+                        unique_ids = (
+                            filtered["nct_id"].replace("", pd.NA).dropna().nunique()
+                            if "nct_id" in filtered else 0
+                        )
+                        st.caption(
+                            f"{len(shown):,} displayed rows · {unique_ids:,} unique linked trial IDs. "
+                            "Saved dates are not all FDA-verified."
+                        )
+                    with st.expander("STAGES / DATES count audit", expanded=False):
+                        stage_counts = (
+                            filtered["current_stage"].value_counts().to_dict()
+                            if "current_stage" in filtered else {}
+                        )
+                        date_counts = (
+                            filtered["DATES"].value_counts().to_dict()
+                            if "DATES" in filtered else {}
+                        )
+                        col_a, col_b = st.columns(2)
+                        with col_a:
+                            stage_table = pd.DataFrame(
+                                [{"Stage": stage, "Count": int(stage_counts.get(stage, 0))}
+                                 for stage in PIPELINE_STAGES]
+                                + [{"Stage": "TOTAL", "Count": len(shown)}]
+                            )
+                            pdufa_dataframe(stage_table, hide_index=True, use_container_width=True, height=250, survey_source=filtered)
+                        with col_b:
+                            date_table = pd.DataFrame(
+                                [{"DATES": band, "Count": int(date_counts.get(band, 0))}
+                                 for band in PIPELINE_DATE_BANDS]
+                                + [{"DATES": "TOTAL", "Count": len(shown)}]
+                            )
+                            pdufa_dataframe(date_table, hide_index=True, use_container_width=True, height=250, survey_source=filtered)
+                        if sum(stage_counts.values()) != len(shown) or sum(date_counts.values()) != len(shown):
+                            st.error("COUNT MISMATCH: displayed count and audit disagree.")
+                        else:
+                            st.caption("COUNT AUDIT PASSED: each chart row counted once.")
+                if st.button("REFRESH PDUFA DATA", key="pipeline_refresh_v9"):
+                    load_pipeline_universe_data.clear()
+                    _clear_pipeline_results_v9()
+                    st.rerun()
 
     # Re-enter the same Streamlit tab: former Workbench features remain inside
     # PIPELINE, without an independent or duplicate navigation submenu.
