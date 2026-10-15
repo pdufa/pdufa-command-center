@@ -9,6 +9,14 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+  # Primary-document discovery changes must be reconciled by a fresh full
+  # source scan before canonical ledgers or alert counts can be updated.
+  push:
+    branches: [main]
+    paths:
+      - 'config/issuer_sources.json'
+      - 'scripts/source_verification.py'
+      - 'scripts/targeted_verification_repair.py'
 
 permissions:
   contents: read
