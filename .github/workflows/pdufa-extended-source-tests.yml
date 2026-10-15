@@ -10,6 +10,7 @@ on:
       - 'scripts/scan_email.py'
       - 'tests/test_nightly_missing_sources.py'
       - 'tests/test_source_verification.py'
+      - 'tests/test_fda_weekday_delta.py'
       - 'tests/test_scan_completion_repairs.py'
       - 'tests/test_scan_email_notifications.py'
   pull_request:
@@ -22,6 +23,7 @@ on:
       - 'scripts/scan_email.py'
       - 'tests/test_nightly_missing_sources.py'
       - 'tests/test_source_verification.py'
+      - 'tests/test_fda_weekday_delta.py'
       - 'tests/test_scan_completion_repairs.py'
       - 'tests/test_scan_email_notifications.py'
   workflow_dispatch:
@@ -42,6 +44,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_nightly_missing_sources.py' -v
           python -m unittest discover -s tests -p 'test_source_verification.py' -v
+          python -m unittest discover -s tests -p 'test_fda_weekday_delta.py' -v
           python -m unittest discover -s tests -p 'test_scan_completion_repairs.py' -v
           python -m unittest discover -s tests -p 'test_scan_email_notifications.py' -v
 
