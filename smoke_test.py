@@ -460,13 +460,16 @@ if ',"10. MATCH OPTIMIZER","11. PLAN"' in app or 'elif page == "10. MATCH OPTIMI
     raise SystemExit("Match Optimizer must not remain a standalone navigation page")
 # Standalone Prediction Engine and Match Optimizer were intentionally
 # retired. Both archived model inputs and the clinical GEM scans remain.
-if 'nav_options = ["PDUFA", "SCANS", "2. PDUFA CALENDAR"]' not in app:
-    raise SystemExit("Main navigation must contain PDUFA, SCANS activity and calendar")
-if 'elif page == "SCANS":' not in app or 'render_scans_activity()' not in app:
-    raise SystemExit("Top-level SCANS page must render live scan history")
+if 'nav_options = ["PDUFA", "2. PDUFA CALENDAR"]' not in app:
+    raise SystemExit("Main navigation must contain PDUFA and Calendar; SCANS is nested")
+if 'elif page == "SCANS":' in app or 'render_scans_activity()' in app:
+    raise SystemExit("Duplicate standalone SCANS page must remain retired")
+if 'if st.session_state.nav == "SCANS":' not in app or 'st.session_state["pdufa_subtab"] = "SCANS"' not in app:
+    raise SystemExit("Former standalone SCANS bookmarks must migrate to PDUFA SCANS")
 if not (Path("scan_activity_dashboard.py").is_file()
-        and Path("tests/test_scan_activity_dashboard.py").is_file()):
-    raise SystemExit("Top-level scan monitor and read-only guardrails must exist")
+        and Path("tests/test_scan_activity_dashboard.py").is_file()
+        and 'render_scans_activity(embedded=True)' in Path("nightly_scan_dashboard.py").read_text(encoding="utf-8")):
+    raise SystemExit("Read-only scan history must remain accessible in unified PDUFA SCANS")
 if 'elif page == "9. PREDICTION ENGINE":' in app or 'elif page == "10. MATCH OPTIMIZER":' in app:
     raise SystemExit("Retired Prediction Engine/Match Optimizer page was restored")
 if 'if st.session_state.nav in ("9. PREDICTION ENGINE", "10. MATCH OPTIMIZER"):' not in app:
