@@ -1,7 +1,7 @@
 {
   "clinical": {
     "overnight_report_published": false,
-    "published_at_utc": "2026-10-14T13:49:07.232657+00:00",
+    "published_at_utc": "2026-10-14T23:56:46.430353+00:00",
     "runs": {},
     "source_run_url": null,
     "status": "PENDING_OR_STALE"
@@ -18,10 +18,10 @@
     "strict_entry_gate_shortlist_count": null,
     "verified_phase3_tracking": null
   },
-  "generated_at_pacific": "2026-10-14T16:33:39.211987-07:00",
-  "generated_at_utc": "2026-10-14T23:33:39.211987+00:00",
+  "generated_at_pacific": "2026-10-14T20:51:56.220131-07:00",
+  "generated_at_utc": "2026-10-15T03:51:56.220131+00:00",
   "notice": "Read-only snapshot. SEC-verified individual closings do not prove two independent post-Phase-3 financings. A pending/stale component must not be represented as newly verified.",
-  "overnight_scan_window_started_pacific": "2026-10-13T21:00:00-07:00",
+  "overnight_scan_window_started_pacific": "2026-10-13T22:00:00-07:00",
   "publication_delayed_after_6am": true,
   "readiness": "OVERNIGHT_REPORTS_PENDING_OR_STALE",
   "report_type": "PDUFA_6AM_PACIFIC_MORNING_RESULTS",
