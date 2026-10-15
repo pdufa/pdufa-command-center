@@ -417,17 +417,30 @@ def main(argv=None):
             status = "PARTIAL"
     counts = [k + ": " + str(v) for k, v in evidence.items()
               if isinstance(v, int) and not isinstance(v, bool)]
+    # Distinguish a completed collector from a clean evidence verification.
+    # Required claim transport/parser failures must stay visible in email,
+    # even though the overall reconciliation was allowed to finish PARTIAL.
+    technical_failures = evidence.get("verification_technical_failure_count", 0)
+    hard_failure = bool(problem or evidence.get("recheck_exit_code", 0))
+    execution_status = ("FAILED" if hard_failure else
+                        "COMPLETE_WITH_VERIFICATION_ERRORS" if technical_failures else
+                        "COMPLETE")
+    report_errors = [problem] if problem else []
+    if technical_failures:
+        report_errors.append(
+            str(technical_failures) + " technical source verification failure(s); "
+            "inspect the primary evidence review queue")
     report = {
         "scan": args.source, "started_at": first, "finished_at": now(),
         "status": status, "source": args.source,
         "scope": "PDUFA event-specific live sources; SEC also inventories company registry",
         "scan_kind": "VERIFIED_EXTENDED_SOURCE_CHECKS",
         "completion_scope": "This source's ledger claims; not the full clinical/trading baseline",
-        "execution_status": "FAILED" if problem or evidence.get("recheck_exit_code", 0) else "COMPLETE",
+        "execution_status": execution_status,
         "full_coverage_verified": False,
-        "errors_count": int(bool(problem)) + evidence.get("verification_technical_failure_count", 0),
+        "errors_count": int(bool(problem)) + technical_failures,
         "source_review_count": evidence.get("findings_unresolved", 0) + evidence.get("findings_conflicted", 0),
-        "errors": [problem] if problem else [],
+        "errors": report_errors,
         "missing_required_source_families": (
             evidence.get("missing_required_source_families", [args.source] if status == "PARTIAL" else [])),
         "verification_limits": "Verification is limited to each ledger claim. "

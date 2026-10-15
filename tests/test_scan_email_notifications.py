@@ -202,6 +202,22 @@ class ScanEmailTests(unittest.TestCase):
             self.assertIn("Trials checked: 23/99", messages[1][1])
             self.assertIn("Errors: 1", messages[1][1])
 
+    def test_verification_error_details_do_not_create_duplicate_error_count(self):
+        status, summary = report_summary({
+            "status": "PARTIAL",
+            "execution_status": "COMPLETE_WITH_VERIFICATION_ERRORS",
+            "errors_count": 4,
+            "verification_technical_failure_count": 4,
+            "errors": [
+                "4 technical source verification failure(s); inspect the primary evidence review queue"
+            ],
+        }, 0, True)
+        self.assertEqual(status, "PARTIAL")
+        self.assertEqual(summary.count("Errors: 4"), 1)
+        self.assertNotIn("Errors: 1", summary)
+        self.assertIn("Error details: 4 technical source verification failure", summary)
+        self.assertIn("Scan execution: COMPLETE_WITH_VERIFICATION_ERRORS", summary)
+
     def test_stale_report_is_not_declared_complete(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
