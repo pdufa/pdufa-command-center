@@ -78,7 +78,7 @@ def section_run(runs, section):
     return max(matches, key=lambda r: r.get("created_at", ""), default={})
 
 
-def render_section_scan(section, *, published_report=None):
+def render_section_scan(section, *, published_report=None, compact=False):
     _, mode = section_config(section)
     token, pin = secret("PDUFA_GITHUB_TOKEN"), secret("PDUFA_SCAN_CONTROL_PIN")
     supplied = st.session_state.get("filings_scan_control_pin", "")
@@ -93,10 +93,35 @@ def render_section_scan(section, *, published_report=None):
                    and (not current or current.get("created_at", "") <
                         time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(pending_at))))
     active = current.get("status") in ACTIVE
-    clicked = st.button("▶ Scan this section", key="scan_section_" + section,
-                 disabled=not unlocked or pending or active,
-                 help=("Recheck this agency's complete saved baseline." if mode == "FULL" else
-                       "Check this agency's new/changed filings and unresolved evidence; retain unchanged verified claims."))
+    button_help = ("Recheck this agency's complete saved baseline." if mode == "FULL"
+                   else "Check this agency's new/changed filings and unresolved evidence; retain unchanged verified claims.")
+    if compact:
+        status = str(current.get("status") or "").lower()
+        if pending or status in {"queued", "waiting", "pending", "requested"}:
+            badge = "Queued"
+        elif active:
+            badge = "Running"
+        elif current.get("status") == "completed":
+            outcome = str(current.get("conclusion") or "").lower()
+            badge = "Finished" if outcome == "success" else "Failed" if outcome == "failure" else "Finished"
+        else:
+            badge = "Ready" if unlocked else "Locked"
+        badge_color = ("#086a32" if badge in {"Ready", "Finished"}
+                       else "#b45309" if badge in {"Queued", "Running"}
+                       else "#9a2d2d" if badge == "Failed" else "#555")
+        status_col, button_col = st.columns([1, 2.6], gap="small",
+                                            vertical_alignment="center")
+        with status_col:
+            st.markdown(
+                f'<span class="pdufa-scan-badge" style="border-color:{badge_color};color:{badge_color}">'
+                f'{badge}</span>', unsafe_allow_html=True)
+        with button_col:
+            clicked = st.button("▶ Scan this section", key="scan_section_" + section,
+                                disabled=not unlocked or pending or active,
+                                help=button_help, use_container_width=True)
+    else:
+        clicked = st.button("▶ Scan this section", key="scan_section_" + section,
+                            disabled=not unlocked or pending or active, help=button_help)
     if clicked and unlocked and not pending and not active:
         try:
             dispatch_section_scan(section, token, pin, supplied)
@@ -109,7 +134,8 @@ def render_section_scan(section, *, published_report=None):
             st.error("Section scan could not be submitted. Check the scan controls and try again.")
     if pending:
         st.caption("Request accepted · waiting for GitHub to start.")
-    elif current:
+    elif current and (not compact or current.get("status") in ACTIVE
+                      or current.get("conclusion") not in (None, "success")):
         st.caption(run_state(current) + " · started " + pacific_time(current.get("created_at")))
     if not unlocked:
         st.caption("Enter the existing scan-control PIN above to enable this button.")
@@ -126,5 +152,6 @@ def render_section_scan(section, *, published_report=None):
         st.caption("Last published check: " + pacific_time(report["finished_at"]) +
                    " · " + report["evidence_status"] + " · " +
                    str(report["required_findings_unresolved"]) + " evidence gaps remaining.")
-    st.link_button("View section scan results", run_link(current) or WORKFLOW_URL,
-                   key="section_results_" + section)
+    if not compact:
+        st.link_button("View section scan results", run_link(current) or WORKFLOW_URL,
+                       key="section_results_" + section)
