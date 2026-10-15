@@ -13,6 +13,10 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from scan_status_ui import required_issue_queue
+from filings_scan_controls import render_section_scan, render_section_scan_unlock
+from scripts.filings_section_scan import (
+    SECTIONS, SNAPSHOTS, extension_observations, load_snapshot, overlay_findings, timestamp,
+)
 
 import pandas as pd
 import streamlit as st
@@ -35,6 +39,38 @@ def read_csv(path):
         return []
     with Path(path).open(encoding="utf-8-sig", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+def apply_section_snapshots(sec_rows, verification, extensions, data_dir):
+    """Show the newest exact-claim evidence without rewriting the five-source audit."""
+    snapshots, notes, manual_findings = [], [], []
+    for section in SECTIONS:
+        folder = data_dir / SNAPSHOTS / section.lower()
+        if not (folder / "report.json").is_file():
+            continue
+        try:
+            snapshots.append(load_snapshot(folder, data_dir, section))
+        except (OSError, ValueError, KeyError, TypeError):
+            notes.append(section.replace("_", " ") +
+                         " saved results need a fresh scan for the current candidate list.")
+    for snapshot in sorted(snapshots, key=lambda s: timestamp(s["report"]["finished_at"])):
+        fresh = snapshot["findings"]
+        if snapshot["report"]["source"] == "SEC":
+            existing = {r["ticker"]: r for r in verification
+                        if r.get("category") == "SEC" and r.get("claim") == "FILINGS_INVENTORY"}
+            replace = {r["ticker"] for r in fresh
+                       if r.get("claim") == "FILINGS_INVENTORY" and r.get("verification_status") == "VERIFIED"
+                       and (not existing.get(r["ticker"], {}).get("checked_at") or
+                            timestamp(r["checked_at"]) >= timestamp(existing[r["ticker"]]["checked_at"]))}
+            watch = read_csv(snapshot["folder"] / "sec_filing_watch.csv")
+            sec_rows = [r for r in sec_rows if r.get("ticker") not in replace]
+            sec_rows += [r for r in watch if r.get("ticker") in replace]
+        else:
+            extensions = extension_observations([], extensions + read_csv(
+                snapshot["folder"] / "fda_extensions.csv"), snapshot["report"]["finished_at"])
+        verification = overlay_findings(verification, fresh)
+        manual_findings = overlay_findings(manual_findings, fresh)
+    return sec_rows, verification, extensions, manual_findings, notes
 
 
 def table_rows(sec_filings, verification, extensions):
@@ -410,6 +446,9 @@ def render_filings_base_amendments():
     sec_rows = read_csv(FILINGS)
     verification = read_csv(VERIFICATION)
     extension_history = read_csv(EXTENSIONS)
+    sec_rows, verification, extension_history, manual_findings, section_notes = apply_section_snapshots(
+        sec_rows, verification, extension_history, ROOT / "data",
+    )
     candidate_rows = read_csv(CANDIDATES)
     bases = program_base_rows(
         candidate_rows, read_csv(PHASE3_CHECKS), read_csv(SEC_PAIR_CHECKS),
@@ -421,14 +460,18 @@ def render_filings_base_amendments():
         sec_rows, source_tables["FDA Amendments"], extension_history, today=today,
     )
     queue_frame, queue_notice = required_issue_queue()
-    queue_rows = queue_frame.to_dict("records")
+    queue_rows = overlay_findings(queue_frame.to_dict("records"), manual_findings)
     registry_rows = read_csv(REGISTRY)
 
     st.markdown("## SEC FILINGS")
+    render_section_scan_unlock()
+    for note in section_notes:
+        st.warning(note)
     st.caption("PIPELINE → GEM JR → GEM · Original Phase 3 and two-financing "
                "claims shown as saved evidence, not automatic GEM qualification. "
                "Weekday changed/new scan; Sunday full 10 PM Pacific.")
     st.markdown(f"#### SEC BASE ({len(bases['SEC'])}) — Phase 3 + 1st and 2nd financing")
+    render_section_scan("SEC_BASE")
     st.caption("One row per exact drug/trial event. The 2nd financing date can "
                "be historical/reported while the independent SEC deal-sequence "
                "check remains under review.")
@@ -458,6 +501,7 @@ def render_filings_base_amendments():
     today_sec = today_changes["SEC"]
     sec_total = str(len(today_sec)) if sec_rows else "PENDING"
     st.markdown(f"#### SEC AMENDMENTS FOUND TODAY ({sec_total})")
+    render_section_scan("SEC_AMENDMENTS")
     st.caption("EDGAR /A filing dates for " + today +
                " (Pacific calendar). These are original filing dates, not proof "
                "that an amendment was first discovered in today's scan.")
@@ -482,6 +526,7 @@ def render_filings_base_amendments():
                "Phase 3 and financing benchmarks. A regulatory PDUFA extension "
                "is not necessarily a formal NDA/BLA application amendment.")
     st.markdown(f"#### FDA BASE ({len(bases['FDA'])}) — Phase 3 + 1st and 2nd financing")
+    render_section_scan("FDA_BASE")
     if bases["FDA"]:
         st.dataframe(
             pd.DataFrame(bases["FDA"]), use_container_width=True, hide_index=True,
@@ -496,6 +541,7 @@ def render_filings_base_amendments():
 
     fda_today = today_changes["FDA"]
     st.markdown(f"#### FDA AMENDMENTS FOUND TODAY ({len(fda_today)})")
+    render_section_scan("FDA_AMENDMENTS")
     st.caption("Counted by first-detected PDUFA extension timestamp converted "
                "to Pacific time (" + today + "), not a routine last-updated time. "
                "Unobserved formal NDA/BLA amendments cannot be inferred.")

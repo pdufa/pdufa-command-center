@@ -745,7 +745,10 @@ def render_nightly_scan_report():
     supplied = st.text_input("Scan controls PIN", type="password",
                              key="pdufa_nightly_control_pin",
                              help="PIN never appears in scan logs or published reports.")
-    authorized = bool(token and pin and hmac.compare_digest(supplied, pin))
+    authorized = bool(token and pin and (
+        hmac.compare_digest(supplied.encode(), pin.encode()) or
+        hmac.compare_digest(str(st.session_state.get("filings_scan_control_pin", "")).encode(), pin.encode())
+    ))
     if not token or not pin:
         st.warning("Scan controls are locked until PDUFA_GITHUB_TOKEN and PDUFA_SCAN_CONTROL_PIN are set in Streamlit app secrets. Report viewing remains available.")
     elif not authorized:
