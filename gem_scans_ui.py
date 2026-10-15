@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from gem_scans import SCAN_QUALIFIERS, STAGES, WEIGHTS, build_gem_scans
+from pipeline_universe import SOURCE_FILES as PIPELINE_SOURCE_FILES
 from gem_master_list import MASTER_COLUMNS, build_gem_master_list
 from gem_trading_advisory import (TRADE_COLUMNS, attach_trade_fields,
                                   load_market_rows, render_gem_trade_panel)
@@ -21,7 +22,7 @@ from gem_readiness_audit import build_readiness_report
 from gem_calibration_ui import render_gem_calibration
 from gem_survey_catalog import survey_rows
 
-FILES = (
+FILES = (*PIPELINE_SOURCE_FILES,
     "pdufa_candidates.csv",
     "step7_live_status.json",
     "step7_financing_review.csv",
@@ -76,6 +77,16 @@ def render_gem_scans(root="data"):
         st.error("GEM scan source load failed; no stocks were qualified or scored.")
         return
 
+    excluded = status.get("excluded_outside_pipeline", 0)
+    st.caption(
+        f"PIPELINE ORIGIN CONTROL · {len(items):,} tracked GEM leads · "
+        f"{excluded:,} outside-Pipeline source leads withheld. "
+        "GEM JR and GEM may enrich or qualify existing Pipeline IDs only."
+    )
+    if excluded:
+        st.warning("New source leads were excluded because no exact Pipeline "
+                   "application or trial identity exists yet. Add and reconcile "
+                   "them in Pipeline first; they are not new GEM records.")
     if not status.get("feed_current"):
         st.warning(
             "SOURCE SNAPSHOT STALE: refresh saved clinical and market data. "
