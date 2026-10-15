@@ -85,7 +85,7 @@ jobs:
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "2" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
+              --scan "2" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/nightly-clinical-2.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -136,7 +136,7 @@ jobs:
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "3" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
+              --scan "3" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/nightly-clinical-3.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -218,7 +218,7 @@ jobs:
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "4" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
+              --scan "4" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/nightly-clinical-4.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
