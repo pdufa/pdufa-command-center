@@ -3,12 +3,22 @@ name: PDUFA Nightly FDA SEC Financial Market Issuer Sources
 # Collect, verify direct-source claims, then reconcile the evidence ledgers.
 on:
   workflow_call:
+    inputs:
+      scan_mode:
+        type: string
+        default: DELTA
   # Only the completed, published clinical scan can start the extended source scan.
   workflow_run:
     workflows: ['PDUFA Nightly Scan Report Publisher']
     types: [completed]
     branches: [main]
   workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: 'DELTA weekday changes or FULL Sunday evidence check'
+        type: choice
+        options: [DELTA, FULL]
+        default: DELTA
 
 permissions:
   contents: read
@@ -54,12 +64,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "FDA" --mode DELTA \
+            --scan "FDA" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/missing_sources/fda_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
             python scripts/nightly_missing_sources.py \
-              --source "FDA" \
+              --source "FDA" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/missing_sources/fda_scan_report.json"
           exit_code=$?
           if [ "$exit_code" -eq 3 ]; then
@@ -126,12 +136,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "SEC" --mode DELTA \
+            --scan "SEC" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/missing_sources/sec_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
             python scripts/nightly_missing_sources.py \
-              --source "SEC" \
+              --source "SEC" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/missing_sources/sec_scan_report.json"
           exit_code=$?
           if [ "$exit_code" -eq 3 ]; then
@@ -196,12 +206,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "FINANCIAL" --mode DELTA \
+            --scan "FINANCIAL" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/missing_sources/financial_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
             python scripts/nightly_missing_sources.py \
-              --source "FINANCIAL" \
+              --source "FINANCIAL" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/missing_sources/financial_scan_report.json"
           exit_code=$?
           if [ "$exit_code" -eq 3 ]; then
@@ -266,12 +276,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "MARKET" --mode DELTA \
+            --scan "MARKET" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/missing_sources/market_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
             python scripts/nightly_missing_sources.py \
-              --source "MARKET" \
+              --source "MARKET" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/missing_sources/market_scan_report.json"
           exit_code=$?
           if [ "$exit_code" -eq 3 ]; then
@@ -336,12 +346,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "ISSUER" --mode DELTA \
+            --scan "ISSUER" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/missing_sources/issuer_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
             python scripts/nightly_missing_sources.py \
-              --source "ISSUER" \
+              --source "ISSUER" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/missing_sources/issuer_scan_report.json"
           exit_code=$?
           if [ "$exit_code" -eq 3 ]; then

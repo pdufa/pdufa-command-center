@@ -147,7 +147,9 @@ def collect(session, company, ticker):
         if pages>=200:raise RuntimeError("Company pagination safety limit reached")
     return found
 
-def scan(data_dir):
+def scan(data_dir, mode="FULL"):
+    if mode not in {"FULL", "DELTA"}:
+        raise ValueError("Mode must be FULL or DELTA")
     data_dir.mkdir(parents=True,exist_ok=True)
     registry=rows(data_dir/"company_registry.csv")
     companies={(r.get("ticker","").strip(),r.get("company","").strip()) for r in registry if r.get("ticker","").strip() and r.get("company","").strip()}
@@ -155,11 +157,13 @@ def scan(data_dir):
     today=datetime.now(timezone.utc).date().isoformat()
     state_path=data_dir/"all_phase_scan_state.json"; ledger_path=data_dir/"all_phase_trials.csv"
     previous=json.loads(state_path.read_text()) if state_path.exists() else {}
-    same_day=previous.get("run_date")==today and previous.get("registry_companies")==len(companies)
+    same_day=(previous.get("run_date")==today and previous.get("registry_companies")==len(companies)
+              and previous.get("scan_mode")==mode)
     checks=previous.get("checks",{}) if same_day else {}
     existing={r["nct_id"]:r for r in rows(ledger_path)}
     before_refresh={nct:dict(row) for nct,row in existing.items()}
     session=requests.Session()
+    sponsor_seen=set()
     try:
         for ticker,company in sorted(companies):
             key=ticker+"|"+company
@@ -167,11 +171,12 @@ def scan(data_dir):
             try:
                 found=collect(session,company,ticker)
                 existing.update(found)
+                sponsor_seen.update(found)
                 checks[key]={"status":"COMPLETE","checked_at":stamp(),"matched_trials":len(found)}
             except Exception as exc:
                 checks[key]={"status":"WARNING","checked_at":stamp(),"error":str(exc)[:350]}
             save_csv(ledger_path,list(existing.values()))
-            save(state_path,{"run_date":today,"started_at":previous.get("started_at",stamp()) if same_day else stamp(),
+            save(state_path,{"run_date":today,"scan_mode":mode,"started_at":previous.get("started_at",stamp()) if same_day else stamp(),
                 "finished_at":stamp(),"registry_companies":len(companies),"companies_checked":len(checks),
                 "checks":checks,"status":"RUNNING"})
             time.sleep(0.15)
@@ -179,11 +184,26 @@ def scan(data_dir):
         # of current sponsor names or company-discovery query results.
         tracked=tracked_trial_metadata(data_dir,existing)
         trial_checks=previous.get("tracked_trial_checks",{}) if same_day else {}
-        due=[nct for nct in sorted(tracked)
-             if trial_checks.get(nct,{}).get("status")!="COMPLETE"]
         changed=0
         monitored=("phase","status","drug","intervention_type","route","indication","start_date",
                    "primary_completion","study_completion","results_posted","source_updated")
+        # The daily sponsor inventory already retrieved these NCT records.
+        # Never fetch their full documents a second time just to confirm
+        # unchanged historical data. Missing/reassigned sponsors still get an
+        # exact-ID check; Sunday FULL always retries the entire NCT ledger.
+        if mode == "DELTA":
+            for nct in sorted(sponsor_seen & tracked.keys()):
+                old=before_refresh.get(nct)
+                fields=[f for f in monitored if old is not None and
+                        old.get(f,"") != existing[nct].get(f,"")]
+                if fields:
+                    changed+=1
+                trial_checks[nct]={"status":"COMPLETE","checked_at":stamp(),
+                                   "changed_fields":fields,
+                                   "first_direct_refresh":old is None,
+                                   "source_kind":"SPONSOR_DISCOVERY_INVENTORY"}
+        due=[nct for nct in sorted(tracked)
+             if trial_checks.get(nct,{}).get("status")!="COMPLETE"]
         for offset in range(0,len(due),100):
             batch=due[offset:offset+100]
             try:
@@ -206,7 +226,7 @@ def scan(data_dir):
                     trial_checks[nct]={"status":"WARNING","checked_at":stamp(),
                                        "error":str(exc)[:350]}
             save_csv(ledger_path,list(existing.values()))
-            save(state_path,{"run_date":today,"finished_at":stamp(),
+            save(state_path,{"run_date":today,"scan_mode":mode,"finished_at":stamp(),
                 "registry_companies":len(companies),"companies_checked":len(checks),
                 "checks":checks,"tracked_trial_checks":trial_checks,
                 "tracked_trials_total":len(tracked),
@@ -219,17 +239,21 @@ def scan(data_dir):
     trial_attempted=sum(nct in trial_checks for nct in tracked)
     trial_warn=sum(trial_checks.get(nct,{}).get("status")!="COMPLETE" for nct in tracked)
     status="PARTIAL" if attempted<len(companies) or trial_attempted<len(tracked) else "COMPLETE WITH WARNINGS" if warn or trial_warn else "COMPLETE"
-    final={"run_date":today,"finished_at":stamp(),"registry_companies":len(companies),
+    final={"run_date":today,"scan_mode":mode,"finished_at":stamp(),"registry_companies":len(companies),
            "companies_checked":attempted,"companies_with_warnings":warn,
            "trials_stored":len(existing),"status":status,"complete":status=="COMPLETE",
            "tracked_trials_total":len(tracked),"tracked_trials_checked":trial_attempted,
            "tracked_trials_with_warnings":trial_warn,"changed_trials_this_execution":changed,
            "changed_trials_today":sum(bool(trial_checks.get(nct,{}).get("changed_fields")) for nct in tracked),
-           "scope":"All registry companies plus direct daily rechecks of every saved NCT ID",
+           "tracked_nct_direct_fetches":len(due),
+           "tracked_nct_sponsor_reuse":len(tracked)-len(due) if mode == "DELTA" else 0,
+           "scope":("Sunday FULL: all company sponsor inventories and all saved exact NCT IDs" if mode == "FULL"
+                    else "DELTA: all company sponsor inventories for new/amended trials; exact-NCT fetch only for unmatched trial IDs"),
            "limitations":"Discovery uses exact lead-sponsor matching; existing NCT IDs bypass sponsor matching. FDA/SEC/market sources are separate.",
            "checks":checks,"tracked_trial_checks":trial_checks}
     save(state_path,final);print(json.dumps({k:v for k,v in final.items() if k not in ("checks","tracked_trial_checks")},indent=2))
     return 0 if status!="PARTIAL" else 1
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--data-dir",type=Path,default=ROOT/"data")
-    args=p.parse_args();raise SystemExit(scan(args.data_dir))
+    p.add_argument("--mode",choices=("FULL","DELTA"),default="FULL")
+    args=p.parse_args();raise SystemExit(scan(args.data_dir,args.mode))

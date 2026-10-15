@@ -14,6 +14,9 @@ on:
       gem_action:
         type: string
         default: REVERIFY_PARTIAL
+      scan_mode:
+        type: string
+        default: DELTA
   workflow_dispatch:
     inputs:
       scan:
@@ -22,6 +25,11 @@ on:
         options: ['ALL', 'PIPELINE', 'GEM_JR']
         default: 'ALL'
         required: true
+      scan_mode:
+        description: 'DELTA new/changed evidence, or FULL Sunday reconciliation'
+        type: choice
+        options: [DELTA, FULL]
+        default: DELTA
       include_gem:
         description: 'Include fourth GEMS block in the nightly ALL sequence'
         type: boolean
@@ -72,12 +80,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "2" --mode DELTA \
+            --scan "2" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-2.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "2" \
+              --scan "2" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/nightly-clinical-2.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -123,12 +131,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "3" --mode DELTA \
+            --scan "3" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-3.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "3" \
+              --scan "3" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/nightly-clinical-3.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -205,12 +213,12 @@ jobs:
         run: |
           set +e
           python scripts/run_scan_with_email.py \
-            --scan "4" --mode DELTA \
+            --scan "4" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-4.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7100 -- \
             python scripts/nightly_clinical_collection.py \
-              --scan "4" \
+              --scan "4" --mode "${{ inputs.scan_mode || 'DELTA' }}" \
               --report "reports/nightly-clinical-4.json"
           exit_code=$?
           echo "Notification/scanner exit code: $exit_code"
@@ -270,4 +278,6 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/gem-financing-full-coverage.yml
+    with:
+      scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
     secrets: inherit

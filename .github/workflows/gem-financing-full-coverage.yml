@@ -4,7 +4,16 @@ name: GEM Full Financing Block Research Audit
 # no independent cron or data-push audit may overlap the serial chain.
 on:
   workflow_dispatch:
+    inputs:
+      scan_mode:
+        type: choice
+        options: [DELTA, FULL]
+        default: DELTA
   workflow_call:
+    inputs:
+      scan_mode:
+        type: string
+        default: DELTA
 
 permissions:
   contents: read
@@ -43,6 +52,7 @@ jobs:
         continue-on-error: true
         run: |
           python scripts/gem_two_close_recheck.py \
+            --mode "${{ inputs.scan_mode || 'DELTA' }}" \
             --data-dir data \
             --output reports/gem_financing_batch/live_sec_two_close_recheck.csv \
             --summary reports/gem_financing_batch/live_sec_two_close_summary.json

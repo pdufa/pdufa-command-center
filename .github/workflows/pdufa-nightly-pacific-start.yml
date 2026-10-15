@@ -55,6 +55,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" -f ref=main
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
+            -f ref=main -f "scan_mode=${{ steps.pacific.outputs.scan_mode }}" \
+            -f "gem_action=${{ steps.pacific.outputs.gem_action }}"
           echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."

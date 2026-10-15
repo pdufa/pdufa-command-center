@@ -1280,7 +1280,7 @@ class Verifier:
         except Exception as exc:
             return self.result(event, "SEC", "FILINGS_INVENTORY", "TECHNICAL_FAILURE", str(exc), url)
 
-    def financing(self, event):
+    def financing_target(self, event):
         url = event.get("financing_evidence_url", "")
         close = event.get("financing_close_date", "")
         review = event.get("_financing_review", {})
@@ -1308,6 +1308,10 @@ class Verifier:
             # A source replacement retains the saved closing date and exact
             # event. No company-wide later financing can supply that date.
             url = next((u for u in mapped if sec_url_matches(u, self.cik(event))), url)
+        return url, close
+
+    def financing(self, event):
+        url, close = self.financing_target(event)
         if not sec_url_matches(url, self.cik(event)) or not close:
             return self.result(event, "SEC", "FINANCING_CLOSURE", "REVIEW_REQUIRED",
                 "Closing requires a company-matched SEC document and an explicit closing date; index/keywords do not prove second-financing sequence", url, close)
@@ -1617,7 +1621,9 @@ def summary(rows):
             "verification_status_counts": dict(counts)}
 
 
-def verify_source(source, data_dir, out, fetch=None, as_of=None):
+def verify_source(source, data_dir, out, fetch=None, as_of=None, mode="FULL"):
+    if mode not in {"FULL", "DELTA"}:
+        raise ValueError("Scan mode must be FULL or DELTA")
     events = read_rows(data_dir / "pdufa_candidates.csv")
     companies = read_rows(data_dir / "company_registry.csv")
     if not events or any(not r.get("event_key") or not r.get("ticker") for r in events):
@@ -1634,6 +1640,16 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
     results = []
     sec_auto_retries = 0
     sec_auto_recovered = 0
+    sec_carried_forward = 0
+    sec_financing_live_checked = 0
+    prior = read_rows(data_dir / "pdufa_source_verification.csv") if source == "SEC" and mode == "DELTA" else []
+    prior_registry = {r["event_key"]: r for r in prior if
+                      r.get("category") == "SEC" and r.get("claim") == "FILINGS_INVENTORY"
+                      and r.get("verification_status") == "VERIFIED"}
+    prior_closures = {r["event_key"]: r for r in prior if
+                      r.get("category") == "SEC" and r.get("claim") == "FINANCING_CLOSURE"
+                      and r.get("verification_status") == "VERIFIED"}
+    current_registry = {}
 
     def safe_sec_retry(row, recheck):
         nonlocal sec_auto_retries, sec_auto_recovered
@@ -1654,14 +1670,44 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
     if source == "SEC":
         for company in companies:
             first = verifier.registry(company)
-            results.append(safe_sec_retry(first, lambda company=company: verifier.registry(company)))
+            checked = safe_sec_retry(first, lambda company=company: verifier.registry(company))
+            results.append(checked)
+            current_registry[company["ticker"].upper()] = checked
     for event in events:
         event = {**event, "_financing_review": financing_reviews.get(event["event_key"], {})}
         if source == "FDA":
             results += verifier.regulatory(event)
         elif source == "SEC":
-            first = verifier.financing(event)
-            results.append(safe_sec_retry(first, lambda event=event: verifier.financing(event)))
+            old = prior_closures.get(event["event_key"], {})
+            old_index = prior_registry.get("REGISTRY:" + event["ticker"], {})
+            new_index = current_registry.get(event["ticker"].upper(), {})
+            target_url, target_date = verifier.financing_target(event)
+            can_carry = (
+                mode == "DELTA"
+                and old.get("ticker") == event["ticker"]
+                and old.get("source_url") == target_url
+                and old.get("expected") == target_date
+                and re.fullmatch(r"[a-f0-9]{64}", old.get("source_sha256", "")) is not None
+                and new_index.get("verification_status") == "VERIFIED"
+                and old_index.get("source_sha256")
+                and old_index["source_sha256"] == new_index.get("source_sha256")
+            )
+            if can_carry:
+                # Today's timestamp is the fresh issuer-index comparison, not
+                # a claim that the original EDGAR closing body was downloaded.
+                carried = dict(old)
+                carried["checked_at"] = utcnow()
+                carried["reason"] = (
+                    "CARRIED_FORWARD: unchanged issuer SEC filings inventory; "
+                    "original funded-closing document verified at "
+                    + str(old.get("checked_at", "unknown"))
+                    + ". New/amended filings or Sunday FULL reopen this claim.")
+                results.append(carried)
+                sec_carried_forward += 1
+            else:
+                first = verifier.financing(event)
+                results.append(safe_sec_retry(first, lambda event=event: verifier.financing(event)))
+                sec_financing_live_checked += 1
         elif source == "FINANCIAL":
             results += verifier.financial(event)
         elif source == "MARKET":
@@ -1720,7 +1766,9 @@ def verify_source(source, data_dir, out, fetch=None, as_of=None):
                  "sec_auto_retry_cleared": sec_auto_recovered,
                  "sec_auto_retry_limit": SEC_AUTO_RECOVERY_LIMIT}
                 if source == "SEC" else {})
-    return {**totals, **inventory, **recovery, **provisional_recheck, "verification_version": VERSION, "verification_run_id": run_identity(),
+    return {**totals, **inventory, **recovery, **provisional_recheck, "scan_mode": mode,
+            "sec_closures_carried_forward": sec_carried_forward,
+            "sec_financing_closures_live_checked": sec_financing_live_checked, "verification_version": VERSION, "verification_run_id": run_identity(),
             "verification_scope_sha256": scope_hash(events, companies),
             "verification_ledger": path.name, "verification_ledger_sha256": digest(path.read_bytes()),
             "verification_events_due": len(events), "verification_events_checked": len({r["event_key"] for r in results if not r["event_key"].startswith("REGISTRY:")}),

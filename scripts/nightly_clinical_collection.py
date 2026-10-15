@@ -28,13 +28,14 @@ MISSING = [
 ]
 
 
-def summarize(scan, source, returncode, fresh):
+def summarize(scan, source, returncode, fresh, mode="DELTA"):
     ok = fresh and returncode == 0 and source.get("status") in (
         "COMPLETE", "COMPLETE WITH WARNINGS"
     )
     state = {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "scan": scan,
+        "scan_mode": mode,
         "scan_kind": "CLINICAL_SOURCE_COLLECTION_ONLY",
         "status": "PARTIAL" if ok else "FAILED",
         "collector_status": source.get("status") if fresh else "NO_FRESH_REPORT",
@@ -67,8 +68,17 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--scan", choices=sorted(SOURCES), required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--mode", choices=("DELTA", "FULL"), default="DELTA")
     args = parser.parse_args(argv)
     script, state_filename, flags = SOURCES[args.scan]
+    flags = list(flags)
+    if args.scan == "2":
+        flags += ["--mode", args.mode]
+    elif args.scan == "3" and args.mode == "FULL":
+        flags[flags.index("--lookback-days") + 1] = "3650"
+        flags[flags.index("--page-limit") + 1] = "120"
+    elif args.scan == "4" and args.mode == "FULL":
+        flags[flags.index("--mode") + 1] = "backfill"
     status_path = ROOT / "data" / state_filename
     before = status_path.stat().st_mtime_ns if status_path.exists() else None
     code = 1
@@ -89,7 +99,7 @@ def main(argv=None):
                 fresh, state = False, {}
     except (OSError, ValueError, UnicodeError):
         fresh = False
-    report = summarize(args.scan, state, code, fresh)
+    report = summarize(args.scan, state, code, fresh, args.mode)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print("PDUFA NIGHTLY AUDIT")

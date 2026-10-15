@@ -89,7 +89,9 @@ jobs:
         continue-on-error: true
         env:
           SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
-        run: python scripts/gem_two_close_recheck.py --data-dir data
+        run: |
+          if [ "$GEM_ACTION" = "RESCAN_ALL" ]; then mode=FULL; else mode=DELTA; fi
+          python scripts/gem_two_close_recheck.py --mode "$mode" --data-dir data
 
       - name: Reconcile actual registry ledger and collector totals
         id: registry_validation
