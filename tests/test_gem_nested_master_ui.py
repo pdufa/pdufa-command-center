@@ -70,7 +70,7 @@ class NestedGEMTests(unittest.TestCase):
         overview = (ROOT / "unified_clinical_trading.py").read_text(encoding="utf-8")
         ui = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
         self.assertIn('["PIPELINE", "GEM JR + GEM"', app)
-        self.assertIn('previous_subtab == "UNIFIED OVERVIEW"', app)
+        self.assertIn('"GEM", "UNIFIED OVERVIEW"', app)
         self.assertIn("render_gem_nested_master(root=root, selections_ready=True, compact=True)", overview)
         block = 'GEM — THREE-LEVEL VERIFIED MASTER (show / hide)'
         self.assertIn(block, overview)
