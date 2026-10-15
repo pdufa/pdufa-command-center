@@ -269,6 +269,16 @@ def documented_pdufa_extension(event, text):
                 or not drug_matches(event, passage)
                 or not indication_matches(event, passage)):
             continue
+        # Parenthetical disease acronyms cannot override a different spelled-
+        # out diagnosis (e.g., "spinal muscular atrophy (DMD)" is not Duchenne).
+        # A changed FDA target requires the expanded disease name in the same
+        # local passage; acronym-only claims remain REVIEW/CONFLICT.
+        raw_indication = str(event.get("indication", ""))
+        if re.search(r"\([A-Za-z][A-Za-z0-9/-]{2,12}\)", raw_indication):
+            expanded = normalized(re.sub(r"\([^)]*\)", "", raw_indication)).strip()
+            if expanded and not re.search(
+                    r"(?<!\w)" + re.escape(expanded) + r"(?!\w)", normalized(passage)):
+                continue
         old, new = dates(match.group(1)), dates(match.group(2))
         if len(old) == len(new) == 1 and next(iter(old)) < next(iter(new)):
             return next(iter(old)), next(iter(new)), passage
