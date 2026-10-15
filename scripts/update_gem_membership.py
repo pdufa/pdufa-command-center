@@ -79,6 +79,42 @@ def stage_exit_reasons(data_dir, prior, current, *, as_of):
                 reasons[stage][pid] = "NO_LONGER_IN_VERIFIED_STAGE_SNAPSHOT"
     return reasons
 
+def validate_registry_snapshot(data_dir, observed_on):
+    """Fail closed unless the current run actually completed its registry scan.
+
+    A saved COMPLETE flag from yesterday is not a dated GEM JR/GEM
+    membership snapshot. This blocks accidental mass departures from
+    a stale or partially published ClinicalTrials.gov feed.
+    """
+    root = Path(data_dir)
+    status = json.loads(
+        (root / "phase3_intake_status.json").read_text(encoding="utf-8"))
+    if (status.get("status") != "COMPLETE"
+            or status.get("complete") is not True
+            or status.get("errors")):
+        raise ValueError("Incomplete Phase 3 registry: preserve existing found/left dates")
+    finished = str(status.get("finished_at") or "")
+    started = str(status.get("started_at") or "")
+    try:
+        completed = datetime.fromisoformat(finished)
+        commenced = datetime.fromisoformat(started)
+    except (ValueError, TypeError) as e:
+        raise ValueError("Missing dated registry collection timestamps") from e
+    if (completed.tzinfo is None or commenced.tzinfo is None or
+            completed < commenced or
+            completed.astimezone(ZoneInfo("America/Los_Angeles")).date() != observed_on):
+        raise ValueError(
+            "Registry scan not complete on the specified Pacific observation date")
+    expected = status.get("stored_results")
+    if type(expected) is not int or expected < 0:
+        raise ValueError("Registry result count absent or invalid")
+    with (root / "phase3_announcements.csv").open(newline="", encoding="utf-8-sig") as f:
+        actual = sum(1 for _ in csv.DictReader(f))
+    if actual != expected:
+        raise ValueError("Registry count does not match published trial observations")
+    return status
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data")
@@ -86,13 +122,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     day = (date.fromisoformat(args.as_of) if args.as_of
            else datetime.now(ZoneInfo("America/Los_Angeles")).date())
-    # The workflow validates fresh registry source, complete exact-program and
-    # financing rechecks before this step. Also guard against stale registry
-    # snapshot even when this script is called manually.
-    status = json.loads((args.data_dir / "phase3_intake_status.json").read_text(encoding="utf-8"))
-    if (status.get("status") != "COMPLETE"
-            or status.get("complete") is not True or status.get("errors")):
-        raise ValueError("Incomplete Phase 3 registry: preserve existing found/left dates")
+    # Check the collector date and saved-row totals even on manual invocation.
+    # Do not archive a prior GEM/JR member using yesterday's successful scan.
+    validate_registry_snapshot(args.data_dir, day)
     stages = current_stage_members(args.data_dir, as_of=day)
     prior = read_history(args.data_dir)
     reasons = stage_exit_reasons(args.data_dir, prior, stages, as_of=day)
