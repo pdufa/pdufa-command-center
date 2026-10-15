@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -42,7 +42,8 @@ def main(argv=None):
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data")
     parser.add_argument("--as-of", default="")
     args = parser.parse_args(argv)
-    day = (args.as_of or datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat())
+    day = (date.fromisoformat(args.as_of) if args.as_of
+           else datetime.now(ZoneInfo("America/Los_Angeles")).date())
     # The workflow validates fresh registry source, complete exact-program and
     # financing rechecks before this step. Also guard against stale registry
     # snapshot even when this script is called manually.
@@ -54,7 +55,7 @@ def main(argv=None):
     ledger = update_history(read_history(args.data_dir), stages, observed_on=day)
     changed = write_history(args.data_dir, ledger)
     print(json.dumps({
-        "date_pacific": day, "changed": changed,
+        "date_pacific": day.isoformat(), "changed": changed,
         "first_tracked_after_ledger_install": True,
         "members": {stage: len(rows) for stage, rows in stages.items()},
         "departures_total": {
