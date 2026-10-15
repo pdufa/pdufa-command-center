@@ -1,5 +1,6 @@
 """Per-exact-Pipeline-ID GEM JR/GEM stage history, PDUFA expiry and promotions."""
 import csv
+import json
 import tempfile
 import unittest
 from datetime import date
@@ -9,7 +10,7 @@ from gem_membership_history import (
     empty_history, update_history, membership_fields, departed_stage_rows,
     read_history, write_history,
 )
-from scripts.update_gem_membership import stage_exit_reasons
+from scripts.update_gem_membership import stage_exit_reasons, validate_registry_snapshot
 
 
 def trial(pid, ticker="ABC", drug="Test", pdufa="2026-10-17"):
@@ -120,6 +121,62 @@ class GemMembershipHistoryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             update_history(prior, {"GEM_JR": [], "GEM": []},
                            observed_on="2026-10-14")
+
+    def test_prior_gem_appearance_is_not_new_gem_jr_promotion(self):
+        pid = "TRIAL|NCT22227777"
+        # This record used to be in GEM, returned to JR, and then was omitted
+        # from a later complete research snapshot; old GEM history cannot
+        # authorize an invented new promotion.
+        old = update_history(
+            empty_history(), {"GEM_JR": [], "GEM": [trial(pid)]},
+            observed_on="2026-10-01")
+        old = update_history(
+            old, {"GEM_JR": [trial(pid)], "GEM": []},
+            observed_on="2026-10-05")
+        dropped = update_history(
+            old, {"GEM_JR": [], "GEM": []},
+            observed_on="2026-10-15")
+        recent = departed_stage_rows(dropped, "GEM_JR")
+        self.assertEqual(recent[0]["Leave Reason"],
+                         "NO_LONGER_IN_VERIFIED_STAGE_SNAPSHOT")
+
+    def test_registry_dates_counts_and_freshness_required_for_history(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "phase3_announcements.csv").write_text(
+                "nct_id,phase3_status\\nNCT11111111,RESULTS_REVIEW\\n",
+                encoding="utf-8")
+            status = {
+                "status": "COMPLETE", "complete": True, "errors": [],
+                "started_at": "2026-10-15T05:16:35+00:00",
+                "finished_at": "2026-10-15T05:16:44+00:00",
+                "stored_results": 1,
+            }
+            (root / "phase3_intake_status.json").write_text(json.dumps(status))
+            # 05:16 UTC is Oct 14 in Pacific, not Oct 15.
+            self.assertEqual(
+                validate_registry_snapshot(root, date(2026, 10, 14)),
+                status)
+            with self.assertRaisesRegex(ValueError, "Pacific observation"):
+                validate_registry_snapshot(root, date(2026, 10, 15))
+            status["finished_at"] = "2026-10-16T05:16:44+00:00"
+            (root / "phase3_intake_status.json").write_text(json.dumps(status))
+            with self.assertRaisesRegex(ValueError, "Pacific observation"):
+                validate_registry_snapshot(root, date(2026, 10, 15))
+            status["started_at"] = "2026-10-16T05:16:35+00:00"
+            status["stored_results"] = 2
+            (root / "phase3_intake_status.json").write_text(json.dumps(status))
+            with self.assertRaisesRegex(ValueError, "count"):
+                validate_registry_snapshot(root, date(2026, 10, 15))
+            status["stored_results"] = 1
+            (root / "phase3_intake_status.json").write_text(json.dumps(status))
+            self.assertEqual(
+                validate_registry_snapshot(root, date(2026, 10, 15)),
+                status)
+            status["status"] = "PARTIAL"
+            (root / "phase3_intake_status.json").write_text(json.dumps(status))
+            with self.assertRaisesRegex(ValueError, "Incomplete"):
+                validate_registry_snapshot(root, date(2026, 10, 15))
 
     def test_history_is_durable_and_does_not_invent_dates(self):
         pid = "TRIAL|NCT12345678"
