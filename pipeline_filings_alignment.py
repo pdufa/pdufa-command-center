@@ -93,3 +93,28 @@ def reconciliation_counts(records):
         "matched": sum(row["Reconciliation"] == "EXACT APPLICATION EVENT MATCH" for row in records),
         "unassessed": sum(row["Reconciliation"] != "EXACT APPLICATION EVENT MATCH" for row in records),
     }
+
+
+
+def candidate_events_outside_pipeline(pipeline_records, candidate_baseline):
+    """Report orphan candidate events; filters must not manufacture 'orphans'."""
+    known = {
+        str(row.get("record_id") or "").strip()
+        for row in pipeline_records
+    }
+    orphaned = []
+    seen = set()
+    for item in candidate_baseline:
+        key = str(item.get("Trial / event") or "").strip()
+        if not key or key in seen or "APPLICATION|" + key in known:
+            continue
+        seen.add(key)
+        orphaned.append({
+            "Ticker": item.get("Ticker", ""),
+            "Candidate event": key,
+            "Agency claim": item.get("Agency claim", ""),
+            "Agency verification": item.get("Agency verification", ""),
+            "Agency source": item.get("Agency source", ""),
+            "Reconciliation": "CANDIDATE NOT IN CURRENT PIPELINE UNIVERSE",
+        })
+    return orphaned
