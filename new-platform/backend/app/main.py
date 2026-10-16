@@ -104,6 +104,23 @@ async def lifespan(app: FastAPI):
     )
     if storage_ready():
         Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
+    if os.getenv("PDUFA_MIGRATION_COPY_ON_BOOT", "") == "1":
+        try:
+            from .migrate_snapshot import copy_with_checks
+            copy_with_checks(
+                ENGINE, os.getenv("PDUFA_MIGRATION_TARGET_DATABASE_URL", ""),
+                Base, Checklist,
+            )
+        except Exception as exc:
+            # No credentials or source record values should reach application logs.
+            logging.getLogger(__name__).error(
+                "PDUFA_DATABASE_COPY_FAILED error_type=%s", type(exc).__name__
+            )
+            raise RuntimeError("PDUFA migration verification failed; source left unchanged") from None
+    logging.getLogger(__name__).warning(
+        "PDUFA checklist write freeze active: %s",
+        os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"),
+    )
     yield
 
 
