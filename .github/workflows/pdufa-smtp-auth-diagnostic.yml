@@ -1,8 +1,13 @@
 name: PDUFA SMTP Authentication Diagnostic — NO SEND
 
-# Manual-only authentication diagnostic. No scheduled scans and no email sends.
+# Isolated authentication diagnostic. No scheduled scans and no email sends.
+# The repair-branch push path permits retesting after rotating the secret without
+# merging unverified changes; the manual trigger is for future explicit checks.
 on:
   workflow_dispatch:
+  push:
+    branches: [repair/smtp-auth-diagnostic-20261015]
+    paths: ['.github/workflows/pdufa-smtp-auth-diagnostic.yml']
 
 permissions:
   contents: read
