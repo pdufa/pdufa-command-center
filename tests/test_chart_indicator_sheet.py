@@ -3,7 +3,8 @@ import csv
 import json
 from datetime import date
 
-from chart_indicator_sheet import build_chart_indicator_rows
+from chart_indicator_sheet import COLUMNS, build_chart_indicator_rows
+from indicator_target_spec import EXTRA_FIELDS, TARGETS
 
 
 def _csv(path, rows):
@@ -50,6 +51,10 @@ def test_program_identity_and_wt_tags_are_not_trade_authorization(tmp_path):
     assert keyed["APPLICATION|XYZ|THERAPY_ONE"]["Current stage"] == "GEM"
     assert all(item["WT decision label"] == "W + T — CHECK" for item in records)
     assert all(item["Market-cap gate"] == "WITHIN $300M–$10B" for item in records)
+    assert all("$300,000,000 to $10,000,000,000" in item["TARGET — Market cap $"]
+               for item in records)
+    assert keyed["APPLICATION|XYZ|THERAPY_ONE"]["FINANCIAL — Catalyst window (days)"].startswith("+46")
+    assert keyed["TRIAL|NCT00000002"]["CLINICAL — Phase 3 primary endpoint"] == "UNVERIFIED / MISSING"
     assert all(item["Priority 4 — ATR(14)"] == "UNAVAILABLE — OHLC REQUIRED"
                for item in records)
     assert all(item["Reward / risk"] == "NO VERIFIED TRADE PLAN"
@@ -75,3 +80,17 @@ def test_unverified_market_cap_and_inactive_stage_do_not_promote(tmp_path):
     assert result[0]["Market-cap gate"] == "UNVERIFIED"
     assert result[0]["WT decision label"] == "T — TRADING RESEARCH"
     assert "needs manual entry/stop/target" in result[0]["Data completeness / next action"]
+
+
+def test_every_indicated_metric_has_an_adjacent_target():
+    """Every scored/reference indicator must have its desired level beside it."""
+    for indicator, target in TARGETS.items():
+        assert indicator in COLUMNS, indicator
+        at = COLUMNS.index(indicator)
+        assert COLUMNS[at + 1] == "TARGET — " + indicator
+        assert isinstance(target, str) and len(target) > 12
+    assert all(metric in TARGETS for metric in EXTRA_FIELDS)
+    assert TARGETS["Priority 4 — ATR(14)"].startswith("[RISK INPUT]")
+    assert ">=75%" in TARGETS["CLINICAL — FDA approval probability"]
+    assert ">=15%" in TARGETS["PARTICIPATION — Short interest (%)"]
+    assert "not" in TARGETS["DECISION — Entry score (/100)"].lower()
