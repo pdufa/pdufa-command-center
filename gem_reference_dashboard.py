@@ -367,13 +367,13 @@ def render_reference_stage(stage, root="data"):
         color:#101d35!important;white-space:nowrap;line-height:22px!important}
       .st-key-pdufa_brand_header [data-testid="stCaptionContainer"],
       .st-key-pdufa_main_navigation{display:none!important}
-      .stApp [data-baseweb="tab-list"]{min-height:35px!important;height:35px!important;
+      .stApp [role="tablist"]{min-height:35px!important;height:35px!important;
         background:#f4fcff!important;border-bottom:1px solid #c9e2de!important;
         gap:7px!important;padding:4px 9px 4px 290px!important}
-      .stApp [data-baseweb="tab"]{min-height:25px!important;height:25px!important;
+      .stApp [role="tab"]{min-height:25px!important;height:25px!important;
         border:0!important;border-radius:4px!important;padding:3px 17px!important;
         color:#14243c!important;font:700 11px Arial,sans-serif!important}
-      .stApp [data-baseweb="tab"][aria-selected="true"]{
+      .stApp [role="tab"][aria-selected="true"]{
         background:#078aff!important;color:#fff!important}
       .stApp [data-baseweb="tab-highlight"],.stApp [data-baseweb="tab-border"]{display:none}
       .stApp [data-testid="stTabPanel"]{padding-top:0!important}
@@ -381,8 +381,8 @@ def render_reference_stage(stage, root="data"):
       .stApp [data-testid="stCustomComponentV1"] iframe{display:block;border:0}
       @media(max-width:760px){
         .st-key-pdufa_brand_header h1{font-size:10px!important;left:7px;top:5px}
-        .stApp [data-baseweb="tab-list"]{height:60px!important;padding:30px 5px 3px!important;gap:3px!important}
-        .stApp [data-baseweb="tab"]{padding:3px 10px!important;font-size:10px!important}
+        .stApp [role="tablist"]{height:60px!important;padding:30px 5px 3px!important;gap:3px!important}
+        .stApp [role="tab"]{padding:3px 10px!important;font-size:10px!important}
       }
     </style>""", unsafe_allow_html=True)
     _init_browser_selection("gem_reference_" + stage.replace(" ", "_"))
