@@ -151,3 +151,5 @@ jobs:
           PY
 
 # 2026-10-16 05:32 PDT: credential rotation verification requested; no email or scan.
+
+# Credential-replacement verification round 2: no email sent, no scans dispatched.
