@@ -221,15 +221,17 @@ async function audit() {
     await screenshot(page, "pipeline-sec-fda-count-parity");
   });
 
-  // Exercise the collapsed GEM master UI, not just its title. The chart and
-  // trading assessment require a stock card to open before their code runs.
+  // Exercise GEM full-width master, not just its title. The chart and
+  // trading assessment require an exact-program stock card to open.
   await safely("GEM nested stock entry/exit chart", async() => {
-    await inspectTab(page, "GEM JR + GEM", ["GEM JR — RESEARCH & QUALIFICATION QUEUE", "POTENTIAL GEMs — PENDING RESEARCH"]);
+    await inspectTab(page, "GEM", ["GEM — TWO-BENCHMARK VERIFIED RESEARCH", "POTENTIAL GEMs — PENDING RESEARCH"]);
     const first = await currentFrame(page);
-    const label = "GEM — THREE-LEVEL VERIFIED MASTER (show / hide)";
-    await first.getByText(label, {exact:true}).click({timeout:15000});
+    const label = "GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS";
+    // The full-width master opens by default; do not click its toggle closed.
+    if (!await first.getByText(label, {exact:true}).count())
+      throw Error("GEM full verified master toggle missing.");
     const master = await waitFor(page, "GEM nested master", async(f, text) =>
-      await selectedTab(f, "GEM JR + GEM") &&
+      await selectedTab(f, "GEM") &&
       text.includes("GEM — STOCK → FACTORS → SOURCE INPUTS") &&
       text.includes("GEM programs"));
     if (/This app has encountered an error|Traceback \(most recent call last\)/i.test(master.text)) {
@@ -246,9 +248,7 @@ async function audit() {
     }
     await candidates.first().click({timeout:15000});
     await delay(750);
-    // The one-quarter-width GEM contains its own 560px scrollable region.
-    // Scroll the STOCK card into that region before asking the browser for
-    // content: Streamlit can defer layout/text on out-of-view descendants.
+    // Scroll the selected stock into view if the browser has deferred its body.
     const scrollDetail = await candidates.first().evaluate(el => {
       let parent = el;
       while (parent) {
@@ -297,7 +297,7 @@ async function audit() {
                       "; master=" + probeText.includes("GEM — STOCK → FACTORS → SOURCE INPUTS"));
     await screenshot(page,"gem-expander-diagnostic");
     const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
-      await selectedTab(f, "GEM JR + GEM") && text.includes("ENTRY / EXIT MONITOR"), 35000);
+      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR"), 35000);
     // Streamlit's st.dataframe uses a canvas-backed grid; its column titles
     // are not necessarily present in body.innerText. Require the actual
     // rendered research header and inspect Streamlit's dataframe test ID.
