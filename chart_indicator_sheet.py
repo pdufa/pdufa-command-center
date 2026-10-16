@@ -246,7 +246,7 @@ def render_chart_indicator_sheet(data_root="data", *, as_of=None):
     if not rows:
         st.info("No source-identified saved PIPELINE/GEM programs available.")
         return
-    c1, c2, c3 = st.columns([2, 2, 2])
+    c1, c2, c3, c4 = st.columns(4)
     with c1:
         stage = st.selectbox("Stage", ["ALL", "PIPELINE", "GEM JR", "GEM"],
                              key="chart_sheet_stage")
@@ -256,9 +256,14 @@ def render_chart_indicator_sheet(data_root="data", *, as_of=None):
                            key="chart_sheet_wt")
     with c3:
         find = st.text_input("Ticker / program search", key="chart_sheet_find").strip().upper()
+    with c4:
+        cap_filter = st.selectbox(
+            "Market cap", ["WITHIN $300M–$10B", "ALL", "OUTSIDE $300M–$10B",
+                           "UNVERIFIED"], key="chart_sheet_cap")
     filtered = [
         r for r in rows
-        if (stage == "ALL" or r["Current stage"] == stage)
+        if (cap_filter == "ALL" or r["Market-cap gate"] == cap_filter)
+        and (stage == "ALL" or r["Current stage"] == stage)
         and (tag == "ALL" or r["WT decision label"] == tag)
         and (not find or find in r["Ticker"] or find in r["Pipeline ID"].upper()
              or find in r["Drug"].upper())
