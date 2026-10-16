@@ -19,6 +19,20 @@ No PDUFA production jobs or orders are enabled by this code.
 6. Build and deploy **new** Vercel project; test login, ticker- and stage-specific checklist persistence, tab switching, notes, and reloading. Verify Render environment stays healthy. Check that Streamlit's deployed URL and nightly jobs are unchanged.
 7. Do not activate scanners in the new app. Later migration will copy (never move) ticker data, add real GEM scoring, and verify functionality before any operator-approved cutover.
 
+## PostgreSQL guard and activation
+
+The Render backend has `PDUFA_REQUIRE_POSTGRES=1` configured, and the app refuses checklist reads/writes with an HTTP 503 until a persistent PostgreSQL URL is present. Check `https://pdufa-new-api-staging.onrender.com/health` and confirm both `storage_ready: true` and `storage_kind: postgresql` after connecting the database.
+
+To activate without exposing secrets:
+
+1. Open [the Render staging database](https://dashboard.render.com/d/dpg-db972eei0phs73fpm3u0-a) → **Connect** and copy the **Internal Database URL** (not the public external URL).
+2. Open [the Render staging backend](https://dashboard.render.com/web/srv-db976hfbtjjs73bb98fg) → **Environment** → add `DATABASE_URL` with the copied URL. Do not share the URL in chat, GitHub, or a `NEXT_PUBLIC_` variable.
+3. Save/deploy Render. Check `/health` and ensure PostgreSQL readiness is true.
+4. On [Vercel staging](https://vercel.com/pdufa/pdufa-new-dashboard), set the `DASHBOARD_PASSWORD` secret to a privately chosen strong password and redeploy.
+5. Sign in, check a box and enter a note, reload, switch stages/tickers, and confirm exact selections restore. These tests are prerequisites before moving real ticker records.
+
+**The connected Render service must never rely on SQLite as permanent storage.** The free Postgres database is a **temporary test resource**, with a stated expiration of 2026-11-15. Production trading data must be backed up and moved to durable storage before that date.
+
 ## Important staging limitations
 
 - The current login is a **single-password prototype**, not final production authentication: no account-level separation, rate limiting, audit history, or password reset. Do not expose clinical/financial secrets or trading capabilities until production-grade authentication, audit logging, and network protections are added.
