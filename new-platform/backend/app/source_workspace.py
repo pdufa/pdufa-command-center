@@ -271,7 +271,7 @@ def gather() -> dict:
     ]
     if missing_trial_feeds:
         problems.append("Clinical trial feed unavailable or empty in public GitHub source: " + ", ".join(missing_trial_feeds))
-    candidates.sort(key=lambda r: (r["pdufaDate"] == "", r["pdufaDate"], r["ticker"], r["id"]))
+    candidates.sort(key=lambda r: (not bool(r.get("pdufaDate")), r.get("pdufaDate", ""), r["ticker"], r["id"]))
     return {
         "mode": "LIVE_READ_ONLY_GITHUB_SOURCE",
         "asOf": now.isoformat(),
