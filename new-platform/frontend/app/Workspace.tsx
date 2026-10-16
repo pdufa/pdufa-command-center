@@ -162,8 +162,10 @@ function exportCandidateCsv(rows: Candidate[], name: string) {
   const link = document.createElement("a");
   link.href=url;
   link.download=name;
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1200);
 }
 function SourceDetails({ record }: { record: Candidate }) {
   return (
@@ -218,6 +220,8 @@ function Chart({ ticker }: { ticker: string }) {
 
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
+  const [fetchVersion, setFetchVersion] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
@@ -241,10 +245,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const ctrl = new AbortController();
     fetch("/api/workspace", { cache: "no-store", signal: ctrl.signal })
       .then(async r => { if (!r.ok) throw new Error("Published source unavailable: " + r.status); return r.json(); })
-      .then((data: Snapshot) => { if (!ctrl.signal.aborted) setSnapshot(data); })
-      .catch(error => { if (!ctrl.signal.aborted) setFetchError(String(error)); });
+      .then((data: Snapshot) => { if (!ctrl.signal.aborted) { setSnapshot(data); setFetchError(""); setRefreshing(false); } })
+      .catch(error => { if (!ctrl.signal.aborted) { setFetchError(String(error)); setRefreshing(false); } });
     return () => ctrl.abort();
-  }, []);
+  }, [fetchVersion]);
   useEffect(() => {
     let local: Tags = { watch: [], trade: [] };
     try {
@@ -417,7 +421,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="worktop">
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
-      <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · No live orders</span>
+      <button type="button" className="secondary" disabled={refreshing} onClick={()=>{setRefreshing(true);setFetchVersion(v=>v+1);}}>{refreshing ? "Reloading…" : "Reload published sources"}</button>
+      <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
     {top==="PDUFA" && <nav className="worknav" aria-label="PDUFA sections">
       {([["PIPELINE","PIPELINE"],["GEMS","GEM JR + GEM"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
