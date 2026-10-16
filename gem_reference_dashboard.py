@@ -355,40 +355,13 @@ def render_reference_stage(stage, root="data"):
     # Loaded only inside an open GEM tab. Removing this tab also removes the
     # stylesheet, so the other PDUFA workspaces retain their existing theme.
     st.markdown("""<style>
+      /* GEM content styling stays local; global navigation is styled by app.py. */
       .stApp{background:#e1fae9!important}
       header[data-testid="stHeader"]{display:none!important}
       .stApp .block-container{max-width:none!important;padding:0 0 12px!important}
       .stApp [data-testid="stVerticalBlock"]{gap:0.12rem!important}
-      /* Keep the two navigation levels independently accessible: main pages
-         (PDUFA / Calendar) above the PDUFA research subtabs. */
-      .st-key-pdufa_brand_header{position:relative!important;min-height:29px!important;
-        margin:0!important;padding:5px 12px 2px!important;border:0!important;
-        background:#f4fcff!important}
-      .st-key-pdufa_brand_header h1{position:static!important;
-        padding:0!important;margin:0!important;font:700 14px Arial,sans-serif!important;
-        color:#101d35!important;line-height:22px!important}
-      .st-key-pdufa_brand_header [data-testid="stCaptionContainer"]{display:none!important}
-      .st-key-pdufa_main_navigation{display:block!important;background:#f4fcff!important;
-        padding:2px 12px 6px!important;border-bottom:1px solid #c9e2de!important}
-      .st-key-pdufa_main_navigation [role="radiogroup"]{display:flex!important;
-        flex-wrap:wrap!important;gap:8px!important}
-      .stApp [role="tablist"]{min-height:35px!important;height:auto!important;
-        background:#f4fcff!important;border-bottom:1px solid #c9e2de!important;
-        gap:7px!important;padding:4px 9px!important;flex-wrap:wrap!important}
-      .stApp [role="tab"]{min-height:25px!important;height:25px!important;
-        border:0!important;border-radius:4px!important;padding:3px 17px!important;
-        color:#14243c!important;font:700 11px Arial,sans-serif!important}
-      .stApp [role="tab"][aria-selected="true"]{
-        background:#078aff!important;color:#fff!important}
-      .stApp [data-baseweb="tab-highlight"],.stApp [data-baseweb="tab-border"]{display:none}
-      .stApp [data-testid="stTabPanel"]{padding-top:0!important}
       .stApp [data-testid="stCustomComponentV1"]{width:100%!important}
       .stApp [data-testid="stCustomComponentV1"] iframe{display:block;border:0}
-      @media(max-width:760px){
-        .st-key-pdufa_brand_header h1{font-size:12px!important}
-        .stApp [role="tablist"]{height:auto!important;padding:4px 5px!important;gap:3px!important}
-        .stApp [role="tab"]{padding:3px 10px!important;font-size:10px!important}
-      }
     </style>""", unsafe_allow_html=True)
     _init_browser_selection("gem_reference_" + stage.replace(" ", "_"))
     payload = build_dashboard(stage, root)
