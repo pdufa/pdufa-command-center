@@ -43,7 +43,8 @@ async function waitFor(page, label, matches, timeoutMs=125000) {
     try {
       recent = await frame.locator("body").innerText({timeout: 6000});
       if (/This app has encountered an error|Traceback \(most recent call last\)/i.test(recent)) {
-        throw Error(label + ": Streamlit application exception.");
+        try { await screenshot(page, "exception-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-")); } catch (_) {}
+        throw Error(label + ": Streamlit application exception. Visible text: " + recent.slice(-2800));
       }
       if (recent.includes("Source integration failed.") && label === "PIPELINE") {
         throw Error("PIPELINE clinical source cache failed validation in deployed app.");
