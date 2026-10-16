@@ -352,17 +352,24 @@ def render_chart_indicator_sheet(data_root="data", *, as_of=None):
     st.dataframe(pd.DataFrame(filtered, columns=overview), use_container_width=True,
                  hide_index=True, height=350)
     if filtered:
+        # Bound the per-program selector to keep Streamlit responsive on the
+        # full universe.  A ticker/program search narrows the available rows.
+        choices = filtered[:250]
+        if len(filtered) > len(choices):
+            st.caption("Showing the first 250 programs in the detail selector. "
+                       "Use the ticker / program search above for others.")
+        selected_by_id = {row["Pipeline ID"]: row for row in choices}
         def label_for(identifier):
-            candidate = next(row for row in filtered if row["Pipeline ID"] == identifier)
+            candidate = selected_by_id[identifier]
             return (f'{candidate["Ticker"]} · {candidate["Drug"]} · '
                     f'{candidate["Current stage"]} · {identifier}')
 
         selected_id = st.selectbox(
             "VIEW ALL INDICATORS + TARGET LEVELS FOR ONE PROGRAM",
-            [row["Pipeline ID"] for row in filtered],
+            list(selected_by_id),
             format_func=label_for, key="chart_sheet_program",
         )
-        selected_row = next(row for row in filtered if row["Pipeline ID"] == selected_id)
+        selected_row = selected_by_id[selected_id]
         detail = []
         for field in SOURCE_COLUMNS:
             if field not in TARGETS:
