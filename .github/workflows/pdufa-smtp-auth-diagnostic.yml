@@ -80,3 +80,5 @@ jobs:
                   print(f"SMTP_STARTTLS_CONNECTION_ERROR; phase={phase}; kind={type(e).__name__}; no email sent")
                   raise SystemExit(8)
           PY
+
+# 2026-10-16 05:32 PDT: credential rotation verification requested; no email or scan.
