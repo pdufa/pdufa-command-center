@@ -229,6 +229,18 @@ def _css():
     .stApp:has(.gem-stage-gem) .st-key-visual_gem_ranked [data-testid="stButton"] button[kind="primary"]{
       background:#2474be!important;border-color:#2474be!important;
     }
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_w_"] button,
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_selected_w"] button{
+      background:#2b80c5!important;color:#fff!important;border:1px solid #226fb0!important;
+    }
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_t_"] button,
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_selected_t"] button{
+      background:#157a55!important;color:#fff!important;border:1px solid #116a49!important;
+    }
+    .gem-visual-chip{display:inline-block!important;border-radius:3px!important;
+      padding:2px 5px!important;font-weight:800!important;font-size:9px!important;
+      background:#fff1cc!important;color:#895f05!important;}
+    .gem-visual-chip--qualified{background:#dcf5e7!important;color:#176649!important}
     .gem-visual-footnote{text-align:center;padding:5px!important;
       font-size:9px!important;color:#6b8090!important}
     @media(max-width:760px){
@@ -455,7 +467,11 @@ def render_visual_stage(stage, root="data"):
                 c[6].caption("N/A")  # Runway months not present in the qualified feed.
                 c[7].caption(str(score["entry"]) if score["entry"] is not None else "N/A")
                 c[8].caption(str(score["exit_risk"]) if score["exit_risk"] is not None else "N/A")
-                c[9].caption("Review required" if junior else "Qualified · check risks")
+                c[9].markdown(
+                    '<span class="gem-visual-chip' +
+                    ('' if junior else ' gem-visual-chip--qualified') +
+                    '">' + ('Review' if junior else 'Qualified · review') +
+                    '</span>', unsafe_allow_html=True)
                 with c[10]:
                     _row_button(stageid, symbol, rec, i)
             if len(matched) > 12:
