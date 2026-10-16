@@ -3316,7 +3316,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR + GEM (two blocks, one tab) · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 9 PM Pacific sequential scans")
+st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -3343,7 +3343,7 @@ if st.session_state.detail_return_page in ("9. PREDICTION ENGINE", "10. MATCH OP
 if st.session_state.nav in ("PRE PHASE 3", "POST PHASE 3"):
     legacy_stage = st.session_state.nav
     st.session_state.nav = "PDUFA"
-    st.session_state["pdufa_subtab"] = "PIPELINE" if legacy_stage == "PRE PHASE 3" else "GEM JR + GEM"
+    st.session_state["pdufa_subtab"] = "PIPELINE" if legacy_stage == "PRE PHASE 3" else "GEM JR"
 if st.session_state.nav == "PIPELINE":
     st.session_state.nav = "PDUFA"
     st.session_state["pdufa_subtab"] = "PIPELINE"
@@ -3377,9 +3377,9 @@ else:
 if page == "PDUFA":
     # Preserve saved subtab selection after older labels are removed or renamed.
     previous_subtab = st.session_state.get("pdufa_subtab")
-    if previous_subtab in ("PHASE 3 DAILY", "POST PHASE 3", "GEM JR",
-                           "GEM", "UNIFIED OVERVIEW"):
-        st.session_state["pdufa_subtab"] = "GEM JR + GEM"
+    if previous_subtab in ("PHASE 3 DAILY", "POST PHASE 3",
+                           "GEM JR + GEM", "UNIFIED OVERVIEW"):
+        st.session_state["pdufa_subtab"] = "GEM JR"
     elif previous_subtab == "PRE PHASE 3":
         st.session_state["pdufa_subtab"] = "PIPELINE"
     elif previous_subtab == "WATCHLIST / TRADING":
@@ -3389,9 +3389,9 @@ if page == "PDUFA":
     elif previous_subtab in ("SCORE AUDIT", "SCORING TESTS"):
         st.session_state["pdufa_subtab"] = "PIPELINE"
     # Clinical evidence and SEC financing eligibility retain their separate source checks.
-    # GEM JR and GEM share one tab but remain independent qualification blocks.
-    pipeline_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(
-        ["PIPELINE", "GEM JR + GEM", "SCANS", "WT"],
+    # Two full-width stage pages; source gates and W/T selections stay shared.
+    pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(
+        ["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"],
         key="pdufa_subtab", on_change="rerun",
     )
     with pipeline_tab:
@@ -4226,54 +4226,59 @@ if page == "PDUFA":
             if st.toggle("SHOW EARLY CLINICAL RESEARCH / READINESS", value=False, key="pipeline_early_research"):
                 render_pre_phase3()
 
-    with gem_tab:
-        if gem_tab.open:
-            st.markdown("## GEM JR + GEM — CANDIDATE QUALIFICATION")
+    with gem_jr_tab:
+        if gem_jr_tab.open:
+            st.markdown("## GEM JR — POST-PHASE 3 RESEARCH")
             st.caption(
-                "Two independent blocks on one page. GEM JR is a research queue; "
-                "GEM status requires source-verified successful Phase 3 results and "
-                "two distinct SEC-confirmed financing closures after the readout. "
-                "Research alone never promotes a stock or authorizes a trade."
+                "Earlier-stage source leads. No GEM qualification, score or "
+                "trade authorization can be inferred from a registry result, "
+                "unverified financing or technical price base."
             )
-            # Full-width stacked sections match the SEC/FDA card design and
-            # give nested evidence tables and WT lists readable column widths.
+            from gem_stage_dossier import render_stage_dossier
             with st.container(border=True, key="gem_jr_shared_block"):
-                st.markdown("### GEM JR")
+                render_stage_dossier("GEM JR")
+                st.divider()
                 from gem_jr_ui import render_gem_jr
                 render_gem_jr()
                 if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH",
                              value=False, key="gemjr_extended_research"):
                     render_post_phase3_workspace()
+
+    with gem_tab:
+        if gem_tab.open:
+            st.markdown("## GEM — TWO-BENCHMARK VERIFIED RESEARCH")
+            st.caption(
+                "Full-width GEM page. Exact-program successful Phase 3 results "
+                "and two distinct SEC-confirmed financing closures after readout "
+                "are mandatory; new trades also require independent market, "
+                "risk and regulatory checks. T opens WT review, not an order."
+            )
+            from gem_stage_dossier import render_stage_dossier
             with st.container(border=True, key="gem_shared_block"):
-                st.markdown("### GEM")
+                render_stage_dossier("GEM")
+                st.divider()
                 from gem_potential_ui import render_gem_potential
-                render_gem_potential(root="data", compact=True,
-                                     namespace="gem_shared_potential",
+                render_gem_potential(root="data", compact=False,
+                                     namespace="gem_full_potential",
                                      show_previous=False)
-                # Prioritize per-program GEM factor/entry/exit detail rather than
-                # hiding the six-factor master behind a closed toggle.
-                if st.toggle("GEM — THREE-LEVEL VERIFIED MASTER (show / hide)",
+                if st.toggle("GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS",
                              value=True, key="gem_shared_show_master"):
                     from gem_nested_master_ui import render_gem_nested_master
-                    with st.container(height=600, border=False,
-                                      key="gem_shared_master_content"):
-                        render_gem_nested_master(root="data", selections_ready=True,
-                                                 compact=True, show_previous=False)
-                # ONE previous archive at the bottom of the GEM stage, after
-                # both verified lists and detailed priority/score tables.
+                    render_gem_nested_master(root="data", selections_ready=True,
+                                             compact=False, show_previous=False)
                 from gem_membership_history import read_history, departed_stage_rows
                 previous_gem = departed_stage_rows(read_history("data"), "GEM")
                 with st.container(border=True, key="gem_previous_candidates"):
                     st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
-                    st.caption("First found, left date, days in GEM and reason. "
-                               "PDUFA −3 is a trading warning, not list expiry.")
-                    with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
-                                     expanded=False):
-                        if previous_gem:
-                            st.dataframe(pd.DataFrame(previous_gem),
-                                         hide_index=True, use_container_width=True)
-                        else:
-                            st.caption("No GEM departures recorded by a validated scan yet.")
+                st.caption("Only actual scan-observed promotions, departures and "
+                           "reentries; PDUFA −3 is a warning, not list expiry.")
+                with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
+                                 expanded=False):
+                    if previous_gem:
+                        st.dataframe(pd.DataFrame(previous_gem),
+                                     hide_index=True, use_container_width=True)
+                    else:
+                        st.caption("No GEM departures recorded by a validated scan yet.")
 
     with nightly_report_tab:
         if nightly_report_tab.open:

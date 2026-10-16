@@ -221,3 +221,15 @@ def render_ticker_toggle_panel(panel_id, records, *, title=""):
             st.caption("Browser storage unavailable: selections last only for this session.")
         else:
             st.caption("Saved in this browser only; use the same device to see selections after a refresh.")
+
+
+def open_trade_workspace(ticker):
+    """Open the existing WT trading-research screen; never submit orders."""
+    symbol = clean_ticker(ticker)
+    if not symbol:
+        return
+    selected = {clean_ticker(v) for v in st.session_state.get("trading_tickers", [])}
+    if symbol not in selected:
+        _toggle(symbol, "trade")
+    st.session_state["selected_ticker"] = symbol
+    st.session_state["pdufa_subtab"] = "WT"

@@ -67,12 +67,12 @@ class TodayTabTests(unittest.TestCase):
                         if line.startswith("nav_options ="))
         self.assertNotIn('"TODAY"', nav_line)
         self.assertNotIn('if page == "TODAY":', app)
-        self.assertIn('pipeline_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(', pipeline)
-        self.assertIn('["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]', pipeline)
+        self.assertIn('pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(', pipeline)
+        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', pipeline)
         self.assertNotIn('"PDUFA WORKBENCH"', pipeline)
         self.assertIn("with gem_tab:", pipeline)
-        post = pipeline.split("with gem_tab:", 1)[1]
-        self.assertIn("if gem_tab.open:", post)
+        post = pipeline.split("with gem_jr_tab:", 1)[1].split("with gem_tab:", 1)[0]
+        self.assertIn("if gem_jr_tab.open:", post)
         self.assertIn("render_post_phase3_workspace()", post)
         self.assertNotIn("pipeline_phase3_daily_details_v1", post)
         self.assertNotIn("render_today(", post)

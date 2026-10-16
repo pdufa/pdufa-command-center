@@ -15,7 +15,7 @@ class ScanActivityDashboardTests(unittest.TestCase):
         self.assertNotIn('elif page == "SCANS":', src)
         self.assertIn('if st.session_state.nav == "SCANS":', src)
         self.assertIn('st.session_state["pdufa_subtab"] = "SCANS"', src)
-        self.assertIn('["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]', src)
+        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', src)
         self.assertIn("render_nightly_scan_report()", src)
         self.assertNotIn("render_scans_activity()", src)
 

@@ -301,5 +301,5 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert "FACTOR_FIELDS" in nested
         assert "score_factor_inputs" in nested
         assert 'args=(ticker, "watch")' in nested
-        assert 'args=(ticker, "trade")' in nested
+        assert 'on_click=open_trade_workspace, args=(ticker,)' in nested
 

@@ -106,8 +106,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertIn("PDUFA", nav.options)
         self.assertNotIn("WATCHLIST", nav.options)
         submenu_labels = [item.label for item in app.get("tab") if item.label in
-                          {"PIPELINE", "GEM JR + GEM", "PDUFA WORKBENCH"}]
-        self.assertEqual(submenu_labels, ["PIPELINE", "GEM JR + GEM"])
+                          {"PIPELINE", "GEM JR", "GEM", "PDUFA WORKBENCH"}]
+        self.assertEqual(submenu_labels, ["PIPELINE", "GEM JR", "GEM"])
         self.assertTrue(any("WATCHLIST MANAGEMENT" in item.body for item in app.markdown))
         self.assertTrue(any("PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS" in item.body
                             for item in app.markdown))
@@ -235,35 +235,34 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.session_state["pdufa_subtab"] = "PHASE 3 DAILY"
         app.run()
         self.assertFalse(list(app.exception))
-        self.assertEqual(app.session_state["pdufa_subtab"], "GEM JR + GEM")
+        self.assertEqual(app.session_state["pdufa_subtab"], "GEM JR")
         labels = [item.label for item in app.get("tab")]
-        self.assertIn("GEM JR + GEM", labels)
+        self.assertIn("GEM JR", labels)
+        self.assertIn("GEM", labels)
         self.assertNotIn("PHASE 3 DAILY", labels)
 
-    def test_gem_jr_and_gem_are_two_blocks_in_one_tab(self):
+    def test_gem_jr_and_gem_are_separate_full_width_tabs(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "GEM JR + GEM"
+        app.session_state["pdufa_subtab"] = "GEM JR"
         app.run()
         self.assertFalse(list(app.exception),
                          [str(error.message) for error in app.exception])
         labels = [item.label for item in app.get("tab")]
-        self.assertIn("GEM JR + GEM", labels)
-        self.assertNotIn("GEM JR", labels)
-        self.assertNotIn("GEM", labels)
+        self.assertIn("GEM JR", labels)
+        self.assertIn("GEM", labels)
+        self.assertNotIn("GEM JR + GEM", labels)
         self.assertNotIn("PRE PHASE 3", labels)
         self.assertNotIn("POST PHASE 3", labels)
-        combined = next(item for item in app.get("tab")
-                        if item.label == "GEM JR + GEM")
-        headings = [item.body for item in combined.get("markdown")]
+        junior = next(item for item in app.get("tab") if item.label == "GEM JR")
+        headings = [item.body for item in junior.get("markdown")]
         self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x
                             for x in headings))
-        self.assertTrue(any("### GEM" in x for x in headings))
         source = APP_PATH.read_text(encoding="utf-8")
         self.assertIn('key="gem_jr_shared_block"', source)
         self.assertIn('key="gem_shared_block"', source)
         self.assertIn("render_gem_jr()", source)
-        self.assertIn("render_gem_potential(root=\"data\", compact=True", source)
+        self.assertIn('render_gem_potential(root="data", compact=False', source)
         self.assertIn("two distinct SEC-confirmed financing closures", source)
 
     def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):

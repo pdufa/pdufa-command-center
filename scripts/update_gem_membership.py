@@ -102,7 +102,8 @@ def validate_registry_snapshot(data_dir, observed_on):
         raise ValueError("Missing dated registry collection timestamps") from e
     if (completed.tzinfo is None or commenced.tzinfo is None or
             completed < commenced or
-            completed.astimezone(ZoneInfo("America/Los_Angeles")).date() != observed_on):
+            completed.astimezone(ZoneInfo("America/Los_Angeles")).date() != observed_on or
+            commenced.astimezone(ZoneInfo("America/Los_Angeles")).date() != observed_on):
         raise ValueError(
             "Registry scan not complete on the specified Pacific observation date")
     expected = status.get("stored_results")

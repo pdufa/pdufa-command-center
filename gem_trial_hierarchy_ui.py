@@ -14,7 +14,7 @@ import hashlib
 import math
 import pandas as pd
 import streamlit as st
-from ticker_toggle_panel import _toggle, clean_ticker
+from ticker_toggle_panel import open_trade_workspace, _toggle, clean_ticker
 
 
 PAGE_SIZE = 12
@@ -173,9 +173,9 @@ def render_trial_hierarchy(records, *, namespace, title):
             with t:
                 st.button("T", key=namespace + "_trade_" + uid,
                           type="primary" if ticker in trade else "secondary",
-                          help="Toggle Trading Research for " + ticker +
+                          help="Open WT trading review for " + ticker +
                                " (ticker-wide; not a broker order)",
-                          on_click=_toggle, args=(ticker, "trade"))
+                          on_click=open_trade_workspace, args=(ticker,))
             with st.expander("OPEN THREE LEVELS — ACTUAL CANDIDATE EVIDENCE",
                              expanded=False):
                 st.markdown("**LEVEL 1 — EXACT PROGRAM & LIST STATUS**")
