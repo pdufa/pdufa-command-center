@@ -24,7 +24,8 @@ from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_che
 from gem_benchmark_checklist import program_key
 from gem_scans_ui import FILES, _saved_gem_scans
 from gem_membership_history import read_history, enrich_gem_master_rows, departed_stage_rows
-from ticker_toggle_panel import open_trade_workspace, _init_browser_selection, _toggle, clean_ticker
+from gem_trade_navigation import open_trade_workspace
+from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
 
 
 FACTOR_FIELDS = (
