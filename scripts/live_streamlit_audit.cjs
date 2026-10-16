@@ -81,6 +81,32 @@ async function inspectTab(page, name, expected, opts={}) {
   await frame.getByRole("tab", {name, exact: true}).click({timeout: 15000});
   const found = await waitFor(page, name, async(f, text) =>
     await selectedTab(f, name) && expected.every(s => text.includes(s)), opts.timeoutMs || 125000);
+  // Reject a pass for an old/cached rendering. The reference-matched
+  // GEM stylesheet must actually change the computed DOM layout.
+  if (name === "GEM JR" || name === "GEM") {
+    const geometry = await found.frame.locator(".gem-visual-hero").evaluate(hero => {
+      const heading = hero.querySelector("h2");
+      const metric = document.querySelector('[data-testid="stMetric"]');
+      const app = document.querySelector(".stApp");
+      return {
+        headingPx: heading ? parseFloat(getComputedStyle(heading).fontSize) : -1,
+        metricBorderPx: metric ? parseFloat(getComputedStyle(metric).borderTopWidth) : -1,
+        backgroundImage: app ? getComputedStyle(app).backgroundImage : "",
+        brandPx: (() => {
+          const brand = document.querySelector(".st-key-pdufa_brand_header h1");
+          return brand ? parseFloat(getComputedStyle(brand).fontSize) : -1;
+        })(),
+      };
+    });
+    if (!(geometry.headingPx >= 20 && geometry.headingPx <= 24)
+        || !(geometry.metricBorderPx === 0)
+        || !geometry.backgroundImage.includes("gradient")
+        || !(geometry.brandPx >= 12 && geometry.brandPx <= 19)) {
+      throw Error(name + ": old or unstyled GEM presentation in live deployment: "
+                  + JSON.stringify(geometry));
+    }
+    report.checked.push({screen:name + " reference styling",result:"PASS",computed:geometry});
+  }
   const warning = [];
   if (found.text.includes("SOURCE SNAPSHOT STALE")) warning.push("GEM source snapshot stale");
   if (found.text.includes("SEC FINANCING RECHECK PARTIAL/STALE")) warning.push("SEC financing recheck partial or stale");
