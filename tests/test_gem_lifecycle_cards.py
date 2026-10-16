@@ -43,7 +43,7 @@ class GemLifecycleCardTests(unittest.TestCase):
             ast.parse(code, filename=name)
         self.assertIn('with st.container(border=True, key=namespace + "_program_" + uid)', ui)
         self.assertIn('args=(ticker, "watch")', ui)
-        self.assertIn('args=(ticker, "trade")', ui)
+        self.assertIn('on_click=open_trade_workspace, args=(ticker,)', ui)
         self.assertIn("LEVEL 1 — EXACT PROGRAM & LIST STATUS", ui)
         self.assertIn("LEVEL 2 — WHAT THIS CANDIDATE RECEIVED", ui)
         self.assertIn("LEVEL 3 — UNDERLYING EVIDENCE", ui)
