@@ -54,6 +54,43 @@ class WatchTrade(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class ProgramIdentity(Base):
+    """Never-recycled integer registry, keyed by immutable Pipeline exact program."""
+    __tablename__ = "program_identity"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    source_key: Mapped[str] = mapped_column(String(512), unique=True, nullable=False)
+    ticker: Mapped[str] = mapped_column(String(15), nullable=False)
+    drug: Mapped[str] = mapped_column(String(300), nullable=False, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ProgramWatchTrade(Base):
+    __tablename__ = "program_watch_trade_labels"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    watch: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    trade: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+PROGRAM_ID_PATTERN = re.compile(r"^PDUFA-[0-9]{6,}$")
+
+
+class ProgramWatchTradePayload(BaseModel):
+    watch: list[str] = Field(default_factory=list, max_length=500)
+    trade: list[str] = Field(default_factory=list, max_length=500)
+    version: int = Field(ge=0)
+
+    def canonical(self) -> tuple[list[str], list[str]]:
+        watch = sorted(set(self.watch))
+        trade = sorted(set(self.trade))
+        if (any(not isinstance(v, str) or not PROGRAM_ID_PATTERN.fullmatch(v) for v in watch + trade)
+                or len(watch) > 500 or len(trade) > 500
+                or set(watch).intersection(trade)):
+            raise HTTPException(status_code=422, detail="Invalid or overlapping permanent Program IDs")
+        return watch, trade
+
+
 class WatchTradePayload(BaseModel):
     watch: list[str] = Field(default_factory=list, max_length=500)
     trade: list[str] = Field(default_factory=list, max_length=500)
@@ -245,14 +282,17 @@ def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     return {"saved": True, "version": payload.version + 1, "updated_at": now}
 
 
-@app.get("/api/workspace", dependencies=[Depends(require_internal_key)])
+@app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace():
     from .source_workspace import workspace
+    from .program_registry import number_workspace
     try:
-        return workspace()
+        return number_workspace(workspace())
     except Exception as exc:
-        # Do not suggest fresh source data were loaded if the fetch fails.
-        raise HTTPException(status_code=503, detail="Published upstream source unavailable") from None
+        import logging
+        logging.getLogger(__name__).error("PDUFA_PROGRAM_REGISTRY_FAILED error_type=%s", type(exc).__name__)
+        # Do NOT publish an ephemeral/recomputed number if Neon is unavailable.
+        raise HTTPException(status_code=503, detail="Persistent program identification unavailable") from None
 
 
 @app.get("/api/watch-trade", dependencies=[Depends(require_internal_key), Depends(require_storage)])
@@ -286,3 +326,59 @@ def put_watch_trade(payload: WatchTradePayload):
             raise HTTPException(status_code=409, detail="Watch/Trade changed in another session; reload")
         session.commit()
         return {"watch": watch, "trade": trade, "version": payload.version + 1, "updated_at": now}
+
+
+@app.get("/api/program-watch-trade", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def get_program_watch_trade():
+    with Session(ENGINE) as session:
+        row = session.get(ProgramWatchTrade, 1)
+        legacy = session.get(WatchTrade, 1)  # Preserve all pre-migration ticker choices.
+        watched = list(row.watch) if row else []
+        trading = list(row.trade) if row else []
+        ids = [int(label[6:]) for label in watched + trading if PROGRAM_ID_PATTERN.fullmatch(label)]
+        identities = session.scalars(select(ProgramIdentity).where(ProgramIdentity.id.in_(ids))).all() if ids else []
+        return {
+            "watch": watched, "trade": trading, "version": row.version if row else 0,
+            "updated_at": row.updated_at if row else None,
+            "identities": [{
+                "programId": f"PDUFA-{item.id:06d}",
+                "id": item.source_key, "ticker": item.ticker, "drug": item.drug,
+            } for item in identities],
+            "legacy": {
+                "watch": list(legacy.watch) if legacy else [],
+                "trade": list(legacy.trade) if legacy else [],
+            },
+        }
+
+
+@app.put("/api/program-watch-trade", dependencies=[
+    Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled),
+])
+def put_program_watch_trade(payload: ProgramWatchTradePayload):
+    watch, trade = payload.canonical()
+    numbers = {int(x[6:]) for x in watch + trade}
+    now = datetime.now(timezone.utc)
+    with Session(ENGINE) as session:
+        existing = set(session.scalars(
+            select(ProgramIdentity.id).where(ProgramIdentity.id.in_(numbers))
+        ).all()) if numbers else set()
+        if existing != numbers:
+            raise HTTPException(status_code=422, detail="Unknown permanent Program ID; refresh Pipeline first")
+        if payload.version == 0:
+            session.add(ProgramWatchTrade(id=1, watch=watch, trade=trade, version=1, updated_at=now))
+            try:
+                session.commit()
+            except IntegrityError:
+                session.rollback()
+                raise HTTPException(status_code=409, detail="Program W/T conflict; reload")
+            return {"watch": watch, "trade": trade, "version": 1, "updated_at": now}
+        result = session.execute(
+            update(ProgramWatchTrade)
+            .where(ProgramWatchTrade.id == 1, ProgramWatchTrade.version == payload.version)
+            .values(watch=watch, trade=trade, version=payload.version + 1, updated_at=now)
+        )
+        if result.rowcount != 1:
+            session.rollback()
+            raise HTTPException(status_code=409, detail="Program W/T conflict; reload")
+        session.commit()
+    return {"watch": watch, "trade": trade, "version": payload.version + 1, "updated_at": now}
