@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pdufa_new
+      POSTGRES_USER: pdufa_new
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set unique POSTGRES_PASSWORD in .env}
+    volumes:
+      - new_platform_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pdufa_new -d pdufa_new"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://pdufa_new:${POSTGRES_PASSWORD}@db:5432/pdufa_new
+      PDUFA_INTERNAL_API_KEY: ${PDUFA_INTERNAL_API_KEY:?Set API key in .env}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    environment:
+      PDUFA_API_BASE_URL: http://backend:8000
+      PDUFA_INTERNAL_API_KEY: ${PDUFA_INTERNAL_API_KEY:?Set API key in .env}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:?Set dashboard password in .env}
+      SESSION_SIGNING_KEY: ${SESSION_SIGNING_KEY:?Set session key in .env}
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
+volumes:
+  new_platform_pgdata:
