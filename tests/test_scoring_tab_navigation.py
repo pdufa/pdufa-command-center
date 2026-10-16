@@ -9,9 +9,10 @@ def test_consolidated_pdufa_subtabs_keep_scans_and_trading():
     start = source.index('if page == "PDUFA":')
     end = source.index('elif page == "2. PDUFA CALENDAR":', start)
     pdufa = source[start:end]
-    assert '["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]' in pdufa
-    assert 'pipeline_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(' in pdufa
+    assert '["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]' in pdufa
+    assert 'pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(' in pdufa
     assert 'with pipeline_tab:' in pdufa
+    assert 'with gem_jr_tab:' in pdufa
     assert 'with gem_tab:' in pdufa
     assert 'render_gem_jr()' in pdufa
     assert 'render_gem_potential(' in pdufa
