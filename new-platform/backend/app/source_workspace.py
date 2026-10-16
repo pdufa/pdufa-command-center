@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import io
+from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
 import math
@@ -172,16 +173,23 @@ def make_candidate(source: dict, program_id: str, now: date,
     }
 
 
+def _fetch_safe(name: str) -> tuple[str, str, str]:
+    try:
+        return name, fetch(name), ""
+    except (HTTPError, URLError, OSError, UnicodeDecodeError, ValueError) as exc:
+        return name, "", f"{name}: {type(exc).__name__}"
+
+
 def gather() -> dict:
     now = datetime.now(ZoneInfo("America/Los_Angeles")).date()
     sources: dict = {}
     problems: list[str] = []
-    for name in SOURCES:
-        try:
-            sources[name] = fetch(name)
-        except (HTTPError, URLError, OSError, UnicodeDecodeError, ValueError) as exc:
-            sources[name] = ""
-            problems.append(f"{name}: {type(exc).__name__}")
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        results = list(executor.map(_fetch_safe, SOURCES))
+    for name, contents, issue in results:
+        sources[name] = contents
+        if issue:
+            problems.append(issue)
     if not sources["gem_stage_membership.json"] or not sources["pdufa_candidates.csv"]:
         raise RuntimeError("Required candidate or stage-membership source is unavailable")
 
