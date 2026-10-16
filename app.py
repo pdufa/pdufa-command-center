@@ -3352,7 +3352,7 @@ if isinstance(_gem_dashboard_action, dict):
 
 with st.container(key="pdufa_brand_header"):
     st.title("🧬 BIO PDUFA COMMAND CENTER")
-    st.caption("BUILD 2026-10-16 · PIPELINE → GEM JR → GEM · NEW COMPACT DASHBOARD · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
+    st.caption("BUILD 2026-10-16 · PIPELINE → GEM JR → GEM · GEM JR / GEM REFERENCE LAYOUT · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
     st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
     st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
