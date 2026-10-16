@@ -262,3 +262,5 @@ button.secondary { background: white; color: #172b1b; }
   .gold-master-readable .gold-selected-strip{flex-wrap:wrap;}
   .gold-master-readable .gold-chart-state{font-size:10px;}
 }
+
+.master-quicklink{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;padding:10px 12px;color:#3d300c;background:#f7df8c;border:2px solid #bd8813;border-radius:9px}.master-quicklink strong{font-size:12px}.master-quicklink button{background:linear-gradient(#805d10,#a47915);color:white;border:1px solid #936b18;font-weight:800;padding:8px 11px;border-radius:5px}.master-quicklink button:hover{background:#795a12}
