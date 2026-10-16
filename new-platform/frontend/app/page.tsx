@@ -5,7 +5,7 @@ import Workspace from "./Workspace";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
-type Pending = { ticker: string; stage: Stage; selections: Selections; notes: string };
+type Pending = { ticker: string; programId: string; stage: Stage; selections: Selections; notes: string };
 type AuthState = "checking" | "login" | "ready" | "unavailable";
 
 const items = [
@@ -29,8 +29,10 @@ const items = [
 
 const stages: Stage[] = ["PIPELINE", "GEM_JR", "GEM"];
 const stageName = (stage: Stage) => stage === "GEM_JR" ? "GEM JR" : stage;
-function stateUrl(ticker: string, stage: Stage) {
-  return "/api/state?ticker=" + encodeURIComponent(ticker) + "&stage=" + encodeURIComponent(stage);
+function stateUrl(ticker: string, stage: Stage, programId: string) {
+  return programId
+    ? "/api/program-state?programId=" + encodeURIComponent(programId) + "&stage=" + encodeURIComponent(stage)
+    : "/api/state?ticker=" + encodeURIComponent(ticker) + "&stage=" + encodeURIComponent(stage);
 }
 
 export default function Home() {
@@ -39,6 +41,7 @@ export default function Home() {
   const [authError, setAuthError] = useState("");
   const [tickerInput, setTickerInput] = useState("OCGN");
   const [ticker, setTicker] = useState("OCGN");
+  const [programId, setProgramId] = useState("");
   const [stage, setStage] = useState<Stage>("GEM_JR");
   const [selections, setSelections] = useState<Selections>({});
   const [notes, setNotes] = useState("");
@@ -60,12 +63,12 @@ export default function Home() {
 
   useEffect(() => {
     if (auth !== "ready") return;
-    const key = ticker + "|" + stage;
+    const key = (programId || "TICKER:" + ticker) + "|" + stage;
     activeKey.current = key;
     const controller = new AbortController();
     setLoaded(false);
     setStatus("Loading saved checklist…");
-    fetch(stateUrl(ticker, stage), { signal: controller.signal, cache: "no-store" })
+    fetch(stateUrl(ticker, stage, programId), { signal: controller.signal, cache: "no-store" })
       .then(async response => {
         if (!response.ok) throw new Error(response.status === 503
           ? "Persistent storage is not configured on Render. Set DATABASE_URL before using autosave."
@@ -82,7 +85,7 @@ export default function Home() {
         if (!controller.signal.aborted) setStatus(String(error));
       });
     return () => controller.abort();
-  }, [auth, ticker, stage]);
+  }, [auth, ticker, stage, programId]);
 
   function flushPending(): Promise<void> {
     if (timer.current) clearTimeout(timer.current);
@@ -90,12 +93,12 @@ export default function Home() {
     const change = pending.current;
     pending.current = null;
     if (!change) return queue.current;
-    const key = change.ticker + "|" + change.stage;
+    const key = (change.programId || "TICKER:" + change.ticker) + "|" + change.stage;
     queue.current = queue.current.catch(() => {}).then(async () => {
       if (activeKey.current === key) setStatus("Saving…");
       const version = versions.current[key] ?? 0;
       try {
-        const response = await fetch(stateUrl(change.ticker, change.stage), {
+        const response = await fetch(stateUrl(change.ticker, change.stage, change.programId), {
           method: "PUT", keepalive: true, headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ version, selections: change.selections, notes: change.notes })
         });
@@ -117,7 +120,7 @@ export default function Home() {
   }
 
   function queueChange(nextSelections: Selections, nextNotes: string, delay: number) {
-    pending.current = { ticker, stage, selections: nextSelections, notes: nextNotes };
+    pending.current = { ticker, programId, stage, selections: nextSelections, notes: nextNotes };
     setStatus("Unsaved change…");
     if (timer.current) clearTimeout(timer.current);
     if (delay === 0) { void flushPending(); }
@@ -164,6 +167,7 @@ export default function Home() {
     }
     void flushPending();
     setTicker(value);
+    setProgramId(""); // An arbitrary ticker cannot inherit a particular drug/trial identity.
   }
 
   const checked = items.filter(item => selections[item.id]).length;
@@ -193,8 +197,8 @@ export default function Home() {
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <div className="banner"><strong>Streamlit is preserved.</strong> This is the new platform setup; survey execution and live trading remain disabled.</div>
-      <Workspace onInspect={(nextTicker, nextStage) => { void flushPending(); setTickerInput(nextTicker); setTicker(nextTicker); setStage(nextStage); document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" }); }} />
-      <div id="checklist-workbench" className="checklist-workbench"><h2>SELECTED TICKER · PERSISTENT CHECKLIST</h2><p className="subtle">Data saved to the new Neon PostgreSQL database; independent by ticker and stage.</p>
+      <Workspace onInspect={(nextTicker, nextStage, nextProgramId) => { void flushPending(); setTickerInput(nextTicker); setTicker(nextTicker); setStage(nextStage); setProgramId(nextProgramId || ""); document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" }); }} />
+      <div id="checklist-workbench" className="checklist-workbench"><h2>{programId ? "PERMANENT PROGRAM · PERSISTENT CHECKLIST" : "TICKER-ONLY LEGACY CHECKLIST"}</h2><p className="subtle">{programId ? "Notes and checklist are stored in Neon by permanent Program ID and stage. Different drugs and trials under one ticker stay separate." : "Manual ticker lookup uses the preserved legacy ticker/stage checklist. Select an exact program from PIPELINE or GEM to use the permanent Program ID."}</p>{programId && <p><strong className="permanent-id">{programId}</strong></p>}
       <div className="panel controls">
         <form onSubmit={loadTicker}>
           <label htmlFor="ticker">Ticker</label>
@@ -208,7 +212,7 @@ export default function Home() {
       </div>
       <div className="layout">
         <section className="panel">
-          <div className="sectionhead"><div><h2>{ticker} · {stageName(stage)}</h2><p className="subtle">Illustrative checklist — full scoring rules will migrate later</p></div><span className="counter">{checked}/{items.length}</span></div>
+          <div className="sectionhead"><div><h2>{ticker} · {stageName(stage)} {programId && <span className="permanent-id">{programId}</span>}</h2><p className="subtle">Illustrative checklist — full scoring rules will migrate later</p></div><span className="counter">{checked}/{items.length}</span></div>
           <div aria-live="polite" className="saveState">{status}</div>
           {loaded ? items.map(item => (
             <label key={item.id} className="criteria">
@@ -223,7 +227,7 @@ export default function Home() {
         </section>
         <aside className="panel notes">
           <h2>Research notes</h2>
-          <p className="subtle">Typing saves after a short pause. Return to this ticker and stage to restore notes.</p>
+          <p className="subtle">Typing saves after a short pause. Return to this exact Program ID and stage to restore program-specific notes (or ticker and stage in legacy mode).</p>
           <textarea disabled={!loaded} onBlur={() => void flushPending()} rows={13} value={notes} placeholder="Add entry rationale, financing evidence, risks, and next actions…" onChange={event => {
             const value = event.target.value;
             setNotes(value);
