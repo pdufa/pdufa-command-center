@@ -40,29 +40,220 @@ def _short(value, limit=46):
 
 
 def _css():
+    """Compact reference-matched dashboard styles, isolated to GEM JR/GEM.
+
+    This page inherits a site-wide large-font/black-metric theme. Override it
+    only while a GEM visual hero is mounted; other PDUFA pages stay untouched.
+    """
     st.markdown("""
     <style>
-    .gem-visual-hero{padding:6px 2px 12px}
-    .gem-visual-kicker{font-size:.72rem;font-weight:800;letter-spacing:.13em;color:#20774b}
-    .gem-visual-hero h2{font-size:1.8rem;color:#064c39;margin:0 0 4px;font-weight:850}
-    .gem-visual-hero p{font-size:.78rem;color:#496273;margin:0}
-    .gem-section-head{background:#e7f3ed;border-bottom:1px solid #d1ddd9;
-      margin:-.8rem -.8rem .7rem;padding:.52rem .8rem;font-size:.84rem;
-      color:#224d53;font-weight:800}
-    .gem-grid-head{font-size:.71rem;letter-spacing:.01em;font-weight:800;color:#497181;
-      border-bottom:1px solid #bed4d9;padding:3px 0 9px}
-    .gem-row-note{font-size:.72rem;color:#486477}
-    .gem-status-ok{font-size:.72rem;font-weight:700;color:#157247}
-    .gem-status-review{font-size:.72rem;font-weight:700;color:#9c6c0c}
-    .gem-visual-footnote{font-size:.7rem;color:#617a83;padding:8px}
-    div[class*="st-key-visual_"] [data-testid="stVerticalBlockBorderWrapper"]{
-      border-color:#d4e5eb;border-radius:9px}
-    div[class*="st-key-visual_"] [data-testid="stMetricValue"]{
-      font-size:1.45rem;color:#1a5165;font-weight:850}
-    div[class*="st-key-visual_"] [data-testid="stMetricLabel"]{font-size:.72rem}
-    div[class*="st-key-visual_"] [data-testid="stButton"] button{
-      min-height:1.85rem;font-size:.76rem;padding:.18rem .5rem}
-    div[class*="st-key-visual_"] [data-testid="stDataFrame"]{font-size:.75rem}
+    .stApp:has(.gem-visual-hero){
+      --gem-ink:#17364c;--gem-muted:#5f7788;--gem-rule:#d9e4eb;
+      --gem-band:#eaf4f0;--gem-accent:#126e52;
+      background:linear-gradient(120deg,#eff7f5 0%,#edf4fb 76%,#eef6f8 100%)!important;
+      color:var(--gem-ink)!important;font-size:12px!important;
+    }
+    .stApp:has(.gem-stage-gem){
+      --gem-band:#e9f2fd;--gem-accent:#2367a5;
+    }
+    .stApp:has(.gem-visual-hero) .block-container{
+      max-width:1850px!important;padding:.4rem 1rem 1.2rem!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stVerticalBlock"]{
+      gap:.34rem!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stHorizontalBlock"]{
+      gap:.45rem!important;
+    }
+    .stApp:has(.gem-visual-hero) h1{
+      font-size:1.0rem!important;line-height:1.15!important;
+      letter-spacing:.015em;margin:0!important;color:#15354a!important;
+    }
+    .stApp:has(.gem-visual-hero) h2{
+      font-size:1.08rem!important;line-height:1.18!important;
+      margin:.15rem 0!important;color:#15354a!important;
+    }
+    .stApp:has(.gem-visual-hero) h3{
+      font-size:.91rem!important;line-height:1.17!important;
+      margin:.2rem 0!important;color:#163950!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stCaptionContainer"],
+    .stApp:has(.gem-visual-hero) [data-testid="stCaptionContainer"] p{
+      color:#657d8e!important;font-size:10.5px!important;
+      line-height:1.3!important;margin:0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMarkdownContainer"] p,
+    .stApp:has(.gem-visual-hero) [data-testid="stMarkdownContainer"] li{
+      font-size:11px!important;line-height:1.3!important;
+      margin:0!important;color:#304f62!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-pdufa_brand_header{
+      background:#fff!important;border:1px solid var(--gem-rule)!important;
+      border-radius:9px!important;padding:7px 12px!important;
+      box-shadow:0 2px 8px #a4bdc522;margin:0 0 3px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-pdufa_brand_header [data-testid="stCaptionContainer"]{
+      display:none!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stRadio"]{
+      margin:0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stRadio"] [data-testid="stMarkdownContainer"] p{
+      font-size:10px!important;color:#4f7184!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab-list"]{
+      background:#fff!important;padding:3px 5px!important;border:1px solid var(--gem-rule);
+      border-radius:8px;gap:4px!important;min-height:30px!important;
+      box-shadow:0 1px 6px #9bb2ba16;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab"]{
+      font-size:10.5px!important;font-weight:700!important;min-height:26px!important;
+      padding:4px 13px!important;border-radius:5px!important;
+      border-bottom:0!important;color:#2c4f66!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab"][aria-selected="true"]{
+      background:var(--gem-accent)!important;color:#fff!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab-highlight"],
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab-border"]{
+      background:transparent!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stTabs"] [data-testid="stTabPanel"]{
+      padding-top:0!important;
+    }
+    .stApp:has(.gem-visual-hero) .gem-visual-hero{
+      padding:4px 0 5px!important;margin:0!important;
+    }
+    .gem-visual-kicker{font-size:9px!important;letter-spacing:.12em;
+      font-weight:800;color:var(--gem-accent);margin:0 0 1px!important;}
+    .stApp:has(.gem-visual-hero) .gem-visual-hero h2{
+      font-size:23px!important;line-height:1.15!important;letter-spacing:-.025em;
+      font-weight:850!important;color:var(--gem-ink)!important;margin:0!important;
+    }
+    .stApp:has(.gem-stage-jr) .gem-visual-hero h2{color:#09503e!important}
+    .stApp:has(.gem-stage-gem) .gem-visual-hero h2{color:#1c5891!important}
+    .gem-visual-hero p{font-size:10px!important;line-height:1.25!important;
+      color:#5e7688!important;margin:2px 0!important}
+    .gem-section-head{
+      background:var(--gem-band)!important;border-bottom:1px solid #d8e6e9;
+      font-size:12px!important;line-height:1.2!important;font-weight:800!important;
+      color:#244e60!important;margin:-9px -11px 7px!important;
+      padding:6px 10px!important;
+    }
+    .stApp:has(.gem-visual-hero) div[class*="st-key-visual_"]
+    [data-testid="stVerticalBlockBorderWrapper"]{
+      background:#fff!important;border:1px solid var(--gem-rule)!important;
+      border-radius:8px!important;
+      box-shadow:0 1px 3px #b4c7d018!important;padding:9px 11px!important;
+    }
+    .stApp:has(.gem-visual-hero) div[class*="st-key-visual_"]
+    [data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stMetric"]){
+      padding:5px 8px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetric"]{
+      background:#fff!important;border:none!important;border-radius:0!important;
+      min-height:44px!important;padding:0!important;box-shadow:none!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetric"] *{
+      color:var(--gem-ink)!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetricLabel"]{
+      font-size:9px!important;line-height:1.2!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetricValue"]{
+      font-size:17px!important;line-height:1.22!important;
+      font-weight:800!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetricDelta"]{
+      font-size:9px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stButton"] button,
+    .stApp:has(.gem-visual-hero) [data-testid="stLinkButton"] a,
+    .stApp:has(.gem-visual-hero) .stDownloadButton button{
+      min-height:24px!important;max-height:29px!important;
+      border-radius:5px!important;padding:3px 7px!important;
+      font-size:10.5px!important;line-height:1.2!important;font-weight:700!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stTextInput"] input{
+      font-size:10px!important;min-height:28px!important;padding:4px 8px!important;
+      border:1px solid #cddce4!important;border-radius:4px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stTextInput"] label{
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stDataFrame"]{
+      border:1px solid #e3ebf0!important;border-radius:4px!important;
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stDataFrame"] *{
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stAlert"]{
+      padding:6px 8px!important;border-radius:5px!important;
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stExpander"]{
+      border:1px solid #dbe5ea!important;border-radius:5px!important;
+      margin:2px 0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stExpander"] summary{
+      font-size:11px!important;padding:5px 8px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stProgress"]{
+      height:5px!important;margin:0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stProgress"]>div{
+      height:5px!important;border-radius:5px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_summary [data-testid="stHorizontalBlock"],
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_summary [data-testid="stHorizontalBlock"]{
+      gap:7px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stHorizontalBlock"],
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_ranked [data-testid="stHorizontalBlock"]{
+      gap:6px!important;padding:3px 0!important;border-bottom:1px solid #e8eef1;
+      min-height:27px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stCaptionContainer"],
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_ranked [data-testid="stCaptionContainer"]{
+      font-size:9.5px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stButton"] button,
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_ranked [data-testid="stButton"] button{
+      padding:2px 4px!important;min-height:22px!important;
+      max-height:25px!important;font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stButton"] button[kind="primary"]{
+      background:#127650!important;border-color:#127650!important;
+    }
+    .stApp:has(.gem-stage-gem) .st-key-visual_gem_ranked [data-testid="stButton"] button[kind="primary"]{
+      background:#2474be!important;border-color:#2474be!important;
+    }
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_w_"] button,
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_selected_w"] button{
+      background:#2b80c5!important;color:#fff!important;border:1px solid #226fb0!important;
+    }
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_t_"] button,
+    .stApp:has(.gem-visual-hero) [class*="st-key-visual_"][class*="_selected_t"] button{
+      background:#157a55!important;color:#fff!important;border:1px solid #116a49!important;
+    }
+    .gem-visual-chip{display:inline-block!important;border-radius:3px!important;
+      padding:2px 5px!important;font-weight:800!important;font-size:9px!important;
+      background:#fff1cc!important;color:#895f05!important;}
+    .gem-visual-chip--qualified{background:#dcf5e7!important;color:#176649!important}
+    .gem-visual-footnote{text-align:center;padding:5px!important;
+      font-size:9px!important;color:#6b8090!important}
+    @media(max-width:760px){
+      .stApp:has(.gem-visual-hero) .block-container{padding:5px 8px!important}
+      .stApp:has(.gem-visual-hero) [data-baseweb="tab"]{padding:4px 6px!important;
+        font-size:10px!important}
+      .stApp:has(.gem-visual-hero) .gem-visual-hero h2{font-size:19px!important}
+      .stApp:has(.gem-visual-hero) [data-testid="stVerticalBlock"]{gap:5px!important}
+      .stApp:has(.gem-visual-hero) .st-key-visual_jr_summary [data-testid="stHorizontalBlock"],
+      .stApp:has(.gem-visual-hero) .st-key-visual_gem_summary [data-testid="stHorizontalBlock"]{
+        flex-wrap:wrap!important;
+      }
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -211,7 +402,7 @@ def render_visual_stage(stage, root="data"):
     stageid = "jr" if junior else "gem"
     rows = _rankings(stage, active, root, today)
     st.markdown(
-        '<div class="gem-visual-hero"><div class="gem-visual-kicker">'
+        '<div class="gem-visual-hero gem-stage-' + stageid + '"><div class="gem-visual-kicker">'
         f'GEM JR + GEM · PAGE {1 if junior else 2} OF 2</div>'
         f'<h2>{escape(stage)} — Full Research &amp; Trading View</h2>'
         '<p>' + ('Earlier-entry research · post-Phase-3 monitoring · evidence pending verification'
@@ -235,43 +426,56 @@ def render_visual_stage(stage, root="data"):
                     st.metric(label, value)
 
     with st.container(border=True, key="visual_" + stageid + "_ranked"):
-        _head(f"▦ {stage} Candidate Priority Table")
-        query = st.text_input("Search candidate", placeholder="Search ticker / drug / indication",
-                              key="visual_" + stageid + "_search")
+        headline, search = st.columns([3.6, 1.2], gap="small",
+                                      vertical_alignment="center")
+        with headline:
+            _head(f"▦ {stage} Candidate Priority Table")
+        with search:
+            query = st.text_input(
+                "Search candidate", placeholder="Search ticker / drug / indication",
+                key="visual_" + stageid + "_search", label_visibility="collapsed")
         matched = [(i, x) for i, x in enumerate(rows)
                    if query.strip().lower() in (
                       _show(x[0].get("Ticker"), "") + " " +
+                      _show(x[1].get("company"), "") + " " +
                       _show(x[0].get("Drug"), "") + " " +
                       _show(x[0].get("Indication"), "")).lower()]
         if not matched:
             st.info("No active source-qualified candidates match this view. "
-                    "Held and historical programs remain in the source workbench below.")
+                    "Held and historical programs remain in the detailed workbench below.")
         else:
-            st.caption(f"{len(matched)} exact programs · ordered by existing stage review priority "
-                       "· select ticker to open full profile")
-            header = st.columns([.95, 2.4, 1.6, 1.6, 1.65, .8, .8, 1.4, 1.4])
-            for h, title in zip(header, ["Ticker", "Drug / company", "Indication", "Phase 3",
-                                           "Financing", "Entry", "Exit risk", "Status", "W / T"]):
+            widths = [.83, 1.8, 1.45, .78, 1.58, 1.55, .75, .53, .62, 1.05, .9]
+            labels = ["Ticker", "Company / Drug", "Indication", "Stage", "Phase 3",
+                      "Financing", "Runway", "Entry", "Exit", "Status", "W / T"]
+            header = st.columns(widths, vertical_alignment="center", gap="small")
+            for h, title in zip(header, labels):
                 h.markdown("**" + title + "**")
             for rank, (i, (rec, evt, master, p, score)) in enumerate(matched[:12], 1):
                 symbol = clean_ticker(rec.get("Ticker"))
-                c = st.columns([.95, 2.4, 1.6, 1.6, 1.65, .8, .8, 1.4, 1.4],
-                               vertical_alignment="center", gap="small")
+                c = st.columns(widths, vertical_alignment="center", gap="small")
                 with c[0]:
                     st.button(symbol or "—", key=f"visual_{stageid}_pick_{i}",
                               help="Open this candidate profile",
-                              on_click=_select, args=(stageid, i))
-                c[1].caption(_short(rec.get("Drug") or evt.get("company"), 42))
-                c[2].caption(_short(rec.get("Indication"), 28))
-                c[3].caption(_short(rec.get("Phase 3 status") or rec.get("Evidence type"), 29))
-                c[4].caption("Both verified" if not junior else _short(rec.get("SEC documents rechecked"), 29))
-                c[5].caption(str(score["entry"]) if score["entry"] is not None else "N/A")
-                c[6].caption(str(score["exit_risk"]) if score["exit_risk"] is not None else "N/A")
-                c[7].caption("Research / hold" if junior else "Qualified / review")
-                with c[8]:
+                              on_click=_select, args=(stageid, i),
+                              use_container_width=True)
+                c[1].caption(_short(evt.get("company") or rec.get("Drug"), 32))
+                c[2].caption(_short(rec.get("Indication"), 24))
+                c[3].caption("Phase 3")
+                c[4].caption(_short(rec.get("Phase 3 status") or rec.get("Evidence type"), 30))
+                c[5].caption("2 SEC closes ✓" if not junior else
+                             _short(rec.get("SEC documents rechecked"), 26))
+                c[6].caption("N/A")  # Runway months not present in the qualified feed.
+                c[7].caption(str(score["entry"]) if score["entry"] is not None else "N/A")
+                c[8].caption(str(score["exit_risk"]) if score["exit_risk"] is not None else "N/A")
+                c[9].markdown(
+                    '<span class="gem-visual-chip' +
+                    ('' if junior else ' gem-visual-chip--qualified') +
+                    '">' + ('Review' if junior else 'Qualified · review') +
+                    '</span>', unsafe_allow_html=True)
+                with c[10]:
                     _row_button(stageid, symbol, rec, i)
             if len(matched) > 12:
-                st.caption(f"Showing first 12 of {len(matched)}. Narrow the search to see another candidate.")
+                st.caption(f"Showing 12 of {len(matched)}; use search to narrow the source list.")
 
     if not rows:
         _empty_reference_sections(stageid, stage)
@@ -291,20 +495,28 @@ def render_visual_stage(stage, root="data"):
     with left:
         with st.container(border=True, key="visual_" + stageid + "_profile"):
             _head("▦ Selected Candidate · Full Profile")
+            # Paired label/value fields reproduce the reference's compact two-up
+            # profile without deriving approval odds or missing financial inputs.
             values = [
-                ("Ticker / drug", ticker + " · " + _show(record.get("Drug"))),
-                ("Indication", record.get("Indication")),
-                ("Clinical readout", record.get("Phase 3 status") or record.get("Evidence type")),
-                ("NCT trial", record.get("NCT ID")),
-                ("PDUFA date", record.get("PDUFA saved") or event.get("pdufa_date")),
-                ("Cash", event.get("cash")),
-                ("Market cap / float", _show(event.get("market_cap")) + " / " + _show(event.get("shares_float"))),
-                ("Short interest", event.get("short_interest")),
-                ("Approval probability (unverified estimate)", event.get("approval_probability")),
-                ("Entry / exit", f"{_show(score['entry'])}/100 · {_show(score['exit_risk'])}/100"),
+                ("Ticker", ticker, "Company / drug",
+                 _show(event.get("company")) + " / " + _show(record.get("Drug"))),
+                ("Indication", _show(record.get("Indication")), "Phase 3",
+                 _show(record.get("Phase 3 status") or record.get("Evidence type"))),
+                ("PDUFA date", _show(record.get("PDUFA saved") or event.get("pdufa_date")),
+                 "Clinical readout", _show(record.get("Phase 3 date") or event.get("phase3_date"))),
+                ("Cash / runway", _show(event.get("cash")) + " / runway NOT VERIFIED",
+                 "Market cap / float", _show(event.get("market_cap")) + " / " +
+                 _show(event.get("shares_float"))),
+                ("Short interest", _show(event.get("short_interest")),
+                 "Warrants / convertibles", "NOT VERIFIED"),
+                ("Approval probability", _show(event.get("approval_probability"), "NOT SCORED"),
+                 "Entry readiness", _show(score["entry"]) + " /100"),
+                ("Exit risk", _show(score["exit_risk"]) + " /100",
+                 "Trial NCT", _show(record.get("NCT ID"))),
             ]
-            _frame([{"Candidate field": k, "Source observation": _show(v)}
-                    for k, v in values], height=350)
+            _frame([{"Field": left, "Source observation": lv,
+                     "Other field": right, "Other observation": rv}
+                    for left, lv, right, rv in values], height=270)
     with right:
         with st.container(border=True, key="visual_" + stageid + "_gates"):
             _head("★ " + stage + " Qualification Gates")
