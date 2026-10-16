@@ -140,7 +140,7 @@ def make_candidate(source: dict, program_id: str, now: date,
     else:
         stage = "Unknown"
     finance = funding.get(event_key, {}) if event_key else {}
-    return {
+    candidate = {
         "id": program_id,
         "eventKey": event_key,
         "ticker": ticker,
@@ -171,6 +171,9 @@ def make_candidate(source: dict, program_id: str, now: date,
         "signal": first(source, "signal"),
         "sourceRecordType": "Registered trial" if clinical else "Regulatory program",
     }
+    # Omit empty optional columns from thousands of trial records to keep
+    # serverless response size and mobile rendering within reasonable limits.
+    return {key: value for key, value in candidate.items() if value is not None and value != ""}
 
 
 def _fetch_safe(name: str) -> tuple[str, str, str]:
