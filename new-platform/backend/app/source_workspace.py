@@ -303,9 +303,30 @@ def gather() -> dict:
                 "membershipStatus": "ACTIVE IN PUBLISHED STAGE LEDGER",
                 "candidateLinked": bool(source),
             })
+        # Preserve exact observed stage transitions from the published ledger,
+        # never infer GEM qualification, promotion or exit from a filing date.
+        transitions = []
+        for exact_id, entry in detail.get("entries", {}).items():
+            if exact_id != entry.get("pipeline_id"):
+                continue
+            for cycle, period in enumerate(entry.get("periods", []) or [], start=1):
+                if not isinstance(period, dict):
+                    continue
+                transitions.append({
+                    "id": exact_id,
+                    "ticker": first(entry, "ticker").upper(),
+                    "drug": first(entry, "drug"),
+                    "enteredOn": first(period, "found"),
+                    "leftOn": first(period, "left"),
+                    "reason": first(period, "reason") or first(entry, "left_reason"),
+                    "status": ("DEPARTED" if period.get("left") else
+                               "ACTIVE" if entry.get("status") == "ACTIVE" else "UNRESOLVED"),
+                    "cycle": cycle,
+                })
         members[stage] = {
             "asOf": first(detail, "last_complete_snapshot"),
             "rows": sorted(rows, key=lambda v: (v["ticker"], v["id"])),
+            "history": sorted(transitions, key=lambda v: (v["ticker"], v["enteredOn"], v["cycle"])),
         }
     missing_trial_feeds = [
         name for name in ("all_phase_trials.csv", "phase_pipeline.csv")
