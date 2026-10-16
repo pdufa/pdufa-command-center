@@ -101,3 +101,30 @@ def test_stale_wt_version_conflicts(isolated_db):
     with pytest.raises(HTTPException) as exc:
         main.put_program_watch_trade(main.ProgramWatchTradePayload(watch=[ids[1]],trade=[],version=7))
     assert exc.value.status_code == 409
+
+
+
+def test_program_checklist_distinguishes_two_drugs_and_stages(isolated_db):
+    payload = program_registry.number_workspace(snapshot())
+    one, two = [row["programId"] for row in payload["pipeline"] if row["ticker"] == "AAA"]
+    first = main.save_program_checklist(
+        one,"GEM_JR",main.ChecklistPayload(notes="Drug one evidence",selections={"phase3":True},version=0)
+    )
+    second = main.save_program_checklist(
+        two,"GEM_JR",main.ChecklistPayload(notes="Different drug",selections={},version=0)
+    )
+    assert first["version"] == second["version"] == 1
+    assert main.read_program_checklist(one,"GEM_JR")["notes"] == "Drug one evidence"
+    assert main.read_program_checklist(two,"GEM_JR")["notes"] == "Different drug"
+    assert main.read_program_checklist(one,"GEM")["notes"] == ""
+
+
+def test_program_notes_do_not_overwrite_legacy_ticker_checklist(isolated_db):
+    workspace = program_registry.number_workspace(snapshot())
+    number = workspace["pipeline"][0]["programId"]
+    main.save_checklist("AAA","PIPELINE",main.ChecklistPayload(notes="Old ticker-level note",version=0))
+    main.save_program_checklist(
+        number,"PIPELINE",main.ChecklistPayload(notes="Specific program note",version=0)
+    )
+    assert main.read_checklist("AAA","PIPELINE")["notes"] == "Old ticker-level note"
+    assert main.read_program_checklist(number,"PIPELINE")["notes"] == "Specific program note"
