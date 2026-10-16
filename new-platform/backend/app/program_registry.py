@@ -6,7 +6,6 @@ This module deliberately does not call Streamlit, scanners, or brokers.
 """
 from __future__ import annotations
 
-import copy
 from datetime import datetime, timezone
 
 from sqlalchemy import select
@@ -47,8 +46,16 @@ def number_workspace(source: dict) -> dict:
             insert_stmt = sqlite_insert
         else:
             raise RuntimeError("Unsupported identity registry dialect")
-        for offset in range(0, len(keys), 300):
-            chunk = keys[offset:offset + 300]
+        result = {}
+        for offset in range(0, len(keys), 1000):
+            for key, serial in session.execute(
+                select(ProgramIdentity.source_key, ProgramIdentity.id)
+                .where(ProgramIdentity.source_key.in_(keys[offset:offset + 1000]))
+            ):
+                result[key] = f"{PREFIX}{serial:06d}"
+        missing = [key for key in keys if key not in result]
+        for offset in range(0, len(missing), 300):
+            chunk = missing[offset:offset + 300]
             values = [
                 {"source_key": key, "ticker": identity[key][0][:15],
                  "drug": identity[key][1][:300], "created_at": now}
@@ -57,14 +64,14 @@ def number_workspace(source: dict) -> dict:
             session.execute(insert_stmt(ProgramIdentity).values(values).on_conflict_do_nothing(
                 index_elements=["source_key"],
             ))
-        session.commit()
-        result = {}
-        for offset in range(0, len(keys), 1000):
-            for key, serial in session.execute(
-                select(ProgramIdentity.source_key, ProgramIdentity.id)
-                .where(ProgramIdentity.source_key.in_(keys[offset:offset + 1000]))
-            ):
-                result[key] = f"{PREFIX}{serial:06d}"
+        if missing:
+            session.commit()
+            for offset in range(0, len(missing), 1000):
+                for key, serial in session.execute(
+                    select(ProgramIdentity.source_key, ProgramIdentity.id)
+                    .where(ProgramIdentity.source_key.in_(missing[offset:offset + 1000]))
+                ):
+                    result[key] = f"{PREFIX}{serial:06d}"
     if len(result) != len(identity):
         raise RuntimeError("Permanent program registry incomplete")
     # Keep the original source cache immutable. Never give two program stages
