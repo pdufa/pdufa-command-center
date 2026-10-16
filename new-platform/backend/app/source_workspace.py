@@ -171,8 +171,26 @@ def make_candidate(source: dict, program_id: str, now: date,
         "signal": first(source, "signal"),
         "sourceRecordType": "Registered trial" if clinical else "Regulatory program",
     }
-    # Omit empty optional columns from thousands of trial records to keep
-    # serverless response size and mobile rendering within reasonable limits.
+    # Trim repeated nonessential audit columns on clinical registry rows.
+    # This API is a candidate-table index, not the canonical source ledger.
+    # Exact trial/source URLs, drug, indication, company and stage are retained.
+    candidate.pop("sourceRecordType", None)
+    if clinical:
+        for key in (
+            "capSource", "capChecked", "fdaSource", "financingStatus",
+            "financingDate", "financingSource", "financingEvidence",
+            "approvalProbability", "pValues", "evidenceSummary", "signal",
+            "outcome",
+        ):
+            candidate.pop(key, None)
+        if candidate.get("phase3Status") == "NOT VERIFIED":
+            candidate.pop("phase3Status", None)
+        if candidate.get("checkStatus") == "NOT VERIFIED":
+            candidate.pop("checkStatus", None)
+        # Trial identity already appears as TRIAL|NCT######## in the exact ID;
+        # front-end derives the NCT value when opening the trial detail.
+        if candidate.get("nctId") and candidate["id"] == "TRIAL|" + candidate["nctId"]:
+            candidate.pop("nctId", None)
     return {key: value for key, value in candidate.items() if value is not None and value != ""}
 
 
