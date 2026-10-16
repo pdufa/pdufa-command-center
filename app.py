@@ -3332,10 +3332,11 @@ if "selected_event_key" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
-st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
-st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
-st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
+with st.container(key="pdufa_brand_header"):
+    st.title("🧬 BIO PDUFA COMMAND CENTER")
+    st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
+    st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
+    st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
 if "_pending_nav" in st.session_state:
     st.session_state.nav = st.session_state.pop("_pending_nav")
