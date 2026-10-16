@@ -125,9 +125,9 @@ class FiledAlertAuditTests(unittest.TestCase):
                     raise AssertionError("IMAP header request exceeds 100 messages")
                 if "BODY.PEEK" not in args[1]:
                     raise AssertionError("Non-read-only header fetch")
-                header = (b"Subject: [pdufa/pdufa-command-center] workflow failed\\r\\n"
-                          b"Date: Thu, 15 Oct 2026 19:00:00 +0000\\r\\n"
-                          b"Message-ID: <one-alert@example.test>\\r\\n\\r\\n")
+                header = (b"Subject: [pdufa/pdufa-command-center] workflow failed\r\n"
+                          b"Date: Thu, 15 Oct 2026 19:00:00 +0000\r\n"
+                          b"Message-ID: <one-alert@example.test>\r\n\r\n")
                 return "OK", [
                     (b"1 (UID " + uid + b" X-GM-MSGID 123456 BODY[HEADER] {160}", header)
                     for uid in batch
