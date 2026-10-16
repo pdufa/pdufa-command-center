@@ -89,6 +89,13 @@ def require_storage() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Log only storage readiness, never the database URL or credentials.
+    import logging
+    logging.getLogger(__name__).warning(
+        "PDUFA staging storage mode: %s; persistent database ready: %s",
+        "postgresql" if DATABASE_URL.startswith("postgresql+psycopg://") else "sqlite",
+        storage_ready() and DATABASE_URL.startswith("postgresql+psycopg://"),
+    )
     if storage_ready():
         Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
     yield
