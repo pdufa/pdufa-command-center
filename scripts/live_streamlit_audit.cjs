@@ -20,7 +20,7 @@ const report = {
     "No broker orders, private accounts or trade-performance claims are inspected."
   ]
 };
-const EXPECTED_TABS = ["PIPELINE", "GEM JR + GEM", "SCANS", "WT"];
+const EXPECTED_TABS = ["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"];
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let browser;
 
@@ -151,7 +151,8 @@ async function audit() {
 
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
-    ["GEM JR + GEM", ["GEM JR — RESEARCH & QUALIFICATION QUEUE", "POTENTIAL GEMs — PENDING RESEARCH"]],
+    ["GEM JR", ["GEM JR — POST-PHASE 3 RESEARCH", "GEM JR — RESEARCH & QUALIFICATION QUEUE"]],
+    ["GEM", ["GEM — TWO-BENCHMARK VERIFIED RESEARCH", "POTENTIAL GEMs — PENDING RESEARCH"]],
     ["SCANS", ["GEMS — GITHUB SCAN LOGS", "GEM — MASTER STOCK LIST", "NIGHTLY SCAN REPORT"]],
     // WT chart/widget content lives in a nested components iframe.
     ["WT", []]
