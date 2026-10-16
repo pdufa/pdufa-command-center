@@ -152,8 +152,8 @@ async function audit() {
 
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
-    ["GEM JR", ["GEM JR — POST-PHASE 3 RESEARCH", "GEM JR — RESEARCH & QUALIFICATION QUEUE"]],
-    ["GEM", ["GEM — TWO-BENCHMARK VERIFIED RESEARCH", "POTENTIAL GEMs — PENDING RESEARCH"]],
+    ["GEM JR", ["GEM JR — POST-PHASE 3 RESEARCH", "GEM JR Candidate Priority Table", "GEM JR — RESEARCH & QUALIFICATION QUEUE"]],
+    ["GEM", ["GEM — TWO-BENCHMARK VERIFIED RESEARCH", "GEM Candidate Priority Table", "Three-Level Nested Clinical Trials", "POTENTIAL GEMs — PENDING RESEARCH"]],
     ["SCANS", ["GEMS — GITHUB SCAN LOGS", "GEM — MASTER STOCK LIST", "NIGHTLY SCAN REPORT"]],
     // WT chart/widget content lives in a nested components iframe.
     ["WT", []]
