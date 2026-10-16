@@ -144,6 +144,29 @@ async def lifespan(app: FastAPI):
         "PDUFA checklist write freeze active: %s",
         os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"),
     )
+
+    # Lightweight asynchronous read-only smoke check; never delays service
+    # readiness and never starts a survey, crawler, scan or trading order.
+    import threading
+    def verify_published_sources():
+        try:
+            from .source_workspace import workspace
+            published = workspace()
+            health = published.get("sourceHealth") or {}
+            logging.getLogger(__name__).warning(
+                "PDUFA_SOURCE_CHECK state=%s programs=%d gem_jr=%d gem=%d clinical_rows=%d issues=%d",
+                health.get("state", "UNKNOWN"),
+                len(published.get("pipeline", [])),
+                len(published.get("members", {}).get("GEM_JR", {}).get("rows", [])),
+                len(published.get("members", {}).get("GEM", {}).get("rows", [])),
+                health.get("clinicalRows", 0),
+                len(health.get("issues", [])),
+            )
+        except Exception as exc:
+            logging.getLogger(__name__).error(
+                "PDUFA_SOURCE_CHECK_FAILED error_type=%s", type(exc).__name__
+            )
+    threading.Thread(target=verify_published_sources, daemon=True).start()
     yield
 
 
