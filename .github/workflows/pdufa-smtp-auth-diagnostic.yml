@@ -1,10 +1,8 @@
 name: PDUFA SMTP Authentication Diagnostic — NO SEND
 
-# One-time diagnostic branch. Never sends email or starts a collector.
+# Manual-only authentication diagnostic. No scheduled scans and no email sends.
 on:
-  push:
-    branches: [repair/smtp-auth-diagnostic-20261015]
-    paths: ['.github/workflows/pdufa-smtp-auth-diagnostic.yml']
+  workflow_dispatch:
 
 permissions:
   contents: read
