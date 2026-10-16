@@ -10,6 +10,10 @@
 - **Autosave:** edits write to database and restore on screen return (optimistic version checks).
 - Production surveys, Gmail alerts, Streamlit deployment, and other live jobs **are not migrated or started** by this bootstrap.
 
+## Automated local setup
+
+On a machine with Docker Compose and Python 3 installed, check out this branch and run `bash new-platform/install-local.sh`. The installer generates isolated, private random credentials, builds only the new-platform containers and starts them on localhost:3000. Keep the generated dashboard password safe. It does not edit the Streamlit branch, deploy Streamlit, or touch its files and data.
+
 ## Local container installation (no Streamlit impact)
 
 1. Copy `.env.example` to `.env` **within this directory**.
