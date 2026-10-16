@@ -30,9 +30,17 @@ WORKFLOWS = (
     "step7-live-feed.yml",
     "pdufa-nightly-report-checks.yml",
     "pdufa-overnight-sequential.yml",
+    "pdufa-nightly-pacific-start.yml",
+    "pdufa-morning-6am-results.yml",
+    "pdufa-nightly-scoring-then-repair.yml",
+    "gem-research-quality.yml",
+    "gem-financing-full-coverage.yml",
+    "gem-potential-live-audit.yml",
 )
 SCAN_WORKFLOWS = frozenset(WORKFLOWS[:3] + ("step7-live-feed.yml", "pdufa-overnight-sequential.yml"))
-GMAIL_FOLDERS = ("INBOX", '"[Gmail]/Sent Mail"')
+GMAIL_FOLDERS = ("INBOX", '"[Gmail]/Sent Mail"', '"PDUFA"',
+                 '"PDUFA/Scan START"', '"PDUFA/Scan END"', '"PDUFA/Scan ERROR"',
+                 '"PDUFA/Daily Report"', '"PDUFA/Weekly Report"')
 ERROR_SUBJECT = re.compile(r"\b(?:fail(?:ed|ure)?|error|bounce|undeliverable|delivery status notification)\b", re.I)
 PDUFA_SUBJECT = re.compile(r"PDUFA|GitHub|workflow|scan", re.I)
 
@@ -168,6 +176,7 @@ def audit_gmail(username: str, password: str, since: datetime) -> dict:
     if not username or not password:
         return {"status": "UNAVAILABLE", "reason": "Gmail IMAP credentials missing; cannot audit Gmail."}
     items, folder_errors = [], []
+    seen_messages = set()
     client = None
     try:
         client = imaplib.IMAP4_SSL("imap.gmail.com", timeout=20)
@@ -182,25 +191,40 @@ def audit_gmail(username: str, password: str, since: datetime) -> dict:
                 status, matches = client.uid("SEARCH", None, "SINCE", date_clause)
                 if status != "OK":
                     raise RuntimeError("IMAP search failed")
-                # Capped for safety; headers only, no email bodies.
-                for uid in (matches[0].split() if matches and matches[0] else [])[-150:]:
+                # Capped for safety; incomplete coverage must stay explicit.
+                uids = matches[0].split() if matches and matches[0] else []
+                if len(uids) > 150:
+                    folder_errors.append(folder + " header audit truncated to newest 150 messages")
+                for uid in uids[-150:]:
                     status, data = client.uid(
                         "FETCH", uid,
-                        "(BODY.PEEK[HEADER.FIELDS (SUBJECT FROM DATE)])",
+                        "(X-GM-MSGID BODY.PEEK[HEADER.FIELDS (SUBJECT FROM DATE MESSAGE-ID)])",
                     )
                     if status != "OK":
+                        folder_errors.append(folder + " header fetch failed")
                         continue
-                    payload = next((p[1] for p in (data or []) if isinstance(p, tuple)), b"")
-                    if payload:
-                        msg = email.message_from_bytes(payload)
+                    entry = next((p for p in (data or []) if isinstance(p, tuple)), None)
+                    if entry and entry[1]:
+                        msg = email.message_from_bytes(entry[1])
+                        metadata = entry[0] if isinstance(entry[0], bytes) else b""
+                        gmail_id = re.search(rb"\bX-GM-MSGID\s+(\d+)", metadata)
+                        message_id = str(msg.get("Message-ID", "")).strip()
+                        identity = ("gmail:" + gmail_id.group(1).decode("ascii") if gmail_id
+                                    else "message-id:" + message_id if message_id else None)
+                        if identity is not None:
+                            if identity in seen_messages:
+                                continue
+                            seen_messages.add(identity)
                         items.append(dict(msg.items()))
+                    else:
+                        folder_errors.append(folder + " header unavailable")
             except (imaplib.IMAP4.error, RuntimeError, OSError):
                 folder_errors.append(folder + " unavailable")
         if folder_errors:
-            return {"status": "PARTIAL", "reason": "; ".join(folder_errors),
+            return {"status": "PARTIAL", "reason": "; ".join(dict.fromkeys(folder_errors)),
                     **filter_headers(items, since)}
         return {"status": "CHECKED", **filter_headers(items, since),
-                "note": "Headers only. Counts do not prove delivery or identify a missing END by job ID."}
+                "note": "Headers only; messages deduplicated across labels by Gmail ID or Message-ID. Counts do not prove delivery or identify a missing END by job ID."}
     except (imaplib.IMAP4.error, OSError, TimeoutError, ValueError) as exc:
         return {"status": "UNAVAILABLE",
                 "reason": "Gmail IMAP connection failed (" + type(exc).__name__ + ")."}
@@ -280,3 +304,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

@@ -14,6 +14,7 @@ RERUN_ALLOWLIST = frozenset({
     "Streamlit setup and dashboard tests",
     "Live Streamlit Cloud Browser Audit",
     "PRE PHASE 3 Live Acceptance",
+    "PIPELINE Early Clinical Live Acceptance",
     "Unified Dashboard Smoke Check",
     "PDUFA Nightly Report Checks",
     "PDUFA Extended Source Scan Tests",
@@ -77,7 +78,8 @@ def decide(run: dict, jobs: list, logs: str, main_sha: str,
     if not any(j.get("conclusion") == "failure" for j in jobs):
         return "skip", "No failed job on the last attempt."
 
-    if name in {"PRE PHASE 3 Live Acceptance", "Live Streamlit Cloud Browser Audit"}:
+    if name in {"PRE PHASE 3 Live Acceptance", "PIPELINE Early Clinical Live Acceptance",
+                "Live Streamlit Cloud Browser Audit"}:
         expired = (re.search(r"Source integration failed", logs, re.I)
                    and re.search(r"(?:Error type:\s*ValueError|past its Pacific-day cutoff)", logs, re.I))
         generated = aware((manifest or {}).get("generated_at_utc"))
@@ -110,3 +112,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

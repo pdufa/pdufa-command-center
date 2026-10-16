@@ -56,7 +56,7 @@ class TodayTabTests(unittest.TestCase):
                   "today_page.py").read_text(encoding="utf-8")
         self.assertIn("a source link is not proof of a positive primary endpoint", source)
 
-    def test_standalone_today_removed_and_post_phase3_workspace_installed(self):
+    def test_standalone_today_removed_and_gem_reference_workspace_installed(self):
         root = Path(__file__).resolve().parents[1]
         app = (root / "app.py").read_text(encoding="utf-8")
         source = (root / "today_page.py").read_text(encoding="utf-8")
@@ -73,7 +73,8 @@ class TodayTabTests(unittest.TestCase):
         self.assertIn("with gem_tab:", pipeline)
         post = pipeline.split("with gem_jr_tab:", 1)[1].split("with gem_tab:", 1)[0]
         self.assertIn("if gem_jr_tab.open:", post)
-        self.assertIn("render_post_phase3_workspace()", post)
+        self.assertIn('_render_reference_gem_page("GEM JR")', post)
+        self.assertNotIn("render_post_phase3_workspace()", post)
         self.assertNotIn("pipeline_phase3_daily_details_v1", post)
         self.assertNotIn("render_today(", post)
         self.assertIn("from post_phase3_workspace import render_post_phase3_workspace", app)
@@ -96,3 +97,4 @@ class TodayTabTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
