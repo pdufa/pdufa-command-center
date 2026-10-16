@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "stages": {
+    "GEM": {
+      "entries": {
+        "APPLICATION|MLYS|LORUNDROSTAT_20261222": {
+          "drug": "lorundrostat",
+          "exact_program": "MLYS|LORUNDROSTAT_20261222",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06153693",
+          "pdufa_date": "2026-12-22",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|MLYS|LORUNDROSTAT_20261222",
+          "status": "ACTIVE",
+          "ticker": "MLYS"
+        },
+        "APPLICATION|NTLA|LONVOZ_HAE_20270310": {
+          "drug": "lonvoguran ziclumeran (lonvo-z)",
+          "exact_program": "NTLA|LONVOZ_HAE_20270310",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06634420",
+          "pdufa_date": "2027-03-10",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|NTLA|LONVOZ_HAE_20270310",
+          "status": "ACTIVE",
+          "ticker": "NTLA"
+        },
+        "APPLICATION|PRAX|ULIXACALTAMIDE_ET_20270129": {
+          "drug": "ulixacaltamide HCl",
+          "exact_program": "PRAX|ULIXACALTAMIDE_ET_20270129",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06087276",
+          "pdufa_date": "2027-01-29",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|PRAX|ULIXACALTAMIDE_ET_20270129",
+          "status": "ACTIVE",
+          "ticker": "PRAX"
+        },
+        "APPLICATION|SVRA|MOLBREEVI_PAP_20261122": {
+          "drug": "MOLBREEVI",
+          "exact_program": "SVRA|MOLBREEVI_PAP_20261122",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT04544293",
+          "pdufa_date": "2026-11-22",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|SVRA|MOLBREEVI_PAP_20261122",
+          "status": "ACTIVE",
+          "ticker": "SVRA"
+        },
+        "APPLICATION|ZBIO|OBEXELIMAB_IGG4RD_20270527": {
+          "drug": "obexelimab",
+          "exact_program": "ZBIO|OBEXELIMAB_IGG4RD_20270527",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT05662241",
+          "pdufa_date": "2027-05-27",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|ZBIO|OBEXELIMAB_IGG4RD_20270527",
+          "status": "ACTIVE",
+          "ticker": "ZBIO"
+        }
+      },
+      "last_complete_snapshot": "2026-10-16"
+    },
+    "GEM_JR": {
+      "entries": {
+        "APPLICATION|AXSM|AXS12_CATAPLEXY_20270501": {
+          "drug": "AXS-12",
+          "exact_program": "AXSM|AXS12_CATAPLEXY_20270501",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT03881852",
+          "pdufa_date": "2027-05-01",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|AXSM|AXS12_CATAPLEXY_20270501",
+          "status": "ACTIVE",
+          "ticker": "AXSM"
+        },
+        "APPLICATION|BBIO|BBP418_LGMD2IR9_20261127": {
+          "drug": "BBP-418",
+          "exact_program": "BBIO|BBP418_LGMD2IR9_20261127",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT07678775",
+          "pdufa_date": "2026-11-27",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|BBIO|BBP418_LGMD2IR9_20261127",
+          "status": "ACTIVE",
+          "ticker": "BBIO"
+        },
+        "APPLICATION|BBIO|ENCALERET_ADH1": {
+          "drug": "encaleret",
+          "exact_program": "BBIO|ENCALERET_ADH1",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT05680818",
+          "pdufa_date": "2027-05-08",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|BBIO|ENCALERET_ADH1",
+          "status": "ACTIVE",
+          "ticker": "BBIO"
+        },
+        "APPLICATION|CAPR|DERAMIOCEL_DMD_20261122": {
+          "drug": "Deramiocel",
+          "exact_program": "CAPR|DERAMIOCEL_DMD_20261122",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT03406780",
+          "pdufa_date": "2026-11-22",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|CAPR|DERAMIOCEL_DMD_20261122",
+          "status": "ACTIVE",
+          "ticker": "CAPR"
+        },
+        "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130": {
+          "drug": "bezuclastinib + sunitinib",
+          "exact_program": "COGT|BEZUCLASTINIB_GIST_20261130",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT05208047",
+          "pdufa_date": "2026-11-30",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|COGT|BEZUCLASTINIB_GIST_20261130",
+          "status": "ACTIVE",
+          "ticker": "COGT"
+        },
+        "APPLICATION|CORT|RELACORILANT_CUSHINGS_20261217": {
+          "drug": "relacorilant",
+          "exact_program": "CORT|RELACORILANT_CUSHINGS_20261217",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT04308590",
+          "pdufa_date": "2026-12-17",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|CORT|RELACORILANT_CUSHINGS_20261217",
+          "status": "ACTIVE",
+          "ticker": "CORT"
+        },
+        "APPLICATION|CYTK|MYQORZO_HCM_20261114": {
+          "drug": "MYQORZO",
+          "exact_program": "CYTK|MYQORZO_HCM_20261114",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "",
+          "pdufa_date": "2026-11-14",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|CYTK|MYQORZO_HCM_20261114",
+          "status": "ACTIVE",
+          "ticker": "CYTK"
+        },
+        "APPLICATION|IONS|BEPIROVIRSEN_CHB_20261026": {
+          "drug": "bepirovirsen",
+          "exact_program": "IONS|BEPIROVIRSEN_CHB_20261026",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT05630807|NCT05630820",
+          "pdufa_date": "2026-10-26",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|IONS|BEPIROVIRSEN_CHB_20261026",
+          "status": "ACTIVE",
+          "ticker": "IONS"
+        },
+        "APPLICATION|IRD|PHENTOLAMINE_PRESBYOPIA_20261017": {
+          "drug": "Phentolamine Ophthalmic Solution 0.75%",
+          "exact_program": "IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06542497",
+          "pdufa_date": "2026-10-17",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|IRD|PHENTOLAMINE_PRESBYOPIA_20261017",
+          "status": "ACTIVE",
+          "ticker": "IRD"
+        },
+        "APPLICATION|SMMT|IVONESCIMAB_20261114": {
+          "drug": "ivonescimab",
+          "exact_program": "SMMT|IVONESCIMAB_20261114",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "",
+          "pdufa_date": "2026-11-14",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|SMMT|IVONESCIMAB_20261114",
+          "status": "ACTIVE",
+          "ticker": "SMMT"
+        },
+        "APPLICATION|VTRS|PHENTOLAMINE_PRESBYOPIA_20261017": {
+          "drug": "MR-141 (phentolamine ophthalmic solution 0.75%)",
+          "exact_program": "VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06542497",
+          "pdufa_date": "2026-10-17",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "APPLICATION|VTRS|PHENTOLAMINE_PRESBYOPIA_20261017",
+          "status": "ACTIVE",
+          "ticker": "VTRS"
+        },
+        "TRIAL|NCT06445023": {
+          "drug": "barzolvolimab",
+          "exact_program": "TRIAL|CLDX|NCT06445023",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06445023",
+          "pdufa_date": "",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "TRIAL|NCT06445023",
+          "status": "ACTIVE",
+          "ticker": "CLDX"
+        },
+        "TRIAL|NCT06455202": {
+          "drug": "barzolvolimab",
+          "exact_program": "TRIAL|CLDX|NCT06455202",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06455202",
+          "pdufa_date": "",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "TRIAL|NCT06455202",
+          "status": "ACTIVE",
+          "ticker": "CLDX"
+        },
+        "TRIAL|NCT06641076": {
+          "drug": "sonelokimab",
+          "exact_program": "TRIAL|MLTX|NCT06641076",
+          "first_found": "2026-10-16",
+          "last_seen": "2026-10-16",
+          "latest_found": "2026-10-16",
+          "left_date": null,
+          "left_reason": "",
+          "nct_id": "NCT06641076",
+          "pdufa_date": "",
+          "periods": [
+            {
+              "found": "2026-10-16",
+              "left": null,
+              "reason": ""
+            }
+          ],
+          "pipeline_id": "TRIAL|NCT06641076",
+          "status": "ACTIVE",
+          "ticker": "MLTX"
+        }
+      },
+      "last_complete_snapshot": "2026-10-16"
+    }
+  }
+}
