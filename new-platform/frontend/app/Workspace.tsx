@@ -171,8 +171,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }, [tags, tagsReady]);
   function mark(ticker: string, kind: "watch" | "trade" | "clear") {
     setTags(prev => ({
-      watch: kind === "watch" ? [...new Set([...prev.watch, ticker])].sort() : prev.watch.filter(t => t !== ticker),
-      trade: kind === "trade" ? [...new Set([...prev.trade, ticker])].sort() : prev.trade.filter(t => t !== ticker),
+      watch: kind === "watch" ? [...new Set([...prev.watch.filter(t => t !== ticker), ticker])].sort() : prev.watch.filter(t => t !== ticker),
+      trade: kind === "trade" ? [...new Set([...prev.trade.filter(t => t !== ticker), ticker])].sort() : prev.trade.filter(t => t !== ticker),
     }));
   }
   const pipeline = snapshot?.pipeline || [];
