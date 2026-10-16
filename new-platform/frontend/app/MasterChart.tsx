@@ -14,14 +14,14 @@ type Technical = {
   riskAlerts?:string[];
 };
 export type ChartRecord = {
-  id:string;ticker:string;drug?:string;company?:string;indication?:string;
+  id:string;programId?:string;ticker:string;drug?:string;company?:string;indication?:string;
   nctId?:string;pdufaDate?:string;phase3Status?:string;phase3Date?:string;
   phase3Source?:string;fdaSource?:string;marketCap?:number|null;capInRange?:boolean;
   financingStatus?:string;financingDate?:string;financingSource?:string;
   checkStatus?:string;approvalProbability?:string;pValues?:string;
   membershipStatus?:string;firstFound?:string;lastSeen?:string;technical?:Technical;
 };
-type History = {id:string;ticker:string;drug:string;enteredOn:string;leftOn:string;reason:string;status:string;cycle:number};
+type History = {id:string;programId?:string;ticker:string;drug:string;enteredOn:string;leftOn:string;reason:string;status:string;cycle:number};
 type SourceStatus = {state:string;issues:string[];publishedScan?:{state?:string;complete?:boolean;finishedAt?:string}|null};
 type Grade = "pass"|"hold"|"review";
 type Item = {label:string;goal:string;actual?:string;grade?:Grade;source?:string};
@@ -46,7 +46,7 @@ function sourceLink(url?:string){return url && /^https:\/\/[^\s]+$/i.test(url)?u
 function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string[],health?:SourceStatus):Panel[]{
   const t=row.technical, b=t?.base, days=daysUntil(row.pdufaDate);
   const phase=t?.benchmarks?.phase3, financing=t?.benchmarks?.secondFinancing;
-  const label=trade.includes(row.ticker)?"TRADING RESEARCH":watch.includes(row.ticker)?"WATCH":"WAIT";
+  const label=trade.includes(row.programId||"")?"TRADING RESEARCH":watch.includes(row.programId||"")?"WATCH":"WAIT";
   const catalystConfirmed=Boolean(sourceLink(row.fdaSource) && /^VERIFIED/i.test(row.checkStatus||""));
   const runway=t?.runwayMonths;
   const active=history.filter(z=>z.id===row.id);
@@ -194,7 +194,7 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
       plain("Performance Alerts","Track accuracy and results")
     ]},
     {code:"P",title:"CANDIDATE STATUS & WEEKLY TRACKING",tone:"purple",items:[
-      observed("Date / Ticker","Current selection",row.ticker),
+      observed("Date / Ticker","Current selection",(row.programId||"UNREGISTERED")+" · "+row.ticker),
       observed("Stage","Exact published membership",row.membershipStatus),
       observed("Action","Research workflow only",t?.tradeCall||label),
       observed("Reason","Evidence gaps, quality and signals",riskNote||t?.tradeReason),
@@ -237,8 +237,8 @@ export default function MasterChart({records,gemJr,gem,history=[],watch,trade,so
       <p>Gold goals beside actual sourced observations and explicit PASS / HOLD / REVIEW</p></div>
       <div className="gold-selectors"><label>Find ticker / exact program<input value={filter} onChange={e=>setFilter(e.target.value)} placeholder="Ticker or drug"/></label>
       <label>Selected program<select value={selected?.id||""} onChange={e=>onSelect(e.target.value)}>
-        {selected&&!options.some(o=>o.id===selected.id)&&<option value={selected.id}>{selected.ticker} — {selected.drug||selected.id}</option>}
-        {options.map(r=><option key={r.id} value={r.id}>{r.ticker} — {r.drug||r.id} ({r.id.startsWith("TRIAL|")?"TRIAL":"APPLICATION"})</option>)}
+        {selected&&!options.some(o=>o.id===selected.id)&&<option value={selected.id}>{selected.programId||"NOT REGISTERED"} · {selected.ticker} — {selected.drug||selected.id}</option>}
+        {options.map(r=><option key={r.id} value={r.id}>{r.programId||"NOT REGISTERED"} · {r.ticker} — {r.drug||r.id} ({r.id.startsWith("TRIAL|")?"TRIAL":"APPLICATION"})</option>)}
       </select></label></div>
       <div className="gold-view-buttons"><button type="button" className={view==="poster"?"chosen":""} onClick={()=>setView("poster")}>Full picture layout</button>
         <button type="button" className={view==="readable"?"chosen":""} onClick={()=>setView("readable")}>Readable mobile</button></div>
@@ -257,7 +257,7 @@ export default function MasterChart({records,gemJr,gem,history=[],watch,trade,so
           {i<3&&<span className="gold-stage-arrow" aria-hidden="true">➜</span>}
         </div>)}</section>
         <div className="gold-selected-strip"><strong>PROGRAM: {selected?.ticker||"—"} — {selected?.drug||"Not selected"}</strong>
-          <span>{selected?.id||"No exact program"} · Published {asOf}</span><strong>{sourceHealth?.state||"SOURCE UNKNOWN"}</strong></div>
+          <span><strong className="permanent-id">{selected?.programId||"NO PERMANENT ID"}</strong> · {selected?.id||"No exact program"} · Published {asOf}</span><strong>{sourceHealth?.state||"SOURCE UNKNOWN"}</strong></div>
         <div className="gold-matrix-five">{panels.slice(0,5).map(p=><MatrixPanel key={p.code} value={p}/>)}</div>
         <div className="gold-matrix-five gold-matrix-second">{panels.slice(5,10).map(p=><MatrixPanel key={p.code} value={p}/>)}</div>
         <div className="gold-matrix-five gold-matrix-third">{panels.slice(10).map(p=><MatrixPanel key={p.code} value={p}/>)}</div>
