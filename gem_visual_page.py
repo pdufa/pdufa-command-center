@@ -14,12 +14,10 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
-from gem_financing_gate import sec_recheck_current
 from gem_membership_history import read_history, enrich_stage_rows, departed_stage_rows
 from gem_potential_list import build_potential_list
 from gem_verified_snapshot import source_cleared_gems
-from gem_stage_dossier import exact_event, timeline_events, scan_health, _master_row
-from gem_trial_hierarchy_ui import _benchmark_rows, _source_rows
+from gem_stage_dossier import exact_event, timeline_events, scan_health
 from gem_trading_advisory import (
     load_market_rows, assess_gem_trade, _score_gem_trade, render_base_formation_chart,
 )
