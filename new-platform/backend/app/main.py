@@ -188,7 +188,13 @@ async def lifespan(app: FastAPI):
     def verify_published_sources():
         try:
             from .source_workspace import workspace
-            published = workspace()
+            from .program_registry import number_workspace
+            published = number_workspace(workspace())
+            logging.getLogger(__name__).warning(
+                "PDUFA_IDENTITY_CHECK registered=%d numbered_pipeline=%d",
+                published["identityRegistry"]["registeredExactPrograms"],
+                sum(bool(r.get("programId")) for r in published["pipeline"]),
+            )
             health = published.get("sourceHealth") or {}
             member_rows = (published.get("members", {}).get("GEM_JR", {}).get("rows", [])
                            + published.get("members", {}).get("GEM", {}).get("rows", []))
