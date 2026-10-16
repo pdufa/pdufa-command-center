@@ -55,5 +55,18 @@ jobs:
               raise SystemExit(5)
           except (ssl.SSLError, OSError, smtplib.SMTPException) as exc:
               print(f"SMTP_CONNECTION_ERROR; kind={type(exc).__name__}; no email sent")
-              raise SystemExit(6)
+              print("Testing alternate authenticated STARTTLS route; no email will be sent")
+              try:
+                  with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
+                      server.ehlo()
+                      server.starttls(context=ssl.create_default_context())
+                      server.ehlo()
+                      server.login(settings.sender, settings.app_password)
+                  print("SMTP_STARTTLS_AUTH_ACCEPTED; no email sent")
+              except smtplib.SMTPAuthenticationError as e:
+                  print(f"SMTP_STARTTLS_AUTH_REJECTED; status={e.smtp_code}; no email sent")
+                  raise SystemExit(7)
+              except (OSError, smtplib.SMTPException, ssl.SSLError) as e:
+                  print(f"SMTP_STARTTLS_CONNECTION_ERROR; kind={type(e).__name__}; no email sent")
+                  raise SystemExit(8)
           PY
