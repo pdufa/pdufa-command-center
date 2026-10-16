@@ -221,7 +221,7 @@ const stages=[
   {name:"GEM",tone:"purple",heading:"QUALIFIED RESEARCH",bullets:["Successful, exact-program Phase 3 and two verified closes","Independent evidence and entry gates","Identify entry, stop and target levels","Full analysis of upside, risk and market conditions","Prepare for WT research decision"],goal:"Best Risk-Reward GEM Candidates"},
   {name:"WT",tone:"red",heading:"WATCHLIST & TRADING DECISION",bullets:["Final analysis and trade decision research","WAIT / WATCH / ENTRY REVIEW / HOLD / EXIT REVIEW","Monitor until pre-catalyst exit","Track position, P&L and outcome when available","Re-enter only with new evidence"],goal:"Disciplined Trading Decisions"}
 ];
-export default function MasterChart({records,gemJr,gem,history=[],watch,trade,sourceHealth,asOf,selectedId,onSelect}:{records:ChartRecord[];gemJr:ChartRecord[];gem:ChartRecord[];history?:History[];watch:string[];trade:string[];sourceHealth?:SourceStatus;asOf:string;selectedId:string;onSelect:(id:string)=>void}){
+export default function MasterChart({records,gemJr,gem,history=[],watch,trade,sourceHealth,asOf,selectedId,onSelect,onInspect}:{records:ChartRecord[];gemJr:ChartRecord[];gem:ChartRecord[];history?:History[];watch:string[];trade:string[];sourceHealth?:SourceStatus;asOf:string;selectedId:string;onSelect:(id:string)=>void;onInspect?:(r:ChartRecord)=>void}){
   const [view,setView]=useState<"poster"|"readable">("poster");
   const [filter,setFilter]=useState("");
   const catalog=useMemo(()=>{
@@ -240,7 +240,7 @@ export default function MasterChart({records,gemJr,gem,history=[],watch,trade,so
         {selected&&!options.some(o=>o.id===selected.id)&&<option value={selected.id}>{selected.programId||"NOT REGISTERED"} · {selected.ticker} — {selected.drug||selected.id}</option>}
         {options.map(r=><option key={r.id} value={r.id}>{r.programId||"NOT REGISTERED"} · {r.ticker} — {r.drug||r.id} ({r.id.startsWith("TRIAL|")?"TRIAL":"APPLICATION"})</option>)}
       </select></label></div>
-      <div className="gold-view-buttons"><button type="button" className={view==="poster"?"chosen":""} onClick={()=>setView("poster")}>Full picture layout</button>
+      <div className="gold-view-buttons">{selected?.programId && onInspect && <button type="button" onClick={()=>onInspect(selected)}>Open exact program checklist ↗</button>}<button type="button" className={view==="poster"?"chosen":""} onClick={()=>setView("poster")}>Full picture layout</button>
         <button type="button" className={view==="readable"?"chosen":""} onClick={()=>setView("readable")}>Readable mobile</button></div>
     </div>
     <div className="gold-reference-scroller">
