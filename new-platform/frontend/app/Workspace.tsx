@@ -21,7 +21,7 @@ type ResearchTechnical = {
 };
 
 type Candidate = {
-  id: string; eventKey?: string; ticker: string; company?: string;
+  id: string; programId?: string; eventKey?: string; ticker: string; company?: string;
   drug?: string; indication?: string; nctId?: string; pdufaDate?: string;
   phase3Date?: string; phase3Status?: string; phase3Source?: string;
   stage?: string; outcome?: string; marketCap?: number | null; capInRange?: boolean;
@@ -32,7 +32,7 @@ type Candidate = {
   membershipStatus?: string; firstFound?: string; lastSeen?: string; candidateLinked?: boolean;
   technical?: ResearchTechnical;
 };
-type StageHistory = { id: string; ticker: string; drug: string; enteredOn: string; leftOn: string; reason: string; status: string; cycle: number };
+type StageHistory = { id: string; programId?: string; ticker: string; drug: string; enteredOn: string; leftOn: string; reason: string; status: string; cycle: number };
 type StageData = { asOf?: string; rows: Candidate[]; history?: StageHistory[] };
 type Snapshot = {
   mode: string; asOf: string; disclaimer: string;
@@ -43,7 +43,8 @@ type Snapshot = {
 type Nav = "PIPELINE" | "GEMS" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
-const TAG_KEY = "pdufa_new_watch_trade_v1";
+const TAG_KEY = "pdufa_new_program_watch_trade_v1";
+const LEGACY_TAG_KEY = "pdufa_new_watch_trade_v1";
 const STAGES = ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision", "Phase 4", "Not Applicable", "Unknown"];
 const BANDS = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS", "NO PDUFA YET", "PAST / RECHECK"];
 
@@ -154,9 +155,9 @@ function PriorityIndicators({ record }: { record: Candidate }) {
   </details>;
 }
 function exportCandidateCsv(rows: Candidate[], name: string) {
-  const columns = ["Ticker","Pipeline ID","Drug","Indication","PDUFA","Market cap","Phase 3","Second financing","Entry score","Entry coverage","Exit risk","Exit coverage","Runway","Last seen"];
+  const columns = ["Permanent Program ID","Ticker","Pipeline ID","Drug","Indication","PDUFA","Market cap","Phase 3","Second financing","Entry score","Entry coverage","Exit risk","Exit coverage","Runway","Last seen"];
   const quote = (value: unknown) => '"'+String(value??"").replaceAll('"','""')+'"';
-  const data = rows.map(x=>[x.ticker,x.id,x.drug,x.indication,x.pdufaDate,x.marketCap,x.phase3Status,x.financingStatus,x.technical?.entry,x.technical?.entryCoverage,x.technical?.exitRisk,x.technical?.exitCoverage,x.technical?.runwayGate,x.lastSeen]);
+  const data = rows.map(x=>[x.programId,x.ticker,x.id,x.drug,x.indication,x.pdufaDate,x.marketCap,x.phase3Status,x.financingStatus,x.technical?.entry,x.technical?.entryCoverage,x.technical?.exitRisk,x.technical?.exitCoverage,x.technical?.runwayGate,x.lastSeen]);
   const body = [columns,...data].map(a=>a.map(quote).join(",")).join("\r\n");
   const blob = new Blob([body],{type:"text/csv;charset=utf-8"});
   const url = URL.createObjectURL(blob);
@@ -172,7 +173,8 @@ function SourceDetails({ record }: { record: Candidate }) {
   return (
     <div className="program-details">
       <div className="trial-details">
-        <div><strong>Exact Pipeline ID</strong><span>{record.id}</span></div>
+        <div><strong>Permanent Program ID</strong><span className="permanent-id">{stated(record.programId,"REGISTRY UNAVAILABLE")}</span></div>
+        <div><strong>Exact Pipeline source key</strong><span>{record.id}</span></div>
         <div><strong>Drug / indication</strong><span>{stated(record.drug)} / {stated(record.indication)}</span></div>
         <div><strong>ClinicalTrials.gov NCT</strong><span>{stated(record.nctId || (record.id.startsWith("TRIAL|") ? record.id.slice(6) : ""))}</span></div>
         <div><strong>Phase 3</strong><span>{stated(record.phase3Status)} · {stated(record.phase3Date, "date unavailable")}</span></div>
@@ -202,7 +204,7 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
         <summary><strong>{ticker}</strong><span>{companies.length} exact program{companies.length === 1 ? "" : "s"}</span></summary>
         {companies.map(item => (
           <details key={item.id} className="drill-program">
-            <summary><strong>{stated(item.drug)}</strong><span>{stated(item.indication, "program research")} · {stated(item.pdufaDate, "no date")}</span></summary>
+            <summary><strong>{stated(item.drug)}</strong><span><strong className="permanent-id">{stated(item.programId)}</strong> · {stated(item.indication, "program research")} · {stated(item.pdufaDate, "no date")}</span></summary>
             <div className="drill-evidence"><strong>Trial details and verification</strong><SourceDetails record={item} /></div>
           </details>
         ))}
@@ -238,6 +240,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [tags, setTags] = useState<Tags>({ watch: [], trade: [] });
   const [tagsReady, setTagsReady] = useState(false);
+  const [legacyTags, setLegacyTags] = useState<Tags>({watch:[],trade:[]});
+  const [storedIdentities,setStoredIdentities] = useState<{programId:string;id:string;ticker:string;drug:string}[]>([]);
   const [wtStatus, setWtStatus] = useState("Loading saved W/T labels…");
   const wtVersion = useRef(0);
   const wtCurrent = useRef<Tags>({ watch: [], trade: [] });
@@ -252,77 +256,71 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     return () => ctrl.abort();
   }, [fetchVersion]);
   useEffect(() => {
-    let local: Tags = { watch: [], trade: [] };
+    let local: Tags = {watch:[],trade:[]};
     try {
-      const saved = JSON.parse(localStorage.getItem(TAG_KEY) || "{}");
-      if (Array.isArray(saved.watch) && Array.isArray(saved.trade)) {
-        const valid = (s: unknown) => typeof s === "string" && /^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(s);
+      const saved = JSON.parse(localStorage.getItem(TAG_KEY)||"{}");
+      const valid=(v: unknown)=>typeof v==="string" && /^PDUFA-[0-9]{6,}$/.test(v);
+      if(Array.isArray(saved.watch)&&Array.isArray(saved.trade)){
         const trade = [...new Set<string>(saved.trade.filter(valid))];
-        const watch = [...new Set<string>(saved.watch.filter(valid))].filter(t => !trade.includes(t));
-        local = { watch, trade };
+        local={watch:[...new Set<string>(saved.watch.filter(valid))].filter(v=>!trade.includes(v)),trade};
       }
-    } catch { /* local storage might be disabled */ }
-    wtCurrent.current = local;
-    setTags(local);
-    let cancelled = false;
-    async function restore() {
+      const legacy=JSON.parse(localStorage.getItem(LEGACY_TAG_KEY)||"{}");
+      if(Array.isArray(legacy.watch)&&Array.isArray(legacy.trade)){
+        setLegacyTags({watch:legacy.watch.filter((v:unknown)=>typeof v==="string"),trade:legacy.trade.filter((v:unknown)=>typeof v==="string")});
+      }
+    } catch { /* local storage may be disabled */ }
+    wtCurrent.current=local;setTags(local);
+    let cancelled=false;
+    async function restore(){
       try {
-        const response = await fetch("/api/watch-trade", { cache: "no-store" });
-        if (!response.ok) throw new Error("WT storage unavailable");
-        let remote = await response.json();
-        if (!Array.isArray(remote.watch) || !Array.isArray(remote.trade) || !Number.isSafeInteger(remote.version)) {
-          throw new Error("WT state invalid");
-        }
-        if (remote.version === 0 && (local.watch.length || local.trade.length)) {
-          const write = await fetch("/api/watch-trade", {
-            method: "PUT", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...local, version: 0 })
-          });
-          if (!write.ok) throw new Error("Unable to migrate browser W/T tags");
-          remote = await write.json();
-        }
-        if (cancelled) return;
-        wtVersion.current = remote.version;
-        const canonical: Tags = { watch: remote.watch, trade: remote.trade };
-        wtCurrent.current = canonical;
-        setTags(canonical);
-        setWtStatus("W/T labels stored in Neon PostgreSQL");
+        const response=await fetch("/api/program-watch-trade",{cache:"no-store"});
+        if(!response.ok) throw Error("Program WT storage unavailable");
+        const remote=await response.json();
+        if(!Array.isArray(remote.watch)||!Array.isArray(remote.trade)||!Number.isSafeInteger(remote.version)) throw Error("Invalid WT data");
+        if(cancelled)return;
+        wtVersion.current=remote.version;
+        const canonical: Tags={watch:remote.watch,trade:remote.trade};
+        wtCurrent.current=canonical;setTags(canonical);
+        setStoredIdentities(Array.isArray(remote.identities)?remote.identities:[]);
+        setLegacyTags(prev=>({
+          watch:[...new Set([...(remote.legacy?.watch||[]),...prev.watch])],
+          trade:[...new Set([...(remote.legacy?.trade||[]),...prev.trade])]
+        }));
+        setWtStatus("Permanent program selections saved in Neon PostgreSQL; old ticker-only tags retained separately");
       } catch {
-        if (!cancelled) setWtStatus("W/T database unavailable — browser copy only; not synchronized");
+        if(!cancelled)setWtStatus("WT database unavailable — local program selections not synchronized");
       } finally {
-        if (!cancelled) setTagsReady(true);
+        if(!cancelled)setTagsReady(true);
       }
     }
     void restore();
-    return () => { cancelled = true; };
-  }, []);
+    return()=>{cancelled=true};
+  },[]);
   useEffect(() => {
     if (!tagsReady) return;
     try { localStorage.setItem(TAG_KEY, JSON.stringify(tags)); } catch { /* keep current memory */ }
   }, [tags, tagsReady]);
-  function mark(ticker: string, kind: "watch" | "trade" | "clear") {
-    if (!tagsReady) return;
-    const prev = wtCurrent.current;
-    const updated: Tags = {
-      watch: kind === "watch" ? [...new Set([...prev.watch.filter(t => t !== ticker), ticker])].sort() : prev.watch.filter(t => t !== ticker),
-      trade: kind === "trade" ? [...new Set([...prev.trade.filter(t => t !== ticker), ticker])].sort() : prev.trade.filter(t => t !== ticker),
+  function mark(programId: string,kind: "watch"|"trade"|"clear"){
+    if(!tagsReady||!/^PDUFA-[0-9]{6,}$/.test(programId)){
+      setWtStatus("Unable to select this program: permanent Neon ID not available");
+      return;
+    }
+    const prev=wtCurrent.current;
+    const updated: Tags={
+      watch:kind==="watch"?[...new Set([...prev.watch.filter(v=>v!==programId),programId])].sort():prev.watch.filter(v=>v!==programId),
+      trade:kind==="trade"?[...new Set([...prev.trade.filter(v=>v!==programId),programId])].sort():prev.trade.filter(v=>v!==programId)
     };
-    wtCurrent.current = updated;
-    setTags(updated);
-    setWtStatus("Saving W/T to database…");
-    wtQueue.current = wtQueue.current.catch(() => {}).then(async () => {
-      const response = await fetch("/api/watch-trade", {
-        method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...updated, version: wtVersion.current })
+    wtCurrent.current=updated;setTags(updated);setWtStatus("Saving permanent Program IDs to Neon…");
+    wtQueue.current=wtQueue.current.catch(()=>{}).then(async()=>{
+      const response=await fetch("/api/program-watch-trade",{
+        method:"PUT",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({...updated,version:wtVersion.current})
       });
-      if (!response.ok) {
-        setWtStatus(response.status === 409 ? "W/T conflict: reload before changing more labels" : "W/T save failed — browser copy only; not synchronized");
-        return;
-      }
-      const saved = await response.json();
-      wtVersion.current = saved.version;
-      setWtStatus("W/T saved in Neon PostgreSQL");
-    }).catch(() => { setWtStatus("W/T save failed — browser copy only; not synchronized"); });
+      if(!response.ok){setWtStatus(response.status===409?"Program selection conflict — reload this page": "Program selection save failed — local changes unsynchronized");return;}
+      const remote=await response.json();
+      wtVersion.current=remote.version;
+      setWtStatus("Permanent Program IDs saved in Neon PostgreSQL");
+    }).catch(()=>setWtStatus("Program selection save failed — local changes unsynchronized"));
   }
 
   const pipeline = snapshot?.pipeline || [];
@@ -343,6 +341,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const pageSize = 100;
   const pageCount = Math.max(1, Math.ceil(shown.length / pageSize));
   const visiblePipeline = shown.slice(Math.min(pipelinePage, pageCount - 1) * pageSize, (Math.min(pipelinePage, pageCount - 1) + 1) * pageSize);
+  const byProgram = useMemo(() => {
+    const m=new Map<string,Candidate>();
+    for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
+      if(r.programId&&!m.has(r.programId))m.set(r.programId,r);
+    }
+    return m;
+  },[snapshot,pipeline]);
   const byTicker = useMemo(() => {
     const m = new Map<string, Candidate[]>();
     [...pipeline, ...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])].forEach(r => {
@@ -359,10 +364,15 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const stageCounts = STAGES.map(stage => ({label:stage,count:counted.filter(r => r.stage === stage).length})).filter(x => x.count);
   const dateCounts = BANDS.map(band => ({label:band,count:counted.filter(r => dateBand(r) === band).length})).filter(x => x.count);
 
-  function wtButton(ticker: string, kind: "watch" | "trade") {
-    const current = tags[kind].includes(ticker);
-    return <button type="button" className={current ? "wt-active" : "wt-btn"} aria-pressed={current}
-      onClick={() => mark(ticker, current ? "clear" : kind)} title={kind === "watch" ? "Add to Watchlist" : "Add to Trading research"}>{kind === "watch" ? "W" : "T"}{current ? " ✓" : ""}</button>;
+  function wtButton(record: Candidate,kind:"watch"|"trade"){
+    const id=record.programId||"";
+    const current=tags[kind].includes(id);
+    return <button type="button" className={current?"wt-active":"wt-btn"}
+      disabled={!tagsReady||!/^PDUFA-[0-9]{6,}$/.test(id)} aria-pressed={current}
+      onClick={()=>mark(id,current?"clear":kind)}
+      title={id?(kind==="watch"?"Watch ":"Trading research ")+id:"Permanent ID unavailable"}>
+      {kind==="watch"?"W":"T"}{current?" ✓":""}
+    </button>;
   }
   function selectCandidate(record: Candidate, stage: Stage) { onInspect(record.ticker,stage); }
 
@@ -385,9 +395,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         <div className="gem-table-panel">
           <div className="sectionhead"><h3>Saved exact-program candidates</h3><button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button></div>
           <div className="table-scroll">
-            <table><thead><tr><th>W/T</th><th>Ticker</th><th>Drug / exact program</th><th>PDUFA</th><th>Cap</th><th>Status</th></tr></thead>
+            <table><thead><tr><th>W/T</th><th>Program ID</th><th>Ticker</th><th>Drug / exact program</th><th>PDUFA</th><th>Cap</th><th>Status</th></tr></thead>
               <tbody>{rows.map(r => <tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
-                <td><div className="wt-pair">{wtButton(r.ticker,"watch")}{wtButton(r.ticker,"trade")}</div></td>
+                <td><div className="wt-pair">{wtButton(r,"watch")}{wtButton(r,"trade")}</div></td>
+                <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td><button type="button" className="ticker-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{r.ticker}</button></td>
                 <td><button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{stated(r.drug)}<small>{r.id}</small></button></td>
                 <td>{stated(r.pdufaDate,"—")}</td>
@@ -408,8 +419,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </div>
       <details className="nested-expander">
         <summary>Historical stage transitions — recorded entries, departures and re-entries ({group?.history?.length||0})</summary>
-        <div className="table-scroll"><table><thead><tr><th>Ticker</th><th>Drug</th><th>Entry</th><th>Departure</th><th>Cycle</th><th>Reason / status</th></tr></thead>
-          <tbody>{(group?.history||[]).map((t,i)=><tr key={t.id+"|"+t.cycle+"|"+i}><td>{t.ticker}</td><td>{t.drug}</td><td>{stated(t.enteredOn,"Not recorded")}</td>
+        <div className="table-scroll"><table><thead><tr><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Entry</th><th>Departure</th><th>Cycle</th><th>Reason / status</th></tr></thead>
+          <tbody>{(group?.history||[]).map((t,i)=><tr key={t.id+"|"+t.cycle+"|"+i}><td className="permanent-id">{stated(t.programId)}</td><td>{t.ticker}</td><td>{t.drug}</td><td>{stated(t.enteredOn,"Not recorded")}</td>
             <td>{stated(t.leftOn,"Currently listed")}</td><td>{t.cycle}</td><td>{stated(t.reason,t.status)}</td></tr>)}</tbody></table></div>
         <p className="subtle small">Dates come only from complete published stage snapshots; no historical membership dates are inferred from Phase 3 or SEC evidence.</p>
       </details>
@@ -461,8 +472,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <section className="panel">
         <div className="sectionhead"><h3>PDUFA TRIALS / PROGRAMS</h3><span className="counter">{shown.length} matches · {visiblePipeline.length} shown</span></div>
         <p className="subtle">{!applied ? "Nothing is displayed until both filters are chosen and SHOW MATCHING TRIALS is pressed." : "Results show up to 100 exact programs per page. Match total includes all pages."}</p>
-        <div className="table-scroll"><table><thead><tr><th>W/T</th><th>Ticker</th><th>Current stage</th><th>Drug</th><th>Indication</th><th>Days</th><th>PDUFA</th><th>Cap</th><th>Evidence</th><th>Program</th></tr></thead>
-          <tbody>{visiblePipeline.map(r=><tr key={r.id}><td><div className="wt-pair">{wtButton(r.ticker,"watch")}{wtButton(r.ticker,"trade")}</div></td>
+        <div className="table-scroll"><table><thead><tr><th>W/T</th><th>Program ID</th><th>Ticker</th><th>Current stage</th><th>Drug</th><th>Indication</th><th>Days</th><th>PDUFA</th><th>Cap</th><th>Evidence</th><th>Program</th></tr></thead>
+          <tbody>{visiblePipeline.map(r=><tr key={r.id}><td><div className="wt-pair">{wtButton(r,"watch")}{wtButton(r,"trade")}</div></td>
+          <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
           <td><button type="button" className="ticker-select" onClick={()=>selectCandidate(r,"PIPELINE")}>{r.ticker}</button></td><td>{stated(r.stage)}</td><td>{stated(r.drug)}</td><td>{stated(r.indication)}</td>
           <td>{daysAway(r.pdufaDate)??"—"}</td><td>{stated(r.pdufaDate,"—")}</td><td>{money(r.marketCap)}</td>
           <td>{stated(r.checkStatus)}</td><td><details><summary>Trial/source</summary><SourceDetails record={r} /></details></td></tr>)}</tbody>
