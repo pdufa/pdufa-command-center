@@ -3,3 +3,25 @@
 @media(min-width:1700px){body{font-size:12px}.candidate-table{font-size:10px}.candidate-table th{font-size:9.5px}.candidate-table td{height:24px}.jr-top{min-height:290px}.gem-top{min-height:270px}.jr-bottom{min-height:193px}.gem-bottom{min-height:231px}.key-values td{height:18px}.checklist .data-table{font-size:9.5px}}
 @media(max-width:1199px){h1{font-size:23px}.candidate-table{min-width:1170px}.jr-top{grid-template-columns:1fr 1.4fr}.jr-top>.chart{grid-column:1/-1;height:260px}.gem-top{grid-template-columns:1fr 1fr}.gem-top>.financing{grid-column:1/-1}.gem-bottom{grid-template-columns:2fr 1fr}.gem-bottom>.checklist{min-height:190px}.jr-bottom{grid-template-columns:1fr 1fr}.jr-bottom>.financing{grid-column:1/-1}.gem-footer{grid-template-columns:1fr 1fr}.chart-signals{width:150px}.footer{grid-template-columns:1fr 1fr}.footer>.card:last-child{grid-column:1/-1}.hero-tools input{width:120px}.hero{padding:9px}.hero p{font-size:10px}}
 @media(max-width:680px){h1{font-size:20px}.hero-icon{width:27px;height:27px}.hero{gap:7px;padding:9px 8px}.hero-tools{display:none}.hero p{font-size:10px}.page{padding:0 5px 5px;gap:5px}.grid{grid-template-columns:1fr!important;gap:5px}.grid>.card{grid-column:auto!important;min-height:180px}.footer>.card{height:130px;min-height:100px}.jr-top>.chart,.gem-bottom>.chart{height:300px}.card-head h2{font-size:12px}.card-tools input{width:120px}.card-tools select{max-width:105px}.candidates .card-head{flex-wrap:wrap}.candidates .card-tools{width:100%;margin:0;justify-content:space-between}.candidate-wrap{max-height:220px}.key-values td{height:22px;font-size:11px}.data-table{font-size:10px}.source-table td{font-size:10px}.chart-signals{width:105px}.chart-subtitle{font-size:9px}.chart .card-head{flex-wrap:wrap}.chart .card-tools{width:auto;margin-left:auto}.checklist .data-table td{height:24px}.rules li{font-size:11px;margin:8px 0}.empty-panel{min-height:160px}.notice{margin:0 5px 4px}.footnote{font-size:8px}.mini-tabs button{font-size:11px}.source-note{font-size:10px}}
+
+
+/* Reference-image hierarchy: stage banner, left criteria, wide candidate grid. */
+.stage-banner{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:6px 10px;margin:0 9px 3px;background:linear-gradient(90deg,#0c4798,#1685e3);color:#fff;border-radius:5px;font-size:12px}
+.stage-banner strong{font-size:18px;white-space:nowrap}
+.stage-banner span{font-weight:600}
+.stage-banner.senior{background:linear-gradient(90deg,#3825a3,#735ce3)}
+.stage-banner .stage-tally{margin-left:auto;background:rgba(255,255,255,.93);color:#153057;padding:4px 10px;border-radius:4px}
+.stage-banner .stage-health{background:rgba(255,255,255,.18);padding:4px 8px;border-radius:4px}
+.reference-top-layout{display:grid;grid-template-columns:minmax(215px,18%) minmax(0,1fr);gap:7px;min-width:0;align-items:stretch}
+.reference-top-layout>.card{min-width:0}
+.reference-top-layout>.candidates{min-width:0}
+.criteria-card .card-head{background:linear-gradient(90deg,#0876c4,#46ade7);color:#fff}
+.criteria-card .card-head .icon{color:#fff}
+.criteria-card .card-body{padding:8px!important}
+.criteria-intro{font-size:10px;color:#48677b;margin-bottom:8px;line-height:1.35}
+.criteria-list{padding:0;margin:0;list-style:none;display:grid;gap:7px}
+.criteria-list li{display:flex;gap:7px;font-size:11px;line-height:1.25;align-items:flex-start}
+.criteria-mark{background:#e9f4ff;color:#0876c4;border:1px solid #a6d5f5;border-radius:3px;min-width:15px;text-align:center;font-weight:700}
+.criteria-foot{margin-top:10px;padding-top:8px;border-top:1px solid #d9e8ef;font-size:10px;line-height:1.7;color:#36546b}
+@media(max-width:960px){.reference-top-layout{grid-template-columns:minmax(0,1fr)}.criteria-list{grid-template-columns:repeat(2,minmax(0,1fr))}.stage-banner .stage-tally{margin-left:0}}
+@media(max-width:560px){.criteria-list{grid-template-columns:1fr}.stage-banner strong{font-size:15px}}
