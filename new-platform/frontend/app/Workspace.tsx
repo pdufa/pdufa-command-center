@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import MasterChart from "./MasterChart";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -39,7 +40,7 @@ type Snapshot = {
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
-type Nav = "PIPELINE" | "GEMS" | "SCANS" | "WT";
+type Nav = "PIPELINE" | "GEMS" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
 const TAG_KEY = "pdufa_new_watch_trade_v1";
@@ -225,6 +226,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
+  const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [query, setQuery] = useState("");
@@ -396,6 +398,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           </div>
           {chosen && <div className="gem-profile">
             <div className="sectionhead"><h3>{chosen.ticker} · {stated(chosen.drug)}</h3>
+              <button type="button" onClick={()=>{setMasterProgram(chosen.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
               <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
             <SourceDetails record={chosen} />
             <TechnicalPanel record={chosen} />
@@ -425,12 +428,14 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
     {top==="PDUFA" && <nav className="worknav" aria-label="PDUFA sections">
-      {([["PIPELINE","PIPELINE"],["GEMS","GEM JR + GEM"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
+      {([["PIPELINE","PIPELINE"],["GEMS","GEM JR + GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
         <button type="button" key={key} className={nav===key?"nav-selected":""} onClick={()=>setNav(key)}>{label}</button>)}
     </nav>}
+    <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
     <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
     {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     {!snapshot && <div className="panel">{fetchError || "Loading saved Streamlit candidates…"}</div>}
+    {snapshot && top==="PDUFA" && nav==="MASTER" && <MasterChart records={pipeline} gemJr={snapshot.members.GEM_JR.rows} gem={snapshot.members.GEM.rows} history={[...(snapshot.members.GEM_JR.history||[]),...(snapshot.members.GEM.history||[])]} watch={tags.watch} trade={tags.trade} sourceHealth={snapshot.sourceHealth} asOf={snapshot.asOf} selectedId={masterProgram} onSelect={setMasterProgram} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
         <p className="subtle">Streamlit-compatible workflow: choose both STAGES and DATES, then select SHOW MATCHING TRIALS.</p>
