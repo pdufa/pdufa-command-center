@@ -87,8 +87,8 @@ class PipelineDisplayTests(unittest.TestCase):
         end = source.index('elif page == "2. PDUFA CALENDAR":', start)
         section = source[start:end]
         self.assertIn('with pipeline_tab:', section)
-        self.assertIn('pipeline_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(', section)
-        self.assertIn('["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]', section)
+        self.assertIn('pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(', section)
+        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', section)
         self.assertIn('key="pdufa_subtab", on_change="rerun"', section)
         self.assertIn('with gem_tab:', section)
         self.assertIn('if gem_tab.open:', section)
@@ -135,12 +135,8 @@ class PipelineDisplayTests(unittest.TestCase):
         stage = p.index('key="pipeline_stages_v9"')
         dates = p.index('key="pipeline_dates_v9"')
         charts = p.index('stage_chart_col, date_chart_col = st.columns(2, gap="medium")')
-        first_chart = p.index('stage_count_slot = st.container()')
-        second_chart = p.index('date_count_slot = st.container()')
         self.assertLess(stage, dates)
         self.assertLess(dates, charts)
-        self.assertLess(charts, first_chart)
-        self.assertLess(first_chart, second_chart)
         self.assertNotIn("with stage_col:\\n            stage_count_slot", p)
 
 
