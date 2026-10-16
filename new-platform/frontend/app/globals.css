@@ -156,3 +156,5 @@ button.secondary { background: white; color: #172b1b; }
 .source-health ul {margin:2px 0 0 18px;padding:0;line-height:1.5;}
 .scan-result {display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid #d1e0d5;padding:12px 0;font-size:13px;}
 .scan-result strong {color:#294c38;}
+
+.page-controls{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin:14px 0;padding:9px}.page-controls button:disabled{opacity:.4;cursor:default}.page-controls strong{font-size:12px}
