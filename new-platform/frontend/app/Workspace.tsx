@@ -31,7 +31,8 @@ type Candidate = {
   membershipStatus?: string; firstFound?: string; lastSeen?: string; candidateLinked?: boolean;
   technical?: ResearchTechnical;
 };
-type StageData = { asOf?: string; rows: Candidate[] };
+type StageHistory = { id: string; ticker: string; drug: string; enteredOn: string; leftOn: string; reason: string; status: string; cycle: number };
+type StageData = { asOf?: string; rows: Candidate[]; history?: StageHistory[] };
 type Snapshot = {
   mode: string; asOf: string; disclaimer: string;
   marketCapRange: { min: number; max: number };
@@ -127,6 +128,42 @@ function TechnicalPanel({ record }: { record: Candidate }) {
     {evidence(x.marketSource) && <a target="_blank" rel="noopener noreferrer" href={x.marketSource}>Saved market source ↗</a>}
     {evidence(x.runwaySource) && <a target="_blank" rel="noopener noreferrer" href={x.runwaySource}>SEC cash runway evidence ↗</a>}
   </div>;
+}
+function PriorityIndicators({ record }: { record: Candidate }) {
+  const t = record.technical;
+  const pdufaDays = daysAway(record.pdufaDate);
+  const observations: [string,string,string][] = [
+    ["Support / resistance / base", t?.base ? scoreNum(t.base.support)+" / "+scoreNum(t.base.resistance)+" · "+t.base.status : "NOT VERIFIED", "≥2 separated support touches; verify 20-session base"],
+    ["Volume and relative volume", scoreNum(t?.rvol,2,"×")+" · "+(t?.avgDollarVolume20 == null ? "liquidity unknown" : money(t.avgDollarVolume20)), "RVOL ≥1.5× breakout; average $ volume ≥$5M"],
+    ["SMA20 and SMA50", scoreNum(t?.sma20)+" / "+scoreNum(t?.sma50), "Close above rising SMA20 and SMA50"],
+    ["ATR(14)", "NOT AVAILABLE — no verified high/low bars", "Size volatility-based stop; no fixed ATR target"],
+    ["Reward / risk", "NOT AVAILABLE — no validated stop and target", "Prefer ≥2:1 after costs; define hard stop before entry"],
+    ["VWAP / anchored VWAP", "NOT AVAILABLE — intraday / anchor data missing", "Price above significant VWAP level"],
+    ["Relative strength vs XBI", "NOT AVAILABLE — benchmark data missing", "Outperform XBI across matched periods"],
+    ["Catalyst / PDUFA markers", record.pdufaDate ? record.pdufaDate+" · "+(pdufaDays??"—")+" days (reported)" : "NOT VERIFIED", "Verify date; pre-PDUFA exit at −3 days"],
+    ["RSI(14)", scoreNum(t?.rsi14,1), "45–65 provisional; optional filter"],
+    ["MACD", scoreNum(t?.macd?.macd,3)+" vs "+scoreNum(t?.macd?.signal,3), "Bullish crossover preferred; optional confirmation"],
+  ];
+  return <details className="priority-panel"><summary>Chart indicators — strict priority 1–10 and target levels</summary>
+    <div className="priority-scroll"><table><thead><tr><th>Priority</th><th>Observed</th><th>Gold target</th></tr></thead><tbody>
+      {observations.map(([name,value,goal],i)=><tr key={name}><td><strong>{i+1}. {name}</strong></td>
+        <td>{value}</td><td><span className="gold-goal">{goal}</span></td></tr>)}
+    </tbody></table></div>
+    <p className="subtle small">The market feed contains close/volume observations only. Intraday ATR, spread, actual stops, anchored VWAP and XBI comparisons are not fabricated.</p>
+  </details>;
+}
+function exportCandidateCsv(rows: Candidate[], name: string) {
+  const columns = ["Ticker","Pipeline ID","Drug","Indication","PDUFA","Market cap","Phase 3","Second financing","Entry score","Entry coverage","Exit risk","Exit coverage","Runway","Last seen"];
+  const quote = (value: unknown) => '"'+String(value??"").replaceAll('"','""')+'"';
+  const data = rows.map(x=>[x.ticker,x.id,x.drug,x.indication,x.pdufaDate,x.marketCap,x.phase3Status,x.financingStatus,x.technical?.entry,x.technical?.entryCoverage,x.technical?.exitRisk,x.technical?.exitCoverage,x.technical?.runwayGate,x.lastSeen]);
+  const body = [columns,...data].map(a=>a.map(quote).join(",")).join("\r\n");
+  const blob = new Blob([body],{type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href=url;
+  link.download=name;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 function SourceDetails({ record }: { record: Candidate }) {
   return (
@@ -340,7 +377,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <Goals record={chosen} />
         </aside>
         <div className="gem-table-panel">
-          <h3>Saved exact-program candidates</h3>
+          <div className="sectionhead"><h3>Saved exact-program candidates</h3><button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button></div>
           <div className="table-scroll">
             <table><thead><tr><th>W/T</th><th>Ticker</th><th>Drug / exact program</th><th>PDUFA</th><th>Cap</th><th>Status</th></tr></thead>
               <tbody>{rows.map(r => <tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
@@ -358,9 +395,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
             <SourceDetails record={chosen} />
             <TechnicalPanel record={chosen} />
+            <PriorityIndicators record={chosen} />
           </div>}
         </div>
       </div>
+      <details className="nested-expander">
+        <summary>Historical stage transitions — recorded entries, departures and re-entries ({group?.history?.length||0})</summary>
+        <div className="table-scroll"><table><thead><tr><th>Ticker</th><th>Drug</th><th>Entry</th><th>Departure</th><th>Cycle</th><th>Reason / status</th></tr></thead>
+          <tbody>{(group?.history||[]).map((t,i)=><tr key={t.id+"|"+t.cycle+"|"+i}><td>{t.ticker}</td><td>{t.drug}</td><td>{stated(t.enteredOn,"Not recorded")}</td>
+            <td>{stated(t.leftOn,"Currently listed")}</td><td>{t.cycle}</td><td>{stated(t.reason,t.status)}</td></tr>)}</tbody></table></div>
+        <p className="subtle small">Dates come only from complete published stage snapshots; no historical membership dates are inferred from Phase 3 or SEC evidence.</p>
+      </details>
       <details className="nested-expander">
         <summary>Three-level clinical trials and evidence table · ticker → drug/program → trial</summary>
         <Drilldown rows={rows} />
@@ -372,7 +417,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="worktop">
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
-      <span className="workspace-stage">Snapshot {snapshot?.asOf||"loading"} · No live orders</span>
+      <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · No live orders</span>
     </div>
     {top==="PDUFA" && <nav className="worknav" aria-label="PDUFA sections">
       {([["PIPELINE","PIPELINE"],["GEMS","GEM JR + GEM"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
