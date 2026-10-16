@@ -26,6 +26,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Validate the secret structure without revealing secret bytes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from scripts.scan_email import EmailSettings, EmailSetupError
+          import re
+          try:
+              settings = EmailSettings.from_env()
+          except EmailSetupError:
+              print("CREDENTIAL_SETTINGS_VALID=false")
+              raise SystemExit(2)
+          shape = bool(re.fullmatch(r"[A-Za-z]{16}", settings.app_password))
+          print("CREDENTIAL_SETTINGS_VALID=true")
+          print(f"GMAIL_APP_PASSWORD_16_LETTERS={str(shape).lower()}")
+          # Never print password values, substrings, hashes, or lengths.
+          if not shape:
+              print("Check that the GitHub secret contains the 16-character Google app password, not the normal account password or label.")
+              raise SystemExit(3)
+          PY
       - name: Test Gmail app-password acceptance via IMAP login only (no mailbox access)
         continue-on-error: true
         shell: bash
@@ -50,8 +69,21 @@ jobs:
                   print("IMAP_AUTH_NOT_ACKNOWLEDGED")
                   raise SystemExit(3)
               print("IMAP_AUTH_ACCEPTED; no mailbox selected, no email sent")
-          except imaplib.IMAP4.error:
-              print(f"IMAP_AUTH_OR_POLICY_REJECTED; stage={stage}")
+          except imaplib.IMAP4.error as exc:
+              # Classify only known Gmail response categories. Never print
+              # server error strings or any username/password material.
+              reply = str(exc).casefold()
+              if "application-specific password" in reply or "app password" in reply:
+                  reason = "APP_PASSWORD_REQUIRED"
+              elif "imap access is disabled" in reply or "imap disabled" in reply:
+                  reason = "IMAP_DISABLED"
+              elif "invalid credentials" in reply or "authenticationfailed" in reply:
+                  reason = "INVALID_CREDENTIALS_OR_POLICY"
+              elif "web browser" in reply:
+                  reason = "WEB_LOGIN_REQUIRED"
+              else:
+                  reason = "OTHER_AUTH_OR_POLICY_REJECTION"
+              print(f"IMAP_AUTH_OR_POLICY_REJECTED; stage={stage}; reason={reason}")
               raise SystemExit(4)
           except (socket.timeout, TimeoutError, OSError, ssl.SSLError) as exc:
               print(f"IMAP_CONNECTION_ERROR; stage={stage}; kind={type(exc).__name__}")
