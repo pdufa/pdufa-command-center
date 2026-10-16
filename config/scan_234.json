@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "plan": "PDUFA #2 PIPELINE #3 PRE3 #4 POST3 baseline then delta",
+  "plan": "PIPELINE inventory and clinical enrichment -> GEM JR Phase 3 research -> GEM",
   "status": "PREFLIGHT_ONLY",
   "baseline_state": "NOT_VERIFIED",
   "automation_enabled": false,
@@ -93,7 +93,7 @@
     },
     {
       "id": 3,
-      "name": "PRE3",
+      "name": "PIPELINE - clinical enrichment",
       "full_initial_scope": "all pre-readout programs plus unknown/review records",
       "source_files": [
         "phase_pipeline.csv",
@@ -107,7 +107,7 @@
     },
     {
       "id": 4,
-      "name": "POST3",
+      "name": "GEM JR",
       "full_initial_scope": "all post-readout FDA and trading events plus review records",
       "source_files": [
         "phase3_announcements.csv",
@@ -161,9 +161,10 @@
     "email_provider": "Gmail SMTP",
     "messages_per_scan": 2,
     "individual_scans": [
-      "#2 PIPELINE",
-      "#3 PRE3",
-      "#4 POST3",
+      "PIPELINE - inventory",
+      "PIPELINE - clinical enrichment",
+      "GEM JR - Phase 3 readout",
+      "GEM - research",
       "each individually executed extra scan"
     ],
     "events": [
@@ -207,7 +208,7 @@
     "email_setup_state": "GITHUB_GMAIL_TEST_RECEIVED_2026-10-11_21_28_PDT",
     "notifications_active": false,
     "nightly_schedules_restored": false,
-    "note": "GitHub Gmail SMTP test was received; automated #2/#3/#4 clinical-only nightly START emails confirmed at 21:34 PDT October 11. Full-source scans remain unimplemented; clinical results are PARTIAL baseline only.",
+    "note": "Legacy full-source-baseline activation flags remain false until that baseline is independently verified. Active clinical, GEM and extended-source workflows submit START/END notifications; SMTP acceptance alone does not prove inbox delivery or complete evidence coverage.",
     "independent_completion_workflow": ".github/workflows/pdufa-clinical-scan-end-email.yml",
     "completion_notifier": "scripts/notify_completed_clinical_run.py",
     "test_completion_notifier": "tests/test_pdufa_completion_emails.py",
@@ -218,11 +219,21 @@
     "enabled": true,
     "workflow": ".github/workflows/pdufa-nightly-clinical.yml",
     "cron_utc": [
-      "0 4 * * *",
-      "0 5 * * *"
+      "0 5 * * *",
+      "15 5 * * *",
+      "30 5 * * *",
+      "0 6 * * *",
+      "15 6 * * *",
+      "30 6 * * *",
+      "5 7 * * *",
+      "35 7 * * *",
+      "5 8 * * *",
+      "35 8 * * *",
+      "5 9 * * *",
+      "35 9 * * *"
     ],
-    "pacific_daylight_time": "21:00",
-    "pacific_standard_time": "21:00",
+    "pacific_daylight_time": "22:00",
+    "pacific_standard_time": "22:00",
     "first_start_confirmation": "2026-10-11 21:34 PDT: START emails for scans 2, 3, 4 received",
     "scan_ids": [
       "2",
@@ -234,7 +245,18 @@
     "production_dashboard_updates_automatic": true,
     "limitations": "Full-source baseline (FDA, SEC, issuer, cash, market, identity audit) remains unverified; do not set automation_enabled=true until that distinct baseline is actually implemented and verified.",
     "scheduler_workflow": ".github/workflows/pdufa-nightly-pacific-start.yml",
-    "sequence_workflow": ".github/workflows/pdufa-overnight-sequential.yml"
+    "sequence_workflow": ".github/workflows/pdufa-overnight-sequential.yml",
+    "timezone": "America/Los_Angeles",
+    "start_policy": "One 10 PM Pacific admission per night, with DST-aware missed-start recovery and an active/full-run duplicate guard.",
+    "scan_labels": {
+      "2": "PIPELINE - inventory",
+      "3": "PIPELINE - clinical enrichment",
+      "4": "GEM JR - Phase 3 readout"
+    },
+    "nightly_modes": {
+      "Monday-Saturday": "DELTA / REVERIFY_PARTIAL",
+      "Sunday": "FULL / RESCAN_ALL"
+    }
   },
   "extended_source_schedule": {
     "enabled": true,
@@ -259,7 +281,7 @@
       "SEC event financing/ownership recheck plus registry filings index; closings require exhibit review",
       "FINANCIAL event-linked SEC cash/runway checks, not independent full financial reconciliation",
       "MARKET event-linked delayed quotes/volume; short/borrow/IV unsupported",
-      "ISSUER Google News RSS discovery only; no primary issuer release verification",
+      "ISSUER RSS/news discovery plus configured primary issuer-release verification where obtainable; unverified releases remain incomplete",
       "AUDIT reconciles only this workflow's five available manifests; clinical status and independent full-program verification remain separate"
     ],
     "start_policy": "Await clinical, both GEM stages and report in pdufa-overnight-sequential.yml; no independent nightly cron or collection-on-push"

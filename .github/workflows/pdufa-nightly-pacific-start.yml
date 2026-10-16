@@ -56,7 +56,8 @@ jobs:
         run: |
           set -euo pipefail
           gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
-            -f ref=main -f "scan_mode=${{ steps.pacific.outputs.scan_mode }}" \
-            -f "gem_action=${{ steps.pacific.outputs.gem_action }}"
+            -f ref=main -f "inputs[scan_mode]=${{ steps.pacific.outputs.scan_mode }}" \
+            -f "inputs[gem_action]=${{ steps.pacific.outputs.gem_action }}"
           echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."
+
