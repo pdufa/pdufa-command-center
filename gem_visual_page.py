@@ -414,43 +414,52 @@ def render_visual_stage(stage, root="data"):
                     st.metric(label, value)
 
     with st.container(border=True, key="visual_" + stageid + "_ranked"):
-        _head(f"▦ {stage} Candidate Priority Table")
-        query = st.text_input("Search candidate", placeholder="Search ticker / drug / indication",
-                              key="visual_" + stageid + "_search")
+        headline, search = st.columns([3.6, 1.2], gap="small",
+                                      vertical_alignment="center")
+        with headline:
+            _head(f"▦ {stage} Candidate Priority Table")
+        with search:
+            query = st.text_input(
+                "Search candidate", placeholder="Search ticker / drug / indication",
+                key="visual_" + stageid + "_search", label_visibility="collapsed")
         matched = [(i, x) for i, x in enumerate(rows)
                    if query.strip().lower() in (
                       _show(x[0].get("Ticker"), "") + " " +
+                      _show(x[1].get("company"), "") + " " +
                       _show(x[0].get("Drug"), "") + " " +
                       _show(x[0].get("Indication"), "")).lower()]
         if not matched:
             st.info("No active source-qualified candidates match this view. "
-                    "Held and historical programs remain in the source workbench below.")
+                    "Held and historical programs remain in the detailed workbench below.")
         else:
-            st.caption(f"{len(matched)} exact programs · ordered by existing stage review priority "
-                       "· select ticker to open full profile")
-            header = st.columns([.95, 2.4, 1.6, 1.6, 1.65, .8, .8, 1.4, 1.4])
-            for h, title in zip(header, ["Ticker", "Drug / company", "Indication", "Phase 3",
-                                           "Financing", "Entry", "Exit risk", "Status", "W / T"]):
+            widths = [.83, 1.8, 1.45, .78, 1.58, 1.55, .75, .53, .62, 1.05, .9]
+            labels = ["Ticker", "Company / Drug", "Indication", "Stage", "Phase 3",
+                      "Financing", "Runway", "Entry", "Exit", "Status", "W / T"]
+            header = st.columns(widths, vertical_alignment="center", gap="small")
+            for h, title in zip(header, labels):
                 h.markdown("**" + title + "**")
             for rank, (i, (rec, evt, master, p, score)) in enumerate(matched[:12], 1):
                 symbol = clean_ticker(rec.get("Ticker"))
-                c = st.columns([.95, 2.4, 1.6, 1.6, 1.65, .8, .8, 1.4, 1.4],
-                               vertical_alignment="center", gap="small")
+                c = st.columns(widths, vertical_alignment="center", gap="small")
                 with c[0]:
                     st.button(symbol or "—", key=f"visual_{stageid}_pick_{i}",
                               help="Open this candidate profile",
-                              on_click=_select, args=(stageid, i))
-                c[1].caption(_short(rec.get("Drug") or evt.get("company"), 42))
-                c[2].caption(_short(rec.get("Indication"), 28))
-                c[3].caption(_short(rec.get("Phase 3 status") or rec.get("Evidence type"), 29))
-                c[4].caption("Both verified" if not junior else _short(rec.get("SEC documents rechecked"), 29))
-                c[5].caption(str(score["entry"]) if score["entry"] is not None else "N/A")
-                c[6].caption(str(score["exit_risk"]) if score["exit_risk"] is not None else "N/A")
-                c[7].caption("Research / hold" if junior else "Qualified / review")
-                with c[8]:
+                              on_click=_select, args=(stageid, i),
+                              use_container_width=True)
+                c[1].caption(_short(evt.get("company") or rec.get("Drug"), 32))
+                c[2].caption(_short(rec.get("Indication"), 24))
+                c[3].caption("Phase 3")
+                c[4].caption(_short(rec.get("Phase 3 status") or rec.get("Evidence type"), 30))
+                c[5].caption("2 SEC closes ✓" if not junior else
+                             _short(rec.get("SEC documents rechecked"), 26))
+                c[6].caption("N/A")  # Runway months not present in the qualified feed.
+                c[7].caption(str(score["entry"]) if score["entry"] is not None else "N/A")
+                c[8].caption(str(score["exit_risk"]) if score["exit_risk"] is not None else "N/A")
+                c[9].caption("Review required" if junior else "Qualified · check risks")
+                with c[10]:
                     _row_button(stageid, symbol, rec, i)
             if len(matched) > 12:
-                st.caption(f"Showing first 12 of {len(matched)}. Narrow the search to see another candidate.")
+                st.caption(f"Showing 12 of {len(matched)}; use search to narrow the source list.")
 
     if not rows:
         _empty_reference_sections(stageid, stage)
