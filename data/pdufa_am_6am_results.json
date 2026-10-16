@@ -1,26 +1,10 @@
 {
   "clinical": {
-    "overnight_report_published": true,
-    "published_at_utc": "2026-10-15T05:20:34.256478+00:00",
-    "runs": {
-      "2": {
-        "changed_trials": 175,
-        "collector_status": "COMPLETE",
-        "new_records": null
-      },
-      "3": {
-        "changed_trials": null,
-        "collector_status": "COMPLETE",
-        "new_records": null
-      },
-      "4": {
-        "changed_trials": null,
-        "collector_status": "COMPLETE",
-        "new_records": 0
-      }
-    },
-    "source_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322",
-    "status": "PARTIAL"
+    "overnight_report_published": false,
+    "published_at_utc": "2026-10-16T13:00:29.079446+00:00",
+    "runs": {},
+    "source_run_url": null,
+    "status": "PENDING_OR_STALE"
   },
   "gem": {
     "all_source_trade_verification": "NOT VERIFIED",
@@ -28,29 +12,29 @@
     "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
     "new_records": 0,
     "overnight_report_published": true,
-    "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322",
+    "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38903263454",
     "status": "PARTIAL",
-    "stored_results": 2483,
+    "stored_results": 2487,
     "strict_entry_gate_shortlist_count": 0,
     "verified_phase3_tracking": 0
   },
-  "generated_at_pacific": "2026-10-15T10:46:00.768948-07:00",
-  "generated_at_utc": "2026-10-15T17:46:00.768948+00:00",
+  "generated_at_pacific": "2026-10-16T10:16:30.576602-07:00",
+  "generated_at_utc": "2026-10-16T17:16:30.576602+00:00",
   "notice": "Read-only snapshot. SEC-verified individual closings do not prove two independent post-Phase-3 financings. A pending/stale component must not be represented as newly verified.",
-  "overnight_scan_window_started_pacific": "2026-10-14T22:00:00-07:00",
+  "overnight_scan_window_started_pacific": "2026-10-15T22:00:00-07:00",
   "publication_delayed_after_6am": true,
-  "readiness": "SOURCE_VERIFICATION_PENDING_OR_STALE",
+  "readiness": "OVERNIGHT_REPORTS_PENDING_OR_STALE",
   "report_type": "PDUFA_6AM_PACIFIC_MORNING_RESULTS",
   "scheduled_display_time_pacific": "06:00",
   "schema_version": 1,
-  "snapshot_date_pacific": "2026-10-15",
+  "snapshot_date_pacific": "2026-10-16",
   "sources": {
     "new_claims": null,
     "newly_resolved_claims": null,
     "overnight_report_published": false,
     "public_ir_sec_leads_checked": null,
     "public_ir_sec_recheck_status": "PENDING_OR_STALE",
-    "published_at_utc": "2026-10-15T17:43:47.771219+00:00",
+    "published_at_utc": "2026-10-16T13:10:37.226689+00:00",
     "required_findings_cleared": null,
     "required_findings_due": null,
     "required_findings_unresolved": null,
