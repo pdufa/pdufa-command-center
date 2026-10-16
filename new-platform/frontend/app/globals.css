@@ -143,3 +143,11 @@ button.secondary { background: white; color: #172b1b; }
 
 .streamlit-fallback {display:inline-block; margin-top:10px; color:#105b3a; font-weight:800; border:1px solid #568564; border-radius:6px; padding:8px 10px; text-decoration:none; background:#f1f8f0; font-size:12px;}
 .streamlit-fallback:hover {background:#dfefdd; text-decoration:underline;}
+
+@media (min-width: 1051px) {
+  .gems-two-blocks {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start;}
+  .gems-two-blocks .gem-section {margin:18px 0;}
+  .gems-two-blocks .gem-body {grid-template-columns:minmax(0,1fr);}
+  .gems-two-blocks .gem-profile .trial-details {grid-template-columns:1fr;}
+  .gems-two-blocks .goal-grid {grid-template-columns:.95fr 1fr 1.25fr;}
+}
