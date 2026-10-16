@@ -85,7 +85,7 @@ function SourceDetails({ record }: { record: Candidate }) {
       <div className="trial-details">
         <div><strong>Exact Pipeline ID</strong><span>{record.id}</span></div>
         <div><strong>Drug / indication</strong><span>{stated(record.drug)} / {stated(record.indication)}</span></div>
-        <div><strong>ClinicalTrials.gov NCT</strong><span>{stated(record.nctId)}</span></div>
+        <div><strong>ClinicalTrials.gov NCT</strong><span>{stated(record.nctId || (record.id.startsWith("TRIAL|") ? record.id.slice(6) : ""))}</span></div>
         <div><strong>Phase 3</strong><span>{stated(record.phase3Status)} · {stated(record.phase3Date, "date unavailable")}</span></div>
         <div><strong>Second financing</strong><span>{stated(record.financingStatus)} · {stated(record.financingDate, "date unavailable")}</span></div>
         <div><strong>PDUFA</strong><span>{stated(record.pdufaDate)}</span></div>
