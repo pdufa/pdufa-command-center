@@ -359,17 +359,22 @@ def render_reference_stage(stage, root="data"):
       header[data-testid="stHeader"]{display:none!important}
       .stApp .block-container{max-width:none!important;padding:0 0 12px!important}
       .stApp [data-testid="stVerticalBlock"]{gap:0.12rem!important}
-      .st-key-pdufa_brand_header{position:relative!important;height:0!important;
-        min-height:0!important;margin:0!important;padding:0!important;border:0!important;
-        background:transparent!important;z-index:2}
-      .st-key-pdufa_brand_header h1{position:absolute!important;left:13px;top:7px;
-        padding:0!important;margin:0!important;font:700 13px Arial,sans-serif!important;
-        color:#101d35!important;white-space:nowrap;line-height:22px!important}
-      .st-key-pdufa_brand_header [data-testid="stCaptionContainer"],
-      .st-key-pdufa_main_navigation{display:none!important}
-      .stApp [role="tablist"]{min-height:35px!important;height:35px!important;
+      /* Keep the two navigation levels independently accessible: main pages
+         (PDUFA / Calendar) above the PDUFA research subtabs. */
+      .st-key-pdufa_brand_header{position:relative!important;min-height:29px!important;
+        margin:0!important;padding:5px 12px 2px!important;border:0!important;
+        background:#f4fcff!important}
+      .st-key-pdufa_brand_header h1{position:static!important;
+        padding:0!important;margin:0!important;font:700 14px Arial,sans-serif!important;
+        color:#101d35!important;line-height:22px!important}
+      .st-key-pdufa_brand_header [data-testid="stCaptionContainer"]{display:none!important}
+      .st-key-pdufa_main_navigation{display:block!important;background:#f4fcff!important;
+        padding:2px 12px 6px!important;border-bottom:1px solid #c9e2de!important}
+      .st-key-pdufa_main_navigation [role="radiogroup"]{display:flex!important;
+        flex-wrap:wrap!important;gap:8px!important}
+      .stApp [role="tablist"]{min-height:35px!important;height:auto!important;
         background:#f4fcff!important;border-bottom:1px solid #c9e2de!important;
-        gap:7px!important;padding:4px 9px 4px 290px!important}
+        gap:7px!important;padding:4px 9px!important;flex-wrap:wrap!important}
       .stApp [role="tab"]{min-height:25px!important;height:25px!important;
         border:0!important;border-radius:4px!important;padding:3px 17px!important;
         color:#14243c!important;font:700 11px Arial,sans-serif!important}
@@ -380,8 +385,8 @@ def render_reference_stage(stage, root="data"):
       .stApp [data-testid="stCustomComponentV1"]{width:100%!important}
       .stApp [data-testid="stCustomComponentV1"] iframe{display:block;border:0}
       @media(max-width:760px){
-        .st-key-pdufa_brand_header h1{font-size:10px!important;left:7px;top:5px}
-        .stApp [role="tablist"]{height:60px!important;padding:30px 5px 3px!important;gap:3px!important}
+        .st-key-pdufa_brand_header h1{font-size:12px!important}
+        .stApp [role="tablist"]{height:auto!important;padding:4px 5px!important;gap:3px!important}
         .stApp [role="tab"]{padding:3px 10px!important;font-size:10px!important}
       }
     </style>""", unsafe_allow_html=True)
