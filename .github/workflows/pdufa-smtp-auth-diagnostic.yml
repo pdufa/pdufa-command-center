@@ -38,10 +38,12 @@ jobs:
               print("CONFIGURATION_INVALID; no email sent")
               raise SystemExit(2)
           try:
+              phase = "connect_465"
               with smtplib.SMTP_SSL(
                   "smtp.gmail.com", 465, timeout=15,
                   context=ssl.create_default_context(),
               ) as server:
+                  phase = "login_465"
                   server.login(settings.sender, settings.app_password)
               print("SMTP_AUTH_ACCEPTED; no email sent")
           except smtplib.SMTPAuthenticationError as exc:
@@ -54,19 +56,24 @@ jobs:
               print(f"SMTP_NETWORK_ERROR; kind={type(exc).__name__}; no email sent")
               raise SystemExit(5)
           except (ssl.SSLError, OSError, smtplib.SMTPException) as exc:
-              print(f"SMTP_CONNECTION_ERROR; kind={type(exc).__name__}; no email sent")
+              print(f"SMTP_CONNECTION_ERROR; phase={phase}; kind={type(exc).__name__}; no email sent")
               print("Testing alternate authenticated STARTTLS route; no email will be sent")
               try:
+                  phase = "connect_587"
                   with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
+                      phase = "ehlo_587"
                       server.ehlo()
+                      phase = "starttls_587"
                       server.starttls(context=ssl.create_default_context())
+                      phase = "posttls_ehlo_587"
                       server.ehlo()
+                      phase = "login_587"
                       server.login(settings.sender, settings.app_password)
                   print("SMTP_STARTTLS_AUTH_ACCEPTED; no email sent")
               except smtplib.SMTPAuthenticationError as e:
                   print(f"SMTP_STARTTLS_AUTH_REJECTED; status={e.smtp_code}; no email sent")
                   raise SystemExit(7)
               except (OSError, smtplib.SMTPException, ssl.SSLError) as e:
-                  print(f"SMTP_STARTTLS_CONNECTION_ERROR; kind={type(e).__name__}; no email sent")
+                  print(f"SMTP_STARTTLS_CONNECTION_ERROR; phase={phase}; kind={type(e).__name__}; no email sent")
                   raise SystemExit(8)
           PY
