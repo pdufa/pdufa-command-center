@@ -1,0 +1,39 @@
+name: PDUFA New Platform Bootstrap Checks
+
+on:
+  push:
+    branches: [new-platform-bootstrap]
+    paths:
+      - 'new-platform/**'
+      - '.github/workflows/pdufa-new-platform-bootstrap-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r new-platform/backend/requirements.txt
+      - run: PYTHONPATH=new-platform/backend pytest -q new-platform/backend/tests
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run build
