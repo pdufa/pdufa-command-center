@@ -1,0 +1,36 @@
+name: PDUFA Chart Indicator Target and Lineage Validation
+
+on:
+  push:
+    branches: [feature/chart-indicator-lineage-sheet-20261016]
+    paths:
+      - 'chart_indicator_sheet.py'
+      - 'indicator_target_spec.py'
+      - 'tests/test_chart_indicator_sheet.py'
+      - 'tests/test_chart_indicator_unittest.py'
+      - '.github/workflows/pdufa-chart-indicator-quick-tests.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'chart_indicator_sheet.py'
+      - 'indicator_target_spec.py'
+      - 'tests/test_chart_indicator_sheet.py'
+      - 'tests/test_chart_indicator_unittest.py'
+      - '.github/workflows/pdufa-chart-indicator-quick-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test-indicator-lineage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dashboard dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify exact trial identity, safe WT tags, 300M-10B gate, and every target
+        run: python -m unittest discover -s tests -p 'test_chart_indicator_unittest.py' -v
