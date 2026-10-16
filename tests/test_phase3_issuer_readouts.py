@@ -103,11 +103,16 @@ class IssuerReadoutTests(unittest.TestCase):
         self.assertEqual({r["nct_id"] for r in reviews},{"NCT05535946","NCT06173531"})
         now=max(datetime.fromisoformat(r["last_checked_at"]) for r in reviews)+timedelta(seconds=1)
         trials, _, _ = build_snapshot(ROOT/"data",now)
+        with (ROOT/"data/phase_pipeline.csv").open() as f:
+            registry_dates = {r["nct_id"]: r.get("results_first_posted", "")
+                              for r in csv.DictReader(f)}
         for nct in ("NCT05535946","NCT06173531"):
             row=next(r for r in trials if r["NCT ID"]==nct)
             self.assertEqual(row["Issuer Phase 3 readout"],ANNOUNCED)
             self.assertTrue(row["Issuer readout source"].startswith("https://"))
-            self.assertEqual(row["Registry results posted"],"")
+            # The registry may publish real results after the issuer press
+            # release. Preserve that observed date without inferring efficacy.
+            self.assertEqual(row["Registry results posted"], registry_dates.get(nct, ""))
             self.assertIsNone(row["Pre-readout research score /100"])
             self.assertIsNone(row["Preliminary clinical score /100"])
             self.assertEqual(scoring_review_queue([row]),[])

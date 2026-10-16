@@ -208,7 +208,17 @@ class TradingResearchQueueTests(unittest.TestCase):
         latest_protocol = pd.to_datetime(
             protocols["checked_at"], utc=True, errors="coerce"
         ).max().date()
-        after_expiry = latest_protocol + timedelta(days=4)
+        # Snapshots are replaced by nightly scans. The cutoff must be later
+        # than both the pipeline observation and the market-cap verification,
+        # otherwise the candidate selector correctly rejects future evidence.
+        latest_pipeline = pd.to_datetime(
+            pipeline["checked_at"], utc=True, errors="coerce"
+        ).max().date()
+        latest_cap = pd.to_datetime(
+            caps["market_cap_checked_at"], utc=True, errors="coerce"
+        ).max().date()
+        after_expiry = max(latest_protocol + timedelta(days=4),
+                           latest_pipeline, latest_cap)
         broad = candidate_queue(pipeline, announcements, caps, after_expiry, protocols=None)
         strict = candidate_queue(
             pipeline, announcements, caps, after_expiry,
