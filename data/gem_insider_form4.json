@@ -1,13 +1,9 @@
 {
-  "as_of_pacific": "2026-10-14",
+  "as_of_pacific": "2026-10-16",
   "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-15T05:19:35.521164+00:00",
+  "generated_at_utc": "2026-10-16T12:59:26.568591+00:00",
   "issuer_count": 34,
   "issuer_errors": [
-    {
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "ticker": "CYTK"
-    },
     {
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "ticker": "CORT"
@@ -17,11 +13,11 @@
       "ticker": "INBX"
     }
   ],
-  "issuers_complete": 31,
+  "issuers_complete": 32,
   "limits": "Issuer filing index capped to 25 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
   "records": [
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001160308",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-25",
@@ -30,7 +26,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001622229",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-05",
@@ -60,7 +56,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001933414",
       "filings_reviewed": 12,
       "latest_filing": "2026-10-02",
@@ -136,21 +132,11 @@
           "shares": 7438,
           "source": "https://www.sec.gov/Archives/edgar/data/1933414/000191604826000009/wk-form4_1784846362.xml",
           "ticker": "MLYS"
-        },
-        {
-          "code": "S",
-          "date": "2026-07-17",
-          "filed": "2026-07-20",
-          "owner": "Rodman David Malcom",
-          "price": 26.53,
-          "shares": 416,
-          "source": "https://www.sec.gov/Archives/edgar/data/1933414/000167265926000036/wk-form4_1784595624.xml",
-          "ticker": "MLYS"
         }
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001689548",
       "filings_reviewed": 1,
       "latest_filing": "2026-07-08",
@@ -159,7 +145,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001652130",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-06",
@@ -209,7 +195,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001953926",
       "filings_reviewed": 1,
       "latest_filing": "2026-09-02",
@@ -218,7 +204,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0000874015",
       "filings_reviewed": 19,
       "latest_filing": "2026-09-02",
@@ -248,9 +234,9 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001439222",
-      "filings_reviewed": 3,
+      "filings_reviewed": 2,
       "latest_filing": "2026-08-06",
       "status": "COMPLETE",
       "ticker": "AGIO",
@@ -268,17 +254,187 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001061983",
-      "error": "More than capped Form 4 filings \u2014 not a complete lookback",
-      "filings_reviewed": 0,
-      "latest_filing": "",
-      "status": "INCOMPLETE",
+      "filings_reviewed": 24,
+      "latest_filing": "2026-10-13",
+      "status": "COMPLETE",
       "ticker": "CYTK",
-      "transactions": []
+      "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-12",
+          "filed": "2026-10-13",
+          "owner": "Blum Robert I",
+          "price": 62.88,
+          "shares": 7500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000099/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-10-06",
+          "filed": "2026-10-06",
+          "owner": "Malik Fady Ibraham",
+          "price": 61.38,
+          "shares": 3500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000098/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-28",
+          "filed": "2026-09-28",
+          "owner": "Blum Robert I",
+          "price": 65.46,
+          "shares": 7500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000097/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-22",
+          "filed": "2026-09-22",
+          "owner": "Malik Fady Ibraham",
+          "price": 68.29,
+          "shares": 3500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000096/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-15",
+          "owner": "Landry Robert E",
+          "price": 72.13,
+          "shares": 1000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000095/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-14",
+          "filed": "2026-09-15",
+          "owner": "Blum Robert I",
+          "price": 73.44,
+          "shares": 7500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000094/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-15",
+          "filed": "2026-09-15",
+          "owner": "Blum Robert I",
+          "price": 69.33,
+          "shares": 97926,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000094/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-11",
+          "filed": "2026-09-11",
+          "owner": "Landry Robert E",
+          "price": 74.66,
+          "shares": 1000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000093/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-08",
+          "filed": "2026-09-08",
+          "owner": "Malik Fady Ibraham",
+          "price": 75.46,
+          "shares": 3500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000092/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-09-01",
+          "filed": "2026-09-01",
+          "owner": "PARSHALL B LYNNE",
+          "price": 71.48,
+          "shares": 5000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000091/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-31",
+          "filed": "2026-08-31",
+          "owner": "Callos Andrew",
+          "price": 70.24,
+          "shares": 10000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000090/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-31",
+          "filed": "2026-08-31",
+          "owner": "Blum Robert I",
+          "price": 70.24,
+          "shares": 7500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000089/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-18",
+          "filed": "2026-08-18",
+          "owner": "Malik Fady Ibraham",
+          "price": 75.82,
+          "shares": 3500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000088/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-08-10",
+          "filed": "2026-08-10",
+          "owner": "Blum Robert I",
+          "price": 76.76,
+          "shares": 7500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000087/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-30",
+          "filed": "2026-07-30",
+          "owner": "Callos Andrew",
+          "price": 79.88,
+          "shares": 14000,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000086/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-27",
+          "filed": "2026-07-27",
+          "owner": "Blum Robert I",
+          "price": 80.87,
+          "shares": 7500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000085/form4.xml",
+          "ticker": "CYTK"
+        },
+        {
+          "code": "S",
+          "date": "2026-07-21",
+          "filed": "2026-07-23",
+          "owner": "Malik Fady Ibraham",
+          "price": 80.59,
+          "shares": 3500,
+          "source": "https://www.sec.gov/Archives/edgar/data/1061983/000106198326000084/form4.xml",
+          "ticker": "CYTK"
+        }
+      ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001599298",
       "filings_reviewed": 1,
       "latest_filing": "2026-10-14",
@@ -287,7 +443,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001133869",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -296,7 +452,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001743881",
       "filings_reviewed": 8,
       "latest_filing": "2026-09-21",
@@ -406,7 +562,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0000875320",
       "filings_reviewed": 10,
       "latest_filing": "2026-09-10",
@@ -415,16 +571,16 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001704292",
-      "filings_reviewed": 8,
+      "filings_reviewed": 7,
       "latest_filing": "2026-10-05",
       "status": "COMPLETE",
       "ticker": "ZLAB",
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0000939767",
       "filings_reviewed": 1,
       "latest_filing": "2026-08-12",
@@ -444,7 +600,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001370053",
       "filings_reviewed": 4,
       "latest_filing": "2026-10-02",
@@ -464,7 +620,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001088856",
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "filings_reviewed": 0,
@@ -474,9 +630,9 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0000882095",
-      "filings_reviewed": 19,
+      "filings_reviewed": 18,
       "latest_filing": "2026-10-02",
       "status": "COMPLETE",
       "ticker": "GILD",
@@ -724,18 +880,18 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001792044",
-      "filings_reviewed": 5,
+      "filings_reviewed": 3,
       "latest_filing": "2026-10-02",
       "status": "COMPLETE",
       "ticker": "VTRS",
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001326110",
-      "filings_reviewed": 5,
+      "filings_reviewed": 4,
       "latest_filing": "2026-10-06",
       "status": "COMPLETE",
       "ticker": "IBRX",
@@ -763,7 +919,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001818794",
       "filings_reviewed": 11,
       "latest_filing": "2026-10-06",
@@ -953,7 +1109,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001828316",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -962,7 +1118,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001889109",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-05",
@@ -971,7 +1127,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001787306",
       "filings_reviewed": 13,
       "latest_filing": "2026-09-18",
@@ -1111,9 +1267,9 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001789972",
-      "filings_reviewed": 5,
+      "filings_reviewed": 3,
       "latest_filing": "2026-09-10",
       "status": "COMPLETE",
       "ticker": "CGEM",
@@ -1141,7 +1297,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001745648",
       "filings_reviewed": 10,
       "latest_filing": "2026-08-05",
@@ -1171,7 +1327,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001048477",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-01",
@@ -1191,7 +1347,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0000873303",
       "filings_reviewed": 5,
       "latest_filing": "2026-09-08",
@@ -1200,7 +1356,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001802665",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-18",
@@ -1280,7 +1436,7 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0002007919",
       "error": "SEC issuer Form 4 amendments require manual reconciliation",
       "filings_reviewed": 0,
@@ -1290,9 +1446,9 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001830487",
-      "filings_reviewed": 25,
+      "filings_reviewed": 23,
       "latest_filing": "2026-10-13",
       "status": "COMPLETE",
       "ticker": "PHVS",
@@ -1490,9 +1646,9 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001472012",
-      "filings_reviewed": 15,
+      "filings_reviewed": 14,
       "latest_filing": "2026-09-15",
       "status": "COMPLETE",
       "ticker": "IMNM",
@@ -1570,9 +1726,9 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0001579428",
-      "filings_reviewed": 3,
+      "filings_reviewed": 2,
       "latest_filing": "2026-09-03",
       "status": "COMPLETE",
       "ticker": "AXSM",
@@ -1610,9 +1766,9 @@
       ]
     },
     {
-      "as_of": "2026-10-14",
+      "as_of": "2026-10-16",
       "cik": "0000014272",
-      "filings_reviewed": 16,
+      "filings_reviewed": 11,
       "latest_filing": "2026-10-05",
       "status": "COMPLETE",
       "ticker": "BMY",
