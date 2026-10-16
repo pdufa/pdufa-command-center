@@ -86,6 +86,11 @@ def require_storage() -> None:
             detail="Persistent PostgreSQL is not connected. Set DATABASE_URL in Render first.",
         )
 
+def require_writes_enabled() -> None:
+    # Opt-in freeze for a database migration. GETs remain usable for validation.
+    if os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"):
+        raise HTTPException(status_code=503, detail="Checklist writes paused for database migration")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -130,7 +135,7 @@ def read_checklist(ticker: str, stage: str):
         }
 
 
-@app.put("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+@app.put("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled)])
 def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     ticker, stage = validate_location(ticker, stage)
     payload.validate_size()
