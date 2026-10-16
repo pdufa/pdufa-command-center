@@ -73,9 +73,9 @@ class AdhocAlertTests(unittest.TestCase):
                 for uid in batch:
                     n = int(uid)
                     header = (
-                        f"Subject: [PDUFA] START {n}\\r\\n"
-                        f"Date: Fri, 16 Oct 2026 13:00:00 +0000\\r\\n"
-                        f"Message-ID: <pdufa-{n}@gmail.com>\\r\\n\\r\\n"
+                        f"Subject: [PDUFA] START {n}\r\n"
+                        f"Date: Fri, 16 Oct 2026 13:00:00 +0000\r\n"
+                        f"Message-ID: <pdufa-{n}@gmail.com>\r\n\r\n"
                     ).encode()
                     rows.append((b"1 (UID " + uid + b" X-GM-MSGID " +
                                  str(9000 + n).encode() + b")", header))
@@ -110,9 +110,9 @@ class AdhocAlertTests(unittest.TestCase):
                     if uid == b"2":
                         continue
                     header = (
-                        b"Subject: [PDUFA] END test\\r\\n"
-                        b"Date: Fri, 16 Oct 2026 13:00:00 +0000\\r\\n"
-                        b"Message-ID: <missing-one@gmail.com>\\r\\n\\r\\n"
+                        b"Subject: [PDUFA] END test\r\n"
+                        b"Date: Fri, 16 Oct 2026 13:00:00 +0000\r\n"
+                        b"Message-ID: <missing-one@gmail.com>\r\n\r\n"
                     )
                     data.append((b"1 (UID " + uid + b" X-GM-MSGID 7001)", header))
                 return "OK", data
