@@ -221,7 +221,7 @@ function Chart({ ticker }: { ticker: string }) {
   </div>;
 }
 
-export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage) => void }) {
+export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [fetchVersion, setFetchVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -374,7 +374,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {kind==="watch"?"W":"T"}{current?" ✓":""}
     </button>;
   }
-  function selectCandidate(record: Candidate, stage: Stage) { onInspect(record.ticker,stage); }
+  function selectCandidate(record: Candidate, stage: Stage) { onInspect(record.ticker,stage,record.programId); }
 
   function gemBlock(stage: "GEM_JR" | "GEM") {
     const group = snapshot?.members[stage];
@@ -446,7 +446,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
     {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     {!snapshot && <div className="panel">{fetchError || "Loading saved Streamlit candidates…"}</div>}
-    {snapshot && top==="PDUFA" && nav==="MASTER" && <MasterChart records={pipeline} gemJr={snapshot.members.GEM_JR.rows} gem={snapshot.members.GEM.rows} history={[...(snapshot.members.GEM_JR.history||[]),...(snapshot.members.GEM.history||[])]} watch={tags.watch} trade={tags.trade} sourceHealth={snapshot.sourceHealth} asOf={snapshot.asOf} selectedId={masterProgram} onSelect={setMasterProgram} />}
+    {snapshot && top==="PDUFA" && nav==="MASTER" && <MasterChart records={pipeline} gemJr={snapshot.members.GEM_JR.rows} gem={snapshot.members.GEM.rows} history={[...(snapshot.members.GEM_JR.history||[]),...(snapshot.members.GEM.history||[])]} watch={tags.watch} trade={tags.trade} sourceHealth={snapshot.sourceHealth} asOf={snapshot.asOf} selectedId={masterProgram} onSelect={setMasterProgram} onInspect={record => {
+      const stage: Stage = snapshot.members.GEM.rows.some(r=>r.id===record.id) ? "GEM" : snapshot.members.GEM_JR.rows.some(r=>r.id===record.id) ? "GEM_JR" : "PIPELINE";
+      onInspect(record.ticker,stage,record.programId);
+    }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
         <p className="subtle">Streamlit-compatible workflow: choose both STAGES and DATES, then select SHOW MATCHING TRIALS.</p>
@@ -513,7 +516,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <button type="button" onClick={()=>mark(programId,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE PROGRAM TO TRADING RESEARCH":"RETURN PROGRAM TO WATCHLIST"}</button>
               <button type="button" className="secondary" onClick={()=>mark(programId,"clear")}>REMOVE PROGRAM TAG</button>
               {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
-              {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE")}>Open ticker checklist (shared at ticker level)</button>}
+              {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
             {ticker && <Chart ticker={ticker}/>}
           </div>;
