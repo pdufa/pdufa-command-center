@@ -4252,6 +4252,9 @@ if page == "PDUFA":
                 "unverified financing or technical price base."
             )
             from gem_stage_dossier import render_stage_dossier
+            from gem_visual_page import render_visual_stage
+            render_visual_stage("GEM JR")
+            st.markdown("### DETAILED SOURCE WORKBENCH / EXISTING GEM JR CONTROLS")
             with st.container(border=True, key="gem_jr_shared_block"):
                 render_stage_dossier("GEM JR")
                 st.divider()
@@ -4271,6 +4274,9 @@ if page == "PDUFA":
                 "risk and regulatory checks. T opens WT review, not an order."
             )
             from gem_stage_dossier import render_stage_dossier
+            from gem_visual_page import render_visual_stage
+            render_visual_stage("GEM")
+            st.markdown("### DETAILED SOURCE WORKBENCH / VERIFIED MASTER")
             with st.container(border=True, key="gem_shared_block"):
                 render_stage_dossier("GEM")
                 st.divider()
