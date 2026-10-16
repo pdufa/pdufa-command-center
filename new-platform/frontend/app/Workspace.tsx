@@ -141,6 +141,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [onlyBand, setOnlyBand] = useState(true);
   const [applied, setApplied] = useState(false);
   const [sort, setSort] = useState("PDUFA");
+  const [pipelinePage, setPipelinePage] = useState(0);
   const [gemQuery, setGemQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [tags, setTags] = useState<Tags>({ watch: [], trade: [] });
@@ -247,6 +248,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       .filter(r => stageFilters.includes(r.stage || "Unknown") && dateFilters.includes(dateBand(r)))
       .sort((a,b) => sort === "TICKER" ? a.ticker.localeCompare(b.ticker) : (daysAway(a.pdufaDate) ?? 99999) - (daysAway(b.pdufaDate) ?? 99999));
   }, [applied, counted, stageFilters, dateFilters, sort]);
+  const pageSize = 100;
+  const pageCount = Math.max(1, Math.ceil(shown.length / pageSize));
+  const visiblePipeline = shown.slice(Math.min(pipelinePage, pageCount - 1) * pageSize, (Math.min(pipelinePage, pageCount - 1) + 1) * pageSize);
   const byTicker = useMemo(() => {
     const m = new Map<string, Candidate[]>();
     [...pipeline, ...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])].forEach(r => {
@@ -258,6 +262,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   function toggleFilter(current: string[], item: string, setter: (value: string[])=>void) {
     setter(current.includes(item) ? current.filter(v => v !== item) : [...current, item]);
     setApplied(false);
+    setPipelinePage(0);
   }
   const stageCounts = STAGES.map(stage => ({label:stage,count:counted.filter(r => r.stage === stage).length})).filter(x => x.count);
   const dateCounts = BANDS.map(band => ({label:band,count:counted.filter(r => dateBand(r) === band).length})).filter(x => x.count);
@@ -340,8 +345,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         <div className="pipeline-row"><label>Search ticker, drug, indication, NCT<input value={query} onChange={e=>{setQuery(e.target.value);setApplied(false)}} placeholder="Optional search" /></label>
           <label>Order<select value={sort} onChange={e=>{setSort(e.target.value);setApplied(false)}}><option value="PDUFA">Closest PDUFA first</option><option value="TICKER">Ticker A–Z</option></select></label>
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>{setOnlyBand(e.target.checked);setApplied(false)}} />Market cap $300M–$10B only</label></div>
-        <div className="pipeline-actions"><button type="button" disabled={!stageFilters.length||!dateFilters.length} onClick={()=>setApplied(true)}>SHOW MATCHING TRIALS</button>
-          <button type="button" className="secondary" onClick={()=>{setApplied(false);setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(true)}}>CLEAR STAGE / DATE</button></div>
+        <div className="pipeline-actions"><button type="button" disabled={!stageFilters.length||!dateFilters.length} onClick={()=>{setPipelinePage(0);setApplied(true);}}>SHOW MATCHING TRIALS</button>
+          <button type="button" className="secondary" onClick={()=>{setApplied(false);setPipelinePage(0);setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(true)}}>CLEAR STAGE / DATE</button></div>
       </div>
       <div className="count-panels">
         {([[ "STAGE COUNTS",stageCounts ],["DATE TRIAL COUNTS",dateCounts ]] as const).map(([title,group])=>
@@ -349,15 +354,20 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div className="count-bars">{group.map(item=><div className="count-row" key={item.label}><span>{item.label}</span><div className="count-track"><div style={{width:(item.count/Math.max(1,counted.length)*100)+"%"}} /></div><b>{item.count}</b></div>)}</div></div>)}
       </div>
       <section className="panel">
-        <div className="sectionhead"><h3>PDUFA TRIALS / PROGRAMS</h3><span className="counter">{shown.length} displayed</span></div>
-        <p className="subtle">{!applied ? "Nothing is displayed until both filters are chosen and SHOW MATCHING TRIALS is pressed." : "Each table row is an exact program; counts reconcile to displayed rows."}</p>
+        <div className="sectionhead"><h3>PDUFA TRIALS / PROGRAMS</h3><span className="counter">{shown.length} matches · {visiblePipeline.length} shown</span></div>
+        <p className="subtle">{!applied ? "Nothing is displayed until both filters are chosen and SHOW MATCHING TRIALS is pressed." : "Results show up to 100 exact programs per page. Match total includes all pages."}</p>
         <div className="table-scroll"><table><thead><tr><th>W/T</th><th>Ticker</th><th>Current stage</th><th>Drug</th><th>Indication</th><th>Days</th><th>PDUFA</th><th>Cap</th><th>Evidence</th><th>Program</th></tr></thead>
-          <tbody>{shown.map(r=><tr key={r.id}><td><div className="wt-pair">{wtButton(r.ticker,"watch")}{wtButton(r.ticker,"trade")}</div></td>
+          <tbody>{visiblePipeline.map(r=><tr key={r.id}><td><div className="wt-pair">{wtButton(r.ticker,"watch")}{wtButton(r.ticker,"trade")}</div></td>
           <td><button type="button" className="ticker-select" onClick={()=>selectCandidate(r,"PIPELINE")}>{r.ticker}</button></td><td>{stated(r.stage)}</td><td>{stated(r.drug)}</td><td>{stated(r.indication)}</td>
           <td>{daysAway(r.pdufaDate)??"—"}</td><td>{stated(r.pdufaDate,"—")}</td><td>{money(r.marketCap)}</td>
           <td>{stated(r.checkStatus)}</td><td><details><summary>Trial/source</summary><SourceDetails record={r} /></details></td></tr>)}</tbody>
         </table></div>
-        {applied && <details className="nested-expander"><summary>Three-level Pipeline trial table</summary><Drilldown rows={shown}/></details>}
+        {applied && pageCount > 1 && <div className="page-controls">
+          <button type="button" className="secondary" disabled={pipelinePage<=0} onClick={()=>setPipelinePage(p=>Math.max(0,p-1))}>← Previous 100</button>
+          <strong>Page {Math.min(pipelinePage,pageCount-1)+1} / {pageCount}</strong>
+          <button type="button" className="secondary" disabled={pipelinePage>=pageCount-1} onClick={()=>setPipelinePage(p=>Math.min(pageCount-1,p+1))}>Next 100 →</button>
+        </div>}
+        {applied && <details className="nested-expander"><summary>Three-level Pipeline trial table</summary><Drilldown rows={visiblePipeline}/></details>}
         <p className="subtle small">The source snapshot contains regulatory/program rows only; Streamlit's larger live clinical-trial universe will be added during scanner migration. Unknown market caps are excluded from the default screening view.</p>
       </section>
     </section>}
