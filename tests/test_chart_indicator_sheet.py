@@ -93,4 +93,4 @@ def test_every_indicated_metric_has_an_adjacent_target():
     assert TARGETS["Priority 4 — ATR(14)"].startswith("[RISK INPUT]")
     assert ">=75%" in TARGETS["CLINICAL — FDA approval probability"]
     assert ">=15%" in TARGETS["PARTICIPATION — Short interest (%)"]
-    assert "not" in TARGETS["DECISION — Entry score (/100)"].lower()
+    assert "no buy cutoff" in TARGETS["DECISION — Entry score (/100)"].lower()
