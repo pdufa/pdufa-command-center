@@ -9,19 +9,20 @@ from __future__ import annotations
 import csv
 import io
 import json
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 from gem_trading_advisory import assess_gem_trade, load_market_rows
+from indicator_target_spec import EXTRA_FIELDS, TARGETS
 from ticker_toggle_panel import _init_browser_selection, clean_ticker
 
 MIN_CAP = 300_000_000
 MAX_CAP = 10_000_000_000
 STAGE_ORDER = ("PIPELINE", "GEM JR", "GEM")
-COLUMNS = (
+BASE_COLUMNS = (
     "Pipeline ID", "Ticker", "Drug", "Trial / Program", "Current stage",
     "In PIPELINE", "In GEM JR", "In GEM", "GEM JR first found",
     "GEM first found", "Market cap $", "Market-cap gate",
@@ -35,6 +36,21 @@ COLUMNS = (
     "Priority 10 — MACD", "Saved EOD close $", "EOD date",
     "Market source", "Market-cap source", "Data completeness / next action",
 )
+
+# Pair each observed metric immediately with its target.  The other five
+# categories are inserted before the chart indicators, not dropped.
+_SPLIT = BASE_COLUMNS.index("WT decision label") + 1
+SOURCE_COLUMNS = (*BASE_COLUMNS[:_SPLIT], *EXTRA_FIELDS, *BASE_COLUMNS[_SPLIT:])
+COLUMNS = tuple(
+    name for field in SOURCE_COLUMNS
+    for name in ((field, f"TARGET — {field}") if field in TARGETS else (field,))
+)
+
+
+def _reported(value, *, limit=180):
+    """Preserve saved source fields without asserting primary verification."""
+    value = _text(value)
+    return ("REPORTED / RECHECK: " + value[:limit]) if value else "UNVERIFIED / MISSING"
 
 
 def read_csv(path):
@@ -141,6 +157,13 @@ def build_chart_indicator_rows(data_root, as_of, watch=(), trade=()):
         raise TypeError("as_of must be a date")
     root = Path(data_root)
     programs = _program_rows(root)
+    # This key is already used by the application source ledger.  Never join
+    # Phase 3 results from a different program merely because tickers match.
+    exact_fundamentals = {
+        "APPLICATION|" + _text(item.get("event_key")): item
+        for item in read_csv(root / "pdufa_candidates.csv")
+        if _text(item.get("event_key"))
+    }
     market = load_market_rows(root)
     caps = {}
     for raw in read_csv(root / "phase_pipeline_market_caps.csv"):
@@ -184,7 +207,48 @@ def build_chart_indicator_rows(data_root, as_of, watch=(), trade=()):
                  "R:R needs manual entry/stop/target plan"]
         if not event:
             gaps.append("Catalyst date not verified")
-        output.append({
+        raw = exact_fundamentals.get(identifier, {})
+        days = (event - as_of).days if event else None
+        evidence = {
+            "CLINICAL — Phase 3 primary endpoint": _reported(raw.get("phase3_status")),
+            "CLINICAL — Statistical significance": _reported(raw.get("reported_p_values")),
+            "CLINICAL — Clinical efficacy": "UNVERIFIED — PRIMARY EVIDENCE REVIEW",
+            "CLINICAL — Safety / adverse events": "UNVERIFIED — BENEFIT-RISK REVIEW",
+            "CLINICAL — FDA approval probability": _reported(raw.get("approval_probability")),
+            "CLINICAL — Regulatory / CMC risk": (
+                "Recorded conflict flag: " + _text(raw.get("conflict_flag")) +
+                " — NOT complete FDA clearance"
+                if _text(raw.get("conflict_flag")) else "UNVERIFIED — FDA / CMC REVIEW"),
+            "FINANCIAL — Second post-Phase 3 financing": (
+                _reported(raw.get("financing_status")) +
+                " — separate SEC verification required"),
+            "FINANCIAL — Cash runway (months)": "UNVERIFIED — CASH / BURN EVIDENCE NEEDED",
+            "FINANCIAL — Dilution / ATM / warrants": _reported(raw.get("new_dilution_flag")),
+            "FINANCIAL — Catalyst window (days)": (
+                f"{days:+d} days from SAVED date; verification required"
+                if days is not None else "UNVERIFIED / NO SAVED DATE"),
+            "FINANCIAL — Valuation / opportunity": "UNVERIFIED — VALUATION ANALYSIS",
+            "FINANCIAL — Trading liquidity (20D $)": (
+                p["dollar_volume"] if p["fresh"] else None),
+            "PARTICIPATION — Short interest (%)": (
+                _reported(raw.get("short_interest")) + " — units/source recheck"),
+            "PARTICIPATION — Free float": _reported(raw.get("shares_float")),
+            "PARTICIPATION — Short days to cover": (
+                _reported(raw.get("short_ratio")) + " — definition/source recheck"),
+            "PARTICIPATION — Institutional accumulation": (
+                "UNVERIFIED — ownership percentage is not accumulation"),
+            "PARTICIPATION — Insider open-market buying": "UNVERIFIED — FORM 4 REVIEW",
+            "PARTICIPATION — Buyout evidence": "UNVERIFIED — STRATEGIC EVIDENCE",
+            "DECISION — Candidate eligibility": "NOT ASSESSED — VERIFY PROGRAM GATES",
+            "DECISION — Entry score (/100)": None,
+            "DECISION — Exit risk score (/100)": None,
+            "DECISION — Hard stop / invalidation": "NOT PLANNED — NO POSITION ASSUMED",
+            "DECISION — Profit objective": "NOT PLANNED — NO TARGET ASSUMED",
+            "DECISION — Catalyst exit rule": (
+                f"REFERENCE ONLY: {(event - timedelta(days=3)).isoformat()}"
+                if event else "UNVERIFIED — PDUFA DATE NEEDED"),
+        }
+        row = {
             "Pipeline ID": identifier,
             "Ticker": ticker,
             "Drug": program["drug"] or "UNVERIFIED",
@@ -223,7 +287,10 @@ def build_chart_indicator_rows(data_root, as_of, watch=(), trade=()):
             "Market source": p["source"] if p["fresh"] else "",
             "Market-cap source": cap_record.get("market_cap_source", ""),
             "Data completeness / next action": "; ".join(gaps),
-        })
+        }
+        row.update(evidence)
+        row.update({f"TARGET — {field}": target for field, target in TARGETS.items()})
+        output.append(row)
     return output
 
 
@@ -273,8 +340,47 @@ def render_chart_indicator_sheet(data_root="data", *, as_of=None):
         "$300M to $10B. OUTSIDE and UNVERIFIED are shown, not silently promoted. "
         "Indicator values require recent verified saved market data."
     )
-    st.dataframe(pd.DataFrame(filtered, columns=COLUMNS), use_container_width=True,
-                 hide_index=True, height=390)
+    # Keep the main overview compact.  Detailed actual-vs-target measurements
+    # appear as a vertical data sheet for one exact program below.
+    overview = ["Pipeline ID", "Ticker", "Drug", "Current stage",
+                "Market cap $", "TARGET — Market cap $", "Market-cap gate",
+                "WT decision label", "Priority 1 — Price base / support / resistance",
+                "TARGET — Priority 1 — Price base / support / resistance",
+                "RVOL", "TARGET — RVOL",
+                "Priority 8 — PDUFA / catalyst",
+                "TARGET — Priority 8 — PDUFA / catalyst"]
+    st.dataframe(pd.DataFrame(filtered, columns=overview), use_container_width=True,
+                 hide_index=True, height=350)
+    if filtered:
+        def label_for(identifier):
+            candidate = next(row for row in filtered if row["Pipeline ID"] == identifier)
+            return (f'{candidate["Ticker"]} · {candidate["Drug"]} · '
+                    f'{candidate["Current stage"]} · {identifier}')
+
+        selected_id = st.selectbox(
+            "VIEW ALL INDICATORS + TARGET LEVELS FOR ONE PROGRAM",
+            [row["Pipeline ID"] for row in filtered],
+            format_func=label_for, key="chart_sheet_program",
+        )
+        selected_row = next(row for row in filtered if row["Pipeline ID"] == selected_id)
+        detail = []
+        for field in SOURCE_COLUMNS:
+            if field not in TARGETS:
+                continue
+            group = (field.split(" — ", 1)[0]
+                     if field.startswith(("CLINICAL — ", "FINANCIAL — ",
+                                          "PARTICIPATION — ", "DECISION — "))
+                     else "TECHNICAL CHART" if field.startswith(("Priority ",
+                         "Base ", "RVOL", "SMA", "Stop ", "Target ", "Reward "))
+                     else "ELIGIBILITY / CHART")
+            detail.append({
+                "Category": group,
+                "Indicator": field,
+                "Current / source observation": selected_row.get(field),
+                "Target / acceptable level": selected_row[f"TARGET — {field}"],
+            })
+        st.dataframe(pd.DataFrame(detail), use_container_width=True,
+                     hide_index=True, height=570)
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=COLUMNS, extrasaction="ignore")
     writer.writeheader()
@@ -284,6 +390,9 @@ def render_chart_indicator_sheet(data_root="data", *, as_of=None):
         data=output.getvalue(), file_name=f"pdufa_chart_indicator_sheet_{as_of.isoformat()}.csv",
         mime="text/csv", key="chart_indicator_sheet_export")
     st.caption(
+        "Targets marked PROJECT / GEM GATE are policy requirements; ILLUSTRATIVE, "
+        "PREFERENCE and OPTIONAL targets are NOT validated trading thresholds. "
+        "A missing source cannot be counted as a pass. "
         "This is a snapshot of saved data and browser-local W/T selections. "
         "ATR, VWAP, XBI strength, stops and targets stay unavailable until "
         "their actual inputs exist. No broker orders are placed."
