@@ -47,7 +47,7 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
   const t=row.technical, b=t?.base, days=daysUntil(row.pdufaDate);
   const phase=t?.benchmarks?.phase3, financing=t?.benchmarks?.secondFinancing;
   const label=trade.includes(row.ticker)?"TRADING RESEARCH":watch.includes(row.ticker)?"WATCH":"WAIT";
-  const anyExpectedSource=Boolean(sourceLink(row.phase3Source)||sourceLink(row.fdaSource));
+  const catalystConfirmed=Boolean(sourceLink(row.fdaSource) && /^VERIFIED/i.test(row.checkStatus||""));
   const runway=t?.runwayMonths;
   const active=history.filter(z=>z.id===row.id);
   const first=active[0],last=active[active.length-1];
@@ -80,7 +80,7 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
       plain("Debt Obligations","Manageable"),
       observed("Catalyst Date (PDUFA)","30–90 days (focus 30–60)",row.pdufaDate,days==null?null:days>=30&&days<=90),
       plain("Catalyst Type","PDUFA / Phase 3 data"),
-      observed("Catalyst Timeline","Confirmed date",row.pdufaDate,anyExpectedSource?true:null),
+      observed("Catalyst Timeline","Confirmed date",row.pdufaDate,catalystConfirmed?true:null),
       plain("Probability-weighted Upside","Attractive vs. downside")
     ]},
     {code:"C",title:"TECHNICAL CHART INDICATORS",tone:"purple",items:[
