@@ -9,6 +9,12 @@ on:
       - "scripts/gem_potential_live_audit.cjs"
       - "gem_potential_ui.py"
       - "gem_potential_list.py"
+      - "gem_jr_ui.py"
+      - "gem_stage_dossier.py"
+      - "gem_trade_navigation.py"
+      - "gem_trial_hierarchy_ui.py"
+      - "gem_nested_master_ui.py"
+      - "ticker_toggle_panel.py"
       - "unified_clinical_trading.py"
 
 permissions:
