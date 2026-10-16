@@ -390,7 +390,8 @@ def render_visual_stage(stage, root="data"):
         with st.container(border=True, key="visual_" + stageid + "_chart"):
             _head("↗ Trading Chart · Price, Base, Breakout & Volume")
             _candles(ticker)
-            with st.expander("SOURCE-SAVED EOD · Base, SMA20/SMA50, support and volume", expanded=False):
+            if st.toggle("SHOW SOURCE-SAVED EOD · Base, SMA20/SMA50, support and volume",
+                         value=False, key="visual_" + stageid + "_saved_eod"):
                 render_base_formation_chart(profile, compact=True)
     with right:
         with st.container(border=True, key="visual_" + stageid + "_signals"):
