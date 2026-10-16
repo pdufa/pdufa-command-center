@@ -2,6 +2,13 @@ name: PIPELINE Early Clinical Live Acceptance
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/prephase3-acceptance.yml"
+      - "scripts/prephase3_live_acceptance.cjs"
+      - "scripts/browser_frame_errors.cjs"
+      - "tests/test_browser_frame_errors.cjs"
   push:
     branches: [main]
     paths:
@@ -37,6 +44,8 @@ jobs:
           node-version: "22"
       - name: Install browser instrumentation
         run: npm install --no-save playwright-core
+      - name: Verify bounded frame-loading retries offline
+        run: node tests/test_browser_frame_errors.cjs
       - name: Verify Chrome on runner
         shell: bash
         run: |

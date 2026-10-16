@@ -3,6 +3,7 @@
 const {chromium}=require("playwright-core");
 const fs=require("fs");
 const path=require("path");
+const {isTransientFrameReadError}=require("./browser_frame_errors.cjs");
 const URL="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/";
 const out=path.join(process.cwd(),"prephase3-acceptance-artifacts");
 fs.mkdirSync(out,{recursive:true});
@@ -20,7 +21,7 @@ async function findFrame(page){
       if(text.includes("BIO PDUFA COMMAND CENTER"))
         return {frame,text};
     }catch(err){
-      if(!/detached|Execution context was destroyed|closed/i.test(String(err)))throw err;
+      if(!isTransientFrameReadError(err))throw err;
     }
   }
   return null;
