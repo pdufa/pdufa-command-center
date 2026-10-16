@@ -36,6 +36,7 @@ on:
       - "gem_master_list.py"
       - "gem_jr_ui.py"
       - "gem_stage_dossier.py"
+      - "gem_visual_page.py"
       - "gem_trade_navigation.py"
       - "gem_trial_hierarchy_ui.py"
       - "gem_nested_master_ui.py"
