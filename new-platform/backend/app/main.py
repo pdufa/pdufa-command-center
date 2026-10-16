@@ -54,6 +54,17 @@ class WatchTrade(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class ProgramChecklist(Base):
+    """Notes and checklist state belong to an exact numbered program and stage."""
+    __tablename__ = "program_checklists"
+    program_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    stage: Mapped[str] = mapped_column(String(12), primary_key=True)
+    selections: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    notes: Mapped[str] = mapped_column(String(4000), nullable=False, default="")
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class ProgramIdentity(Base):
     """Never-recycled integer registry, keyed by immutable Pipeline exact program."""
     __tablename__ = "program_identity"
@@ -388,3 +399,67 @@ def put_program_watch_trade(payload: ProgramWatchTradePayload):
             raise HTTPException(status_code=409, detail="Program W/T conflict; reload")
         session.commit()
     return {"watch": watch, "trade": trade, "version": payload.version + 1, "updated_at": now}
+
+
+def validate_program_checklist(session: Session, program_id: str, stage: str) -> tuple[str, str]:
+    stage = stage.upper()
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id) or stage not in ALLOWED_STAGES:
+        raise HTTPException(status_code=422, detail="Invalid program or stage")
+    serial = int(program_id[6:])
+    if not session.get(ProgramIdentity, serial):
+        raise HTTPException(status_code=404, detail="Permanent Program ID not registered")
+    return program_id, stage
+
+
+@app.get("/api/program-checklists/{program_id}/{stage}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_program_checklist(program_id: str, stage: str):
+    with Session(ENGINE) as session:
+        program_id, stage = validate_program_checklist(session, program_id, stage)
+        item = session.get(ProgramChecklist, (program_id, stage))
+        return {
+            "programId": program_id, "stage": stage,
+            "selections": item.selections if item else {}, "notes": item.notes if item else "",
+            "version": item.version if item else 0,
+            "updated_at": item.updated_at if item else None,
+        }
+
+
+@app.put("/api/program-checklists/{program_id}/{stage}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled),
+])
+def save_program_checklist(program_id: str, stage: str, payload: ChecklistPayload):
+    payload.validate_size()
+    now = datetime.now(timezone.utc)
+    with Session(ENGINE) as session:
+        program_id, stage = validate_program_checklist(session, program_id, stage)
+        if payload.version == 0:
+            session.add(ProgramChecklist(
+                program_id=program_id, stage=stage, selections=payload.selections,
+                notes=payload.notes, version=1, updated_at=now,
+            ))
+            try:
+                session.commit()
+            except IntegrityError:
+                session.rollback()
+                raise HTTPException(status_code=409, detail="Program checklist conflict; reload")
+            return {"saved": True, "programId": program_id, "version": 1, "updated_at": now}
+        result = session.execute(
+            update(ProgramChecklist)
+            .where(
+                ProgramChecklist.program_id == program_id,
+                ProgramChecklist.stage == stage,
+                ProgramChecklist.version == payload.version,
+            )
+            .values(
+                selections=payload.selections, notes=payload.notes,
+                version=payload.version + 1, updated_at=now,
+            )
+        )
+        if result.rowcount != 1:
+            session.rollback()
+            raise HTTPException(status_code=409, detail="Program checklist conflict; reload")
+        session.commit()
+        return {"saved": True, "programId": program_id,
+                "version": payload.version + 1, "updated_at": now}
