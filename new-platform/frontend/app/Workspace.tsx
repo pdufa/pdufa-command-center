@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Candidate = {
@@ -19,6 +19,7 @@ type Snapshot = {
   mode: string; asOf: string; disclaimer: string;
   marketCapRange: { min: number; max: number };
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
+  sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
 type Nav = "PIPELINE" | "GEMS" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
@@ -144,37 +145,93 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [tags, setTags] = useState<Tags>({ watch: [], trade: [] });
   const [tagsReady, setTagsReady] = useState(false);
+  const [wtStatus, setWtStatus] = useState("Loading saved W/T labels…");
+  const wtVersion = useRef(0);
+  const wtCurrent = useRef<Tags>({ watch: [], trade: [] });
+  const wtQueue = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
     const ctrl = new AbortController();
     fetch("/api/workspace", { cache: "no-store", signal: ctrl.signal })
-      .then(async r => { if (!r.ok) throw new Error("Source snapshot unavailable: " + r.status); return r.json(); })
+      .then(async r => { if (!r.ok) throw new Error("Published source unavailable: " + r.status); return r.json(); })
       .then((data: Snapshot) => { if (!ctrl.signal.aborted) setSnapshot(data); })
       .catch(error => { if (!ctrl.signal.aborted) setFetchError(String(error)); });
     return () => ctrl.abort();
   }, []);
   useEffect(() => {
+    let local: Tags = { watch: [], trade: [] };
     try {
       const saved = JSON.parse(localStorage.getItem(TAG_KEY) || "{}");
       if (Array.isArray(saved.watch) && Array.isArray(saved.trade)) {
         const valid = (s: unknown) => typeof s === "string" && /^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(s);
         const trade = [...new Set<string>(saved.trade.filter(valid))];
         const watch = [...new Set<string>(saved.watch.filter(valid))].filter(t => !trade.includes(t));
-        setTags({ watch, trade });
+        local = { watch, trade };
       }
-    } catch { /* Browser may block local storage; lists remain temporary. */ }
-    setTagsReady(true);
+    } catch { /* local storage might be disabled */ }
+    wtCurrent.current = local;
+    setTags(local);
+    let cancelled = false;
+    async function restore() {
+      try {
+        const response = await fetch("/api/watch-trade", { cache: "no-store" });
+        if (!response.ok) throw new Error("WT storage unavailable");
+        let remote = await response.json();
+        if (!Array.isArray(remote.watch) || !Array.isArray(remote.trade) || !Number.isSafeInteger(remote.version)) {
+          throw new Error("WT state invalid");
+        }
+        if (remote.version === 0 && (local.watch.length || local.trade.length)) {
+          const write = await fetch("/api/watch-trade", {
+            method: "PUT", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...local, version: 0 })
+          });
+          if (!write.ok) throw new Error("Unable to migrate browser W/T tags");
+          remote = await write.json();
+        }
+        if (cancelled) return;
+        wtVersion.current = remote.version;
+        const canonical: Tags = { watch: remote.watch, trade: remote.trade };
+        wtCurrent.current = canonical;
+        setTags(canonical);
+        setWtStatus("W/T labels stored in Neon PostgreSQL");
+      } catch {
+        if (!cancelled) setWtStatus("W/T database unavailable — browser copy only; not synchronized");
+      } finally {
+        if (!cancelled) setTagsReady(true);
+      }
+    }
+    void restore();
+    return () => { cancelled = true; };
   }, []);
   useEffect(() => {
     if (!tagsReady) return;
-    try { localStorage.setItem(TAG_KEY, JSON.stringify(tags)); } catch { /* keep live session */ }
+    try { localStorage.setItem(TAG_KEY, JSON.stringify(tags)); } catch { /* keep current memory */ }
   }, [tags, tagsReady]);
   function mark(ticker: string, kind: "watch" | "trade" | "clear") {
-    setTags(prev => ({
+    if (!tagsReady) return;
+    const prev = wtCurrent.current;
+    const updated: Tags = {
       watch: kind === "watch" ? [...new Set([...prev.watch.filter(t => t !== ticker), ticker])].sort() : prev.watch.filter(t => t !== ticker),
       trade: kind === "trade" ? [...new Set([...prev.trade.filter(t => t !== ticker), ticker])].sort() : prev.trade.filter(t => t !== ticker),
-    }));
+    };
+    wtCurrent.current = updated;
+    setTags(updated);
+    setWtStatus("Saving W/T to database…");
+    wtQueue.current = wtQueue.current.catch(() => {}).then(async () => {
+      const response = await fetch("/api/watch-trade", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...updated, version: wtVersion.current })
+      });
+      if (!response.ok) {
+        setWtStatus(response.status === 409 ? "W/T conflict: reload before changing more labels" : "W/T save failed — browser copy only; not synchronized");
+        return;
+      }
+      const saved = await response.json();
+      wtVersion.current = saved.version;
+      setWtStatus("W/T saved in Neon PostgreSQL");
+    }).catch(() => { setWtStatus("W/T save failed — browser copy only; not synchronized"); });
   }
+
   const pipeline = snapshot?.pipeline || [];
   const possible = useMemo(() => pipeline.filter(r =>
     (!onlyBand || r.capInRange) &&
@@ -266,7 +323,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {([["PIPELINE","PIPELINE"],["GEMS","GEM JR + GEM"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
         <button type="button" key={key} className={nav===key?"nav-selected":""} onClick={()=>setNav(key)}>{label}</button>)}
     </nav>}
-    <p className="workspace-banner"><strong>Read-only migrated source snapshot.</strong> Stage histories are exact-program evidence, not investment ratings. W/T labels do not place trades or affect the original Streamlit platform.</p>
+    <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
+    {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     {!snapshot && <div className="panel">{fetchError || "Loading saved Streamlit candidates…"}</div>}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
@@ -310,7 +368,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     </div>}
     {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
       <h2>WT — Watchlist and Trading research</h2>
-      <p className="subtle">W/T selections are saved in this browser on the new site, separately from Streamlit. They are labels, never broker orders. Charts are third-party and may be delayed.</p>
+      <p className="subtle">W/T labels are stored in your new Neon database, with a browser fallback if disconnected. No broker orders are placed. Charts may be delayed.</p><p aria-live="polite" className="saveState">{wtStatus}</p>
       {(["watch","trade"] as const).map(kind=><section className="panel" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST":"TRADING RESEARCH — NO ORDERS"}</h3><span className="counter">{tags[kind].length} tickers</span></div>
         {tags[kind].length===0 && <p className="subtle">No tickers yet. Use W/T buttons in Pipeline or GEM candidate rows.</p>}
@@ -324,7 +382,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </div>)}
       </section>)}
     </div>}
-    {snapshot && top==="PDUFA" && nav==="SCANS" && <section className="panel"><h2>SCANS — Not yet migrated</h2><p className="subtle">No new-system scanners, emails, Alpaca orders or nightly jobs are enabled. The existing Streamlit 10 PM Pacific scan installation remains unchanged.</p></section>}
+    {snapshot && top==="PDUFA" && nav==="SCANS" && <section className="panel"><h2>SCANS — Published original-system status</h2><p className="subtle">The new dashboard reads published scanner results. The original Streamlit 10 PM Pacific scans continue independently; no second scanner or Alpaca orders are enabled here.</p><p><strong>Last published overnight scan:</strong> {stated(snapshot.sourceHealth?.publishedScan?.finishedAt, "NOT VERIFIED")} · <strong>Status:</strong> {stated(snapshot.sourceHealth?.publishedScan?.state, "NOT AVAILABLE")}</p><p><strong>Live published-source health:</strong> {stated(snapshot.sourceHealth?.state, "UNKNOWN")}</p>{Object.entries(snapshot.sourceHealth?.publishedScan?.sources || {}).map(([name,result])=><div key={name} className="scan-result"><span>{name.replaceAll("_"," ")}</span><strong>{stated(result.status)}</strong></div>)}<p className="subtle">PARTIAL and missing source families are not marked COMPLETE. These are the saved original reports, not proof of a successful new scan.</p></section>}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
       <p className="subtle">Reported dates only, not FDA-confirmed future events unless the source explicitly verifies them.</p>
       <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
