@@ -245,6 +245,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "GEM JR"
+        app.session_state["gem_reference_details_jr"] = True
         app.run()
         self.assertFalse(list(app.exception),
                          [str(error.message) for error in app.exception])
@@ -269,6 +270,7 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "GEM JR + GEM"
+        app.session_state["gem_reference_details_jr"] = True
         app.session_state["gemjr_extended_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
@@ -490,3 +492,4 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

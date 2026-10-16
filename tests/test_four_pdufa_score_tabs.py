@@ -69,6 +69,7 @@ class FourPdufaScoreTabTests(unittest.TestCase):
         app = AppTest.from_file(str(APP), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "GEM JR"
+        app.session_state["gem_reference_details_jr"] = True
         app.run()
         self.assertFalse(list(app.exception))
         jr = next(t for t in app.get("tab") if t.label == "GEM JR")
@@ -76,6 +77,7 @@ class FourPdufaScoreTabTests(unittest.TestCase):
         self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x
                             for x in headings))
         app.session_state["pdufa_subtab"] = "GEM"
+        app.session_state["gem_reference_details_gem"] = True
         app.run()
         self.assertFalse(list(app.exception))
         gem = next(t for t in app.get("tab") if t.label == "GEM")
@@ -90,3 +92,4 @@ class FourPdufaScoreTabTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
