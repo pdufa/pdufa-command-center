@@ -473,7 +473,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <button type="button" className="secondary" disabled={pipelinePage>=pageCount-1} onClick={()=>setPipelinePage(p=>Math.min(pageCount-1,p+1))}>Next 100 →</button>
         </div>}
         {applied && <details className="nested-expander"><summary>Three-level Pipeline trial table</summary><Drilldown rows={visiblePipeline}/></details>}
-        <p className="subtle small">The source snapshot contains regulatory/program rows only; Streamlit's larger live clinical-trial universe will be added during scanner migration. Unknown market caps are excluded from the default screening view.</p>
+        <p className="subtle small">Pipeline loads the latest published clinical-trial and regulatory records from Streamlit's original sources; a PARTIAL scan does not count as a completed scan. Unknown market caps are excluded from the default screening view.</p>
       </section>
     </section>}
     {snapshot && top==="PDUFA" && nav==="GEMS" && <div className="gems-page">
