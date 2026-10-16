@@ -270,7 +270,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     {!snapshot && <div className="panel">{fetchError || "Loading saved Streamlit candidates…"}</div>}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Streamlit-compatible workflow: choose both STAGES and DATES, then select SHOW MATCHING TRIALS.</p></div>
+        <p className="subtle">Streamlit-compatible workflow: choose both STAGES and DATES, then select SHOW MATCHING TRIALS.</p>
+        <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{possible.length} recorded programs in current screening scope</span></div>
       <div className="panel pipeline-filters">
         <h3>PIPELINE FILTERS</h3>
