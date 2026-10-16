@@ -45,6 +45,29 @@ class Checklist(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class WatchTrade(Base):
+    __tablename__ = "watch_trade_labels"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    watch: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    trade: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class WatchTradePayload(BaseModel):
+    watch: list[str] = Field(default_factory=list, max_length=500)
+    trade: list[str] = Field(default_factory=list, max_length=500)
+    version: int = Field(ge=0)
+
+    def canonical(self) -> tuple[list[str], list[str]]:
+        watch = sorted(set(t.strip().upper() for t in self.watch))
+        trade = sorted(set(t.strip().upper() for t in self.trade))
+        if (any(not TICKER_PATTERN.fullmatch(t) for t in watch + trade)
+                or set(watch).intersection(trade)):
+            raise HTTPException(status_code=422, detail="Invalid or overlapping Watch/Trade tickers")
+        return watch, trade
+
+
 class ChecklistPayload(BaseModel):
     selections: dict[str, bool] = Field(default_factory=dict)
     notes: str = Field(default="", max_length=4000)
@@ -180,3 +203,46 @@ def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
             raise HTTPException(status_code=409, detail="Version conflict; reload this checklist")
         session.commit()
     return {"saved": True, "version": payload.version + 1, "updated_at": now}
+
+
+@app.get("/api/workspace", dependencies=[Depends(require_internal_key)])
+def read_workspace():
+    from .source_workspace import workspace
+    try:
+        return workspace()
+    except Exception as exc:
+        # Do not suggest fresh source data were loaded if the fetch fails.
+        raise HTTPException(status_code=503, detail="Published upstream source unavailable") from None
+
+
+@app.get("/api/watch-trade", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def get_watch_trade():
+    with Session(ENGINE) as session:
+        row = session.get(WatchTrade, 1)
+        if row is None:
+            return {"watch": [], "trade": [], "version": 0, "updated_at": None}
+        return {"watch": row.watch, "trade": row.trade, "version": row.version, "updated_at": row.updated_at}
+
+
+@app.put("/api/watch-trade", dependencies=[Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled)])
+def put_watch_trade(payload: WatchTradePayload):
+    watch, trade = payload.canonical()
+    now = datetime.now(timezone.utc)
+    with Session(ENGINE) as session:
+        if payload.version == 0:
+            session.add(WatchTrade(id=1, watch=watch, trade=trade, version=1, updated_at=now))
+            try:
+                session.commit()
+            except IntegrityError:
+                session.rollback()
+                raise HTTPException(status_code=409, detail="Watch/Trade changed in another session; reload")
+            return {"watch": watch, "trade": trade, "version": 1, "updated_at": now}
+        result = session.execute(
+            update(WatchTrade).where(WatchTrade.id == 1, WatchTrade.version == payload.version)
+            .values(watch=watch, trade=trade, version=payload.version + 1, updated_at=now)
+        )
+        if result.rowcount != 1:
+            session.rollback()
+            raise HTTPException(status_code=409, detail="Watch/Trade changed in another session; reload")
+        session.commit()
+        return {"watch": watch, "trade": trade, "version": payload.version + 1, "updated_at": now}
