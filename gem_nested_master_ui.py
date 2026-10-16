@@ -24,7 +24,7 @@ from gem_checklist_ui import checklist_filters, render_checkbox_table, stock_che
 from gem_benchmark_checklist import program_key
 from gem_scans_ui import FILES, _saved_gem_scans
 from gem_membership_history import read_history, enrich_gem_master_rows, departed_stage_rows
-from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
+from ticker_toggle_panel import open_trade_workspace, _init_browser_selection, _toggle, clean_ticker
 
 
 FACTOR_FIELDS = (
@@ -363,8 +363,8 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                 head[2].button(
                     "T", key=f"gem_nested_t_{uid}",
                     type="primary" if ticker in trading else "secondary",
-                    help=f"{'Remove' if ticker in trading else 'Add'} {ticker} from WT Trading research list — no broker order",
-                    on_click=_toggle, args=(ticker, "trade"),
+                    help=f"{'Remove' if ticker in trading else 'Add'} {ticker} in WT trading review — no broker order",
+                    on_click=open_trade_workspace, args=(ticker,),
                 )
             with st.expander(
                 f"OPEN STOCK → six factors → inputs | {_value(r.get('Indication'))} | {_value(r.get('GEM Status'))}",
