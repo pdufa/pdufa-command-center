@@ -390,7 +390,7 @@ def render_visual_stage(stage, root="data"):
     stageid = "jr" if junior else "gem"
     rows = _rankings(stage, active, root, today)
     st.markdown(
-        '<div class="gem-visual-hero"><div class="gem-visual-kicker">'
+        '<div class="gem-visual-hero gem-stage-' + stageid + '"><div class="gem-visual-kicker">'
         f'GEM JR + GEM · PAGE {1 if junior else 2} OF 2</div>'
         f'<h2>{escape(stage)} — Full Research &amp; Trading View</h2>'
         '<p>' + ('Earlier-entry research · post-Phase-3 monitoring · evidence pending verification'
