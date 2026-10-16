@@ -4300,7 +4300,7 @@ if page == "PDUFA":
             st.session_state["_ticker_selections_hydrated"] = False
             render_alpaca_connection_panel()
             render_watch_trade_dashboard()
-            render_chart_indicator_sheet(as_of=today)
+            render_chart_indicator_sheet(as_of=today.date())
 
 
 elif page == "2. PDUFA CALENDAR":
