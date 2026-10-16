@@ -1,134 +1,76 @@
-// Targeted browser validation for #1 GEM: Potential GEMs numbered list.
-// Research lead visibility is not a declaration of trade entry eligibility.
-const { chromium } = require("playwright-core");
+// Acceptance for the sole GEM JR/GEM reference dashboards. No legacy workbench.
+const {chromium} = require("playwright-core");
 const fs = require("fs");
 const path = require("path");
 const url = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/";
 const output = path.join(process.cwd(), "gem-potential-live-artifacts");
-fs.mkdirSync(output, { recursive: true });
-const result = {
-  timestamp: new Date().toISOString(), url, checks: {},
-  errors: [], evidence: {},
-};
+fs.mkdirSync(output, {recursive:true});
+const result = {timestamp:new Date().toISOString(),url,checks:{},errors:[],evidence:{}};
 let browser;
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-async function framesWithText(page) {
-  const out = [];
-  for (const frame of page.frames()) {
-    try {
-      const value = await frame.locator("body").innerText({ timeout: 4000 });
-      out.push({ frame, text: value });
-    } catch (_) {}
+const delay = ms => new Promise(resolve=>setTimeout(resolve,ms));
+async function appFrame(page) {
+  for(const frame of page.frames()) {
+    try {if((await frame.locator("body").innerText({timeout:2500})).includes("BIO PDUFA COMMAND CENTER"))return frame;}catch{}
   }
-  return out;
+  return null;
 }
-async function frameWithApp(page) {
-  const rows = await framesWithText(page);
-  return rows.find(x => x.text.includes("BIO PDUFA COMMAND CENTER")) || null;
-}
-function errorFrom(text) {
-  return /This app has encountered an error|Traceback \(most recent call last\)/i.test(text);
+async function ready(page,stage) {
+  const until=Date.now()+125000;
+  while(Date.now()<until) {
+    const host=await appFrame(page);
+    if(host) {
+      const text=await host.locator("body").innerText({timeout:5000});
+      if(/This app has encountered an error|Traceback \(most recent call last\)/i.test(text))throw Error("Streamlit exception: "+stage);
+      const frame=page.frames().find(f=>f.url().includes("gem_reference_dashboard"));
+      if(frame && await frame.getByRole("heading",{name:stage+" Candidates",exact:true}).count())return frame;
+    }
+    await delay(1000);
+  }
+  throw Error(stage+" new reference dashboard did not load");
 }
 async function audit() {
-  browser = await chromium.launch({
-    executablePath: process.env.CHROME_PATH || "/usr/bin/google-chrome",
-    headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"],
-  });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  const errors = [];
-  page.on("pageerror", e => errors.push(String(e.message || e).slice(0, 350)));
-  const response = await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
-  result.http = response?.status() ?? null;
-  let app = null;
-  for (let i = 0; i < 85; i++) {
-    app = await frameWithApp(page);
-    if (app) break;
-    await sleep(1200);
-  }
-  if (!app) throw new Error("Deployed Streamlit app header did not render");
-  result.checks.appLoaded = true;
-  let found = false;
-  for (let i = 0; i < 85; i++) {
-    app = (await frameWithApp(page)) || app;
-    if (errorFrom(app.text)) throw new Error("Live Streamlit page reports an application exception");
-    try {
-      if (await app.frame.getByRole("tab", { name: "GEM", exact: true }).count()) {
-        await app.frame.getByRole("tab", { name: "GEM", exact: true })
-          .click({ timeout: 12000 });
-        found = true;
-        break;
-      }
-    } catch (e) {
-      if (!/detached|Execution context was destroyed/i.test(String(e))) {
-        result.errors.push("Navigation retry: " + String(e).slice(0, 160));
-      }
+  browser=await chromium.launch({executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",headless:true,args:["--no-sandbox","--disable-dev-shm-usage"]});
+  const page=await browser.newPage({viewport:{width:1672,height:1000}});
+  const errors=[];page.on("pageerror",e=>errors.push(String(e.message||e).slice(0,300)));
+  result.http=(await page.goto(url,{waitUntil:"domcontentloaded",timeout:60000}))?.status();
+  let host;
+  for(let i=0;i<100;i++){host=await appFrame(page);if(host&&await host.getByRole("tab",{name:"GEM JR",exact:true}).count())break;await delay(1000);}
+  if(!host)throw Error("Streamlit app did not load");
+  for(const stage of ["GEM JR","GEM"]) {
+    await host.getByRole("tab",{name:stage,exact:true}).click();
+    let dashboard=await ready(page,stage);
+    for(const label of ["Entry Checklist ("+stage+")","Exit Checklist ("+stage+")","Scan Diagnostics"]) {
+      if(!await dashboard.getByRole("heading",{name:label,exact:true}).count())throw Error(stage+" missing "+label);
     }
-    await sleep(1200);
+    const table=dashboard.locator(".candidate-table");
+    const rows=await table.locator("tbody tr").count();
+    if(rows) {
+      const watches=table.getByRole("button",{name:/^Watch /});
+      const trades=table.getByRole("button",{name:/^Trade workspace for /});
+      if(await watches.count()!==rows||await trades.count()!==rows)throw Error("Independent W/T controls missing");
+      await table.locator('button[data-action="select"]').first().click();
+      const search=dashboard.getByRole("searchbox",{name:"Search candidates",exact:true});
+      await search.fill("ZZZZ_NO_MATCH");
+      if(!await dashboard.getByText("No matching candidates",{exact:true}).count())throw Error("Search does not filter candidates");
+      await search.fill("");
+      if(await dashboard.locator(".candidate-table tbody tr").count()!==rows)throw Error("Search reset failed");
+      await dashboard.getByRole("button",{name:"1M",exact:true}).click();
+      if(!await dashboard.getByRole("heading",{name:/1M Trading Chart/}).count())throw Error("Chart range selection failed");
+    }
+    if(await host.getByText("DETAILED SOURCE WORKBENCH / VERIFIED MASTER",{exact:true}).count())throw Error("Retired GEM layout is still present");
+    result.checks[stage+" reference layout and controls"]=true;
+    result.evidence[stage]={displayed_candidates:rows};
+    await page.screenshot({path:path.join(output,stage.toLowerCase().replace(/ /g,"-")+"-reference-desktop.png"),fullPage:false});
+    await page.setViewportSize({width:390,height:844});
+    await delay(500);
+    const overflows=await dashboard.locator("body").evaluate(el=>el.scrollWidth>el.clientWidth+2);
+    if(overflows)throw Error(stage+" mobile page overflows its viewport");
+    await page.screenshot({path:path.join(output,stage.toLowerCase().replace(/ /g,"-")+"-reference-mobile.png"),fullPage:false});
+    result.checks[stage+" responsive"]=true;
+    await page.setViewportSize({width:1672,height:1000});
+    host=await appFrame(page);
   }
-  if (!found) throw new Error("GEM tab not available for GEM list check");
-  // Deep research is deliberately collapsed beneath the reference dashboard.
-  await app.frame.getByText("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", {exact:true})
-    .click({timeout:30000});
-  let panelText = "", overview = "";
-  for (let i = 0; i < 120; i++) {
-    app = (await frameWithApp(page)) || app;
-    overview = app.text;
-    if (errorFrom(overview)) throw new Error("GEM tab reports an application exception");
-    try {
-      if (await app.frame.getByRole("tab", { name: "GEM", exact: true })
-        .getAttribute("aria-selected") !== "true") {
-        await sleep(900);
-        continue;
-      }
-      const panel = app.frame.locator(".st-key-gem_shared_block").first();
-      if (await panel.count()) {
-        panelText = await panel.innerText({ timeout: 5000 });
-        if (panelText.includes("POTENTIAL GEMs — PENDING RESEARCH") &&
-            panelText.includes("active research leads")) break;
-      }
-    } catch (_) {}
-    await sleep(1000);
-  }
-  result.evidence.panelText = panelText.slice(0, 11000);
-  result.evidence.overviewExcerpt = overview.slice(0, 1200);
-  const counts = panelText.match(/(\d+) active research leads/);
-  const activeCount = counts ? Number(counts[1]) : null;
-  const hasList = await app.frame.locator(".st-key-gem_shared_block [data-testid=\"stDataFrame\"]").count() >= 1;
-  const explicitlyEmpty = panelText.includes(
-    "No currently active potential GEMs supported by the saved source reviews.");
-  result.evidence.activeResearchLeads = activeCount;
-  result.checks.gemPanelPresent = panelText.includes("GEM");
-  result.checks.potentialHeading = panelText.includes("POTENTIAL GEMs — PENDING RESEARCH");
-  result.checks.countFromSavedSource = activeCount !== null;
-  result.checks.potentialReason = activeCount === 0 ? explicitlyEmpty : panelText.includes("Each reason comes from saved Phase 3/SEC observations");
-  result.checks.pendingEvidence = activeCount === 0 ? explicitlyEmpty : panelText.includes("what still needs verification");
-  result.checks.candidateTable = activeCount === 0 ? explicitlyEmpty : hasList;
-  result.checks.separateVerifiedList = panelText.includes("NOT the verified GEM entry list");
-  await page.screenshot({
-    path: path.join(output, "gem-potential-desktop.png"), fullPage: false,
-  });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await sleep(1400);
-  await page.screenshot({
-    path: path.join(output, "gem-potential-mobile.png"), fullPage: false,
-  });
-  result.evidence.pageErrors = errors;
-  const failed = Object.entries(result.checks).filter(([, value]) => value !== true);
-  if (failed.length) throw new Error(
-    "Deployed #1 GEM Potential list validation failed: " + failed.map(([key])=>key).join(", "));
+  result.evidence.pageErrors=errors;
+  if(errors.length)throw Error("Browser JavaScript errors: "+errors.join("; "));
 }
-(async () => {
-  try { await audit(); }
-  catch (error) {
-    result.errors.push(String(error.stack || error));
-    process.exitCode = 1;
-  } finally {
-    try { if (browser) await browser.close(); } catch (_) {}
-    fs.writeFileSync(path.join(output, "gem-potential-browser-result.json"),
-      JSON.stringify(result, null, 2));
-    console.log(JSON.stringify({
-      checks: result.checks, http: result.http,
-      errors: result.errors.map(x => x.slice(0, 900)),
-    }, null, 2));
-  }
-})();
+(async()=>{try{await audit();}catch(error){result.errors.push(String(error.stack||error));process.exitCode=1;}finally{if(browser)await browser.close();fs.writeFileSync(path.join(output,"gem-potential-browser-result.json"),JSON.stringify(result,null,2));console.log(JSON.stringify({checks:result.checks,errors:result.errors,http:result.http},null,2));}})();

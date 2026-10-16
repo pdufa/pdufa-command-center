@@ -68,8 +68,6 @@ class StageWTTests(unittest.TestCase):
         self.assertIn('render_trial_hierarchy(active, namespace="gem_jr"', junior)
         self.assertIn('"GEM", source_cleared, namespace="gem"', gem)
         self.assertNotIn('gem_jr_col, gem_col = st.columns', app)
-        self.assertIn('with st.container(border=True, key="gem_jr_shared_block")', app)
-        self.assertIn('with st.container(border=True, key="gem_shared_block")', app)
         self.assertIn('st.dataframe(', wt)
         self.assertIn('render_ticker_toggle_panel(', wt)
         self.assertIn('st.session_state.get("trading_tickers", [])', wt)

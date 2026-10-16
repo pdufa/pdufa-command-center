@@ -53,10 +53,3 @@ def _rankings(stage, active, root, today):
         score["quality"] = master.get("GEM Score /100") if master and master.get("_eligible") else None
         results.append((record, event, master, profile, score))
     return results
-
-
-
-def render_visual_stage(stage, root="data"):
-    # Import lazily: the adapter uses the established exact-program lookup.
-    from gem_reference_dashboard import render_reference_stage
-    render_reference_stage(stage, root)

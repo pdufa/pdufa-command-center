@@ -1,5 +1,6 @@
 """Exercise the real Streamlit Pipeline page, not only the filter helpers."""
 import unittest
+import json
 import re
 import pandas as pd
 from pathlib import Path
@@ -245,7 +246,6 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "GEM JR"
-        app.session_state["gem_reference_details_jr"] = True
         app.run()
         self.assertFalse(list(app.exception),
                          [str(error.message) for error in app.exception])
@@ -255,36 +255,29 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertNotIn("GEM JR + GEM", labels)
         self.assertNotIn("PRE PHASE 3", labels)
         self.assertNotIn("POST PHASE 3", labels)
-        junior = next(item for item in app.get("tab") if item.label == "GEM JR")
-        headings = [item.body for item in junior.get("markdown")]
-        self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x
-                            for x in headings))
-        source = APP_PATH.read_text(encoding="utf-8")
-        self.assertIn('key="gem_jr_shared_block"', source)
-        self.assertIn('key="gem_shared_block"', source)
-        self.assertIn("render_gem_jr()", source)
-        self.assertIn('render_gem_potential(root="data", compact=False', source)
-        self.assertIn("two distinct SEC-confirmed financing closures", source)
+        components = [c for c in app.get("component_instance")
+                      if "gem_reference_dashboard" in c.proto.component_name]
+        self.assertEqual(len(components), 1)
+        payload = json.loads(components[0].proto.json_args)["payload"]
+        self.assertEqual(payload["stage"], "GEM JR")
+        self.assertFalse(any("DETAILED SOURCE WORKBENCH" in x.label
+                             for x in app.get("toggle")))
 
-    def test_post_phase3_stage3_has_no_fabricated_backtest_wins(self):
+    def test_retired_extended_research_bookmark_does_not_restore_old_layout(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
         app.session_state["pdufa_subtab"] = "GEM JR + GEM"
-        app.session_state["gem_reference_details_jr"] = True
         app.session_state["gemjr_extended_research"] = True
         app.run()
         self.assertFalse(list(app.exception))
-        self.assertTrue(any(
-            "STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in item.body
-            for item in app.markdown
-        ))
-        metrics = {item.label: item.value for item in app.metric}
-        self.assertEqual(metrics.get("Verified event timelines"), "0")
-        self.assertEqual(metrics.get("Historical OHLCV rows"), "0")
-        self.assertEqual(metrics.get("Simulated trade scenarios"), "0")
-        self.assertTrue(any(
-            "BACKTEST NOT READY" in item.body for item in app.warning
-        ))
+        components = [c for c in app.get("component_instance")
+                      if "gem_reference_dashboard" in c.proto.component_name]
+        self.assertEqual(len(components), 1)
+        payload = json.loads(components[0].proto.json_args)["payload"]
+        self.assertEqual(payload["stage"], "GEM JR")
+        self.assertFalse(any("STAGE 3 — HISTORICAL ENTRY / EXIT RESEARCH" in x.body
+                             for x in app.markdown))
+        self.assertNotIn("Simulated trade scenarios", [x.label for x in app.metric])
 
     def test_pre_phase3_subtab_never_fabricates_success_probability(self):
         app = AppTest.from_file(str(APP_PATH), default_timeout=120)
@@ -492,4 +485,3 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

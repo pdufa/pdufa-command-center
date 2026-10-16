@@ -230,92 +230,29 @@ async function audit() {
     await screenshot(page, "pipeline-sec-fda-count-parity");
   });
 
-  // Exercise GEM full-width master, not just its title. The chart and
-  // trading assessment require an exact-program stock card to open.
-  await safely("GEM nested stock entry/exit chart", async() => {
+  // The reference dashboard is the only GEM view. Check the actual component,
+  // selected program, nested trials and chart controls rather than retired UI.
+  await safely("GEM reference dashboard interaction", async() => {
     await inspectTab(page, "GEM", ["GEM Candidates", "GEM Qualification Rules"]);
-    const first = await currentFrame(page);
-    await first.getByText("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", {exact:true}).click({timeout:15000});
-    const label = "GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS";
-    // The full-width master opens by default; do not click its toggle closed.
-    if (!await first.getByText(label, {exact:true}).count())
-      throw Error("GEM full verified master toggle missing.");
-    const master = await waitFor(page, "GEM nested master", async(f, text) =>
-      await selectedTab(f, "GEM") &&
-      text.includes("GEM — STOCK → FACTORS → SOURCE INPUTS") &&
-      text.includes("GEM programs"));
-    if (/This app has encountered an error|Traceback \(most recent call last\)/i.test(master.text)) {
-      throw Error("GEM master crashed on expansion.");
+    const dashboard = page.frames().find(x => x.url().includes("gem_reference_dashboard"));
+    if (!dashboard) throw Error("GEM reference component missing");
+    const details = dashboard.locator('.candidate-table button[data-action="select"]');
+    const count = await details.count();
+    if (count) {
+      await details.first().click();
+      await dashboard.getByRole("tab", {name:"Trial structure · 3 levels", exact:true}).click();
+      if (!await dashboard.locator('.tree details[data-tree="company"]').count())
+        throw Error("Company > drug > trial hierarchy missing for selected program");
+      await dashboard.getByRole("button", {name:"1M",exact:true}).click();
+      if (!await dashboard.getByRole("heading", {name:/1M Trading Chart/}).count())
+        throw Error("Chart timeframe did not update");
     }
-    // A default research-only filter can be empty even with saved GEM rows.
-    // Selecting All candidates tests an actual program's chart when available.
-    const candidates = master.frame.getByText("OPEN STOCK → six factors → inputs", {exact:false});
-    const count = await candidates.count();
-    if (!count) {
-      report.notes.push("GEM nested master opened, but no matching stock cards were displayed for the saved filter.");
-      report.checked.push({screen:"GEM nested master",result:"PASS",stock_chart:"NO STOCK MATCH"});
-      return;
-    }
-    await candidates.first().click({timeout:15000});
-    await delay(750);
-    // Scroll the selected stock into view if the browser has deferred its body.
-    const scrollDetail = await candidates.first().evaluate(el => {
-      let parent = el;
-      while (parent) {
-        const style = getComputedStyle(parent);
-        if (parent.scrollHeight > parent.clientHeight + 50 &&
-            /(scroll|auto)/.test(style.overflowY)) {
-          const before = parent.scrollTop;
-          parent.scrollTop = Math.min(parent.scrollHeight,
-                                      parent.scrollTop + 700);
-          return {found:true, before, after:parent.scrollTop,
-                  scrollHeight:parent.scrollHeight,
-                  clientHeight:parent.clientHeight};
-        }
-        parent = parent.parentElement;
-      }
-      return {found:false};
-    });
-    await delay(1600);
-    report.notes.push("GEM stock internal scroll: " + JSON.stringify(scrollDetail));
-    // Preserve diagnostic facts from the opened disclosure; this distinguishes
-    // real chart failures from a missing/invisible DOM label in the renderer.
-    const probeFrame = await currentFrame(page);
-    const probeText = probeFrame ? await probeFrame.locator("body").innerText({timeout:9000}) : "";
-    const summary = probeFrame ? probeFrame.getByText("OPEN STOCK → six factors → inputs", {exact:false}).first() : null;
-    let disclosure = "unknown";
-    try { disclosure = await summary.evaluate(el => {
-      const holder = el.closest('[data-testid="stExpander"]');
-      const details = holder?.querySelector("details");
-      return details ? (details.open ? "open" : "closed") : (holder ? "found expander" : "expander not found");
-    }); } catch (_) {}
-    let chartInDisclosure = "unknown", disclosureSnippet = "";
-    try {
-      const diagnostic = await summary.evaluate(el => {
-        const section=el.closest('[data-testid="stExpander"]');
-        return {hasChart:section?.textContent.includes("ENTRY / EXIT MONITOR"),
-                text:section?.textContent.slice(0,650)};
-      });
-      chartInDisclosure = diagnostic.hasChart;
-      disclosureSnippet = diagnostic.text || "";
-    } catch (_) {}
-    report.notes.push("GEM stock probe: header=" +
-                      probeText.includes("ENTRY / EXIT MONITOR") +
-                      "; disclosure=" + disclosure +
-                      "; chart_dom=" + chartInDisclosure +
-                      "; expander_text=" + disclosureSnippet.slice(0,460) +
-                      "; master=" + probeText.includes("GEM — STOCK → FACTORS → SOURCE INPUTS"));
-    await screenshot(page,"gem-expander-diagnostic");
-    const chart = await waitFor(page, "GEM entry/exit stock chart", async(f,text) =>
-      await selectedTab(f, "GEM") && text.includes("ENTRY / EXIT MONITOR"), 35000);
-    // Streamlit's st.dataframe uses a canvas-backed grid; its column titles
-    // are not necessarily present in body.innerText. Require the actual
-    // rendered research header and inspect Streamlit's dataframe test ID.
-    const tables = await chart.frame.locator('[data-testid="stDataFrame"]').count();
-    report.checked.push({screen:"GEM nested stock entry/exit chart",result:"PASS",
-                         source_warnings_visible:chart.text.includes("SOURCE RECHECK PARTIAL / STALE"),
-                         dataframe_widgets:tables});
-    await screenshot(page,"gem-entry-exit-stock");
+    if (!await dashboard.getByRole("heading", {name:"Entry Checklist (GEM)",exact:true}).count())
+      throw Error("Entry checklist missing");
+    if (!await dashboard.getByRole("heading", {name:"Exit Checklist (GEM)",exact:true}).count())
+      throw Error("Exit checklist missing");
+    report.checked.push({screen:"GEM reference dashboard", result:"PASS", candidate_controls:count});
+    await screenshot(page,"gem-reference-dashboard");
   });
   // The embedded watchlist is hosted in its own components iframe.
   await safely("WT embedded watchlist", async() => {

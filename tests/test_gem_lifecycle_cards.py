@@ -38,8 +38,9 @@ class GemLifecycleCardTests(unittest.TestCase):
         gem = (ROOT / "gem_potential_ui.py").read_text(encoding="utf-8")
         master = (ROOT / "gem_nested_master_ui.py").read_text(encoding="utf-8")
         app = (ROOT / "app.py").read_text(encoding="utf-8")
+        reference = (ROOT / "gem_reference_dashboard.py").read_text(encoding="utf-8")
         for name, code in [("ui", ui), ("junior", junior), ("gem", gem),
-                           ("master", master), ("app", app)]:
+                           ("master", master), ("app", app), ("reference", reference)]:
             ast.parse(code, filename=name)
         self.assertIn('with st.container(border=True, key=namespace + "_program_" + uid)', ui)
         self.assertIn('args=(ticker, "watch")', ui)
@@ -49,11 +50,12 @@ class GemLifecycleCardTests(unittest.TestCase):
         self.assertIn("LEVEL 3 — UNDERLYING EVIDENCE", ui)
         self.assertIn('render_trial_hierarchy(active, namespace="gem_jr"', junior)
         self.assertIn('render_trial_hierarchy(source_cleared,', gem)
-        self.assertIn('show_previous=False', app)
-        self.assertIn('value=True, key="gem_shared_show_master"', app)
-        self.assertIn('key="gem_previous_candidates"', app)
+        self.assertIn('_render_reference_gem_page("GEM")', app)
+        self.assertIn('departed_stage_rows(history,', reference)
+        self.assertIn('"history": histories', reference)
         self.assertIn('if show_previous:', master)
 
 
 if __name__ == "__main__":
     unittest.main()
+

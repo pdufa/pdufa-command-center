@@ -14,9 +14,8 @@ def test_consolidated_pdufa_subtabs_keep_scans_and_trading():
     assert 'with pipeline_tab:' in pdufa
     assert 'with gem_jr_tab:' in pdufa
     assert 'with gem_tab:' in pdufa
-    assert 'render_gem_jr()' in pdufa
-    assert 'render_gem_potential(' in pdufa
-    assert 'render_gem_nested_master(' in pdufa
+    assert '_render_reference_gem_page("GEM JR")' in pdufa
+    assert '_render_reference_gem_page("GEM")' in pdufa
     assert 'with nightly_report_tab:' in pdufa
     assert 'render_nightly_scan_report()' in pdufa
     assert 'with watch_trade_tab:' in pdufa
