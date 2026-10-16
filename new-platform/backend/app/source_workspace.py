@@ -27,7 +27,8 @@ SOURCES = (
     "pdufa_candidates.csv", "fda_review_engine.csv", "prediction_engine_history.csv",
     "drug_metadata.csv", "second_financing_status.csv",
     "phase_pipeline_market_caps.csv", "gem_stage_membership.json",
-    "overnight_scan_status.json",
+    "overnight_scan_status.json", "step7_market_status.csv",
+    "gem_two_close_recheck.csv", "gem_runway_evidence.json",
 )
 STAGES = (
     "Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3",
@@ -217,6 +218,10 @@ def gather() -> dict:
     records = {name: as_rows(sources[name]) for name in SOURCES if name.endswith(".csv")}
     caps = unique(records["phase_pipeline_market_caps.csv"], "ticker")
     funding = unique(records["second_financing_status.csv"], "event_key")
+    market = unique(records["step7_market_status.csv"], "ticker")
+    sec_recheck = unique(records["gem_two_close_recheck.csv"], "event_key")
+    from .gem_research_adapter import analyze_member, parse_runway
+    runway = parse_runway(sources["gem_runway_evidence.json"])
     # Source identity is exact event key; duplicate matches are quarantined.
     primary = unique(records["pdufa_candidates.csv"], "event_key")
     fda = unique(records["fda_review_engine.csv"], "event_key")
@@ -245,6 +250,16 @@ def gather() -> dict:
     if ledger.get("schema_version") != 1:
         raise ValueError("Unsupported GEM membership source schema")
 
+    status = {}
+    if sources["overnight_scan_status.json"]:
+        try:
+            audit = json.loads(sources["overnight_scan_status.json"])
+            status = {"state": audit.get("status", "UNKNOWN"), "finishedAt": audit.get("finished_at"),
+                      "complete": bool(audit.get("complete")),
+                      "sources": audit.get("source_checks", {})}
+        except (ValueError, TypeError):
+            problems.append("overnight_scan_status.json: invalid JSON")
+
     members: dict = {}
     for stage in ("GEM_JR", "GEM"):
         detail = ledger.get("stages", {}).get(stage, {})
@@ -259,9 +274,27 @@ def gather() -> dict:
             source = by_id.get(exact_id, {})
             if source and source["ticker"] != ticker:
                 source = {}
+            event_key = first(source, "eventKey")
+            event = primary.get(event_key, {}) if event_key else {}
+            row_id = {**source, "id": exact_id, "ticker": ticker,
+                      "nctId": first(entry, "nct_id") or source.get("nctId", "")}
+            try:
+                technical = analyze_member(
+                    row_id, event, funding.get(event_key, {}),
+                    sec_recheck.get(event_key, {}), market, runway.get(ticker),
+                    status, now,
+                )
+            except (ValueError, TypeError, KeyError, OverflowError):
+                technical = {
+                    "entry": None, "exitRisk": None,
+                    "entryStatus": "UNAVAILABLE — SAVED EVIDENCE INVALID",
+                    "exitStatus": "UNAVAILABLE — SAVED EVIDENCE INVALID",
+                    "riskAlerts": ["Original-source calculation could not be verified"],
+                    "researchOnly": True,
+                }
             rows.append({
                 **source,
-                "id": exact_id, "ticker": ticker,
+                "id": exact_id, "ticker": ticker, "technical": technical,
                 "drug": first(entry, "drug") or source.get("drug", ""),
                 "nctId": first(entry, "nct_id") or source.get("nctId", ""),
                 "pdufaDate": first(entry, "pdufa_date") or source.get("pdufaDate", ""),
@@ -274,15 +307,6 @@ def gather() -> dict:
             "asOf": first(detail, "last_complete_snapshot"),
             "rows": sorted(rows, key=lambda v: (v["ticker"], v["id"])),
         }
-    status = {}
-    if sources["overnight_scan_status.json"]:
-        try:
-            audit = json.loads(sources["overnight_scan_status.json"])
-            status = {"state": audit.get("status", "UNKNOWN"), "finishedAt": audit.get("finished_at"),
-                      "complete": bool(audit.get("complete")),
-                      "sources": audit.get("source_checks", {})}
-        except (ValueError, TypeError):
-            problems.append("overnight_scan_status.json: invalid JSON")
     missing_trial_feeds = [
         name for name in ("all_phase_trials.csv", "phase_pipeline.csv")
         if not records.get(name)
@@ -303,6 +327,8 @@ def gather() -> dict:
             "issues": problems, "publishedScan": status,
             "clinicalRows": len(trials),
             "regulatoryRows": len(candidates) - len(trials),
+            "technicalMarketTickers": len(market),
+            "secRunwayTickers": len(runway),
         },
     }
 
