@@ -154,13 +154,14 @@ async def lifespan(app: FastAPI):
             published = workspace()
             health = published.get("sourceHealth") or {}
             logging.getLogger(__name__).warning(
-                "PDUFA_SOURCE_CHECK state=%s programs=%d gem_jr=%d gem=%d clinical_rows=%d issues=%d",
+                "PDUFA_SOURCE_CHECK state=%s programs=%d gem_jr=%d gem=%d clinical_rows=%d issues=%d payload_bytes=%d",
                 health.get("state", "UNKNOWN"),
                 len(published.get("pipeline", [])),
                 len(published.get("members", {}).get("GEM_JR", {}).get("rows", [])),
                 len(published.get("members", {}).get("GEM", {}).get("rows", [])),
                 health.get("clinicalRows", 0),
                 len(health.get("issues", [])),
+                len(__import__("json").dumps(published, separators=(",", ":"), default=str).encode("utf-8")),
             )
         except Exception as exc:
             logging.getLogger(__name__).error(
