@@ -31,6 +31,23 @@ def render_post_phase3_workspace(*args, **kwargs):
         # Rendering is outside the catch: data/schema errors are never hidden.
         return render(*args, **kwargs)
 
+def _fresh_stage_module(name):
+    """Refresh a GEM renderer only when its deployed source changes.
+
+    Streamlit Cloud may cache an older module function with an incompatible
+    signature even after app.py and other Python files have hot-reloaded.
+    """
+    import hashlib
+    import importlib
+    from pathlib import Path
+    module = importlib.import_module(name)
+    source = Path(module.__file__)
+    revision = hashlib.sha256(source.read_bytes()).hexdigest()
+    if getattr(module, "_pdufa_stage_source_revision", None) != revision:
+        importlib.reload(module)
+        module._pdufa_stage_source_revision = revision
+    return module
+
 from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid, sort_pdufa_rows,
                                    DISPLAY_ORDER_OPTIONS)
@@ -4257,13 +4274,13 @@ if page == "PDUFA":
             with st.container(border=True, key="gem_shared_block"):
                 render_stage_dossier("GEM")
                 st.divider()
-                from gem_potential_ui import render_gem_potential
+                render_gem_potential = _fresh_stage_module("gem_potential_ui").render_gem_potential
                 render_gem_potential(root="data", compact=False,
                                      namespace="gem_full_potential",
                                      show_previous=False)
                 if st.toggle("GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS",
                              value=True, key="gem_shared_show_master"):
-                    from gem_nested_master_ui import render_gem_nested_master
+                    render_gem_nested_master = _fresh_stage_module("gem_nested_master_ui").render_gem_nested_master
                     render_gem_nested_master(root="data", selections_ready=True,
                                              compact=False, show_previous=False)
                 from gem_membership_history import read_history, departed_stage_rows
