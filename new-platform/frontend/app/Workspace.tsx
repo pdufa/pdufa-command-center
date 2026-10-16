@@ -326,7 +326,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const pipeline = snapshot?.pipeline || [];
   const possible = useMemo(() => pipeline.filter(r =>
     (!onlyBand || r.capInRange) &&
-    (!query || [r.ticker,r.company,r.drug,r.indication,r.nctId].some(t => (t || "").toLowerCase().includes(query.toLowerCase())))
+    (!query || [r.ticker,r.company,r.drug,r.indication,r.nctId,r.programId,r.id].some(t => (t || "").toLowerCase().includes(query.toLowerCase())))
   ), [pipeline, onlyBand, query]);
   const counted = useMemo(() => possible.filter(r =>
     (stageFilters.length === 0 || stageFilters.includes(r.stage || "Unknown")) &&
@@ -458,7 +458,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div><strong>STAGES · current, not historical</strong><div className="filter-checks">{STAGES.map(s=><label key={s}><input type="checkbox" checked={stageFilters.includes(s)} onChange={()=>toggleFilter(stageFilters,s,setStageFilters)} />{s}</label>)}</div></div>
           <div><strong>DATES · PDUFA countdown</strong><div className="filter-checks">{BANDS.map(s=><label key={s}><input type="checkbox" checked={dateFilters.includes(s)} onChange={()=>toggleFilter(dateFilters,s,setDateFilters)} />{s}</label>)}</div></div>
         </div>
-        <div className="pipeline-row"><label>Search ticker, drug, indication, NCT<input value={query} onChange={e=>{setQuery(e.target.value);setApplied(false)}} placeholder="Optional search" /></label>
+        <div className="pipeline-row"><label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>{setQuery(e.target.value);setApplied(false)}} placeholder="Optional search" /></label>
           <label>Order<select value={sort} onChange={e=>{setSort(e.target.value);setApplied(false)}}><option value="PDUFA">Closest PDUFA first</option><option value="TICKER">Ticker A–Z</option></select></label>
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>{setOnlyBand(e.target.checked);setApplied(false)}} />Market cap $300M–$10B only</label></div>
         <div className="pipeline-actions"><button type="button" disabled={!stageFilters.length||!dateFilters.length} onClick={()=>{setPipelinePage(0);setApplied(true);}}>SHOW MATCHING TRIALS</button>
@@ -489,7 +489,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </section>
     </section>}
     {snapshot && top==="PDUFA" && nav==="GEMS" && <div className="gems-page">
-      <div className="sectionhead"><div><h2>GEM JR + GEM — One research tab, two stage blocks</h2><p className="subtle">The two membership ledgers stay separate. An observed junior does not automatically qualify as GEM.</p></div>
+      <div className="sectionhead"><div><h2>GEM JR + GEM — One research tab, two stage blocks</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
       <div className="gems-two-blocks">{gemBlock("GEM_JR")}{gemBlock("GEM")}</div>
     </div>}
@@ -536,8 +536,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     {snapshot && top==="PDUFA" && nav==="SCANS" && <section className="panel"><h2>SCANS — Published original-system status</h2><p className="subtle">The new dashboard reads published scanner results. The original Streamlit 10 PM Pacific scans continue independently; no second scanner or Alpaca orders are enabled here.</p><p><strong>Last published overnight scan:</strong> {stated(snapshot.sourceHealth?.publishedScan?.finishedAt, "NOT VERIFIED")} · <strong>Status:</strong> {stated(snapshot.sourceHealth?.publishedScan?.state, "NOT AVAILABLE")}</p><p><strong>Live published-source health:</strong> {stated(snapshot.sourceHealth?.state, "UNKNOWN")}</p>{Object.entries(snapshot.sourceHealth?.publishedScan?.sources || {}).map(([name,result])=><div key={name} className="scan-result"><span>{name.replaceAll("_"," ")}</span><strong>{stated(result.status)}</strong></div>)}<p className="subtle">PARTIAL and missing source families are not marked COMPLETE. These are the saved original reports, not proof of a successful new scan.</p></section>}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
       <p className="subtle">Reported dates only, not FDA-confirmed future events unless the source explicitly verifies them.</p>
-      <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
-        <tbody>{pipeline.filter(r=>daysAway(r.pdufaDate)!==null && (daysAway(r.pdufaDate)||0)>=0).sort((a,b)=>(daysAway(a.pdufaDate)||0)-(daysAway(b.pdufaDate)||0)).map(r=><tr key={r.id}><td>{r.pdufaDate}</td><td>{r.ticker}</td><td>{r.drug}</td><td>{r.id}</td><td>{daysAway(r.pdufaDate)}</td><td>{stated(r.checkStatus)}</td></tr>)}</tbody>
+      <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
+        <tbody>{pipeline.filter(r=>daysAway(r.pdufaDate)!==null && (daysAway(r.pdufaDate)||0)>=0).sort((a,b)=>(daysAway(a.pdufaDate)||0)-(daysAway(b.pdufaDate)||0)).map(r=><tr key={r.id}><td>{r.pdufaDate}</td><td className="permanent-id">{stated(r.programId)}</td><td>{r.ticker}</td><td>{r.drug}</td><td>{r.id}</td><td>{daysAway(r.pdufaDate)}</td><td>{stated(r.checkStatus)}</td></tr>)}</tbody>
       </table></div></section>}
   </div>;
 }
