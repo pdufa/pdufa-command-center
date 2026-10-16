@@ -68,13 +68,20 @@ class FourPdufaScoreTabTests(unittest.TestCase):
     def test_gem_jr_and_gem_keep_distinct_qualification_contract(self):
         app = AppTest.from_file(str(APP), default_timeout=120)
         app.session_state["nav"] = "PDUFA"
-        app.session_state["pdufa_subtab"] = "GEM JR + GEM"
+        app.session_state["pdufa_subtab"] = "GEM JR"
         app.run()
         self.assertFalse(list(app.exception))
-        panel = next(t for t in app.get("tab") if t.label == "GEM JR + GEM")
-        headings = [x.body for x in panel.get("markdown")]
-        self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x for x in headings))
-        self.assertTrue(any("POTENTIAL GEMs — PENDING RESEARCH" in x for x in headings))
+        jr = next(t for t in app.get("tab") if t.label == "GEM JR")
+        headings = [x.body for x in jr.get("markdown")]
+        self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x
+                            for x in headings))
+        app.session_state["pdufa_subtab"] = "GEM"
+        app.run()
+        self.assertFalse(list(app.exception))
+        gem = next(t for t in app.get("tab") if t.label == "GEM")
+        gem_headings = [x.body for x in gem.get("markdown")]
+        self.assertTrue(any("POTENTIAL GEMs — PENDING RESEARCH" in x
+                            for x in gem_headings))
         source = APP.read_text(encoding="utf-8")
         self.assertIn("two distinct SEC-confirmed financing closures", source)
         self.assertIn('key="gem_jr_shared_block"', source)
