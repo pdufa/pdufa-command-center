@@ -264,3 +264,6 @@ button.secondary { background: white; color: #172b1b; }
 }
 
 .master-quicklink{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;padding:10px 12px;color:#3d300c;background:#f7df8c;border:2px solid #bd8813;border-radius:9px}.master-quicklink strong{font-size:12px}.master-quicklink button{background:linear-gradient(#805d10,#a47915);color:white;border:1px solid #936b18;font-weight:800;padding:8px 11px;border-radius:5px}.master-quicklink button:hover{background:#795a12}
+
+/* Immutable research Program IDs distinguish multiple drugs under a single ticker. */
+.permanent-id{display:inline-block;font:800 11px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;color:#1a4765;background:#e4f4ff;border:1px solid #86bacb;border-radius:5px;padding:3px 5px;white-space:nowrap}.legacy-tags{border-color:#9f8251!important;background:#fff8e7!important}.legacy-tags h4{margin:10px 0}.legacy-ticker-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #ded3be;padding:10px 0}.legacy-ticker-row>strong{font-size:15px;min-width:58px}.legacy-ticker-row button{font-size:11px;padding:6px 8px}.legacy-ticker-row span{color:#8b6355;font-size:12px}
