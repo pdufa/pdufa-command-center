@@ -153,6 +153,22 @@ async def lifespan(app: FastAPI):
             from .source_workspace import workspace
             published = workspace()
             health = published.get("sourceHealth") or {}
+            member_rows = (published.get("members", {}).get("GEM_JR", {}).get("rows", [])
+                           + published.get("members", {}).get("GEM", {}).get("rows", []))
+            verified_profiles = sum(
+                isinstance(row.get("technical"), dict)
+                and "tradeCall" in row.get("technical", {})
+                for row in member_rows
+            )
+            market_profiles = sum(
+                isinstance(row.get("technical"), dict)
+                and row.get("technical", {}).get("close") is not None
+                for row in member_rows
+            )
+            logging.getLogger(__name__).warning(
+                "PDUFA_TECHNICAL_CHECK profiles=%d/%d eod_profiles=%d",
+                verified_profiles, len(member_rows), market_profiles,
+            )
             logging.getLogger(__name__).warning(
                 "PDUFA_SOURCE_CHECK state=%s programs=%d gem_jr=%d gem=%d clinical_rows=%d issues=%d payload_bytes=%d",
                 health.get("state", "UNKNOWN"),
