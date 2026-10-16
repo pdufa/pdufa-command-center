@@ -23,9 +23,8 @@ from gem_trading_advisory import (
 )
 from gem_scans_ui import _saved_gem_scans, FILES
 from gem_master_list import build_gem_master_list
-from ticker_toggle_panel import (
-    _init_browser_selection, _toggle, clean_ticker, open_trade_workspace,
-)
+from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
+from gem_trade_navigation import open_trade_workspace
 
 
 def source_date(value):
