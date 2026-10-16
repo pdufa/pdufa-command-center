@@ -105,11 +105,41 @@ function historyCard(){const rows=data.history;return card(data.junior?"Promotio
 function alertsCard(r){const rows=r?r.alerts:data.alerts;return card(data.junior?"Alerts / Watchlist":"Alerts / Watchlist / Trade","bell",rows.length?table(["Date","Ticker","Event","Details"],rows.map(x=>[dateLabel(x.date),esc(x.ticker),esc(x.type),`<span title="${esc(x.detail)}">${x.url?safeLink(x.url,x.detail):esc(x.detail)}</span>`])):'<div class="history-empty">No source-linked alerts for this selection. Review published scans for updates.</div>',"alerts",`<button class="scan-open" data-action="navigate" data-tab="WT">Open W / T</button>`);}
 function scansCard(){return card("Scan Diagnostics","pulse",table(["Scan Type","Last Update","Status"],data.scans.map(s=>[esc(s.label),`<span title="${esc(s.date)}">${dateLabel(s.date)}</span>`,badge(s.status,s.type)]))+`<div class="source-note">10 PM Pacific sequential schedule · ${esc(data.scan_note)}</div>`,"diagnostics",'<button class="scan-open" data-action="navigate" data-tab="SCANS">Open scans</button>');}
 function policyCard(){const value=state.policy;return card("Hard Stop / PDUFA Exit Policy","flag",`<p>${value==="unresolved"?"Policy decision required:":"Selected research policy:"}</p><div class="policy-options">${[["pre","Exit before PDUFA (reduce event risk)"],["partial","Hold a partial position through PDUFA"],["hold","Hold the full position through PDUFA"]].map(([id,label])=>`<label><input type="radio" name="exit-policy" value="${id}"${value===id?" checked":""}>${esc(label)}</label>`).join("")}</div><div class="callout warning"><span>! ${value==="unresolved"?"Unresolved. Define a consistent exit policy.":"Saved as a research preference. Apply manually with your position and risk plan."}</span></div>`,"policy-card");}
+function criteriaCard(){
+  const rules=data.junior?[
+    "Exact-program Phase 3 readout reviewed",
+    "PDUFA date verified or explicitly pending",
+    "Financing #1 source verified",
+    "Financing #2 tracked for GEM promotion",
+    "Cash runway source reviewed",
+    "Market-cap and liquidity reviewed",
+    "No unresolved material safety flags",
+    "Technical trend and price levels reviewed"
+  ]:[
+    "Positive exact-program Phase 3 evidence",
+    "Two separately funded post-readout closes",
+    "Both financing sources independently reviewed",
+    "Cash runway / dilution risk reviewed",
+    "PDUFA timing and source reviewed",
+    "Regulatory and clinical risks reviewed",
+    "Technical entry and exit plan defined",
+    "No automatic trade authorization"
+  ];
+  return card("Filters / Criteria ("+data.stage+")","check",
+    '<div class="criteria-intro">Qualification rules are source-backed; these are not manually overridden checkboxes.</div>'+
+    '<ul class="criteria-list">'+rules.map(rule=>'<li><span class="criteria-mark" aria-hidden="true">✓</span>'+esc(rule)+'</li>').join("")+'</ul>'+
+    '<div class="criteria-foot">Current source-qualified candidates: <strong>'+data.candidates.length+'</strong><br>Held for review: <strong>'+data.held_count+'</strong></div>',
+    "criteria-card");
+}
+function stageSummary(){
+  const label=data.junior?"Earlier Setups — Post Phase 3 / Pre-PDUFA":"Higher Conviction — Near PDUFA";
+  return '<div class="stage-banner '+(data.junior?"junior":"senior")+'"><strong>'+esc(data.stage)+'</strong><span>'+esc(label)+'</span><span class="stage-tally">Candidates: '+data.candidates.length+'</span><span class="stage-health">'+(data.source_current?"Saved source status current":"Source review required")+'</span></div>';
+}
 function render(focusSearch=false){if(!data)return;const rows=matching();if(!rows.some(r=>r.id===state.selected))state.selected=rows[0]?.id||null;const r=rows.find(x=>x.id===state.selected)||null;
   const intro=data.junior?"Earlier Setups (Post Phase 3 / Pre-PDUFA)":"Higher Conviction (Near PDUFA)";
   const subtitle=data.junior?"Earlier setups with more time to develop. Monitor trial evidence, financing progress and promotion to GEM.":"Later-stage research with stronger qualification requirements. Exact-program Phase 3 and two independently verified financing closures.";
   const notice=data.notice||(!data.source_current?"Published SEC / source coverage is partial or stale. Clinical and financing clearance does not clear new trading entries.":"");
-  app.innerHTML=`<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page">${candidateCard(rows)}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
+  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout">${criteriaCard()}${candidateCard(rows)}</div>${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
   app.setAttribute("aria-busy","false");drawPriceChart(r);persist();
   app.querySelectorAll("details[data-tree]").forEach(el=>{const key=r?.id+":"+el.dataset.tree;if(Object.hasOwn(state.tree,key))el.open=state.tree[key];el.addEventListener("toggle",()=>{state.tree[key]=el.open;persist();});});
   if(focusSearch){const input=document.getElementById("candidate-search");input.focus();input.setSelectionRange(input.value.length,input.value.length);}resize();
