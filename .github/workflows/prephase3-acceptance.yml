@@ -37,6 +37,8 @@ jobs:
           node-version: "22"
       - name: Install browser instrumentation
         run: npm install --no-save playwright-core
+      - name: Verify bounded frame-loading retries offline
+        run: node tests/test_browser_frame_errors.cjs
       - name: Verify Chrome on runner
         shell: bash
         run: |
