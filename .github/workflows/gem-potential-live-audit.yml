@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/gem-potential-live-audit.yml"
       - "scripts/gem_potential_live_audit.cjs"
+      - "app.py"
       - "gem_potential_ui.py"
       - "gem_potential_list.py"
       - "gem_jr_ui.py"
