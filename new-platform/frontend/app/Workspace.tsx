@@ -3,6 +3,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
+type Factor = { label: string; weight: number; earned: number | null; evidence: string };
+type ResearchTechnical = {
+  benchmarks?: { phase3: boolean; secondFinancing: boolean; bothConfirmed: boolean; warning: string; readoutDate: string; firstClose: string; secondClose: string };
+  tradeCall?: string; tradeReason?: string;
+  marketDate?: string; marketSource?: string; eodFresh?: boolean;
+  close?: number | null; sma20?: number | null; sma50?: number | null;
+  rsi14?: number | null; rvol?: number | null; avgDollarVolume20?: number | null;
+  closingSupport20?: number | null; macd?: { macd: number | null; signal: number | null; bullish: boolean } | null;
+  base?: { status: string; support: number | null; resistance: number | null; touches: number | null; widthPct: number | null; contractionRatio: number | null; volumeRatio: number | null; breakoutRvol: number | null };
+  dataGaps?: string; entry?: number | null; entryCoverage?: number; entryStatus?: string;
+  exitRisk?: number | null; exitCoverage?: number; exitStatus?: string;
+  entryFactors?: Factor[]; exitFactors?: Factor[];
+  runwayMonths?: number | null; runwayGate?: string; runwayReason?: string; runwaySource?: string; runwayAsOf?: string;
+  riskAlerts?: string[]; researchOnly?: boolean;
+};
+
 type Candidate = {
   id: string; eventKey?: string; ticker: string; company?: string;
   drug?: string; indication?: string; nctId?: string; pdufaDate?: string;
@@ -13,6 +29,7 @@ type Candidate = {
   lastChecked?: string; approvalProbability?: string; checkStatus?: string;
   pValues?: string; evidenceSummary?: string; signal?: string;
   membershipStatus?: string; firstFound?: string; lastSeen?: string; candidateLinked?: boolean;
+  technical?: ResearchTechnical;
 };
 type StageData = { asOf?: string; rows: Candidate[] };
 type Snapshot = {
@@ -56,28 +73,60 @@ function uniqueRows(rows: Candidate[]) {
   const seen = new Set<string>();
   return rows.filter(row => { if (!row.id || seen.has(row.id)) return false; seen.add(row.id); return true; });
 }
+function scoreNum(number?: number | null, digits = 2, suffix = "") {
+  return typeof number === "number" && Number.isFinite(number) ? number.toFixed(digits) + suffix : "NOT VERIFIED";
+}
 function Goals({ record }: { record: Candidate | null }) {
-  const rows = [
-    ["Market cap", record?.marketCap == null ? "NOT VERIFIED" : money(record.marketCap), "$300M–$10B", record?.capInRange === true],
-    ["Phase 3 primary endpoint", stated(record?.phase3Status), "Issuer/clinical primary source verified", false],
-    ["2nd financing closed", stated(record?.financingStatus), "Two distinct post-Phase-3 funded closings for GEM", record?.financingStatus === "VERIFIED_SECOND_POST_PHASE3_FINANCING"],
-    ["Cash runway", "NOT IN SNAPSHOT", "≥12 months; verified filings", false],
-    ["FDA approval probability", stated(record?.approvalProbability, "NOT SCORED"), "≥75% if model validated; never assume", false],
-    ["Relative volume", "NOT IN SNAPSHOT", "≥1.5× provisional; validate", false],
-    ["Entry risk/reward", "NOT IN SNAPSHOT", "≥2:1 before research entry", false],
-    ["Exit plan", "NOT IN SNAPSHOT", "Hard stop and catalyst policy before entry", false],
-  ] as [string, string, string, boolean][];
-  return (
-    <div className="goal-table">
-      <div className="goal-grid goal-header"><span>Indicator</span><span>Current</span><span>Target / desired level</span></div>
-      {rows.map(([indicator, current, target, verified]) => (
-        <div className="goal-grid" key={indicator}>
-          <span>{indicator}</span><span className={verified ? "verified" : "unknown-value"}>{current}</span>
-          <span className="gold-goal">{target}</span>
-        </div>
-      ))}
+  const tech = record?.technical;
+  const pass = (value?: boolean) => value === true;
+  const rows: [string,string,string,boolean][] = [
+    ["Market capitalization", money(record?.marketCap), "$300M–$10B",pass(record?.capInRange)],
+    ["Phase 3 verified positive", tech?.benchmarks?.phase3 ? "PASS — source checked" : stated(record?.phase3Status), "Exact successful primary endpoint + source", pass(tech?.benchmarks?.phase3)],
+    ["Second post-readout financing", tech?.benchmarks?.secondFinancing ? "PASS — SEC checked" : "NOT CLEARED", "Two distinct SEC-verified funded closes after readout", pass(tech?.benchmarks?.secondFinancing)],
+    ["SEC cash-only runway", tech?.runwayMonths == null ? stated(tech?.runwayGate) : scoreNum(tech.runwayMonths,1," months"), "≥12 months; source current and reconciled", pass(tech?.runwayGate?.startsWith("PASS"))],
+    ["EOD closing price", scoreNum(tech?.close,2," USD"), "Compare SMA20 and SMA50; not executable quote", false],
+    ["SMA20 / SMA50", scoreNum(tech?.sma20)+" / "+scoreNum(tech?.sma50), "Close above SMA20 & SMA50", false],
+    ["Relative volume", scoreNum(tech?.rvol,2,"×"), "≥1.5× provisional", (tech?.rvol??0)>=1.5],
+    ["RSI(14)", scoreNum(tech?.rsi14,1), "45–65 provisional", tech?.rsi14 != null && tech.rsi14>=45 && tech.rsi14<=65],
+    ["20D traded dollar volume", tech?.avgDollarVolume20 == null ? "NOT VERIFIED" : "$"+Math.round(tech.avgDollarVolume20).toLocaleString("en-US"), "≥$5M/day", (tech?.avgDollarVolume20??0)>=5000000],
+    ["Closing support proxy", scoreNum(tech?.closingSupport20,2), "Verify 20 prior sessions; not a hard stop", false],
+    ["Base formation", stated(tech?.base?.status), "2+ separate tests; width ≤18%; volume review", false],
+    ["Entry strength / coverage", tech?.entry == null ? stated(tech?.entryStatus,"UNAVAILABLE") : tech.entry+"/100 · "+tech.entryCoverage+"/100 observed", "Only when ≥50/100 evidence coverage and all gates pass", false],
+    ["Exit risk / coverage", tech?.exitRisk == null ? stated(tech?.exitStatus,"UNAVAILABLE") : tech.exitRisk+"/100 · "+tech.exitCoverage+"/100 observed", "PDUFA −3 and hard-exit warnings override scores", false],
+  ];
+  return <div className="goal-table">
+    <div className="goal-grid goal-header"><span>Indicator</span><span>Observed / status</span><span>Goal / rule</span></div>
+    {rows.map(([label, observed, goal, verified])=><div key={label} className="goal-grid">
+      <span>{label}</span><span className={verified ? "verified" : "unknown-value"}>{observed}</span><span className="gold-goal">{goal}</span>
+    </div>)}
+  </div>;
+}
+function TechnicalPanel({ record }: { record: Candidate }) {
+  const x = record.technical;
+  if (!x) return <p className="subtle">Saved market/SEC observations are unavailable for this exact program.</p>;
+  return <div className="research-technical">
+    <h3>Evidence-gated entry / exit monitor</h3>
+    <p className="risk-line"><strong>{stated(x.tradeCall,"NO VERIFIED MARKET ASSESSMENT")}</strong> · {stated(x.tradeReason)}</p>
+    <div className="research-score-cards">
+      <div><strong>Entry /100</strong><span>{x.entry == null ? "UNSCORED" : x.entry}</span><small>Evidence coverage {x.entryCoverage??0}/100</small></div>
+      <div><strong>Exit risk /100</strong><span>{x.exitRisk == null ? "UNSCORED" : x.exitRisk}</span><small>Evidence coverage {x.exitCoverage??0}/100</small></div>
+      <div><strong>Market snapshot</strong><span>{x.eodFresh ? "RECENT EOD" : "STALE / REVIEW"}</span><small>{stated(x.marketDate,"No verified session")}</small></div>
     </div>
-  );
+    <p><strong>Entry:</strong> {stated(x.entryStatus)}</p><p><strong>Exit:</strong> {stated(x.exitStatus)}</p>
+    <p><strong>Closing base:</strong> {stated(x.base?.status)} · support {scoreNum(x.base?.support,2)} / resistance {scoreNum(x.base?.resistance,2)}</p>
+    <p><strong>MACD:</strong> {scoreNum(x.macd?.macd,3)} · Signal {scoreNum(x.macd?.signal,3)} (close-based; no intraday VWAP)</p>
+    <p><strong>SEC cash runway:</strong> {stated(x.runwayGate)} · {stated(x.runwayReason)}</p>
+    {x.riskAlerts?.length ? <div className="risk-warnings"><strong>Source warnings</strong>{x.riskAlerts.map(alert=><p key={alert}>{alert}</p>)}</div> : null}
+    <details><summary>All weighted scoring factors and missing evidence</summary>
+      <div className="score-factor-groups">{([["Entry strength",x.entryFactors||[]],["Exit risk",x.exitFactors||[]]] as [string,Factor[]][]).map(([name,items])=>
+        <div key={name}><h4>{name}</h4>{items.map(item=><div className="score-factor" key={item.label}><strong>{item.label}</strong>
+          <span>{item.earned==null ? "NOT AVAILABLE" : item.earned} / {item.weight}</span>
+          <small>{item.evidence}</small></div>)}</div>)}</div>
+    </details>
+    <p className="subtle small">GEM membership and numerical scores do not authorize trading. No order, stop, ATR, spread or position is inferred. {stated(x.dataGaps,"Missing observations remain unscored.")}</p>
+    {evidence(x.marketSource) && <a target="_blank" rel="noopener noreferrer" href={x.marketSource}>Saved market source ↗</a>}
+    {evidence(x.runwaySource) && <a target="_blank" rel="noopener noreferrer" href={x.runwaySource}>SEC cash runway evidence ↗</a>}
+  </div>;
 }
 function SourceDetails({ record }: { record: Candidate }) {
   return (
@@ -308,6 +357,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <div className="sectionhead"><h3>{chosen.ticker} · {stated(chosen.drug)}</h3>
               <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
             <SourceDetails record={chosen} />
+            <TechnicalPanel record={chosen} />
           </div>}
         </div>
       </div>
