@@ -92,8 +92,9 @@ async def lifespan(app: FastAPI):
     # Log only storage readiness, never the database URL or credentials.
     import logging
     logging.getLogger(__name__).warning(
-        "PDUFA staging storage mode: %s; persistent database ready: %s",
+        "PDUFA staging storage mode: %s; postgres_required: %s; persistent database ready: %s",
         "postgresql" if DATABASE_URL.startswith("postgresql+psycopg://") else "sqlite",
+        REQUIRE_POSTGRES,
         storage_ready() and DATABASE_URL.startswith("postgresql+psycopg://"),
     )
     if storage_ready():
