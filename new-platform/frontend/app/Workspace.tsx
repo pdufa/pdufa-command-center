@@ -306,7 +306,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     {snapshot && top==="PDUFA" && nav==="GEMS" && <div className="gems-page">
       <div className="sectionhead"><div><h2>GEM JR + GEM — One research tab, two stage blocks</h2><p className="subtle">The two membership ledgers stay separate. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
-      {gemBlock("GEM_JR")}{gemBlock("GEM")}
+      <div className="gems-two-blocks">{gemBlock("GEM_JR")}{gemBlock("GEM")}</div>
     </div>}
     {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
       <h2>WT — Watchlist and Trading research</h2>
