@@ -26,6 +26,43 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Test Gmail app-password acceptance via IMAP login only (no mailbox access)
+        continue-on-error: true
+        shell: bash
+        run: |
+          python - <<'PY'
+          import imaplib
+          import socket
+          import ssl
+          from scripts.scan_email import EmailSettings, EmailSetupError
+          try:
+              settings = EmailSettings.from_env()
+          except EmailSetupError:
+              print("IMAP_CONFIG_INVALID")
+              raise SystemExit(2)
+          client = None
+          stage = "connect"
+          try:
+              client = imaplib.IMAP4_SSL("imap.gmail.com", 993, ssl_context=ssl.create_default_context(), timeout=15)
+              stage = "login"
+              status, _ = client.login(settings.sender, settings.app_password)
+              if status != "OK":
+                  print("IMAP_AUTH_NOT_ACKNOWLEDGED")
+                  raise SystemExit(3)
+              print("IMAP_AUTH_ACCEPTED; no mailbox selected, no email sent")
+          except imaplib.IMAP4.error:
+              print(f"IMAP_AUTH_OR_POLICY_REJECTED; stage={stage}")
+              raise SystemExit(4)
+          except (socket.timeout, TimeoutError, OSError, ssl.SSLError) as exc:
+              print(f"IMAP_CONNECTION_ERROR; stage={stage}; kind={type(exc).__name__}")
+              raise SystemExit(5)
+          finally:
+              if client is not None:
+                  try:
+                      client.logout()
+                  except (imaplib.IMAP4.error, OSError):
+                      pass
+          PY
       - name: Attempt one authenticated SMTP connection only
         shell: bash
         run: |
