@@ -3350,6 +3350,17 @@ if isinstance(_gem_dashboard_action, dict):
     elif _gem_dashboard_action.get("tab") in {"PIPELINE", "GEM JR", "GEM", "SCANS", "WT"}:
         st.session_state["pdufa_subtab"] = _gem_dashboard_action["tab"]
 
+st.markdown("""<style>
+/* Shared top navigation -- stable on all pages regardless of selected tab. */
+.st-key-pdufa_brand_header{position:relative!important;min-height:29px!important;margin:0!important;padding:5px 12px 2px!important;border:0!important;background:#f4fcff!important}
+.st-key-pdufa_brand_header h1{position:static!important;padding:0!important;margin:0!important;font:700 14px Arial,sans-serif!important;color:#101d35!important;line-height:22px!important}
+.st-key-pdufa_brand_header [data-testid="stCaptionContainer"]{display:none!important}
+.st-key-pdufa_main_navigation{display:block!important;background:#f4fcff!important;padding:2px 12px 6px!important;border-bottom:1px solid #c9e2de!important}
+.st-key-pdufa_main_navigation [role="radiogroup"]{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+.st-key-pdufa_main_navigation [role="radiogroup"] label{margin:0!important}
+@media(max-width:760px){.st-key-pdufa_brand_header h1{font-size:12px!important}}
+</style>""", unsafe_allow_html=True)
+
 with st.container(key="pdufa_brand_header"):
     st.title("🧬 BIO PDUFA COMMAND CENTER")
     st.caption("BUILD 2026-10-16 · PIPELINE → GEM JR → GEM · GEM JR / GEM REFERENCE LAYOUT · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
