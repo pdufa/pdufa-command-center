@@ -14,7 +14,8 @@ import hashlib
 import math
 import pandas as pd
 import streamlit as st
-from ticker_toggle_panel import open_trade_workspace, _toggle, clean_ticker
+from gem_trade_navigation import open_trade_workspace
+from ticker_toggle_panel import _toggle, clean_ticker
 
 
 PAGE_SIZE = 12
