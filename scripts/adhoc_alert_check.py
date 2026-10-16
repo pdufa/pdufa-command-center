@@ -191,22 +191,39 @@ def audit_gmail(username: str, password: str, since: datetime) -> dict:
                 status, matches = client.uid("SEARCH", None, "SINCE", date_clause)
                 if status != "OK":
                     raise RuntimeError("IMAP search failed")
-                # Capped for safety; incomplete coverage must stay explicit.
+                # Process the entire 36-hour SEARCH result in bounded batches,
+                # not just the newest messages. Fetch headers only, read-only.
+                # A missing/malformed response must remain PARTIAL, never PASS.
                 uids = matches[0].split() if matches and matches[0] else []
-                if len(uids) > 150:
-                    folder_errors.append(folder + " header audit truncated to newest 150 messages")
-                for uid in uids[-150:]:
+                for offset in range(0, len(uids), 100):
+                    batch = uids[offset:offset + 100]
+                    expected = set(batch)
                     status, data = client.uid(
-                        "FETCH", uid,
-                        "(X-GM-MSGID BODY.PEEK[HEADER.FIELDS (SUBJECT FROM DATE MESSAGE-ID)])",
+                        "FETCH", b",".join(batch),
+                        "(UID X-GM-MSGID BODY.PEEK[HEADER.FIELDS (SUBJECT FROM DATE MESSAGE-ID)])",
                     )
                     if status != "OK":
-                        folder_errors.append(folder + " header fetch failed")
+                        folder_errors.append(folder + " header batch fetch failed")
                         continue
-                    entry = next((p for p in (data or []) if isinstance(p, tuple)), None)
-                    if entry and entry[1]:
-                        msg = email.message_from_bytes(entry[1])
+                    returned = set()
+                    for entry in (p for p in (data or []) if isinstance(p, tuple)):
+                        if len(entry) < 2:
+                            folder_errors.append(folder + " malformed header response")
+                            continue
                         metadata = entry[0] if isinstance(entry[0], bytes) else b""
+                        uid_match = re.search(rb"\bUID\s+(\d+)\b", metadata)
+                        if not uid_match or uid_match.group(1) not in expected:
+                            folder_errors.append(folder + " unrecognized header UID")
+                            continue
+                        uid = uid_match.group(1)
+                        if uid in returned:
+                            folder_errors.append(folder + " duplicate header UID")
+                            continue
+                        returned.add(uid)
+                        if not entry[1]:
+                            folder_errors.append(folder + " header unavailable")
+                            continue
+                        msg = email.message_from_bytes(entry[1])
                         gmail_id = re.search(rb"\bX-GM-MSGID\s+(\d+)", metadata)
                         message_id = str(msg.get("Message-ID", "")).strip()
                         identity = ("gmail:" + gmail_id.group(1).decode("ascii") if gmail_id
@@ -216,8 +233,8 @@ def audit_gmail(username: str, password: str, since: datetime) -> dict:
                                 continue
                             seen_messages.add(identity)
                         items.append(dict(msg.items()))
-                    else:
-                        folder_errors.append(folder + " header unavailable")
+                    if returned != expected:
+                        folder_errors.append(folder + " incomplete header batch")
             except (imaplib.IMAP4.error, RuntimeError, OSError):
                 folder_errors.append(folder + " unavailable")
         if folder_errors:
