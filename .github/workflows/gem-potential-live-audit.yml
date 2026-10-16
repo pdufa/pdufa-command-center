@@ -1,4 +1,4 @@
-name: GEM Potential Live Browser Check
+name: GEM Reference Dashboard Browser Check
 
 on:
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
             echo "::error::Chrome browser not available on GitHub runner"
             exit 1
           fi
-      - name: Check deployed #1 GEM Potential list and reasons
+      - name: Check both replacement GEM reference dashboards
         run: node scripts/gem_potential_live_audit.cjs
       - name: Upload GEM browser screenshots and diagnostic
         if: always()

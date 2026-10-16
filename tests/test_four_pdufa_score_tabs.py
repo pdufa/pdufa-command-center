@@ -3,6 +3,7 @@
 Values remain NOT SCORED if no independently supported score exists.
 """
 import unittest
+import json
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
@@ -71,21 +72,25 @@ class FourPdufaScoreTabTests(unittest.TestCase):
         app.session_state["pdufa_subtab"] = "GEM JR"
         app.run()
         self.assertFalse(list(app.exception))
-        jr = next(t for t in app.get("tab") if t.label == "GEM JR")
-        headings = [x.body for x in jr.get("markdown")]
-        self.assertTrue(any("GEM JR — RESEARCH & QUALIFICATION QUEUE" in x
-                            for x in headings))
+        jr = [c for c in app.get("component_instance")
+              if "gem_reference_dashboard" in c.proto.component_name]
+        self.assertEqual(len(jr), 1)
+        jr_payload = json.loads(jr[0].proto.json_args)["payload"]
+        self.assertEqual(jr_payload["stage"], "GEM JR")
+        self.assertTrue(all(r["entry"] is None for r in jr_payload["candidates"]))
         app.session_state["pdufa_subtab"] = "GEM"
         app.run()
         self.assertFalse(list(app.exception))
-        gem = next(t for t in app.get("tab") if t.label == "GEM")
-        gem_headings = [x.body for x in gem.get("markdown")]
-        self.assertTrue(any("POTENTIAL GEMs — PENDING RESEARCH" in x
-                            for x in gem_headings))
-        source = APP.read_text(encoding="utf-8")
-        self.assertIn("two distinct SEC-confirmed financing closures", source)
-        self.assertIn('key="gem_jr_shared_block"', source)
-        self.assertIn('key="gem_shared_block"', source)
+        gem = [c for c in app.get("component_instance")
+               if "gem_reference_dashboard" in c.proto.component_name]
+        self.assertEqual(len(gem), 1)
+        payload = json.loads(gem[0].proto.json_args)["payload"]
+        self.assertEqual(payload["stage"], "GEM")
+        for row in payload["candidates"]:
+            self.assertEqual(len(row["financings"]), 2)
+            self.assertTrue(all(f["status"] == "Confirmed" for f in row["financings"]))
+        self.assertFalse(any("DETAILED SOURCE WORKBENCH" in x.label
+                             for x in app.get("toggle")))
 
 
 if __name__ == "__main__":

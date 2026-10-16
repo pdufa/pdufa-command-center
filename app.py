@@ -48,6 +48,15 @@ def _fresh_stage_module(name):
         module._pdufa_stage_source_revision = revision
     return module
 
+
+def _render_reference_gem_page(stage):
+    """The sole GEM page; refresh source adapters retained by Streamlit Cloud."""
+    for name in ("gem_membership_history", "gem_potential_list", "gem_verified_snapshot",
+                 "gem_trading_advisory", "gem_stage_dossier", "gem_visual_page"):
+        _fresh_stage_module(name)
+    _fresh_stage_module("gem_reference_dashboard").render_reference_stage(stage)
+
+
 from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_grid, enrich_exact_trials,
                                    finance_style, sort_pdufa_grid, sort_pdufa_rows,
                                    DISPLAY_ORDER_OPTIONS)
@@ -248,8 +257,7 @@ a:active,a:focus{color:#ff8a00 !important}
  .st-key-pipeline_date_chart_card,.st-key-pipeline_trials_card,
  .st-key-pipeline_workbench_card {padding:10px 12px !important;}
 }
-/* GEM JR, GEM and every stage's WT tables follow the same SEC/FDA cards. */
-.st-key-gem_jr_shared_block, .st-key-gem_shared_block,
+/* Shared ticker watch/trade cards outside the new GEM reference pages. */
 .st-key-stage_wt_pipeline, .st-key-stage_wt_gem_jr,
 .st-key-stage_wt_gem {
   background:#fff !important;
@@ -260,7 +268,6 @@ a:active,a:focus{color:#ff8a00 !important}
   margin-bottom:14px !important;
   box-shadow:0 1px 2px rgba(0,0,0,.08);
 }
-.st-key-gem_jr_shared_block h2, .st-key-gem_shared_block h2,
 .st-key-stage_wt_pipeline h3, .st-key-stage_wt_gem_jr h3,
 .st-key-stage_wt_gem h3 {
   color:#111 !important;
@@ -274,7 +281,6 @@ a:active,a:focus{color:#ff8a00 !important}
   border-radius:10px !important;
 }
 @media(max-width:768px) {
- .st-key-gem_jr_shared_block,.st-key-gem_shared_block,
  .st-key-stage_wt_pipeline,.st-key-stage_wt_gem_jr,
  .st-key-stage_wt_gem {padding:10px 12px !important;}
 }
@@ -3346,7 +3352,7 @@ if isinstance(_gem_dashboard_action, dict):
 
 with st.container(key="pdufa_brand_header"):
     st.title("🧬 BIO PDUFA COMMAND CENTER")
-    st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
+    st.caption("BUILD 2026-10-16 · PIPELINE → GEM JR → GEM · NEW COMPACT DASHBOARD · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
     st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
     st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -4259,52 +4265,11 @@ if page == "PDUFA":
 
     with gem_jr_tab:
         if gem_jr_tab.open:
-            from gem_stage_dossier import render_stage_dossier
-            render_visual_stage = _fresh_stage_module("gem_visual_page").render_visual_stage
-            _fresh_stage_module("gem_reference_dashboard")
-            render_visual_stage("GEM JR")
-            if st.toggle("DETAILED SOURCE WORKBENCH / EXISTING GEM JR CONTROLS", value=False, key="gem_reference_details_jr"):
-                with st.container(border=True, key="gem_jr_shared_block"):
-                    render_stage_dossier("GEM JR")
-                    st.divider()
-                    from gem_jr_ui import render_gem_jr
-                    render_gem_jr()
-                    if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH",
-                                 value=False, key="gemjr_extended_research"):
-                        render_post_phase3_workspace()
+            _render_reference_gem_page("GEM JR")
 
     with gem_tab:
         if gem_tab.open:
-            from gem_stage_dossier import render_stage_dossier
-            render_visual_stage = _fresh_stage_module("gem_visual_page").render_visual_stage
-            _fresh_stage_module("gem_reference_dashboard")
-            render_visual_stage("GEM")
-            if st.toggle("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", value=False, key="gem_reference_details_gem"):
-                with st.container(border=True, key="gem_shared_block"):
-                    render_stage_dossier("GEM")
-                    st.divider()
-                    render_gem_potential = _fresh_stage_module("gem_potential_ui").render_gem_potential
-                    render_gem_potential(root="data", compact=False,
-                                         namespace="gem_full_potential",
-                                         show_previous=False)
-                    if st.toggle("GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS",
-                                 value=True, key="gem_shared_show_master"):
-                        render_gem_nested_master = _fresh_stage_module("gem_nested_master_ui").render_gem_nested_master
-                        render_gem_nested_master(root="data", selections_ready=True,
-                                                 compact=False, show_previous=False)
-                    from gem_membership_history import read_history, departed_stage_rows
-                    previous_gem = departed_stage_rows(read_history("data"), "GEM")
-                    with st.container(border=True, key="gem_previous_candidates"):
-                        st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
-                    st.caption("Only actual scan-observed promotions, departures and "
-                               "reentries; PDUFA −3 is a warning, not list expiry.")
-                    with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
-                                     expanded=False):
-                        if previous_gem:
-                            st.dataframe(pd.DataFrame(previous_gem),
-                                         hide_index=True, use_container_width=True)
-                        else:
-                            st.caption("No GEM departures recorded by a validated scan yet.")
+            _render_reference_gem_page("GEM")
 
     with nightly_report_tab:
         if nightly_report_tab.open:
