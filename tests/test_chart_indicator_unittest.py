@@ -30,6 +30,20 @@ class ChartIndicatorSheetTests(unittest.TestCase):
                 Path(directory)
             )
 
+    def test_timestamp_from_streamlit_day_does_not_crash_catalyst_delta(self):
+        import pandas as pd
+        from chart_indicator_sheet import build_chart_indicator_rows
+        _csv = _cases()._csv
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _csv(root / "pdufa_candidates.csv", [
+                {"event_key": "XYZ|DRUG", "ticker": "XYZ",
+                 "drug": "therapy", "pdufa_date": "2026-12-01"},
+            ])
+            rows = build_chart_indicator_rows(root, pd.Timestamp("2026-10-16"))
+            self.assertEqual(len(rows), 1)
+            self.assertIn("+46 days", rows[0]["Priority 8 — PDUFA / catalyst"])
+
     def test_all_indicators_have_adjoining_reference_targets(self):
         _cases().test_every_indicated_metric_has_an_adjacent_target()
 
