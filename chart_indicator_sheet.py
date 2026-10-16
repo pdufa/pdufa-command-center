@@ -153,6 +153,11 @@ def _program_rows(root):
 
 def build_chart_indicator_rows(data_root, as_of, watch=(), trade=()):
     """Build the display/export without market network calls or fabricated metrics."""
+    # Streamlit's shared dashboard day is a pandas.Timestamp. Normalize it
+    # before subtracting a plain datetime.date catalyst; otherwise
+    # date - Timestamp raises TypeError for saved PDUFA programs.
+    if isinstance(as_of, pd.Timestamp):
+        as_of = as_of.date()
     if not isinstance(as_of, date):
         raise TypeError("as_of must be a date")
     root = Path(data_root)
