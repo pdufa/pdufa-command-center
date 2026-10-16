@@ -82,20 +82,9 @@ from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
 from stage_wt_tables import render_stage_wt_tables
 from alpaca_connection import render_alpaca_connection_panel
-import nightly_scan_dashboard as nightly_scan_dashboard_module
 def render_nightly_scan_report():
-    # Streamlit can rerun app.py while retaining an imported report module.
-    # Reload only when that module's tracked file changed, so deployed controls
-    # and source-report readers cannot stay bound to an older function object.
-    import hashlib
-    import importlib
-    from pathlib import Path
-    source = Path(nightly_scan_dashboard_module.__file__)
-    revision = hashlib.sha256(source.read_bytes()).hexdigest()
-    if getattr(nightly_scan_dashboard_module, "_loaded_source_revision", None) != revision:
-        importlib.reload(nightly_scan_dashboard_module)
-        nightly_scan_dashboard_module._loaded_source_revision = revision
-    nightly_scan_dashboard_module.render_nightly_scan_report()
+    """Load the report on demand without reloading shared modules mid-session."""
+    _fresh_stage_module("nightly_scan_dashboard").render_nightly_scan_report()
 from phase2_pre_readout_p import attach_phase2_p
 from phase2_phase3_combined import combine_phase2_phase3
 from pre_readout_score import candidate_queue as phase3_pre_readout_queue, assess as assess_pre_readout, evidence_template as pre_readout_template, WEIGHTS as PRE_READOUT_WEIGHTS
