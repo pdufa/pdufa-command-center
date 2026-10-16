@@ -7,6 +7,7 @@ observations are introduced to fill the reference artwork.
 from __future__ import annotations
 
 import csv
+import hashlib
 import math
 from datetime import date, datetime
 from pathlib import Path
@@ -55,8 +56,10 @@ def _money(value):
     return f"${number:,.2f}"
 
 
-def _pct(value):
+def _pct(value, *, probability=False):
     number = _number(value)
+    if probability and number is not None and 0 <= number <= 1:
+        number *= 100
     return f"{number:g}%" if number is not None else "—"
 
 
@@ -229,7 +232,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     info.extend([
         ("Cash Runway", f"{runway_months:g} months" if runway_months is not None else "Unverified"),
         ("Market Cap (saved)", _money(event.get("market_cap"))),
-        ("PoA (saved estimate)", _pct(event.get("approval_probability"))),
+        ("PoA (saved estimate)", _pct(event.get("approval_probability"), probability=True)),
         ("Short Interest (saved)", _pct(event.get("short_interest"))),
         ("Entry Score", f"{entry}/100" if entry is not None else "N/A"),
         ("Exit Risk", f"{risk}/100" if risk is not None else "N/A"),
@@ -242,7 +245,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "runway_reason": runway_result["Cash runway reason"], "cash": _money(cash),
         "market_cap": _number(event.get("market_cap")),
         "market_cap_display": _money(event.get("market_cap")),
-        "poa_display": _pct(event.get("approval_probability")),
+        "poa_display": _pct(event.get("approval_probability"), probability=True),
         "short_display": _pct(event.get("short_interest")),
         "entry": entry, "exit_risk": risk, "quality": score.get("quality"),
         "entry_status": score.get("entry_status", "Unverified"),
@@ -387,8 +390,12 @@ def render_reference_stage(stage, root="data"):
     payload["watch"] = list(st.session_state.get("watchlist", []))
     payload["trade"] = list(st.session_state.get("trading_tickers", []))
     payload["notice"] = st.session_state.pop("_gem_reference_notice", "")
+    revision = hashlib.sha256(b"".join(
+        (FRONTEND / name).read_bytes()
+        for name in ("index.html", "dashboard.css", "dashboard.js")
+    )).hexdigest()[:12]
     raw = _dashboard(payload=payload, default=None,
-                     key="reference_dashboard_" + stage.replace(" ", "_"))
+                     key="reference_dashboard_" + stage.replace(" ", "_") + "_" + revision)
     event = resolve_dashboard_action(raw, payload)
     last_key = "_gem_reference_event_" + stage
     if event is None or raw["nonce"] == st.session_state.get(last_key):

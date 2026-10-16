@@ -4260,7 +4260,8 @@ if page == "PDUFA":
     with gem_jr_tab:
         if gem_jr_tab.open:
             from gem_stage_dossier import render_stage_dossier
-            from gem_visual_page import render_visual_stage
+            render_visual_stage = _fresh_stage_module("gem_visual_page").render_visual_stage
+            _fresh_stage_module("gem_reference_dashboard")
             render_visual_stage("GEM JR")
             if st.toggle("DETAILED SOURCE WORKBENCH / EXISTING GEM JR CONTROLS", value=False, key="gem_reference_details_jr"):
                 with st.container(border=True, key="gem_jr_shared_block"):
@@ -4275,7 +4276,8 @@ if page == "PDUFA":
     with gem_tab:
         if gem_tab.open:
             from gem_stage_dossier import render_stage_dossier
-            from gem_visual_page import render_visual_stage
+            render_visual_stage = _fresh_stage_module("gem_visual_page").render_visual_stage
+            _fresh_stage_module("gem_reference_dashboard")
             render_visual_stage("GEM")
             if st.toggle("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", value=False, key="gem_reference_details_gem"):
                 with st.container(border=True, key="gem_shared_block"):
