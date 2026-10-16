@@ -66,6 +66,9 @@ async function audit() {
     await sleep(1200);
   }
   if (!found) throw new Error("GEM tab not available for GEM list check");
+  // Deep research is deliberately collapsed beneath the reference dashboard.
+  await app.frame.getByText("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", {exact:true})
+    .click({timeout:30000});
   let panelText = "", overview = "";
   for (let i = 0; i < 120; i++) {
     app = (await frameWithApp(page)) || app;

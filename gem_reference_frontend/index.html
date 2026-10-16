@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GEM Research Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <script src="dashboard.js" defer></script>
+</head>
+<body>
+  <main id="dashboard" aria-label="GEM research dashboard" aria-busy="true">
+    <p class="loading">Loading source-backed research…</p>
+  </main>
+  <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+  <dialog id="plan-dialog" aria-labelledby="plan-title">
+    <form method="dialog" id="plan-form">
+      <h2 id="plan-title">Chart reference levels</h2>
+      <p>Your reference levels are saved for this exact program in this browser. They do not change scanner scores.</p>
+      <label>Entry ($)<input name="entry" type="number" min="0.0001" step="any"></label>
+      <label>Stop ($)<input name="stop" type="number" min="0.0001" step="any"></label>
+      <label>Target ($)<input name="target" type="number" min="0.0001" step="any"></label>
+      <p id="plan-error" role="alert"></p>
+      <div class="dialog-actions"><button type="button" data-action="clear-plan">Clear levels</button><button value="cancel">Cancel</button><button class="blue" id="save-plan" value="save">Save levels</button></div>
+    </form>
+  </dialog>
+</body>
+</html>

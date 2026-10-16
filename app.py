@@ -3332,6 +3332,18 @@ if "selected_event_key" not in st.session_state:
     base = future if not future.empty else df
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
+# Component events arrive after tabs are instantiated. Apply their validated
+# navigation at the start of the next run, before any keyed navigation widget.
+_gem_dashboard_action = st.session_state.pop("_gem_dashboard_action", None)
+if isinstance(_gem_dashboard_action, dict):
+    st.session_state.nav = "PDUFA"
+    st.session_state.detail_open = False
+    if _gem_dashboard_action.get("action") == "trade":
+        from gem_trade_navigation import open_trade_workspace
+        open_trade_workspace(_gem_dashboard_action.get("ticker"))
+    elif _gem_dashboard_action.get("tab") in {"PIPELINE", "GEM JR", "GEM", "SCANS", "WT"}:
+        st.session_state["pdufa_subtab"] = _gem_dashboard_action["tab"]
+
 with st.container(key="pdufa_brand_header"):
     st.title("🧬 BIO PDUFA COMMAND CENTER")
     st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA DECISION ENGINE V3.2 · 10 PM Pacific sequential scans")
@@ -3386,8 +3398,9 @@ def _on_main_nav_change():
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
-    st.radio("Navigation", nav_options, horizontal=True, key="nav",
-             label_visibility="collapsed", on_change=_on_main_nav_change)
+    with st.container(key="pdufa_main_navigation"):
+        st.radio("Navigation", nav_options, horizontal=True, key="nav",
+                 label_visibility="collapsed", on_change=_on_main_nav_change)
     page = st.session_state.nav
     if len(st.query_params):
         st.query_params.clear()
@@ -4246,63 +4259,50 @@ if page == "PDUFA":
 
     with gem_jr_tab:
         if gem_jr_tab.open:
-            st.markdown("## GEM JR — POST-PHASE 3 RESEARCH")
-            st.caption(
-                "Earlier-stage source leads. No GEM qualification, score or "
-                "trade authorization can be inferred from a registry result, "
-                "unverified financing or technical price base."
-            )
             from gem_stage_dossier import render_stage_dossier
             from gem_visual_page import render_visual_stage
             render_visual_stage("GEM JR")
-            st.markdown("### DETAILED SOURCE WORKBENCH / EXISTING GEM JR CONTROLS")
-            with st.container(border=True, key="gem_jr_shared_block"):
-                render_stage_dossier("GEM JR")
-                st.divider()
-                from gem_jr_ui import render_gem_jr
-                render_gem_jr()
-                if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH",
-                             value=False, key="gemjr_extended_research"):
-                    render_post_phase3_workspace()
+            if st.toggle("DETAILED SOURCE WORKBENCH / EXISTING GEM JR CONTROLS", value=False, key="gem_reference_details_jr"):
+                with st.container(border=True, key="gem_jr_shared_block"):
+                    render_stage_dossier("GEM JR")
+                    st.divider()
+                    from gem_jr_ui import render_gem_jr
+                    render_gem_jr()
+                    if st.toggle("SHOW EXTENDED PHASE 3 / FINANCING RESEARCH",
+                                 value=False, key="gemjr_extended_research"):
+                        render_post_phase3_workspace()
 
     with gem_tab:
         if gem_tab.open:
-            st.markdown("## GEM — TWO-BENCHMARK VERIFIED RESEARCH")
-            st.caption(
-                "Full-width GEM page. Exact-program successful Phase 3 results "
-                "and two distinct SEC-confirmed financing closures after readout "
-                "are mandatory; new trades also require independent market, "
-                "risk and regulatory checks. T opens WT review, not an order."
-            )
             from gem_stage_dossier import render_stage_dossier
             from gem_visual_page import render_visual_stage
             render_visual_stage("GEM")
-            st.markdown("### DETAILED SOURCE WORKBENCH / VERIFIED MASTER")
-            with st.container(border=True, key="gem_shared_block"):
-                render_stage_dossier("GEM")
-                st.divider()
-                render_gem_potential = _fresh_stage_module("gem_potential_ui").render_gem_potential
-                render_gem_potential(root="data", compact=False,
-                                     namespace="gem_full_potential",
-                                     show_previous=False)
-                if st.toggle("GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS",
-                             value=True, key="gem_shared_show_master"):
-                    render_gem_nested_master = _fresh_stage_module("gem_nested_master_ui").render_gem_nested_master
-                    render_gem_nested_master(root="data", selections_ready=True,
-                                             compact=False, show_previous=False)
-                from gem_membership_history import read_history, departed_stage_rows
-                previous_gem = departed_stage_rows(read_history("data"), "GEM")
-                with st.container(border=True, key="gem_previous_candidates"):
-                    st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
-                st.caption("Only actual scan-observed promotions, departures and "
-                           "reentries; PDUFA −3 is a warning, not list expiry.")
-                with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
-                                 expanded=False):
-                    if previous_gem:
-                        st.dataframe(pd.DataFrame(previous_gem),
-                                     hide_index=True, use_container_width=True)
-                    else:
-                        st.caption("No GEM departures recorded by a validated scan yet.")
+            if st.toggle("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", value=False, key="gem_reference_details_gem"):
+                with st.container(border=True, key="gem_shared_block"):
+                    render_stage_dossier("GEM")
+                    st.divider()
+                    render_gem_potential = _fresh_stage_module("gem_potential_ui").render_gem_potential
+                    render_gem_potential(root="data", compact=False,
+                                         namespace="gem_full_potential",
+                                         show_previous=False)
+                    if st.toggle("GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS",
+                                 value=True, key="gem_shared_show_master"):
+                        render_gem_nested_master = _fresh_stage_module("gem_nested_master_ui").render_gem_nested_master
+                        render_gem_nested_master(root="data", selections_ready=True,
+                                                 compact=False, show_previous=False)
+                    from gem_membership_history import read_history, departed_stage_rows
+                    previous_gem = departed_stage_rows(read_history("data"), "GEM")
+                    with st.container(border=True, key="gem_previous_candidates"):
+                        st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
+                    st.caption("Only actual scan-observed promotions, departures and "
+                               "reentries; PDUFA −3 is a warning, not list expiry.")
+                    with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
+                                     expanded=False):
+                        if previous_gem:
+                            st.dataframe(pd.DataFrame(previous_gem),
+                                         hide_index=True, use_container_width=True)
+                        else:
+                            st.caption("No GEM departures recorded by a validated scan yet.")
 
     with nightly_report_tab:
         if nightly_report_tab.open:

@@ -33,6 +33,7 @@ jobs:
         run: python scripts/validate_gem_source_ledgers.py
       - name: Check GEM and PIPELINE early-clinical browser JavaScript syntax
         run: |
+          node --check gem_reference_frontend/dashboard.js
           node --check scripts/gem_potential_live_audit.cjs
           node --check scripts/prephase3_live_acceptance.cjs
       - name: Run financing and header regression tests

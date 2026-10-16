@@ -79,8 +79,16 @@ async function inspectTab(page, name, expected, opts={}) {
   const frame = await currentFrame(page);
   if (!frame) throw Error(name + ": app iframe not found.");
   await frame.getByRole("tab", {name, exact: true}).click({timeout: 15000});
-  const found = await waitFor(page, name, async(f, text) =>
-    await selectedTab(f, name) && expected.every(s => text.includes(s)), opts.timeoutMs || 125000);
+  const found = await waitFor(page, name, async(f, text) => {
+    if (!await selectedTab(f, name)) return false;
+    if (name === "GEM JR" || name === "GEM") {
+      const dashboard = page.frames().find(x => x.url().includes("gem_reference_dashboard"));
+      if (!dashboard) return false;
+      const content = await dashboard.locator("body").innerText({timeout:5000});
+      return expected.every(s => content.includes(s));
+    }
+    return expected.every(s => text.includes(s));
+  }, opts.timeoutMs || 125000);
   const warning = [];
   if (found.text.includes("SOURCE SNAPSHOT STALE")) warning.push("GEM source snapshot stale");
   if (found.text.includes("SEC FINANCING RECHECK PARTIAL/STALE")) warning.push("SEC financing recheck partial or stale");
@@ -152,8 +160,8 @@ async function audit() {
 
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
-    ["GEM JR", ["GEM JR — POST-PHASE 3 RESEARCH", "GEM JR Candidate Priority Table", "GEM JR — RESEARCH & QUALIFICATION QUEUE"]],
-    ["GEM", ["GEM — TWO-BENCHMARK VERIFIED RESEARCH", "GEM Candidate Priority Table", "Three-Level Nested Clinical Trials", "POTENTIAL GEMs — PENDING RESEARCH"]],
+    ["GEM JR", ["GEM JR Candidates", "Trial Structure (3-Level View)", "Entry Checklist (GEM JR)", "Exit Checklist (GEM JR)"]],
+    ["GEM", ["GEM Candidates", "GEM Qualification Rules", "Two-Financing Verification", "Hard Stop / PDUFA Exit Policy"]],
     ["SCANS", ["GEMS — GITHUB SCAN LOGS", "GEM — MASTER STOCK LIST", "NIGHTLY SCAN REPORT"]],
     // WT chart/widget content lives in a nested components iframe.
     ["WT", []]
@@ -225,8 +233,9 @@ async function audit() {
   // Exercise GEM full-width master, not just its title. The chart and
   // trading assessment require an exact-program stock card to open.
   await safely("GEM nested stock entry/exit chart", async() => {
-    await inspectTab(page, "GEM", ["GEM — TWO-BENCHMARK VERIFIED RESEARCH", "POTENTIAL GEMs — PENDING RESEARCH"]);
+    await inspectTab(page, "GEM", ["GEM Candidates", "GEM Qualification Rules"]);
     const first = await currentFrame(page);
+    await first.getByText("DETAILED SOURCE WORKBENCH / VERIFIED MASTER", {exact:true}).click({timeout:15000});
     const label = "GEM — FULL VERIFIED MASTER: SCORES / SIX FACTORS / INPUTS";
     // The full-width master opens by default; do not click its toggle closed.
     if (!await first.getByText(label, {exact:true}).count())

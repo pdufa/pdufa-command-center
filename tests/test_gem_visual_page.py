@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
+from gem_reference_dashboard import resolve_dashboard_action, _candidate
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -32,25 +33,60 @@ class GemVisualPageTests(unittest.TestCase):
         self.assertIsNone(rows[0][4]["exit_risk"])
         self.assertIsNone(rows[0][4]["quality"])
 
-    def test_image_sections_and_real_w_t_callbacks_are_present(self):
-        source = (ROOT / "gem_visual_page.py").read_text(encoding="utf-8")
-        for text in (
-            "Candidate Priority Table", "Selected Candidate · Full Profile",
-            "Three-Level Nested Clinical Trials", "Financing, SEC Verification",
-            "Trading Chart · Price, Base, Breakout & Volume",
-            "Technical Entry / Exit Signals", "ENTRY READINESS",
-            "EXIT RISK", "Timeline · PDUFA · Dead Zone",
-            "Hard Stops · PDUFA Decision", "News · Alerts",
-            "Scan Scheduler · Diagnostics", "Promotion · Exit History",
-            "LEVEL 1 · COMPANY", "LEVEL 2 · DRUG", "LEVEL 3 · PHASE 3",
-            'on_click=_toggle, args=(symbol, "watch")',
-            'on_click=open_trade_workspace, args=(symbol,)',
-        ):
-            with self.subTest(section=text):
-                self.assertIn(text, source)
-        self.assertNotIn('with st.expander("LEVEL 1', source)
-        self.assertIn('key="visual_" + stageid + "_level1"', source)
-        self.assertIn('key="visual_" + stageid + "_level2"', source)
+    def test_w_t_actions_resolve_from_exact_program_not_client_ticker(self):
+        payload = {"candidates": [{"id": "APPLICATION|TEST|A", "ticker": "TEST"}]}
+        for action in ("watch", "trade"):
+            result = resolve_dashboard_action({
+                "nonce": "click-1", "action": action,
+                "id": "APPLICATION|TEST|A", "ticker": "WRONG",
+            }, payload)
+            self.assertEqual(result, {"action": action, "ticker": "TEST"})
+        self.assertIsNone(resolve_dashboard_action({
+            "nonce": "click-2", "action": "trade", "id": "UNKNOWN",
+        }, payload))
+
+    def test_ambiguous_or_expired_component_targets_fail_closed(self):
+        same = {"id": "APPLICATION|TEST|A", "ticker": "TEST"}
+        event = {"nonce": "click-1", "action": "watch", "id": same["id"]}
+        self.assertIsNone(resolve_dashboard_action(event, {"candidates": [same, same]}))
+        self.assertIsNone(resolve_dashboard_action(event, {"candidates": []}))
+        self.assertIsNone(resolve_dashboard_action({"action": "watch"}, {"candidates": [same]}))
+
+    def test_only_existing_research_navigation_and_policies_are_accepted(self):
+        payload = {"candidates": []}
+        for value in ("SCANS", "WT", "GEM JR"):
+            self.assertEqual(resolve_dashboard_action({"nonce": "x", "action": "navigate", "tab": value}, payload),
+                             {"action": "navigate", "tab": value})
+        for event in ({"action": "order", "ticker": "TEST"},
+                      {"action": "navigate", "tab": "BROKER"},
+                      {"action": "policy", "policy": "automatic"}):
+            self.assertIsNone(resolve_dashboard_action({"nonce": "x", **event}, payload))
+
+    @patch("gem_reference_dashboard.assess_runway", return_value={
+        "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
+    })
+    def test_profile_does_not_invent_financing_terms_or_inherit_sibling_clinical_results(self, runway):
+        record = {"Ticker": "TEST", "Pipeline ID": "APPLICATION|TEST|A",
+                  "Exact program": "TEST|A", "Drug": "Drug A", "Indication": "Condition A",
+                  "NCT ID": "NCT00000001", "Phase 3 status": "PRIMARY_MET_VERIFIED",
+                  "Phase 3 date": "2025-01-01", "First close": "2025-02-01",
+                  "Second close": "2025-04-01", "First SEC source": "https://www.sec.gov/first",
+                  "Second SEC source": "https://www.sec.gov/second"}
+        event = {"company": "Test Bio", "reported_p_values": "0.002"}
+        profile = {"base": {}, "bars": [], "date": None}
+        score = {"entry": None, "exit_risk": None}
+        registry = [{"ticker": "TEST", "nct_id": "NCT00000002", "phase": "Phase 3",
+                     "drug": "Drug B", "indication": "Condition B", "status": "COMPLETED"}]
+        result = _candidate("GEM", (record, event, None, profile, score), "data",
+                            date(2026, 10, 15), {}, {}, {}, registry, [])
+        self.assertIsNone(result["entry"])
+        self.assertEqual(result["financings"][0]["amount"], "—")
+        self.assertEqual(result["financings"][1]["warrants"], "—")
+        children = {t["nct"]: t for group in result["hierarchy"] for t in group["trials"]}
+        self.assertEqual(children["NCT00000001"]["p_value"], "0.002")
+        self.assertEqual(children["NCT00000002"]["p_value"], "—")
+        self.assertEqual(children["NCT00000002"]["result"], "COMPLETED")
+        self.assertEqual(children["NCT00000002"]["result_type"], "unknown")
 
 
 if __name__ == "__main__":
