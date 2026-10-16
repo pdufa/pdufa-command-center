@@ -494,20 +494,44 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="gems-two-blocks">{gemBlock("GEM_JR")}{gemBlock("GEM")}</div>
     </div>}
     {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
-      <h2>WT — Watchlist and Trading research</h2>
-      <p className="subtle">W/T labels are stored in your new Neon database, with a browser fallback if disconnected. No broker orders are placed. Charts may be delayed.</p><p aria-live="polite" className="saveState">{wtStatus}</p>
+      <h2>WT — Permanent Program ID Watchlist & Trading Research</h2>
+      <p className="subtle">Each WT selection is attached to one immutable Neon-assigned Program ID, not just a ticker. Different drugs or trials from the same company stay independent. Research only — no broker orders.</p>
+      <p aria-live="polite" className="saveState">{wtStatus}</p>
       {(["watch","trade"] as const).map(kind=><section className="panel" key={kind}>
-        <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST":"TRADING RESEARCH — NO ORDERS"}</h3><span className="counter">{tags[kind].length} tickers</span></div>
-        {tags[kind].length===0 && <p className="subtle">No tickers yet. Use W/T buttons in Pipeline or GEM candidate rows.</p>}
-        {tags[kind].map(ticker=><div className="wt-stock" key={ticker}>
-          <div className="wt-identity"><h3>{ticker}</h3><p className="subtle">{byTicker.get(ticker)?.length||0} linked source program(s)</p>
-            <button type="button" onClick={()=>mark(ticker,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE TO TRADING":"RETURN TO WATCHLIST"}</button>
-            <button type="button" className="secondary" onClick={()=>mark(ticker,"clear")}>REMOVE TAG</button>
-            <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE")}>Open ticker checklist</button>
-          </div>
-          <Chart ticker={ticker}/>
-        </div>)}
+        <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
+        {tags[kind].length===0 && <p className="subtle">No exact programs selected yet. Use W/T buttons beside Program IDs in PIPELINE or GEM.</p>}
+        {tags[kind].map(programId=>{
+          const selectedRecord=byProgram.get(programId);
+          const saved=storedIdentities.find(x=>x.programId===programId);
+          const ticker=selectedRecord?.ticker||saved?.ticker||"";
+          return <div className="wt-stock" key={programId}>
+            <div className="wt-identity">
+              <strong className="permanent-id">{programId}</strong>
+              <h3>{ticker||"SOURCE NOT CURRENT"}</h3>
+              <p className="subtle">{stated(selectedRecord?.drug||saved?.drug)} · {stated(selectedRecord?.id||saved?.id,"historical exact program")}</p>
+              {!selectedRecord && <p className="subtle">Program remains stored in Neon even when no longer in the latest published source. Historical identity has not been removed.</p>}
+              <button type="button" onClick={()=>mark(programId,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE PROGRAM TO TRADING RESEARCH":"RETURN PROGRAM TO WATCHLIST"}</button>
+              <button type="button" className="secondary" onClick={()=>mark(programId,"clear")}>REMOVE PROGRAM TAG</button>
+              {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
+              {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE")}>Open ticker checklist (shared at ticker level)</button>}
+            </div>
+            {ticker && <Chart ticker={ticker}/>}
+          </div>;
+        })}
       </section>)}
+      {(legacyTags.watch.length>0||legacyTags.trade.length>0) && <section className="panel legacy-tags">
+        <h3>Legacy ticker-only selections — preserved for review</h3>
+        <p className="subtle">Older WT tags did not identify a particular drug or trial. They remain unchanged; choose an exact permanent Program ID below to add it to the new WT lists. Nothing is assigned automatically.</p>
+        {(["watch","trade"] as const).map(kind=>legacyTags[kind].length>0 &&
+          <div key={kind}><h4>{kind==="watch"?"Previous WATCH tickers":"Previous TRADING tickers"}</h4>
+            {legacyTags[kind].map(ticker=><div key={kind+"|"+ticker} className="legacy-ticker-row">
+              <strong>{ticker}</strong>
+              {(byTicker.get(ticker)||[]).map(r=><button type="button" key={r.id} disabled={!r.programId||!tagsReady}
+                onClick={()=>mark(r.programId||"",kind)}>{stated(r.programId)} · {stated(r.drug,r.id)}</button>)}
+              {!byTicker.get(ticker)?.length && <span>Original ticker retained; no current exact-program match in published sources</span>}
+            </div>)}
+          </div>)}
+      </section>}
     </div>}
     {snapshot && top==="PDUFA" && nav==="SCANS" && <section className="panel"><h2>SCANS — Published original-system status</h2><p className="subtle">The new dashboard reads published scanner results. The original Streamlit 10 PM Pacific scans continue independently; no second scanner or Alpaca orders are enabled here.</p><p><strong>Last published overnight scan:</strong> {stated(snapshot.sourceHealth?.publishedScan?.finishedAt, "NOT VERIFIED")} · <strong>Status:</strong> {stated(snapshot.sourceHealth?.publishedScan?.state, "NOT AVAILABLE")}</p><p><strong>Live published-source health:</strong> {stated(snapshot.sourceHealth?.state, "UNKNOWN")}</p>{Object.entries(snapshot.sourceHealth?.publishedScan?.sources || {}).map(([name,result])=><div key={name} className="scan-result"><span>{name.replaceAll("_"," ")}</span><strong>{stated(result.status)}</strong></div>)}<p className="subtle">PARTIAL and missing source families are not marked COMPLETE. These are the saved original reports, not proof of a successful new scan.</p></section>}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
