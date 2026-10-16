@@ -1,0 +1,81 @@
+name: PDUFA One-Time Gmail Recovery 2026-10-16
+
+# The recovery is intentionally limited to the single requested commit and
+# requires a completed failed predecessor, valid Gmail auth, and no newer scan.
+# This workflow sends no test email and does not alter trading decisions.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-gmail-recovery-20261016.yml']
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  guarded-recovery:
+    if: ${{ github.event.head_commit.message == 'Recover PDUFA overnight scan after Gmail auth fix' }}
+    name: Authenticate Gmail and dispatch one replacement full chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Verify Gmail START-notification authentication
+        shell: bash
+        run: |
+          python - <<'PY'
+          import smtplib, ssl
+          from scripts.scan_email import EmailSettings
+          settings = EmailSettings.from_env()
+          try:
+              with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20, context=ssl.create_default_context()) as smtp:
+                  smtp.login(settings.sender, settings.app_password)
+          except Exception as exc:
+              print("Gmail SMTP START-auth preflight FAILED (" + type(exc).__name__ + "); survey blocked.")
+              raise SystemExit(1)
+          print("Gmail SMTP START-auth preflight PASSED (no email sent).")
+          PY
+      - name: Confirm failed predecessor and reject duplicate full-chain dispatches
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/38854080757" > "$RUNNER_TEMP/predecessor.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/runs?branch=main&per_page=100" > "$RUNNER_TEMP/overnight.json"
+          python - "$RUNNER_TEMP/predecessor.json" "$RUNNER_TEMP/overnight.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1]) as f: previous = json.load(f)
+          with open(sys.argv[2]) as f: recent = json.load(f)
+          if previous.get("id") != 38854080757 or previous.get("status") != "completed" or previous.get("conclusion") != "failure":
+              print("Expected failed predecessor not confirmed; no scan dispatch.")
+              raise SystemExit(1)
+          items = recent.get("workflow_runs")
+          if not isinstance(items, list):
+              print("Cannot examine scan runs; no dispatch.")
+              raise SystemExit(1)
+          past = previous.get("created_at", "")
+          for run in items:
+              if run.get("event") != "workflow_dispatch" or run.get("head_branch") != "main":
+                  continue
+              if run.get("id") == previous["id"]:
+                  continue
+              if run.get("status") != "completed" or run.get("created_at", "") > past:
+                  print("A different full-chain scan is already active or newer; no duplicate dispatch.")
+                  raise SystemExit(1)
+          print("Exactly one recovery dispatch is admitted.")
+          PY
+      - name: Dispatch awaited PIPELINE GEM JR GEM and all source checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
+            -f ref=main -f 'inputs[scan_mode]=DELTA' \
+            -f 'inputs[gem_action]=REVERIFY_PARTIAL' \
+            -f 'inputs[validate_only]=false'
+          echo "Requested exactly one DELTA full-chain recovery; this is not proof of scan completion." >> "$GITHUB_STEP_SUMMARY"
