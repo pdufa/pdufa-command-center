@@ -3358,6 +3358,12 @@ st.markdown("""<style>
 .st-key-pdufa_main_navigation{display:block!important;background:#f4fcff!important;padding:2px 12px 6px!important;border-bottom:1px solid #c9e2de!important}
 .st-key-pdufa_main_navigation [role="radiogroup"]{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
 .st-key-pdufa_main_navigation [role="radiogroup"] label{margin:0!important}
+/* The old PDUFA st.tabs still manages lazy rendering, but the single top
+   navigation above is the only visible menu. Nested detail tabs remain shown. */
+.st-key-pdufa_subtab [role="tablist"]{display:none!important}
+.st-key-pdufa_main_navigation [role="radiogroup"] label{border:1px solid #c9e2de!important;border-radius:5px!important;padding:5px 9px!important;background:#fff!important}
+.st-key-pdufa_main_navigation [role="radiogroup"] label:has(input:checked){background:#078aff!important;color:#fff!important;border-color:#078aff!important}
+.st-key-pdufa_main_navigation [role="radiogroup"] label:has(input:checked) p{color:#fff!important}
 @media(max-width:760px){.st-key-pdufa_brand_header h1{font-size:12px!important}}
 </style>""", unsafe_allow_html=True)
 
@@ -3407,17 +3413,38 @@ if st.session_state.nav not in nav_options:
     st.session_state.nav = "PDUFA"
 if st.session_state.detail_return_page not in nav_options:
     st.session_state.detail_return_page = "PDUFA"
-def _on_main_nav_change():
-    """Every fresh visit to PDUFA lands on the primary PIPELINE workflow."""
-    if st.session_state.get("nav") == "PDUFA":
-        st.session_state["pdufa_subtab"] = "PIPELINE"
+# One persistent visible navigation bar. The legacy two-page "nav" and
+# tab-keyed PDUFA workspaces remain internal routes only.
+TOP_NAV_ITEMS = ("PIPELINE", "GEM JR", "GEM", "SCANS", "WT", "PDUFA CALENDAR")
+PDUFA_TABS = TOP_NAV_ITEMS[:5]
+
+def _on_top_navigation_change():
+    destination = st.session_state["top_navigation"]
+    st.session_state.detail_open = False
+    if destination == "PDUFA CALENDAR":
+        st.session_state.nav = "2. PDUFA CALENDAR"
+    else:
+        st.session_state.nav = "PDUFA"
+        st.session_state["pdufa_subtab"] = destination
+
+# Synchronize programmatic GEM shortcuts, saved bookmarks and detail returns
+# before constructing the visible widget. Never reset the currently selected
+# stage merely because an already-visited page is opened.
+if st.session_state.nav == "2. PDUFA CALENDAR":
+    current_top_route = "PDUFA CALENDAR"
+else:
+    current_top_route = st.session_state.get("pdufa_subtab", "PIPELINE")
+    if current_top_route not in PDUFA_TABS:
+        current_top_route = "PIPELINE"
+if st.session_state.get("top_navigation") != current_top_route:
+    st.session_state["top_navigation"] = current_top_route
 
 if st.session_state.detail_open:
     page = "__DETAIL__"
 else:
     with st.container(key="pdufa_main_navigation"):
-        st.radio("Navigation", nav_options, horizontal=True, key="nav",
-                 label_visibility="collapsed", on_change=_on_main_nav_change)
+        st.radio("Navigation", TOP_NAV_ITEMS, horizontal=True, key="top_navigation",
+                 label_visibility="collapsed", on_change=_on_top_navigation_change)
     page = st.session_state.nav
     if len(st.query_params):
         st.query_params.clear()
