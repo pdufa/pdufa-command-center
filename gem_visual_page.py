@@ -40,29 +40,208 @@ def _short(value, limit=46):
 
 
 def _css():
+    """Compact reference-matched dashboard styles, isolated to GEM JR/GEM.
+
+    This page inherits a site-wide large-font/black-metric theme. Override it
+    only while a GEM visual hero is mounted; other PDUFA pages stay untouched.
+    """
     st.markdown("""
     <style>
-    .gem-visual-hero{padding:6px 2px 12px}
-    .gem-visual-kicker{font-size:.72rem;font-weight:800;letter-spacing:.13em;color:#20774b}
-    .gem-visual-hero h2{font-size:1.8rem;color:#064c39;margin:0 0 4px;font-weight:850}
-    .gem-visual-hero p{font-size:.78rem;color:#496273;margin:0}
-    .gem-section-head{background:#e7f3ed;border-bottom:1px solid #d1ddd9;
-      margin:-.8rem -.8rem .7rem;padding:.52rem .8rem;font-size:.84rem;
-      color:#224d53;font-weight:800}
-    .gem-grid-head{font-size:.71rem;letter-spacing:.01em;font-weight:800;color:#497181;
-      border-bottom:1px solid #bed4d9;padding:3px 0 9px}
-    .gem-row-note{font-size:.72rem;color:#486477}
-    .gem-status-ok{font-size:.72rem;font-weight:700;color:#157247}
-    .gem-status-review{font-size:.72rem;font-weight:700;color:#9c6c0c}
-    .gem-visual-footnote{font-size:.7rem;color:#617a83;padding:8px}
-    div[class*="st-key-visual_"] [data-testid="stVerticalBlockBorderWrapper"]{
-      border-color:#d4e5eb;border-radius:9px}
-    div[class*="st-key-visual_"] [data-testid="stMetricValue"]{
-      font-size:1.45rem;color:#1a5165;font-weight:850}
-    div[class*="st-key-visual_"] [data-testid="stMetricLabel"]{font-size:.72rem}
-    div[class*="st-key-visual_"] [data-testid="stButton"] button{
-      min-height:1.85rem;font-size:.76rem;padding:.18rem .5rem}
-    div[class*="st-key-visual_"] [data-testid="stDataFrame"]{font-size:.75rem}
+    .stApp:has(.gem-visual-hero){
+      --gem-ink:#17364c;--gem-muted:#5f7788;--gem-rule:#d9e4eb;
+      --gem-band:#eaf4f0;--gem-accent:#126e52;
+      background:linear-gradient(120deg,#eff7f5 0%,#edf4fb 76%,#eef6f8 100%)!important;
+      color:var(--gem-ink)!important;font-size:12px!important;
+    }
+    .stApp:has(.gem-stage-gem){
+      --gem-band:#e9f2fd;--gem-accent:#2367a5;
+    }
+    .stApp:has(.gem-visual-hero) .block-container{
+      max-width:1850px!important;padding:.4rem 1rem 1.2rem!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stVerticalBlock"]{
+      gap:.34rem!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stHorizontalBlock"]{
+      gap:.45rem!important;
+    }
+    .stApp:has(.gem-visual-hero) h1{
+      font-size:1.0rem!important;line-height:1.15!important;
+      letter-spacing:.015em;margin:0!important;color:#15354a!important;
+    }
+    .stApp:has(.gem-visual-hero) h2{
+      font-size:1.08rem!important;line-height:1.18!important;
+      margin:.15rem 0!important;color:#15354a!important;
+    }
+    .stApp:has(.gem-visual-hero) h3{
+      font-size:.91rem!important;line-height:1.17!important;
+      margin:.2rem 0!important;color:#163950!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stCaptionContainer"],
+    .stApp:has(.gem-visual-hero) [data-testid="stCaptionContainer"] p{
+      color:#657d8e!important;font-size:10.5px!important;
+      line-height:1.3!important;margin:0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMarkdownContainer"] p,
+    .stApp:has(.gem-visual-hero) [data-testid="stMarkdownContainer"] li{
+      font-size:11px!important;line-height:1.3!important;
+      margin:0!important;color:#304f62!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-pdufa_brand_header{
+      background:#fff!important;border:1px solid var(--gem-rule)!important;
+      border-radius:9px!important;padding:7px 12px!important;
+      box-shadow:0 2px 8px #a4bdc522;margin:0 0 3px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-pdufa_brand_header [data-testid="stCaptionContainer"]{
+      display:none!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stRadio"]{
+      margin:0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stRadio"] [data-testid="stMarkdownContainer"] p{
+      font-size:10px!important;color:#4f7184!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab-list"]{
+      background:#fff!important;padding:3px 5px!important;border:1px solid var(--gem-rule);
+      border-radius:8px;gap:4px!important;min-height:30px!important;
+      box-shadow:0 1px 6px #9bb2ba16;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab"]{
+      font-size:10.5px!important;font-weight:700!important;min-height:26px!important;
+      padding:4px 13px!important;border-radius:5px!important;
+      border-bottom:0!important;color:#2c4f66!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab"][aria-selected="true"]{
+      background:var(--gem-accent)!important;color:#fff!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab-highlight"],
+    .stApp:has(.gem-visual-hero) [data-baseweb="tab-border"]{
+      background:transparent!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stTabs"] [data-testid="stTabPanel"]{
+      padding-top:0!important;
+    }
+    .stApp:has(.gem-visual-hero) .gem-visual-hero{
+      padding:4px 0 5px!important;margin:0!important;
+    }
+    .gem-visual-kicker{font-size:9px!important;letter-spacing:.12em;
+      font-weight:800;color:var(--gem-accent);margin:0 0 1px!important;}
+    .stApp:has(.gem-visual-hero) .gem-visual-hero h2{
+      font-size:23px!important;line-height:1.15!important;letter-spacing:-.025em;
+      font-weight:850!important;color:var(--gem-ink)!important;margin:0!important;
+    }
+    .stApp:has(.gem-stage-jr) .gem-visual-hero h2{color:#09503e!important}
+    .stApp:has(.gem-stage-gem) .gem-visual-hero h2{color:#1c5891!important}
+    .gem-visual-hero p{font-size:10px!important;line-height:1.25!important;
+      color:#5e7688!important;margin:2px 0!important}
+    .gem-section-head{
+      background:var(--gem-band)!important;border-bottom:1px solid #d8e6e9;
+      font-size:12px!important;line-height:1.2!important;font-weight:800!important;
+      color:#244e60!important;margin:-9px -11px 7px!important;
+      padding:6px 10px!important;
+    }
+    .stApp:has(.gem-visual-hero) div[class*="st-key-visual_"]
+    [data-testid="stVerticalBlockBorderWrapper"]{
+      background:#fff!important;border:1px solid var(--gem-rule)!important;
+      border-radius:8px!important;
+      box-shadow:0 1px 3px #b4c7d018!important;padding:9px 11px!important;
+    }
+    .stApp:has(.gem-visual-hero) div[class*="st-key-visual_"]
+    [data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stMetric"]){
+      padding:5px 8px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetric"]{
+      background:#fff!important;border:none!important;border-radius:0!important;
+      min-height:44px!important;padding:0!important;box-shadow:none!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetric"] *{
+      color:var(--gem-ink)!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetricLabel"]{
+      font-size:9px!important;line-height:1.2!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetricValue"]{
+      font-size:17px!important;line-height:1.22!important;
+      font-weight:800!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stMetricDelta"]{
+      font-size:9px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stButton"] button,
+    .stApp:has(.gem-visual-hero) [data-testid="stLinkButton"] a,
+    .stApp:has(.gem-visual-hero) .stDownloadButton button{
+      min-height:24px!important;max-height:29px!important;
+      border-radius:5px!important;padding:3px 7px!important;
+      font-size:10.5px!important;line-height:1.2!important;font-weight:700!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stTextInput"] input{
+      font-size:10px!important;min-height:28px!important;padding:4px 8px!important;
+      border:1px solid #cddce4!important;border-radius:4px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stTextInput"] label{
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stDataFrame"]{
+      border:1px solid #e3ebf0!important;border-radius:4px!important;
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stDataFrame"] *{
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stAlert"]{
+      padding:6px 8px!important;border-radius:5px!important;
+      font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stExpander"]{
+      border:1px solid #dbe5ea!important;border-radius:5px!important;
+      margin:2px 0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stExpander"] summary{
+      font-size:11px!important;padding:5px 8px!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stProgress"]{
+      height:5px!important;margin:0!important;
+    }
+    .stApp:has(.gem-visual-hero) [data-testid="stProgress"]>div{
+      height:5px!important;border-radius:5px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_summary [data-testid="stHorizontalBlock"],
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_summary [data-testid="stHorizontalBlock"]{
+      gap:7px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stHorizontalBlock"],
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_ranked [data-testid="stHorizontalBlock"]{
+      gap:6px!important;padding:3px 0!important;border-bottom:1px solid #e8eef1;
+      min-height:27px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stCaptionContainer"],
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_ranked [data-testid="stCaptionContainer"]{
+      font-size:9.5px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stButton"] button,
+    .stApp:has(.gem-visual-hero) .st-key-visual_gem_ranked [data-testid="stButton"] button{
+      padding:2px 4px!important;min-height:22px!important;
+      max-height:25px!important;font-size:10px!important;
+    }
+    .stApp:has(.gem-visual-hero) .st-key-visual_jr_ranked [data-testid="stButton"] button[kind="primary"]{
+      background:#127650!important;border-color:#127650!important;
+    }
+    .stApp:has(.gem-stage-gem) .st-key-visual_gem_ranked [data-testid="stButton"] button[kind="primary"]{
+      background:#2474be!important;border-color:#2474be!important;
+    }
+    .gem-visual-footnote{text-align:center;padding:5px!important;
+      font-size:9px!important;color:#6b8090!important}
+    @media(max-width:760px){
+      .stApp:has(.gem-visual-hero) .block-container{padding:5px 8px!important}
+      .stApp:has(.gem-visual-hero) [data-baseweb="tab"]{padding:4px 6px!important;
+        font-size:10px!important}
+      .stApp:has(.gem-visual-hero) .gem-visual-hero h2{font-size:19px!important}
+      .stApp:has(.gem-visual-hero) [data-testid="stVerticalBlock"]{gap:5px!important}
+      .stApp:has(.gem-visual-hero) .st-key-visual_jr_summary [data-testid="stHorizontalBlock"],
+      .stApp:has(.gem-visual-hero) .st-key-visual_gem_summary [data-testid="stHorizontalBlock"]{
+        flex-wrap:wrap!important;
+      }
+    }
     </style>
     """, unsafe_allow_html=True)
 
