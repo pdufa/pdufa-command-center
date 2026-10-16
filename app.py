@@ -3316,7 +3316,7 @@ if "selected_event_key" not in st.session_state:
     st.session_state.selected_event_key = make_event_key(base.iloc[0]) if not base.empty else ""
 
 st.title("🧬 BIO PDUFA COMMAND CENTER")
-st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FDA ENGINE V3.2 · 10 PM Pacific sequential scans")
+st.caption("BUILD 2026-10-15 · PIPELINE → GEM JR → GEM (separate full pages) · SOURCE-GROUNDED RESEARCH · FINANCING CACHE FIX · FDA ENGINE V3.2 · 10 PM Pacific sequential scans")
 st.caption("OPERATING FLOW: PDUFA → WATCHLIST → ANALYSIS → INVEST. Use the calendar and research pages for supporting review.")
 st.caption("Approval scoring is independent: Internal PoA + Public-Evidence PoA form Our Consensus PoA. Direction / FDA Match remains separately validated against final FDA outcomes.")
 
@@ -4268,7 +4268,8 @@ if page == "PDUFA":
                                              compact=False, show_previous=False)
                 from gem_membership_history import read_history, departed_stage_rows
                 previous_gem = departed_stage_rows(read_history("data"), "GEM")
-                st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
+                with st.container(border=True, key="gem_previous_candidates"):
+                    st.markdown("### PREVIOUS GEM — EXACT TRIAL HISTORY")
                 st.caption("Only actual scan-observed promotions, departures and "
                            "reentries; PDUFA −3 is a warning, not list expiry.")
                 with st.expander(f"OPEN PREVIOUS GEM ({len(previous_gem)})",
