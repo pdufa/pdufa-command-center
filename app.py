@@ -4249,7 +4249,7 @@ if page == "PDUFA":
             st.markdown("## GEM — TWO-BENCHMARK VERIFIED RESEARCH")
             st.caption(
                 "Full-width GEM page. Exact-program successful Phase 3 results "
-                "and two distinct SEC-confirmed post-readout financing closures "
+                "and two distinct SEC-confirmed financing closures after readout "
                 "are mandatory; new trades also require independent market, "
                 "risk and regulatory checks. T opens WT review, not an order."
             )
