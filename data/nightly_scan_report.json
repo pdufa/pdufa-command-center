@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-15T18:14:27.917012+00:00",
-  "latest_run_id": 38685204322,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322",
-  "latest_run_started_at_utc": "2026-10-15T13:27:07Z",
-  "latest_run_conclusion": "success",
+  "updated_at_utc": "2026-10-16T05:07:16.555360+00:00",
+  "latest_run_id": 38854080757,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38854080757",
+  "latest_run_started_at_utc": "2026-10-16T05:06:49Z",
+  "latest_run_conclusion": null,
   "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
-  "status": "PARTIAL",
+  "status": "UNVERIFIED",
   "verification": {
-    "checked_at_utc": "2026-10-15T18:14:27.917031+00:00",
-    "artifact_integrity": "PASS",
+    "checked_at_utc": "2026-10-16T05:07:16.555378+00:00",
+    "artifact_integrity": "ISSUES",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
   },
@@ -17,46 +17,32 @@
     {
       "scan": "2",
       "label": "PIPELINE \u2014 trial inventory",
-      "status": "PARTIAL",
-      "artifact_integrity": "PASS",
-      "run_id": 38685204322,
+      "status": "UNVERIFIED",
+      "artifact_integrity": "FAILED",
+      "run_id": 38854080757,
       "new_records": null,
-      "changed_trials_this_execution": 175,
-      "errors_count": 0,
-      "issues": [],
-      "metrics": {
-        "companies_checked": 717,
-        "companies_due": 717,
-        "tracked_trials_checked": 9744,
-        "tracked_trials_total": 9744,
-        "registry_companies": 717,
-        "companies_with_warnings": 0,
-        "tracked_trials_with_warnings": 0
-      },
-      "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-10-15T05:13:57.945575+00:00",
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322"
+      "changed_trials_this_execution": null,
+      "errors_count": null,
+      "issues": [
+        "Cannot validate archived artifact: ValueError"
+      ],
+      "metrics": {},
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38854080757"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
-      "status": "PARTIAL",
-      "artifact_integrity": "PASS",
-      "run_id": 38685204322,
+      "status": "UNVERIFIED",
+      "artifact_integrity": "FAILED",
+      "run_id": 38854080757,
       "new_records": null,
       "changed_trials_this_execution": null,
-      "errors_count": 0,
-      "issues": [],
-      "metrics": {
-        "companies_due": 717,
-        "studies_checked": 15635,
-        "matched_trials": 3106,
-        "registry_companies": 717,
-        "market_cap_source_unavailable": 0
-      },
-      "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-10-15T05:14:59.057008+00:00",
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322"
+      "errors_count": null,
+      "issues": [
+        "Cannot validate archived artifact: ValueError"
+      ],
+      "metrics": {},
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38854080757"
     },
     {
       "scan": "4",
@@ -82,7 +68,7 @@
   "metrics": {
     "new_records": null,
     "changed_trials": null,
-    "errors": 0
+    "errors": null
   },
   "missing_required_source_families": [
     "FDA regulatory decision/date verification",
@@ -93,6 +79,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 38854080757,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38854080757",
+      "started_at_utc": "2026-10-16T05:06:49Z",
+      "run_conclusion": null,
+      "status": "UNVERIFIED",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": null
+    },
     {
       "run_id": 38685204322,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322",
