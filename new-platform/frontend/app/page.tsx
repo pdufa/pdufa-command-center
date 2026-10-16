@@ -66,7 +66,9 @@ export default function Home() {
     setStatus("Loading saved checklist…");
     fetch(stateUrl(ticker, stage), { signal: controller.signal, cache: "no-store" })
       .then(async response => {
-        if (!response.ok) throw new Error("Checklist could not be loaded (" + response.status + ")");
+        if (!response.ok) throw new Error(response.status === 503
+          ? "Persistent storage is not configured on Render. Set DATABASE_URL before using autosave."
+          : "Checklist could not be loaded (" + response.status + ")");
         return response.json();
       }).then(data => {
         if (controller.signal.aborted) return;
@@ -93,7 +95,7 @@ export default function Home() {
       const version = versions.current[key] ?? 0;
       try {
         const response = await fetch(stateUrl(change.ticker, change.stage), {
-          method: "PUT", headers: { "Content-Type": "application/json" },
+          method: "PUT", keepalive: true, headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ version, selections: change.selections, notes: change.notes })
         });
         const data = await response.json().catch(() => ({}));
@@ -117,8 +119,16 @@ export default function Home() {
     pending.current = { ticker, stage, selections: nextSelections, notes: nextNotes };
     setStatus("Unsaved change…");
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => { void flushPending(); }, delay);
+    if (delay === 0) { void flushPending(); }
+    else timer.current = setTimeout(() => { void flushPending(); }, delay);
   }
+
+  useEffect(() => {
+    // Preserve the last typed note on navigation away, where supported.
+    const flushOnPageHide = () => { void flushPending(); };
+    window.addEventListener("pagehide", flushOnPageHide);
+    return () => window.removeEventListener("pagehide", flushOnPageHide);
+  }, []);
 
   async function signIn(event: FormEvent) {
     event.preventDefault();
@@ -202,16 +212,16 @@ export default function Home() {
               <input type="checkbox" checked={Boolean(selections[item.id])} onChange={event => {
                 const updated = { ...selections, [item.id]: event.target.checked };
                 setSelections(updated);
-                queueChange(updated, notes, 100);
+                queueChange(updated, notes, 0);
               }} />
               <span className="criterionText"><strong>{item.label}</strong><span className="goal">GOAL · {item.goal}</span></span>
             </label>
-          )) : <p>Loading saved choices…</p>}
+          )) : <p role="status">{status}</p>}
         </section>
         <aside className="panel notes">
           <h2>Research notes</h2>
           <p className="subtle">Typing saves after a short pause. Return to this ticker and stage to restore notes.</p>
-          <textarea disabled={!loaded} rows={13} value={notes} placeholder="Add entry rationale, financing evidence, risks, and next actions…" onChange={event => {
+          <textarea disabled={!loaded} onBlur={() => void flushPending()} rows={13} value={notes} placeholder="Add entry rationale, financing evidence, risks, and next actions…" onChange={event => {
             const value = event.target.value;
             setNotes(value);
             queueChange(selections, value, 650);
