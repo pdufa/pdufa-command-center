@@ -479,20 +479,28 @@ def render_visual_stage(stage, root="data"):
     with left:
         with st.container(border=True, key="visual_" + stageid + "_profile"):
             _head("▦ Selected Candidate · Full Profile")
+            # Paired label/value fields reproduce the reference's compact two-up
+            # profile without deriving approval odds or missing financial inputs.
             values = [
-                ("Ticker / drug", ticker + " · " + _show(record.get("Drug"))),
-                ("Indication", record.get("Indication")),
-                ("Clinical readout", record.get("Phase 3 status") or record.get("Evidence type")),
-                ("NCT trial", record.get("NCT ID")),
-                ("PDUFA date", record.get("PDUFA saved") or event.get("pdufa_date")),
-                ("Cash", event.get("cash")),
-                ("Market cap / float", _show(event.get("market_cap")) + " / " + _show(event.get("shares_float"))),
-                ("Short interest", event.get("short_interest")),
-                ("Approval probability (unverified estimate)", event.get("approval_probability")),
-                ("Entry / exit", f"{_show(score['entry'])}/100 · {_show(score['exit_risk'])}/100"),
+                ("Ticker", ticker, "Company / drug",
+                 _show(event.get("company")) + " / " + _show(record.get("Drug"))),
+                ("Indication", _show(record.get("Indication")), "Phase 3",
+                 _show(record.get("Phase 3 status") or record.get("Evidence type"))),
+                ("PDUFA date", _show(record.get("PDUFA saved") or event.get("pdufa_date")),
+                 "Clinical readout", _show(record.get("Phase 3 date") or event.get("phase3_date"))),
+                ("Cash / runway", _show(event.get("cash")) + " / runway NOT VERIFIED",
+                 "Market cap / float", _show(event.get("market_cap")) + " / " +
+                 _show(event.get("shares_float"))),
+                ("Short interest", _show(event.get("short_interest")),
+                 "Warrants / convertibles", "NOT VERIFIED"),
+                ("Approval probability", _show(event.get("approval_probability"), "NOT SCORED"),
+                 "Entry readiness", _show(score["entry"]) + " /100"),
+                ("Exit risk", _show(score["exit_risk"]) + " /100",
+                 "Trial NCT", _show(record.get("NCT ID"))),
             ]
-            _frame([{"Candidate field": k, "Source observation": _show(v)}
-                    for k, v in values], height=350)
+            _frame([{"Field": left, "Source observation": lv,
+                     "Other field": right, "Other observation": rv}
+                    for left, lv, right, rv in values], height=270)
     with right:
         with st.container(border=True, key="visual_" + stageid + "_gates"):
             _head("★ " + stage + " Qualification Gates")
