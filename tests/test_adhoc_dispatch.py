@@ -15,7 +15,7 @@ class DispatchAdhocTests(unittest.TestCase):
         self.assertIn("## NIGHTLY SCAN REPORT", scan_renderer)
         app = (Path(__file__).resolve().parents[1] / "app.py").read_text(
             encoding="utf-8")
-        self.assertIn('["PIPELINE", "GEM JR + GEM", "SCANS", "WT"]', app)
+        self.assertIn('["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]', app)
         self.assertIn("render_nightly_scan_report()", app)
 
     def test_dispatch_uses_auth_and_exact_workflow_payload(self):
