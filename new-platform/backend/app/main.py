@@ -16,6 +16,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 # Render supplies postgres:// or postgresql://; SQLAlchemy 2 uses psycopg (v3) explicitly.
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./checklists_dev.sqlite3")
+REQUIRE_POSTGRES = os.getenv("PDUFA_REQUIRE_POSTGRES", "").lower() in ("1", "true", "yes")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgres://"):]
 elif DATABASE_URL.startswith("postgresql://"):
@@ -73,9 +74,23 @@ def require_internal_key(
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
+def storage_ready() -> bool:
+    # Hosted staging must NEVER silently save ticker data to ephemeral SQLite.
+    return not REQUIRE_POSTGRES or DATABASE_URL.startswith("postgresql+psycopg://")
+
+
+def require_storage() -> None:
+    if not storage_ready():
+        raise HTTPException(
+            status_code=503,
+            detail="Persistent PostgreSQL is not connected. Set DATABASE_URL in Render first.",
+        )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
+    if storage_ready():
+        Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
     yield
 
 
@@ -84,10 +99,17 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "pdufa-new-backend", "production_scans_enabled": False}
+    # An HTTP 200 permits configuration inspection without claiming DB readiness.
+    return {
+        "status": "ok" if storage_ready() else "waiting_for_database",
+        "service": "pdufa-new-backend",
+        "storage_ready": storage_ready(),
+        "storage_kind": "postgresql" if DATABASE_URL.startswith("postgresql+psycopg://") else "sqlite",
+        "production_scans_enabled": False,
+    }
 
 
-@app.get("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key)])
+@app.get("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_checklist(ticker: str, stage: str):
     ticker, stage = validate_location(ticker, stage)
     with Session(ENGINE) as session:
@@ -100,7 +122,7 @@ def read_checklist(ticker: str, stage: str):
         }
 
 
-@app.put("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key)])
+@app.put("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     ticker, stage = validate_location(ticker, stage)
     payload.validate_size()
