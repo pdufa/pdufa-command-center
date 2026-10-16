@@ -32,21 +32,38 @@ def render_post_phase3_workspace(*args, **kwargs):
         return render(*args, **kwargs)
 
 def _fresh_stage_module(name):
-    """Refresh a GEM renderer only when its deployed source changes.
+    """Load a GEM module without reloading shared modules during page renders.
 
-    Streamlit Cloud may cache an older module function with an incompatible
-    signature even after app.py and other Python files have hot-reloaded.
+    Streamlit handles source changes on reruns/deployment. Reloading modules in
+    one session while another imports them can evict a partly loaded module,
+    causing importlib's internal KeyError at _load_unlocked.
     """
-    import hashlib
     import importlib
-    from pathlib import Path
-    module = importlib.import_module(name)
-    source = Path(module.__file__)
-    revision = hashlib.sha256(source.read_bytes()).hexdigest()
-    if getattr(module, "_pdufa_stage_source_revision", None) != revision:
-        importlib.reload(module)
-        module._pdufa_stage_source_revision = revision
-    return module
+    import sys
+    import logging
+
+    for attempt in range(2):
+        try:
+            return importlib.import_module(name)
+        except KeyError as error:
+            # Retry only an importlib module-registry eviction race. Never
+            # conceal a KeyError raised by module code or malformed data.
+            trace = error.__traceback__
+            while trace and trace.tb_next:
+                trace = trace.tb_next
+            loader_race = (
+                error.args == (name,)
+                and name not in sys.modules
+                and trace is not None
+                and trace.tb_frame.f_code.co_filename == "<frozen importlib._bootstrap>"
+                and trace.tb_frame.f_code.co_name == "_load_unlocked"
+            )
+            if attempt or not loader_race:
+                raise
+            logging.getLogger(__name__).warning(
+                "GEM module %s was evicted during import; retrying once.", name
+            )
+    raise RuntimeError("GEM module import unexpectedly exhausted retries")
 
 
 def _render_reference_gem_page(stage):
