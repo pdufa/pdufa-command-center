@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from adhoc_alert_check import current_issue, filter_headers, completed_scan_context
+from adhoc_alert_check import current_issue, filter_headers, completed_scan_context, audit_gmail
 from unittest.mock import patch
 
 
@@ -41,6 +41,88 @@ class AdhocAlertTests(unittest.TestCase):
         self.assertEqual(r["error_subjects"], 1)
         self.assertEqual(r["scan_end_subjects"], 1)
         self.assertEqual(r["scan_start_subjects"], 0)
+
+    def test_gmail_audit_checks_all_messages_in_batches_of_100(self):
+        """A >150 message mailbox must not silently truncate; labels dedupe."""
+        since = datetime(2026, 10, 16, 12, 0, tzinfo=timezone.utc)
+        calls = []
+
+        class FakeIMAP:
+            def __init__(self, host, timeout):
+                self.folder = None
+                self.readonly = []
+            def login(self, username, password):
+                return "OK", [b"logged in"]
+            def select(self, folder, readonly=False):
+                self.folder = folder
+                self.readonly.append(readonly)
+                return "OK", [b"250"]
+            def uid(self, command, *args):
+                if command == "SEARCH":
+                    ids = range(1, 6) if self.folder == "INBOX" else (
+                        range(1, 251) if self.folder == '"PDUFA"' else [])
+                    return "OK", [b" ".join(str(x).encode() for x in ids)]
+                self_assert = command == "FETCH"
+                if not self_assert:
+                    raise AssertionError("Expected only FETCH")
+                batch = args[0].split(b",")
+                calls.append((self.folder, len(batch), args[1]))
+                if not 1 <= len(batch) <= 100:
+                    raise AssertionError("Not bounded to batches of 100")
+                rows = []
+                for uid in batch:
+                    n = int(uid)
+                    header = (
+                        f"Subject: [PDUFA] START {n}\r\n"
+                        f"Date: Fri, 16 Oct 2026 13:00:00 +0000\r\n"
+                        f"Message-ID: <pdufa-{n}@gmail.com>\r\n\r\n"
+                    ).encode()
+                    rows.append((b"1 (UID " + uid + b" X-GM-MSGID " +
+                                 str(9000 + n).encode() + b")", header))
+                return "OK", rows
+            def logout(self):
+                return "BYE", [b""]
+        with patch("adhoc_alert_check.imaplib.IMAP4_SSL", FakeIMAP):
+            report = audit_gmail("sender@gmail.com", "app-password", since)
+        self.assertEqual(report["status"], "CHECKED")
+        self.assertEqual(report["relevant_messages"], 250)
+        self.assertEqual(report["scan_start_subjects"], 250)
+        self.assertEqual([count for folder, count, _ in calls if folder == '"PDUFA"'],
+                         [100, 100, 50])
+        self.assertTrue(all("BODY.PEEK" in fmt for _, _, fmt in calls))
+
+    def test_missing_header_in_batch_remains_partial(self):
+        """Never report CHECKED when a requested Gmail header is missing."""
+        since = datetime(2026, 10, 16, 12, 0, tzinfo=timezone.utc)
+        class FakeIMAP:
+            def __init__(self, host, timeout):
+                self.folder = ""
+            def login(self, *args):
+                return "OK", [b""]
+            def select(self, folder, readonly=False):
+                self.folder = folder
+                return "OK", [b""]
+            def uid(self, command, *args):
+                if command == "SEARCH":
+                    return "OK", [b"1 2"] if self.folder == '"PDUFA"' else [b""]
+                data = []
+                for uid in args[0].split(b","):
+                    if uid == b"2":
+                        continue
+                    header = (
+                        b"Subject: [PDUFA] END test\r\n"
+                        b"Date: Fri, 16 Oct 2026 13:00:00 +0000\r\n"
+                        b"Message-ID: <missing-one@gmail.com>\r\n\r\n"
+                    )
+                    data.append((b"1 (UID " + uid + b" X-GM-MSGID 7001)", header))
+                return "OK", data
+            def logout(self):
+                pass
+        with patch("adhoc_alert_check.imaplib.IMAP4_SSL", FakeIMAP):
+            report = audit_gmail("sender@gmail.com", "app-password", since)
+        self.assertEqual(report["status"], "PARTIAL")
+        self.assertIn("incomplete header batch", report["reason"])
+        self.assertEqual(report["relevant_messages"], 1)
 
     def test_completed_source_scan_is_linked_and_verified(self):
         source = {

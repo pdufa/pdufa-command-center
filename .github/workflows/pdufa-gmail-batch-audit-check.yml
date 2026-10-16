@@ -1,0 +1,67 @@
+name: PDUFA Gmail 100-Message Header Audit Validation
+
+# Regression tests and read-only live header audit. No scanning, mail sending,
+# mailbox mutation, repository writes, or trade authorizations.
+on:
+  push:
+    branches: [main, fix/gmail-audit-100-batches-20261016]
+    paths:
+      - 'scripts/adhoc_alert_check.py'
+      - 'tests/test_adhoc_alert_check.py'
+      - '.github/workflows/pdufa-gmail-batch-audit-check.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/adhoc_alert_check.py'
+      - 'tests/test_adhoc_alert_check.py'
+      - '.github/workflows/pdufa-gmail-batch-audit-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-batch-tests:
+    name: Check 100-item paging, deduplication, and missing headers
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_adhoc_alert_check.py' -v
+
+  real-mailbox-header-check:
+    name: Read Gmail headers only in 100-message batches
+    if: github.event_name == 'push'
+    needs: offline-batch-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify full 36-hour Gmail audit in read-only batches of 100
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime, timedelta, timezone
+          from scripts.adhoc_alert_check import audit_gmail
+          since = datetime.now(timezone.utc) - timedelta(hours=36)
+          result = audit_gmail(os.environ.get("PDUFA_GMAIL_USER", ""),
+                               os.environ.get("PDUFA_GMAIL_APP_PASSWORD", ""),
+                               since)
+          print("Gmail header audit:", result.get("status"))
+          print("Relevant PDUFA messages:", result.get("relevant_messages", 0))
+          print("START subjects:", result.get("scan_start_subjects", 0))
+          print("END subjects:", result.get("scan_end_subjects", 0))
+          if result.get("status") != "CHECKED":
+              print("Audit incomplete; folder-level reason:", result.get("reason", "unknown"))
+              raise SystemExit(1)
+          print("All Gmail folders audited without 150-message truncation.")
+          PY
