@@ -1,0 +1,59 @@
+name: PDUFA SMTP Authentication Diagnostic — NO SEND
+
+# One-time diagnostic branch. Never sends email or starts a collector.
+on:
+  push:
+    branches: [repair/smtp-auth-diagnostic-20261015]
+    paths: ['.github/workflows/pdufa-smtp-auth-diagnostic.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  verify-smtp-auth:
+    name: Check Gmail authentication without sending email
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Attempt one authenticated SMTP connection only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import socket
+          import smtplib
+          import ssl
+          from scripts.scan_email import EmailSettings, EmailSetupError
+
+          try:
+              settings = EmailSettings.from_env()
+          except EmailSetupError:
+              print("CONFIGURATION_INVALID; no email sent")
+              raise SystemExit(2)
+          try:
+              with smtplib.SMTP_SSL(
+                  "smtp.gmail.com", 465, timeout=15,
+                  context=ssl.create_default_context(),
+              ) as server:
+                  server.login(settings.sender, settings.app_password)
+              print("SMTP_AUTH_ACCEPTED; no email sent")
+          except smtplib.SMTPAuthenticationError as exc:
+              print(f"SMTP_AUTH_REJECTED; status={exc.smtp_code}; no email sent")
+              raise SystemExit(3)
+          except smtplib.SMTPResponseException as exc:
+              print(f"SMTP_PROVIDER_REJECTED; status={exc.smtp_code}; no email sent")
+              raise SystemExit(4)
+          except (socket.timeout, TimeoutError, socket.gaierror, ConnectionError) as exc:
+              print(f"SMTP_NETWORK_ERROR; kind={type(exc).__name__}; no email sent")
+              raise SystemExit(5)
+          except (ssl.SSLError, OSError, smtplib.SMTPException) as exc:
+              print(f"SMTP_CONNECTION_ERROR; kind={type(exc).__name__}; no email sent")
+              raise SystemExit(6)
+          PY
