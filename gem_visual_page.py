@@ -331,26 +331,32 @@ def render_visual_stage(stage, root="data"):
         with st.container(border=True, key="visual_" + stageid + "_clinical"):
             _head("▦ Three-Level Nested Clinical Trials")
             company = _show(event.get("company"), ticker)
-            with st.expander("LEVEL 1 · COMPANY / TICKER — " + company, expanded=True):
-                st.caption("Company: " + company + " · Ticker: " + ticker +
-                           " · Exact Pipeline ID: " + _show(record.get("Pipeline ID")))
-            with st.expander("↳ LEVEL 2 · DRUG / INDICATION — " +
-                             _short(record.get("Drug")) + " / " +
-                             _short(record.get("Indication")), expanded=True):
-                _frame([{
-                    "Drug": _show(record.get("Drug")),
-                    "Exact indication": _show(record.get("Indication")),
-                    "Program key": _show(record.get("Exact program")),
-                }])
-            with st.expander("↳ ↳ LEVEL 3 · PHASE 3 TRIAL — " +
-                             _show(record.get("NCT ID")), expanded=True):
-                _frame([
-                    {"Trial field": "NCT ID", "Value": _show(record.get("NCT ID"))},
-                    {"Trial field": "Readout", "Value": _show(record.get("Phase 3 date") or event.get("phase3_date"))},
-                    {"Trial field": "Primary endpoint / p-values", "Value": _show(event.get("reported_p_values"))},
-                    {"Trial field": "Result source status", "Value": _show(record.get("Phase 3 status"))},
-                    {"Trial field": "Patients / study sites", "Value": "NOT AVAILABLE IN QUALIFIED FEED"},
-                ])
+            # Streamlit forbids nested expanders. Use nested toggles and
+            # containers for genuine Company > Drug/Indication > Trial levels.
+            if st.toggle("▸ LEVEL 1 · COMPANY / TICKER — " + company,
+                         value=True, key="visual_" + stageid + "_level1"):
+                with st.container(border=True):
+                    st.caption("Company: " + company + " · Ticker: " + ticker +
+                               " · Exact Pipeline ID: " + _show(record.get("Pipeline ID")))
+                    if st.toggle("↳ LEVEL 2 · DRUG / INDICATION — " +
+                                 _short(record.get("Drug")) + " / " +
+                                 _short(record.get("Indication")),
+                                 value=True, key="visual_" + stageid + "_level2"):
+                        with st.container(border=True):
+                            _frame([{
+                                "Drug": _show(record.get("Drug")),
+                                "Exact indication": _show(record.get("Indication")),
+                                "Program key": _show(record.get("Exact program")),
+                            }])
+                            with st.expander("↳ ↳ LEVEL 3 · PHASE 3 TRIAL — " +
+                                             _show(record.get("NCT ID")), expanded=True):
+                                _frame([
+                                    {"Trial field": "NCT ID", "Value": _show(record.get("NCT ID"))},
+                                    {"Trial field": "Readout", "Value": _show(record.get("Phase 3 date") or event.get("phase3_date"))},
+                                    {"Trial field": "Primary endpoint / p-values", "Value": _show(event.get("reported_p_values"))},
+                                    {"Trial field": "Result source status", "Value": _show(record.get("Phase 3 status"))},
+                                    {"Trial field": "Patients / study sites", "Value": "NOT AVAILABLE IN QUALIFIED FEED"},
+                                ])
             st.caption("Other indications and trials remain independent Pipeline records; "
                        "no clinical evidence is inherited between programs.")
     with right:
