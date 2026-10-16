@@ -140,3 +140,6 @@ button.secondary { background: white; color: #172b1b; }
   .drill-company>summary,.drill-program>summary {flex-wrap:wrap;}
   .chart-wrap iframe {height:240px;}
 }
+
+.streamlit-fallback {display:inline-block; margin-top:10px; color:#105b3a; font-weight:800; border:1px solid #568564; border-radius:6px; padding:8px 10px; text-decoration:none; background:#f1f8f0; font-size:12px;}
+.streamlit-fallback:hover {background:#dfefdd; text-decoration:underline;}
