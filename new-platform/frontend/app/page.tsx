@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import Workspace from "./Workspace";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
@@ -188,10 +189,12 @@ export default function Home() {
     <main className="shell">
       <div className="topline">NEW PLATFORM · ISOLATED TEST INSTALL</div>
       <header className="head">
-        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM · Per-ticker autosaved checklist</p></div>
+        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT · Research workspace and autosaved checklists</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <div className="banner"><strong>Streamlit is preserved.</strong> This is the new platform setup; survey execution and live trading remain disabled.</div>
+      <Workspace onInspect={(nextTicker, nextStage) => { void flushPending(); setTickerInput(nextTicker); setTicker(nextTicker); setStage(nextStage); document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" }); }} />
+      <div id="checklist-workbench" className="checklist-workbench"><h2>SELECTED TICKER · PERSISTENT CHECKLIST</h2><p className="subtle">Data saved to the new Neon PostgreSQL database; independent by ticker and stage.</p>
       <div className="panel controls">
         <form onSubmit={loadTicker}>
           <label htmlFor="ticker">Ticker</label>
@@ -228,6 +231,7 @@ export default function Home() {
           }} />
           <div className="subtle small">Database-backed. No cookies are used to store your checklist answers.</div>
         </aside>
+      </div>
       </div>
     </main>
   );
