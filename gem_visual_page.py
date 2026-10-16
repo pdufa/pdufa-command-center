@@ -276,9 +276,7 @@ def render_visual_stage(stage, root="data"):
                 st.caption(f"Showing first 12 of {len(matched)}. Narrow the search to see another candidate.")
 
     if not rows:
-        with st.container(border=True, key="visual_" + stageid + "_empty"):
-            st.info(f"No active {stage} programs to chart or score. "
-                    "The full research, previous candidates, and source gaps appear below.")
+        _empty_reference_sections(stageid, stage)
         _monitoring(stage, root, today)
         return
 
@@ -458,6 +456,54 @@ def render_visual_stage(stage, root="data"):
                 'never substitutes mockup examples for real verification.</div>',
                 unsafe_allow_html=True)
 
+
+
+def _empty_reference_sections(stageid, stage):
+    """Keep every reference-image panel visible even when eligibility yields zero.
+
+    Empty is a valid research result, not permission to insert demo tickers.
+    """
+    groups = [
+        ([1.65, 1], [
+            ("▦ Selected Candidate · Full Profile",
+             "No active exact-program candidate is selectable in this stage."),
+            ("★ " + stage + " Qualification Gates",
+             "Source results must meet this stage's independent clinical/SEC gates."),
+        ]),
+        ([1, 1], [
+            ("▦ Three-Level Nested Clinical Trials",
+             "COMPANY → DRUG / INDICATION → TRIAL: no active candidate data."),
+            ("▦ Financing, SEC Verification & Dilution",
+             "Financing dates, SEC sources, cash and dilution require a selected program."),
+        ]),
+        ([1.55, 1], [
+            ("↗ Trading Chart · Price, Base, Breakout & Volume",
+             "No selected ticker. No illustrative candlesticks or inferred signals."),
+            ("▦ Technical Entry / Exit Signals",
+             "RSI, MACD, RVOL, SMA, ATR, VWAP, support and resistance unavailable."),
+        ]),
+        ([1, 1], [
+            ("✓ ENTRY READINESS — Weighted 0–100",
+             "N/A — candidate not qualified or source coverage unavailable."),
+            ("⚑ EXIT RISK — Weighted 0–100",
+             "N/A — no source-grounded active program."),
+        ]),
+        ([1, 1], [
+            ("◷ Timeline · PDUFA · Dead Zone",
+             "No exact-program Phase 3 / financing / PDUFA dates are available."),
+            ("⚠ Hard Stops · PDUFA Decision · W/T Controls",
+             "PDUFA exit policy remains unresolved. W/T actions require a selected ticker."),
+        ]),
+    ]
+    for n, (widths, panels) in enumerate(groups):
+        left, right = st.columns(widths, gap="small")
+        for slot, (title, description), suffix in zip(
+            (left, right), panels, ("left", "right")
+        ):
+            with slot:
+                with st.container(border=True, key=f"visual_{stageid}_empty_{n}_{suffix}"):
+                    _head(title)
+                    st.info(description)
 
 def _select(stageid, index):
     st.session_state["visual_" + stageid + "_current"] = index
