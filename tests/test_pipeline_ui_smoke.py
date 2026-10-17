@@ -150,17 +150,15 @@ class PipelinePageSmokeTests(unittest.TestCase):
         self.assertEqual(str(metric_after[0].value), "0")
         self.assert_empty_chart(app)
 
-        # Both selections still need an explicit Show click.
+        # Selecting the second filter now populates automatically.
         app.multiselect(key="pipeline_dates_v9").set_value(["0–30 DAYS"]).run()
-        self.assert_empty_chart(app)
+        self.assert_matching_chart(app, "PDUFA Decision", 0, 30)
         self.assertFalse(app.button(key="pipeline_show_v9").disabled)
         app.button(key="pipeline_show_v9").click().run()
         self.assert_matching_chart(app, "PDUFA Decision", 0, 30)
 
-        # A different window immediately clears previously applied results.
+        # Changing the date immediately shows the new selected window.
         app.multiselect(key="pipeline_dates_v9").set_value(["31–60 DAYS"]).run()
-        self.assert_empty_chart(app)
-        app.button(key="pipeline_show_v9").click().run()
         self.assert_matching_chart(app, "PDUFA Decision", 31, 60)
 
         # Refresh keeps both controls available and requires applying again.
@@ -171,24 +169,16 @@ class PipelinePageSmokeTests(unittest.TestCase):
 
         # Changing stage cannot retain the prior PDUFA application's rows.
         app.multiselect(key="pipeline_stages_v9").set_value(["Phase 3"]).run()
-        self.assert_empty_chart(app)
-        app.button(key="pipeline_show_v9").click().run()
-        self.assert_empty_chart(app)
+        self.assert_empty_chart(app)  # No Phase 3 programs in this date band.
         app.multiselect(key="pipeline_dates_v9").set_value(["NO PDUFA YET"]).run()
-        self.assert_empty_chart(app)
-        app.button(key="pipeline_show_v9").click().run()
         self.assert_matching_chart(app, "Phase 3")
         self.assertTrue(next(t.value for t in app.dataframe if "PDUFA Target" in t.value.columns)["PDUFA Target"].eq("").all())
 
-        # Search and sort changes also invalidate a previously applied chart.
+        # Search and sort also update results immediately when filters are valid.
         app.text_input(key="pipeline_query_v9").set_value("NO_SUCH_PIPELINE_RECORD_9F2A").run()
-        self.assert_empty_chart(app)
-        app.button(key="pipeline_show_v9").click().run()
         self.assert_empty_chart(app)
         app.text_input(key="pipeline_query_v9").set_value("")
         app.selectbox(key="pipeline_sort_v9").set_value("Ticker A–Z").run()
-        self.assert_empty_chart(app)
-        app.button(key="pipeline_show_v9").click().run()
         self.assert_matching_chart(app, "Phase 3")
         tickers = next(t.value for t in app.dataframe if "Current Stage" in t.value.columns)["Ticker"].tolist()
         self.assertEqual(tickers, sorted(tickers))
