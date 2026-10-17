@@ -51,6 +51,37 @@ the live SEC identity check must independently confirm that ticker. Nuvation's
 abbreviated disease label is expanded to the FDA-label wording. These source
 repairs do not change probabilities, scores or trading eligibility.
 
+## Second financing may contain multiple funded tranches — standing rule
+
+One second-financing AGREEMENT may release proceeds across many dated tranches.
+Maintain one row per company and tranche in data/financing_tranches.csv, keyed
+by ticker, event_key, financing_id and unique tranche_id. Record funded date,
+announced/committed/conditional/actually funded status, gross proceeds, NET
+unrestricted USD cash actually received, fees/restrictions, exact source URL,
+SEC accession or source hash, and verification status. Check the company's
+Investor Relations releases and original filing for each disbursement.
+
+**Qualification:** Multiple draws under one facility or offering are ONE
+financing agreement, not independent separate second/third financings.
+The two separate post-Phase-3 financing requirement still needs independently
+documented chronology, actual closings and program matching.
+
+**Runway:** Use the latest verified SEC unrestricted cash statement and its
+historical operating cash-flow burn. A $400 million facility with only $50
+million actually drawn is not $400 million available cash. Never add a loan
+commitment, merely expected tranche, gross principal when net cash is
+unknown, or restricted proceeds to runway. A tranche funded on/before the
+balance-sheet cash date is already incorporated and must not be double counted.
+Post-report, dated, SEC-documented net receipts can support a separate
+time-adjusted PRO FORMA runway estimate, after deducting estimated burn
+since the balance sheet. Never represent this as verified current cash.
+
+If any post-report actual draw lacks independently supported net proceeds,
+there is no precise tranche-adjusted runway figure: label it REVIEW and show
+missing evidence. The module financing_tranche_runway.py and GEM/GEM JR
+tranche/runway panel use research estimates only. They cannot override the
+strict SEC Step 4 cash-only runway, two-close entry gate, or broker controls.
+
 ## Mandatory escalation for all unresolved or difficult findings
 
 **Standing PDUFA research rule:** If an automated scan, retry, source lookup, or
