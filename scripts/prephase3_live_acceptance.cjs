@@ -19,8 +19,11 @@ async function findFrame(page){
       const text=await frame.locator("body").innerText({timeout:2500});
       if(text.includes("BIO PDUFA COMMAND CENTER"))
         return {frame,text};
-    }catch(err){
-      if(!/detached|Execution context was destroyed|closed/i.test(String(err)))throw err;
+    }catch(_err){
+      // Frames can be present before their document/body is ready during
+      // Streamlit Cloud warm-up or rerender. Try the next frame and poll
+      // again; the outer readiness loop still fails closed if none loads.
+      continue;
     }
   }
   return null;
