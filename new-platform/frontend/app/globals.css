@@ -267,3 +267,22 @@ button.secondary { background: white; color: #172b1b; }
 
 /* Immutable research Program IDs distinguish multiple drugs under a single ticker. */
 .permanent-id{display:inline-block;font:800 11px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;color:#1a4765;background:#e4f4ff;border:1px solid #86bacb;border-radius:5px;padding:3px 5px;white-space:nowrap}.legacy-tags{border-color:#9f8251!important;background:#fff8e7!important}.legacy-tags h4{margin:10px 0}.legacy-ticker-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid #ded3be;padding:10px 0}.legacy-ticker-row>strong{font-size:15px;min-width:58px}.legacy-ticker-row button{font-size:11px;padding:6px 8px}.legacy-ticker-row span{color:#8b6355;font-size:12px}
+
+/* WT shares the exact GEM JR/GEM evidence-gated score panel, not a second model. */
+.wt-research-column{min-width:0;display:flex;flex-direction:column;gap:12px;}
+.wt-score-details{min-width:0;padding:13px 15px;border:2px solid #b59736;background:#fffaf0;border-radius:8px;}
+.wt-score-details>h3{font-size:14px;margin:0 0 6px;color:#594215;}
+.wt-score-details>p.subtle{font-size:11px;line-height:1.45;margin:0 0 9px;}
+.wt-score-details .research-technical{margin-top:10px;padding-top:8px;}
+.wt-score-details .research-score-cards{grid-template-columns:repeat(3,minmax(0,1fr));}
+.wt-score-details .research-score-cards>div{background:#fff;}
+.wt-score-details .research-score-cards span{font-variant-numeric:tabular-nums;}
+@media(max-width:750px){
+  .wt-score-details{padding:10px;}
+  .wt-score-details .research-score-cards{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .wt-score-details .research-score-cards>div:last-child{grid-column:1/-1;}
+}
+@media(max-width:450px){
+  .wt-score-details .research-score-cards{grid-template-columns:1fr;}
+  .wt-score-details .research-score-cards>div:last-child{grid-column:auto;}
+}
