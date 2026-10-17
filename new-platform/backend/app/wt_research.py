@@ -100,6 +100,7 @@ def _interpret_yahoo(payload: dict, ticker: str, url: str, today) -> dict | None
     # quotes for a completed daily bar, and never accept duplicate sessions.
     seen = set()
     bars = []
+    now_eastern = datetime.now(ZoneInfo("America/New_York"))
     for timestamp, close, volume in zip(timestamps, closes, volumes):
         try:
             day = datetime.fromtimestamp(int(timestamp), timezone.utc).astimezone(
@@ -108,7 +109,9 @@ def _interpret_yahoo(payload: dict, ticker: str, url: str, today) -> dict | None
             value = float(close)
             shares = float(volume)
             if (day > today or day in seen or not math.isfinite(value)
-                    or value <= 0 or not math.isfinite(shares) or shares < 0):
+                    or value <= 0 or not math.isfinite(shares) or shares < 0
+                    or (day == now_eastern.date() and now_eastern.hour < 17)):
+                # Do not count an unclosed US trading session as a daily close.
                 continue
         except (ValueError, OverflowError, TypeError):
             continue
@@ -166,7 +169,7 @@ def _market_for_ticker(ticker: str, published: dict, today) -> dict:
     if old and old.get("market_status") == "MARKET_UPDATED":
         day = _safe_date(old.get("last_session"))
         if (day and _days_since_session(day, today) is not None
-                and _days_since_session(day, today) <= 2 and len(_bars(old, today)) >= 21):
+                and _days_since_session(day, today) <= 2 and len(_bars(old, today)) >= 60):
             return published
     with _EOD_LOCK:
         cached = _EOD_CACHE.get(ticker)
