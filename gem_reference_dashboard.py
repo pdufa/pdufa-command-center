@@ -504,6 +504,127 @@ def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, c
     return facts
 
 
+def _junior_section8_checks(record, event, profile, runway_result, sources,
+                            clinical_facts):
+    """Ordered GEM JR research-readiness observations, never an entry score.
+
+    Explicit unknown means documents still need independent review.
+    No inferred 2nd-financing qualification, or evidence of risk absence.
+    """
+    def entry(number, label, observed, status=None, source="",
+              next_step="Verify current primary-source evidence"):
+        return {
+            "priority": number, "label": label,
+            "detail": str(observed or "Not independently verified"),
+            "status": status, "points": "—",
+            "url": source if str(source).startswith("https://") else "",
+            "next_step": next_step,
+        }
+
+    nct_ids = re.findall(r"NCT\d{8}",
+                         str(record.get("NCT ID") or "").upper())
+    pipeline_id = str(record.get("Pipeline ID") or "")
+    phase_status = str(record.get("Phase 3 status") or
+                       event.get("phase3_status") or "NOT VERIFIED")
+    clinical_url = str(record.get("Phase 3 source") or
+                       record.get("Clinical source") or
+                       event.get("trial_evidence_url") or "")
+    phase_date = str(record.get("Phase 3 date") or
+                     event.get("phase3_date") or "")
+    exact_identity = (pipeline_id.startswith(("APPLICATION|", "TRIAL|"))
+                      and bool(nct_ids))
+    source_linked_p3 = (len(nct_ids) == 1 and bool(phase_date[:10])
+                        and clinical_url.startswith("https://")
+                        and phase_status == "PRIMARY_MET_VERIFIED")
+    source_by_name = {row.get("label"): row for row in sources}
+    sec1 = source_by_name.get("Financing #1", {})
+    sec2 = source_by_name.get("Financing #2", {})
+    financings_rechecked = _number(record.get("SEC documents rechecked"))
+    cash_months = _number(runway_result.get("Cash runway (months)"))
+    cash_source = str(runway_result.get("Cash runway source") or "")
+    market_cap = _number(event.get("market_cap"))
+    dilution_flag = str(event.get("new_dilution_flag") or "").strip().upper()
+    has_dilution_alert = dilution_flag in {"YES", "Y", "TRUE", "FLAGGED", "HIGH"}
+    pdufa_source = source_by_name.get("PDUFA target", {})
+    pdufa_saved = str(record.get("PDUFA date (saved)") or
+                      record.get("PDUFA saved") or event.get("pdufa_date") or "")
+    pdufa_verified = bool(
+        record.get("PDUFA verified") or
+        (str(event.get("pdufa_confirmation") or "").startswith("VERIFIED")
+         and str(event.get("pdufa_evidence_url") or "").startswith("https://"))
+    )
+    exact_endpoint = clinical_facts.get("endpoint", {})
+    safety = clinical_facts.get("safety", {})
+    dollar_volume = _number(profile.get("dollar_volume"))
+    market_fresh = profile.get("fresh") is True
+    pending = str(record.get("Still needed") or "").strip()
+
+    return [
+        entry(1, "Exact Pipeline / NCT identity",
+              pipeline_id + (" · " + ", ".join(nct_ids) if nct_ids else " · trial ID missing"),
+              True if exact_identity else None, clinical_url,
+              "Reconcile the same ticker, drug, indication and NCT ID"),
+        entry(2, "Successful Phase 3 readout",
+              f"{phase_status} · {phase_date or 'readout date unavailable'}",
+              True if source_linked_p3 else None, clinical_url,
+              "Verify dated primary endpoints for this exact trial, not a sibling"),
+        entry(3, "Primary endpoint and safety review",
+              ((str(exact_endpoint.get("label")) if exact_endpoint else
+                 "Trial-specific endpoint not independently scored") +
+               (" · safety evidence recorded" if safety else
+                " · safety evidence incomplete")),
+              None, clinical_url,
+              "Inspect trial-matched p-values, endpoints and adverse-event details"),
+        entry(4, "First post-readout financing",
+              "SEC reference saved · verify transaction and chronology"
+              if sec1.get("url") else "Independent first SEC closing not confirmed",
+              None, sec1.get("url", ""),
+              "Verify actual closing proceeds after the Phase 3 readout"),
+        entry(5, "Second separate financing",
+              (f"{int(financings_rechecked)}/2 SEC documents rechecked · "
+               "this alone does NOT verify two qualifying post-readout closes")
+              if financings_rechecked is not None
+              else "Second independent post-readout closing not confirmed",
+              None, sec2.get("url", ""),
+              "Verify a distinct second closing; GEM eligibility remains separate"),
+        entry(6, "Cash runway ≥12 months (research guide)",
+              f"{cash_months:g} months · SEC source dated "
+              f"{runway_result.get('Cash runway as of') or 'unavailable'}"
+              if cash_months is not None else
+              str(runway_result.get("Cash runway reason") or "Cash runway unavailable"),
+              (cash_months >= 12 if cash_months is not None and
+               cash_source.startswith("https://") else None),
+              cash_source,
+              "Verify cash-only runway and dilution assumptions"),
+        entry(7, "Market cap $300M–$10B",
+              f"USD {market_cap:,.0f} saved · "
+              f"{'market feed current' if market_fresh else 'market feed stale/unknown'}"
+              if market_cap is not None else "Market cap unavailable",
+              (300_000_000 <= market_cap <= 10_000_000_000
+               if market_cap is not None and market_fresh else None),
+              "", "Refresh market cap before applying the selection filter"),
+        entry(8, "Dilution / warrants / convertibles",
+              ("Recorded dilution warning · investigate" if has_dilution_alert
+               else "No independently verified absence of financing overhang"),
+              False if has_dilution_alert else None,
+              sec2.get("url", "") or sec1.get("url", ""),
+              "Review SEC terms, outstanding warrants and future financing risk"),
+        entry(9, "Trading liquidity / technical setup",
+              f"Saved dollar volume USD {dollar_volume:,.0f}"
+              if dollar_volume is not None and market_fresh else
+              "Current dollar volume unavailable",
+              None, "", "Compare liquidity with planned order size and entry setup"),
+        entry(10, "PDUFA / FDA date verification",
+              pdufa_saved or "No independently verified FDA target date",
+              True if pdufa_verified else None,
+              pdufa_source.get("url", ""),
+              "Confirm current primary FDA or issuer source and PDUFA −3 policy"),
+        entry(11, "Outstanding research / trade plan",
+              pending or "Stage review and position-specific risk plan remain necessary",
+              None, "", "Resolve source gaps; define entry, stop and target separately"),
+    ]
+
+
 def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified"):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
@@ -560,6 +681,13 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         info.append(("Financing Status", _text(record.get("SEC documents rechecked"), "Review source")))
     else:
         info.extend([("Financing #1", first or "—"), ("Financing #2", second or "—")])
+    junior_research_checks = (
+        _junior_section8_checks(
+            record, event, profile, runway_result, sources,
+            _criterion_facts(record, event, master, profile, funding,
+                             pvalues, ticker, clinical_url),
+        ) if junior else []
+    )
     info.extend([
         ("Cash Runway", f"{runway_months:g} months" if runway_months is not None else "Unverified"),
         ("Market Cap (saved)", _money(event.get("market_cap"))),
@@ -592,6 +720,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "source_review": record.get("Source review as of") or record.get("Source review date") or "",
         "financings": financings_display, "sources": sources, "profile": info,
         "entry_checks": _checks(score.get("entry_factors"), record, event, profile, junior=junior),
+        "junior_research_checks": junior_research_checks,
         "exit_checks": _checks(score.get("exit_factors"), record, event, profile, junior=junior, exit_risk=True),
         "hierarchy": _hierarchy(record, event, company, registry, pvalues,
                                 (company_trials or {}).get(ticker, [])), "alerts": alerts,
