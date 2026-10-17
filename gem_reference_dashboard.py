@@ -624,7 +624,254 @@ def _junior_section8_checks(record, event, profile, runway_result, sources,
     ]
 
 
-def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified"):
+def _section9_date(raw):
+    """Parse one saved ISO calendar date; an unknown date is not a positive gate."""
+    try:
+        return date.fromisoformat(str(raw or "")[:10])
+    except (ValueError, TypeError):
+        return None
+
+
+def _section9_item(priority, label, detail, status=None, url="", next_step="",
+                   group="Review"):
+    """True=evidence observed, False=explicit risk or block, None=unverified."""
+    return {
+        "priority": priority, "label": label, "detail": str(detail or "Not verified"),
+        "status": status, "url": str(url) if str(url).startswith("https://") else "",
+        "next_step": str(next_step), "group": group, "points": "—",
+    }
+
+
+def _junior_section9_exit_checks(record, event, profile, runway_result,
+                                  today):
+    """Early warning/downgrade research; never an auto-sell or exit score."""
+    outcome = str(event.get("outcome") or record.get("FDA outcome") or "").upper().strip()
+    resolved = outcome in {
+        "APPROVED", "CRL", "REJECTED", "REFUSED", "WITHDRAWN",
+        "COMPLETE_RESPONSE", "COMPLETE RESPONSE LETTER",
+    }
+    pdufa = _section9_date(record.get("PDUFA date (saved)") or
+                           record.get("PDUFA saved") or event.get("pdufa_date"))
+    days = (pdufa - today).days if pdufa else None
+    phase = str(record.get("Phase 3 status") or
+                event.get("phase3_status") or "").strip().upper()
+    failed = phase in {
+        "PRIMARY_FAILED_VERIFIED", "PHASE_3_FAILED_VERIFIED",
+        "FAILED_PRIMARY_ENDPOINT", "PHASE3_FAILED",
+    }
+    safety = str(event.get("conflict_flag") or "").strip().upper()
+    safety_flag = safety in {"YES", "TRUE", "1", "ACTIVE", "CONFLICT", "REVIEW"}
+    dilution = str(event.get("new_dilution_flag") or "").strip().upper()
+    dilution_flag = dilution in {"YES", "TRUE", "1", "ACTIVE", "UNRESOLVED",
+                                "FLAGGED", "HIGH"}
+    runway = _number(runway_result.get("Cash runway (months)"))
+    runway_url = str(runway_result.get("Cash runway source") or "")
+    fresh_runway = runway is not None and runway_url.startswith("https://")
+    fresh_price = bool(profile.get("fresh")) and profile.get("date") is not None
+    close = _number(profile.get("close"))
+    sma50 = _number(profile.get("sma50"))
+    base = profile.get("base") or {}
+    support = _number(base.get("support"))
+    pdufa_url = str(event.get("pdufa_evidence_url") or "")
+    clinical_url = str(record.get("Clinical source") or
+                       record.get("Phase 3 source") or
+                       event.get("trial_evidence_url") or "")
+    second_sec = str(record.get("Financing SEC source") or "")
+    review_date = _section9_date(record.get("Source review as of") or
+                                 record.get("Source review date"))
+    source_age = (today - review_date).days if review_date else None
+    stale_review = source_age is not None and source_age > 7
+    return [
+        _section9_item(1, "Resolved or adverse FDA decision",
+                       f"Saved FDA outcome: {outcome or 'unverified'}",
+                       False if resolved else None, pdufa_url,
+                       "Move resolved programs to prior candidates and verify the FDA outcome",
+                       "Regulatory"),
+        _section9_item(2, "Clinical failure or safety conflict",
+                       f"Phase 3: {phase or 'not independently verified'} · "
+                       f"safety conflict flag: {safety or 'unverified'}",
+                       False if failed or safety_flag else None, clinical_url,
+                       "Verify adverse trial findings and the exact program before any downgrade",
+                       "Clinical"),
+        _section9_item(3, "PDUFA / event-time exit boundary",
+                       f"{days} days to saved PDUFA" if days is not None
+                       else "FDA date missing or cannot be parsed",
+                       False if days is not None and days <= 3 else None,
+                       pdufa_url,
+                       "Apply the selected PDUFA policy; a saved date alone is not FDA verification",
+                       "Regulatory"),
+        _section9_item(4, "Dilution / new financing overhang",
+                       "Explicit dilution alert in saved ledger" if dilution_flag
+                       else "Current dilution and warrant exposure not independently cleared",
+                       False if dilution_flag else None, second_sec,
+                       "Review new shelf, ATM, warrants and convertibles in dated SEC filings",
+                       "Financing"),
+        _section9_item(5, "Cash runway below 6 months",
+                       f"{runway:g} months · saved SEC cash assessment"
+                       if fresh_runway else
+                       "No current source-backed cash-only runway assessment",
+                       False if fresh_runway and runway < 6 else None,
+                       runway_url, "Recheck cash burn and expected financing needs",
+                       "Financing"),
+        _section9_item(6, "Breakdown below closing support",
+                       f"Close {_money(close)} / support {_money(support)}"
+                       if fresh_price and close is not None and support is not None
+                       else "Current closing-price support unavailable",
+                       False if fresh_price and close is not None and
+                       support is not None and close < support else None, "",
+                       "Review closing support and your position-specific stop; no auto-exit",
+                       "Technical"),
+        _section9_item(7, "SMA50 loss and momentum deterioration",
+                       f"Close {_money(close)} / SMA50 {_money(sma50)}"
+                       if fresh_price and close is not None and sma50 is not None
+                       else "Current price/SMA50 comparison unavailable",
+                       False if fresh_price and close is not None and
+                       sma50 is not None and close < sma50 else None, "",
+                       "Confirm trend change using dated EOD data and independent news",
+                       "Technical"),
+        _section9_item(8, "Stale / unresolved clinical and financing sources",
+                       f"Latest saved program review: {review_date or 'not available'}",
+                       False if stale_review else None, "",
+                       "Refresh clinical, regulatory and SEC sources before making an exit decision",
+                       "Sources"),
+        _section9_item(9, "Research list / GEM promotion review",
+                       "GEM JR is research only; moving to GEM requires the exact "
+                       "positive Phase 3 program and two independent post-readout financings",
+                       None, "", "Check current GEM membership and qualification separately",
+                       "Workflow"),
+    ]
+
+
+def _gem_section9_entry_checks(record, event, profile, runway_result,
+                                today, source_current=None):
+    """Prioritized exact-program entry research gates; no automatic buy.
+
+    The first three are qualifying evidence (historical saved source claims).
+    Independently verified *current* SEC coverage remains a separate hard hold.
+    """
+    ncts = re.findall(r"NCT\d{8}", str(record.get("NCT ID") or "").upper())
+    trial_url = str(record.get("Phase 3 source") or
+                    record.get("Clinical source") or
+                    event.get("trial_evidence_url") or "")
+    p3_day = _section9_date(record.get("Phase 3 date") or
+                            event.get("phase3_date"))
+    p3_status = str(record.get("Phase 3 status") or "").upper()
+    phase3_observed = (len(ncts) == 1 and p3_day is not None and
+                       p3_status == "PRIMARY_MET_VERIFIED" and
+                       trial_url.startswith("https://"))
+    first_day = _section9_date(record.get("First close"))
+    second_day = _section9_date(record.get("Second close"))
+    first_url = str(record.get("First SEC source") or "")
+    second_url = str(record.get("Second SEC source") or "")
+    two_closes = (phase3_observed and first_day is not None and
+                  second_day is not None and p3_day < first_day < second_day and
+                  first_url.startswith("https://") and second_url.startswith("https://")
+                  and first_url != second_url)
+    review_day = _section9_date(record.get("Source review as of") or
+                                record.get("Source review date"))
+    review_age = (today - review_day).days if review_day else None
+    sec_current = (source_current is True and review_age is not None and
+                   0 <= review_age <= 7)
+    runway = _number(runway_result.get("Cash runway (months)"))
+    cash_url = str(runway_result.get("Cash runway source") or "")
+    cash_current = runway is not None and cash_url.startswith("https://")
+    cap = _number(event.get("market_cap"))
+    dilution = str(event.get("new_dilution_flag") or "").upper().strip()
+    dilution_flag = dilution in {"YES", "TRUE", "1", "ACTIVE", "UNRESOLVED",
+                                 "FLAGGED", "HIGH"}
+    conflict = str(event.get("conflict_flag") or "").upper().strip()
+    safety_flag = conflict in {"YES", "TRUE", "1", "ACTIVE", "CONFLICT", "REVIEW"}
+    pdufa = _section9_date(record.get("PDUFA saved") or
+                           record.get("PDUFA date (saved)") or
+                           event.get("pdufa_date"))
+    days = (pdufa - today).days if pdufa else None
+    pdufa_verified = (
+        (record.get("PDUFA verified") is True or
+         (str(event.get("pdufa_confirmation") or "").startswith("VERIFIED")
+          and str(event.get("pdufa_evidence_url") or "").startswith("https://")))
+    )
+    pdufa_url = str(event.get("pdufa_evidence_url") or "")
+    fresh_price = bool(profile.get("fresh")) and profile.get("date") is not None
+    close = _number(profile.get("close"))
+    sma20 = _number(profile.get("sma20"))
+    sma50 = _number(profile.get("sma50"))
+    dollar_vol = _number(profile.get("dollar_volume"))
+    tradable_setup = (fresh_price and close is not None and
+                      sma20 is not None and sma50 is not None)
+    outcome = str(event.get("outcome") or record.get("FDA outcome") or "").upper()
+    resolved = outcome in {"APPROVED", "CRL", "REJECTED", "REFUSED",
+                           "WITHDRAWN", "COMPLETE_RESPONSE"}
+    return [
+        _section9_item(1, "Exact successful Phase 3 program",
+                       f"{record.get('NCT ID') or 'No NCT'} · "
+                       f"{p3_status or 'not verified'} · {p3_day or 'no readout date'}",
+                       True if phase3_observed else None, trial_url,
+                       "Open primary results and confirm the endpoint for this NCT",
+                       "Hard gate"),
+        _section9_item(2, "First independent post-readout SEC close",
+                       f"Saved close: {first_day or 'not recorded'}",
+                       True if two_closes else None, first_url,
+                       "Verify actual first closing after the Phase 3 readout",
+                       "Hard gate"),
+        _section9_item(3, "Second distinct post-readout SEC close",
+                       f"Saved close: {second_day or 'not recorded'}",
+                       True if two_closes else None, second_url,
+                       "Verify the different second closing; two URLs alone prove nothing",
+                       "Hard gate"),
+        _section9_item(4, "Current source recheck / entry hold",
+                       f"Global SEC current: {source_current is True} · "
+                       f"program review age: {review_age if review_age is not None else 'unknown'} days",
+                       True if sec_current else False, "",
+                       "Refresh SEC source ledger and exact-program evidence before considering entry",
+                       "Hard gate"),
+        _section9_item(5, "FDA event timing / resolved outcome",
+                       (f"{days} days to saved PDUFA" if days is not None
+                        else "Current PDUFA date unverified") +
+                       (f" · FDA outcome: {outcome}" if resolved else ""),
+                       False if resolved or (days is not None and days <= 3) else
+                       True if pdufa_verified and days is not None and days > 3 else None,
+                       pdufa_url,
+                       "Confirm primary date; apply PDUFA −3 policy consistently",
+                       "Hard gate"),
+        _section9_item(6, "Cash-only runway ≥12 months (guide)",
+                       f"{runway:g} months (saved SEC)" if cash_current
+                       else "Source-backed cash assessment not available",
+                       (runway >= 12 if cash_current else None), cash_url,
+                       "Review spending, cash burn and financing commitments",
+                       "Risk"),
+        _section9_item(7, "Market cap $300M–$10B",
+                       f"Saved issuer cap: {_money(cap)}" if cap is not None
+                       else "Current market cap not available",
+                       False if cap is not None and not
+                       300_000_000 <= cap <= 10_000_000_000 else None, "",
+                       "Revalidate market cap independently; saved in-range is not verified current",
+                       "Risk"),
+        _section9_item(8, "Dilution / safety / convertible review",
+                       (("Dilution alert; " if dilution_flag else "") +
+                        ("Safety conflict; " if safety_flag else "")).strip("; ") or
+                       "No independent clearance of dilution, safety, warrants or convertibles",
+                       False if dilution_flag or safety_flag else None,
+                       second_url or trial_url,
+                       "Inspect SEC offering terms, adverse events and clinical conflicts",
+                       "Risk"),
+        _section9_item(9, "Fresh price trend and liquidity",
+                       f"Close {_money(close)} · SMA20 {_money(sma20)} · "
+                       f"SMA50 {_money(sma50)} · dollar volume {_money(dollar_vol)}"
+                       if tradable_setup else "Current priced technical setup unavailable",
+                       None if not tradable_setup else
+                       False if close < sma50 else None, "",
+                       "Review risk/reward, current bid/ask liquidity and relative strength",
+                       "Technical"),
+        _section9_item(10, "Independent trade plan and entry authorization",
+                       "Chart reference levels and risk policy require explicit review; "
+                       "candidate qualification is not a BUY",
+                       None, "",
+                       "Set entry, stop, target, position size and reward/risk; no automatic orders",
+                       "Workflow"),
+    ]
+
+
+def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified", source_current=None):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
     ticker = clean_ticker(record.get("Ticker"))
@@ -687,6 +934,12 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
                              pvalues, ticker, clinical_url),
         ) if junior else []
     )
+    section9_checks = (
+        _junior_section9_exit_checks(record, event, profile, runway_result, today)
+        if junior else
+        _gem_section9_entry_checks(record, event, profile, runway_result, today,
+                                   source_current=source_current)
+    )
     info.extend([
         ("Cash Runway", f"{runway_months:g} months" if runway_months is not None else "Unverified"),
         ("Market Cap (saved)", _money(event.get("market_cap"))),
@@ -720,6 +973,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "financings": financings_display, "sources": sources, "profile": info,
         "entry_checks": _checks(score.get("entry_factors"), record, event, profile, junior=junior),
         "junior_research_checks": junior_research_checks,
+        "section9_checks": section9_checks,
         "exit_checks": _checks(score.get("exit_factors"), record, event, profile, junior=junior, exit_risk=True),
         "hierarchy": _hierarchy(record, event, company, registry, pvalues,
                                 (company_trials or {}).get(ticker, [])), "alerts": alerts,
@@ -771,7 +1025,8 @@ def build_dashboard(stage, root="data", *, as_of=None):
     registry = _csv(root, "all_phase_trials.csv")
     pvalues = _csv(root, "phase3_primary_pvalues.csv")
     candidates = [_candidate(stage, r, root, today, companies, finance, runway,
-                             registry, pvalues, company_trials, trial_coverage)
+                             registry, pvalues, company_trials, trial_coverage,
+                             source_current=current)
                   for r in _rankings(stage, active, root, today)]
     departed = departed_stage_rows(history, "GEM_JR" if stage == "GEM JR" else "GEM")
     histories = [{"date": r.get("Date Left") or "", "ticker": r.get("Ticker") or "",
