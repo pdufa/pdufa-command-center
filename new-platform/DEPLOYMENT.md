@@ -19,6 +19,16 @@ No PDUFA production jobs or orders are enabled by this code.
 6. Build and deploy **new** Vercel project; test login, ticker- and stage-specific checklist persistence, tab switching, notes, and reloading. Verify Render environment stays healthy. Check that Streamlit's deployed URL and nightly jobs are unchanged.
 7. Do not activate scanners in the new app. Later migration will copy (never move) ticker data, add real GEM scoring, and verify functionality before any operator-approved cutover.
 
+## Manual scan controls on the new SCANS page
+
+The staging dashboard now reads **published** PIPELINE, GEM JR, GEM, FDA/SEC/FINANCIAL/MARKET/ISSUER status from original `main` reports and can dispatch the existing GitHub Actions workflow. **It never creates a second automated schedule.** The only 10 PM Pacific scanner remains `.github/workflows/pdufa-nightly-pacific-start.yml` on production `main`.
+
+To activate the **START SELECTED SCAN** button, add the server-only secret `PDUFA_GITHUB_TOKEN` to the **new** Vercel project's environment variables. Use a fine-grained GitHub token restricted to repository `pdufa/pdufa-command-center` with **Actions: Read and write** permissions. Do not use a public `NEXT_PUBLIC_` variable and never put the token in GitHub files, browser code, or a chat. Redeploy the staging frontend after changing its secrets. Leave the existing Streamlit settings untouched.
+
+The authenticated SCANS panel offers `VERIFY_ALL` (archived source validation), `REVERIFY_PARTIAL` (incremental recheck), and `RESCAN_ALL` (full recollection), targeting `ALL`, `PIPELINE`, `GEM_JR`, or `GEM`. Every manual request is sent to the **original** `pdufa-scan-control.yml` on `main`. The API checks current manual and overnight jobs and refuses to dispatch while either has an active/queued run. It does not promise the GitHub Actions job has finished: inspect the linked run and separately published evidence report. If GitHub status cannot be verified, it refuses to initiate another run.
+
+The read-only report view and existing scheduled jobs work without this token; manual dispatch does not. Staging has **no** new production scheduler, order routing, or permission to rewrite original source snapshots directly. Do not cut over scheduling until reconciliation and an explicit separate deployment decision.
+
 ## PostgreSQL guard and activation
 
 The Render backend has `PDUFA_REQUIRE_POSTGRES=1` configured, and the app refuses checklist reads/writes with an HTTP 503 until a persistent PostgreSQL URL is present. Check `https://pdufa-new-api-staging.onrender.com/health` and confirm both `storage_ready: true` and `storage_kind: postgresql` after connecting the database.
