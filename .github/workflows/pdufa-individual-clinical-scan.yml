@@ -139,17 +139,15 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "Prepare individual $SECTION clinical source snapshot"
           fi
-          git fetch origin main
-          git checkout -B publish-individual-clinical origin/main
-          mkdir -p data/individual_clinical_scans
-          cp /tmp/pdufa-individual-clinical/section.json "data/individual_clinical_scans/$(printf '%s' "$SECTION" | tr '[:upper:]' '[:lower:]').json"
-          # Collector raw output is archived; publish the standalone status
-          # without overwriting files changed by a concurrently running chain.
-          git add data/individual_clinical_scans
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Publish individual $SECTION clinical scan audit"
+          # Rebase with the collector's real validated source changes intact.
+          # If another workflow changed the same source, a genuine conflict
+          # stops publication instead of silently overwriting fresh evidence.
           for attempt in 1 2 3; do
-            if git push origin HEAD:main; then exit 0; fi
-            git pull --rebase origin main || exit 1
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep 5
           done
+          echo "::error::Could not safely publish this section snapshot."
           exit 1
