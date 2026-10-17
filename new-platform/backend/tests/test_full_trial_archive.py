@@ -1,0 +1,99 @@
+import csv
+import gzip
+import io
+import json
+from zipfile import ZipFile
+
+import pytest
+from fastapi import HTTPException
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
+
+from app import full_trial_archive as archive, main
+
+
+@pytest.fixture
+def isolated(monkeypatch, tmp_path):
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    main.Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, "ENGINE", engine)
+    monkeypatch.setattr(archive, "_scope", lambda: ["NCT00000001", "NCT00000002"])
+    monkeypatch.setattr(archive, "_EXPORT_PATH", tmp_path / "cached-export.zip")
+    monkeypatch.setattr(archive, "_EXPORT_STAMP", "")
+    monkeypatch.setattr(archive.time, "sleep", lambda _: None)
+    yield engine
+    engine.dispose()
+
+
+def study(nct="NCT00000001"):
+    return {
+        "protocolSection": {"identificationModule": {"nctId": nct, "briefTitle": "A trial"},
+                            "designModule": {"phases": ["PHASE1"]},
+                            "outcomesModule": {"primaryOutcomes": [{"measure": "A priori p < 0.05"}]}},
+        "hasResults": True,
+        "resultsSection": {"outcomeMeasuresModule": {"outcomeMeasures": [{
+            "type": "PRIMARY", "title": "Primary endpoint", "timeFrame": "12 weeks",
+            "groups": [{"id": "OG000", "title": "Drug"}, {"id": "OG001", "title": "Placebo"}],
+            "analyses": [{"groupIds": ["OG000", "OG001"], "pValue": "<0.0001",
+                          "paramValue": "1.2", "ciLowerLimit": "0.4", "ciUpperLimit": "2.0",
+                          "unknownFutureStatistic": {"keep": [0, False, None]}}],
+        }, {"type": "SECONDARY", "title": "Secondary endpoint", "analyses": [{"pValue": 0}]}]}},
+        "documentSection": {"protocolSection": [{"filename": "protocol.pdf"}]},
+        "unknownFutureSection": {"complete": True, "empty": [], "zero": 0},
+    }
+
+
+def test_all_fields_and_p_values_remain_lossless(isolated, tmp_path):
+    archive.start_download(launch=False)
+    originals = {nct: study(nct) for nct in archive._scope()}
+    archive.run_download(lambda ids: {nct: originals[nct] for nct in ids})
+    status = archive.archive_status()
+    assert status["complete"] and status["downloaded"] == 2
+    assert status["reportedPValues"] == 4
+    with Session(isolated) as session:
+        record = session.get(main.FullTrialRecord, "NCT00000001")
+        assert json.loads(gzip.decompress(record.payload_gzip)) == originals["NCT00000001"]
+        assert record.statistics[0]["comparison_groups"][0]["title"] == "Drug"
+        assert record.statistics[0]["p_value"] == "<0.0001"
+        assert record.statistics[1]["p_value"] == 0
+    output = tmp_path / "full.zip"
+    archive.build_archive(output)
+    with ZipFile(output) as zipped:
+        exported = [json.loads(line) for line in zipped.read("full_studies.jsonl").splitlines()]
+        assert exported == list(originals.values())
+        rows = list(csv.DictReader(io.StringIO(zipped.read("statistical_analyses.csv").decode("utf-8-sig"))))
+        assert rows[0]["p_value"] == "<0.0001"
+        assert json.loads(rows[0]["analysis_json"])["unknownFutureStatistic"]["keep"] == [0, False, None]
+        assert json.loads(zipped.read("manifest.json"))["field_filter"] is None
+
+
+def test_protocol_threshold_is_not_a_reported_result():
+    value = study()
+    value.pop("resultsSection")
+    value["hasResults"] = False
+    assert archive.statistics(value) == []
+    assert archive.summarize(value, [])["p_value_status"] == "NO_POSTED_RESULTS"
+
+
+def test_missing_studies_stay_partial_and_retry_resumes(isolated):
+    archive.start_download(launch=False)
+    archive.run_download(lambda ids: {"NCT00000001": study()})
+    assert archive.archive_status()["status"] == "PARTIAL"
+    seen = []
+    def retry(ids):
+        seen.extend(ids)
+        return {nct: study(nct) for nct in ids}
+    archive.start_download(launch=False)
+    archive.run_download(retry)
+    assert seen == ["NCT00000002"]
+    assert archive.archive_status()["complete"]
+    assert archive.archive_status()["reportedPValues"] == 4
+
+
+def test_incomplete_export_and_forged_links_are_rejected(isolated, monkeypatch):
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-export-key")
+    with pytest.raises(HTTPException):
+        archive.make_export_ticket()
+    with pytest.raises(HTTPException):
+        archive.export_response("v1.9999999999.forged")

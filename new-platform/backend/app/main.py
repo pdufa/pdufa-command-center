@@ -10,7 +10,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import JSON, DateTime, Integer, String, create_engine, select, update
+from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -82,6 +82,34 @@ class ProgramWatchTrade(Base):
     trade: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class FullTrialRecord(Base):
+    """Every ClinicalTrials.gov field, retained losslessly by exact NCT ID."""
+    __tablename__ = "full_trial_records"
+    nct_id: Mapped[str] = mapped_column(String(11), primary_key=True)
+    payload_gzip: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    summary: Mapped[dict] = mapped_column(JSON, nullable=False)
+    statistics: Mapped[list] = mapped_column(JSON, nullable=False)
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class FullTrialDownload(Base):
+    __tablename__ = "full_trial_download"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    scope_ids: Mapped[list] = mapped_column(JSON, nullable=False)
+    completed_ids: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    missing_ids: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    statistics_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    p_value_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    lease_owner: Mapped[str] = mapped_column(String(40), nullable=False, default="")
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    error: Mapped[str] = mapped_column(String(300), nullable=False, default="")
 
 
 PROGRAM_ID_PATTERN = re.compile(r"^PDUFA-[0-9]{6,}$")
@@ -306,6 +334,10 @@ async def lifespan(app: FastAPI):
                 traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
     threading.Thread(target=verify_published_sources, daemon=True).start()
+    if (storage_ready() and os.getenv("PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP") == "1"
+            and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in ("1", "true", "yes")):
+        from .full_trial_archive import bootstrap
+        threading.Thread(target=bootstrap, daemon=True).start()
     yield
 
 
@@ -315,13 +347,39 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 @app.get("/health")
 def health():
     # An HTTP 200 permits configuration inspection without claiming DB readiness.
+    from .full_trial_archive import archive_status
     return {
         "status": "ok" if storage_ready() else "waiting_for_database",
         "service": "pdufa-new-backend",
         "storage_ready": storage_ready(),
         "storage_kind": "postgresql" if DATABASE_URL.startswith("postgresql+psycopg://") else "sqlite",
         "production_scans_enabled": False,
+        "full_trial_download": archive_status(),
     }
+
+
+@app.get("/api/pipeline-full-records", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def full_trial_status():
+    from .full_trial_archive import archive_status
+    return archive_status()
+
+
+@app.post("/api/pipeline-full-records", dependencies=[Depends(require_internal_key), Depends(require_storage), Depends(require_writes_enabled)])
+def start_full_trial_download(refresh: bool = False):
+    from .full_trial_archive import start_download
+    return start_download(refresh=refresh)
+
+
+@app.get("/api/pipeline-full-records/export-link", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def full_trial_export_link():
+    from .full_trial_archive import make_export_ticket
+    return {"path": make_export_ticket()}
+
+
+@app.get("/downloads/pipeline-all-fields/{ticket}")
+def download_full_trials(ticket: str):
+    from .full_trial_archive import export_response
+    return export_response(ticket)
 
 
 @app.get("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage)])

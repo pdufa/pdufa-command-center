@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import IndicatorParityTables from "./IndicatorParityTables";
+import FullTrialDownload from "./FullTrialDownload";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -538,6 +539,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         {query?" · Text search active":""}
         {" · As of "+snapshot.asOf}
       </p>
+      <FullTrialDownload />
       <div className="panel pipeline-filters">
         <h3>PIPELINE FILTERS</h3>
         <div className="filter-columns">
