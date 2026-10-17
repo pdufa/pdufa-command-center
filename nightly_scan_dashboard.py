@@ -17,6 +17,7 @@ from gem_scans_ui import render_gem_scans
 from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
+from overnight_status_ui import render_overnight_execution
 from filings_base_amendments_ui import render_filings_base_amendments
 from scan_activity_dashboard import render_scans_activity
 from scripts.scan_recovery_triage import triage_source_rows
@@ -621,6 +622,8 @@ def _number(v):
 
 
 def render_nightly_scan_report():
+    render_overnight_execution(published_report, published_source_report)
+    st.divider()
     # The agency controls lead the merged SCANS page, matching the requested
     # SEC/FDA scan-control preview. Activity and GEM reports remain below.
     render_filings_base_amendments()
