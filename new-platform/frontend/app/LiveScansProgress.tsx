@@ -94,7 +94,9 @@ function progress(jobs: Job[], totalJobs: number | undefined, truncated: boolean
   const totalSteps = allSteps.length;
   const doneJobs = jobs.filter(j => TERMINAL.has(j.status)).length;
   const knownJobs = totalJobs ?? jobs.length;
-  const pct = !truncated && totalSteps > 0 ? Math.round(100 * doneSteps / totalSteps) : null;
+// Job completion has a stable denominator; reported step totals can grow as jobs start.
+  // Never call skipped or failed work successful — only count that its execution has finished.
+  const pct = !truncated && knownJobs > 0 ? Math.round(100 * doneJobs / knownJobs) : null;
   return { doneJobs, knownJobs, doneSteps, totalSteps, pct };
 }
 function currentTask(jobs: Job[]) {
@@ -200,17 +202,17 @@ export default function LiveScansProgress() {
       <div className="pdufa-progress-hero">
         <div className="pdufa-progress-gauge">
           <div className="pdufa-gauge-circle" role="img"
-               aria-label={data.pct === null ? "Percent unavailable" : data.pct + " percent of reported GitHub steps finished"}
+               aria-label={data.pct === null ? "Percent unavailable" : data.pct + " percent of reported GitHub jobs finished"}
                style={{ "--meter": (data.pct ?? 0) + "%" } as React.CSSProperties}>
             <div className="pdufa-gauge-middle">
               <b>{data.pct === null ? "—" : data.pct + "%"}</b>
-              <small>GitHub steps finished</small>
+              <small>GitHub jobs finished</small>
             </div>
           </div>
           <div className="pdufa-gauge-bar"><span style={{ width: (data.pct ?? 0) + "%" }} /></div>
-          <p><strong>{data.doneSteps}</strong> of <strong>{data.totalSteps}</strong> steps reported as finished</p>
-          <p>{data.doneJobs} of {data.knownJobs} jobs finished · {jobs.filter(j => j.status === "running").length} running</p>
-          <small>Steps may appear as jobs begin; this is execution progress, not evidence approval or a time-based estimate.</small>
+          <p><strong>{data.doneJobs}</strong> of <strong>{data.knownJobs}</strong> reported jobs finished</p>
+          <p>{data.doneSteps} of {data.totalSteps} reported steps finished · {jobs.filter(j => j.status === "running").length} jobs running</p>
+          <small>Exact fraction of currently reported jobs finished; GitHub can add jobs as a workflow advances. Includes skipped/failed jobs as finished, not successful. Does not measure research evidence approval.</small>
         </div>
         <div className="pdufa-current-task">
           <div className="pdufa-current-label">CURRENT TASK</div>
