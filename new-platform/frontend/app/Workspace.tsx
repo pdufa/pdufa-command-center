@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import MasterChart from "./MasterChart";
+import GemParityChart from "./GemParityChart";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -9,6 +10,7 @@ type ResearchTechnical = {
   benchmarks?: { phase3: boolean; secondFinancing: boolean; bothConfirmed: boolean; warning: string; readoutDate: string; firstClose: string; secondClose: string };
   tradeCall?: string; tradeReason?: string;
   marketDate?: string; marketSource?: string; eodFresh?: boolean;
+  chartBars?: {date:string;close:number;volume:number}[];
   close?: number | null; sma20?: number | null; sma50?: number | null;
   rsi14?: number | null; rvol?: number | null; avgDollarVolume20?: number | null;
   closingSupport20?: number | null; macd?: { macd: number | null; signal: number | null; bullish: boolean } | null;
@@ -138,7 +140,7 @@ type WTResearchReply = {
   source: string; technical: ResearchTechnical | null; asOf?: string;
   scope?: string; missingSources?: string[];
 };
-function WTIndicatorDetails({programId, record}: {programId:string;record?:Candidate}) {
+function WTIndicatorDetails({programId, record, ticker}: {programId:string;record?:Candidate;ticker:string}) {
   const [reply,setReply] = useState<WTResearchReply|null>(null);
   const [error,setError] = useState("");
   useEffect(()=>{
@@ -163,6 +165,7 @@ function WTIndicatorDetails({programId, record}: {programId:string;record?:Candi
   return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
+    <GemParityChart ticker={ticker} programKey={record?.id||reply?.exactKey||programId} data={x} />
     <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3/financing eligibility and does not authorize a trade.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
     : !reply ? <p className="subtle">Checking verified price, volume, trend, technical risks and source dates…</p>
@@ -485,6 +488,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <button type="button" onClick={()=>{setMasterProgram(chosen.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
               <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
             <SourceDetails record={chosen} />
+            <GemParityChart ticker={chosen.ticker} programKey={chosen.id} data={chosen.technical}/>
             <TechnicalPanel record={chosen} />
             <PriorityIndicators record={chosen} />
           </div>}
@@ -592,8 +596,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
             <div className="wt-research-column">
-              {ticker && <Chart ticker={ticker}/>}
-              <WTIndicatorDetails programId={programId} record={selectedRecord} />
+              {ticker ? <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
+                : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
             </div>
           </div>;
         })}
