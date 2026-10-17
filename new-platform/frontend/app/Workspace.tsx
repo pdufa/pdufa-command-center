@@ -13,6 +13,7 @@ type ResearchTechnical = {
   rsi14?: number | null; rvol?: number | null; avgDollarVolume20?: number | null;
   closingSupport20?: number | null; macd?: { macd: number | null; signal: number | null; bullish: boolean } | null;
   base?: { status: string; support: number | null; resistance: number | null; touches: number | null; widthPct: number | null; contractionRatio: number | null; volumeRatio: number | null; breakoutRvol: number | null };
+  indicatorEntry?: number | null; indicatorEntryCoverage?: number; indicatorExitRisk?: number | null; indicatorExitCoverage?: number; indicatorEntryFactors?: Factor[]; indicatorExitFactors?: Factor[]; indicatorDisclaimer?: string; indicatorModel?: string;
   dataGaps?: string; entry?: number | null; entryCoverage?: number; entryStatus?: string;
   exitRisk?: number | null; exitCoverage?: number; exitStatus?: string;
   entryFactors?: Factor[]; exitFactors?: Factor[];
@@ -131,6 +132,78 @@ function TechnicalPanel({ record }: { record: Candidate }) {
     {evidence(x.runwaySource) && <a target="_blank" rel="noopener noreferrer" href={x.runwaySource}>SEC cash runway evidence ↗</a>}
   </div>;
 }
+
+type WTResearchReply = {
+  programId: string; exactKey?: string;
+  source: string; technical: ResearchTechnical | null; asOf?: string;
+  scope?: string; missingSources?: string[];
+};
+function WTIndicatorDetails({programId, record}: {programId:string;record?:Candidate}) {
+  const [reply,setReply] = useState<WTResearchReply|null>(null);
+  const [error,setError] = useState("");
+  useEffect(()=>{
+    const ctrl=new AbortController();
+    setReply(null);
+    setError("");
+    fetch("/api/wt-research/"+encodeURIComponent(programId),{
+      cache:"no-store",signal:ctrl.signal
+    }).then(async result=>{
+      if(!result.ok)throw Error("WT indicator feed returned "+result.status);
+      return await result.json() as WTResearchReply;
+    }).then(x=>{if(!ctrl.signal.aborted){
+      if(x.programId!==programId|| (record && x.exactKey!==record.id)) {
+        setError("Program identity mismatch; scores withheld.");return;
+      }
+      setReply(x);
+    }}).catch(e=>{if(!ctrl.signal.aborted)setError(String(e));});
+    return ()=>ctrl.abort();
+  },[programId,record?.id]);
+  const x=reply?.technical;
+  const observed=(v?:number|null)=>typeof v==="number"&&Number.isFinite(v)?v.toString()+"/100":"UNSCORED";
+  return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
+    <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
+      <span className="permanent-id">{programId}</span></div>
+    <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3/financing eligibility and does not authorize a trade.</p>
+    {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
+    : !reply ? <p className="subtle">Checking verified price, volume, trend, technical risks and source dates…</p>
+    : !x ? <p className="risk-line">Current exact-program indicator evidence unavailable. Scores withheld.</p>
+    : <>
+      <div className="research-score-cards wt-observed-scores">
+        <div><strong>Indicator entry /100</strong>
+          <span>{observed(x.indicatorEntry)}</span>
+          <small>Observed factor coverage {x.indicatorEntryCoverage??0}/100</small></div>
+        <div><strong>Indicator exit risk /100</strong>
+          <span>{observed(x.indicatorExitRisk)}</span>
+          <small>Observed factor coverage {x.indicatorExitCoverage??0}/100</small></div>
+        <div><strong>Verified market snapshot</strong>
+          <span>{x.eodFresh?stated(x.marketDate,"CHECK DATE"):"STALE / MISSING"}</span>
+          <small>{x.eodFresh?"Recent, source-consistent EOD":"Unverified / old observations"}</small></div>
+      </div>
+      <p className="wt-indicator-eligibility"><strong>Clinical/financing entry gate:</strong> {stated(x.entryStatus,"NOT VERIFIED")}</p>
+      <p><strong>Exit overrides:</strong> {stated(x.exitStatus,"NOT VERIFIED")}{x.riskAlerts?.length?" · "+x.riskAlerts.join("; "):""}</p>
+      <details className="wt-factors"><summary>Expand indicator scoring factors, weights, actual evidence and gaps</summary>
+        <div className="score-factor-groups">{([
+          ["Entry indicators",x.indicatorEntryFactors||[]],
+          ["Exit indicators",x.indicatorExitFactors||[]],
+        ] as [string,Factor[]][]).map(([title,items])=><div key={title}>
+          <h4>{title}</h4>
+          {items.length ? items.map(f=><div className="score-factor" key={f.label}>
+            <strong>{f.label}</strong><span>{f.earned==null?"NOT VERIFIED":f.earned} / {f.weight}</span>
+            <small>{f.evidence}</small></div>) : <p className="subtle">No verified EOD observations yet.</p>}
+        </div>)}</div>
+      </details>
+      {record && <details className="wt-factors"><summary>Original GEM eligibility entry / exit monitor (same Program ID)</summary>
+        <TechnicalPanel record={{...record,technical:x}} />
+      </details>}
+      <p className="subtle small">Source: {stated(reply.source)}. {stated(reply.scope)} {stated(x.indicatorDisclaimer)}
+        Missing ATR, real stops, VWAP, spread, and reward/risk are not scored.
+        {reply.missingSources?.length?" Missing upstream files: "+reply.missingSources.join(", "):""}
+      </p>
+      {evidence(x.marketSource)&&<a href={x.marketSource} target="_blank" rel="noopener noreferrer">Market data source ↗</a>}
+    </>}
+  </section>;
+}
+
 function PriorityIndicators({ record }: { record: Candidate }) {
   const t = record.technical;
   const pdufaDays = daysAway(record.pdufaDate);
@@ -520,23 +593,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             </div>
             <div className="wt-research-column">
               {ticker && <Chart ticker={ticker}/>}
-              {selectedRecord?.technical ? (
-                <section className="wt-score-details" aria-label={programId+" GEM JR and GEM entry and exit scores"}>
-                  <h3>ENTRY &amp; EXIT SCORES — SAME AS GEM JR / GEM</h3>
-                  <p className="subtle">Original GEM research scores for this exact {programId}; identical weights, data-coverage requirements, source dates and hard-exit warnings. No WT-only formula.</p>
-                  <TechnicalPanel record={selectedRecord}/>
-                </section>
-              ) : (
-                <section className="wt-score-details" aria-label={programId+" unavailable entry and exit scores"}>
-                  <h3>ENTRY &amp; EXIT SCORES — SAME AS GEM JR / GEM</h3>
-                  <div className="research-score-cards">
-                    <div><strong>Entry /100</strong><span>UNSCORED</span><small>GEM JR / GEM source evidence unavailable</small></div>
-                    <div><strong>Exit risk /100</strong><span>UNSCORED</span><small>GEM JR / GEM source evidence unavailable</small></div>
-                    <div><strong>Data coverage</strong><span>NOT VERIFIED</span><small>Exact-program profile required</small></div>
-                  </div>
-                  <p className="subtle">No score is inferred from the ticker, membership label, older WT records or chart appearance. Check PIPELINE/GEM source health and the program research evidence.</p>
-                </section>
-              )}
+              <WTIndicatorDetails programId={programId} record={selectedRecord} />
             </div>
           </div>;
         })}
