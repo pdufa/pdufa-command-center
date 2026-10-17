@@ -169,7 +169,7 @@ export default function LiveScansProgress() {
       <div>
         <div className="pdufa-progress-eyebrow"><span className="pdufa-live-dot" /> LIVE EXECUTION TRACKER</div>
         <h3>What's running — and how far it's progressed</h3>
-        <p>Actual GitHub jobs and steps · Pacific time · automatic refresh every 60 seconds</p>
+        <p>Actual GitHub jobs and steps · Pacific time · checks every 60 seconds; server data can lag about 3 minutes without GitHub authorization</p>
       </div>
       <div className="pdufa-progress-controls">
         <label htmlFor="pdufa-progress-feed">Follow workflow
