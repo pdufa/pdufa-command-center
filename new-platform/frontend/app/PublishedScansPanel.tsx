@@ -79,7 +79,7 @@ export default function PublishedScansPanel() {
         const missing = s.findings_due === undefined || s.findings_verified === undefined ? null : Math.max(0,s.findings_due - s.findings_verified - (s.findings_not_applicable || 0));
         return <details className="nested-expander" key={s.source}>
           <summary>{value(s.source)} · {pct == null ? "Score N/A" : pct.toFixed(1)+"% resolved"} · {value(s.status)}</summary>
-          <p>Verified: {value(s.findings_verified)} · Not applicable: {value(s.findings_not_applicable || 0)} · Examined: {value(s.findings_due)} · Outstanding: {value(missing)}.</p>
+          <p>Verified: {value(s.findings_verified)} · Not applicable: {value(s.findings_not_applicable || 0)} · Examined: {value(s.findings_due)} · Outstanding: {value(missing ?? undefined)}.</p>
           <p><strong>Why not 100%?</strong> Required outstanding: {value(s.required_findings_unresolved || 0)}. Supplemental unavailable: {value(s.optional_findings_unavailable || 0)}. Where the denominator is fully resolved, 100% only covers reported checks, not the broader research universe.</p>
         </details>;
       })}
