@@ -24,6 +24,7 @@ from gem_potential_list import build_potential_list
 from gem_verified_snapshot import source_cleared_gems
 from gem_stage_dossier import scan_diagnostics
 from gem_runway_gate import load_snapshots, assess_runway
+from financing_tranche_runway import load_tranches, assess_tranche_runway
 from gem_visual_page import _rankings, _show
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
 
@@ -1048,7 +1049,7 @@ def _gem_section10_exit_checks(record, event, profile, runway_result,
     ]
 
 
-def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified", source_current=None):
+def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified", source_current=None, tranche_ledger=None):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
     ticker = clean_ticker(record.get("Ticker"))
@@ -1068,6 +1069,12 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     runway_result = assess_runway(ticker, runway.get(ticker), as_of=today.isoformat(),
                                  second_close=second or None)
     runway_months = runway_result["Cash runway (months)"]
+    # Independent research overlay: actual net funded tranches only. Never
+    # promotes the strict Step 4 runway gate or the two-financing entry rule.
+    tranche_runway = assess_tranche_runway(
+        ticker, runway.get(ticker), (tranche_ledger or {}).get(ticker, []),
+        as_of=today, event_key=str(event.get("event_key") or funding.get("event_key") or ""),
+    )
     entry, risk = score.get("entry"), score.get("exit_risk")
     status = "Research" if junior else "Qualified · Hold"
     status_type = "review" if junior else "pass"
@@ -1136,6 +1143,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "nct": _text(record.get("NCT ID")), "readout": p3_date, "pdufa": pdufa,
         "pdufa_verified": pdufa_verified, "runway": runway_months,
         "runway_reason": runway_result["Cash runway reason"], "cash": _money(cash),
+        "tranche_runway": tranche_runway,
         "market_cap": _number(event.get("market_cap")),
         "market_cap_display": _money(event.get("market_cap")),
         "poa_display": _pct(event.get("approval_probability"), probability=True),
@@ -1240,11 +1248,12 @@ def build_dashboard(stage, root="data", *, as_of=None):
     companies = _unique(_csv(root, "company_registry.csv"), "ticker")
     finance = _unique(_csv(root, "second_financing_status.csv"), "event_key")
     runway = load_snapshots(root)
+    tranche_ledger = load_tranches(root)
     registry = _csv(root, "all_phase_trials.csv")
     pvalues = _csv(root, "phase3_primary_pvalues.csv")
     candidates = [_candidate(stage, r, root, today, companies, finance, runway,
                              registry, pvalues, company_trials, trial_coverage,
-                             source_current=current)
+                             source_current=current, tranche_ledger=tranche_ledger)
                   for r in _rankings(stage, active, root, today)]
     junior_timeline = _junior_section10_history(history) if stage == "GEM JR" else []
     gem_timeline = _gem_history_timeline(history) if stage == "GEM" else []
