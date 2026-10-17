@@ -44,7 +44,7 @@ type Snapshot = {
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; streamlitPipelineParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
-type Nav = "PIPELINE" | "GEMS" | "MASTER" | "SCANS" | "WT";
+type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -514,7 +514,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
     {top==="PDUFA" && <nav className="worknav" aria-label="PDUFA sections">
-      {([["PIPELINE","PIPELINE"],["GEMS","GEM JR + GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
+      {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
         <button type="button" key={key} className={nav===key?"nav-selected":""} onClick={()=>setNav(key)}>{label}</button>)}
     </nav>}
     <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
@@ -557,10 +557,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <b>{item.count.toLocaleString("en-US")}</b></div>)}</div></div>)}
       </div>
     </section>}
-    {snapshot && top==="PDUFA" && nav==="GEMS" && <div className="gems-page">
-      <div className="sectionhead"><div><h2>GEM JR + GEM — One research tab, two stage blocks</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
+    {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
+      <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
-      <div className="gems-two-blocks">{gemBlock("GEM_JR")}{gemBlock("GEM")}</div>
+      <div className="gems-two-blocks">{gemBlock(nav==="GEM_JR"?"GEM_JR":"GEM")}</div>
     </div>}
     {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
       <h2>WT — Permanent Program ID Watchlist & Trading Research</h2>
