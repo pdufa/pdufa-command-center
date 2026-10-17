@@ -18,6 +18,7 @@ from gem_scan_block_ui import (published_gem_block_report, latest_gem_block_run,
                                gem_block_summary_row, render_gem_scan_block_status)
 from scan_status_ui import render_scan_status, required_issue_queue
 from overnight_status_ui import render_overnight_execution
+from unified_scans_command_center import render_unified_scans
 from filings_base_amendments_ui import render_filings_base_amendments
 from scan_activity_dashboard import render_scans_activity
 from scripts.scan_recovery_triage import triage_source_rows
@@ -622,6 +623,12 @@ def _number(v):
 
 
 def render_nightly_scan_report():
+    render_unified_scans(published_report, published_source_report, latest_run)
+    # Preserve specialist tools without repeating the old status panels on
+    # the default combined 2+3 dashboard.
+    if not st.toggle("SHOW ORIGINAL DETAILED AUDITS / LEGACY SCAN CONTROLS",
+                     value=False, key="unified_scans_legacy"):
+        return
     render_overnight_execution(published_report, published_source_report, latest_run)
     st.divider()
     # The agency controls lead the merged SCANS page, matching the requested
