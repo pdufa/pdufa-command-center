@@ -51,6 +51,67 @@ the live SEC identity check must independently confirm that ticker. Nuvation's
 abbreviated disease label is expanded to the FDA-label wording. These source
 repairs do not change probabilities, scores or trading eligibility.
 
+## Mandatory escalation for all unresolved or difficult findings
+
+**Standing PDUFA research rule:** If an automated scan, retry, source lookup, or
+reconciliation cannot verify a claim, **do not repeat the same scan as the only
+next step**. Investigate the specific ticker, company, exact drug/indication,
+event and outstanding claim through all relevant company-controlled and
+primary-source avenues. This rule applies to **every** finding left in
+`REVIEW_REQUIRED`, `CONFLICT`, `TECHNICAL_FAILURE`, or an important
+supplemental `UNAVAILABLE` state—not only a hand-picked subset. Record which
+avenues were checked, even when nothing is found.
+
+For each unresolved company, use the following source escalation workflow:
+
+1. **Official company website → Investors / Investor Relations.** Inspect
+   dated News/Press Releases, SEC Filings, Events & Presentations,
+   Quarterly/Annual Results, Financial Statements, financing/offerings
+   announcements, and archived announcements. Search exact company/ticker,
+   program, financing type, filing date, and announcement language. Company
+   Investor Relations evidence is a first-class research avenue, **not** an
+   optional last resort.
+2. **Cross-check official primary records.** Open the actual company-matched
+   SEC filing and relevant exhibit (8-K/6-K/10-Q/10-K, 424B, S-3, etc. as
+   applicable), using the company's IR link or EDGAR filing index as a route
+   to the original document. For FDA/PDUFA claims, inspect official FDA
+   materials and exact company/program regulatory announcements. For Phase 3
+   claims, inspect the exact ClinicalTrials.gov/NCT study and dated issuer
+   readout. A search result, cached snippet, or filings index by itself is
+   a *discovery lead*, never verified evidence.
+3. **Verify the claim, not just page accessibility.** Financing requires
+   company/CIK match, named transaction, amount/securities when disclosed,
+   an **explicit completed closing/receipt date**, and a separate chronology
+   proving whether it is the required first or second qualifying financing
+   *after* the relevant Phase 3 milestone. Announced/priced/expected offerings,
+   shelf registrations, unutilized credit facilities and at-the-market
+   capacity are not proof of a completed close. For cash/runway, require
+   matching filing period, reporting currency, spendable-cash definition,
+   and operating cash flow for the same period before calculating runway.
+   For FDA dates, distinguish an issuer-reported goal date from FDA-confirmed
+   regulatory action and final decision.
+4. **Use additional source avenues as appropriate.** Investor presentations,
+   earnings-call transcripts, offering prospectus supplements, exchange
+   disclosures, official trial registry records, and reputable market/broker
+   feeds can locate the missing evidence. Market option-IV HTTP 401 or borrow
+   data requiring broker authorization cannot be silently inferred from
+   price/volume. Do not present media or third-party summaries as primary proof.
+5. **Document the research trail and keep a fail-closed status.** Record
+   exact-event identity; source URLs, filing accessions, dated quotations,
+   retrieval time, and a source-content hash when fetched. Clearly record
+   found/contradictory/not found/blocked sources. Update the event-matched
+   source mapping or research queue to enable a fresh verifier pass, but never
+   hardcode an expected fact into its own proof, fabricate a source, or
+   promote a finding without meeting the claim's applicable verification
+   rules. Recheck the complete queue after repairs; unresolved findings
+   remain visible and prevent trade clearance.
+
+**Email cleanup dependency:** Move a PDUFA issue report to Trash only when
+fresh verification proves the issue is resolved or when a newer retained report
+supersedes it. A successful GitHub job, an automated repair's green status,
+an IR research lead, or a completed collection run does **not** establish that
+every source finding is fixed. Preserve the newest unresolved report.
+
 ## Checks by source
 
 | Source | Implemented checks and scope limits |
