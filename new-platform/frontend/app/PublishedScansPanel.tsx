@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import VerificationLedgerPanel from "./VerificationLedgerPanel";
+import LiveScansProgress from "./LiveScansProgress";
 
 type SourceRow = {
   source?: string; status?: string; findings_due?: number; findings_verified?: number;
@@ -144,6 +145,7 @@ export default function PublishedScansPanel() {
     <h2>SCANS — Published source scores and outstanding evidence</h2>
     <p className="subtle">This dashboard reads the original published GitHub scan reports independently of the database. With server-side GitHub authorization, it can directly dispatch the existing scanners; otherwise it opens GitHub's own manual run form. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
     <p><a href={SCAN_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN EXISTING GITHUB SCAN RUN CONTROLS ↗</a></p>
+    <LiveScansProgress />
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
     <div className="source-health">
       <strong>Run existing scanners from this dashboard</strong>
