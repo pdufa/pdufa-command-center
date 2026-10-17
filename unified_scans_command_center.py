@@ -114,9 +114,34 @@ def reasons(name, row, source_report=None):
     return messages
 
 
-def collect_cards(clinical, sources, gem, jobs=None, standalone=None):
+def collect_cards(clinical, sources, gem, jobs=None, standalone=None, individual_clinical=None):
     cards = []
     scans = {str(s.get("scan")): s for s in (clinical.get("scans") or []) if isinstance(s, dict)}
+    scan_scopes = {}
+    # Newer individual collectors replace only their section's display,
+    # never the archived all-night clinical or five-source aggregate.
+    for section, raw in (individual_clinical or {}).items():
+        expected = ("2", "3") if section == "PIPELINE" else ("4",)
+        if not isinstance(raw, dict) or raw.get("section") != section or raw.get("schema_version") != 1:
+            continue
+        if not _when(raw.get("published_at_utc")) or (
+            _when(clinical.get("updated_at_utc")) and
+            _when(raw.get("published_at_utc")) <= _when(clinical.get("updated_at_utc"))
+        ):
+            continue
+        report = raw.get("collector_reports") or {}
+        if not all(isinstance(report.get(k), dict) and
+                   report[k].get("scan") == k for k in expected):
+            continue
+        for k in expected:
+            detail = report[k]
+            metrics = {key: value for key, value in detail.items()
+                       if isinstance(value, int) and not isinstance(value, bool)}
+            scans[k] = {"scan": k, "metrics": metrics, "run_id": raw.get("run_id"),
+                        "collector_status": detail.get("collector_status"),
+                        "artifact_integrity": "VALIDATED AT INDIVIDUAL PUBLICATION",
+                        "status": detail.get("status")}
+            scan_scopes[k] = "Newer individual " + section + " run"
     inventory = scans.get("2", {})
     enrichment = scans.get("3", {})
     gm = scans.get("4", {})
@@ -134,7 +159,8 @@ def collect_cards(clinical, sources, gem, jobs=None, standalone=None):
                       "Enrichment studies examined": (enrichment.get("metrics") or {}).get("studies_checked"),
                       "Enrichment matched trials": (enrichment.get("metrics") or {}).get("matched_trials"),
                       "Collector 2 integrity": inventory.get("artifact_integrity"),
-                      "Collector 3 integrity": enrichment.get("artifact_integrity")})
+                      "Collector 3 integrity": enrichment.get("artifact_integrity"),
+                      "Evidence origin": scan_scopes.get("2", "Last complete nightly clinical report")})
     cards.append(p)
     junior_metrics = gm.get("metrics") or {}
     cards.append(dict(name="GEM JR", score=None,
@@ -144,7 +170,8 @@ def collect_cards(clinical, sources, gem, jobs=None, standalone=None):
                       details={"Studies examined": junior_metrics.get("studies_checked"),
                                "Matched posted-result records": junior_metrics.get("matched_posted_results"),
                                "Registered companies": junior_metrics.get("registry_companies"),
-                               "Clinical artifact integrity": gm.get("artifact_integrity")}))
+                               "Clinical artifact integrity": gm.get("artifact_integrity"),
+                               "Evidence origin": scan_scopes.get("4", "Last complete nightly clinical report")}))
     six = gem.get("two_benchmark_candidate_count")
     qualified = gem.get("strict_entry_gate_shortlist_count")
     cards.append(dict(name="GEM", score=None, checked=gem.get("observed_phase3_rows"),
@@ -240,6 +267,29 @@ def individual_snapshot(name):
         except (OSError, ValueError):
             return {}
     return data if isinstance(data, dict) and data.get("source") == name else {}
+
+
+@st.cache_data(ttl=90, show_spinner=False)
+def individual_clinical_snapshot(section):
+    if section not in ("PIPELINE", "GEM JR"):
+        return {}
+    name = "gem_jr" if section == "GEM JR" else "pipeline"
+    url = ("https://raw.githubusercontent.com/" + REPO +
+           "/main/data/individual_clinical_scans/" + name + ".json")
+    try:
+        req = urllib.request.Request(url, headers={
+            "Accept": "application/json", "User-Agent": "pdufa-scan-unified"})
+        with urllib.request.urlopen(req, timeout=6) as response:
+            payload = json.load(response)
+    except (OSError, ValueError, urllib.error.URLError):
+        try:
+            payload = json.loads(
+                (Path("data/individual_clinical_scans") / (name + ".json"))
+                .read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+    return payload if isinstance(payload, dict) and payload.get("section") == (
+        "GEM_JR" if section == "GEM JR" else "PIPELINE") else {}
 
 
 def workflow_request(section, mode):
@@ -355,7 +405,11 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
     run_id = latest.get("id")
     jobs = current_job_steps(run_id) if isinstance(run_id, int) else []
     standalone = {name: individual_snapshot(name) for name in SOURCE_NAMES}
-    cards = collect_cards(clinical, sources, gem, jobs, standalone)
+    clinical_standalone = {
+        "PIPELINE": individual_clinical_snapshot("PIPELINE"),
+        "GEM JR": individual_clinical_snapshot("GEM JR"),
+    }
+    cards = collect_cards(clinical, sources, gem, jobs, standalone, clinical_standalone)
     scoreable = [r for r in cards if r["score"] is not None and r["name"] in SOURCE_NAMES]
     due = sum(r["due"] for r in scoreable)
     cleared = sum(r["due"] - r["outstanding"] for r in scoreable)
@@ -511,6 +565,7 @@ def _submit(name, mode, token, clinical_loader, sources_loader):
         clinical_loader.clear()
         sources_loader.clear()
         individual_snapshot.clear()
+        individual_clinical_snapshot.clear()
         st.success(name + " " + mode + " scan requested. GitHub accepted the job; "
                    "refresh status to confirm the actual run and completion.")
     except urllib.error.HTTPError as exc:
