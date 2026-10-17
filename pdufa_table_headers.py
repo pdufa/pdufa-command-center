@@ -183,10 +183,20 @@ def _text_pixel_width(value):
 
 
 def column_width_for(label, values):
-    """Fit the entire header and longest displayed value; no maximum width."""
-    header_pixels = _text_pixel_width(label) + 48  # circled help + sort affordance
+    """Give the header text, sort/dropdown control and question-mark help room."""
+    # Streamlit's native header reserves its own menu and hover-help controls.
+    # Do not let the first one cover the help label on narrow fields.
+    header_pixels = _text_pixel_width(label) + 108
     cell_pixels = max((_text_pixel_width(value) for value in values), default=0) + 28
-    return int(max(48, header_pixels, cell_pixels) + 0.999)
+    width = max(132, header_pixels, cell_pixels)
+    # Source notes and clinical narratives can be thousands of pixels wide:
+    # keep the controls legible without letting one prose cell consume the grid.
+    name = _name(label)
+    if any(term in name for term in (
+            "note", "narrative", "summary", "description", "explanation",
+            "evidence text", "source url", "next action", "research gaps")):
+        width = min(width, max(header_pixels, 440))
+    return int(width + 0.999)
 
 
 def header_config(data, config=None):
