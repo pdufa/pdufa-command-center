@@ -129,6 +129,13 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
         "tradeReason": profile["reason"],
         "marketDate": profile["date"].isoformat() if profile["date"] else "",
         "marketSource": profile["source"] if profile["source"] else "",
+        # Reuse the exact GEM source-verified daily bars for a matching chart,
+        # including closing prices and volumes; never invent candles or OHLC.
+        "chartBars": [
+            {"date": bar["date"].isoformat(), "close": _float(bar["close"], 5),
+             "volume": _float(bar["volume"], 0)}
+            for bar in profile["bars"]
+        ],
         "eodFresh": profile["fresh"],
         "close": _float(profile["close"]),
         "sma20": _float(profile["sma20"]),
