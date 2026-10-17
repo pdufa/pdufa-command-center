@@ -6,6 +6,7 @@ separately; no retired scan-status file is treated as the current run.
 from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
+import re
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -285,15 +286,38 @@ def render_overnight_execution(report_loader, source_loader, run_loader):
             else:
                 st.caption("No individual issue examples in the published report.")
 
-    st.markdown("### GMAIL START / END DELIVERY CHECK")
+    st.markdown("### GMAIL START / END SUBMISSION CHECK")
     st.caption(
-        "GitHub job success can verify the mail-sending step executed. It does "
-        "not independently prove a message was delivered to an inbox. "
-        "The currently published source summary does not contain Gmail delivery "
-        "receipts; inspect the exact workflow notification artifacts for START/END "
-        "submission evidence. Delivery remains UNVERIFIED until independently checked."
+        "Each row below is the actual GitHub step that attempted a mail action. "
+        "SUCCESS proves the step exited successfully, not that Gmail delivered "
+        "a message to your inbox. START/END delivery remains UNVERIFIED "
+        "until independent mailbox or provider evidence is available."
     )
-    st.write("**Delivery:** NOT VERIFIED · **Scan archival:** "
+    mail_steps = []
+    for job in jobs:
+        if not isinstance(job, dict):
+            continue
+        for step in (job.get("steps") or []):
+            name = str(step.get("name") or "")
+            if re.search(r"\\b(?:gmail|smtp|e-?mail|notification)\\b", name, flags=re.I):
+                mail_steps.append({
+                    "Scan stage": str(job.get("name") or ""),
+                    "Email action": name,
+                    "GitHub step result": _status(step),
+                    "Started (Pacific)": _fmt_short(step.get("started_at")),
+                    "Finished (Pacific)": _fmt_short(step.get("completed_at")),
+                    "Inbox delivery": "NOT INDEPENDENTLY VERIFIED",
+                })
+    if mail_steps:
+        st.dataframe(pd.DataFrame(mail_steps), use_container_width=True,
+                     hide_index=True, height=min(390, 70 + 36 * len(mail_steps)))
+        if any(x["GitHub step result"] in ("FAILURE", "TIMED_OUT", "CANCELLED")
+               for x in mail_steps):
+            st.error("At least one email-related GitHub step failed. Check its run log.")
+    else:
+        st.warning("No individual email submission steps are available for this run. "
+                   "Email submission and delivery cannot be confirmed.")
+    st.write("**Inbox delivery:** NOT VERIFIED · **Scan archival:** "
              + ("matching" if matched_clinical and matched_source else "pending / mismatched"))
     st.caption(
         "Legacy data/overnight_scan_status.json may be older than the latest "
