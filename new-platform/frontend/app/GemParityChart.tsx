@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 type Bar={date:string;close:number;volume:number};
 type Technical={
@@ -101,6 +101,51 @@ function Plot({ticker,data,bars,range,plan,rolling}:{ticker:string;data:Technica
  </div>;
 }
 
+function OriginalTradingView({ticker,range}:{ticker:string;range:Range}){
+ const root=useRef<HTMLDivElement>(null);
+ useEffect(()=>{
+   const host=root.current;
+   if(!host)return;
+   host.replaceChildren();
+   // Exact widget script/settings used in Streamlit gem_reference_frontend/dashboard.js.
+   const child=document.createElement("div");
+   child.className="tradingview-widget-container__widget";child.style.height="100%";
+   host.appendChild(child);
+   const script=document.createElement("script");
+   script.src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+   script.async=true;
+   script.textContent=JSON.stringify({
+     autosize:true,symbol:ticker,interval:"D",range:range==="ALL"?"ALL":range,
+     timezone:"America/Los_Angeles",theme:"light",style:"1",locale:"en",
+     enable_publishing:false,hide_top_toolbar:false,allow_symbol_change:false,
+     save_image:false,studies:["MASimple@tv-basicstudies"],
+     support_host:"https://www.tradingview.com"
+   });
+   host.appendChild(script);
+   return ()=>{host.replaceChildren()};
+ },[ticker,range]);
+ return <div className="parity-external" ref={root} role="region"
+   aria-label={ticker+" TradingView external candles; may be delayed"} />;
+}
+function StreamlitWatchlistSignalTable(){
+ const [mode,setMode]=useState<"ENTRY"|"EXIT"|"BOTH">("BOTH");
+ const names=["Volume / RVOL","Bollinger (20,2)","Phase 3 AVWAP",
+  "EMA (10/20/50)","RSI (14)","MACD (12/26/9)","OBV","ATR (14)"];
+ const modes=mode==="BOTH"?["ENTRY","EXIT"]:[mode];
+ return <details className="parity-eight">
+  <summary>STREAMLIT WATCHLIST SIGNALS — EIGHT ENTRY / EXIT INDICATORS</summary>
+  <p>Identical Streamlit indicator labels and mode selector. These signals require the separate validated intraday watchlist scanner. Without its published output, Streamlit marks them NOT SCANNED; an EOD chart cannot manufacture them.</p>
+  <div className="parity-signal-modes" role="group" aria-label="Watchlist indicator mode">
+   {(["ENTRY","EXIT","BOTH"] as const).map(v=><button type="button" key={v}
+    aria-pressed={mode===v} onClick={()=>setMode(v)}>{v}</button>)}
+  </div>
+  <div className="parity-check-table"><table><thead><tr><th>Indicator</th><th>Signal</th><th>Updated</th></tr></thead><tbody>
+   {modes.flatMap(m=>names.map(name=><tr key={m+"|"+name}>
+     <td>{mode==="BOTH"?m+" | "+name:name}</td><td>NOT SCANNED</td><td>NOT SCANNED</td>
+   </tr>))}
+  </tbody></table></div>
+ </details>;
+}
 export default function GemParityChart({ticker,programKey,data}:{ticker:string;programKey:string;data?:Technical|null}){
  const [range,setRange]=useState<Range>("6M"),[mode,setMode]=useState<"saved"|"tv">("saved");
  const [plan,setPlan]=useState<Plan>({}),[editing,setEditing]=useState(false);
@@ -155,9 +200,7 @@ export default function GemParityChart({ticker,programKey,data}:{ticker:string;p
        <span key={label}><i style={{borderColor:c}}/>{label}</span>)}
     </div>
     {mode==="saved"?<Plot ticker={ticker} data={data||{}} bars={bars} range={range} plan={plan} rolling={false}/>:
-      <div className="parity-external"><iframe title={ticker+" TradingView daily candlesticks"} loading="lazy"
-       src={"https://s.tradingview.com/widgetembed/?symbol="+encodeURIComponent(ticker)+"&interval=D&symboledit=0&saveimage=0&toolbarbg=F1F3F6&theme=light&style=1"}
-       referrerPolicy="strict-origin-when-cross-origin"/></div>}
+      <OriginalTradingView ticker={ticker} range={range}/>} 
     <div className="parity-caption"><span>{mode==="saved"?bars.length+" saved sessions · closes and volume only":"External TradingView · may be delayed"}</span>
       <span className="parity-actions">
         <button type="button" onClick={()=>setMode(old=>old==="saved"?"tv":"saved")}>{mode==="saved"?"Candles":"Saved EOD"}</button>
@@ -173,6 +216,7 @@ export default function GemParityChart({ticker,programKey,data}:{ticker:string;p
       <div className="parity-actions"><button onClick={()=>{save({});setEditing(false)}}>Clear levels</button><button onClick={()=>setEditing(false)}>Cancel</button><button onClick={saveDraft}>Save levels</button></div>
     </div>}
   </div>
+  <StreamlitWatchlistSignalTable/>
   <details className="parity-base"><summary><strong>20-SESSION BASE FORMATION — DAILY-CLOSE OBSERVATIONS</strong> · {base?.status||"NOT AVAILABLE"}</summary>
    <p>Closing support and resistance use the preceding 20 closes at each session and appear only in the most recent 21 sessions. No future-price lookahead.</p>
    <Plot ticker={ticker} data={data||{}} bars={bars} range={range} plan={{}} rolling={true}/>
