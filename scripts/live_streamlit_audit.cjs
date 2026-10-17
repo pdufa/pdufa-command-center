@@ -75,10 +75,25 @@ async function selectedTab(frame, label) {
   return await control.getAttribute("aria-selected") === "true";
 }
 
+async function expandLegacyScans(page) {
+  // Deep SEC/FDA cards are collapsed by default in the combined SCANS page.
+  const shell = await waitFor(page, "Unified SCANS shell", async(f, text) =>
+    await selectedTab(f, "SCANS") &&
+    text.includes("SHOW ORIGINAL DETAILED AUDITS / LEGACY SCAN CONTROLS"), 45000);
+  if (!shell.text.includes("SEC & FDA SCAN CONTROLS")) {
+    await shell.frame.getByText(
+      "SHOW ORIGINAL DETAILED AUDITS / LEGACY SCAN CONTROLS", {exact:true}
+    ).click({timeout:15000});
+    await waitFor(page, "Legacy source controls", async(f, text) =>
+      await selectedTab(f, "SCANS") && text.includes("SEC & FDA SCAN CONTROLS"), 60000);
+  }
+}
+
 async function inspectTab(page, name, expected, opts={}) {
   const frame = await currentFrame(page);
   if (!frame) throw Error(name + ": app iframe not found.");
   await frame.getByRole("tab", {name, exact: true}).click({timeout: 15000});
+  if (name === "SCANS" && opts.legacy) await expandLegacyScans(page);
   const found = await waitFor(page, name, async(f, text) => {
     if (!await selectedTab(f, name)) return false;
     if (name === "GEM JR" || name === "GEM") {
@@ -223,7 +238,7 @@ async function audit() {
       "SEC Base details", "SEC Amendment details",
       "FDA Base details", "FDA Amendment details",
       "SEC MISSING EVIDENCE", "FDA MISSING EVIDENCE",
-    ]);
+    ], {legacy:true});
     // Image-contract acceptance: four independent stacked agency cards
     // followed by one joint missing-evidence card and a progress legend.
     const cardClasses = [
@@ -328,10 +343,9 @@ async function audit() {
       throw Error("Obsolete duplicate top-level SCANS navigation is still visible.");
     }
     const found = await inspectTab(page, "SCANS", [
-      "SEC & FDA SCAN CONTROLS",
-      "SHOW LIVE ACTIVITY & HISTORY",
-      "GEMS — GITHUB SCAN LOGS",
-      "NIGHTLY SCAN REPORT",
+      "UNIFIED SCANS — CONTROL CENTER",
+      "Start scans", "Section scorecards",
+      "SHOW ORIGINAL DETAILED AUDITS / LEGACY SCAN CONTROLS",
     ]);
     report.checked.push({screen:"One consolidated SCANS navigation",result:"PASS",
                          live_activity_toggle:found.text.includes("SHOW LIVE ACTIVITY & HISTORY")});
@@ -359,8 +373,8 @@ async function audit() {
     await scans.click({timeout:15000});
     await waitFor(page,"Mobile SCANS content",async(f,text) =>
       await selectedTab(f,"SCANS") &&
-      text.includes("NIGHTLY SCAN REPORT") &&
-      text.includes("GEM — MASTER STOCK LIST"),120000);
+      text.includes("UNIFIED SCANS — CONTROL CENTER") &&
+      text.includes("Section scorecards"),120000);
     report.checked.push({screen:"Mobile SCANS opens at 390px",result:"PASS"});
     await screenshot(page,"iphone-390-scans");
   });
