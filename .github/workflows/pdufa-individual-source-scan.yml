@@ -59,6 +59,7 @@ jobs:
           set -euo pipefail
           mkdir -p reports/missing_sources reports/scan_notifications
           lower="$(printf '%s' "$SOURCE" | tr '[:upper:]' '[:lower:]')"
+          set +e
           python scripts/run_scan_with_email.py \
             --scan "$SOURCE" --mode "$SCAN_MODE" \
             --status-file "reports/missing_sources/${lower}_scan_report.json" \
@@ -67,6 +68,12 @@ jobs:
             python scripts/nightly_missing_sources.py \
               --source "$SOURCE" --mode "$SCAN_MODE" \
               --report "reports/missing_sources/${lower}_scan_report.json"
+          result=$?
+          if [ "$result" -eq 3 ]; then
+            echo "::warning::Individual source collected with unresolved evidence."
+            exit 0
+          fi
+          exit "$result"
       - name: Preserve exact individual source result
         if: always()
         uses: actions/upload-artifact@v4
