@@ -2941,9 +2941,20 @@ def render_pre_phase3():
     try:
         trials, finance, manifest = _step7_snapshot(signature)
     except (OSError, ValueError, TypeError, KeyError, pd.errors.ParserError) as exc:
+        # Report only known, safe diagnosis categories; never echo arbitrary
+        # source exceptions or market/clinical payloads into the live UI.
+        known_reasons = {
+            "Source trial universe absent; clinical display remains blocked":
+                "source universe missing on this deployment",
+            "Local display reconstruction did not pass source and count checks":
+                "local source reconstruction/count validation blocked",
+            "Locally reconstructed clinical feed failed strict validation":
+                "rebuilt display feed failed strict identity/rank validation",
+        }
+        reason = known_reasons.get(str(exc), "unclassified source validation error")
         st.error(
             "Source integration failed. Original clinical and financing records were NOT changed. "
-            f"Error type: {type(exc).__name__}"
+            f"Error type: {type(exc).__name__}. Diagnostic: {reason}."
         )
         # Safe deployment diagnostic: cache provenance and file presence only.
         # Never invent results, reveal credentials, or bypass source validation.
