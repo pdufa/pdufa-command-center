@@ -3466,6 +3466,26 @@ if page == "PDUFA":
                 st.session_state["pipeline_sort_v9"] = DISPLAY_ORDER_OPTIONS[0]
                 _clear_pipeline_results_v9()
 
+            def _select_pipeline_count_v10(field, category):
+                """Count buttons select one stage/date and immediately show a valid pair.
+
+                Streamlit callbacks run before widgets are instantiated, avoiding
+                changes to the multiselects after they have been rendered.
+                """
+                dimension = ("pipeline_stages_v9" if field == "current_stage"
+                             else "pipeline_dates_v9")
+                st.session_state[dimension] = [category]
+                stages = st.session_state.get("pipeline_stages_v9", [])
+                dates = st.session_state.get("pipeline_dates_v9", [])
+                if stages and dates:
+                    st.session_state["pipeline_applied_v9"] = (
+                        tuple(stages), tuple(dates),
+                        str(st.session_state.get("pipeline_query_v9", "")).strip(),
+                        st.session_state.get("pipeline_sort_v9", DISPLAY_ORDER_OPTIONS[0]),
+                    )
+                else:
+                    _clear_pipeline_results_v9()
+
             # The filters are one white/black Pipeline control card; retain every key.
             with st.container(border=True, key="pipeline_filters_card"):
                 st.markdown("### PIPELINE FILTERS")
@@ -3542,11 +3562,12 @@ if page == "PDUFA":
             try:
                 universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
                 prepared = prepare_pipeline(universe, pipeline_today)
-                # Unselected dimensions show the available universe; selecting both
-                # makes both count charts reconcile to the eventual spreadsheet rows.
+                # Count buttons describe the searchable universe, NOT just the
+                # active selection: unchecking a phase must never zero the others.
+                # The displayed-row count audit below still uses exact filters.
                 count_records = filter_pipeline(
-                    prepared, selected_stages or list(PIPELINE_STAGES),
-                    selected_dates or list(PIPELINE_DATE_BANDS), query,
+                    prepared, list(PIPELINE_STAGES),
+                    list(PIPELINE_DATE_BANDS), query,
                 )
             except (KeyError, ValueError, TypeError, OSError, AttributeError) as exc:
                 st.error("Could not load Pipeline records. Check Streamlit application logs.")
@@ -3626,7 +3647,24 @@ if page == "PDUFA":
                 with slot:
                     st.markdown("#### " + title)
                     st.metric(total_label, f"{len(count_records):,}")
+                    st.caption("Universe counts; independent of selected stages/dates. "
+                               "Use a button below to display matching trials.")
                     st.markdown(chart_html, unsafe_allow_html=True)
+                    selector_columns = st.columns(2, gap="small")
+                    for index, category in enumerate(categories):
+                        with selector_columns[index % 2]:
+                            active = (category in selected_stages if field == "current_stage"
+                                      else category in selected_dates)
+                            st.button(
+                                f"{category} · {int(counts.get(category, 0)):,}",
+                                key=f"pipeline_count_button_v10_{field}_{index}",
+                                help=f"Select {category} and show trials when both a stage "
+                                     "and a date are chosen.",
+                                type="primary" if active else "secondary",
+                                use_container_width=True,
+                                on_click=_select_pipeline_count_v10,
+                                args=(field, category),
+                            )
 
             _render_pipeline_counts(stage_count_slot, "STAGE COUNTS", "current_stage", PIPELINE_STAGES, "PHASE TOTAL")
             _render_pipeline_counts(date_count_slot, "DATE TRIAL COUNTS", "DATES", PIPELINE_DATE_BANDS, "DATE TOTAL")
