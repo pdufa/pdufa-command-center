@@ -444,3 +444,15 @@ button.secondary { background: white; color: #172b1b; }
 .gem-source-parity-table td:last-child{min-width:140px}
 .gem-source-parity-table td:last-child small{display:block;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:700px){.entryexit-table-grid{grid-template-columns:1fr}.alpaca-header{padding:9px}.alpaca-range span{width:100%;margin:0}.alpaca-plot{min-height:130px}}
+
+/* Six-column Gold Master reference matrix, including Source / Notes. */
+.gold-master-poster{min-width:1770px}
+.gold-chart-table-wrap th:nth-child(2){width:25%}
+.gold-chart-table-wrap th:nth-child(3){width:24%}
+.gold-chart-table-wrap th:nth-child(4){width:18%}
+.gold-chart-table-wrap th:nth-child(5){width:11%}
+.gold-chart-table-wrap th:nth-child(6){width:17%}
+.gold-chart-table-wrap a{display:inline-block;color:#135c9a;font-size:9px;font-weight:700;word-break:break-word}
+.gold-matrix-third{grid-template-columns:repeat(6,minmax(0,1fr))}
+.gold-master-readable .gold-matrix-third{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1000px){.gold-master-readable .gold-matrix-third{grid-template-columns:1fr}}
