@@ -1,0 +1,155 @@
+name: PDUFA Individual Clinical Scan
+run-name: "${{ inputs.section }} — individual clinical source scan"
+
+on:
+  workflow_dispatch:
+    inputs:
+      section:
+        description: "Run only the selected clinical section"
+        type: choice
+        required: true
+        options: [PIPELINE, GEM_JR]
+      scan_mode:
+        description: "DELTA changed trials or FULL entire tracked section"
+        type: choice
+        default: DELTA
+        options: [DELTA, FULL]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-individual-clinical-${{ inputs.section }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: "Collect ${{ inputs.section }} only"
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      SECTION: ${{ inputs.section }}
+      SCAN_MODE: ${{ inputs.scan_mode }}
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ClinicalTrials.gov collector dependencies
+        run: python -m pip install requests
+      - name: Verify notification secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email secret; scan not started."
+              exit 1
+            fi
+          done
+      - name: Collect and validate only this clinical section
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/scan_notifications
+          case "$SECTION" in
+            PIPELINE) scans="2 3" ;;
+            GEM_JR) scans="4" ;;
+            *) echo "::error::Unknown clinical section"; exit 2 ;;
+          esac
+          for scan in $scans; do
+            echo "Collecting clinical scan $scan in $SECTION mode $SCAN_MODE"
+            set +e
+            python scripts/run_scan_with_email.py \
+              --scan "$scan" --mode "$SCAN_MODE" \
+              --status-file "reports/nightly-clinical-${scan}.json" \
+              --audit-dir reports/scan_notifications \
+              --timeout-seconds 7100 -- \
+              python scripts/nightly_clinical_collection.py \
+                --scan "$scan" --mode "$SCAN_MODE" \
+                --report "reports/nightly-clinical-${scan}.json"
+            result=$?
+            set -e
+            if [ "$result" -ne 0 ] && [ "$result" -ne 3 ]; then
+              echo "::error::Collector $scan failed; stop without publishing."
+              exit "$result"
+            fi
+            python scripts/validate_clinical_snapshot.py --scan "$scan"
+          done
+      - name: Preserve exact collector report and notification audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: individual-clinical-${{ inputs.section }}-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            reports/nightly-clinical-2.json
+            reports/nightly-clinical-3.json
+            reports/nightly-clinical-4.json
+            reports/scan_notifications/
+      - name: Publish section-only clinical snapshot with scope and run ID
+        shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from datetime import datetime, timezone
+          section = os.environ["SECTION"]
+          scan_ids = ["2","3"] if section == "PIPELINE" else ["4"]
+          reports = {}
+          for number in scan_ids:
+              file = Path("reports") / ("nightly-clinical-" + number + ".json")
+              if not file.exists():
+                  raise SystemExit("Missing clinical collector report " + number)
+              record = json.loads(file.read_text(encoding="utf-8"))
+              reports[number] = record
+          report = {
+              "schema_version": 1,
+              "section": section,
+              "mode": os.environ["SCAN_MODE"],
+              "run_id": int(os.environ["RUN_ID"]),
+              "run_url": os.environ["RUN_URL"],
+              "published_at_utc": datetime.now(timezone.utc).isoformat(),
+              "collector_reports": reports,
+              "note": "Individual section scan; not a complete overnight source reconciliation."
+          }
+          p = Path("data/individual_clinical_scans") / (section.lower() + ".json")
+          p.parent.mkdir(parents=True, exist_ok=True)
+          p.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+          PY
+          mkdir -p /tmp/pdufa-individual-clinical
+          cp "data/individual_clinical_scans/$(printf '%s' "$SECTION" | tr '[:upper:]' '[:lower:]').json" /tmp/pdufa-individual-clinical/section.json
+          # Snapshot data was verified by validate_clinical_snapshot above.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/all_phase_scan_state.json data/all_phase_trials.csv \
+            data/phase_pipeline_state.json data/phase_pipeline.csv \
+            data/phase_pipeline_market_caps.csv data/phase3_intake_status.json \
+            data/phase3_announcements.csv data/individual_clinical_scans
+          if ! git diff --cached --quiet; then
+            git commit -m "Prepare individual $SECTION clinical source snapshot"
+          fi
+          git fetch origin main
+          git checkout -B publish-individual-clinical origin/main
+          mkdir -p data/individual_clinical_scans
+          cp /tmp/pdufa-individual-clinical/section.json "data/individual_clinical_scans/$(printf '%s' "$SECTION" | tr '[:upper:]' '[:lower:]').json"
+          # Collector raw output is archived; publish the standalone status
+          # without overwriting files changed by a concurrently running chain.
+          git add data/individual_clinical_scans
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish individual $SECTION clinical scan audit"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main || exit 1
+          done
+          exit 1
