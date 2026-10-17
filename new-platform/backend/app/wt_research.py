@@ -141,26 +141,35 @@ def _interpret_yahoo(payload: dict, ticker: str, url: str, today) -> dict | None
 
 
 def _download_eod(ticker: str, today) -> dict | None:
+    """Alpaca is the only provider of on-demand WT market bars.
+
+    The original published GEM saved observations remain separate; Alpaca IEX
+    volume is explicitly single-exchange data, never described as SIP totals.
+    """
     if not _VALID_TICKER.fullmatch(ticker):
         return None
-    for host in ("query1.finance.yahoo.com", "query2.finance.yahoo.com"):
-        url = "https://" + host + "/v8/finance/chart/" + quote(ticker, safe="") + "?range=6mo&interval=1d&events=history"
-        try:
-            request = Request(url, headers={
-                "User-Agent": "Mozilla/5.0 (compatible; PDUFA-trial-EOD-research/1.0)",
-                "Accept": "application/json",
-            })
-            with urlopen(request, timeout=6) as response:
-                blob = response.read(750_001)
-                if len(blob) > 750_000:
-                    continue
-            parsed = _interpret_yahoo(json.loads(blob), ticker, url, today)
-            if parsed:
-                return parsed
-        except (OSError, ValueError, TypeError, UnicodeError, KeyError):
-            continue
-    return None
-
+    from .alpaca_market_chart import get_alpaca_bars
+    returned = get_alpaca_bars(ticker, "6M")
+    if returned.get("status") != "OK":
+        return None
+    source_bars = returned.get("bars") or []
+    if len(source_bars) < 60:
+        return None
+    bars = [
+        {"date": b["date"], "close": b["close"], "volume": b["volume"]}
+        for b in source_bars
+    ]
+    base = sum(b["volume"] for b in bars[-21:-1]) / 20
+    return {
+        "ticker": ticker, "market_status": "MARKET_UPDATED",
+        "last_session": bars[-1]["date"], "last_close_usd": bars[-1]["close"],
+        "last_volume": bars[-1]["volume"],
+        "relative_volume": bars[-1]["volume"] / base if base > 0 else None,
+        "price_bars_json": json.dumps(bars, separators=(",", ":")),
+        "market_source": "https://data.alpaca.markets/v2/stocks/"
+                         + ticker + "/bars?feed=" + returned["feed"].lower(),
+        "market_origin": "WT_ON_DEMAND_ALPACA_" + returned["feed"],
+    }
 
 def _market_for_ticker(ticker: str, published: dict, today) -> dict:
     """Prefer source-verified existing GEM data; refresh absent/stale bars for WT."""
