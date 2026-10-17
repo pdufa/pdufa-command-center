@@ -17,6 +17,7 @@ from post_phase3_review_priority import assign_review_ranks
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
 from gem_financing_gate import entry_status, sec_recheck_current
 from gem_runway_gate import assess_runway, load_snapshots, passes as runway_passes, MIN_MONTHS
+from financing_tranche_runway import load_tranches as load_financing_tranches, assess_tranche_runway
 from gem_runway_trend import load_history as load_runway_history, assess_trend
 from gem_two_benchmark import assess as assess_two_benchmarks, assign_ranks as rank_two_benchmark
 from gem_hedge_funds import load_signal_records, assess_signal
@@ -292,6 +293,7 @@ def build_gem_scans(root="data", as_of=None):
     sec_current = sec_recheck_current(root, as_of=source_status.get("as_of") or as_of)
     events = _event_map(root)
     runway_snapshots = load_snapshots(root)
+    tranche_ledger = load_financing_tranches(root)
     runway_history = load_runway_history(root)
     hedge_signals = load_signal_records(root, as_of=source_status.get("as_of") or as_of)
     insider_signals = load_insider_records(root, as_of=source_status.get("as_of") or as_of)
@@ -327,6 +329,19 @@ def build_gem_scans(root="data", as_of=None):
             if item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
             else None,
         ))
+        tranche_info = assess_tranche_runway(
+            ticker, runway_snapshots.get(ticker), tranche_ledger.get(ticker, []),
+            as_of=source_status.get("as_of") or as_of,
+            event_key=str(record.get("Exact event") or ""),
+        )
+        # Display research fields only. Neither estimated post-funding runway
+        # nor multiple tranches can override two separate financing closes.
+        item["Funding agreements (research)"] = tranche_info["agreement_count"]
+        item["Financing tranches listed"] = len(tranche_info["tranches"])
+        item["Tranche runway research status"] = tranche_info["status"]
+        item["Tranche runway research reason"] = tranche_info["reason"]
+        item["Pro forma funded runway (months)"] = tranche_info["estimated_runway_months"]
+        item["Net tranches since cash statement (USD)"] = tranche_info["funded_net_added_usd"]
         item.update(assess_trend(
             ticker, runway_snapshots.get(ticker), runway_history.get(ticker, []),
             as_of=source_status.get("as_of") or as_of,
