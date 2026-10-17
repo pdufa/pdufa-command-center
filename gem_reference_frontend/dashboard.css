@@ -200,3 +200,42 @@
 .section9-plan{background:#f0f8ff;border-color:#7bbedb;font-size:9px;font-weight:700;padding:5px 7px}
 .section9-disclaimer{font-size:9px;line-height:1.35;color:#546d7f;padding:5px 2px 2px}
 @media(max-width:700px){.section9-scroll{max-height:345px}.section9-card .card-head .score-badge{max-width:100%}}
+
+/* Section 10: archived, scan-observed GEM JR movements and GEM exit risk */
+.jr-timeline .card-body{display:flex;flex-direction:column;min-height:0;gap:3px;overflow:hidden}
+.footer>.jr-timeline{height:224px;min-height:185px}
+.jr-timeline .history-summary{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:9px}
+.jr-timeline .history-summary strong{color:#124d7e}
+.jr-timeline .history-summary span{background:#edf7fc;border:1px solid #cde2ec;border-radius:3px;padding:2px 4px}
+.jr-timeline .history-controls{display:flex;gap:3px;flex-wrap:wrap;align-items:center;margin:4px 0}
+.jr-timeline .history-controls input,.jr-timeline .history-controls select{font-size:9px;min-height:25px;border:1px solid #adcee2;border-radius:3px;padding:3px}
+.jr-timeline .history-controls input{flex:1 1 120px;min-width:90px}
+.jr-timeline .history-controls select{flex:1 1 72px;min-width:70px;max-width:155px}
+.jr-timeline .history-table-wrap{max-height:115px;min-height:35px;overflow:auto;overscroll-behavior:contain}
+.jr-timeline .history-timeline-table{table-layout:fixed;min-width:620px}
+.jr-timeline .history-timeline-table th{position:sticky;top:0;z-index:1;white-space:normal;font-size:8px}
+.jr-timeline .history-timeline-table td{font-size:8px;line-height:1.25;vertical-align:top;white-space:normal;overflow-wrap:anywhere;padding:4px;min-height:23px;height:auto}
+.jr-timeline .history-timeline-table td:nth-child(1),.jr-timeline .history-timeline-table td:nth-child(2){white-space:nowrap}
+.jr-timeline .history-timeline-table .badge{font-size:8px;line-height:1.25;white-space:normal}
+.jr-timeline .history-id{color:#5b7691;font-size:8px;margin-top:3px;word-break:break-word}
+.jr-timeline .source-note{font-size:8px;line-height:1.3;padding:2px 1px}
+.gem-exit .card-body{display:flex;flex-direction:column;min-height:0;gap:5px}
+.gem-exit .card-head{flex-wrap:wrap}
+.gem-exit .card-head .score-badge{font-size:10px;white-space:normal;text-align:right;max-width:50%}
+.gem-exit .exit-overview{border:1px solid #d3e2eb;background:#f5faff;border-radius:4px;padding:6px;display:grid;gap:3px;font-size:10px;color:#31536e}
+.gem-exit .exit-overview strong{font-size:10.5px;color:#914223}
+.gem-exit .exit-policy-note{color:#5d6680}
+.gem-exit .exit-review-scroll{max-height:290px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.gem-exit .exit-review-row{border:1px solid #d4e6f0;border-radius:4px;margin:3px 0;background:#fff}
+.gem-exit .exit-review-row summary{cursor:pointer;list-style:none;display:flex;gap:5px;padding:5px;align-items:center}
+.gem-exit .exit-review-row summary::-webkit-details-marker{display:none}
+.gem-exit .exit-review-row[open] summary{background:#eff8ff}
+.gem-exit .exit-review-row .exit-rank{flex:none;min-width:19px;text-align:center;font-weight:800;font-size:9px;color:#fff;background:#164e80;border-radius:3px;padding:3px}
+.gem-exit .exit-review-row .exit-label{min-width:0;flex:1;font-size:10px;font-weight:700;overflow-wrap:anywhere}
+.gem-exit .exit-review-row .exit-label small{display:block;color:#53748c;font-weight:400;font-size:9px;line-height:1.3;margin-top:2px}
+.gem-exit .exit-review-row .badge{flex:none;max-width:85px;white-space:normal;font-size:9px;text-align:center}
+.gem-exit .exit-review-detail{border-top:1px solid #d7e7f0;padding:6px;display:grid;gap:4px;color:#3f617a;font-size:9px;line-height:1.35}
+.gem-exit .exit-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px;color:#486a82;font-size:9px}
+.gem-exit .exit-controls button{padding:5px 7px;font-size:9px;border-color:#8ab8d2;font-weight:700}
+.gem-exit .exit-disclaimer{color:#4f6e83;font-size:9px;line-height:1.35}
+@media(max-width:700px){.footer>.jr-timeline{height:280px}.jr-timeline .history-table-wrap{max-height:167px}.gem-exit .exit-review-scroll{max-height:335px}}
