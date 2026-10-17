@@ -327,8 +327,7 @@ function criteriaCard(){
     '<div class="criteria-focus">'+(active?'Active: <strong>'+esc(active)+'</strong> · observed first, unknown last.':'Original source-qualified priority order')+'</div>'+
     '<div class="criteria-reset"><button data-action="criteria-reset" '+(active?'':'disabled')+'>↺ Restore original order</button></div>'+
     '<div class="criteria-foot">Current candidates: <strong>'+data.candidates.length+'</strong> · Held for review: <strong>'+data.held_count+'</strong><br>Sort priority is advisory. Source qualification, missing-data holds and trading restrictions never change.</div>',
-    "criteria-card"+(collapsed?" is-collapsed":""),tools).replace('<div class="card-body">','<div class="card-body" id="stage-rating-content"'+(collapsed?' hidden':'')+'>')+
-    '';
+    "criteria-card"+(collapsed?" is-collapsed":""),tools).replace('<div class="card-body">','<div class="card-body" id="stage-rating-content"'+(collapsed?' hidden':'')+'>');
 }
 function stageSummary(){
   const label=data.junior?"Earlier Setups — Post Phase 3 / Pre-PDUFA":"Higher Conviction — Near PDUFA";
