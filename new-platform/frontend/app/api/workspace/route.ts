@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import snapshot from "../../../data/stageSnapshot.json";
+import { gzipSync } from "node:zlib";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 
 export const runtime = "nodejs";
@@ -22,16 +22,29 @@ export async function GET(req: NextRequest) {
     });
     if (!response.ok) throw new Error("Upstream source unavailable");
     const data = await response.json();
-    return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
+    if (!Array.isArray(data.pipeline) ||
+        !data.sourceHealth?.streamlitPipelineParity ||
+        data.pipeline.length !== data.sourceHealth.streamlitPipelineParity.exactPrograms) {
+      throw new Error("Streamlit Pipeline parity not verified by backend");
+    }
+    // The full Streamlit-equivalent 9k+ trial universe is too large for
+    // Vercel's uncompressed Serverless Function response limit. Send
+    // authenticated gzip bytes; browser fetch().json() decompresses them.
+    const output = gzipSync(Buffer.from(JSON.stringify(data)), { level: 6 });
+    return new NextResponse(new Uint8Array(output), {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Encoding": "gzip",
+        "Cache-Control": "private, no-store",
+        "Vary": "Accept-Encoding",
+      }
+    });
   } catch {
-    // Explicitly label the last bundled snapshot rather than falsely showing it as live.
+    // Do not silently substitute an obsolete tiny bundle. Old source
+    // snapshots made the Pipeline total look wrong even after a backend fix.
     return NextResponse.json({
-      ...snapshot,
-      mode: "BUNDLED_FALLBACK_SOURCE_SNAPSHOT",
-      sourceHealth: {
-        state: "STALE", issues: ["Unable to connect to the read-only published-source backend. Showing bundled historical snapshot."],
-        clinicalRows: 0, regulatoryRows: snapshot.pipeline.length, publishedScan: null
-      },
-    }, { headers: { "Cache-Control": "private, no-store" } });
+      error: "Pipeline temporarily unavailable; current Streamlit-parity count could not be verified",
+      sourceHealth: { state: "UNAVAILABLE" }
+    }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
   }
 }
