@@ -1,12 +1,12 @@
 """Reference-image GEM page contract: source data, ranked controls and disclosures."""
 import unittest
 import tempfile
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
-from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks, _gem_section9_entry_checks, _junior_section9_exit_checks
+from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks, _gem_section9_entry_checks, _junior_section9_exit_checks, _junior_section10_history, _gem_section10_exit_checks
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -362,6 +362,114 @@ class GemVisualPageTests(unittest.TestCase):
         )
         self.assertTrue(all(c["status"] is None for c in no_data))
         self.assertTrue(all(c["points"] == "—" for c in no_data))
+
+    def test_section10_junior_promotion_requires_exact_observed_gem_identity(self):
+        history = {
+            "stages": {
+                "GEM_JR": {
+                    "entries": {
+                        "TRIAL|NCT00000001": {
+                            "pipeline_id": "TRIAL|NCT00000001",
+                            "ticker": "AAA", "drug": "Drug A",
+                            "nct_id": "NCT00000001", "status": "LEFT",
+                            "periods": [{
+                                "found": "2026-10-10", "left": "2026-10-16",
+                                "reason": "PROMOTED_TO_GEM",
+                            }],
+                        },
+                        "TRIAL|NCT00000002": {
+                            "pipeline_id": "TRIAL|NCT00000002",
+                            "ticker": "BBB", "drug": "Drug B",
+                            "nct_id": "NCT00000002", "status": "ACTIVE",
+                            "periods": [
+                                {"found": "2026-10-10", "left": "2026-10-12",
+                                 "reason": "NO_LONGER_IN_VERIFIED_STAGE_SNAPSHOT"},
+                                {"found": "2026-10-15", "left": None, "reason": ""},
+                            ],
+                        },
+                    },
+                },
+                "GEM": {
+                    "entries": {
+                        "TRIAL|NCT00000001": {
+                            "ticker": "AAA", "first_found": "2026-10-16",
+                            "status": "ACTIVE",
+                        },
+                    },
+                },
+            },
+        }
+        rows = _junior_section10_history(history)
+        promoted = [r for r in rows if r["ticker"] == "AAA"]
+        self.assertEqual(len(promoted), 1)
+        self.assertEqual(promoted[0]["movement"], "PROMOTED TO GEM")
+        self.assertEqual(promoted[0]["found"], "2026-10-10")
+        self.assertEqual(promoted[0]["left"], "2026-10-16")
+        self.assertEqual(promoted[0]["duration_days"], 6)
+        self.assertEqual(promoted[0]["current_stage"], "GEM")
+        self.assertEqual(len([r for r in rows if r["ticker"] == "BBB"]), 2)
+
+        history["stages"]["GEM"]["entries"]["TRIAL|NCT00000001"]["ticker"] = "OTHER"
+        rows = _junior_section10_history(history)
+        self.assertEqual(next(r for r in rows if r["ticker"] == "AAA")["movement"],
+                         "PROMOTION NEEDS REVIEW")
+        self.assertNotIn("GEM", next(r for r in rows if r["ticker"] == "AAA")["current_stage"])
+
+    def test_section10_gem_exit_risk_warns_without_automatically_selling(self):
+        today = date(2026, 10, 17)
+        bars = [{
+            "date": today - timedelta(days=21 - i),
+            "close": 80.0 if i >= 19 else 100.0,
+        } for i in range(21)]
+        profile = {
+            "fresh": True, "date": today - timedelta(days=1),
+            "close": 80.0, "sma50": 95.0, "rsi": 75.0,
+            "macd": {"bullish": False}, "base": {"support": 90.0},
+            "bars": bars,
+        }
+        record = {
+            "PDUFA saved": "2026-10-20", "Source review as of": "2026-10-16",
+            "Second SEC source": "https://www.sec.gov/filing",
+        }
+        event = {"outcome": "CRL", "conflict_flag": "ACTIVE",
+                 "new_dilution_flag": "YES",
+                 "pdufa_evidence_url": "https://www.fda.gov/decision"}
+        runway = {
+            "Cash runway (months)": 4.5,
+            "Cash runway source": "https://www.sec.gov/cash",
+            "Cash runway as of": "2026-09-30",
+        }
+        checks = _gem_section10_exit_checks(record, event, profile, runway,
+                                            today, source_current=False)
+        self.assertEqual(len(checks), 12)
+        self.assertEqual([c["priority"] for c in checks], list(range(1, 13)))
+        self.assertIs(checks[0]["triggered"], True)
+        self.assertIs(checks[1]["triggered"], True)
+        self.assertIs(checks[2]["triggered"], True)
+        self.assertIs(checks[3]["triggered"], True)
+        self.assertIs(checks[4]["triggered"], True)
+        self.assertIs(checks[5]["triggered"], True)
+        self.assertIs(checks[6]["triggered"], True)
+        self.assertIs(checks[7]["triggered"], True)
+        self.assertIs(checks[8]["triggered"], True)
+        self.assertIs(checks[9]["triggered"], True)
+        self.assertIsNone(checks[10]["triggered"])  # no fake OHLC / VWAP
+        self.assertIs(checks[11]["triggered"], True)  # SEC source review stale
+
+    def test_section10_missing_price_history_does_not_assert_support_or_sma20(self):
+        today = date(2026, 10, 17)
+        checks = _gem_section10_exit_checks(
+            {"Ticker": "TEST"}, {}, {"fresh": False, "bars": []}, {},
+            today, source_current=None
+        )
+        self.assertIsNone(checks[5]["triggered"])
+        self.assertIsNone(checks[6]["triggered"])
+        self.assertIsNone(checks[7]["triggered"])
+        self.assertIsNone(checks[8]["triggered"])
+        self.assertIsNone(checks[9]["triggered"])
+        self.assertIsNone(checks[10]["triggered"])
+        self.assertIs(checks[11]["triggered"], True)
+        self.assertTrue(all("url" in c and "next_step" in c for c in checks))
 
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
