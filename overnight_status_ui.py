@@ -299,7 +299,7 @@ def render_overnight_execution(report_loader, source_loader, run_loader):
             continue
         for step in (job.get("steps") or []):
             name = str(step.get("name") or "")
-            if re.search(r"\\b(?:gmail|smtp|e-?mail|notification)\\b", name, flags=re.I):
+            if re.search(r"\b(?:gmail|smtp|e-?mail|notification)\b", name, flags=re.I):
                 mail_steps.append({
                     "Scan stage": str(job.get("name") or ""),
                     "Email action": name,
