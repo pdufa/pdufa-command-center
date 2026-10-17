@@ -170,8 +170,14 @@ def scan_diagnostics(root, *, now=None):
         return "unknown"
 
     def child(label, status, *, date="", detail="", errors=None, coverage="SCOPE ONLY"):
+        kind = state(status)
+        # A finished collector is a scoped observation, never independent
+        # clearance of the parent source universe.
+        if kind == "pass" and ("SCOPE" in str(coverage).upper() or
+                               "SELECTED SOURCES" in str(coverage).upper()):
+            kind = "review"
         return {
-            "label": text(label), "status": text(status), "type": state(status),
+            "label": text(label), "status": text(status), "type": kind,
             "date": text(date, ""), "detail": text(detail, ""),
             "errors": list(dict.fromkeys(str(v)[:240] for v in (errors or [])
                                             if v is not None))[:10],
@@ -234,9 +240,12 @@ def scan_diagnostics(root, *, now=None):
                 errs = r.get("issues") if isinstance(r.get("issues"), list) else []
                 if r.get("errors_count"):
                     parts.append("Reported errors: " + str(r["errors_count"]))
+                child_status = (r.get("collector_status") or r.get("status"))
+                if r.get("errors_count"):
+                    child_status = "REVIEW — RECORDED ERRORS"
                 details.append(child(
                     "Scan " + str(r.get("scan") or "?") + " · " + str(r.get("label") or "Collector"),
-                    r.get("collector_status") or r.get("status"),
+                    child_status,
                     date=r.get("collected_at_utc"), detail="; ".join(parts),
                     errors=errs, coverage="COLLECTOR SCOPE; global " + coverage,
                 ))
@@ -259,9 +268,12 @@ def scan_diagnostics(root, *, now=None):
                     if not isinstance(r, dict):
                         continue
                     errs = r.get("errors") if isinstance(r.get("errors"), list) else []
+                    child_status = r.get("status")
+                    if errs or (r.get("exit_code") not in {0, None}):
+                        child_status = "REVIEW — RECORDED ERRORS"
                     details.append(child(
                         str(name).replace("_", " ").title(),
-                        r.get("status"), date=r.get("finished_at"),
+                        child_status, date=r.get("finished_at"),
                         detail=text(r.get("source_scope"), ""),
                         errors=errs,
                         coverage="COLLECTOR SCOPE; full source verification not established",
