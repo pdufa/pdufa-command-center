@@ -498,7 +498,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     </div>}
     {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
       <h2>WT — Permanent Program ID Watchlist & Trading Research</h2>
-      <p className="subtle">Each WT selection is attached to one immutable Neon-assigned Program ID, not just a ticker. Different drugs or trials from the same company stay independent. Research only — no broker orders.</p>
+      <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
       {(["watch","trade"] as const).map(kind=><section className="panel" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
@@ -518,7 +518,26 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
-            {ticker && <Chart ticker={ticker}/>}
+            <div className="wt-research-column">
+              {ticker && <Chart ticker={ticker}/>}
+              {selectedRecord?.technical ? (
+                <section className="wt-score-details" aria-label={programId+" GEM JR and GEM entry and exit scores"}>
+                  <h3>ENTRY &amp; EXIT SCORES — SAME AS GEM JR / GEM</h3>
+                  <p className="subtle">Original GEM research scores for this exact {programId}; identical weights, data-coverage requirements, source dates and hard-exit warnings. No WT-only formula.</p>
+                  <TechnicalPanel record={selectedRecord}/>
+                </section>
+              ) : (
+                <section className="wt-score-details" aria-label={programId+" unavailable entry and exit scores"}>
+                  <h3>ENTRY &amp; EXIT SCORES — SAME AS GEM JR / GEM</h3>
+                  <div className="research-score-cards">
+                    <div><strong>Entry /100</strong><span>UNSCORED</span><small>GEM JR / GEM source evidence unavailable</small></div>
+                    <div><strong>Exit risk /100</strong><span>UNSCORED</span><small>GEM JR / GEM source evidence unavailable</small></div>
+                    <div><strong>Data coverage</strong><span>NOT VERIFIED</span><small>Exact-program profile required</small></div>
+                  </div>
+                  <p className="subtle">No score is inferred from the ticker, membership label, older WT records or chart appearance. Check PIPELINE/GEM source health and the program research evidence.</p>
+                </section>
+              )}
+            </div>
           </div>;
         })}
       </section>)}
