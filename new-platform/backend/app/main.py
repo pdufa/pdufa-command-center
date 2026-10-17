@@ -241,6 +241,15 @@ async def lifespan(app: FastAPI):
                 and row.get("technical", {}).get("close") is not None
                 for row in member_rows
             )
+            logged_charts = sum(
+                isinstance(row.get("technical"), dict)
+                and len(row["technical"].get("chartBars") or []) >= 2
+                for row in member_rows
+            )
+            logging.getLogger(__name__).warning(
+                "PDUFA_STREAMLIT_CHART_CHECK saved_eod_series=%d/%d same_gem_chart_source=True",
+                logged_charts, len(member_rows),
+            )
             logging.getLogger(__name__).warning(
                 "PDUFA_TECHNICAL_CHECK profiles=%d/%d eod_profiles=%d",
                 verified_profiles, len(member_rows), market_profiles,
