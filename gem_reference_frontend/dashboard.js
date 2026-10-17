@@ -39,26 +39,100 @@ const card=(title,name,content,cls="",tools="")=>`<section class="card ${cls}"><
 const empty=(title,description,small=false)=>`<div class="empty ${small?"table-empty":"empty-panel"}">${small?"":icon("users")}<strong>${esc(title)}</strong><span>${esc(description)}</span></div>`;
 function table(headers,rows,cls="",widths=null){return `<table class="data-table ${cls}">${widths?`<colgroup>${widths.map(x=>`<col style="width:${x}%">`).join("")}</colgroup>`:""}<thead><tr>${headers.map(x=>`<th scope="col">${esc(x)}</th>`).join("")}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(cell=>`<td>${cell}</td>`).join("")}</tr>`).join("")}</tbody></table>`;}
 function spark(bars){if(!bars || bars.length<2)return '<span class="muted">No EOD data</span>';const b=bars.slice(-60),lo=Math.min(...b.map(x=>x.close)),hi=Math.max(...b.map(x=>x.close)),span=hi-lo||1;return `<svg class="spark" viewBox="0 0 110 20" role="img" aria-label="Saved closing-price trend"><path class="spark-line" d="${b.map((x,i)=>(i?"L":"M")+(1+i*108/(b.length-1)).toFixed(1)+","+(18-(x.close-lo)*16/span).toFixed(1)).join(" ")}"/></svg>`;}
-function matching(){let r=data.candidates.filter(x=>(state.status==="All Statuses"||x.status===state.status)&&(`${x.ticker} ${x.company} ${x.drug} ${x.indication} ${x.nct}`).toLowerCase().includes(state.search.toLowerCase()));if(state.sort){r=[...r].sort((a,b)=>{let x=a[state.sort],y=b[state.sort];if(x==null)return y==null?0:1;if(y==null)return -1;return (typeof x==="number"?x-y:String(x).localeCompare(String(y)))*(state.desc?-1:1);});}return r;}
+
+/* Priority controls reorder observations only; they never alter stage membership. */
+const MARKET_CAP_MIN=300000000, MARKET_CAP_MAX=10000000000;
+function priorityCriteria(){
+  return [
+    ["clinical",data.junior?"Phase 3 primary evidence":"Successful Phase 3 verified","Clinical results for the exact drug and indication"],
+    ["finance1",data.junior?"Financing #1 SEC review":"Financing #1 SEC verified","First distinct post-readout SEC closing evidence"],
+    ["finance2",data.junior?"Financing #2 SEC review":"Financing #2 SEC verified","Second independent post-readout closing evidence"],
+    ["risk","Clinical / dilution risk review","Only available source-gated risk factors; unknown is not low risk"],
+    ["runway","Cash runway","SEC-based months of runway, longest first within evidence tiers"],
+    ["pdufa","PDUFA date verification","Confirmed regulatory event date, earliest verified date first"],
+    ["cap","Market capitalization $300M–$10B","Saved capitalization in range first, not live valuation"],
+    ["volume","Relative trading volume","Recent saved RVOL; not confirmed bid/ask liquidity"],
+    ["trend","Price trend and chart setup","Fresh daily close and SMA20/SMA50 comparisons"],
+    ["plan","Entry / stop / target plan","Locally saved personal reference plan, not verified"]
+  ];
+}
+function criterionEvidence(r,key){
+  const missing=why=>({tier:0,metric:0,label:"Unknown",detail:why});
+  const result=(tier,metric,label,detail)=>({tier,metric:Number.isFinite(metric)?metric:0,label,detail});
+  const source=label=>r.sources?.find(s=>s.label===label);
+  if(["clinical","finance1","finance2"].includes(key)){
+    const label=key==="clinical"?"Phase 3 results":key==="finance1"?"Financing #1":"Financing #2";
+    const s=source(label);
+    if(!s?.url||!s?.date)return missing("Dated primary evidence missing; no status invented");
+    const verified=!data.junior&&s.type==="pass";
+    return result(verified?2:1,0,verified?"Verified source":"Dated reference · review",
+      verified?"Source-verified under existing GEM gates":"Source found; GEM JR review is not qualification or proof of closing");
+  }
+  if(key==="risk"){
+    const factor=r.exit_checks?.find(x=>x.label==="Clinical / financing risk");
+    const raw=String(factor?.points||"");
+    if(!raw.endsWith("/20"))return missing("Clinical/financing risk assessment unavailable or stale");
+    const points=Number(raw.slice(0,-3));
+    if(!Number.isFinite(points)||points<0||points>20)return missing("Risk factor has no valid recorded score");
+    return result(1,-points,points===0?"No flagged risk in saved data":"Risk: "+points+"/20",
+      "Lower known risk factor first; absence of a flag is not a verified safety clearance");
+  }
+  if(key==="runway"){
+    if(!Number.isFinite(r.runway))return missing("SEC-based cash runway not independently available");
+    return result(r.runway>=12?2:1,r.runway,r.runway.toFixed(1)+" months",
+      "Twelve months is a research reference, not a new entry qualification threshold");
+  }
+  if(key==="pdufa"){
+    const stamp=Date.parse(String(r.pdufa||"").slice(0,10)+"T00:00:00Z");
+    if(!r.pdufa_verified||!Number.isFinite(stamp))return missing("Date not source-verified");
+    return result(2,-stamp/86400000,dateLabel(r.pdufa),"Source-verified FDA date; earlier dates first (even historical)");
+  }
+  if(key==="cap"){
+    if(!Number.isFinite(r.market_cap))return missing("Saved market capitalization absent");
+    const fit=r.market_cap>=MARKET_CAP_MIN&&r.market_cap<=MARKET_CAP_MAX;
+    return result(fit?2:1,0,fit?"Saved: in range":"Saved: outside range",
+      "Market cap is a saved value, may be stale and never changes qualification");
+  }
+  if(key==="volume"){
+    if(!r.fresh||!Number.isFinite(r.rvol))return missing("Recent source-saved RVOL unavailable");
+    return result(1,r.rvol,r.rvol.toFixed(2)+"× RVOL",
+      "Recent relative volume only; verified execution liquidity unavailable");
+  }
+  if(key==="trend"){
+    if(!r.fresh||![r.close,r.sma20,r.sma50].every(Number.isFinite))return missing("Fresh close and SMA20/SMA50 not all available");
+    const count=Number(r.close>=r.sma20)+Number(r.close>=r.sma50)+Number(r.sma20>=r.sma50);
+    return result(1,count,count+"/3 daily conditions",
+      "Close≥SMA20, close≥SMA50, SMA20≥SMA50; descriptive not validated");
+  }
+  if(key==="plan"){
+    const plan=getPlan(r);
+    if(![plan.entry,plan.stop,plan.target].every(Number.isFinite)||
+       !(plan.stop<plan.entry&&plan.entry<plan.target))return missing("No complete personal entry, stop, target plan");
+    return result(1,0,"Local plan · unverified","Reference levels from this browser only; not a live or authorized trade");
+  }
+  return missing("Unknown criterion");
+}
+function criterionName(){return priorityCriteria().find(x=>x[0]===state.focus)?.[1]||null;}
+function matching(){let r=data.candidates.filter(x=>(state.status==="All Statuses"||x.status===state.status)&&(`${x.ticker} ${x.company} ${x.drug} ${x.indication} ${x.nct}`).toLowerCase().includes(state.search.toLowerCase()));if(state.focus){r=[...r].sort((a,b)=>{const x=criterionEvidence(a,state.focus),y=criterionEvidence(b,state.focus);return y.tier-x.tier||y.metric-x.metric||data.candidates.indexOf(a)-data.candidates.indexOf(b);});}else if(state.sort){r=[...r].sort((a,b)=>{let x=a[state.sort],y=b[state.sort];if(x==null)return y==null?0:1;if(y==null)return -1;return (typeof x==="number"?x-y:String(x).localeCompare(String(y)))*(state.desc?-1:1);});}return r;}
 function candidateCard(rows){
   state.page=Math.min(Math.max(0,state.page),Math.max(0,Math.ceil(rows.length/PAGE_SIZE)-1));
   const paged=rows.slice(state.page*PAGE_SIZE,(state.page+1)*PAGE_SIZE);
-  const labels=[["#",null],["Ticker","ticker"],["Company","company"],["Indication","indication"],["Phase",null],["P3 Readout","readout"],["PDUFA","pdufa"],["Financing Status",null],["Cash Runway",null],["Market Cap","market_cap"],["PoA",null],["Short Int.",null],["Entry Score","entry"],["Exit Risk","exit_risk"],["Status","status"],["Trend (saved)",null],["W",null],["T",null],["Details",null]];
+  const labels=[["#",null],["Criterion evidence",null],["Ticker","ticker"],["Company","company"],["Indication","indication"],["Phase",null],["P3 Readout","readout"],["PDUFA","pdufa"],["Financing Status",null],["Cash Runway",null],["Market Cap","market_cap"],["PoA",null],["Short Int.",null],["Entry Score","entry"],["Exit Risk","exit_risk"],["Status","status"],["Trend (saved)",null],["W",null],["T",null],["Details",null]];
   const head=labels.map(([label,key])=>`<th scope="col"${key?` aria-sort="${state.sort===key?(state.desc?"descending":"ascending"):"none"}"`:""}>${key?`<button class="sort" data-action="sort" data-key="${key}" style="border:0;background:none;padding:0;font:inherit;font-weight:700" title="Sort by ${esc(label)}">${esc(label)}${state.sort===key?(state.desc?" ▾":" ▴"):""}</button>`:esc(label)}</th>`).join("");
-  const body=paged.map((r,i)=>`<tr class="${r.id===state.selected?"selected":""}" data-program="${esc(r.id)}"><td class="number">${state.page*PAGE_SIZE+i+1}</td><td><button class="ticker" data-action="select" data-id="${esc(r.id)}">${esc(r.ticker)}</button></td><td title="${esc(r.company)}">${esc(r.company)}</td><td title="${esc(r.drug+" · "+r.indication)}">${esc(r.indication)}</td><td class="number">P3</td><td title="${esc(r.readout)}">${dateLabel(r.readout)}</td><td title="${esc(r.pdufa_verified?"Source-verified target":"Saved target; verify source")}">${dateLabel(r.pdufa)}${r.pdufa&&!r.pdufa_verified?" *":""}</td><td title="${esc(r.financing_detail)}">${esc(r.financing_label)}</td><td class="number" title="${esc(r.runway_reason)}">${r.runway==null?"—":num(r.runway,1)+" mo"}</td><td class="number">${esc(r.market_cap_display)}</td><td class="number" title="Saved model estimate; not a forecast guarantee">${esc(r.poa_display)}</td><td class="number">${esc(r.short_display)}</td><td class="number" title="${esc(r.entry_status)}">${num(r.entry,0)}</td><td class="number" title="${esc(r.exit_status)}">${num(r.exit_risk,0)}</td><td title="${esc(r.trade_status)}">${badge(r.status,r.status_type)}</td><td>${spark(r.bars)}</td><td class="number"><button class="wt" data-action="watch" data-id="${esc(r.id)}" aria-label="Watch ${esc(r.ticker)}" aria-pressed="${data.watch.includes(r.ticker)}">W</button></td><td class="number"><button class="wt" data-action="trade" data-id="${esc(r.id)}" aria-label="Trade workspace for ${esc(r.ticker)}" aria-pressed="${data.trade.includes(r.ticker)}" title="Open existing WT research workspace">T</button></td><td class="number"><button class="details" data-action="select" data-id="${esc(r.id)}" aria-label="Details for ${esc(r.ticker)} ${esc(r.drug)}">Details</button></td></tr>`).join("");
+  const body=paged.map((r,i)=>`<tr class="${r.id===state.selected?"selected":""}" data-program="${esc(r.id)}"><td class="number">${state.page*PAGE_SIZE+i+1}</td><td title="${esc(state.focus?criterionEvidence(r,state.focus).detail:"Choose a criterion to reorder the candidates")}">${state.focus?esc(criterionEvidence(r,state.focus).label):'<span class="muted">Original order</span>'}</td><td><button class="ticker" data-action="select" data-id="${esc(r.id)}">${esc(r.ticker)}</button></td><td title="${esc(r.company)}">${esc(r.company)}</td><td title="${esc(r.drug+" · "+r.indication)}">${esc(r.indication)}</td><td class="number">P3</td><td title="${esc(r.readout)}">${dateLabel(r.readout)}</td><td title="${esc(r.pdufa_verified?"Source-verified target":"Saved target; verify source")}">${dateLabel(r.pdufa)}${r.pdufa&&!r.pdufa_verified?" *":""}</td><td title="${esc(r.financing_detail)}">${esc(r.financing_label)}</td><td class="number" title="${esc(r.runway_reason)}">${r.runway==null?"—":num(r.runway,1)+" mo"}</td><td class="number">${esc(r.market_cap_display)}</td><td class="number" title="Saved model estimate; not a forecast guarantee">${esc(r.poa_display)}</td><td class="number">${esc(r.short_display)}</td><td class="number" title="${esc(r.entry_status)}">${num(r.entry,0)}</td><td class="number" title="${esc(r.exit_status)}">${num(r.exit_risk,0)}</td><td title="${esc(r.trade_status)}">${badge(r.status,r.status_type)}</td><td>${spark(r.bars)}</td><td class="number"><button class="wt" data-action="watch" data-id="${esc(r.id)}" aria-label="Watch ${esc(r.ticker)}" aria-pressed="${data.watch.includes(r.ticker)}">W</button></td><td class="number"><button class="wt" data-action="trade" data-id="${esc(r.id)}" aria-label="Trade workspace for ${esc(r.ticker)}" aria-pressed="${data.trade.includes(r.ticker)}" title="Open existing WT research workspace">T</button></td><td class="number"><button class="details" data-action="select" data-id="${esc(r.id)}" aria-label="Details for ${esc(r.ticker)} ${esc(r.drug)}">Details</button></td></tr>`).join("");
   const statuses=["All Statuses",...new Set(data.candidates.map(r=>r.status))];
   const tools=`<span class="header-count">${rows.length} candidate${rows.length===1?"":"s"}</span><input type="search" id="candidate-search" aria-label="Search candidates" placeholder="Search ticker or company…" value="${esc(state.search)}"><select id="status-filter" aria-label="Filter by status">${statuses.map(s=>`<option${s===state.status?" selected":""}>${esc(s)}</option>`).join("")}</select>`;
-  const grid=`<div class="candidate-wrap scroll"><table class="data-table candidate-table"><colgroup>${[1.6,3.6,9,10,2.8,6,6,9,4.7,5,3,3.8,4.3,4.3,7.2,7,2.4,2.4,4.9].map(w=>`<col style="width:${w}%">`).join("")}</colgroup><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
-  return card(data.stage+" Candidates","users",grid+(!rows.length?empty(data.candidates.length?"No matching candidates":"No active "+data.stage+" candidates",data.candidates.length?"Change the search or status filter to see available programs.":"The current source snapshot has no programs meeting this stage’s criteria.",true):"")+`<div class="toolbar-footer"><span>Priority: source-qualified stage order · Missing values: — · * Unverified PDUFA target</span><div class="pagination"><button data-action="export" title="Export every matching candidate">Export CSV</button><button data-action="prev" ${state.page===0?"disabled":""} aria-label="Previous candidate page">‹</button><span>${rows.length?state.page+1:0} / ${Math.ceil(rows.length/PAGE_SIZE)}</span><button data-action="next" ${((state.page+1)*PAGE_SIZE>=rows.length)?"disabled":""} aria-label="Next candidate page">›</button></div></div>`,"candidates",tools);
+  const grid=`<div class="candidate-wrap scroll"><table class="data-table candidate-table"><colgroup>${[1.6,9,3.6,9,10,2.8,6,6,9,4.7,5,3,3.8,4.3,4.3,7.2,7,2.4,2.4,4.9].map(w=>`<col style="width:${w}%">`).join("")}</colgroup><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+  return card(data.stage+" Candidates","users",grid+(!rows.length?empty(data.candidates.length?"No matching candidates":"No active "+data.stage+" candidates",data.candidates.length?"Change the search or status filter to see available programs.":"The current source snapshot has no programs meeting this stage’s criteria.",true):"")+`<div class="toolbar-footer"><span>Ordering: ${esc(criterionName()|| (state.sort?"Column "+state.sort:"original stage priority"))} · Unverified ranked last · * PDUFA unverified</span><div class="pagination"><button data-action="export" title="Export every matching candidate">Export CSV</button><button data-action="prev" ${state.page===0?"disabled":""} aria-label="Previous candidate page">‹</button><span>${rows.length?state.page+1:0} / ${Math.ceil(rows.length/PAGE_SIZE)}</span><button data-action="next" ${((state.page+1)*PAGE_SIZE>=rows.length)?"disabled":""} aria-label="Next candidate page">›</button></div></div>`,"candidates",tools);
 }
 
 function reviewNavigator(rows,r){
   const position=r?rows.findIndex(item=>item.id===r.id):-1;
-  const more=state.sort?"← Previous in sorted list":"← Higher priority";
-  const less=state.sort?"Next in sorted list →":"Lower priority →";
+  const more=state.sort||state.focus?"← Previous in sorted list":"← Higher priority";
+  const less=state.sort||state.focus?"Next in sorted list →":"Lower priority →";
   const options=rows.map((item,i)=>'<option value="'+esc(item.id)+'"'+(item.id===state.selected?' selected':'')+'>'+esc((i+1)+'. '+item.ticker+' — '+item.drug+' · '+item.nct)+'</option>').join("");
   const details=r?esc(r.ticker+' · '+r.drug+' · '+r.indication+' · '+r.nct):"No matching candidate";
-  const descriptor=state.sort?"Position in current sorted results":"Position in source-prioritized results";
+  const descriptor=state.sort||state.focus?"Position in current sorted results":"Position in source-prioritized results";
   return '<section id="candidate-review" class="review-nav" aria-label="'+esc(data.stage)+' prioritized candidate navigation">'+
     '<div class="review-summary"><strong>'+details+'</strong><span>'+esc(descriptor)+': '+(position<0?'0':position+1)+' / '+rows.length+'</span></div>'+
     '<div class="review-controls">'+
@@ -138,29 +212,17 @@ function alertsCard(r){const rows=r?r.alerts:data.alerts;return card(data.junior
 function scansCard(){return card("Scan Diagnostics","pulse",table(["Scan Type","Last Update","Status"],data.scans.map(s=>[esc(s.label),`<span title="${esc(s.date)}">${dateLabel(s.date)}</span>`,badge(s.status,s.type)]))+`<div class="source-note">10 PM Pacific sequential schedule · ${esc(data.scan_note)}</div>`,"diagnostics",'<button class="scan-open" data-action="navigate" data-tab="SCANS">Open scans</button>');}
 function policyCard(){const value=state.policy;return card("Hard Stop / PDUFA Exit Policy","flag",`<p>${value==="unresolved"?"Policy decision required:":"Selected research policy:"}</p><div class="policy-options">${[["pre","Exit before PDUFA (reduce event risk)"],["partial","Hold a partial position through PDUFA"],["hold","Hold the full position through PDUFA"]].map(([id,label])=>`<label><input type="radio" name="exit-policy" value="${id}"${value===id?" checked":""}>${esc(label)}</label>`).join("")}</div><div class="callout warning"><span>! ${value==="unresolved"?"Unresolved. Define a consistent exit policy.":"Saved as a research preference. Apply manually with your position and risk plan."}</span></div>`,"policy-card");}
 function criteriaCard(){
-  const rules=data.junior?[
-    "Exact-program Phase 3 readout reviewed",
-    "PDUFA date verified or explicitly pending",
-    "Financing #1 source verified",
-    "Financing #2 tracked for GEM promotion",
-    "Cash runway source reviewed",
-    "Market-cap and liquidity reviewed",
-    "No unresolved material safety flags",
-    "Technical trend and price levels reviewed"
-  ]:[
-    "Positive exact-program Phase 3 evidence",
-    "Two separately funded post-readout closes",
-    "Both financing sources independently reviewed",
-    "Cash runway / dilution risk reviewed",
-    "PDUFA timing and source reviewed",
-    "Regulatory and clinical risks reviewed",
-    "Technical entry and exit plan defined",
-    "No automatic trade authorization"
-  ];
-  return card("Filters / Criteria ("+data.stage+")","check",
-    '<div class="criteria-intro">Qualification rules are source-backed; these are not manually overridden checkboxes.</div>'+
-    '<ul class="criteria-list">'+rules.map(rule=>'<li><span class="criteria-mark" aria-hidden="true">✓</span>'+esc(rule)+'</li>').join("")+'</ul>'+
-    '<div class="criteria-foot">Current source-qualified candidates: <strong>'+data.candidates.length+'</strong><br>Held for review: <strong>'+data.held_count+'</strong></div>',
+  const list=priorityCriteria().map((item,index)=>{
+    const [key,title,hint]=item,active=state.focus===key;
+    return '<li><button class="criterion-button'+(active?' active':'')+'" data-action="criterion" data-criterion="'+esc(key)+'" aria-pressed="'+active+'" title="'+esc(hint)+'"><span class="criterion-rank">'+(index+1)+'</span><span class="criterion-content"><strong>'+esc(title)+'</strong><small>'+esc(hint)+'</small></span><span class="criterion-effect">'+(active?'Selected ✓':'Rank ↓')+'</span></button></li>';
+  }).join("");
+  const active=criterionName();
+  return card("Ranked Criteria ("+data.stage+")","check",
+    '<div class="criteria-intro"><strong>1 = highest importance.</strong> Click a criterion to reorder '+esc(data.stage)+' candidates by recorded evidence, without changing stage membership.</div>'+
+    '<ol class="criteria-list">'+list+'</ol>'+
+    '<div class="criteria-focus">'+(active?'Active: <strong>'+esc(active)+'</strong> · observed first, unknown last.':'Original source-qualified priority order')+'</div>'+
+    '<div class="criteria-reset"><button data-action="criteria-reset" '+(active?'':'disabled')+'>↺ Restore original order</button></div>'+
+    '<div class="criteria-foot">Current candidates: <strong>'+data.candidates.length+'</strong> · Held for review: <strong>'+data.held_count+'</strong><br>Sort priority is advisory. Source qualification, missing-data holds and trading restrictions never change.</div>',
     "criteria-card");
 }
 function stageSummary(){
@@ -182,6 +244,8 @@ app.addEventListener("click",ev=>{
   const button=ev.target.closest("button[data-action]");if(!button||button.disabled)return;
   const action=button.dataset.action,id=button.dataset.id,r=data.candidates.find(x=>x.id===(id||state.selected));
   if(action==="select"){chooseCandidate(id,"details");}
+  else if(action==="criterion"){const key=button.dataset.criterion;if(!priorityCriteria().some(x=>x[0]===key))return;state.focus=state.focus===key?null:key;state.sort=null;state.desc=false;state.page=0;state.selected=matching()[0]?.id||null;render();announce(state.focus?"Sorted "+data.stage+" by "+criterionName():"Restored original "+data.stage+" order");}
+  else if(action==="criteria-reset"){state.focus=null;state.sort=null;state.desc=false;state.page=0;state.selected=matching()[0]?.id||null;render();announce("Restored original "+data.stage+" order");}
   else if(action==="step-candidate"){const rows=matching(),i=rows.findIndex(item=>item.id===state.selected),target=rows[i+Number(button.dataset.step)];if(target)chooseCandidate(target.id,"details");}
   else if(action==="open-details"){if(state.selected)chooseCandidate(state.selected,"details");}
   else if(action==="open-chart"||action==="show-chart"){if(id||state.selected)chooseCandidate(id||state.selected,"chart");}
@@ -192,7 +256,7 @@ app.addEventListener("click",ev=>{
   else if(action==="range"){state.range=button.dataset.range;render();}
   else if(action==="chart-mode"){state.chartMode=state.chartMode==="tv"?"saved":"tv";render();}
   else if(action==="prev"||action==="next"){state.page+=action==="prev"?-1:1;render();}
-  else if(action==="sort"){if(state.sort===button.dataset.key)state.desc=!state.desc;else{state.sort=button.dataset.key;state.desc=["entry","exit_risk","market_cap"].includes(state.sort);}state.page=0;render();}
+  else if(action==="sort"){state.focus=null;if(state.sort===button.dataset.key)state.desc=!state.desc;else{state.sort=button.dataset.key;state.desc=["entry","exit_risk","market_cap"].includes(state.sort);}state.page=0;render();}
   else if(action==="rules-tab"){state.rulesTab=button.dataset.tab;render();}
   else if(action==="finance-tab"){state.financeTab=button.dataset.tab;render();}
   else if(action==="export")exportRows(matching());
@@ -201,7 +265,7 @@ app.addEventListener("click",ev=>{
 function exportRows(rows){const fields=[["Ticker","ticker"],["Company","company"],["Drug","drug"],["Indication","indication"],["NCT ID","nct"],["Exact program","id"],["Phase 3 readout","readout"],["PDUFA","pdufa"],["Financing","financing_label"],["Runway months","runway"],["Market cap USD","market_cap"],["PoA (saved)","poa_display"],["Entry readiness","entry"],["Exit risk","exit_risk"],["Status","trade_status"]];const cell=x=>'"'+String(x??"").replace(/^[=+@\t\r-]/,"'$&").replace(/"/g,'""')+'"';const csv=[fields.map(x=>cell(x[0])).join(","),...rows.map(r=>fields.map(x=>cell(r[x[1]])).join(","))].join("\r\n");const url=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download=data.stage.toLowerCase().replace(/ /g,"-")+"-candidates.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);announce("Exported "+rows.length+" matching source records.");}
 document.getElementById("plan-form").addEventListener("submit",ev=>{if(ev.submitter?.value!=="save")return;ev.preventDefault();const form=ev.target,plan={};for(const k of ["entry","stop","target"]){if(form.elements[k].value!==""){const v=Number(form.elements[k].value);if(!Number.isFinite(v)||v<=0)return;plan[k]=v;}}if(finite(plan.entry)&&((finite(plan.stop)&&plan.stop>=plan.entry)||(finite(plan.target)&&plan.target<=plan.entry))){document.getElementById("plan-error").textContent="Use a stop below entry and a target above entry.";return;}write("gem_chart_plan_"+form.dataset.id,plan);document.getElementById("plan-dialog").close();render();announce("Chart reference levels saved for this exact program.");});
 document.querySelector('[data-action="clear-plan"]').addEventListener("click",()=>{const form=document.getElementById("plan-form");write("gem_chart_plan_"+form.dataset.id,{});document.getElementById("plan-dialog").close();render();});
-window.addEventListener("message",event=>{if(event.source!==window.parent||event.data?.type!=="streamlit:render")return;const payload=event.data.args?.payload;if(!payload||!Array.isArray(payload.candidates))return;const changed=!data||data.stage!==payload.stage;data=payload;if(changed){state={search:"",status:"All Statuses",sort:null,desc:false,page:0,selected:null,range:"6M",chartMode:"saved",rulesTab:"rules",financeTab:"financing",policy:read("gem_pdufa_exit_policy","unresolved"),tree:{},...sessionRead("gem_dashboard_"+data.stage)};if(!["pre","partial","hold","unresolved"].includes(state.policy))state.policy="unresolved";state.tree=state.tree||{};state.chartFocus=false;}render();});
+window.addEventListener("message",event=>{if(event.source!==window.parent||event.data?.type!=="streamlit:render")return;const payload=event.data.args?.payload;if(!payload||!Array.isArray(payload.candidates))return;const changed=!data||data.stage!==payload.stage;data=payload;if(changed){state={search:"",status:"All Statuses",sort:null,desc:false,focus:null,page:0,selected:null,range:"6M",chartMode:"saved",rulesTab:"rules",financeTab:"financing",policy:read("gem_pdufa_exit_policy","unresolved"),tree:{},...sessionRead("gem_dashboard_"+data.stage)};if(!["pre","partial","hold","unresolved"].includes(state.policy))state.policy="unresolved";state.tree=state.tree||{};if(!priorityCriteria().some(x=>x[0]===state.focus))state.focus=null;state.chartFocus=false;}render();});
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&state?.chartFocus){ev.preventDefault();state.chartFocus=false;render();document.getElementById("candidate-review")?.querySelector('[data-action="open-chart"]')?.focus();}});
 new ResizeObserver(()=>resize()).observe(document.body);
 window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:componentReady",apiVersion:1},"*");
