@@ -233,20 +233,41 @@ def gather() -> dict:
         primary.setdefault(key, row)
     for key, row in history.items():
         primary.setdefault(key, row)
+    # Streamlit's original pipeline_universe.build_universe() is the single
+    # source of truth for unique trial/event identities and current stages.
+    # In particular, a repeated NCT across two clinical files is ENRICHED,
+    # never dropped by unique()'s duplicate quarantine.
+    from .pipeline_streamlit_parity import original_pipeline_universe
+    original = original_pipeline_universe(records, now)
     candidates: list[dict] = []
-    for key, row in primary.items():
-        value = make_candidate(row, "APPLICATION|" + key, now, caps, funding)
-        if value:
-            candidates.append(value)
-
-    trial_sources = records["all_phase_trials.csv"] + records["phase_pipeline.csv"]
-    trials = unique([
-        t for t in trial_sources if NCT.fullmatch(first(t, "nct_id").upper())
-    ], "nct_id")
-    for nct, row in trials.items():
-        trial = make_candidate(row, "TRIAL|" + nct, now, caps, funding, clinical=True)
-        if trial:
-            candidates.append(trial)
+    for exact_id, source in original.items():
+        is_clinical = exact_id.startswith(("TRIAL|", "RESULT|"))
+        value = make_candidate(source, exact_id, now, caps, funding,
+                               clinical=is_clinical)
+        if value is None:
+            # Streamlit retains unresolved/blank ticker records for auditing.
+            # They never qualify for market charts or trading research.
+            value = {
+                "id": exact_id, "ticker": source.get("ticker", ""),
+                "company": source.get("company", ""),
+                "drug": source.get("drug", ""),
+                "indication": source.get("indication", ""),
+                "capInRange": False,
+            }
+        value.update(
+            stage=source["stage"],
+            nctId=source.get("nct_id", ""),
+            recordType=source.get("recordType", ""),
+            registeredPhase=source.get("registeredPhase", ""),
+            stageTags=source.get("stageTags", []),
+            evidenceStatus=source.get("evidenceStatus", ""),
+            pipelineSource=source.get("source_url", ""),
+            trialStatus=source.get("status", ""),
+            resultsPosted=source.get("results_posted", ""),
+        )
+        # Exact source identity and stage are preserved across all views.
+        candidates.append(value)
+    trial_count = sum(r["id"].startswith(("TRIAL|", "RESULT|")) for r in candidates)
 
     by_id = {r["id"]: r for r in candidates}
     ledger = json.loads(sources["gem_stage_membership.json"])
@@ -349,8 +370,14 @@ def gather() -> dict:
         "sourceHealth": {
             "state": "PARTIAL" if problems or not status.get("complete") else "COMPLETE_PUBLISHED",
             "issues": problems, "publishedScan": status,
-            "clinicalRows": len(trials),
-            "regulatoryRows": len(candidates) - len(trials),
+            "clinicalRows": trial_count,
+            "regulatoryRows": len(candidates) - trial_count,
+            "streamlitPipelineParity": {
+                "exactPrograms": len(original),
+                "clinicalAndResults": trial_count,
+                "regulatoryPrograms": len(candidates) - trial_count,
+                "comparison": "Original pipeline_universe.build_universe identity and current_stage semantics",
+            },
             "technicalMarketTickers": len(market),
             "secRunwayTickers": len(runway),
         },
