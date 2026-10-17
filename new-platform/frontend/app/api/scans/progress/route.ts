@@ -20,7 +20,7 @@ const WORKFLOWS = {
 } as const;
 type Kind = keyof typeof WORKFLOWS;
 const KNOWN_PATHS = new Set(
-  Object.values(WORKFLOWS).filter((path): path is string => typeof path === "string"),
+  (Object.values(WORKFLOWS).filter(path => path !== null) as string[]),
 );
 type RawRun = {
   id?: unknown; name?: unknown; display_title?: unknown; status?: unknown; conclusion?: unknown;
