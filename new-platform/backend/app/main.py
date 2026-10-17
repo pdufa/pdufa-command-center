@@ -376,7 +376,9 @@ def health():
     # An HTTP 200 permits configuration inspection without claiming DB readiness.
     from .full_trial_archive import archive_status
     return {
-        "status": "ok" if _DB_STATE["available"] else "database_unavailable",
+        "status": ("ok" if _DB_STATE["available"] else
+                   "waiting_for_database" if _DB_STATE["reason"] == "POSTGRES_NOT_CONFIGURED"
+                   else "database_unavailable"),
         "service": "pdufa-new-backend",
         "storage_ready": _DB_STATE["available"],
         "storage_reason": _DB_STATE["reason"],
