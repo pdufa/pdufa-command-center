@@ -3854,21 +3854,38 @@ if page == "PDUFA":
             with st.container(border=True, key="pipeline_workbench_card"):
                 st.markdown("## PIPELINE — PDUFA COUNTDOWN, WATCHLIST & ANALYSIS")
                 st.caption("Continue from trial discovery to FDA countdown, Watchlist, Analysis, and Invest. All research fields and evidence checks are retained; no trading orders are placed.")
-                # Do not mistake passing application tests for complete or fresh data.
-                overnight_path = Path("data/overnight_scan_status.json")
-                if overnight_path.exists():
+                # The old overnight_scan_status.json is a historical collector
+                # snapshot (Oct 11), not tonight's complete nightly chain. The
+                # newer source verification ledger is authoritative for this
+                # one-line PIPELINE health indicator; SCANS has the full audit.
+                latest_source_status = Path("data/pdufa_source_report.json")
+                if latest_source_status.exists():
                     try:
-                        overnight_audit = json.loads(overnight_path.read_text(encoding="utf-8"))
-                        if overnight_audit.get("status") != "COMPLETE":
-                            missing_families = overnight_audit.get("missing_required_source_families", [])
-                            st.warning(
-                                "SOURCE COVERAGE: " + str(overnight_audit.get("status", "UNKNOWN"))
-                                + ". Missing source families: "
-                                + (", ".join(str(name) for name in missing_families) if missing_families else "review required")
-                                + ". Do not treat this as a completed FDA/SEC/trading-data scan."
+                        audit = json.loads(latest_source_status.read_text(encoding="utf-8"))
+                        if audit.get("schema_version") == 2:
+                            latest_state = str(audit.get("status") or "UNVERIFIED")
+                            missing = audit.get("missing_required_source_families") or []
+                            message = (
+                                f"LATEST SOURCE VERIFICATION: {latest_state} "
+                                f"· checked {audit.get('updated_at_utc') or 'date unknown'} "
+                                f"· GitHub run #{audit.get('latest_run_id') or 'unknown'} "
+                                f"· {audit.get('required_findings_unresolved', '?')} required evidence gaps. "
+                                "Open SCANS for actual start/finish times and source details."
                             )
+                            if latest_state != "COMPLETE" or missing:
+                                st.warning(message + " Unverified: " +
+                                           (", ".join(str(v) for v in missing) or "review required"))
+                            else:
+                                st.caption(message)
+                        else:
+                            st.warning("Latest source report schema unrecognized. Review SCANS.")
                     except (OSError, ValueError, TypeError):
-                        st.warning("Overnight source-coverage status could not be verified.")
+                        st.warning("Latest source report could not be read. Review SCANS.")
+                else:
+                    st.caption(
+                        "No recent source report is available. Legacy collector "
+                        "snapshots are historical; review SCANS for the actual nightly status."
+                    )
                 recheck_path = Path("data/recheck_status.csv")
                 if recheck_path.exists():
                     try:
