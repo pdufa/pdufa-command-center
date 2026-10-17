@@ -3736,7 +3736,7 @@ if page == "PDUFA":
                             if source_url.startswith(("https://", "http://")):
                                 st.link_button("OPEN EXACT RECORD SOURCE", source_url)
                             nct = str(chosen_trial.get("NCT ID", "")).strip().upper()
-                            if re.fullmatch(r"NCT\\d{8}", nct):
+                            if re.fullmatch(r"NCT\d{8}", nct):
                                 st.link_button(
                                     "OPEN TRIAL ON CLINICALTRIALS.GOV",
                                     f"https://clinicaltrials.gov/study/{nct}",
