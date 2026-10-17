@@ -506,32 +506,35 @@ function juniorHistoryCard(){
   const scope=state.historyScope||"all";
   const current=data.candidates.find(x=>x.id===state.selected);
   const filtered=rows.filter(r=>{
-    if(scope==="selected" && (!current||r.ticker!==current.ticker))return false;
-    if(move==="promoted"&&!r.movement.includes("PROMOT"))return false;
+    if(scope==="selected" && (!current||r.id!==current.id))return false;
+    if(scope==="ticker" && (!current||r.ticker!==current.ticker))return false;
+    if(move==="promoted"&&r.movement!=="PROMOTED TO GEM")return false;
+    if(move==="review"&&r.movement!=="PROMOTION NEEDS REVIEW")return false;
     if(move==="active"&&r.current_stage!=="GEM JR")return false;
     if(move==="departed"&&r.current_stage==="GEM JR")return false;
     return !search||[r.ticker,r.drug,r.nct,r.id,r.reason,r.movement,r.current_stage].some(v=>String(v||"").toLowerCase().includes(search));
   });
   const count=rows.filter(x=>x.movement==="PROMOTED TO GEM").length;
+  const distinctActive=new Set(rows.filter(x=>x.current_stage==="GEM JR").map(x=>x.id)).size;
   const searchBar='<div class="history-controls">'+
     '<input id="history-search" aria-label="Search GEM JR history" type="search" placeholder="Ticker, NCT, movement…" value="'+esc(state.historySearch||"")+'">'+
     '<select id="history-move" aria-label="Filter GEM JR movements">'+
-    [["all","All movements"],["promoted","Promotions"],["active","Active GEM JR"],["departed","Departed / GEM"]].map(([v,n])=>'<option value="'+v+'"'+(move===v?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select>'+
+    [["all","All movements"],["promoted","Verified stage promotions"],["review","Promotion review"],["active","Active GEM JR"],["departed","Departed / GEM"]].map(([v,n])=>'<option value="'+v+'"'+(move===v?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select>'+
     '<select id="history-scope" aria-label="Show selected ticker or all GEM JR history">'+
-    [["all","All tickers"],["selected","Selected ticker"]].map(([v,n])=>'<option value="'+v+'"'+(scope===v?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
-  const summary='<div class="history-summary"><strong>'+rows.length+' recorded periods</strong><span>'+count+' confirmed promotions</span><span>'+filtered.length+' shown</span></div>';
+    [["all","All programs"],["selected","Selected program"],["ticker","Selected ticker"]].map(([v,n])=>'<option value="'+v+'"'+(scope===v?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
+  const summary='<div class="history-summary"><strong>'+rows.length+' recorded periods</strong><span>'+distinctActive+' active GEM JR programs</span><span>'+count+' scan-observed promotions</span><span>'+filtered.length+' shown</span></div>';
   const content=filtered.length?'<div class="history-table-wrap scroll"><table class="data-table history-timeline-table"><thead><tr>'+
     ["First seen","Left / moved","Ticker / drug","NCT / identity","Movement / destination","Recorded reason"].map(s=>'<th scope="col">'+esc(s)+'</th>').join("")+
     '</tr></thead><tbody>'+filtered.map(r=>'<tr>'+
     '<td>'+dateLabel(r.found)+'</td><td>'+dateLabel(r.left)+'</td>'+
     '<td class="wrap"><strong>'+esc(r.ticker)+'</strong><div>'+esc(r.drug)+'</div></td>'+
-    '<td class="wrap">'+(r.nct?esc(r.nct):'<span class="muted">NCT not recorded</span>')+'<div class="history-id" title="'+esc(r.id)+'">'+esc(r.id)+'</div></td>'+
+    '<td class="wrap">'+(/^NCT\d{8}$/.test(String(r.nct||''))?safeLink('https://clinicaltrials.gov/study/'+r.nct,r.nct):r.nct?esc(r.nct):'<span class="muted">NCT not recorded</span>')+'<div class="history-id" title="'+esc(r.id)+'">'+esc(r.id)+'</div></td>'+
     '<td class="wrap">'+badge(r.movement,r.movement==="PROMOTED TO GEM"?"pass":r.movement==="PROMOTION NEEDS REVIEW"?"hold":"review")+
     '<div>Current: '+esc(r.current_stage)+'</div>'+
     (r.gem_first_found?'<div>GEM first observed '+dateLabel(r.gem_first_found)+'</div>':"")+'</td>'+
     '<td class="wrap">'+esc(r.reason)+(r.duration_days!=null?'<div>'+esc(r.duration_days)+' days in period</div>':"")+'</td></tr>').join("")+'</tbody></table></div>':
     empty("No matching recorded periods","Change the filters or await a fully observed GEM JR membership snapshot.",true);
-  const foot='<div class="source-note">Latest saved complete GEM JR snapshot: '+dateLabel(data.history_snapshot)+
+  const foot='<div class="source-note">'+(count===0?'No GEM JR → GEM promotions have been recorded in this saved stage history. ':'')+'Latest saved complete GEM JR snapshot: '+dateLabel(data.history_snapshot)+
     '. Membership dates are first seen / left in scans, not trial readout, financing or FDA dates. Missing promotions are not assumed.</div>';
   return card("GEM JR — Promotion / Movement Timeline","history",summary+searchBar+content+foot,
     "history jr-timeline");
