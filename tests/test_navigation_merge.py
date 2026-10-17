@@ -47,7 +47,7 @@ class RetiredPredictionNavigationTests(unittest.TestCase):
         self.assertEqual(app.radio(key="nav").value, "PDUFA")
         self.assertEqual(app.session_state["pdufa_subtab"], "SCANS")
         self.assertEqual(app.session_state["detail_return_page"], "PDUFA")
-        self.assertIn("SHOW LIVE ACTIVITY & HISTORY",
+        self.assertIn("SHOW ORIGINAL DETAILED AUDITS / LEGACY SCAN CONTROLS",
                       [item.label for item in app.get("toggle")])
         self.assertEqual(len([t for t in app.get("tab") if t.label == "SCANS"]), 1)
 
