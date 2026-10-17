@@ -203,7 +203,7 @@ def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, c
             values = [raw]
     if clinical_url and str(clinical_url).startswith("https://") and (endpoints or values):
         raw = values[0] if len(values) == 1 else ""
-        match = re.fullmatch(r"\\s*(?:p\\s*)?(?:=|<|<=)?\\s*(0?\\.\\d+|[01](?:\\.0+)?)\\s*", raw, re.I)
+        match = re.fullmatch(r"\s*(?:p\s*)?(?:=|<|<=)?\s*(0?\.\d+|[01](?:\.0+)?)\s*", raw, re.I)
         value = _number(match.group(1)) if match else None
         if value is not None and 0 <= value <= 1:
             observed("endpoint", "Recorded p: " + raw,
@@ -231,8 +231,8 @@ def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, c
 
     note = str(funding.get("second_financing_evidence_note") or "")
     for key, expression, label in (
-        ("warrants", r"\\bwarrants?\\b", "Warrants mentioned"),
-        ("convertibles", r"\\bconvertible(?:\\s+notes?|\\s+debt|\\s+securities)?\\b", "Convertibles mentioned"),
+        ("warrants", r"\bwarrants?\b", "Warrants mentioned"),
+        ("convertibles", r"\bconvertible(?:\s+notes?|\s+debt|\s+securities)?\b", "Convertibles mentioned"),
     ):
         if note and re.search(expression, note, flags=re.I):
             observed(key, label + " in SEC review note",
