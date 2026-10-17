@@ -22,7 +22,7 @@ from gem_membership_history import (
 )
 from gem_potential_list import build_potential_list
 from gem_verified_snapshot import source_cleared_gems
-from gem_stage_dossier import scan_health
+from gem_stage_dossier import scan_diagnostics
 from gem_runway_gate import load_snapshots, assess_runway
 from gem_visual_page import _rankings, _show
 from ticker_toggle_panel import _init_browser_selection, _toggle, clean_ticker
@@ -1252,12 +1252,9 @@ def build_dashboard(stage, root="data", *, as_of=None):
     histories = [{"date": r.get("Date Left") or "", "ticker": r.get("Ticker") or "",
                   "drug": r.get("Drug") or "", "reason": r.get("Leave Reason") or ""}
                  for r in departed]
-    scans = []
-    for s in scan_health(root):
-        status = str(s["Published status"])
-        # Match explicit published status only; PARTIAL_COMPLETE is not COMPLETE.
-        kind = "pass" if status.upper() in {"COMPLETE", "COMPLETED", "SUCCEEDED", "SUCCESS"} else "review"
-        scans.append({"label": s["Scan"], "date": s["Saved update"], "status": status, "type": kind})
+    # Section 12 is a saved-report diagnostic view, not a live execution feed.
+    # Collector COMPLETED never upgrades missing FDA/SEC/source coverage.
+    scans = scan_diagnostics(root)
     return {
         "stage": stage, "junior": stage == "GEM JR", "candidates": candidates,
         "history": histories, "junior_timeline": junior_timeline,
@@ -1266,7 +1263,7 @@ def build_dashboard(stage, root="data", *, as_of=None):
         "history_snapshot": str((history.get("stages") or {}).get("GEM_JR", {}).get("last_complete_snapshot") or ""),
         "held_count": len(held), "source_current": bool(current),
         "alerts": [a for c in candidates for a in c["alerts"]][:12], "scans": scans,
-        "scan_note": "Published collector status; verify source freshness before entry.",
+        "scan_note": "Saved reports only; collector completion is not full-source verification. Open SCANS for live job status.",
         "rules": [
             "Successful Phase 3 for the exact drug + indication, with primary-source results.",
             "Two distinct post-readout financing closures.",
