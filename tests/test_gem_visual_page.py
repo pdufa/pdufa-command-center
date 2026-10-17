@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
-from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials
+from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -112,6 +112,72 @@ class GemVisualPageTests(unittest.TestCase):
             self.assertTrue(all(t["phase"] == "Not verified in saved sources"
                                 for t in by_ticker["ABCD"]))
 
+    def test_section5_trial_tree_includes_all_saved_phases_and_exact_gem_labels(self):
+        record = {"Ticker": "TEST", "NCT ID": "NCT00000003",
+                  "Drug": "Drug Three", "Indication": "Condition 3",
+                  "Phase 3 status": "PRIMARY_MET_VERIFIED",
+                  "Phase 3 date": "2026-09-12",
+                  "Phase 3 source": "https://www.sec.gov/exactphase3"}
+        trials = [
+            {"nct": "NCT00000001", "drug": "Drug One", "indication": "Condition 1",
+             "phase": "Phase 1", "stage_labels": [], "selected_source": ""},
+            {"nct": "NCT00000002", "drug": "Drug Two", "indication": "Condition 2",
+             "phase": "Phase 2", "stage_labels": ["GEM JR"], "selected_source": ""},
+            {"nct": "NCT00000003", "drug": "Drug Three", "indication": "Condition 3",
+             "phase": "Phase 3", "stage_labels": ["GEM"],
+             "selected_source": "https://www.sec.gov/verified-results"},
+            {"nct": "NCT00000004", "drug": "Drug Four", "indication": "Condition 4",
+             "phase": "Phase 4", "stage_labels": [], "selected_source": ""},
+        ]
+        registry = [
+            {"ticker": "TEST", "nct_id": "NCT00000003", "phase": "Phase 3",
+             "status": "COMPLETED"},
+            {"ticker": "OTHER", "nct_id": "NCT00000002", "phase": "Phase 3",
+             "status": "COMPLETED"},
+        ]
+        pvalues = [
+            {"ticker": "TEST", "nct_id": "NCT00000003",
+             "primary_endpoint": "Exact trial endpoint", "p_value": "0.001"},
+            {"ticker": "OTHER", "nct_id": "NCT00000002",
+             "primary_endpoint": "Wrong issuer endpoint", "p_value": "0.0001"},
+        ]
+        for stage in ("GEM JR", "GEM"):
+            nested = _hierarchy(record, {}, "Test Bio", registry, pvalues, trials)
+            all_trials = {t["nct"]: t for g in nested for t in g["trials"]}
+            self.assertEqual(len(all_trials), 4)
+            self.assertEqual([all_trials[f"NCT0000000{i}"]["phase"]
+                              for i in range(1, 5)],
+                             ["Phase 1", "Phase 2", "Phase 3", "Phase 4"])
+            self.assertEqual(all_trials["NCT00000002"]["stage_labels"], ["GEM JR"])
+            self.assertEqual(all_trials["NCT00000003"]["stage_labels"], ["GEM"])
+            self.assertEqual(all_trials["NCT00000002"]["endpoint"],
+                             "Not available in saved sources")
+            self.assertEqual(all_trials["NCT00000002"]["p_value"],
+                             "Not available in saved sources")
+            self.assertEqual(all_trials["NCT00000003"]["endpoint"],
+                             "Exact trial endpoint")
+            self.assertEqual(all_trials["NCT00000003"]["p_value"], "0.001")
+            self.assertEqual(all_trials["NCT00000003"]["result_type"], "pass")
+            self.assertEqual(all_trials["NCT00000003"]["evidence_url"],
+                             "https://www.sec.gov/verified-results")
+            self.assertEqual(all_trials["NCT00000003"]["url"],
+                             "https://clinicaltrials.gov/study/NCT00000003")
+
+    def test_section5_multi_trial_program_never_assigns_individual_endpoint_success(self):
+        record = {"Ticker": "TEST", "NCT ID": "NCT00000006 | NCT00000007",
+                  "Drug": "Drug Group", "Indication": "Disease",
+                  "Phase 3 status": "PRIMARY_MET_VERIFIED"}
+        nested = _hierarchy(record, {"reported_p_values": "0.01"}, "Test Bio",
+                            [], [], [])
+        all_trials = {t["nct"]: t for g in nested for t in g["trials"]}
+        self.assertEqual(set(all_trials), {"NCT00000006", "NCT00000007"})
+        for item in all_trials.values():
+            self.assertEqual(item["phase"], "Phase not verified")
+            self.assertEqual(item["result_type"], "unknown")
+            self.assertEqual(item["p_value"], "Not available in saved sources")
+            self.assertEqual(item["url"],
+                             f"https://clinicaltrials.gov/study/{item['nct']}")
+
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
     })
@@ -134,7 +200,7 @@ class GemVisualPageTests(unittest.TestCase):
         self.assertEqual(result["financings"][1]["warrants"], "—")
         children = {t["nct"]: t for group in result["hierarchy"] for t in group["trials"]}
         self.assertEqual(children["NCT00000001"]["p_value"], "0.002")
-        self.assertEqual(children["NCT00000002"]["p_value"], "—")
+        self.assertEqual(children["NCT00000002"]["p_value"], "Not available in saved sources")
         self.assertEqual(children["NCT00000002"]["result"], "COMPLETED")
         self.assertEqual(children["NCT00000002"]["result_type"], "unknown")
 
