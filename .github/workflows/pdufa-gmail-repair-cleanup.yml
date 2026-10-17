@@ -1,0 +1,56 @@
+name: PDUFA Gmail Fix and Trash Resolved
+run-name: 'Gmail repair & verified cleanup — ${{ inputs.section }}'
+# Manual-only. Users opt into repair/cleanup; the regular Gmail audit is read-only.
+on:
+  workflow_dispatch:
+    inputs:
+      section:
+        description: 'Check selected mail section; only proven resolved GitHub failure notices may go to Trash'
+        required: true
+        type: choice
+        default: ALL
+        options: [ALL, INBOX, SENT_MAIL, PDUFA, SCAN_START, SCAN_END, SCAN_ERROR, DAILY_REPORT, WEEKLY_REPORT]
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: pdufa-gmail-safe-repair-and-cleanup
+  cancel-in-progress: false
+
+jobs:
+  repair-resolved:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ github.token }}
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      SECTION: ${{ inputs.section }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify deterministic safe-cleanup rules before accessing Gmail
+        run: python -m unittest discover -s tests -p 'test_gmail_repair_cleanup.py' -v
+      - name: Verify required Gmail credentials without printing them
+        run: |
+          test -n "$PDUFA_GMAIL_USER" && test -n "$PDUFA_GMAIL_APP_PASSWORD" || {
+            echo "::error::Gmail secrets unavailable. No mailbox changes attempted."
+            exit 1
+          }
+      - name: Repair only eligible transient CI failures; Trash only same-run verified fixes
+        run: python -m scripts.gmail_repair_cleanup --section "$SECTION"
+      - name: Keep aggregate repair and cleanup evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-gmail-safe-repair-${{ inputs.section }}-${{ github.run_id }}
+          path: reports/gmail_repair_cleanup.json
+          retention-days: 30
+          if-no-files-found: warn
