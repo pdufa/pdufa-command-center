@@ -908,40 +908,33 @@ def documented_drawn_credit_tranche(text, closing_date):
             if re.search(r"(?i)\b(?:would|will|might|may|expected|potential|anticipated)\b", before):
                 continue
             return passage[:draw.end()]
-    # Some same-issuer 8-Ks describe an actual loan-tranche borrowing
-    # on a named Amendment Closing Date rather than using "drawn".
-    # Keep a strict local clause; an expanded facility is not funded cash.
-    amended = re.compile(
-        r"(?i)\\bOn\\s+(20\\d{2}-\\d{2}-\\d{2}|"
-        r"January|February|March|April|May|June|July|August|"
-        r"September|October|November|December)\\b"
-    )
+    # A disclosed debt-facility limit is not a completed funding.
+    # Verify a specific past-tense cash borrowing on a named closing day.
     for match in re.finditer(
-        r"(?i)\\bOn\\s+(?:20\\d{2}-\\d{2}-\\d{2}|"
+        r"(?i)\bOn\s+((?:20\d{2}-\d{2}-\d{2}|"
         r"(?:January|February|March|April|May|June|July|August|"
-        r"September|October|November|December)\\s+\\d{1,2},?\\s+20\\d{2})"
-        r"\\s*\\(the\\s+[\\"“]?Amendment Closing Date[\\"”]?\\)", text
+        r"September|October|November|December)\s+\d{1,2},?\s+20\d{2}))"
+        r"\s*\(\s*the\s+[\u201c\u0022]?Amendment Closing Date"
+        r"[\u201d\u0022]?\s*\)", text
     ):
-        segment = text[match.start():match.end() + 950]
-        if closing_date not in dates(segment[:match.end()-match.start()]):
+        if dates(match.group(1)) != {closing_date}:
             continue
-        if not re.search(r"(?i)Loan and Security Agreement|credit agreement", segment):
+        passage = text[match.start():match.end() + 1000]
+        if not re.search(r"(?i)\bLoan and Security Agreement\b", passage):
             continue
         funded = re.search(
-            r"(?i)\\bCompany\\s+borrowed\\s+one\\s+of\\s+the\\s+"
-            r"additional\\s+loan\\s+tranches\\s+in\\s+an\\s+"
-            r"aggregate\\s+principal\\s+amount\\s+of\\s+"
-            r"\\$\\s*[\\d,.]+\\s+(?:million|billion)\\s+"
-            r"on\\s+the\\s+Amendment Closing Date\\b", segment
+            r"(?i)\bCompany\s+borrowed\s+one\s+of\s+the\s+additional\s+"
+            r"loan\s+tranches\s+in\s+an\s+aggregate\s+principal\s+"
+            r"amount\s+of\s+\$\s*[\d,.]+\s+(?:million|billion)"
+            r"\s+on\s+the\s+Amendment Closing Date\b", passage
         )
         if not funded:
             continue
-        if re.search(r"(?i)\\b(?:would|will|might|may|expected|potential|"
-                     r"anticipated)\\b", segment[max(0,funded.start()-35):funded.start()]):
+        prefix = passage[max(0, funded.start()-35):funded.start()]
+        if re.search(r"(?i)\b(?:would|will|may|expected|potential|anticipated)\b", prefix):
             continue
-        return segment[:funded.end()]
+        return passage[:funded.end()]
     return ""
-
 
 # SEC may temporarily throttle or drop connections even after an HTTP retry.
 # One additional recheck of the exact claim is permitted, with a strict
