@@ -10,6 +10,11 @@ function Widget({ticker,full}:{ticker:string;full:boolean}){
   useEffect(()=>{
     const host=ref.current;
     if(!host||!/^[A-Z][A-Z0-9.-]{0,12}$/.test(ticker))return;
+    let mounted=false;
+    let observer: IntersectionObserver|undefined;
+    const mount=()=>{
+    if(mounted||!host.isConnected)return;
+    mounted=true;
     host.replaceChildren();
     const wrapper=document.createElement("div");
     wrapper.className="tradingview-widget-container";
@@ -42,7 +47,18 @@ function Widget({ticker,full}:{ticker:string;full:boolean}){
     });
     wrapper.append(widget,credit,script);
     host.appendChild(wrapper);
-    return ()=>{host.replaceChildren()};
+    };
+    // Streamlit observes charts before loading expensive TradingView scripts.
+    if(typeof IntersectionObserver==="undefined") mount();
+    else {
+      observer=new IntersectionObserver(entries=>{
+        if(entries.some(item=>item.isIntersecting)){
+          mount();observer?.disconnect();
+        }
+      },{rootMargin:"150px 0px"});
+      observer.observe(host);
+    }
+    return ()=>{observer?.disconnect();host.replaceChildren()};
   },[ticker,full]);
   return <div className={full?"wt-streamlit-advanced-widget":"wt-streamlit-compact-widget"} ref={ref}
     role="region" aria-label={ticker+(full?" full advanced TradingView chart":" compact Streamlit TradingView chart")}/>;
