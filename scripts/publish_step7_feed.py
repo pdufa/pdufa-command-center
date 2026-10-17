@@ -34,6 +34,13 @@ def main():
         snapshot = load_current_snapshot(staged, now)
         if snapshot is None or len(snapshot[0]) != len(trials):
             raise SystemExit("BLOCKED: Step 7 reader rejected new snapshot; old files retained")
+        # Publish only a validated display cache, not a claim of new source checks.
+        print(json.dumps({
+            "validated_trial_rows": len(snapshot[0]),
+            "validated_financing_events": len(snapshot[1]),
+            "display_generated_at_utc": snapshot[2].get("generated_at_utc"),
+            "source_scans_reexecuted": False,
+        }, sort_keys=True))
         for name in ("step7_pre_phase3_feed.csv",
                      "step7_financing_review.csv", "step7_live_status.json"):
             os.replace(staged / name, root / name)
