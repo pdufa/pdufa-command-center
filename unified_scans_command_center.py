@@ -342,7 +342,16 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
     sources = sources_loader() or {}
     gem = published_gem_block_report() or {}
     runs, error = recent_github_runs()
-    latest = latest_night_loader() or {}
+    candidates = [x for x in runs if isinstance(x, dict) and
+                  str(x.get("path") or "").split("/")[-1] ==
+                  "pdufa-overnight-sequential.yml" and
+                  x.get("display_title") == "ALL + GEM — PDUFA overnight"]
+    latest = (max(candidates, key=lambda x: str(x.get("created_at") or ""))
+              if candidates else latest_night_loader() or {})
+    # Do not present a clinical-only fallback as the complete ALL + GEM chain.
+    if (str(latest.get("path") or "").split("/")[-1] !=
+            "pdufa-overnight-sequential.yml"):
+        latest = {}
     run_id = latest.get("id")
     jobs = current_job_steps(run_id) if isinstance(run_id, int) else []
     standalone = {name: individual_snapshot(name) for name in SOURCE_NAMES}
