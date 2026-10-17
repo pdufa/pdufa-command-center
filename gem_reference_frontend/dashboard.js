@@ -341,7 +341,7 @@ function juniorEntryCard(r){
 }
 function technicalSignalRows(r){
   const plan=r?getPlan(r):{};
-  const current=r?.fresh===true;
+  const current=r?.fresh===true&&/^\d{4}-\d{2}-\d{2}/.test(String(r.market_date||""));
   const close=r?.close;
   const defined=(x)=>finite(x);
   const status=(pass,available=true)=>!available?"unknown":pass?"pass":"review";
