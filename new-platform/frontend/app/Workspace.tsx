@@ -13,7 +13,7 @@ type ResearchTechnical = {
   rsi14?: number | null; rvol?: number | null; avgDollarVolume20?: number | null;
   closingSupport20?: number | null; macd?: { macd: number | null; signal: number | null; bullish: boolean } | null;
   base?: { status: string; support: number | null; resistance: number | null; touches: number | null; widthPct: number | null; contractionRatio: number | null; volumeRatio: number | null; breakoutRvol: number | null };
-  indicatorEntry?: number | null; indicatorEntryCoverage?: number; indicatorExitRisk?: number | null; indicatorExitCoverage?: number; indicatorEntryFactors?: Factor[]; indicatorExitFactors?: Factor[]; indicatorDisclaimer?: string; indicatorModel?: string;
+  indicatorEntry?: number | null; indicatorEntryCoverage?: number; indicatorEntryObservedPoints?: number; indicatorExitRisk?: number | null; indicatorExitCoverage?: number; indicatorExitObservedPoints?: number; indicatorEntryFactors?: Factor[]; indicatorExitFactors?: Factor[]; indicatorDisclaimer?: string; indicatorModel?: string;
   dataGaps?: string; entry?: number | null; entryCoverage?: number; entryStatus?: string;
   exitRisk?: number | null; exitCoverage?: number; exitStatus?: string;
   entryFactors?: Factor[]; exitFactors?: Factor[];
@@ -171,10 +171,10 @@ function WTIndicatorDetails({programId, record}: {programId:string;record?:Candi
       <div className="research-score-cards wt-observed-scores">
         <div><strong>Indicator entry /100</strong>
           <span>{observed(x.indicatorEntry)}</span>
-          <small>Observed factor coverage {x.indicatorEntryCoverage??0}/100</small></div>
+          <small>Evidence coverage {x.indicatorEntryCoverage??0}/100 · {x.indicatorEntry==null? "Observed points "+(x.indicatorEntryObservedPoints??0)+" (partial, not a validated /100 score)":"GEM weighted score"}</small></div>
         <div><strong>Indicator exit risk /100</strong>
           <span>{observed(x.indicatorExitRisk)}</span>
-          <small>Observed factor coverage {x.indicatorExitCoverage??0}/100</small></div>
+          <small>Evidence coverage {x.indicatorExitCoverage??0}/100 · {x.indicatorExitRisk==null? "Observed points "+(x.indicatorExitObservedPoints??0)+" (partial, not a validated /100 score)":"GEM weighted score"}</small></div>
         <div><strong>Verified market snapshot</strong>
           <span>{x.eodFresh?stated(x.marketDate,"CHECK DATE"):"STALE / MISSING"}</span>
           <small>{x.eodFresh?"Recent, source-consistent EOD":"Unverified / old observations"}</small></div>
