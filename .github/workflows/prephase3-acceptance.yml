@@ -18,6 +18,7 @@ on:
       - "data/pre_phase3_pilot_clinical_reviews.json"
       - "data/step7_pre_phase3_feed.csv"
       - "data/step7_live_status.json"
+      - "data/step7_financing_review.csv"
 
 permissions:
   contents: read
@@ -29,7 +30,7 @@ concurrency:
 jobs:
   verify-clinical-tab:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,6 +49,8 @@ jobs:
             echo "::error::Google Chrome not available on runner"
             exit 1
           fi
+      - name: Allow Streamlit Cloud to sync published cache
+        run: sleep 75
       - name: Verify PIPELINE early-clinical checklist and pilot scores
         run: node scripts/prephase3_live_acceptance.cjs
       - name: Upload screenshot and acceptance checks
