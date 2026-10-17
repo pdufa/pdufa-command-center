@@ -23,8 +23,8 @@ RAW = "https://raw.githubusercontent.com/" + REPO + "/main/data/individual_sourc
 SOURCE_NAMES = ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER")
 SECTIONS = ("PIPELINE", "GEM JR", "GEM", *SOURCE_NAMES, "SCAN HEALTH")
 WORKFLOWS = {
-    "PIPELINE": "pdufa-nightly-clinical.yml",
-    "GEM JR": "pdufa-nightly-clinical.yml",
+    "PIPELINE": "pdufa-individual-clinical-scan.yml",
+    "GEM JR": "pdufa-individual-clinical-scan.yml",
     "GEM": "gem-research-quality.yml",
     **{k: "pdufa-individual-source-scan.yml" for k in SOURCE_NAMES},
     "SCAN ALL": "pdufa-overnight-sequential.yml",
@@ -251,10 +251,9 @@ def workflow_request(section, mode):
             "RESCAN_ALL" if mode == "FULL" else "REVERIFY_PARTIAL")}
     elif section in SOURCE_NAMES:
         args = {"source": section, "scan_mode": mode}
-    elif section == "PIPELINE":
-        args = {"scan": "PIPELINE", "scan_mode": mode}
-    elif section == "GEM JR":
-        args = {"scan": "GEM_JR", "scan_mode": mode}
+    elif section in ("PIPELINE", "GEM JR"):
+        args = {"section": "GEM_JR" if section == "GEM JR" else "PIPELINE",
+                "scan_mode": mode}
     elif section == "SCAN HEALTH":
         args = {}  # Standalone Gmail/GitHub status audit (not a collector).
     else:
@@ -313,8 +312,9 @@ def recent_active(runs, section):
                 if str(run.get("display_title") or "").startswith(section + " —"):
                     return run
             elif section in ("PIPELINE", "GEM JR"):
-                # Shared clinical workflow; conservatively block until it completes.
-                return run
+                expected = "GEM_JR" if section == "GEM JR" else "PIPELINE"
+                if str(run.get("display_title") or "").startswith(expected + " —"):
+                    return run
             else:
                 return run
     return None
