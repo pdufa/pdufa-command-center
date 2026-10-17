@@ -22,18 +22,18 @@ function compute(raw:Bar[]):Enhanced[]{
   if(i<=14){gain+=g;loss+=l;if(i===14){gain/=14;loss/=14;}}
   else{gain=(gain*13+g)/14;loss=(loss*13+l)/14;}
   const tr=last?Math.max(b.high-b.low,Math.abs(b.high-last.close),Math.abs(b.low-last.close)):b.high-b.low;
-  if(i<14)atr+=tr;else if(i===14)atr=(atr+tr)/15;else atr=(atr*13+tr)/14;
+  if(i<13)atr+=tr;else if(i===13)atr=(atr+tr)/14;else atr=(atr*13+tr)/14;
   const a=rows.slice(Math.max(0,i-19),i+1),c=rows.slice(Math.max(0,i-49),i+1);
   return {...b,sma20:a.length===20?a.reduce((s,v)=>s+v.close,0)/20:null,
    sma50:c.length===50?c.reduce((s,v)=>s+v.close,0)/50:null,
    ema10:i>=9?e10:null,ema20:i>=19?e20:null,ema50:i>=49?e50:null,
    rsi:i>=14?(loss===0?(gain===0?50:100):100-100/(1+gain/loss)):null,
-   macd:i>=26?macd:null,signal:i>=34?sign:null,atr:i>=14?atr:null};
+   macd:i>=26?macd:null,signal:i>=34?sign:null,atr:i>=13?atr:null};
  });
 }
 function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;candle:boolean;studies:boolean}){
  const [hover,setHover]=useState<number|null>(null);
- const W=710,H=large?440:235,L=53,R=43,T=12,B=large?296:164,volBottom=large?348:212;
+ const W=710,H=large?555:235,L=53,R=43,T=12,B=large?296:164,volBottom=large?348:212;
  const span=W-L-R,min=Math.min(...bars.map(b=>b.low)),max=Math.max(...bars.map(b=>b.high));
  const padding=Math.max((max-min)*.08,0.001),lo=min-padding,hi=max+padding;
  const x=(i:number)=>L+(i+.5)/bars.length*span;
@@ -43,6 +43,14 @@ function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;ca
  const drawLine=(key:"close"|"sma20"|"sma50"|"ema10"|"ema20"|"ema50")=>
   bars.map((b,i)=>{const value=b[key],previous=i?bars[i-1][key]:null;return good(value)?(i&&good(previous)?"L":"M")+x(i).toFixed(2)+","+y(value).toFixed(2):""}).join(" ");
  const target=hover===null?null:bars[hover];
+ const rsiY=(r:number)=>365+(100-r)/100*55;
+ const mValues=bars.flatMap(b=>[b.macd,b.signal].filter(good));
+ const mMax=Math.max(0.001,...mValues.map(Math.abs));
+ const mY=(v:number)=>450+(mMax-v)/(2*mMax)*62;
+ const indicatorPath=(key:"rsi"|"macd"|"signal",scale:(v:number)=>number)=>bars.map((b,i)=>{
+   const v=b[key],prior=i?bars[i-1][key]:null;
+   return good(v)?(i&&good(prior)?"L":"M")+x(i).toFixed(2)+","+scale(v).toFixed(2):"";
+ }).join(" ");
  return <div className="alpaca-plot-box"><svg viewBox={"0 0 "+W+" "+H} className="alpaca-plot" role="img" aria-label="Alpaca daily candlesticks and daily volume">
   {Array.from({length:5},(_,i)=>{const yy=T+i*(B-T)/4;return <g key={i}>
     <line x1={L} x2={W-R} y1={yy} y2={yy} stroke="#e3edf4"/>
@@ -52,15 +60,23 @@ function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;ca
      return <g key={b.date}><line x1={x(i)} x2={x(i)} y1={y(b.high)} y2={y(b.low)} stroke={color}/>
        <rect x={x(i)-barWidth/2} y={py} width={barWidth} height={Math.max(1,Math.abs(y(b.open)-y(b.close)))} fill={color}/></g>})
     :<path d={drawLine("close")} stroke="#02a65b" fill="none" strokeWidth={2}/>}
-   {([["sma20","#1673eb"],["sma50","#f49429"],
+   {studies&&([["sma20","#1673eb"],["sma50","#f49429"],
      ...(large?[["ema10","#9562c1"],["ema20","#1a9ead"],["ema50","#ad865c"]]:[])] as [("sma20"|"sma50"|"ema10"|"ema20"|"ema50"),string][])
     .map(([key,color])=><path key={key} d={drawLine(key)} stroke={color} strokeWidth="1.2" fill="none"/>)}
    {bars.map((b,i)=>{const height=b.volume/maxVol*(volBottom-B-9);return <rect key={"v"+b.date} x={x(i)-barWidth/2}
       y={volBottom-height} width={barWidth} height={height} fill={b.close>=b.open?"#42c68b":"#ef8d88"}/>})}
    <text x={L+3} y={B+15} fontSize="10" fill="#617586">{"Daily volume "+short(bars.at(-1)?.volume||0)}</text>
-   {large&&studies&&<><text x={L+3} y={H-44} fontSize="11" fill="#536778">RSI(14): {fixed(bars.at(-1)?.rsi,1)}</text>
-      <text x={L+200} y={H-44} fontSize="11" fill="#536778">MACD(12,26,9): {fixed(bars.at(-1)?.macd,3)}</text>
-      <text x={L+470} y={H-44} fontSize="11" fill="#536778">ATR(14): {fixed(bars.at(-1)?.atr,3)}</text></>}
+   <>{large&&studies&&<>
+      <line x1={L} x2={W-R} y1={rsiY(70)} y2={rsiY(70)} stroke="#ccaba0" strokeDasharray="3 2"/>
+      <line x1={L} x2={W-R} y1={rsiY(30)} y2={rsiY(30)} stroke="#a0bdaf" strokeDasharray="3 2"/>
+      <text x={L+4} y={rsiY(70)-5} fontSize="10" fill="#586a78">RSI14: {fixed(bars.at(-1)?.rsi,1)} (70/30)</text>
+      <path d={indicatorPath("rsi",rsiY)} fill="none" stroke="#8e54a8" strokeWidth={1.5}/>
+      <line x1={L} x2={W-R} y1={mY(0)} y2={mY(0)} stroke="#b2becb"/>
+      <text x={L+4} y={mY(mMax)+2} fontSize="10" fill="#586a78">MACD(12,26,9): {fixed(bars.at(-1)?.macd,3)}</text>
+      <path d={indicatorPath("macd",mY)} fill="none" stroke="#1e9d8f" strokeWidth={1.5}/>
+      <path d={indicatorPath("signal",mY)} fill="none" stroke="#d08a2f" strokeWidth={1.2}/>
+      <text x={W-R-5} y={mY(mMax)+2} textAnchor="end" fontSize="10" fill="#586a78">ATR14 {fixed(bars.at(-1)?.atr,3)}</text>
+    </>}</>
    {target&&<line x1={x(hover!)} x2={x(hover!)} y1={T} y2={volBottom} stroke="#7395b4" strokeDasharray="3 2"/>}
    {Array.from({length:Math.min(6,bars.length)},(_,k)=>{const i=Math.round(k*(bars.length-1)/Math.max(1,Math.min(6,bars.length)-1));return <text
        key={k} x={x(i)} y={H-9} textAnchor="middle" fontSize="10" fill="#647483">{bars[i].date.slice(5)}</text>})}
