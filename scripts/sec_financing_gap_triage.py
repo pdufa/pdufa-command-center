@@ -24,6 +24,9 @@ FIELDS = [
     "different_mapped_closing_date", "issuer_cik10", "sec_submissions_url",
     "google_sec_company_search", "google_sec_exhibit_search",
     "google_issuer_closing_search", "known_sec_source_urls",
+    "official_ir_host", "official_ir_home",
+    "official_ir_news_search", "official_ir_sec_filings_search",
+    "official_ir_financial_results_search", "investor_relations_review_required",
     "next_evidence_required", "source_claim_verified",
     "second_post_phase3_financing_verified", "trade_entry_authorized",
 ]
@@ -160,7 +163,31 @@ def triage(queue, companies, config):
             if issuer_hosts and isinstance(issuer_hosts[0], str)
             else f'"{name}" investor relations closing public offering'
         )
+        # Mandatory company-first escalation for every difficult claim.
+        # These are DISCOVERY ROUTES on configured official hosts only.
+        # Neither an IR home page nor a search result proves a closing.
+        official_hosts = config.get(ticker, {}).get("hosts") or []
+        ir_host = next((
+            host.lower() for host in official_hosts
+            if isinstance(host, str) and re.fullmatch(
+                r"[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)+", host
+            )
+        ), "")
+        ir_home = "https://" + ir_host + "/" if ir_host else ""
+        def ir_lookup(topic):
+            return google(f'site:{ir_host} "{name}" {topic}') if ir_host else google(
+                f'"{name}" investor relations {topic}'
+            )
         result.append({
+            "official_ir_host": ir_host,
+            "official_ir_home": ir_home,
+            "official_ir_news_search": ir_lookup(
+                '"closed" OR "completed" "offering" OR "financing"'),
+            "official_ir_sec_filings_search": ir_lookup(
+                '"SEC filings" OR "Form 8-K" OR "Form 6-K"'),
+            "official_ir_financial_results_search": ir_lookup(
+                '"financial results" "cash" "operating activities"'),
+            "investor_relations_review_required": "YES",
             "priority": priority, "event_key": item["event_key"],
             "ticker": ticker, "company": name,
             "category": category, "claim": item["claim"],
@@ -209,12 +236,15 @@ def run(root, csv_output, json_output):
         "by_class": dict(Counter(r["research_class"] for r in rows)),
         "by_category": dict(Counter(r["category"] for r in rows)),
         "rows_with_primary_sec_links": sum(bool(r["known_sec_source_urls"]) for r in rows),
+        "issuer_ir_escalations_required": len(rows),
+        "official_ir_hosts_configured": sum(bool(r["official_ir_host"]) for r in rows),
+        "official_ir_hosts_missing": sum(not bool(r["official_ir_host"]) for r in rows),
         "canonical_source_ledger_modified": False,
         "source_claims_verified": 0,
         "second_post_phase3_financings_verified": 0,
         "trade_entries_authorized": 0,
         "csv_path": str(csv_output),
-        "note": "Google and issuer URLs are discovery leads, NEVER closing proof. Fetch and verify original SEC document before clearing a gap.",
+        "note": "Mandatory company Investor Relations first, then claim-specific SEC/FDA/clinical proof. IR and search links are discovery leads, NEVER proof of financing or runway.",
     }
     json_output.parent.mkdir(parents=True, exist_ok=True)
     json_output.write_text(json.dumps(info, indent=2, sort_keys=True) + "\n")
