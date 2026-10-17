@@ -413,7 +413,7 @@ def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, c
     return facts
 
 
-def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials, trial_coverage):
+def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified"):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
     ticker = clean_ticker(record.get("Ticker"))
@@ -479,7 +479,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     ])
     return {
         "id": identifier, "ticker": ticker, "company": company,
-        "company_trials": company_trials.get(ticker, []),
+        "company_trials": (company_trials or {}).get(ticker, []),
         "company_trial_coverage": trial_coverage,
         "drug": _text(record.get("Drug")), "indication": _text(record.get("Indication")),
         "nct": _text(record.get("NCT ID")), "readout": p3_date, "pdufa": pdufa,
