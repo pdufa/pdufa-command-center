@@ -230,7 +230,8 @@
       "5 8 * * *",
       "35 8 * * *",
       "5 9 * * *",
-      "35 9 * * *"
+      "35 9 * * *",
+      "3-53/10 5-10 * * *"
     ],
     "pacific_daylight_time": "22:00",
     "pacific_standard_time": "22:00",
@@ -247,7 +248,7 @@
     "scheduler_workflow": ".github/workflows/pdufa-nightly-pacific-start.yml",
     "sequence_workflow": ".github/workflows/pdufa-overnight-sequential.yml",
     "timezone": "America/Los_Angeles",
-    "start_policy": "One 10 PM Pacific admission per night, with DST-aware missed-start recovery and an active/full-run duplicate guard.",
+    "start_policy": "One 10 PM Pacific admission per night, with DST-aware 10-minute recovery ticks inside the 10 PM–2:59 AM window and a recorded/full-run duplicate guard; GitHub scheduled wakeups are best-effort.",
     "scan_labels": {
       "2": "PIPELINE - inventory",
       "3": "PIPELINE - clinical enrichment",
