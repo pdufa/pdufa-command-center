@@ -171,3 +171,31 @@
 .technical-signals .card-head{flex-wrap:wrap;gap:3px}
 .technical-signals .card-head .card-tools{margin-left:auto}
 @media(max-width:700px){.jr-readiness-scroll{max-height:325px}.technical-scroll{max-height:340px}}
+
+/* Section 9 — risk-first, source-linked GEM entry and GEM JR downgrade review */
+.section9-card .card-head{gap:5px;flex-wrap:wrap}
+.section9-card .card-head .score-badge{font-size:10px;line-height:1.2;white-space:normal;text-align:right;max-width:50%}
+.section9-card .card-body{display:flex;flex-direction:column;gap:5px;min-height:0}
+.section9-status{display:flex;flex-direction:column;gap:4px;border:1px solid #dae7ef;background:#f3f8fd;padding:6px;border-radius:4px;font-size:10px}
+.section9-status strong{color:#153859;line-height:1.3}
+.section9-gem .section9-status strong{color:#793b1d}
+.section9-status>div{display:flex;flex-wrap:wrap;gap:4px}
+.section9-status>div span{padding:2px 4px;background:#fff;border:1px solid #d5e4ed;border-radius:3px;font-size:9px}
+.section9-scroll{max-height:305px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.section9-item{border:1px solid #d8e6ee;border-radius:4px;background:#fff;margin:3px 0}
+.section9-item summary{list-style:none;display:flex;gap:5px;align-items:center;padding:5px 4px;cursor:pointer}
+.section9-item summary::-webkit-details-marker{display:none}
+.section9-item .section9-rank{background:#194d80;color:white;font-weight:800;font-size:9px;padding:3px 4px;min-width:19px;border-radius:3px;text-align:center}
+.section9-name{min-width:0;flex:1;overflow-wrap:anywhere;font-size:10px;font-weight:700}
+.section9-name small{display:block;margin-top:2px;color:#4b687c;font-size:9px;font-weight:400;line-height:1.3}
+.section9-item summary .badge{font-size:9px;line-height:1.2;white-space:normal;text-align:center;max-width:85px;flex:none}
+.section9-item[open] summary{background:#ecf6fc}
+.section9-item[open] summary .section9-rank{background:#005e9d}
+.section9-detail{padding:6px 7px;border-top:1px solid #dbe7ef;color:#365c75;font-size:9.5px;line-height:1.45}
+.section9-detail p{margin:0 0 5px}
+.section9-detail small{color:#637e91;font-size:9px}
+.section9-source{margin:4px 0;overflow-wrap:anywhere}
+.section9-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;font-size:9px;color:#44677f}
+.section9-plan{background:#f0f8ff;border-color:#7bbedb;font-size:9px;font-weight:700;padding:5px 7px}
+.section9-disclaimer{font-size:9px;line-height:1.35;color:#546d7f;padding:5px 2px 2px}
+@media(max-width:700px){.section9-scroll{max-height:345px}.section9-card .card-head .score-badge{max-width:100%}}
