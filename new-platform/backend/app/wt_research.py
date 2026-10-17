@@ -204,9 +204,12 @@ def _signals_for_ticker(ticker: str) -> dict:
                     mode = str(record.get("mode") or "").strip().upper()
                     if _VALID_TICKER.fullmatch(symbol) and mode in {"ENTRY", "EXIT"}:
                         index[(symbol, mode)] = record
-            except (OSError, UnicodeError, ValueError):
-                # Streamlit also displays NOT SCANNED when the optional file is missing.
-                pass
+            except Exception as exc:
+                # Optional scanner data must never block verified trial scoring.
+                LOG.warning(
+                    "STREAMLIT_WATCHLIST_SIGNAL_OPTIONAL status=NOT_SCANNED error_type=%s",
+                    type(exc).__name__,
+                )
             _SIGNAL_ROWS.update(at=time.monotonic(), by_key=index)
         result = {}
         for mode in ("ENTRY", "EXIT"):
