@@ -9,6 +9,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import math
+import re
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -173,6 +174,142 @@ def _hierarchy(record, event, company, registry, pvalues):
     return sorted(groups.values(), key=lambda x: (not x["selected"], x["drug"], x["indication"]))
 
 
+
+def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, clinical_url):
+    """Exact-program, read-only observations for clickable research criteria.
+
+    Numbers, flags and source links are not promoted to proof of an absence
+    of risk. Unknowns are deliberately omitted, so the frontend ranks last.
+    """
+    facts = {}
+
+    def observed(key, label, detail, *, metric=0, tier=1):
+        metric = _number(metric)
+        facts[key] = {"tier": int(tier), "metric": metric if metric is not None else 0,
+                      "label": str(label)[:92], "detail": str(detail)[:450]}
+
+    nct = str(record.get("NCT ID") or "").strip().upper()
+    exact = [row for row in pvalues
+             if str(row.get("nct_id") or "").strip().upper() == nct
+             and str(row.get("ticker") or "").strip().upper() == ticker
+             and nct.startswith("NCT") and len(nct) == 11]
+    endpoints = [str(row.get("primary_endpoint") or "").strip()
+                 for row in exact if str(row.get("primary_endpoint") or "").strip()]
+    values = [str(row.get("p_value") or "").strip()
+              for row in exact if str(row.get("p_value") or "").strip()]
+    if not values and nct and str(event.get("nct_id") or "").strip().upper() == nct:
+        raw = str(event.get("reported_p_values") or "").strip()
+        if raw:
+            values = [raw]
+    if clinical_url and str(clinical_url).startswith("https://") and (endpoints or values):
+        raw = values[0] if len(values) == 1 else ""
+        match = re.fullmatch(r"\\s*(?:p\\s*)?(?:=|<|<=)?\\s*(0?\\.\\d+|[01](?:\\.0+)?)\\s*", raw, re.I)
+        value = _number(match.group(1)) if match else None
+        if value is not None and 0 <= value <= 1:
+            observed("endpoint", "Recorded p: " + raw,
+                     "Exact NCT endpoint: " + ("; ".join(endpoints)[:170] or "endpoint not separately labeled") +
+                     "; numeric p-value is descriptive and does not prove clinical success",
+                     metric=-value, tier=2)
+        else:
+            observed("endpoint", "Endpoint/p-value cited",
+                     "Exact-program endpoint/p-value text recorded; no unambiguous numeric primary p-value",
+                     tier=1)
+
+    status = str(event.get("conflict_flag") or "").strip().upper()
+    score = _number(event.get("safety_score"))
+    if status in {"YES", "TRUE", "1", "ACTIVE", "CONFLICT", "REVIEW"}:
+        observed("safety", "Safety / evidence conflict flagged",
+                 "Program-specific conflict flag in saved ledger: " + status,
+                 metric=-1)
+    elif score is not None:
+        observed("safety", f"Safety score (saved): {score:g}",
+                 "Saved, uncalibrated score; does not establish that serious adverse events are absent",
+                 metric=score)
+    elif status in {"NO", "NONE", "FALSE", "0", "PASS"}:
+        observed("safety", "No conflict flag recorded",
+                 "Saved flag only; not a clinical safety clearance", tier=1)
+
+    note = str(funding.get("second_financing_evidence_note") or "")
+    for key, expression, label in (
+        ("warrants", r"\\bwarrants?\\b", "Warrants mentioned"),
+        ("convertibles", r"\\bconvertible(?:\\s+notes?|\\s+debt|\\s+securities)?\\b", "Convertibles mentioned"),
+    ):
+        if note and re.search(expression, note, flags=re.I):
+            observed(key, label + " in SEC review note",
+                     "Potential financing structure exposure mentioned in saved source review. Terms and current outstanding balances require direct SEC recheck.",
+                     tier=1)
+    dilution = str(event.get("new_dilution_flag") or "").strip().upper()
+    if dilution in {"YES", "TRUE", "1", "ACTIVE", "UNRESOLVED"}:
+        observed("dilution", "Dilution risk flagged", "Explicit dilution flag: " + dilution,
+                 tier=1, metric=-1)
+    elif dilution in {"NO", "NONE", "FALSE", "0"}:
+        observed("dilution", "No new dilution flag (saved)",
+                 "A saved negative flag does not certify the current capitalization table",
+                 tier=1, metric=0)
+
+    for key, column, direction, description in (
+        ("short", "short_interest", -1, "Saved short-interest figure; lower numeric values first, unit/feed review required"),
+        ("float", "shares_float", 1, "Saved public float; larger float first, not an automatic liquidity pass"),
+        ("institutional", "institutional_ownership_pct", 1, "Saved institutional ownership percentage, not a current filing reconciliation"),
+        ("clinical_quality", "science_score", 1, "Saved uncalibrated science score, not a source-verified trial success rating"),
+        ("cmc", "cmc_score", 1, "Saved uncalibrated CMC score, not FDA manufacturing clearance"),
+        ("poa", "approval_probability", 1, "Saved approval estimate is not a calibrated or assured probability"),
+    ):
+        val = _number(event.get(column))
+        if val is not None and val >= 0:
+            observed(key, f"Saved figure: {val:g}", description, metric=direction*val, tier=1)
+
+    master = master or {}
+    insider_source = str(master.get("Insider Source Links") or "")
+    for key, column in (("insider_buy", "Insider Purchases"),
+                        ("insider_sell", "Insider Sales")):
+        raw = str(master.get(column) or "").strip()
+        if raw and raw.upper() not in {"—", "-", "N/A", "NONE", "UNKNOWN", "UNVERIFIED"}:
+            val = _number(raw)
+            observed(key, "Saved insider activity: " + raw[:55],
+                     "Source link recorded" if insider_source.startswith("https://") else
+                     "Saved issuer-level claim; individual Form 4 evidence unavailable here",
+                     metric=(val if key == "insider_buy" else -val) if val is not None else 0,
+                     tier=2 if insider_source.startswith("https://") else 1)
+
+    hedge = _number(master.get("Hedge-fund accumulation /10"))
+    hedge_status = str(master.get("Hedge-fund Signal") or "")
+    hedge_source = str(master.get("Hedge-fund Source Links") or "")
+    if hedge is not None and hedge_status == "SOURCE-VERIFIED QUARTERLY 13F HOLDINGS" and hedge_source.startswith("https://"):
+        observed("hedge", f"13F signal: {hedge:g}/10",
+                 "Source-linked quarterly 13F holdings; not evidence of current intraday buying",
+                 metric=hedge, tier=2)
+
+    base = profile.get("base") or {}
+    base_status = str(base.get("status") or "")
+    if profile.get("fresh") and base_status and not base_status.upper().startswith(("STALE", "NOT AVAILABLE", "UNKNOWN")):
+        touches = _number(base.get("touches"))
+        observed("base", "Daily-close base: " + base_status[:65],
+                 "Source-saved closing-price approximation, not an intraday accumulation confirmation",
+                 metric=touches or 0, tier=1)
+        breakout = _number(base.get("breakout_rvol"))
+        if breakout is not None:
+            observed("breakout", f"Observed breakout RVOL: {breakout:g}×",
+                     "Saved daily-close breakout-volume observation; external candlesticks require independent review",
+                     metric=breakout, tier=1)
+
+    regulatory_score = _number(event.get("regulatory_score"))
+    outcome = str(event.get("outcome") or "").strip().upper()
+    regulatory_note = str(event.get("regulatory_summary") or "").strip()
+    if outcome in {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}:
+        observed("regulatory", "Resolved: " + outcome,
+                 "Historical FDA outcome, not an open pre-PDUFA opportunity",
+                 metric=-1, tier=1)
+    elif regulatory_score is not None:
+        observed("regulatory", f"Saved regulatory score: {regulatory_score:g}",
+                 "Saved uncalibrated regulatory score; does not confirm FDA clearance",
+                 metric=regulatory_score, tier=1)
+    elif regulatory_note and regulatory_note.upper() not in {"UNVERIFIED", "UNKNOWN", "N/A"}:
+        observed("regulatory", "Saved regulatory review note",
+                 "Saved narrative only; no validated numerical regulatory ranking", tier=1)
+    return facts
+
+
 def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
@@ -248,6 +385,8 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "poa_display": _pct(event.get("approval_probability"), probability=True),
         "short_display": _pct(event.get("short_interest")),
         "entry": entry, "exit_risk": risk, "quality": score.get("quality"),
+        "criteria_facts": _criterion_facts(record, event, master, profile, funding,
+                                          pvalues, ticker, clinical_url),
         "entry_status": score.get("entry_status", "Unverified"),
         "exit_status": score.get("exit_status", "Unverified"),
         "entry_coverage": score.get("entry_coverage", 0), "exit_coverage": score.get("exit_coverage", 0),
