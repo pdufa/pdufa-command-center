@@ -180,7 +180,9 @@ jobs:
   gem_jr:
     name: 'GEM JR — Phase 3 results and qualification research'
     needs: pipeline
-    if: ${{ (inputs.scan == 'GEM_JR' || (inputs.scan == 'ALL' && needs.pipeline.result == 'success')) }}
+    # GEM_JR-only dispatch skips PIPELINE by design. always() prevents the
+    # implicit needs-success guard from skipping this independently requested job.
+    if: ${{ always() && (inputs.scan == 'GEM_JR' || (inputs.scan == 'ALL' && needs.pipeline.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 125
     env:
