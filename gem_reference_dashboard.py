@@ -1172,6 +1172,43 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     }
 
 
+def _gem_history_timeline(state):
+    """Exact Pipeline ID GEM membership periods; only scan-observed dates."""
+    slot = ((state.get("stages") or {}).get("GEM") or {})
+    results = []
+    for pid, item in (slot.get("entries") or {}).items():
+        if not isinstance(item, dict):
+            continue
+        ticker = str(item.get("ticker") or "").strip().upper()
+        if not ticker or not pid.startswith(("TRIAL|", "APPLICATION|")):
+            continue
+        for index, period in enumerate(item.get("periods") or []):
+            if not isinstance(period, dict):
+                continue
+            found = _section9_date(period.get("found"))
+            left = _section9_date(period.get("left"))
+            if found is None or (left is not None and left < found):
+                continue
+            results.append({
+                "id": pid, "ticker": ticker,
+                "drug": str(item.get("drug") or ""),
+                "nct": str(item.get("nct_id") or ""),
+                "found": found.isoformat(),
+                "left": left.isoformat() if left else "",
+                "movement": ("LEFT GEM" if left else
+                             "RE-ENTERED GEM" if index else "ACTIVE IN GEM"),
+                "reason": str(period.get("reason") or
+                              ("OPEN OBSERVED MEMBERSHIP" if not left else
+                               "EXIT REASON UNAVAILABLE")),
+                "current_stage": ("GEM" if item.get("status") == "ACTIVE"
+                                  else "PRIOR CANDIDATE"),
+                "duration_days": (left - found).days if left else None,
+            })
+    return sorted(results, key=lambda r: (
+        r["left"] or r["found"], r["ticker"], r["id"]
+    ), reverse=True)
+
+
 def build_dashboard(stage, root="data", *, as_of=None):
     if stage not in {"GEM JR", "GEM"}:
         raise ValueError("Unknown GEM stage")
@@ -1210,6 +1247,7 @@ def build_dashboard(stage, root="data", *, as_of=None):
                              source_current=current)
                   for r in _rankings(stage, active, root, today)]
     junior_timeline = _junior_section10_history(history) if stage == "GEM JR" else []
+    gem_timeline = _gem_history_timeline(history) if stage == "GEM" else []
     departed = departed_stage_rows(history, "GEM_JR" if stage == "GEM JR" else "GEM")
     histories = [{"date": r.get("Date Left") or "", "ticker": r.get("Ticker") or "",
                   "drug": r.get("Drug") or "", "reason": r.get("Leave Reason") or ""}
@@ -1223,6 +1261,8 @@ def build_dashboard(stage, root="data", *, as_of=None):
     return {
         "stage": stage, "junior": stage == "GEM JR", "candidates": candidates,
         "history": histories, "junior_timeline": junior_timeline,
+        "gem_timeline": gem_timeline,
+        "gem_history_snapshot": str((history.get("stages") or {}).get("GEM", {}).get("last_complete_snapshot") or ""),
         "history_snapshot": str((history.get("stages") or {}).get("GEM_JR", {}).get("last_complete_snapshot") or ""),
         "held_count": len(held), "source_current": bool(current),
         "alerts": [a for c in candidates for a in c["alerts"]][:12], "scans": scans,
