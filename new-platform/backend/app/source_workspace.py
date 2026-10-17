@@ -189,7 +189,7 @@ def make_candidate(source: dict, program_id: str, now: date,
             candidate.pop(key, None)
         if candidate.get("phase3Status") == "NOT VERIFIED":
             candidate.pop("phase3Status", None)
-        if candidate.get("checkStatus") == "NOT VERIFIED":
+        if candidate.get("checkStatus") in ("NOT VERIFIED", "SOURCE RECORDED"):
             candidate.pop("checkStatus", None)
         # Trial identity already appears as TRIAL|NCT######## in the exact ID;
         # front-end derives the NCT value when opening the trial detail.
@@ -205,8 +205,8 @@ def _fetch_safe(name: str) -> tuple[str, str, str]:
         return name, "", f"{name}: {type(exc).__name__}"
 
 
-def gather() -> dict:
-    now = datetime.now(ZoneInfo("America/Los_Angeles")).date()
+def gather(today: date | None = None) -> dict:
+    now = today or datetime.now(ZoneInfo("America/Los_Angeles")).date()
     sources: dict = {}
     problems: list[str] = []
     with ThreadPoolExecutor(max_workers=8) as executor:
@@ -263,17 +263,10 @@ def gather() -> dict:
                 "indication": source.get("indication", ""),
                 "capInRange": False,
             }
-        value.update(
-            stage=source["stage"],
-            nctId=source.get("nct_id", ""),
-            recordType=source.get("recordType", ""),
-            registeredPhase=source.get("registeredPhase", ""),
-            stageTags=source.get("stageTags", []),
-            evidenceStatus=source.get("evidenceStatus", ""),
-            pipelineSource=source.get("source_url", ""),
-            trialStatus=source.get("status", ""),
-            resultsPosted=source.get("results_posted", ""),
-        )
+        # Keep the bulk index below Vercel's response limit. The original
+        # records above retain the complete evidence; these unused duplicate
+        # fields and the NCT already encoded in an exact TRIAL ID added >2 MB.
+        value["stage"] = source["stage"]
         # Exact source identity and stage are preserved across all views.
         candidates.append(value)
     trial_count = sum(r["id"].startswith(("TRIAL|", "RESULT|")) for r in candidates)

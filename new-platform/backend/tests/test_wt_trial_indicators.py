@@ -1,5 +1,5 @@
 """Every exact WT trial obtains GEM indicator factors, no ticker-to-trial eligibility leak."""
-from datetime import date
+from datetime import date, timedelta
 from unittest.mock import patch
 
 from app import wt_research
@@ -101,7 +101,9 @@ def test_same_gem_indicator_model_retains_eligibility_gate(monkeypatch):
             "sma20": 11, "sma50": 10, "rsi": 57, "rvol": 1.8,
             "dollar_volume": 7_000_000, "support": 10,
             "macd": {"macd": 0.1, "signal": 0.05, "bullish": True},
-            "bars": [{"close": 10.5, "volume": 1_000_000}] * 59 + [{"close": 12, "volume": 1_000_000}],
+            "bars": [{"date": today - timedelta(days=59 - i),
+                      "close": 12 if i == 59 else 10.5, "volume": 1_000_000}
+                     for i in range(60)],
             "base": {
                 "status": "NOT CONFIRMED", "support": 10,
                 "resistance": 13, "touches": 1, "width_pct": 10,
