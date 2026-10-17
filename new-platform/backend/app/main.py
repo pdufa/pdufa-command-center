@@ -26,6 +26,9 @@ ENGINE = create_engine(
     pool_pre_ping=True,
     connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {},
 )
+# A quota-blocked persistent database must not crash the web process or
+# silently fall back to ephemeral storage / assign replacement program IDs.
+_DB_STATE = {"available": False, "reason": "STARTING"}
 ALLOWED_STAGES = {"PIPELINE", "GEM_JR", "GEM"}
 TICKER_PATTERN = re.compile(r"^[A-Z0-9][A-Z0-9.-]{0,14}$")
 
@@ -184,6 +187,12 @@ def require_storage() -> None:
             status_code=503,
             detail="Persistent PostgreSQL is not connected. Set DATABASE_URL in Render first.",
         )
+    if not _DB_STATE["available"]:
+        raise HTTPException(status_code=503, detail={
+            "error": "Persistent database temporarily unavailable; no data was reset",
+            "reason": _DB_STATE["reason"],
+            "action": "Restore database quota/access; program IDs and saved selections are preserved.",
+        })
 
 def require_writes_enabled() -> None:
     # Opt-in freeze for a database migration. GETs remain usable for validation.
@@ -202,8 +211,25 @@ async def lifespan(app: FastAPI):
         storage_ready() and DATABASE_URL.startswith("postgresql+psycopg://"),
     )
     if storage_ready():
-        Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
-    if os.getenv("PDUFA_MIGRATION_COPY_ON_BOOT", "") == "1":
+        try:
+            Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
+            _DB_STATE.update(available=True, reason="READY")
+        except Exception as exc:
+            # Neon's free-plan quota can return HTTP 402 while Postgres tables
+            # and identities remain intact. Keep the health endpoint available
+            # but fail CLOSED for all storage-dependent data and mutations.
+            _DB_STATE.update(
+                available=False,
+                reason=("DATABASE_QUOTA_EXCEEDED"
+                        if "quota" in str(exc).lower() else "DATABASE_UNREACHABLE"),
+            )
+            logging.getLogger(__name__).error(
+                "PDUFA_DB_STARTUP_UNAVAILABLE reason=%s error_type=%s; existing data left unchanged",
+                _DB_STATE["reason"], type(exc).__name__,
+            )
+    else:
+        _DB_STATE.update(available=False, reason="POSTGRES_NOT_CONFIGURED")
+    if os.getenv("PDUFA_MIGRATION_COPY_ON_BOOT", "") == "1" and _DB_STATE["available"]:
         try:
             from .migrate_snapshot import copy_with_checks
             copy_with_checks(
@@ -333,8 +359,9 @@ async def lifespan(app: FastAPI):
                 traceback_entry.tb_frame.f_code.co_name if traceback_entry else "UNKNOWN",
                 traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
-    threading.Thread(target=verify_published_sources, daemon=True).start()
-    if (storage_ready() and os.getenv("PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP") == "1"
+    if _DB_STATE["available"]:
+        threading.Thread(target=verify_published_sources, daemon=True).start()
+    if (_DB_STATE["available"] and os.getenv("PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP") == "1"
             and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in ("1", "true", "yes")):
         from .full_trial_archive import bootstrap
         threading.Thread(target=bootstrap, daemon=True).start()
@@ -349,9 +376,10 @@ def health():
     # An HTTP 200 permits configuration inspection without claiming DB readiness.
     from .full_trial_archive import archive_status
     return {
-        "status": "ok" if storage_ready() else "waiting_for_database",
+        "status": "ok" if _DB_STATE["available"] else "database_unavailable",
         "service": "pdufa-new-backend",
-        "storage_ready": storage_ready(),
+        "storage_ready": _DB_STATE["available"],
+        "storage_reason": _DB_STATE["reason"],
         "storage_kind": "postgresql" if DATABASE_URL.startswith("postgresql+psycopg://") else "sqlite",
         "production_scans_enabled": False,
         "full_trial_download": archive_status(),
