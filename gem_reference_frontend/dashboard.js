@@ -335,7 +335,7 @@ function juniorEntryCard(r){
   const summary='<div class="jr-readiness-tally"><strong>'+checks.length+' prioritized checks</strong>'+
     '<span>Observed '+observed+'</span><span>Review '+unverified+'</span><span>Warnings '+blocked+'</span></div>';
   return card("GEM JR — Research Entry Checklist","check",
-    summary+'<div class="jr-readiness-scroll scroll">'+table(["#","Requirement / evidence / next step","Assessment","Document"],rows,"jr-checks-table",[5,58,19,18])+'</div>'+
+    summary+'<div class="jr-readiness-scroll scroll">'+`<table class="data-table jr-checks-table"><colgroup><col style="width:5%"><col style="width:58%"><col style="width:19%"><col style="width:18%"></colgroup><thead><tr><th scope="col">#</th><th scope="col">Requirement / evidence / next step</th><th scope="col">Assessment</th><th scope="col">Document</th></tr></thead><tbody>${rows.join("")}</tbody></table>`+'</div>'+
     '<p class="jr-readiness-disclaimer">Research observations only — GEM JR never receives a qualified GEM entry score from this checklist. Primary-source clearance, the second distinct post-readout financing and a position-specific trade plan remain separate requirements. An unknown is not a pass.</p>',
     "jr-readiness",'<span class="score-badge unavailable">Entry score: N/A</span>');
 }
