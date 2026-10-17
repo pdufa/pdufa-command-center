@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from table_groups import begin_table_render, grouped_dataframe, grouped_editor, render_column_tabs, set_stage_sources, staged_table, stage_filter_panel
 from pdufa_table_headers import pdufa_dataframe, attach_survey, render_survey_box, column_help as pdufa_column_help
+from pipeline_help_grid import render_pipeline_grid
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
@@ -3683,10 +3684,12 @@ if page == "PDUFA":
                 )
                 if not applied:
                     st.metric("Trials / programs displayed", 0)
-                    pdufa_dataframe(
-                        finance_style(empty_chart), hide_index=True, use_container_width=True, height=220,
-                        survey_source=prepared,
-                    )
+                    render_pipeline_grid(empty_chart, height=305)
+                    with st.expander("NATIVE SPREADSHEET VIEW", expanded=False):
+                        pdufa_dataframe(
+                            finance_style(empty_chart), hide_index=True, use_container_width=True,
+                            height=220, survey_source=prepared,
+                        )
                     if not selected_stages or not selected_dates:
                         st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
                     else:
@@ -3708,43 +3711,51 @@ if page == "PDUFA":
                         sort_mode,
                     )
                     st.metric("Trials / programs displayed", len(shown))
-                    trial_selection = pdufa_dataframe(
-                        finance_style(shown), hide_index=True, use_container_width=True, height=540,
-                        key=f"pipeline_trial_results_v10_{hash(selection_signature)}",
-                        on_select="rerun", selection_mode="single-row",
-                        column_config={
-                            "Source": st.column_config.LinkColumn("Source"),
-                            "F": st.column_config.TextColumn("F", width="small"),
-                        },
+                    render_pipeline_grid(shown, height=565)
+                    st.download_button(
+                        "DOWNLOAD ALL DISPLAYED TRIALS (CSV)",
+                        data=shown.to_csv(index=False).encode("utf-8-sig"),
+                        file_name="pipeline_filtered_trials.csv", mime="text/csv",
+                        key="pipeline_download_filtered_trials_v11",
                     )
-                    # Click any record to inspect the exact trial/program instead
-                    # of guessing from the ticker (one company can have many trials).
-                    selected_rows = list(trial_selection.selection.rows)
-                    if selected_rows and 0 <= selected_rows[0] < len(shown):
-                        chosen_trial = shown.iloc[selected_rows[0]]
-                        with st.container(border=True):
-                            st.markdown("#### SELECTED TRIAL / PROGRAM")
-                            detail_cols = (
-                                "Ticker", "Company", "Drug", "Indication",
-                                "NCT ID", "Current Stage", "Record Type",
-                                "Registered Phase", "Trial Status", "Results Posted",
-                                "PDUFA Target", "Days to PDUFA", "Recorded Outcome",
-                                "Evidence Status", "Last Checked", "Evidence Note",
-                            )
-                            for detail in detail_cols:
-                                if detail in chosen_trial and pd.notna(chosen_trial[detail]):
-                                    value = str(chosen_trial[detail]).strip()
-                                    if value and value not in ("nan", "<NA>"):
-                                        st.write(f"**{detail}:** {value}")
-                            source_url = str(chosen_trial.get("Source", "")).strip()
-                            if source_url.startswith(("https://", "http://")):
-                                st.link_button("OPEN EXACT RECORD SOURCE", source_url)
-                            nct = str(chosen_trial.get("NCT ID", "")).strip().upper()
-                            if re.fullmatch(r"NCT\d{8}", nct):
-                                st.link_button(
-                                    "OPEN TRIAL ON CLINICALTRIALS.GOV",
-                                    f"https://clinicaltrials.gov/study/{nct}",
+                    # Keep the native spreadsheet as a secondary fallback while
+                    # the primary grid shows real CSS-circled explanation buttons.
+                    with st.expander("NATIVE SPREADSHEET / ROW SELECTION", expanded=False):
+                        trial_selection = pdufa_dataframe(
+                            finance_style(shown), hide_index=True, use_container_width=True, height=540,
+                            key=f"pipeline_trial_results_v10_{hash(selection_signature)}",
+                            on_select="rerun", selection_mode="single-row",
+                            column_config={
+                                "Source": st.column_config.LinkColumn("Source"),
+                                "F": st.column_config.TextColumn("F", width="small"),
+                            },
+                        )
+                        selected_rows = list(trial_selection.selection.rows)
+                        if selected_rows and 0 <= selected_rows[0] < len(shown):
+                            chosen_trial = shown.iloc[selected_rows[0]]
+                            with st.container(border=True):
+                                st.markdown("#### SELECTED TRIAL / PROGRAM")
+                                detail_cols = (
+                                    "Ticker", "Company", "Drug", "Indication",
+                                    "NCT ID", "Current Stage", "Record Type",
+                                    "Registered Phase", "Trial Status", "Results Posted",
+                                    "PDUFA Target", "Days to PDUFA", "Recorded Outcome",
+                                    "Evidence Status", "Last Checked", "Evidence Note",
                                 )
+                                for detail in detail_cols:
+                                    if detail in chosen_trial and pd.notna(chosen_trial[detail]):
+                                        value = str(chosen_trial[detail]).strip()
+                                        if value and value not in ("nan", "<NA>"):
+                                            st.write(f"**{detail}:** {value}")
+                                source_url = str(chosen_trial.get("Source", "")).strip()
+                                if source_url.startswith(("https://", "http://")):
+                                    st.link_button("OPEN EXACT RECORD SOURCE", source_url)
+                                nct = str(chosen_trial.get("NCT ID", "")).strip().upper()
+                                if re.fullmatch(r"NCT\d{8}", nct):
+                                    st.link_button(
+                                        "OPEN TRIAL ON CLINICALTRIALS.GOV",
+                                        f"https://clinicaltrials.gov/study/{nct}",
+                                    )
                     if shown.empty:
                         st.info("No matching programs for that STAGES + DATES selection.")
                     else:
