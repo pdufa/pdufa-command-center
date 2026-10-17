@@ -23,6 +23,11 @@ type Report = {
   } | null;
 };
 
+type ScanAction = "VERIFY_ALL" | "REVERIFY_PARTIAL" | "RESCAN_ALL";
+type ScanTarget = "ALL" | "PIPELINE" | "GEM_JR" | "GEM";
+type ActionRun = { id: number; status: string; conclusion: string | null; created_at: string; html_url: string };
+type ControlStatus = { dispatchEnabled: boolean; manual?: ActionRun[]; overnight?: ActionRun[]; error?: string };
+
 function value(v?: number | string) { return v === undefined || v === null ? "Not reported" : typeof v === "number" ? v.toLocaleString("en-US") : v; }
 function score(due?: number, verified?: number, na?: number) {
   if (!Number.isFinite(due) || !due || due <= 0 || !Number.isFinite(verified) || verified == null || verified < 0) return null;
@@ -43,12 +48,82 @@ export default function PublishedScansPanel() {
       .catch(e => { if (!ctrl.signal.aborted) { setError(String(e)); } });
     return () => ctrl.abort();
   }, [refresh]);
+  const [action, setAction] = useState<ScanAction>("REVERIFY_PARTIAL");
+  const [target, setTarget] = useState<ScanTarget>("ALL");
+  const [runs, setRuns] = useState<ControlStatus | null>(null);
+  const [runError, setRunError] = useState("");
+  const [scanMessage, setScanMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [scanRefresh, setScanRefresh] = useState(0);
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch("/api/scans/control", { cache: "no-store", signal: ctrl.signal })
+      .then(async response => {
+        const data: ControlStatus = await response.json();
+        if (!response.ok) throw new Error(data.error || "Scan status unavailable");
+        return data;
+      })
+      .then(data => { if (!ctrl.signal.aborted) { setRuns(data); setRunError(""); } })
+      .catch(() => { if (!ctrl.signal.aborted) { setRunError("Live GitHub run status unavailable"); } });
+    return () => ctrl.abort();
+  }, [scanRefresh]);
+
+  async function requestScan() {
+    setSending(true);
+    setScanMessage("");
+    try {
+      const response = await fetch("/api/scans/control", {
+        method: "POST", cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, scan: target }),
+      });
+      const data: { message?: string; error?: string } = await response.json();
+      setScanMessage(response.ok && data.message ? data.message :
+        data.error || "Scan request not confirmed");
+      setScanRefresh(x => x + 1);
+    } catch {
+      setScanMessage("Unable to confirm a new scan request. Check GitHub Actions before retrying.");
+    } finally {
+      setSending(false);
+    }
+  }
+
   const sources = record?.sources;
   return <section className="panel">
     <h2>SCANS — Published source scores and outstanding evidence</h2>
-    <p className="subtle">This staging platform reads original Streamlit scan reports independently of the database. It does not run scanners, generate substitute program IDs, or send orders. Scan buttons remain on the original Streamlit SCANS page.</p>
+    <p className="subtle">This staging platform reads original Streamlit scan reports independently of the database. It reads original scan reports and, when a server-only GitHub token is configured, can dispatch the existing scanners. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
     <p><a href={ORIGINAL} target="_blank" rel="noopener noreferrer">OPEN ORIGINAL SCANS — INDIVIDUAL AND SCAN ALL CONTROLS ↗</a></p>
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
+    <div className="source-health">
+      <strong>Run existing scanners from this dashboard</strong>
+      <p className="subtle">Manual commands use the original GitHub Actions workflows; the only automated schedule remains the original 10 PM Pacific chain. An accepted request is not a completed scan.</p>
+      <div style={{display:"flex", flexWrap:"wrap", alignItems:"end", gap:"0.6rem"}}>
+        <label>Action
+          <select value={action} onChange={e => setAction(e.target.value as ScanAction)}>
+            <option value="REVERIFY_PARTIAL">Reverify partial — incremental</option>
+            <option value="VERIFY_ALL">Verify saved evidence</option>
+            <option value="RESCAN_ALL">Rescan all — full collection</option>
+          </select>
+        </label>
+        <label>Stage
+          <select value={target} onChange={e => setTarget(e.target.value as ScanTarget)}>
+            <option value="ALL">ALL — sequential including GEM</option>
+            <option value="PIPELINE">PIPELINE only</option>
+            <option value="GEM_JR">GEM JR only</option>
+            <option value="GEM">GEM only</option>
+          </select>
+        </label>
+        <button type="button" onClick={requestScan} disabled={sending || !runs?.dispatchEnabled}>
+          {sending ? "REQUESTING…" : "START SELECTED SCAN"}
+        </button>
+        <button type="button" className="secondary" onClick={() => setScanRefresh(x => x + 1)}>REFRESH RUN STATUS</button>
+      </div>
+      {runs && !runs.dispatchEnabled && <p className="subtle">Manual controls require a server-only PDUFA_GITHUB_TOKEN with Actions write access in this staging dashboard. Existing nightly scans continue independently.</p>}
+      {runError && <p className="risk-line">{runError}</p>}
+      {scanMessage && <p role="status">{scanMessage}</p>}
+      {runs?.manual?.[0] && <p className="subtle">Last manual control: <a href={runs.manual[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.manual[0].id}</a> — {runs.manual[0].status} / {runs.manual[0].conclusion || "not concluded"}.</p>}
+      {runs?.overnight?.[0] && <p className="subtle">Last full overnight chain: <a href={runs.overnight[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.overnight[0].id}</a> — {runs.overnight[0].status} / {runs.overnight[0].conclusion || "not concluded"}.</p>}
+    </div>
     {error && <p className="risk-line">{error}</p>}
     {!record && !error && <p className="subtle">Loading original published scan reports…</p>}
     {record && <>
