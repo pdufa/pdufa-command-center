@@ -1,0 +1,62 @@
+name: PDUFA Gmail Section and All-Mail Audit
+run-name: 'Gmail read-only audit — ${{ inputs.section }}'
+
+# Manual-only. No scan scheduling or mail state changes. All reads use
+# hardened 100-header batch checking from scripts/adhoc_alert_check.py.
+on:
+  workflow_dispatch:
+    inputs:
+      section:
+        description: 'Audit one Gmail PDUFA folder or ALL relevant folders (complete saved history)'
+        required: true
+        type: choice
+        default: ALL
+        options:
+          - ALL
+          - INBOX
+          - SENT_MAIL
+          - PDUFA
+          - SCAN_START
+          - SCAN_END
+          - SCAN_ERROR
+          - DAILY_REPORT
+          - WEEKLY_REPORT
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-readonly-gmail-section-audit
+  cancel-in-progress: false
+
+jobs:
+  gmail-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      SECTION: ${{ inputs.section }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm Gmail IMAP credential names are configured
+        run: |
+          test -n "$PDUFA_GMAIL_USER" && test -n "$PDUFA_GMAIL_APP_PASSWORD" || {
+            echo "::error::Gmail IMAP secrets missing; no mailbox audit performed"
+            exit 1
+          }
+      - name: Read all selected Gmail headers in 100-message batches
+        run: python -m scripts.gmail_section_check --section "$SECTION"
+      - name: Archive aggregate read-only audit status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-gmail-audit-${{ inputs.section }}-${{ github.run_id }}
+          path: reports/gmail_section_audit.json
+          retention-days: 30
+          if-no-files-found: warn
