@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
-from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks
+from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks, _gem_section9_entry_checks, _junior_section9_exit_checks
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -231,6 +231,113 @@ class GemVisualPageTests(unittest.TestCase):
         self.assertIsNone(checks[1]["status"])  # Missing Phase 3 verification
         self.assertIsNone(checks[5]["status"])  # Missing cash assessment
         self.assertIsNone(checks[9]["status"])  # No FDA date verification
+
+    def test_section9_gem_entry_gates_do_not_equate_saved_benchmarks_with_trade_clearance(self):
+        record = {
+            "Ticker": "TEST", "NCT ID": "NCT00000001",
+            "Phase 3 status": "PRIMARY_MET_VERIFIED",
+            "Phase 3 date": "2026-04-01",
+            "Phase 3 source": "https://clinicaltrials.gov/study/NCT00000001",
+            "First close": "2026-05-01",
+            "Second close": "2026-06-01",
+            "First SEC source": "https://www.sec.gov/first",
+            "Second SEC source": "https://www.sec.gov/second",
+            "Source review as of": "2026-10-15",
+            "PDUFA verified": True,
+            "PDUFA saved": "2027-03-20",
+        }
+        event = {"market_cap": "550000000"}
+        profile = {
+            "fresh": True, "date": date(2026, 10, 16),
+            "close": 15.0, "sma20": 13.0, "sma50": 12.0,
+            "dollar_volume": 3000000,
+        }
+        runway = {"Cash runway (months)": 16,
+                  "Cash runway source": "https://www.sec.gov/cash"}
+        checks = _gem_section9_entry_checks(
+            record, event, profile, runway,
+            date(2026, 10, 17), source_current=True
+        )
+        self.assertEqual(len(checks), 10)
+        self.assertEqual([c["priority"] for c in checks], list(range(1, 11)))
+        self.assertTrue(all(c["status"] is True for c in checks[:6]))
+        self.assertIsNone(checks[6]["status"])  # in range != current verified
+        self.assertIsNone(checks[7]["status"])  # no negative flag != safe
+        self.assertIsNone(checks[8]["status"])  # trend != buy approval
+        self.assertIsNone(checks[9]["status"])  # position plan still required
+        self.assertTrue(all(c["points"] == "—" for c in checks))
+
+        stale = _gem_section9_entry_checks(
+            record, event, profile, runway,
+            date(2026, 10, 17), source_current=False
+        )
+        self.assertIs(stale[0]["status"], True)  # saved clinical source remains
+        self.assertIs(stale[3]["status"], False)  # stale SEC source blocks entry
+        old = dict(record, **{"Source review as of": "2026-09-01"})
+        stale = _gem_section9_entry_checks(
+            old, event, profile, runway,
+            date(2026, 10, 17), source_current=True
+        )
+        self.assertIs(stale[3]["status"], False)
+
+    def test_section9_gem_missing_second_financing_never_passes(self):
+        record = {
+            "Ticker": "TEST", "NCT ID": "NCT00000001",
+            "Phase 3 status": "PRIMARY_MET_VERIFIED",
+            "Phase 3 date": "2026-04-01",
+            "Phase 3 source": "https://clinicaltrials.gov/study/NCT00000001",
+            "First close": "2026-05-01",
+            "Second close": "2026-03-01",  # before Phase 3, disallowed
+            "First SEC source": "https://www.sec.gov/first",
+            "Second SEC source": "https://www.sec.gov/second",
+            "PDUFA saved": "2026-10-19",  # two days: no new entry
+        }
+        checks = _gem_section9_entry_checks(
+            record, {}, {"fresh": False}, {},
+            date(2026, 10, 17), source_current=None
+        )
+        self.assertIs(checks[0]["status"], True)
+        self.assertIsNone(checks[1]["status"])
+        self.assertIsNone(checks[2]["status"])
+        self.assertIs(checks[3]["status"], False)
+        self.assertIs(checks[4]["status"], False)
+        self.assertIsNone(checks[5]["status"])
+
+    def test_section9_junior_exit_flags_specific_adverse_evidence_only(self):
+        record = {
+            "Ticker": "TEST", "NCT ID": "NCT00000001",
+            "Phase 3 status": "PRIMARY_FAILED_VERIFIED",
+            "PDUFA date (saved)": "2026-10-19",
+            "Source review date": "2026-10-01",
+        }
+        event = {
+            "outcome": "CRL", "new_dilution_flag": "YES",
+            "conflict_flag": "ACTIVE",
+            "pdufa_evidence_url": "https://www.fda.gov/result",
+        }
+        profile = {
+            "fresh": True, "date": date(2026, 10, 16),
+            "close": 6.0, "sma50": 8.0,
+            "base": {"support": 7.0},
+        }
+        runway = {
+            "Cash runway (months)": 3.5,
+            "Cash runway source": "https://www.sec.gov/cash",
+        }
+        checks = _junior_section9_exit_checks(
+            record, event, profile, runway, date(2026, 10, 17)
+        )
+        self.assertEqual(len(checks), 9)
+        self.assertEqual([c["priority"] for c in checks], list(range(1, 10)))
+        self.assertTrue(all(c["status"] is False for c in checks[:8]))
+        self.assertIsNone(checks[8]["status"])
+        self.assertEqual(checks[0]["url"], "https://www.fda.gov/result")
+        no_data = _junior_section9_exit_checks(
+            {"Ticker": "TEST"}, {}, {"fresh": False, "base": {}}, {},
+            date(2026, 10, 17)
+        )
+        self.assertTrue(all(c["status"] is None for c in no_data))
+        self.assertTrue(all(c["points"] == "—" for c in no_data))
 
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
