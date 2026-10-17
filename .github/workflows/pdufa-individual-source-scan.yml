@@ -1,0 +1,135 @@
+name: PDUFA Individual Source Scan
+run-name: "${{ inputs.source }} — individual PDUFA source scan"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Run only the chosen primary-source verification"
+        required: true
+        type: choice
+        options: [FDA, SEC, FINANCIAL, MARKET, ISSUER]
+      scan_mode:
+        description: "Recheck changes or rescan the full source scope"
+        type: choice
+        default: DELTA
+        options: [DELTA, FULL]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-individual-source-${{ inputs.source }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    name: "Verify ${{ inputs.source }} source evidence only"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+      PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+      PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+      SOURCE: ${{ inputs.source }}
+      SCAN_MODE: ${{ inputs.scan_mode }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install source dependencies
+        run: python -m pip install pandas 'pypdf>=5,<7'
+      - name: Verify notification secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          for key in PDUFA_GMAIL_USER PDUFA_GMAIL_APP_PASSWORD PDUFA_ALERT_EMAIL; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing email setting; no unnotified collection permitted."
+              exit 1
+            fi
+          done
+      - name: Send START, scan chosen source, send END
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports/missing_sources reports/scan_notifications
+          lower="$(printf '%s' "$SOURCE" | tr '[:upper:]' '[:lower:]')"
+          python scripts/run_scan_with_email.py \
+            --scan "$SOURCE" --mode "$SCAN_MODE" \
+            --status-file "reports/missing_sources/${lower}_scan_report.json" \
+            --audit-dir reports/scan_notifications \
+            --timeout-seconds 7000 -- \
+            python scripts/nightly_missing_sources.py \
+              --source "$SOURCE" --mode "$SCAN_MODE" \
+              --report "reports/missing_sources/${lower}_scan_report.json"
+      - name: Preserve exact individual source result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: individual-source-${{ inputs.source }}-${{ github.run_id }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            reports/missing_sources/
+            reports/scan_notifications/
+      - name: Publish standalone result without modifying full five-source audit
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          source = os.environ["SOURCE"]
+          p = Path("reports/missing_sources") / (source.lower() + "_scan_report.json")
+          if not p.exists():
+              raise SystemExit("No source-specific report was produced; do not publish success.")
+          report = json.loads(p.read_text(encoding="utf-8"))
+          if report.get("source") != source:
+              raise SystemExit("Mismatched source report")
+          snapshot = {
+              "schema_version": 1,
+              "source": source,
+              "mode": os.environ["SCAN_MODE"],
+              "run_id": int(os.environ["RUN_ID"]),
+              "run_url": os.environ["RUN_URL"],
+              "published_at_utc": datetime.now(timezone.utc).isoformat(),
+              "status": report.get("status", "UNVERIFIED"),
+              "execution_status": report.get("execution_status", "UNKNOWN"),
+              "findings_due": report.get("findings_due"),
+              "findings_verified": report.get("findings_verified"),
+              "findings_not_applicable": report.get("findings_not_applicable"),
+              "required_findings_unresolved": report.get("required_findings_unresolved"),
+              "optional_findings_unavailable": report.get("optional_findings_unavailable"),
+              "errors_count": report.get("errors_count"),
+              "missing_required_source_families": report.get("missing_required_source_families", []),
+              "note": "Standalone source recheck only; not a reconciliation of all five source families."
+          }
+          output = Path("data/individual_source_scans") / (source.lower() + ".json")
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(snapshot, indent=2) + "\n", encoding="utf-8")
+          PY
+          mkdir -p /tmp/individual-snapshot
+          cp "data/individual_source_scans/$(printf '%s' "$SOURCE" | tr '[:upper:]' '[:lower:]').json" /tmp/individual-snapshot/current.json
+          git fetch origin main
+          git checkout -B publish-individual-source origin/main
+          mkdir -p data/individual_source_scans
+          cp /tmp/individual-snapshot/current.json "data/individual_source_scans/$(printf '%s' "$SOURCE" | tr '[:upper:]' '[:lower:]').json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/individual_source_scans
+          git diff --cached --quiet && exit 0
+          git commit -m "Publish standalone $SOURCE source scan audit"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main || exit 1
+          done
+          exit 1
