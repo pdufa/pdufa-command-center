@@ -198,6 +198,18 @@ async def lifespan(app: FastAPI):
     import threading
     def verify_published_sources():
         try:
+            from .alpaca_market_chart import _credentials, _feed, get_alpaca_bars
+            alpaca_configured = bool(_credentials())
+            logging.getLogger(__name__).warning(
+                "PDUFA_ALPACA_CHART_CONFIG status=%s feed=%s provider=ALPACA orders_enabled=False",
+                "CONFIGURED" if alpaca_configured else "MISSING_CREDENTIALS", _feed().upper(),
+            )
+            if alpaca_configured:
+                probe = get_alpaca_bars("SPY", "1M")
+                logging.getLogger(__name__).warning(
+                    "PDUFA_ALPACA_CHART_CHECK status=%s feed=%s daily_bars=%d",
+                    probe["status"], probe["feed"], len(probe.get("bars") or []),
+                )
             from .source_workspace import workspace
             from .program_registry import number_workspace
             published = number_workspace(workspace())
