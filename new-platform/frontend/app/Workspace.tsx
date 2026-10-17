@@ -42,7 +42,7 @@ type Snapshot = {
   mode: string; asOf: string; disclaimer: string;
   marketCapRange: { min: number; max: number };
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
-  sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
+  sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; streamlitPipelineParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
 type Nav = "PIPELINE" | "GEMS" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
@@ -303,7 +303,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [query, setQuery] = useState("");
-  const [onlyBand, setOnlyBand] = useState(true);
+  const [onlyBand, setOnlyBand] = useState(false);
   const [applied, setApplied] = useState(false);
   const [sort, setSort] = useState("PDUFA");
   const [pipelinePage, setPipelinePage] = useState(0);
@@ -543,7 +543,15 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
         <p className="subtle">Streamlit-compatible workflow: choose both STAGES and DATES, then select SHOW MATCHING TRIALS.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
-        <span className="counter">{possible.length} recorded programs in current screening scope</span></div>
+        <span className="counter">{possible.length.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
+      <p className="subtle pipeline-reconciliation">
+        <strong>Streamlit-equivalent Pipeline source total:</strong> {(snapshot.sourceHealth?.streamlitPipelineParity?.exactPrograms??pipeline.length).toLocaleString("en-US")}
+        {" · Registered trials and results: "+(snapshot.sourceHealth?.streamlitPipelineParity?.clinicalAndResults??snapshot.sourceHealth?.clinicalRows??0).toLocaleString("en-US")}
+        {" · Regulatory records: "+(snapshot.sourceHealth?.streamlitPipelineParity?.regulatoryPrograms??snapshot.sourceHealth?.regulatoryRows??0).toLocaleString("en-US")}
+        {onlyBand?" · Optional $300M–$10B screen enabled":" · Full universe (no cap restriction)"}
+        {query?" · Text search active":""}
+        {" · As of "+snapshot.asOf}
+      </p>
       <div className="panel pipeline-filters">
         <h3>PIPELINE FILTERS</h3>
         <div className="filter-columns">
@@ -552,9 +560,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </div>
         <div className="pipeline-row"><label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>{setQuery(e.target.value);setApplied(false)}} placeholder="Optional search" /></label>
           <label>Order<select value={sort} onChange={e=>{setSort(e.target.value);setApplied(false)}}><option value="PDUFA">Closest PDUFA first</option><option value="TICKER">Ticker A–Z</option></select></label>
-          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>{setOnlyBand(e.target.checked);setApplied(false)}} />Market cap $300M–$10B only</label></div>
+          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>{setOnlyBand(e.target.checked);setApplied(false)}} />Market cap $300M–$10B only (optional screening; OFF for Streamlit total)</label></div>
         <div className="pipeline-actions"><button type="button" disabled={!stageFilters.length||!dateFilters.length} onClick={()=>{setPipelinePage(0);setApplied(true);}}>SHOW MATCHING TRIALS</button>
-          <button type="button" className="secondary" onClick={()=>{setApplied(false);setPipelinePage(0);setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(true)}}>CLEAR STAGE / DATE</button></div>
+          <button type="button" className="secondary" onClick={()=>{setApplied(false);setPipelinePage(0);setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(false)}}>CLEAR STAGE / DATE</button></div>
       </div>
       <div className="count-panels">
         {([[ "STAGE COUNTS",stageCounts ],["DATE TRIAL COUNTS",dateCounts ]] as const).map(([title,group])=>
