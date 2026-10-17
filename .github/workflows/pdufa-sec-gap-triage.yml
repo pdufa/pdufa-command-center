@@ -37,9 +37,10 @@ jobs:
       - name: Test that discovery never grants GEM trading eligibility
         run: |
           python -m unittest discover -s tests -p 'test_sec_financing_gap_triage.py' -v
-      - name: Produce latest exact-issuer SEC discovery queries and document leads
+      - name: Visit official issuer IR websites and produce source-specific research leads
         run: |
           python -m scripts.sec_financing_gap_triage \
+            --live-ir \
             --output-csv reports/sec_financing_gap_triage.csv \
             --output-json reports/sec_financing_gap_triage.json
       - name: Write evidence-research summary, not a verification status
@@ -53,6 +54,9 @@ jobs:
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
               out.write("## Still-unresolved SEC and financial research\n\n")
               out.write("Research-only leads: " + str(x["findings_scoped"]) + "\n\n")
+              out.write("Official IR sites configured: " + str(x["official_ir_hosts_configured"]) + "\n\n")
+              out.write("Official IR pages fetched: " + str(x["official_ir_live_fetched"]) + "\n\n")
+              out.write("IR pages blocked/unavailable: " + str(x["official_ir_live_blocked"]) + "\n\n")
               for reason,n in sorted(x["by_class"].items()):
                   out.write("- " + reason + ": " + str(n) + "\n")
               out.write("\nNo source claims automatically verified or trade entry authorized.\n")
