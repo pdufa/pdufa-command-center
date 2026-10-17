@@ -908,8 +908,39 @@ def documented_drawn_credit_tranche(text, closing_date):
             if re.search(r"(?i)\b(?:would|will|might|may|expected|potential|anticipated)\b", before):
                 continue
             return passage[:draw.end()]
+    # Some same-issuer 8-Ks describe an actual loan-tranche borrowing
+    # on a named Amendment Closing Date rather than using "drawn".
+    # Keep a strict local clause; an expanded facility is not funded cash.
+    amended = re.compile(
+        r"(?i)\\bOn\\s+(20\\d{2}-\\d{2}-\\d{2}|"
+        r"January|February|March|April|May|June|July|August|"
+        r"September|October|November|December)\\b"
+    )
+    for match in re.finditer(
+        r"(?i)\\bOn\\s+(?:20\\d{2}-\\d{2}-\\d{2}|"
+        r"(?:January|February|March|April|May|June|July|August|"
+        r"September|October|November|December)\\s+\\d{1,2},?\\s+20\\d{2})"
+        r"\\s*\\(the\\s+[\\"“]?Amendment Closing Date[\\"”]?\\)", text
+    ):
+        segment = text[match.start():match.end() + 950]
+        if closing_date not in dates(segment[:match.end()-match.start()]):
+            continue
+        if not re.search(r"(?i)Loan and Security Agreement|credit agreement", segment):
+            continue
+        funded = re.search(
+            r"(?i)\\bCompany\\s+borrowed\\s+one\\s+of\\s+the\\s+"
+            r"additional\\s+loan\\s+tranches\\s+in\\s+an\\s+"
+            r"aggregate\\s+principal\\s+amount\\s+of\\s+"
+            r"\\$\\s*[\\d,.]+\\s+(?:million|billion)\\s+"
+            r"on\\s+the\\s+Amendment Closing Date\\b", segment
+        )
+        if not funded:
+            continue
+        if re.search(r"(?i)\\b(?:would|will|might|may|expected|potential|"
+                     r"anticipated)\\b", segment[max(0,funded.start()-35):funded.start()]):
+            continue
+        return segment[:funded.end()]
     return ""
-
 
 
 # SEC may temporarily throttle or drop connections even after an HTTP retry.
