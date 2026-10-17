@@ -1,11 +1,12 @@
 """Reference-image GEM page contract: source data, ranked controls and disclosures."""
 import unittest
 import tempfile
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
+from gem_stage_dossier import scan_diagnostics
 from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks, _gem_section9_entry_checks, _junior_section9_exit_checks, _junior_section10_history, _gem_section10_exit_checks, _gem_history_timeline
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -538,6 +539,134 @@ class GemVisualPageTests(unittest.TestCase):
             "PDUFA_EXPIRED"
         )
         self.assertEqual(_gem_history_timeline({"stages": {}}), [])
+
+    def test_section12_reports_partial_source_coverage_and_scoped_collector_completion(self):
+        import json
+        now = datetime(2026, 10, 17, 12, 0, tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as root:
+            target = Path(root)
+            (target / "nightly_scan_report.json").write_text(json.dumps({
+                "status": "PARTIAL",
+                "updated_at_utc": "2026-10-17T09:00:00+00:00",
+                "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/123",
+                "latest_run_conclusion": None,
+                "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
+                "verification": {"all_source_coverage": "NOT_VERIFIED",
+                                 "artifact_integrity": "PASS"},
+                "missing_required_source_families": ["SEC verification", "FDA dates"],
+                "scans": [{
+                    "scan": "2", "label": "PIPELINE trial inventory",
+                    "collector_status": "COMPLETE", "status": "PARTIAL",
+                    "errors_count": 0, "issues": [],
+                    "collected_at_utc": "2026-10-17T09:01:00+00:00",
+                    "metrics": {"companies_checked": 717},
+                }],
+            }), encoding="utf-8")
+            (target / "overnight_scan_status.json").write_text(json.dumps({
+                "status": "PARTIAL", "complete": False,
+                "finished_at": "2026-10-11T14:00:00+00:00",
+                "missing_required_source_families": ["SEC financing"],
+                "source_checks": {
+                    "clinical_pipeline": {
+                        "status": "COMPLETE",
+                        "finished_at": "2026-10-11T14:00:00+00:00",
+                        "source_scope": "Company registry recheck",
+                        "errors": [], "exit_code": 0,
+                    },
+                },
+            }), encoding="utf-8")
+            (target / "gem_scan_block_report.json").write_text(json.dumps({
+                "status": "PARTIAL",
+                "generated_at_utc": "2026-10-17T09:20:00+00:00",
+                "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/123",
+                "source_verification": "NOT VERIFIED — NOT TRADE READY",
+                "blocking_or_review_flags": ["SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE"],
+                "acceptance_checks": {
+                    "phase3_collector_current": True,
+                    "sec_financing_source_current": False,
+                },
+                "sec_source_health": {
+                    "status": "PARTIAL_STALE_OR_BLOCKED",
+                    "blocked_records": 38, "last_check_age_days": 12,
+                },
+                "cash_runway": {"missing_or_stale": 346, "source_backed_pass": 10},
+            }), encoding="utf-8")
+            rows = scan_diagnostics(root, now=now)
+            self.assertEqual(len(rows), 3)
+            night, clinical, gem = rows
+            self.assertEqual(night["status"], "PARTIAL")
+            self.assertEqual(night["freshness"], "CURRENT")
+            self.assertEqual(night["coverage"], "NOT_VERIFIED")
+            self.assertEqual(night["type"], "review")
+            self.assertEqual(night["run_url"],
+                             "https://github.com/pdufa/pdufa-command-center/actions/runs/123")
+            self.assertEqual(night["details"][0]["status"], "COMPLETE")
+            self.assertEqual(night["details"][0]["type"], "review")
+            self.assertIn("SEC verification", night["issues"])
+            self.assertTrue(any("conclusion" in x for x in night["issues"]))
+            self.assertEqual(clinical["freshness"], "STALE")
+            self.assertEqual(clinical["type"], "hold")
+            self.assertEqual(clinical["details"][0]["type"], "review")
+            self.assertEqual(gem["coverage"], "NOT VERIFIED — NOT TRADE READY")
+            self.assertEqual(gem["type"], "review")
+            self.assertTrue(any("sec financing source current" in x
+                                for x in gem["issues"]))
+            self.assertTrue(any("SEC financing source" == x["label"] and
+                                x["type"] == "hold" for x in gem["details"]))
+            self.assertEqual(gem["run_url"],
+                             "https://github.com/pdufa/pdufa-command-center/actions/runs/123")
+
+    def test_section12_missing_or_corrupt_reports_are_not_successful(self):
+        import json
+        now = datetime(2026, 10, 17, 12, 0, tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as root:
+            reports = scan_diagnostics(root, now=now)
+            self.assertEqual(len(reports), 3)
+            for r in reports:
+                self.assertEqual(r["status"], "UNAVAILABLE")
+                self.assertEqual(r["type"], "unknown")
+                self.assertEqual(r["freshness"], "UNKNOWN")
+                self.assertTrue(r["issues"])
+                self.assertEqual(r["run_url"], "")
+            (Path(root) / "nightly_scan_report.json").write_text("{broken", encoding="utf-8")
+            updated = scan_diagnostics(root, now=now)
+            self.assertEqual(updated[0]["status"], "UNAVAILABLE")
+            self.assertIn("invalid", updated[0]["issues"][0])
+
+            # A collector-complete snapshot with unverified broader sources
+            # must never be displayed as a fully verified scan.
+            (Path(root) / "nightly_scan_report.json").write_text(json.dumps({
+                "status": "COMPLETE",
+                "updated_at_utc": "2026-10-17T11:00:00+00:00",
+                "latest_run_url": "https://evil.example.com/actions/runs/123",
+                "latest_run_conclusion": "success",
+                "verification": {"all_source_coverage": "NOT_VERIFIED",
+                                 "artifact_integrity": "PASS"},
+                "scans": [],
+            }), encoding="utf-8")
+            updated = scan_diagnostics(root, now=now)
+            self.assertEqual(updated[0]["status"], "COMPLETE")
+            self.assertEqual(updated[0]["type"], "review")
+            self.assertEqual(updated[0]["run_url"], "")
+
+    def test_section12_source_error_cannot_look_like_a_clean_collector(self):
+        import json
+        now = datetime(2026, 10, 17, 12, 0, tzinfo=timezone.utc)
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / "nightly_scan_report.json").write_text(json.dumps({
+                "status": "PARTIAL",
+                "updated_at_utc": "2026-10-17T10:00:00+00:00",
+                "verification": {"all_source_coverage": "NOT_VERIFIED"},
+                "scans": [{
+                    "scan": "4", "label": "Phase 3",
+                    "collector_status": "COMPLETE", "status": "PARTIAL",
+                    "errors_count": 1, "issues": ["source timeout"],
+                }],
+            }), encoding="utf-8")
+            r = scan_diagnostics(root, now=now)[0]
+            self.assertEqual(r["details"][0]["status"], "REVIEW — RECORDED ERRORS")
+            self.assertEqual(r["details"][0]["type"], "review")
+            self.assertIn("source timeout", r["details"][0]["errors"])
 
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
