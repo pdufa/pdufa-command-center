@@ -70,7 +70,8 @@ def phase_label(value: str) -> str:
 
 
 def _trial_raw(source: dict) -> dict:
-    row = {key: clean(source.get(key)) for key in _COLUMNS if key in source}
+    row = {key: "" for key in _COLUMNS}
+    row.update({key: clean(source.get(key)) for key in _COLUMNS if key in source})
     row["record_id"] = "TRIAL|" + clean(source.get("nct_id")).upper()
     row["record_type"] = "Registered trial"
     row["nct_id"] = clean(source.get("nct_id")).upper()
