@@ -2860,11 +2860,46 @@ def table_view(frame, return_page="PDUFA"):
 
 @st.cache_data(ttl=180, show_spinner=False)
 def _step7_snapshot(signature):
-    """Display GitHub-built, source-dated and validated scores without rescanning 3,105 trials."""
-    saved = load_current_snapshot(Path("data"), datetime.now(timezone.utc))
-    if saved is None:
-        raise ValueError("Step 7 saved feed is missing, inconsistent or past its Pacific-day cutoff")
-    return saved
+    """Prefer strict published cache; recover only from locally saved, source-dated evidence.
+
+    The source rebuild is a display materialization, not a live source scan.
+    Revalidate it with exactly the same fail-closed reader as the publisher.
+    Streamlit's TTL and the source-file signature bound fallback recomputation.
+    """
+    now = datetime.now(timezone.utc)
+    data_root = Path("data")
+    saved = load_current_snapshot(data_root, now)
+    if saved is not None:
+        return saved
+
+    # A deployment may briefly serve an old/missing display cache even when
+    # all original saved evidence is present. Rebuild a *temporary* view, never
+    # change original trial, clinical, SEC or financing source records.
+    if not (data_root / "phase_pipeline.csv").is_file():
+        raise ValueError("Source trial universe absent; clinical display remains blocked")
+    from tempfile import TemporaryDirectory
+    from step7_live import build_snapshot, write_csv
+
+    trials, financing, manifest = build_snapshot(data_root, now)
+    if (not trials or not isinstance(manifest.get("source_checks"), list)
+            or len(trials) != manifest.get("trial_rows")
+            or len(financing) != manifest.get("financing_events")):
+        raise ValueError("Local display reconstruction did not pass source and count checks")
+
+    with TemporaryDirectory(prefix="pdufa-clinical-display-") as temp:
+        staged = Path(temp)
+        write_csv(staged / "step7_pre_phase3_feed.csv", trials)
+        write_csv(staged / "step7_financing_review.csv", financing)
+        (staged / "step7_live_status.json").write_text(
+            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+        )
+        validated = load_current_snapshot(staged, now)
+    if validated is None:
+        raise ValueError("Locally reconstructed clinical feed failed strict validation")
+
+    valid_trials, valid_financing, valid_manifest = validated
+    valid_manifest["display_cache_rebuilt_locally"] = True
+    return valid_trials, valid_financing, valid_manifest
 
 
 def render_pre_phase3():
@@ -2939,6 +2974,15 @@ def render_pre_phase3():
         except (OSError, ValueError, TypeError, KeyError):
             st.caption("PIPELINE cache metadata could not be read safely; source checks remain blocked.")
         return
+
+    if manifest.get("display_cache_rebuilt_locally"):
+        st.warning(
+            "DISPLAY CACHE RECOVERED FROM SAVED SOURCES. The original published "
+            "cache was missing, outdated, or inconsistent. This read-only view "
+            "was strictly revalidated from locally saved clinical and financing "
+            "records, not newly collected evidence. Review the source-health "
+            "table: stale, partial, and blocked data remain unverified."
+        )
 
     readiness = check_pre_phase3_readiness(
         manifest, trials,
