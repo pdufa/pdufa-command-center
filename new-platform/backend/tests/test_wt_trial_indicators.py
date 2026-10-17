@@ -44,6 +44,7 @@ def _ctx():
 def test_wt_pipeline_trials_keep_trial_specific_benchmarks(monkeypatch):
     monkeypatch.setattr(wt_research, "workspace", _source_snapshot)
     monkeypatch.setattr(wt_research, "_context", _ctx)
+    monkeypatch.setattr(wt_research, "_market_for_ticker", lambda ticker, market, today: market)
     calls = []
 
     def analyze(row, event, financing, recheck, market, runway, status, today):
@@ -122,3 +123,39 @@ def test_same_gem_indicator_model_retains_eligibility_gate(monkeypatch):
     assert result["indicatorEntryCoverage"] >= 50
     assert result["indicatorEntryFactors"]
     assert result["indicatorModel"] == "SAME_GEM_WEIGHTED_EOD_MODEL_RESEARCH_ONLY"
+
+
+def test_yahoo_bar_adapter_is_verified_and_reuses_gem_format():
+    from datetime import datetime, timedelta, timezone
+    base = datetime(2026, 5, 1, 14, 30, tzinfo=timezone.utc)
+    days = [base+timedelta(days=i) for i in range(100)]
+    payload = {"chart":{"result":[{
+        "meta":{"symbol":"AAA","currency":"USD","instrumentType":"EQUITY"},
+        "timestamp":[int(x.timestamp()) for x in days],
+        "indicators":{"quote":[{"close":[10+i*.05 for i in range(100)],
+                                 "volume":[1_000_000+i*1000 for i in range(100)]}]}
+    }]}}
+    result = wt_research._interpret_yahoo(
+        payload, "AAA","https://query1.finance.yahoo.com/v8/finance/chart/AAA",
+        date(2026,10,16)
+    )
+    assert result["market_status"] == "MARKET_UPDATED"
+    assert len(__import__("json").loads(result["price_bars_json"])) == 100
+    assert result["relative_volume"] > 0
+    assert result["last_close_usd"] == 14.95
+    payload["chart"]["result"][0]["meta"]["symbol"] = "BBB"
+    assert wt_research._interpret_yahoo(
+        payload,"AAA","https://query1.finance.yahoo.com/v8/finance/chart/AAA",
+        date(2026,10,16)) is None
+
+
+def test_on_demand_market_uses_exact_ticker_and_refuses_invalid(monkeypatch):
+    called=[]
+    monkeypatch.setattr(wt_research, "_download_eod", lambda ticker,today: (
+        called.append(ticker) or {"market_status":"MARKET_UPDATED",
+                                   "last_session":"2026-10-15",
+                                   "price_bars_json":"[]"}
+    ))
+    market = wt_research._market_for_ticker("AAA",{},date(2026,10,16))
+    assert called == ["AAA"]
+    assert "AAA" in market
