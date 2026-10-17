@@ -49,6 +49,7 @@ function priorityCriteria(){
     endpoint:["Primary endpoint and p-value","Trial-matched numerical endpoint result where source-linked"],
     clinical_quality:["Clinical science quality","Saved science score; research only, not a proven clinical ranking"],
     safety:["Safety signals and adverse risks","Documented safety conflicts and saved safety score where available"],
+    risk:["Overall clinical / financing risk factor","Current source-gated clinical and financing risk assessment"],
     finance1:["Financing #1 — SEC closing","First independent post-readout closing, or GEM JR research lead"],
     finance2:["Financing #2 — SEC closing","Second distinct post-readout close required for GEM, tracked in GEM JR"],
     dilution:["Share dilution and financing risk","Explicit saved dilution risk flags"],
@@ -78,11 +79,11 @@ function priorityCriteria(){
     poa:["Approval probability estimate","Saved uncalibrated probability; not a guarantee"],
     updates:["Documented catalyst / source updates","Dated source-linked observations, not an independent news scan"]
   };
-  const jr=["clinical","endpoint","safety","clinical_quality","finance1","finance2","dilution",
+  const jr=["clinical","endpoint","safety","risk","clinical_quality","finance1","finance2","dilution",
     "warrants","convertibles","runway","regulatory","cmc","pdufa","institutional","hedge",
     "insider_buy","insider_sell","cap","float","short","liquidity","volume","trend",
     "base","breakout","macd","rsi","relative_strength","poa","updates","reward","plan"];
-  const gem=["clinical","endpoint","clinical_quality","finance1","finance2","safety",
+  const gem=["clinical","endpoint","clinical_quality","finance1","finance2","safety","risk",
     "dilution","warrants","convertibles","runway","regulatory","cmc","pdufa","cap",
     "liquidity","float","short","institutional","hedge","insider_buy","insider_sell",
     "base","breakout","trend","volume","macd","rsi","relative_strength","reward",
@@ -179,7 +180,7 @@ function criterionEvidence(r,key){
   }
   const fact=r.criteria_facts?.[key];
   if(fact&&Number.isFinite(fact.tier)&&fact.tier>0){
-    return result(fact.tier,fact.metric,esc(fact.label||"Observed"),
+    return result(fact.tier,fact.metric,fact.label||"Observed",
       fact.detail||"Saved source observation; no independent certainty claim");
   }
   return missing("No unambiguous, program-specific recorded evidence for this criterion");
@@ -291,7 +292,7 @@ function criteriaCard(){
   const active=criterionName();
   return card("Ranked Criteria ("+data.stage+")","check",
     '<div class="criteria-intro"><strong>1 = highest importance.</strong> Click a criterion to reorder '+esc(data.stage)+' candidates by recorded evidence, without changing stage membership.</div>'+
-    '<ol class="criteria-list">'+list+'</ol>'+
+    '<ol class="criteria-list scroll" aria-label="Scroll through all criterion ranking controls">'+list+'</ol>'+
     '<div class="criteria-focus">'+(active?'Active: <strong>'+esc(active)+'</strong> · observed first, unknown last.':'Original source-qualified priority order')+'</div>'+
     '<div class="criteria-reset"><button data-action="criteria-reset" '+(active?'':'disabled')+'>↺ Restore original order</button></div>'+
     '<div class="criteria-foot">Current candidates: <strong>'+data.candidates.length+'</strong> · Held for review: <strong>'+data.held_count+'</strong><br>Sort priority is advisory. Source qualification, missing-data holds and trading restrictions never change.</div>',
