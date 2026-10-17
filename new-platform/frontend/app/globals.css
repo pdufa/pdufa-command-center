@@ -390,3 +390,57 @@ button.secondary { background: white; color: #172b1b; }
 .wt-streamlit-chart a{color:#1456aa;}
 .wt-streamlit-feed-note{padding:4px 8px;margin:0;font-size:10px;color:#566a61;}
 @media(max-width:650px){.wt-streamlit-advanced-widget{height:570px;min-height:570px;}.wt-streamlit-advanced-head{font-size:12px;}}
+
+/* Strictly Alpaca-supplied OHLCV stock charts; research tables stay separate. */
+.alpaca-stock-chart{min-width:0;overflow:hidden;border:2px solid #ad923d;border-radius:8px;background:#fff;margin:10px 0;color:#17344b}
+.alpaca-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#e9f5fb;border-bottom:1px solid #b4d2dd;padding:10px 12px}
+.alpaca-header>div:first-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.alpaca-header strong{font-size:13px;letter-spacing:.25px}
+.alpaca-header small{font-size:10px;color:#4b697a;overflow-wrap:anywhere}
+.alpaca-buttons{display:flex;gap:4px;flex-wrap:wrap}
+.alpaca-buttons button,.alpaca-range button{border:1px solid #90b3c9;border-radius:4px;color:#294b64;font-size:10px;background:white;padding:6px 10px;font-weight:700}
+.alpaca-buttons button:hover,.alpaca-range button:hover{border-color:#147e8a}
+.alpaca-range{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:8px 12px;background:#f9fcff;border-bottom:1px solid #d9e7ed}
+.alpaca-range button.active{background:#247baa;border-color:#247baa;color:white}
+.alpaca-range span{margin-left:auto;font-size:10px;color:#5d7081}
+.alpaca-plot-box{position:relative;width:100%;padding:4px 10px;box-sizing:border-box}
+.alpaca-plot{display:block;width:100%;height:auto;min-height:160px}
+.alpaca-plot-tooltip{position:absolute;right:15px;top:12px;pointer-events:none;font-size:10px;color:#153c51;background:#fffdf0;border:1px solid #a7b7ba;padding:7px;border-radius:4px;box-shadow:0 2px 7px #4b687733}
+.alpaca-values{display:flex;justify-content:flex-start;gap:5px;flex-wrap:wrap;padding:9px 12px;border-top:1px solid #dae6ed;background:#fcfeff}
+.alpaca-values span{font-size:10px;border:1px solid #d3e4ed;background:#edf6fb;border-radius:4px;padding:5px 7px;font-variant-numeric:tabular-nums}
+.alpaca-missing{padding:22px 14px;min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center;background:#fff9ed}
+.alpaca-missing strong{font-size:13px;color:#785421}
+.alpaca-missing p{font-size:11px;line-height:1.5;color:#675643;max-width:490px;margin:0}
+.alpaca-footer{border-top:1px solid #cadde8;padding:8px 12px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;color:#476478;background:#f3fafb;font-size:10px}
+.alpaca-footer strong{color:#2e655d}
+.indicator-tables-separate{border:2px solid #9f8024;background:#fff;border-radius:8px;overflow:hidden;margin:11px 0 16px;color:#27374a}
+.indicator-tables-separate>header{background:linear-gradient(90deg,#dfad35,#f9e29a);color:#222f39;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap;padding:11px}
+.indicator-tables-separate>header strong{font-size:12px}
+.indicator-tables-separate>p{font-size:11px;line-height:1.5;margin:9px 12px}
+.indicator-tables-separate table{border-collapse:collapse;font-size:11px;width:100%}
+.indicator-tables-separate th,.indicator-tables-separate td{padding:7px;border:1px solid #d7e1e9;vertical-align:top;text-align:left}
+.indicator-tables-separate th{background:#d6e8f8;color:#19374a;white-space:nowrap;font-size:10px}
+.indicator-tables-separate td.gold-goal{background:#ffe79b;color:#6c4d18;font-weight:700}
+.indicator-tables-separate .table-scroll{max-width:100%;overflow-x:auto}
+.indicator-target-matrix{min-width:790px}
+.entryexit-table-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:11px}
+.entryexit-table-grid>div{min-width:0;border:2px solid #9cacc6;border-radius:6px;overflow:hidden}
+.entryexit-table-grid>div:first-child{border-color:#008a56}
+.entryexit-table-grid>div:last-child{border-color:#bd6c59}
+.entryexit-table-grid h4{font-size:12px;background:#edf6f8;color:#21465b;padding:9px;margin:0}
+.entryexit-table-grid p{padding:7px;margin:0;font-size:11px;background:#fff9ed}
+.entryexit-table-grid strong{font-size:16px}
+.eight-indicators{margin:10px;border-top:2px solid #b1a05e;padding-top:8px}
+.eight-indicators h4{margin:0 0 8px;font-size:12px;color:#284c66}
+.indicator-modes{display:flex;gap:5px;margin:7px 0}
+.indicator-modes button{font-size:11px;padding:6px 10px;border:1px solid #8cacb5;background:#fff}
+.indicator-modes button[aria-pressed=true]{background:#1f75a8;color:white}
+.eight-indicators>p{font-size:10px;margin:7px 0;color:#617688}
+.gem-source-parity-table{min-width:1700px!important;font-size:11px;table-layout:auto}
+.gem-source-parity-table thead th{background:#edf7fc;color:#194661;padding:8px 7px}
+.gem-source-parity-table td{font-size:11px;padding:7px;vertical-align:middle}
+.gem-source-parity-table tr.selected-record{background:#fff3c5}
+.gem-source-parity-table .numeric{text-align:center;font-variant-numeric:tabular-nums}
+.gem-source-parity-table td:last-child{min-width:140px}
+.gem-source-parity-table td:last-child small{display:block;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:700px){.entryexit-table-grid{grid-template-columns:1fr}.alpaca-header{padding:9px}.alpaca-range span{width:100%;margin:0}.alpaca-plot{min-height:130px}}
