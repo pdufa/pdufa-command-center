@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import MasterChart from "./MasterChart";
 import GemParityChart from "./GemParityChart";
+import WTStreamlitChart from "./WTStreamlitChart";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -600,8 +601,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
             <div className="wt-research-column">
-              {ticker ? <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
-                : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
+              {ticker ? <>
+                <WTStreamlitChart ticker={ticker} />
+                <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
+              </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
             </div>
           </div>;
         })}
