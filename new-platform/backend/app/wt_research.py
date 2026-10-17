@@ -204,7 +204,7 @@ _SIGNAL_NAMES = (
 
 def _signals_for_ticker(ticker: str) -> dict:
     with _SIGNAL_LOCK:
-        if time.monotonic() - _SIGNAL_ROWS["at"] > 300:
+        if not _SIGNAL_ROWS["at"] or time.monotonic() - _SIGNAL_ROWS["at"] > 300:
             index = {}
             try:
                 raw = fetch("watchlist_indicator_signals.csv")
