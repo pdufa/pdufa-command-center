@@ -215,8 +215,17 @@ def gather() -> dict:
         sources[name] = contents
         if issue:
             problems.append(issue)
-    if not sources["gem_stage_membership.json"] or not sources["pdufa_candidates.csv"]:
-        raise RuntimeError("Required candidate or stage-membership source is unavailable")
+    required_pipeline_sources = (
+        "all_phase_trials.csv", "phase_pipeline.csv",
+        "phase3_announcements.csv", "pdufa_candidates.csv",
+        "fda_review_engine.csv", "prediction_engine_history.csv",
+    )
+    if (not sources["gem_stage_membership.json"] or
+            any(not sources[name] for name in required_pipeline_sources)):
+        # Never publish an artificially low Pipeline total when the original
+        # Streamlit feeds are temporarily unavailable. workspace() may reuse
+        # its previous snapshot marked STALE, rather than losing trials.
+        raise RuntimeError("Required Streamlit Pipeline parity source unavailable")
 
     records = {name: as_rows(sources[name]) for name in SOURCES if name.endswith(".csv")}
     caps = unique(records["phase_pipeline_market_caps.csv"], "ticker")
