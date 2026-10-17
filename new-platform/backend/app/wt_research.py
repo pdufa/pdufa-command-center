@@ -8,6 +8,13 @@ programs based on ticker.
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+import json
+import math
+import re
+from datetime import datetime, timezone
+from urllib.parse import quote
+from urllib.request import Request, urlopen
+from zoneinfo import ZoneInfo
 import logging
 import threading
 import time
@@ -64,6 +71,115 @@ def _context() -> dict:
         return result
 
 
+# A read-only, per-WT-trial on-demand market source; not a nightly scanner.
+_EOD_CACHE: dict[str, tuple[float, dict | None]] = {}
+_EOD_LOCK = threading.Lock()
+_VALID_TICKER = re.compile(r"^[A-Z0-9][A-Z0-9.-]{0,14}$")
+
+
+def _interpret_yahoo(payload: dict, ticker: str, url: str, today) -> dict | None:
+    """Validate Yahoo daily bars strictly before passing to the GEM EOD model."""
+    results = payload.get("chart", {}).get("result") or []
+    if len(results) != 1:
+        return None
+    entry = results[0]
+    meta = entry.get("meta") or {}
+    if (str(meta.get("symbol") or "").upper() != ticker
+            or str(meta.get("currency") or "").upper() != "USD"
+            or str(meta.get("instrumentType") or "").upper() != "EQUITY"):
+        return None
+    raw = (entry.get("indicators") or {}).get("quote") or []
+    timestamps = entry.get("timestamp") or []
+    if len(raw) != 1 or not isinstance(timestamps, list):
+        return None
+    closes = raw[0].get("close") or []
+    volumes = raw[0].get("volume") or []
+    if not (len(closes) == len(volumes) == len(timestamps)):
+        return None
+    # US market session dates from Eastern Time: never use current intraday
+    # quotes for a completed daily bar, and never accept duplicate sessions.
+    seen = set()
+    bars = []
+    for timestamp, close, volume in zip(timestamps, closes, volumes):
+        try:
+            day = datetime.fromtimestamp(int(timestamp), timezone.utc).astimezone(
+                ZoneInfo("America/New_York")
+            ).date()
+            value = float(close)
+            shares = float(volume)
+            if (day > today or day in seen or not math.isfinite(value)
+                    or value <= 0 or not math.isfinite(shares) or shares < 0):
+                continue
+        except (ValueError, OverflowError, TypeError):
+            continue
+        seen.add(day)
+        bars.append({"date": day.isoformat(), "close": value, "volume": shares})
+    bars.sort(key=lambda v: v["date"])
+    if len(bars) < 21:
+        return None
+    bars = bars[-120:]
+    from .legacy_gem_trading_advisory import _days_since_session
+    last_day = datetime.fromisoformat(bars[-1]["date"]).date()
+    if _days_since_session(last_day, today) is None:
+        return None
+    # A lagging feed is retained but will be marked stale by GEM's own model.
+    volume_base = sum(b["volume"] for b in bars[-21:-1]) / 20
+    return {
+        "ticker": ticker,
+        "market_status": "MARKET_UPDATED",
+        "last_session": last_day.isoformat(),
+        "last_close_usd": bars[-1]["close"],
+        "last_volume": bars[-1]["volume"],
+        "relative_volume": bars[-1]["volume"] / volume_base if volume_base > 0 else None,
+        "price_bars_json": json.dumps(bars, separators=(",", ":")),
+        "market_source": url,
+        "market_origin": "WT_ON_DEMAND_YAHOO_VERIFIED_EOD",
+    }
+
+
+def _download_eod(ticker: str, today) -> dict | None:
+    if not _VALID_TICKER.fullmatch(ticker):
+        return None
+    for host in ("query1.finance.yahoo.com", "query2.finance.yahoo.com"):
+        url = "https://" + host + "/v8/finance/chart/" + quote(ticker, safe="") + "?range=6mo&interval=1d&events=history"
+        try:
+            request = Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (compatible; PDUFA-trial-EOD-research/1.0)",
+                "Accept": "application/json",
+            })
+            with urlopen(request, timeout=6) as response:
+                blob = response.read(750_001)
+                if len(blob) > 750_000:
+                    continue
+            parsed = _interpret_yahoo(json.loads(blob), ticker, url, today)
+            if parsed:
+                return parsed
+        except (OSError, ValueError, TypeError, UnicodeError, KeyError):
+            continue
+    return None
+
+
+def _market_for_ticker(ticker: str, published: dict, today) -> dict:
+    """Prefer source-verified existing GEM data; refresh absent/stale bars for WT."""
+    from .legacy_gem_trading_advisory import _bars, _safe_date, _days_since_session
+    old = published.get(ticker)
+    if old and old.get("market_status") == "MARKET_UPDATED":
+        day = _safe_date(old.get("last_session"))
+        if (day and _days_since_session(day, today) is not None
+                and _days_since_session(day, today) <= 2 and len(_bars(old, today)) >= 21):
+            return published
+    with _EOD_LOCK:
+        cached = _EOD_CACHE.get(ticker)
+        if cached is not None and time.monotonic() - cached[0] < 900:
+            recent = cached[1]
+        else:
+            recent = _download_eod(ticker, today)
+            _EOD_CACHE[ticker] = (time.monotonic(), recent)
+    if recent is None:
+        return published
+    return {**published, ticker: recent}
+
+
 def for_exact_program(exact_key: str) -> dict:
     if not exact_key.startswith(("APPLICATION|", "TRIAL|")):
         raise ValueError("Invalid exact program")
@@ -98,12 +214,13 @@ def for_exact_program(exact_key: str) -> dict:
     analysis_row = dict(row)
     if exact_key.startswith("TRIAL|"):
         analysis_row["nctId"] = exact_key.split("|", 1)[1]
+    market_rows = _market_for_ticker(row["ticker"], context["market"], today)
     try:
         technical = analyze_member(
             analysis_row, event,
             context["financing"].get(event_key, {}) if event else {},
             context["recheck"].get(event_key, {}) if event else {},
-            context["market"], context["runway"].get(row["ticker"]),
+            market_rows, context["runway"].get(row["ticker"]),
             (snapshot.get("sourceHealth") or {}).get("publishedScan") or {},
             today,
         )
@@ -120,6 +237,7 @@ def for_exact_program(exact_key: str) -> dict:
         "technical": technical,
         "asOf": snapshot.get("asOf"),
         "missingSources": context["missingSources"],
+        "marketOrigin": (market_rows.get(row["ticker"]) or {}).get("market_origin", "PUBLISHED_GEM_EOD_FEED"),
         "scope": ("Market indicators are ticker-level and may be shared; Phase 3 "
                   "and financing gates remain exact-program only; no orders authorized."),
     }
