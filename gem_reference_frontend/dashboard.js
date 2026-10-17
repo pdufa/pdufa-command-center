@@ -510,8 +510,8 @@ function juniorHistoryCard(){
     if(scope==="ticker" && (!current||r.ticker!==current.ticker))return false;
     if(move==="promoted"&&r.movement!=="PROMOTED TO GEM")return false;
     if(move==="review"&&r.movement!=="PROMOTION NEEDS REVIEW")return false;
-    if(move==="active"&&r.current_stage!=="GEM JR")return false;
-    if(move==="departed"&&r.current_stage==="GEM JR")return false;
+    if(move==="active"&&(r.current_stage!=="GEM JR"||r.left))return false;
+    if(move==="departed"&&!r.left)return false;
     return !search||[r.ticker,r.drug,r.nct,r.id,r.reason,r.movement,r.current_stage].some(v=>String(v||"").toLowerCase().includes(search));
   });
   const count=rows.filter(x=>x.movement==="PROMOTED TO GEM").length;
@@ -534,8 +534,8 @@ function juniorHistoryCard(){
     (r.gem_first_found?'<div>GEM first observed '+dateLabel(r.gem_first_found)+'</div>':"")+'</td>'+
     '<td class="wrap">'+esc(r.reason)+(r.duration_days!=null?'<div>'+esc(r.duration_days)+' days in period</div>':"")+'</td></tr>').join("")+'</tbody></table></div>':
     empty("No matching recorded periods","Change the filters or await a fully observed GEM JR membership snapshot.",true);
-  const foot='<div class="source-note">'+(count===0?'No GEM JR → GEM promotions have been recorded in this saved stage history. ':'')+'Latest saved complete GEM JR snapshot: '+dateLabel(data.history_snapshot)+
-    '. Membership dates are first seen / left in scans, not trial readout, financing or FDA dates. Missing promotions are not assumed.</div>';
+  const foot='<div class="source-note">'+(count===0?'No GEM JR → GEM promotions have been recorded in this saved stage history. ':'')+'Latest saved GEM JR membership snapshot: '+dateLabel(data.history_snapshot)+
+    '. Membership dates are observations from stage scans, not trial readout, financing or FDA dates. Other collectors may still report partial coverage. Missing promotions are not assumed.</div>';
   return card("GEM JR — Promotion / Movement Timeline","history",summary+searchBar+content+foot,
     "history jr-timeline");
 }
