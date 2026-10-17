@@ -179,7 +179,8 @@ def collect_cards(clinical, sources, gem, jobs=None, standalone=None):
                               details={"Scope": origin}))
             continue
         cards.append(dict(name=name, score=score["score"],
-                          checked=score["verified"], due=score["due"],
+                          checked=score["verified"] + score["not_applicable"],
+                          due=score["due"],
                           outstanding=score["outstanding"], required=score["required"],
                           optional=score["optional"],
                           not_applicable=score["not_applicable"],
@@ -416,7 +417,7 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                 if pct is not None:
                     st.progress(min(max(pct/100, 0), 1.0))
                 st.caption(
-                    "Available: " + _print_count(card.get("checked")) +
+                    "Resolved: " + _print_count(card.get("checked")) +
                     " / " + _print_count(card.get("due")) +
                     " · Outstanding: " + _print_count(card.get("outstanding"))
                 )
@@ -470,11 +471,12 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                "All-source aggregate numbers remain those of the last full reconciliation.")
     st.markdown("### Operational details")
     if latest:
-        st.write("**Last full chain:** #" + str(latest.get("id", "Unknown")) +
-                 " · " + str(latest.get("status") or "UNKNOWN") +
-                 " · started " + pacific_time(latest.get("created_at")) +
-                 " · finished " + pacific_time(latest.get("updated_at"))
-                 if latest.get("status") == "completed" else " · in progress")
+        text = ("**Last full chain:** #" + str(latest.get("id", "Unknown")) +
+                " · " + str(latest.get("status") or "UNKNOWN") +
+                " · started " + pacific_time(latest.get("created_at")))
+        if latest.get("status") == "completed":
+            text += " · finished " + pacific_time(latest.get("updated_at"))
+        st.write(text)
     if jobs:
         with st.expander("Full-chain job list / failures / timings", expanded=False):
             st.dataframe(pd.DataFrame([{
