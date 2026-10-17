@@ -142,3 +142,32 @@
 .tree .trial-provenance{font-size:9px;line-height:1.4;color:#446279;margin:4px 0 0}
 .trial-tree-coverage{font-size:9px;color:#466881;line-height:1.35;padding:6px 4px}
 @media(max-width:700px){.tree[data-trial-tree]{max-height:390px}.trial-tree-toolbar{align-items:flex-start}.tree .trial-evidence-table{width:750px}}
+
+/* Section 8 — GEM JR research checklist; GEM technical review */
+.jr-readiness .card-body,.technical-signals .card-body{min-height:0;display:flex;flex-direction:column;gap:4px}
+.jr-readiness-tally,.technical-heading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 7px;padding:4px 0;font-size:10px;color:#36546a}
+.jr-readiness-tally strong,.technical-heading strong{color:#0d3a64;font-size:11px}
+.jr-readiness-tally>span{padding:3px 5px;border:1px solid #d4e4ed;border-radius:3px;background:#f3faff;font-weight:600}
+.jr-readiness-scroll{max-height:270px;overflow:auto;overscroll-behavior:contain}
+.jr-checks-table{min-width:460px;table-layout:fixed}
+.jr-checks-table th{position:sticky;top:0;z-index:1;white-space:normal;font-size:9px}
+.jr-checks-table td{white-space:normal;overflow-wrap:anywhere;vertical-align:top;font-size:9px;padding:5px 3px;height:auto;line-height:1.35}
+.jr-checks-table .jr-check-detail{font-size:9px;color:#47647e;margin-top:2px}
+.jr-checks-table .jr-check-next{font-size:9px;color:#335b75;margin-top:4px}
+.jr-checks-table .badge{white-space:normal;line-height:1.25}
+.jr-readiness-disclaimer,.technical-disclaimer{font-size:9px;line-height:1.35;color:#4a667b;padding:5px 2px 2px}
+.technical-scroll{max-height:290px;overflow-y:auto;overscroll-behavior:contain}
+.technical-item{border:1px solid #d7e7f1;background:#fcfeff;border-radius:4px;margin:3px 0}
+.technical-item summary{display:flex;align-items:center;gap:6px;padding:5px;cursor:pointer;list-style:none;min-height:31px}
+.technical-item summary::-webkit-details-marker{display:none}
+.technical-item summary::after{content:"⌄";color:#507b99;margin-left:3px;flex:none}
+.technical-item[open] summary::after{content:"⌃"}
+.technical-item .tech-rank{border:1px solid #abcbdc;background:#e9f5ff;min-width:17px;padding:2px 3px;text-align:center;border-radius:3px;font-size:9px;font-weight:750;color:#1b5080}
+.technical-item .tech-label{min-width:0;flex:1;font-size:10px;font-weight:650;overflow-wrap:anywhere}
+.technical-item .tech-label small{display:block;font-size:9px;color:#557087;font-weight:400;margin-top:1px;overflow-wrap:anywhere}
+.technical-item .badge{max-width:92px;white-space:normal;font-size:9px;line-height:1.15;flex:none}
+.technical-item .tech-explain{border-top:1px solid #d7e7f1;padding:6px;font-size:9.5px;color:#375970;line-height:1.38}
+.technical-item .tech-explain p{margin-top:5px}
+.technical-signals .card-head{flex-wrap:wrap;gap:3px}
+.technical-signals .card-head .card-tools{margin-left:auto}
+@media(max-width:700px){.jr-readiness-scroll{max-height:325px}.technical-scroll{max-height:340px}}
