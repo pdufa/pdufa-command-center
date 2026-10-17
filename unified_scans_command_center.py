@@ -16,6 +16,7 @@ import streamlit as st
 
 from scan_status_ui import current_job_steps, recent_github_runs, pacific_time
 from gem_scan_block_ui import published_gem_block_report
+from overnight_status_ui import pacific_schedule_for, run_delay_minutes
 
 REPO = "pdufa/pdufa-command-center"
 API = "https://api.github.com/repos/" + REPO
@@ -589,7 +590,7 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                "complete. The latest individual-source score replaces that source's "
                "card only when its separately published, dated report is newer. "
                "All-source aggregate numbers remain those of the last full reconciliation.")
-    st.markdown("### Operational details")
+    st.markdown("### Operational details — 10 PM start, jobs and Gmail")
     if latest:
         text = ("**Last full chain:** #" + str(latest.get("id", "Unknown")) +
                 " · " + str(latest.get("status") or "UNKNOWN") +
@@ -597,6 +598,17 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
         if latest.get("status") == "completed":
             text += " · finished " + pacific_time(latest.get("updated_at"))
         st.write(text)
+        scheduled = pacific_schedule_for(latest.get("created_at"))
+        delay = run_delay_minutes(latest)
+        if scheduled:
+            st.caption("Scheduled: " + scheduled.strftime("%b %d, %I:%M %p %Z") +
+                       " · Actual dispatch: " + pacific_time(latest.get("created_at")) +
+                       " · Delay: " + (str(delay) + " minutes" if delay is not None
+                                        else "Not verifiable"))
+        if delay is not None and delay > 15:
+            st.warning("Scheduler was late by " + str(delay) +
+                       " minutes. GitHub timer wake-ups are best-effort; "
+                       "duplicate-safe 10-minute recovery ticks are configured.")
     if jobs:
         with st.expander("Full-chain job list / failures / timings", expanded=False):
             st.dataframe(pd.DataFrame([{
@@ -605,6 +617,28 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                 "Started Pacific": pacific_time(j.get("started_at")),
                 "Finished Pacific": pacific_time(j.get("completed_at")),
             } for j in jobs]), hide_index=True, use_container_width=True)
+        email_actions = []
+        for job in jobs:
+            for step in job.get("steps") or []:
+                title = str(step.get("name") or "")
+                title_lower = title.lower()
+                if (any(t in title_lower for t in ("gmail", "email", "smtp", "notification"))
+                        or ("start" in title_lower and "end" in title_lower)):
+                    email_actions.append({
+                        "Stage": job.get("name"),
+                        "START / END step": title,
+                        "Step result": step.get("conclusion") or step.get("status"),
+                        "Performed": pacific_time(step.get("started_at")),
+                        "Inbox delivery": "UNVERIFIED",
+                    })
+        with st.expander("Gmail START / END — submission, failures and delivery proof",
+                         expanded=False):
+            if email_actions:
+                st.dataframe(pd.DataFrame(email_actions), hide_index=True,
+                             use_container_width=True)
+            else:
+                st.info("No matching mail action steps were returned for this run. "
+                        "Submission cannot be verified.")
     st.caption("Email START/END delivery cannot be established from GitHub workflow "
                "success alone; receipt confirmation remains a separate verification.")
 
