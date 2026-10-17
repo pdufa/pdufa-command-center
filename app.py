@@ -81,6 +81,7 @@ from pdufa_display_columns import (align_pdufa_finance_columns, prepare_pdufa_gr
 from unified_clinical_trading import _load as load_unified_evidence, render_combined_overview
 from ticker_toggle_panel import render_ticker_toggle_panel
 from watch_trade_dashboard import render_watch_trade_dashboard
+from chart_indicator_sheet import render_chart_indicator_sheet
 from stage_wt_tables import render_stage_wt_tables
 from alpaca_connection import render_alpaca_connection_panel
 def render_nightly_scan_report():
@@ -4444,6 +4445,7 @@ if page == "PDUFA":
             st.session_state["_ticker_selections_hydrated"] = False
             render_alpaca_connection_panel()
             render_watch_trade_dashboard()
+            render_chart_indicator_sheet(as_of=today.date())
 
 
 elif page == "2. PDUFA CALENDAR":
