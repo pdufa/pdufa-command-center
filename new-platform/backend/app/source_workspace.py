@@ -95,8 +95,11 @@ def phase_label(raw) -> str:
     }.get(val, "Unknown")
 
 
+OPTIONAL_SOURCES = frozenset({"watchlist_indicator_signals.csv"})
+
 def fetch(name: str) -> str:
-    assert name in SOURCES
+    if name not in SOURCES and name not in OPTIONAL_SOURCES:
+        raise ValueError("Unapproved published source path")
     request = Request(
         GITHUB + name,
         headers={"User-Agent": "PDUFA-new-read-only-source-adapter/1.0", "Accept": "text/plain"},
