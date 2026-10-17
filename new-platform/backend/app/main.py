@@ -299,6 +299,30 @@ def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     return {"saved": True, "version": payload.version + 1, "updated_at": now}
 
 
+@app.get("/api/wt-research/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_wt_research(program_id: str):
+    """Return same GEM scoring per immutable trial/program, without bulk copying data."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Permanent Program ID not registered")
+        exact_key = identity.source_key
+    from .wt_research import for_exact_program
+    try:
+        result = for_exact_program(exact_key)
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).error(
+            "WT_RESEARCH_LOOKUP_FAILED error_type=%s", type(exc).__name__
+        )
+        raise HTTPException(status_code=503, detail="Source research temporarily unavailable") from None
+    return {"programId": program_id, "exactKey": exact_key, **result}
+
+
 @app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace():
     from .source_workspace import workspace
