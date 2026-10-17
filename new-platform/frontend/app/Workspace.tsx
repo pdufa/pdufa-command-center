@@ -437,8 +437,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     setApplied(false);
     setPipelinePage(0);
   }
-  const stageCounts = STAGES.map(stage => ({label:stage,count:counted.filter(r => r.stage === stage).length})).filter(x => x.count);
-  const dateCounts = BANDS.map(band => ({label:band,count:counted.filter(r => dateBand(r) === band).length})).filter(x => x.count);
+  const stageCounts = STAGES.map(stage => ({label:stage,count:counted.filter(r => (r.stage||"Unknown") === stage).length}));
+  const dateCounts = BANDS.map(band => ({label:band,count:counted.filter(r => dateBand(r) === band).length}));
 
   function wtButton(record: Candidate,kind:"watch"|"trade"){
     const id=record.programId||"";
@@ -546,8 +546,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </div>
       <div className="count-panels">
         {([[ "STAGE COUNTS",stageCounts ],["DATE TRIAL COUNTS",dateCounts ]] as const).map(([title,group])=>
-          <div className="panel" key={title}><h3>{title}</h3><strong className="count-total">{counted.length} recorded programs</strong>
-          <div className="count-bars">{group.map(item=><div className="count-row" key={item.label}><span>{item.label}</span><div className="count-track"><div style={{width:(item.count/Math.max(1,counted.length)*100)+"%"}} /></div><b>{item.count}</b></div>)}</div></div>)}
+          <div className="panel" key={title}><h3>{title}</h3><strong className="count-total">{title==="STAGE COUNTS"?"PHASE TOTAL":"DATE TOTAL"} · {counted.length.toLocaleString("en-US")}</strong>
+          <div className="count-bars" role="list" aria-label={title}>{group.map(item=><div className="count-row" role="listitem" aria-label={item.label+": "+item.count.toLocaleString("en-US")+" trials / programs"} key={item.label}>
+            <span title={item.label}>{item.label}</span>
+            <div className="count-track" aria-hidden="true"><div style={{width:(item.count/Math.max(1,...group.map(v=>v.count))*100)+"%"}} /></div>
+            <b>{item.count.toLocaleString("en-US")}</b></div>)}</div></div>)}
       </div>
       <section className="panel">
         <div className="sectionhead"><h3>PDUFA TRIALS / PROGRAMS</h3><span className="counter">{shown.length} matches · {visiblePipeline.length} shown</span></div>
