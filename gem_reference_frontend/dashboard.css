@@ -111,3 +111,16 @@
 .company-trial-coverage{color:#516b84;font-size:9px;line-height:1.35;margin-top:5px}
 .jr-top,.gem-top{min-height:350px}
 @media(max-width:700px){.company-trial-scroll{max-height:300px}.company-trial-controls input{min-width:110px}.company-trial-table{min-width:410px}}
+
+/* Collapsible rating criteria: GEM JR and GEM retain separate page state. */
+.criteria-card .criteria-collapse-toggle{min-height:27px;min-width:78px;padding:4px 9px;background:#eaf5ff;color:#14518b;border:1px solid #89c0df;font-size:10px;font-weight:700}
+.criteria-card .criteria-collapse-toggle:hover{background:#d8edff}
+.criteria-card .criteria-collapse-toggle:focus-visible{outline:3px solid #107ee5;outline-offset:2px}
+.criteria-card .criteria-compact{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#335a78;font-weight:600;font-size:9px}
+.criteria-card.is-collapsed{align-self:start;min-height:35px}
+.criteria-card.is-collapsed .card-body,.criteria-card .card-body[hidden]{display:none!important}
+.criteria-card.is-collapsed .card-head{min-height:36px}
+.criteria-card.is-collapsed .card-head h2{font-size:11px}
+.criteria-card.is-collapsed .card-tools{margin-left:auto;max-width:100%}
+.reference-top-layout.criteria-collapsed{grid-template-columns:minmax(230px,290px) minmax(0,1fr)}
+@media(max-width:960px){.reference-top-layout.criteria-collapsed{grid-template-columns:minmax(0,1fr)}.criteria-card.is-collapsed .card-head{flex-wrap:wrap}.criteria-card .criteria-compact{max-width:50vw}}
