@@ -622,7 +622,7 @@ def _number(v):
 
 
 def render_nightly_scan_report():
-    render_overnight_execution(published_report, published_source_report)
+    render_overnight_execution(published_report, published_source_report, latest_run)
     st.divider()
     # The agency controls lead the merged SCANS page, matching the requested
     # SEC/FDA scan-control preview. Activity and GEM reports remain below.
