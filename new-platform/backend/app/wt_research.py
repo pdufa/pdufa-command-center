@@ -234,7 +234,7 @@ def _signals_for_ticker(ticker: str) -> dict:
 
 
 def for_exact_program(exact_key: str) -> dict:
-    if not exact_key.startswith(("APPLICATION|", "TRIAL|")):
+    if not exact_key.startswith(("APPLICATION|", "TRIAL|", "RESULT|")):
         raise ValueError("Invalid exact program")
     snapshot = workspace()
     for stage in ("GEM", "GEM_JR"):
