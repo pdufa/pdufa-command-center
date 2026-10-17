@@ -371,3 +371,22 @@ button.secondary { background: white; color: #172b1b; }
 .count-panels .count-track{display:flex;align-items:center;align-self:center;min-width:0;height:20px;overflow:hidden;background:#edf2ed;border-radius:3px;}
 .count-panels .count-track>div{display:block;flex:0 0 auto;height:18px;background:#23856a;border-radius:0;}
 @media(max-width:600px){.count-panels .count-row{grid-template-columns:140px minmax(24px,1fr) 52px;column-gap:6px;gap:6px;}}
+
+/* Original watch_trade_dashboard.py WT charts: compact 235px, full 615px. */
+.wt-streamlit-chart{min-width:0;background:#fff;border:1px solid #bcdde3;border-radius:5px;overflow:hidden;}
+.wt-streamlit-topbar{padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f7faf7;border-bottom:1px solid #ccdccc;font-size:12px;color:#132e23;}
+.wt-streamlit-chart .wt-full-chart-button{padding:6px 10px;background:#f7faf7;border:2px solid #111;border-radius:2px;font-size:11px;font-weight:800;color:#111;cursor:pointer;}
+.wt-streamlit-compact-widget{height:235px;min-height:235px;width:100%;background:white;position:relative;overflow:hidden;}
+.wt-streamlit-compact-widget .tradingview-widget-container{height:100%;width:100%;}
+.wt-streamlit-compact-widget .tradingview-widget-container__widget{height:calc(100% - 18px);width:100%;}
+.wt-streamlit-advanced{border-top:2px solid #bcdde3;padding:8px;background:#fff;}
+.wt-streamlit-advanced-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin:4px 0;font-size:13px;color:#153f38;}
+.wt-streamlit-advanced-head button{border:1px solid #97b9b1;border-radius:4px;background:#eaf6f2;font-size:11px;padding:6px;}
+.wt-streamlit-advanced>p{margin:4px 0 9px;font-size:11px;color:#425b56;}
+.wt-streamlit-advanced-widget{height:615px;min-height:615px;width:100%;background:white;overflow:hidden;}
+.wt-streamlit-advanced-widget .tradingview-widget-container{height:100%;width:100%;}
+.wt-streamlit-advanced-widget .tradingview-widget-container__widget{height:calc(100% - 25px);width:100%;}
+.wt-streamlit-chart small{font-size:10px;padding-left:4px;}
+.wt-streamlit-chart a{color:#1456aa;}
+.wt-streamlit-feed-note{padding:4px 8px;margin:0;font-size:10px;color:#566a61;}
+@media(max-width:650px){.wt-streamlit-advanced-widget{height:570px;min-height:570px;}.wt-streamlit-advanced-head{font-size:12px;}}
