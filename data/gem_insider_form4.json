@@ -1,7 +1,7 @@
 {
-  "as_of_pacific": "2026-10-16",
+  "as_of_pacific": "2026-10-17",
   "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
-  "generated_at_utc": "2026-10-16T12:59:26.568591+00:00",
+  "generated_at_utc": "2026-10-17T09:18:39.549164+00:00",
   "issuer_count": 34,
   "issuer_errors": [
     {
@@ -17,7 +17,7 @@
   "limits": "Issuer filing index capped to 25 Form 4 documents per 105-day window, 90-day transaction window. Source errors and amendments require manual review. P/S does not guarantee discretionary investment or future returns.",
   "records": [
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001160308",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-25",
@@ -26,7 +26,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001622229",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-05",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001933414",
       "filings_reviewed": 12,
       "latest_filing": "2026-10-02",
@@ -136,7 +136,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001689548",
       "filings_reviewed": 1,
       "latest_filing": "2026-07-08",
@@ -145,7 +145,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001652130",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-06",
@@ -195,7 +195,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001953926",
       "filings_reviewed": 1,
       "latest_filing": "2026-09-02",
@@ -204,7 +204,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0000874015",
       "filings_reviewed": 19,
       "latest_filing": "2026-09-02",
@@ -234,7 +234,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001439222",
       "filings_reviewed": 2,
       "latest_filing": "2026-08-06",
@@ -254,7 +254,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001061983",
       "filings_reviewed": 24,
       "latest_filing": "2026-10-13",
@@ -434,7 +434,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001599298",
       "filings_reviewed": 1,
       "latest_filing": "2026-10-14",
@@ -443,7 +443,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001133869",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -452,7 +452,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001743881",
       "filings_reviewed": 8,
       "latest_filing": "2026-09-21",
@@ -562,7 +562,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0000875320",
       "filings_reviewed": 10,
       "latest_filing": "2026-09-10",
@@ -571,7 +571,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001704292",
       "filings_reviewed": 7,
       "latest_filing": "2026-10-05",
@@ -580,7 +580,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0000939767",
       "filings_reviewed": 1,
       "latest_filing": "2026-08-12",
@@ -600,7 +600,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001370053",
       "filings_reviewed": 4,
       "latest_filing": "2026-10-02",
@@ -620,7 +620,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001088856",
       "error": "More than capped Form 4 filings \u2014 not a complete lookback",
       "filings_reviewed": 0,
@@ -630,13 +630,33 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0000882095",
-      "filings_reviewed": 18,
-      "latest_filing": "2026-10-02",
+      "filings_reviewed": 20,
+      "latest_filing": "2026-10-16",
       "status": "COMPLETE",
       "ticker": "GILD",
       "transactions": [
+        {
+          "code": "S",
+          "date": "2026-10-15",
+          "filed": "2026-10-16",
+          "owner": "Dickinson Andrew D",
+          "price": 156.22,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000131020426000031/wk-form4_1792181840.xml",
+          "ticker": "GILD"
+        },
+        {
+          "code": "S",
+          "date": "2026-10-15",
+          "filed": "2026-10-16",
+          "owner": "Mercier Johanna",
+          "price": 156.22,
+          "shares": 3000,
+          "source": "https://www.sec.gov/Archives/edgar/data/882095/000178213526000035/wk-form4_1792181553.xml",
+          "ticker": "GILD"
+        },
         {
           "code": "S",
           "date": "2026-10-01",
@@ -880,7 +900,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001792044",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-02",
@@ -889,7 +909,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001326110",
       "filings_reviewed": 4,
       "latest_filing": "2026-10-06",
@@ -919,7 +939,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001818794",
       "filings_reviewed": 11,
       "latest_filing": "2026-10-06",
@@ -1109,7 +1129,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001828316",
       "filings_reviewed": 0,
       "latest_filing": "",
@@ -1118,7 +1138,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001889109",
       "filings_reviewed": 5,
       "latest_filing": "2026-10-05",
@@ -1127,7 +1147,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001787306",
       "filings_reviewed": 13,
       "latest_filing": "2026-09-18",
@@ -1267,7 +1287,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001789972",
       "filings_reviewed": 3,
       "latest_filing": "2026-09-10",
@@ -1297,7 +1317,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001745648",
       "filings_reviewed": 10,
       "latest_filing": "2026-08-05",
@@ -1327,7 +1347,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001048477",
       "filings_reviewed": 3,
       "latest_filing": "2026-10-01",
@@ -1347,7 +1367,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0000873303",
       "filings_reviewed": 5,
       "latest_filing": "2026-09-08",
@@ -1356,7 +1376,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001802665",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-18",
@@ -1436,7 +1456,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0002007919",
       "error": "SEC issuer Form 4 amendments require manual reconciliation",
       "filings_reviewed": 0,
@@ -1446,7 +1466,7 @@
       "transactions": []
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001830487",
       "filings_reviewed": 23,
       "latest_filing": "2026-10-13",
@@ -1646,7 +1666,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001472012",
       "filings_reviewed": 14,
       "latest_filing": "2026-09-15",
@@ -1726,7 +1746,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0001579428",
       "filings_reviewed": 2,
       "latest_filing": "2026-09-03",
@@ -1766,7 +1786,7 @@
       ]
     },
     {
-      "as_of": "2026-10-16",
+      "as_of": "2026-10-17",
       "cik": "0000014272",
       "filings_reviewed": 11,
       "latest_filing": "2026-10-05",
