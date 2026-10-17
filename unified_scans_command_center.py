@@ -427,7 +427,7 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                 if name in SOURCE_NAMES and card.get("not_applicable"):
                     st.caption(f"Plus {_print_count(card['not_applicable'])} resolved as N/A.")
             with button_col:
-                if True:
+                if name in WORKFLOWS:
                     busy = recent_active(runs, name)
                     if st.button(("RUN SCAN HEALTH CHECK" if name == "SCAN HEALTH" else
                                   "RUN " + name + " SCAN"),
