@@ -121,6 +121,227 @@ def scan_health(root):
     return result
 
 
+def scan_diagnostics(root, *, now=None):
+    """Read-only, source-specific diagnostics for both GEM stage dashboards.
+
+    This is a snapshot of saved reports, not a live execution or a proof of
+    full-universe coverage. A child collector may finish while its parent
+    scan stays PARTIAL. Missing, corrupt or undated reports fail closed.
+    """
+    from datetime import datetime, timezone
+
+    now = now or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ValueError("Diagnostic clock must include a UTC offset")
+    now = now.astimezone(timezone.utc)
+
+    def stamp(value):
+        raw = str(value or "").strip()
+        if not raw:
+            return None
+        try:
+            parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            return parsed.astimezone(timezone.utc) if parsed.tzinfo else None
+        except (ValueError, TypeError, OverflowError):
+            return None
+
+    def text(value, fallback="NOT VERIFIED"):
+        if value is None or value == "":
+            return fallback
+        if isinstance(value, (dict, list, tuple)):
+            return fallback
+        return str(value)[:240]
+
+    def link(value):
+        url = str(value or "").strip()
+        prefix = "https://github.com/pdufa/pdufa-command-center/actions/runs/"
+        return url if url.startswith(prefix) and url[len(prefix):].split("/")[0].isdigit() else ""
+
+    def state(raw):
+        upper = str(raw or "").strip().upper()
+        if any(marker in upper for marker in (
+            "FAILED", "FAILURE", "ERROR", "BLOCKED", "STALE", "CANCELLED",
+        )):
+            return "hold"
+        if upper in {"COMPLETE", "COMPLETED", "SUCCESS", "SUCCEEDED", "PASS"}:
+            return "pass"
+        if any(marker in upper for marker in ("PARTIAL", "HOLD", "WARNING", "REVIEW")):
+            return "review"
+        return "unknown"
+
+    def child(label, status, *, date="", detail="", errors=None, coverage="SCOPE ONLY"):
+        return {
+            "label": text(label), "status": text(status), "type": state(status),
+            "date": text(date, ""), "detail": text(detail, ""),
+            "errors": list(dict.fromkeys(str(v)[:240] for v in (errors or [])
+                                            if v is not None))[:10],
+            "coverage": text(coverage),
+        }
+
+    specs = (
+        ("nightly", "Overnight scan sequence", "nightly_scan_report.json"),
+        ("clinical", "Clinical collectors", "overnight_scan_status.json"),
+        ("gem", "GEM source verification", "gem_scan_block_report.json"),
+    )
+    rows = []
+    for key, label, filename in specs:
+        path = Path(root) / filename
+        report = None
+        try:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(loaded, dict):
+                raise ValueError("Report is not an object")
+            report = loaded
+            error = ""
+        except (OSError, UnicodeError, ValueError, TypeError) as exc:
+            error = "Saved report missing or invalid (" + type(exc).__name__ + ")"
+        if report is None:
+            rows.append({
+                "key": key, "label": label, "status": "UNAVAILABLE",
+                "type": "unknown", "date": "", "freshness": "UNKNOWN",
+                "age_hours": None, "coverage": "NOT VERIFIED",
+                "run_url": "", "file": filename, "details": [],
+                "issues": [error], "action": "Restore the saved report and inspect SCANS",
+                "scope": "Saved reports only",
+            })
+            continue
+
+        report_time = (report.get("updated_at_utc") or
+                       report.get("generated_at_utc") or
+                       report.get("finished_at"))
+        when = stamp(report_time)
+        age = (now - when).total_seconds() / 3600 if when else None
+        freshness = ("UNKNOWN" if age is None else
+                     "FUTURE DATE" if age < -1 else
+                     "STALE" if age > 48 else "CURRENT")
+        verified = report.get("verification") or {}
+        if not isinstance(verified, dict):
+            verified = {}
+        if key == "nightly":
+            coverage = text(verified.get("all_source_coverage"))
+            integrity = text(verified.get("artifact_integrity"))
+            issues = [str(x)[:240] for x in (
+                report.get("missing_required_source_families") or [])
+                if isinstance(x, str)]
+            scans = report.get("scans") or []
+            details = []
+            for r in scans if isinstance(scans, list) else []:
+                if not isinstance(r, dict):
+                    continue
+                metrics = r.get("metrics") if isinstance(r.get("metrics"), dict) else {}
+                parts = [str(k).replace("_", " ") + ": " + str(v)
+                         for k, v in list(metrics.items())[:4] if v is not None]
+                errs = r.get("issues") if isinstance(r.get("issues"), list) else []
+                if r.get("errors_count"):
+                    parts.append("Reported errors: " + str(r["errors_count"]))
+                details.append(child(
+                    "Scan " + str(r.get("scan") or "?") + " · " + str(r.get("label") or "Collector"),
+                    r.get("collector_status") or r.get("status"),
+                    date=r.get("collected_at_utc"), detail="; ".join(parts),
+                    errors=errs, coverage="COLLECTOR SCOPE; global " + coverage,
+                ))
+            scope = text(report.get("scope"))
+            run_url = link(report.get("latest_run_url"))
+            if report.get("latest_run_conclusion") is None:
+                issues.append("Latest GitHub run conclusion is not confirmed in saved report")
+            if integrity != "PASS":
+                issues.append("Artifact integrity: " + integrity)
+        elif key == "clinical":
+            coverage = ("NOT VERIFIED" if report.get("complete") is not True
+                        else "COLLECTOR COMPLETE; full sources NOT VERIFIED")
+            issues = [str(x)[:240] for x in (
+                report.get("missing_required_source_families") or [])
+                if isinstance(x, str)]
+            checks = report.get("source_checks") or {}
+            details = []
+            if isinstance(checks, dict):
+                for name, r in checks.items():
+                    if not isinstance(r, dict):
+                        continue
+                    errs = r.get("errors") if isinstance(r.get("errors"), list) else []
+                    details.append(child(
+                        str(name).replace("_", " ").title(),
+                        r.get("status"), date=r.get("finished_at"),
+                        detail=text(r.get("source_scope"), ""),
+                        errors=errs,
+                        coverage="COLLECTOR SCOPE; full source verification not established",
+                    ))
+            scope = "Saved clinical registry and pipeline collectors"
+            run_url = ""
+        else:
+            coverage = text(report.get("source_verification"))
+            issues = [str(x)[:240] for x in (
+                report.get("blocking_or_review_flags") or [])
+                if isinstance(x, str)]
+            errors = report.get("errors") if isinstance(report.get("errors"), list) else []
+            issues.extend(str(x)[:240] for x in errors if x is not None)
+            details = []
+            for key_name, display in (
+                ("sec_source_health", "SEC financing source"),
+                ("market_source_health", "Market source"),
+                ("insider_form4", "Insider Form 4"),
+                ("hedge_fund_13f", "Institutional 13F"),
+                ("cash_runway", "Cash / runway"),
+            ):
+                part = report.get(key_name) or {}
+                if not isinstance(part, dict):
+                    continue
+                raw = part.get("status") or part.get("collector_status") or "UNVERIFIED"
+                if key_name == "cash_runway":
+                    raw = "PARTIAL" if part.get("missing_or_stale") else "UNVERIFIED"
+                selected = [
+                    str(k).replace("_", " ") + ": " + str(v)
+                    for k, v in list(part.items())[:7]
+                    if k not in {"status", "collector_status"} and
+                    not isinstance(v, (dict, list)) and v is not None
+                ]
+                details.append(child(display, raw,
+                                     detail="; ".join(selected),
+                                     coverage="SELECTED SOURCES ONLY"))
+            acceptance = report.get("acceptance_checks") or {}
+            if isinstance(acceptance, dict):
+                for k, v in acceptance.items():
+                    if not isinstance(v, bool):
+                        continue
+                    details.append(child(
+                        "Verification · " + str(k).replace("_", " "),
+                        "PASS" if v else "NOT VERIFIED",
+                        detail="Saved acceptance check; not a live recheck",
+                        coverage="EXPLICIT SAVED CHECK ONLY",
+                    ))
+                    if not v:
+                        issues.append("Unmet verification: " + str(k).replace("_", " "))
+            scope = "GEM research-only source checks; no trading authorization"
+            run_url = link(report.get("run_url"))
+
+        status = text(report.get("status") or "UNVERIFIED")
+        status_type = state(status)
+        if freshness == "STALE" and status_type != "hold":
+            status_type = "hold"
+        if coverage.upper() not in {"VERIFIED", "COMPLETE", "FULLY VERIFIED"}:
+            if status_type == "pass":
+                status_type = "review"
+        if freshness in {"UNKNOWN", "FUTURE DATE"} and status_type == "pass":
+            status_type = "review"
+        if freshness == "STALE":
+            issues.insert(0, "Saved report is older than 48 hours; current status is unknown")
+        if freshness == "FUTURE DATE":
+            issues.insert(0, "Report timestamp is in the future; verify clock and artifact")
+        if freshness == "UNKNOWN":
+            issues.insert(0, "Saved report timestamp is missing or invalid")
+        rows.append({
+            "key": key, "label": label, "status": status,
+            "type": status_type, "date": text(report_time, ""),
+            "freshness": freshness,
+            "age_hours": round(age, 1) if age is not None else None,
+            "coverage": coverage, "run_url": run_url, "file": filename,
+            "details": details, "issues": list(dict.fromkeys(issues))[:30],
+            "action": "Open SCANS for live runs, failed steps and source recovery",
+            "scope": scope,
+        })
+    return rows
+
+
 def _display(value):
     text = str(value if value is not None else "").strip()
     return text if text and text.lower() not in {"nan", "nat", "none", "<na>"} else "NOT VERIFIED"
