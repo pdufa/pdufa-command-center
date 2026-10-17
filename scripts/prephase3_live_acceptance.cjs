@@ -68,10 +68,34 @@ async function verify(){
     }
     checked.frameDiagnostics=lastFrameTexts;
     if(!match)throw Error("Live application still unavailable after navigation retry; see frameDiagnostics");
-    const tab=match.frame.getByRole("tab",{name:"PIPELINE",exact:true});
-    await tab.click({timeout:20000});
-    await match.frame.getByText("SHOW EARLY CLINICAL RESEARCH / READINESS",{exact:true})
-      .click({timeout:20000});
+    // Streamlit can replace the active tab frame while data is loading.
+    // Retry finding the research toggle in the current live frame rather than
+    // treating a transient absent control as proof that the page is broken.
+    let openedResearch = false;
+    for (let n=0; n<45; n++){
+      const current = await findFrame(page);
+      if (current) {
+        const tab = current.frame.getByRole("tab",{name:"PIPELINE",exact:true});
+        try {
+          if (await tab.count()) {
+            if (await tab.getAttribute("aria-selected") !== "true")
+              await tab.click({timeout:3500});
+            const toggle = current.frame.getByText(
+              "SHOW EARLY CLINICAL RESEARCH / READINESS",{exact:true});
+            if (await toggle.count()) {
+              await toggle.click({timeout:3500});
+              openedResearch = true;
+              break;
+            }
+          }
+        }catch(_err){
+          // Replaced/slow frame: polling below will try a fresh one.
+        }
+      }
+      await sleep(1700);
+    }
+    if (!openedResearch)
+      throw Error("PIPELINE early clinical research toggle unavailable after frame retries");
     let body="";
     let lastFrame=match.frame;
     // Streamlit may replace the app frame while rerunning the Python script.
