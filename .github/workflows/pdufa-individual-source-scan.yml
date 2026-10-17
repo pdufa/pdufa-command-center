@@ -60,8 +60,10 @@ jobs:
           mkdir -p reports/missing_sources reports/scan_notifications
           lower="$(printf '%s' "$SOURCE" | tr '[:upper:]' '[:lower:]')"
           set +e
+          notify_mode="DELTA"
+          if [ "$SCAN_MODE" = "FULL" ]; then notify_mode="BASELINE"; fi
           python scripts/run_scan_with_email.py \
-            --scan "$SOURCE" --mode "$SCAN_MODE" \
+            --scan "$SOURCE" --mode "$notify_mode" \
             --status-file "reports/missing_sources/${lower}_scan_report.json" \
             --audit-dir reports/scan_notifications \
             --timeout-seconds 7000 -- \
