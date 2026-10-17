@@ -330,6 +330,25 @@ def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     return {"saved": True, "version": payload.version + 1, "updated_at": now}
 
 
+@app.get("/api/alpaca-chart/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_alpaca_chart(program_id: str, range: str = "1Y"):
+    """Alpaca is the ONLY chart provider: never return synthetic/third-party bars."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    if range not in {"1M", "3M", "6M", "1Y", "ALL"}:
+        raise HTTPException(status_code=422, detail="Invalid Alpaca chart range")
+    with Session(ENGINE) as session:
+        row = session.get(ProgramIdentity, int(program_id[6:]))
+        if row is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        ticker = row.ticker
+    from .alpaca_market_chart import get_alpaca_bars
+    return {"programId": program_id, "exactKey": row.source_key,
+            **get_alpaca_bars(ticker, range)}
+
+
 @app.get("/api/wt-research/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
