@@ -11,6 +11,10 @@ PACIFIC = ZoneInfo("America/Los_Angeles")
 RUN_TITLE = "ALL + GEM — PDUFA overnight"
 WORKFLOW = ".github/workflows/pdufa-overnight-sequential.yml"
 RECOVERY_CRONS = {f"{minute} {hour} * * *" for hour in (7, 8, 9) for minute in (5, 35)}
+# One spaced-out cron expression provides frequent recovery opportunities.
+# GitHub schedule execution is best-effort; the clock gate below ensures
+# pre-10 PM Pacific events cannot start a scan and allows safe late recovery.
+SWEEP_CRON = "3-53/10 5-10 * * *"
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 
 
@@ -32,7 +36,8 @@ def decision(event, cron, runs, *, now=None):
     allowed = (event == "workflow_dispatch" or
                event == "push" and local.hour == 22 or
                event == "schedule" and in_window and
-               (cron in primary or local.hour < 3 and cron in RECOVERY_CRONS))
+               (cron in primary or (local.hour < 3 and cron in RECOVERY_CRONS) or
+                cron == SWEEP_CRON))
     if not allowed:
         result["reason"] = "Outside the matching 10 PM–2:59 AM Pacific start/recovery window"
         return result
