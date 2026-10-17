@@ -10,6 +10,7 @@ type Technical={
 };
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
 type Plan={entry?:number;stop?:number;target?:number};
+type SignalSnapshot=Partial<Record<"ENTRY"|"EXIT",{signals?:Record<string,string>;updated?:string}>>;
 type DrawBar=Bar&{sma20:number|null;sma50:number|null;rollingSupport:number|null;rollingResistance:number|null};
 const limits:Record<Range,number>={"1M":31,"3M":93,"6M":186,"1Y":366,"ALL":Infinity};
 const colors={close:"#02a65b",sma20:"#1d78ec",sma50:"#ed982d",support:"#7f95a5",resistance:"#3184cb",entry:"#7750bd",stop:"#f04b47",target:"#00a84f"};
@@ -127,7 +128,7 @@ function OriginalTradingView({ticker,range}:{ticker:string;range:Range}){
  return <div className="parity-external" ref={root} role="region"
    aria-label={ticker+" TradingView external candles; may be delayed"} />;
 }
-function StreamlitWatchlistSignalTable(){
+function StreamlitWatchlistSignalTable({signals}:{signals?:SignalSnapshot}){
  const [mode,setMode]=useState<"ENTRY"|"EXIT"|"BOTH">("BOTH");
  const names=["Volume / RVOL","Bollinger (20,2)","Phase 3 AVWAP",
   "EMA (10/20/50)","RSI (14)","MACD (12/26/9)","OBV","ATR (14)"];
@@ -141,12 +142,14 @@ function StreamlitWatchlistSignalTable(){
   </div>
   <div className="parity-check-table"><table><thead><tr><th>Indicator</th><th>Signal</th><th>Updated</th></tr></thead><tbody>
    {modes.flatMap(m=>names.map(name=><tr key={m+"|"+name}>
-     <td>{mode==="BOTH"?m+" | "+name:name}</td><td>NOT SCANNED</td><td>NOT SCANNED</td>
+     <td>{mode==="BOTH"?m+" | "+name:name}</td>
+     <td>{signals?.[m as "ENTRY"|"EXIT"]?.signals?.[name]||"NOT SCANNED"}</td>
+     <td>{signals?.[m as "ENTRY"|"EXIT"]?.updated||"NOT SCANNED"}</td>
    </tr>))}
   </tbody></table></div>
  </details>;
 }
-export default function GemParityChart({ticker,programKey,data}:{ticker:string;programKey:string;data?:Technical|null}){
+export default function GemParityChart({ticker,programKey,data,watchlistSignals}:{ticker:string;programKey:string;data?:Technical|null;watchlistSignals?:SignalSnapshot}){
  const [range,setRange]=useState<Range>("6M"),[mode,setMode]=useState<"saved"|"tv">("saved");
  const [plan,setPlan]=useState<Plan>({}),[editing,setEditing]=useState(false);
  const [draft,setDraft]=useState({entry:"",stop:"",target:""}),[error,setError]=useState("");
@@ -216,7 +219,7 @@ export default function GemParityChart({ticker,programKey,data}:{ticker:string;p
       <div className="parity-actions"><button onClick={()=>{save({});setEditing(false)}}>Clear levels</button><button onClick={()=>setEditing(false)}>Cancel</button><button onClick={saveDraft}>Save levels</button></div>
     </div>}
   </div>
-  <StreamlitWatchlistSignalTable/>
+  <StreamlitWatchlistSignalTable signals={watchlistSignals}/>
   <details className="parity-base"><summary><strong>20-SESSION BASE FORMATION — DAILY-CLOSE OBSERVATIONS</strong> · {base?.status||"NOT AVAILABLE"}</summary>
    <p>Closing support and resistance use the preceding 20 closes at each session and appear only in the most recent 21 sessions. No future-price lookahead.</p>
    <Plot ticker={ticker} data={data||{}} bars={bars} range={range} plan={{}} rolling={true}/>
