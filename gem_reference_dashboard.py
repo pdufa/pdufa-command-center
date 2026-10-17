@@ -134,6 +134,109 @@ def _checks(factors, record, event, profile, *, junior, exit_risk=False):
             for label, weight, earned, reason in factors]
 
 
+
+def _all_company_trials(root, *, gem, junior):
+    """All *saved, ticker-linked* trial IDs, with CURRENT stage associations.
+
+    The ClinicalTrials.gov inventory is preferred. Other sources contribute
+    only exact NCT observations; they never prove sponsorship or phase on their
+    own. Neither ticker-only nor drug-name-only joins confer GEM status.
+    """
+    inventory = _csv(root, "all_phase_trials.csv")
+    pipeline = _csv(root, "phase_pipeline.csv")
+    events = _csv(root, "pdufa_candidates.csv")
+    rows = {}
+    stage_flags = {}
+
+    def ncts(value):
+        return list(dict.fromkeys(re.findall(r"NCT\d{8}", str(value or "").upper())))
+
+    def staged(candidates, label):
+        for record in candidates:
+            ticker = clean_ticker(record.get("Ticker"))
+            for nct in ncts(record.get("NCT ID")):
+                if ticker:
+                    stage_flags.setdefault((ticker, nct), set()).add(label)
+
+    staged(junior, "GEM JR")
+    staged(gem, "GEM")
+
+    def add(source, kind):
+        ticker = clean_ticker(source.get("ticker") or source.get("Ticker"))
+        if not ticker:
+            return
+        for nct in ncts(source.get("nct_id") or source.get("NCT ID")):
+            key = (ticker, nct)
+            item = rows.setdefault(key, {
+                "nct": nct, "drug": "", "indication": "", "phase": "",
+                "source": "", "source_type": "", "stage_labels": [],
+            })
+            drug = str(source.get("drug") or source.get("Drug") or "").strip()
+            indication = str(source.get("indication") or source.get("Indication") or "").strip()
+            # Trial registry and pipeline phase values outrank event-derived
+            # phase hints; do not substitute a Phase 3 label for unknowns.
+            raw_phase = str(source.get("phase") or source.get("phases")
+                            or source.get("registered_phase") or "").strip()
+            if raw_phase and (not item["phase"] or kind == "registry"):
+                item["phase"] = raw_phase[:85]
+            if drug and (not item["drug"] or kind == "registry"):
+                item["drug"] = drug[:180]
+            if indication and (not item["indication"] or kind == "registry"):
+                item["indication"] = indication[:180]
+            source_url = str(source.get("source_url") or source.get("trial_evidence_url")
+                             or source.get("Clinical source") or "").strip()
+            if source_url.startswith("https://") and (not item["source"] or kind == "registry"):
+                item["source"] = source_url
+            if kind == "registry" or not item["source_type"]:
+                item["source_type"] = kind
+
+    for row in events:
+        add(row, "saved program")
+    for row in pipeline:
+        add(row, "pipeline")
+    for row in inventory:
+        add(row, "registry")
+    # Independent exact-trial Phase 3 readout leads, where they exist.
+    for row in _csv(root, "post_phase3_discoveries.csv"):
+        add(row, "saved discovery")
+
+    # Current GEM/GEM JR records might not yet be present in a registry export.
+    for row in list(junior) + list(gem):
+        add(row, "stage association")
+
+    for (ticker, nct), flags in stage_flags.items():
+        if (ticker, nct) not in rows:
+            rows[(ticker, nct)] = {
+                "nct": nct, "drug": "", "indication": "", "phase": "",
+                "source": "", "source_type": "stage association", "stage_labels": [],
+            }
+        rows[(ticker, nct)]["stage_labels"] = [
+            label for label in ("GEM JR", "GEM") if label in flags
+        ]
+
+    by_ticker = {}
+    for (ticker, nct), row in rows.items():
+        row["url"] = "https://clinicaltrials.gov/study/" + nct
+        row["phase"] = row["phase"] or "Not verified in saved sources"
+        row["drug"] = row["drug"] or "Drug not recorded"
+        row["indication"] = row["indication"] or "Indication not recorded"
+        row["selected_source"] = row["source"] or ""
+        by_ticker.setdefault(ticker, []).append(row)
+
+    for trials in by_ticker.values():
+        trials.sort(key=lambda item: (
+            0 if "GEM" in item["stage_labels"] else 1 if "GEM JR" in item["stage_labels"] else 2,
+            item["drug"].casefold(), item["nct"],
+        ))
+    complete_inventory = bool(inventory)
+    coverage = (
+        "Saved trial registry inventory plus program references; trial-to-issuer association follows saved ticker mappings."
+        if complete_inventory else
+        "PARTIAL: the complete trial inventory is not available. Only source-saved ticker-linked NCT records are shown; this is not every trial run by the company."
+    )
+    return by_ticker, coverage
+
+
 def _hierarchy(record, event, company, registry, pvalues):
     """Company → actual drug/indication → NCT. Siblings keep their own evidence."""
     ticker, selected_nct = record["Ticker"], str(record.get("NCT ID") or "")
@@ -310,7 +413,7 @@ def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, c
     return facts
 
 
-def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues):
+def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials, trial_coverage):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
     ticker = clean_ticker(record.get("Ticker"))
@@ -376,6 +479,8 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     ])
     return {
         "id": identifier, "ticker": ticker, "company": company,
+        "company_trials": company_trials.get(ticker, []),
+        "company_trial_coverage": trial_coverage,
         "drug": _text(record.get("Drug")), "indication": _text(record.get("Indication")),
         "nct": _text(record.get("NCT ID")), "readout": p3_date, "pdufa": pdufa,
         "pdufa_verified": pdufa_verified, "runway": runway_months,
@@ -423,10 +528,17 @@ def build_dashboard(stage, root="data", *, as_of=None):
     except (OSError, ValueError, TypeError):
         history = empty_history()
     qualified, historical, current = source_cleared_gems(root, as_of=today)
+    junior_active, junior_held = build_potential_list(root, as_of=today)
+    excluded = {str(x.get("Pipeline ID") or "") for x in qualified + historical}
+    junior_active = [r for r in junior_active
+                     if str(r.get("Pipeline ID") or "") not in excluded]
+    # Build cross-stage trial flags from exact active program identities; no
+    # archived GEM status is inherited by the current research listing.
+    company_trials, trial_coverage = _all_company_trials(
+        root, gem=qualified, junior=junior_active
+    )
     if stage == "GEM JR":
-        active, held = build_potential_list(root, as_of=today)
-        excluded = {str(x.get("Pipeline ID") or "") for x in qualified + historical}
-        active = [r for r in active if str(r.get("Pipeline ID") or "") not in excluded]
+        active, held = junior_active, junior_held
     else:
         active, held = qualified, historical
     active = enrich_stage_rows(active, "GEM_JR" if stage == "GEM JR" else "GEM", history)
@@ -438,7 +550,8 @@ def build_dashboard(stage, root="data", *, as_of=None):
     runway = load_snapshots(root)
     registry = _csv(root, "all_phase_trials.csv")
     pvalues = _csv(root, "phase3_primary_pvalues.csv")
-    candidates = [_candidate(stage, r, root, today, companies, finance, runway, registry, pvalues)
+    candidates = [_candidate(stage, r, root, today, companies, finance, runway,
+                             registry, pvalues, company_trials, trial_coverage)
                   for r in _rankings(stage, active, root, today)]
     departed = departed_stage_rows(history, "GEM_JR" if stage == "GEM JR" else "GEM")
     histories = [{"date": r.get("Date Left") or "", "ticker": r.get("Ticker") or "",
