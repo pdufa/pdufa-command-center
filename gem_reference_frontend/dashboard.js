@@ -259,7 +259,48 @@ function profileCard(r){
   const facts='<table class="data-table key-values"><tbody>'+r.profile.map(([key,val])=>'<tr><td class="label-cell">'+esc(key)+'</td><td title="'+esc(val)+'">'+esc(val)+'</td></tr>').join('')+'<tr><td class="label-cell">Current Status</td><td>'+badge(r.status,r.status_type)+'</td></tr></tbody></table>';
   return card("Selected Company","building",facts+companyTrialSection(r),"profile",badge(r.status,r.status_type));
 }
-function hierarchy(r){if(!r)return empty("No trial selected","Company → Drug / Indication → Trial. Each program retains its own evidence.");return `<div class="tree tree-body"><details open data-tree="company"><summary>Level 1 · ${esc(r.company)} (${esc(r.ticker)})</summary>${r.hierarchy.map((group,gi)=>`<details ${group.selected?"open":""} data-tree="drug-${gi}"><summary>Level 2 · ${esc(group.drug)} — ${esc(group.indication)}</summary>${group.trials.map(t=>`<details ${t.selected?"open":""} data-tree="trial-${esc(t.nct)}"><summary>Level 3 · ${esc(t.nct)} — ${esc(t.phase)}</summary><div class="trial-detail">${table(["Trial ID","Primary endpoint","p-value","Result / status"],[[safeLink(t.url,t.nct),esc(t.endpoint),esc(t.p_value),badge(t.result,t.result_type)]])}<div class="source-note">Readout: ${dateLabel(t.readout)} · Patients / sites: ${esc(t.patients || "Not available in saved feed")}</div>${t.note?`<div class="callout ${t.result_type==="pass"?"":"warning"}"><span class="status-icon">${t.result_type==="pass"?"✓":"!"}</span><span>${esc(t.note)}</span></div>`:""}</div></details>`).join("")}</details>`).join("")}</details></div>`;}
+function hierarchy(r){
+  if(!r)return empty("No trial selected","Select a company and program to review its source-linked clinical trials.");
+  const groups=Array.isArray(r.hierarchy)?r.hierarchy:[];
+  if(!groups.length)return empty("No trial IDs in saved evidence","Clinical trial data has not been verified for the selected company.");
+  const trialCount=groups.reduce((sum,g)=>sum+(g.trials||[]).length,0);
+  const statusTags=values=>(Array.isArray(values)?values:[]).map(stage=>
+    '<span class="trial-stage-tag '+(stage==="GEM"?"gem":"junior")+'">'+esc(stage)+'</span>').join("");
+  const groupHtml=groups.map((group,gi)=>{
+    const trials=(group.trials||[]).map(t=>{
+      const tags=statusTags(t.stage_labels);
+      const stage=tags||'<span class="muted">Not in GEM or GEM JR</span>';
+      const rows=[[
+        safeLink(t.url,t.nct),
+        esc(t.phase||"Phase not verified"),
+        esc(t.endpoint||"Not available in saved sources"),
+        esc(t.p_value||"Not available in saved sources"),
+        badge(t.result||"Result not verified",t.result_type||"unknown"),
+        stage
+      ]];
+      const evidence=t.evidence_url
+        ?safeLink(t.evidence_url,"Open saved primary evidence")
+        :'<span class="muted">Primary evidence link not saved</span>';
+      const details='<div class="trial-fields-scroll scroll">'+
+        table(["Trial link","Clinical phase","Primary endpoint","p-value","Result / status","Candidate status"],rows,"trial-evidence-table")+
+        '</div><div class="trial-extra"><span>Readout / posted date: '+dateLabel(t.readout)+'</span><span>'+evidence+'</span></div>'+
+        (t.p_value_note?'<p class="trial-provenance">'+esc(t.p_value_note)+'</p>':'')+
+        (t.selected&&t.note?'<p class="trial-provenance">'+esc(t.note)+'</p>':'');
+      return '<details '+(t.selected?"open":"")+' data-tree="trial-'+esc(t.nct)+'"><summary>'+
+        '<span>Level 3 · '+esc(t.nct)+' — '+esc(t.phase||"Phase not verified")+'</span>'+
+        '<span class="trial-title-stages">'+(tags||"")+'</span></summary>'+
+        '<div class="trial-detail">'+details+'</div></details>';
+    }).join("");
+    return '<details '+(group.selected?"open":"")+' data-tree="drug-'+gi+'"><summary>Level 2 · '+
+      esc(group.drug)+' — '+esc(group.indication)+'</summary>'+trials+'</details>';
+  }).join("");
+  const intro='<div class="trial-tree-toolbar"><span><strong>'+trialCount+'</strong> saved trials · '+groups.length+' drug/indication groups</span>'+
+    '<div><button type="button" data-action="trial-expand">Expand all</button> <button type="button" data-action="trial-collapse">Collapse all</button></div></div>';
+  const coverage='<p class="trial-tree-coverage">'+esc(r.company_trial_coverage||"Only saved trials are displayed; source coverage not verified.")+
+    ' Candidate tags require the same ticker and trial ID in the current GEM/GEM JR list. Missing data is not a negative clinical result.</p>';
+  return intro+'<div class="tree tree-body" data-trial-tree><details open data-tree="company"><summary>Level 1 · '+
+    esc(r.company)+' ('+esc(r.ticker)+')</summary>'+groupHtml+'</details></div>'+coverage;
+}
 function clinicalCard(r){return card("Trial Structure (3-Level View)","tree",hierarchy(r),"clinical");}
 function rulesCard(r){const rules=data.rules.map(x=>`<li>${esc(x)}</li>`).join("");return card("GEM Qualification Rules","file",`<div class="mini-tabs" role="tablist" aria-label="Qualification and trials"><button role="tab" aria-selected="${state.rulesTab!=="trials"}" class="${state.rulesTab!=="trials"?"active":""}" data-action="rules-tab" data-tab="rules">Qualification rules</button><button role="tab" aria-selected="${state.rulesTab==="trials"}" class="${state.rulesTab==="trials"?"active":""}" data-action="rules-tab" data-tab="trials">Trial structure · 3 levels</button></div>${state.rulesTab==="trials"?hierarchy(r):`<ol class="rules">${rules}</ol><div class="callout warning"><span class="status-icon">!</span><span><strong>Qualification ≠ automatic BUY.</strong> Valuation, technicals, runway, dilution and current sources still require review.</span></div>`}`,"qualification");}
 function financeCard(r,junior){
@@ -348,6 +389,14 @@ app.addEventListener("click",ev=>{
   const button=ev.target.closest("button[data-action]");if(!button||button.disabled)return;
   const action=button.dataset.action,id=button.dataset.id,r=data.candidates.find(x=>x.id===(id||state.selected));
   if(action==="select"){chooseCandidate(id,"details");}
+  else if(action==="trial-expand"||action==="trial-collapse"){
+    const open=action==="trial-expand";
+    for(const item of app.querySelectorAll(".tree[data-trial-tree] details[data-tree]")){
+      item.open=open;
+      state.tree[(state.selected||"")+":"+item.dataset.tree]=open;
+    }
+    persist();resize();announce((open?"Expanded ":"Collapsed ")+data.stage+" trial hierarchy.");
+  }
   else if(action==="criteria-toggle"){state.criteriaCollapsed=!state.criteriaCollapsed;render();app.querySelector(".criteria-collapse-toggle")?.focus();announce((state.criteriaCollapsed?"Collapsed ":"Expanded ")+data.stage+" rating criteria.");}
   else if(action==="criterion"){const key=button.dataset.criterion;if(!priorityCriteria().some(x=>x[0]===key))return;state.focus=state.focus===key?null:key;state.sort=null;state.desc=false;state.page=0;state.selected=matching()[0]?.id||null;render();announce(state.focus?"Sorted "+data.stage+" by "+criterionName():"Restored original "+data.stage+" order");}
   else if(action==="criteria-reset"){state.focus=null;state.sort=null;state.desc=false;state.page=0;state.selected=matching()[0]?.id||null;render();announce("Restored original "+data.stage+" order");}
