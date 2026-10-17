@@ -71,7 +71,10 @@ async function fromGitHub(path: string): Promise<unknown> {
     },
     // Server-cache shared telemetry to conserve GitHub's unauthenticated limit.
     // This does not cache the authenticated response to our dashboard visitors.
-    next: { revalidate: 45 },
+    // Public GitHub allows a much smaller hourly API budget without a token.
+    // Two API fetches per tracker poll would otherwise exhaust it in ~30min.
+    // Freshness is deliberately relaxed, not silently represented as live.
+    next: { revalidate: token ? 45 : 180 },
     signal: AbortSignal.timeout(12500),
   });
   if (!res.ok) throw new Error("GitHub telemetry HTTP " + res.status);
