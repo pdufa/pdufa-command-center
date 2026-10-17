@@ -40,7 +40,7 @@ class DyneTrancheTests(unittest.TestCase):
                             as_of=date(2026,10,17), issuer_sources=sources)
         result = verifier.financing(event)
         self.assertEqual(result["verification_status"], "VERIFIED", result)
-        self.assertIn("not the post-Phase-3 second-financing sequence", result["reason"])
+        self.assertIn("financing sequence are NOT verified", result["reason"])
         self.assertEqual(result["observed"], "2026-06-16")
         self.assertTrue(result["source_sha256"])
         other = dict(event, event_key="DYN|OTHER_DRUG_EVENT")
