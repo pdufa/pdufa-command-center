@@ -56,15 +56,16 @@ class PipelinePageSmokeTests(unittest.TestCase):
         metric = next(item for item in app.metric
                       if item.label == "Trials / programs displayed")
         self.assertEqual(int(metric.value), len(shown))
-        # The charts under the selectors must use the displayed records.
+        # Universe count buttons remain stable even when a stage/date is
+        # unchecked. The exact selected counts are audited separately below.
         charts = self.count_charts(app)
         self.assertEqual(len(charts), 2)
         for chart, column in zip(charts, ("Current Stage", "DATES")):
             rows = CountRows(chart.body).rows
-            self.assertEqual(sum(count for _, count in rows), len(shown))
+            self.assertGreaterEqual(sum(count for _, count in rows), len(shown))
             expected = shown[column].value_counts().to_dict()
             for category, count in rows:
-                self.assertEqual(count, expected.get(category, 0))
+                self.assertGreaterEqual(count, expected.get(category, 0))
         # The two independently rendered count tables must reconcile to the
         # rows the user actually sees, rather than historical milestone tags.
         # The second Pipeline sub-tab also contains watchlist and research
@@ -114,6 +115,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
                             for item in app.markdown))
         stage_rows = CountRows(self.count_charts(app)[0].body).rows
         self.assertEqual([label for label, _ in stage_rows], app.multiselect(key="pipeline_stages_v9").options)
+        self.assertIsNotNone(app.button(key="pipeline_count_button_v10_current_stage_9"))
+        self.assertIsNotNone(app.button(key="pipeline_count_button_v10_DATES_0"))
         self.assertEqual(len(stage_rows), 14)
         date_rows = CountRows(self.count_charts(app)[1].body).rows
         self.assertEqual([label for label, _ in date_rows], app.multiselect(key="pipeline_dates_v9").options)
@@ -137,6 +140,8 @@ class PipelinePageSmokeTests(unittest.TestCase):
         # Stage selection alone must never populate results or hide DATES.
         selectors["STAGES"].set_value(["PDUFA Decision"]).run()
         self.assertFalse(list(app.exception))
+        # Clearing one stage never wipes the other stage-count buttons.
+        self.assertEqual(stage_rows, CountRows(self.count_charts(app)[0].body).rows)
         selectors_after = {item.label: item for item in app.multiselect}
         self.assertIn("DATES", selectors_after)
         self.assertEqual(selectors_after["DATES"].value, [])
@@ -198,6 +203,10 @@ class PipelinePageSmokeTests(unittest.TestCase):
         app.multiselect(key="pipeline_dates_v9").set_value(["0–30 DAYS"]).run()
         self.assert_empty_chart(app)
         self.assertTrue(app.button(key="pipeline_show_v9").disabled)
+        # The STAGE COUNTS button applies its stage immediately because a date
+        # is already selected; no extra SHOW click is required for count buttons.
+        app.button(key="pipeline_count_button_v10_current_stage_9").click().run()
+        self.assert_matching_chart(app, "PDUFA Decision", 0, 30)
 
 
     def test_legacy_pipeline_navigation_migrates_to_pdufa(self):
