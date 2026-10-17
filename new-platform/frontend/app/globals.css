@@ -300,3 +300,56 @@ button.secondary { background: white; color: #172b1b; }
 .wt-factors h4{margin:8px 0;font-size:12px}
 .wt-factors .score-factor small{line-height:1.45}
 .wt-score-details>a{font-size:12px;color:#15699c;font-weight:700}
+
+/* Ported from original gem_reference_frontend/dashboard.css price/chart layout. */
+.parity-chart{font-family:Arial,Helvetica,sans-serif;display:flex;flex-direction:column;min-width:0;max-width:100%;border:1px solid #bcdde3;border-radius:5px;background:linear-gradient(110deg,#fff,#fbfdff);overflow:hidden;color:#193737;font-size:11px;margin:10px 0;}
+.parity-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;min-height:30px;padding:5px 8px;color:#101c4d;background:#edf6fb;}
+.parity-heading>strong{font-size:14px;}
+.parity-ranges{display:flex;gap:3px;flex-wrap:wrap;}
+.parity-ranges button,.parity-actions button,.parity-plan button{font-size:10px;padding:3px 7px;border:1px solid #aaccdf;background:white;color:#314962;border-radius:3px;cursor:pointer;}
+.parity-ranges button.active{background:#5c95bd;color:white;border-color:#5c95bd;}
+.parity-body{padding:5px 8px 7px;min-width:0;}
+.parity-subtitle{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:10px;color:#50697e;min-height:17px;padding:2px 4px;}
+.parity-subtitle strong{color:#13254c;}
+.parity-subtitle .price{color:#089d4b;font-weight:700;}
+.parity-subtitle .pill-note{font-size:9px;color:#728895;}
+.parity-legend{display:flex;flex-wrap:wrap;gap:9px;font-size:9px;padding:3px 4px;color:#4b6579;}
+.parity-legend span{display:inline-flex;align-items:center;gap:4px;}
+.parity-legend i{display:inline-block;width:11px;border-top:2px solid;}
+.parity-svg-wrap{position:relative;width:100%;min-height:235px;}
+.parity-svg{width:100%;height:auto;display:block;min-height:200px;touch-action:pan-y;}
+.parity-gridline{stroke:#e3edf4;stroke-width:1px;}
+.parity-axis{font-size:9px;fill:#556b7d;}
+.parity-tooltip{position:absolute;top:11px;left:45%;z-index:3;background:white;border:1px solid #a9cfdf;border-radius:3px;padding:6px;pointer-events:none;box-shadow:0 2px 8px #314e6325;font-size:10px;line-height:1.4;}
+.parity-caption{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;font-size:9px;padding:5px 3px 2px;color:#6c8192;}
+.parity-actions{display:inline-flex;align-items:center;flex-wrap:wrap;gap:5px;}
+.parity-actions a{color:#007bff;text-decoration:none;font-size:10px;font-weight:700;}
+.parity-external{min-height:280px;aspect-ratio:16/9;width:100%;position:relative;}
+.parity-external iframe{width:100%;height:100%;min-height:280px;border:0;}
+.parity-empty{display:grid;place-items:center;min-height:180px;padding:20px;text-align:center;background:#f9fcfe;border:1px dashed #bddbe9;border-radius:5px;color:#617b8d;line-height:1.5;font-size:12px;}
+.parity-plan{margin:7px 0;border:1px solid #a6cdce;border-radius:6px;background:#fbfffd;padding:11px;}
+.parity-plan>strong{font-size:12px;}
+.parity-plan>p{font-size:10px;margin:7px 0;color:#58717c;}
+.parity-plan>p[role=alert]{color:#ae3a20;}
+.parity-plan-fields{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:7px 0;}
+.parity-plan-fields label{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:700;}
+.parity-plan-fields input{width:130px;padding:5px 6px;border:1px solid #bcd8df;border-radius:4px;font-size:12px;}
+.parity-base{border-top:1px solid #bcdde3;padding:8px 10px 10px;background:#fafdff;}
+.parity-base summary{font-size:11px;color:#203c61;font-weight:800;cursor:pointer;line-height:1.5;}
+.parity-base>p{font-size:10px;line-height:1.45;margin:8px 0;color:#56758a;}
+.parity-check-table{overflow:auto;max-width:100%;}
+.parity-check-table table{border-collapse:collapse;width:100%;font-size:11px;}
+.parity-check-table th,.parity-check-table td{text-align:left;padding:6px 7px;border:1px solid #dceaf1;vertical-align:top;}
+.parity-check-table th{color:#172b50;background:#edf6fb;font-weight:800;}
+.parity-check-table td:nth-child(2){font-weight:700;color:#214b3b;white-space:nowrap;}
+.gem-profile>.parity-chart{margin:14px 0;}
+.wt-score-details>.parity-chart{margin:8px 0 13px;}
+@media(max-width:650px){
+ .parity-heading>strong{font-size:12px;}
+ .parity-svg-wrap{min-height:0;}
+ .parity-svg{min-height:150px;}
+ .parity-subtitle{font-size:9px;}
+ .parity-ranges button{font-size:10px;padding:5px 7px;}
+ .parity-check-table table{min-width:470px;}
+ .parity-external,.parity-external iframe{min-height:240px;}
+}
