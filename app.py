@@ -2909,6 +2909,34 @@ def render_pre_phase3():
             "Source integration failed. Original clinical and financing records were NOT changed. "
             f"Error type: {type(exc).__name__}"
         )
+        # Safe deployment diagnostic: cache provenance and file presence only.
+        # Never invent results, reveal credentials, or bypass source validation.
+        try:
+            status_file = data_root / "step7_live_status.json"
+            saved_status = step7_read_json(status_file) if status_file.is_file() else {}
+            files_present = {
+                filename: (data_root / filename).is_file()
+                for filename in (
+                    "step7_pre_phase3_feed.csv",
+                    "step7_financing_review.csv",
+                    "step7_live_status.json",
+                )
+            }
+            st.caption(
+                "PIPELINE display-cache diagnosis · generated UTC: " +
+                str(saved_status.get("generated_at_utc") or "MISSING") +
+                " · Pacific report date: " +
+                str(datetime.now(timezone.utc).astimezone(PACIFIC).date()) +
+                " · trial rows claimed: " +
+                str(saved_status.get("trial_rows", "MISSING")) +
+                " · scoring rubric: " +
+                str(saved_status.get("review_priority_rubric", "MISSING")) +
+                " · files present: " +
+                ", ".join(name + "=" + str(present)
+                          for name, present in files_present.items())
+            )
+        except (OSError, ValueError, TypeError, KeyError):
+            st.caption("PIPELINE cache metadata could not be read safely; source checks remain blocked.")
         return
 
     readiness = check_pre_phase3_readiness(
