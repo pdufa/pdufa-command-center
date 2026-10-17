@@ -536,10 +536,48 @@ function juniorHistoryCard(){
     empty("No matching recorded periods","Change the filters or await a fully observed GEM JR membership snapshot.",true);
   const foot='<div class="source-note">'+(count===0?'No GEM JR → GEM promotions have been recorded in this saved stage history. ':'')+'Latest saved GEM JR membership snapshot: '+dateLabel(data.history_snapshot)+
     '. Membership dates are observations from stage scans, not trial readout, financing or FDA dates. Other collectors may still report partial coverage. Missing promotions are not assumed.</div>';
-  return card("GEM JR — Promotion / Movement Timeline","history",summary+searchBar+content+foot,
-    "history jr-timeline");
+  return card("10 · Candidate History — GEM JR → GEM","history",summary+searchBar+content+foot,
+    "history stage-timeline jr-timeline");
 }
-function historyCard(){if(data.junior)return juniorHistoryCard();const rows=data.history;return card(data.junior?"Promotion History (GEM JR → GEM)":"Promotion / History / Exited Candidates","history",rows.length?table(["Date","Ticker","Drug / program","Movement / reason"],rows.map(r=>[dateLabel(r.date),esc(r.ticker),esc(r.drug),esc(r.reason)])): '<div class="history-empty">No scan-observed departures recorded in the saved stage ledger.<br>Discovery and departure dates are retained only when actually observed.</div>',"history");}
+function gemHistoryCard(){
+  const rows=Array.isArray(data.gem_timeline)?data.gem_timeline:[];
+  const search=String(state.historySearch||"").trim().toLowerCase();
+  const move=state.historyMove||"all";
+  const scope=state.historyScope||"all";
+  const current=data.candidates.find(x=>x.id===state.selected);
+  const filtered=rows.filter(r=>{
+    if(scope==="selected"&&(!current||r.id!==current.id))return false;
+    if(scope==="ticker"&&(!current||r.ticker!==current.ticker))return false;
+    if(move==="active"&&(r.current_stage!=="GEM"||r.left))return false;
+    if(move==="departed"&&!r.left)return false;
+    if(move==="reentered"&&r.movement!=="RE-ENTERED GEM")return false;
+    return !search||[r.ticker,r.drug,r.nct,r.id,r.reason,r.movement,r.current_stage].some(v=>String(v||"").toLowerCase().includes(search));
+  });
+  const active=new Set(rows.filter(r=>r.current_stage==="GEM"&&!r.left).map(r=>r.id)).size;
+  const departures=rows.filter(r=>!!r.left).length;
+  const summary='<div class="history-summary"><strong>'+rows.length+' scan-observed periods</strong><span>'+active+' active programs</span><span>'+departures+' departures</span><span>'+filtered.length+' shown</span></div>';
+  const controls='<div class="history-controls">'+
+    '<input id="history-search" aria-label="Search GEM candidate history" type="search" placeholder="Ticker, NCT, movement…" value="'+esc(state.historySearch||"")+'">'+
+    '<select id="history-move" aria-label="Filter GEM movements">'+
+    [["all","All movements"],["active","Active GEM"],["departed","Departed"],["reentered","Re-entered"]].map(([v,n])=>'<option value="'+v+'"'+(move===v?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select>'+
+    '<select id="history-scope" aria-label="Show selected program, ticker or all GEM history">'+
+    [["all","All programs"],["selected","Selected program"],["ticker","Selected ticker"]].map(([v,n])=>'<option value="'+v+'"'+(scope===v?" selected":"")+'>'+esc(n)+'</option>').join("")+'</select></div>';
+  const tableHtml=filtered.length?'<div class="history-table-wrap scroll"><table class="data-table history-timeline-table"><thead><tr>'+
+    ["First seen","Left GEM","Ticker / drug","NCT / Pipeline ID","Movement / status","Recorded reason"].map(x=>'<th scope="col">'+esc(x)+'</th>').join("")+
+    '</tr></thead><tbody>'+filtered.map(r=>'<tr>'+
+    '<td>'+dateLabel(r.found)+'</td><td>'+dateLabel(r.left)+'</td>'+
+    '<td class="wrap"><strong>'+esc(r.ticker)+'</strong><div>'+esc(r.drug)+'</div></td>'+
+    '<td class="wrap">'+(/^NCT\\d{8}$/.test(String(r.nct||""))?safeLink("https://clinicaltrials.gov/study/"+r.nct,r.nct):r.nct?esc(r.nct):'<span class="muted">NCT not recorded</span>')+
+    '<div class="history-id" title="'+esc(r.id)+'">'+esc(r.id)+'</div></td>'+
+    '<td class="wrap">'+badge(r.movement,r.movement==="LEFT GEM"?"review":"pass")+
+    '<div>Current: '+esc(r.current_stage)+'</div></td>'+
+    '<td class="wrap">'+esc(r.reason)+(r.duration_days!=null?'<div>'+esc(r.duration_days)+' days in period</div>':"")+'</td></tr>').join("")+'</tbody></table></div>':
+    empty("No matching GEM history","No observed periods match the filters. A complete, verified stage snapshot is needed to record movements.",true);
+  const note='<div class="source-note">Last complete GEM membership snapshot: '+dateLabel(data.gem_history_snapshot)+
+    '. Dates reflect scan-observed membership, not clinical announcements or trade executions. Incomplete scans do not establish exits.</div>';
+  return card("10 · Candidate History — GEM","history",summary+controls+tableHtml+note,"history stage-timeline gem-timeline");
+}
+function historyCard(){return data.junior?juniorHistoryCard():gemHistoryCard();}
 function gemExitCard(r){
   if(!r)return card("GEM — Exit / Risk Checklist","flag",
     empty("No candidate selected","Choose a GEM candidate to inspect saved exit-risk observations."),
@@ -584,12 +622,36 @@ function gemExitCard(r){
     '<span>Saved market date: '+dateLabel(r.market_date)+'</span></div>';
   return card("GEM — Exit / Risk Checklist ("+r.ticker+")","flag",head+
     '<div class="exit-review-scroll scroll">'+html+'</div>'+controls+
-    '<p class="exit-disclaimer">The saved hard-stop crossing is displayed separately from advisory SMA20, SMA50, MACD and RSI warnings. Alerts are not sell instructions. PDUFA policy is configured separately in Section 11. No orders are placed.</p>',
+    '<p class="exit-disclaimer">The saved hard-stop crossing is displayed separately from advisory SMA20, SMA50, MACD and RSI warnings. Alerts are not sell instructions. PDUFA policy is configured in a separate GEM-only trading control. No orders are placed.</p>',
     "gem-exit",'<span class="score-badge unavailable">Exit risk: '+(finite(r.exit_risk)?num(r.exit_risk,0)+"/100 · provisional":"N/A")+'</span>');
 }
-function alertsCard(r){const rows=r?r.alerts:data.alerts;return card(data.junior?"Alerts / Watchlist":"Alerts / Watchlist / Trade","bell",rows.length?table(["Date","Ticker","Event","Details"],rows.map(x=>[dateLabel(x.date),esc(x.ticker),esc(x.type),`<span title="${esc(x.detail)}">${x.url?safeLink(x.url,x.detail):esc(x.detail)}</span>`])):'<div class="history-empty">No source-linked alerts for this selection. Review published scans for updates.</div>',"alerts",`<button class="scan-open" data-action="navigate" data-tab="WT">Open W / T</button>`);}
+function alertsCard(r){
+  const scope=state.alertScope==="all"?"all":"selected";
+  const selected=scope==="selected"&&r;
+  const stageRows=Array.isArray(data.candidates)?
+    data.candidates.flatMap(x=>Array.isArray(x.alerts)?x.alerts:[]):[];
+  const raw=selected?(Array.isArray(r.alerts)?r.alerts:[]):stageRows;
+  const sorted=[...raw].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+  const rows=sorted.slice(0,40);
+  const picker='<label class="alerts-filter-label" for="alert-scope">Show </label>'+
+    '<select id="alert-scope" aria-label="Alert scope">'+
+    '<option value="selected"'+(scope==="selected"?" selected":"")+'>Selected candidate</option>'+
+    '<option value="all"'+(scope==="all"?" selected":"")+'>All '+esc(data.stage)+' candidates</option></select>';
+  const listing=rows.length?'<div class="alerts-table-wrap scroll">'+
+    table(["Saved date","Ticker","Source event","Details / evidence"],rows.map(x=>[
+      dateLabel(x.date),esc(x.ticker),esc(x.type),
+      x.url?safeLink(x.url,x.detail||"Open saved source"):esc(x.detail||"Source not recorded")
+    ]))+'</div>':
+    empty("No saved alerts in this view","Saved scans have not recorded matching source-linked events; this is not a live notification feed.",true);
+  const note='<p class="alerts-disclosure">'+rows.length+' of '+sorted.length+' saved alerts shown. '+(scope==="all"?
+    'All current candidates in '+esc(data.stage)+'.':'Selected program only.')+
+    ' Dates and source URLs come from saved records; missing alerts do not prove no risk.</p>';
+  return card("11 · Alerts / Watchlist","bell",
+    '<div class="alerts-controls">'+picker+'</div>'+listing+note,
+    "alerts shared-alerts",'<button class="scan-open" data-action="navigate" data-tab="WT">Open Watchlist</button>');
+}
 function scansCard(){return card("Scan Diagnostics","pulse",table(["Scan Type","Last Update","Status"],data.scans.map(s=>[esc(s.label),`<span title="${esc(s.date)}">${dateLabel(s.date)}</span>`,badge(s.status,s.type)]))+`<div class="source-note">10 PM Pacific sequential schedule · ${esc(data.scan_note)}</div>`,"diagnostics",'<button class="scan-open" data-action="navigate" data-tab="SCANS">Open scans</button>');}
-function policyCard(){const value=state.policy;return card("Hard Stop / PDUFA Exit Policy","flag",`<p>${value==="unresolved"?"Policy decision required:":"Selected research policy:"}</p><div class="policy-options">${[["pre","Exit before PDUFA (reduce event risk)"],["partial","Hold a partial position through PDUFA"],["hold","Hold the full position through PDUFA"]].map(([id,label])=>`<label><input type="radio" name="exit-policy" value="${id}"${value===id?" checked":""}>${esc(label)}</label>`).join("")}</div><div class="callout warning"><span>! ${value==="unresolved"?"Unresolved. Define a consistent exit policy.":"Saved as a research preference. Apply manually with your position and risk plan."}</span></div>`,"policy-card");}
+function policyCard(){const value=state.policy;return card("PDUFA Exit Policy · GEM only","flag",`<p>${value==="unresolved"?"Policy decision required:":"Selected research policy:"}</p><div class="policy-options">${[["pre","Exit before PDUFA (reduce event risk)"],["partial","Hold a partial position through PDUFA"],["hold","Hold the full position through PDUFA"]].map(([id,label])=>`<label><input type="radio" name="exit-policy" value="${id}"${value===id?" checked":""}>${esc(label)}</label>`).join("")}</div><div class="callout warning"><span>! ${value==="unresolved"?"Unresolved. Define a consistent exit policy.":"Saved as a research preference. Apply manually with your position and risk plan."}</span></div>`,"policy-card");}
 function criteriaCard(){
   const list=priorityCriteria().map((item,index)=>{
     const [key,title,hint]=item,active=state.focus===key;
@@ -615,13 +677,13 @@ function render(focusSearch=false,focusTrialSearch=false,focusHistorySearch=fals
   const intro=data.junior?"Earlier Setups (Post Phase 3 / Pre-PDUFA)":"Higher Conviction (Near PDUFA)";
   const subtitle=data.junior?"Earlier setups with more time to develop. Monitor trial evidence, financing progress and promotion to GEM.":"Later-stage research with stronger qualification requirements. Exact-program Phase 3 and two independently verified financing closures.";
   const notice=data.notice||(!data.source_current?"Published SEC / source coverage is partial or stale. Clinical and financing clearance does not clear new trading entries.":"");
-  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout ${state.criteriaCollapsed?"criteria-collapsed":""}">${criteriaCard()}${candidateCard(rows)}</div>${reviewNavigator(rows,r)}${state.chartFocus?'<button type="button" class="chart-backdrop" data-action="close-chart" aria-label="Close enlarged chart"></button>':""}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${juniorEntryCard(r)}${section9Card(r)}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${section9Card(r)}${gemExitCard(r)}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
+  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout ${state.criteriaCollapsed?"criteria-collapsed":""}">${criteriaCard()}${candidateCard(rows)}</div>${reviewNavigator(rows,r)}${state.chartFocus?'<button type="button" class="chart-backdrop" data-action="close-chart" aria-label="Close enlarged chart"></button>':""}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${juniorEntryCard(r)}${section9Card(r)}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${section9Card(r)}${gemExitCard(r)}</div><div class="grid footer gem-footer">${historyCard()}${alertsCard(r)}${scansCard()}</div><div class="gem-only-controls" role="region" aria-label="GEM-only trading controls"><div class="gem-only-label"><strong>GEM-only trading control</strong><span>Separate from numbered Sections 10 and 11</span></div>${policyCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
   app.setAttribute("aria-busy","false");drawPriceChart(r);if(state.chartFocus){const enlarged=app.querySelector(".focused-chart");enlarged?.setAttribute("role","dialog");enlarged?.setAttribute("aria-modal","true");enlarged?.setAttribute("aria-label","Enlarged "+data.stage+" price chart");enlarged?.querySelector(".chart-close")?.focus();}persist();
   app.querySelectorAll("details[data-tree]").forEach(el=>{const key=r?.id+":"+el.dataset.tree;if(Object.hasOwn(state.tree,key))el.open=state.tree[key];el.addEventListener("toggle",()=>{state.tree[key]=el.open;persist();});});
   if(focusSearch){const input=document.getElementById("candidate-search");input.focus();input.setSelectionRange(input.value.length,input.value.length);}if(focusTrialSearch){const input=document.getElementById("company-trial-search");input?.focus();input?.setSelectionRange(input.value.length,input.value.length);}if(focusHistorySearch){const input=document.getElementById("history-search");input?.focus();input?.setSelectionRange(input.value.length,input.value.length);}resize();
 }
 app.addEventListener("input",ev=>{if(ev.target.id==="candidate-search"){state.search=ev.target.value;state.page=0;render(true);}else if(ev.target.id==="history-search"){state.historySearch=ev.target.value;render(false,false,true);}else if(ev.target.id==="company-trial-search"){state.companyTrialSearch=ev.target.value;state.companyTrialPage=0;render(false,true);}});
-app.addEventListener("change",ev=>{if(ev.target.id==="status-filter"){state.status=ev.target.value;state.page=0;render();}if(ev.target.id==="history-move"){state.historyMove=ev.target.value;render();}if(ev.target.id==="history-scope"){state.historyScope=ev.target.value;render();}if(ev.target.id==="candidate-jump"){chooseCandidate(ev.target.value,"details");}if(ev.target.name==="exit-policy"){state.policy=ev.target.value;write("gem_pdufa_exit_policy",state.policy);persist();send("policy",{policy:state.policy});announce("Research exit policy saved.");}});
+app.addEventListener("change",ev=>{if(ev.target.id==="status-filter"){state.status=ev.target.value;state.page=0;render();}if(ev.target.id==="history-move"){state.historyMove=ev.target.value;render();}if(ev.target.id==="history-scope"){state.historyScope=ev.target.value;render();}if(ev.target.id==="alert-scope"){state.alertScope=ev.target.value==="all"?"all":"selected";render();}if(ev.target.id==="candidate-jump"){chooseCandidate(ev.target.value,"details");}if(ev.target.name==="exit-policy"){state.policy=ev.target.value;write("gem_pdufa_exit_policy",state.policy);persist();send("policy",{policy:state.policy});announce("Research exit policy saved.");}});
 app.addEventListener("click",ev=>{
   const button=ev.target.closest("button[data-action]");if(!button||button.disabled)return;
   const action=button.dataset.action,id=button.dataset.id,r=data.candidates.find(x=>x.id===(id||state.selected));
@@ -657,7 +719,7 @@ app.addEventListener("click",ev=>{
 function exportRows(rows){const fields=[["Ticker","ticker"],["Company","company"],["Drug","drug"],["Indication","indication"],["NCT ID","nct"],["Exact program","id"],["Phase 3 readout","readout"],["PDUFA","pdufa"],["Financing","financing_label"],["Runway months","runway"],["Market cap USD","market_cap"],["PoA (saved)","poa_display"],["Entry readiness","entry"],["Exit risk","exit_risk"],["Status","trade_status"]];const cell=x=>'"'+String(x??"").replace(/^[=+@\t\r-]/,"'$&").replace(/"/g,'""')+'"';const csv=[fields.map(x=>cell(x[0])).join(","),...rows.map(r=>fields.map(x=>cell(r[x[1]])).join(","))].join("\r\n");const url=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download=data.stage.toLowerCase().replace(/ /g,"-")+"-candidates.csv";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);announce("Exported "+rows.length+" matching source records.");}
 document.getElementById("plan-form").addEventListener("submit",ev=>{if(ev.submitter?.value!=="save")return;ev.preventDefault();const form=ev.target,plan={};for(const k of ["entry","stop","target"]){if(form.elements[k].value!==""){const v=Number(form.elements[k].value);if(!Number.isFinite(v)||v<=0)return;plan[k]=v;}}if(finite(plan.entry)&&((finite(plan.stop)&&plan.stop>=plan.entry)||(finite(plan.target)&&plan.target<=plan.entry))){document.getElementById("plan-error").textContent="Use a stop below entry and a target above entry.";return;}write("gem_chart_plan_"+form.dataset.id,plan);document.getElementById("plan-dialog").close();render();announce("Chart reference levels saved for this exact program.");});
 document.querySelector('[data-action="clear-plan"]').addEventListener("click",()=>{const form=document.getElementById("plan-form");write("gem_chart_plan_"+form.dataset.id,{});document.getElementById("plan-dialog").close();render();});
-window.addEventListener("message",event=>{if(event.source!==window.parent||event.data?.type!=="streamlit:render")return;const payload=event.data.args?.payload;if(!payload||!Array.isArray(payload.candidates))return;const changed=!data||data.stage!==payload.stage;data=payload;if(changed){state={search:"",status:"All Statuses",sort:null,desc:false,focus:null,criteriaCollapsed:false,historySearch:"",historyMove:"all",historyScope:"all",page:0,selected:null,companyTrialTicker:null,companyTrialSearch:"",companyTrialPage:0,range:"6M",chartMode:"saved",rulesTab:"rules",financeTab:"financing",policy:read("gem_pdufa_exit_policy","unresolved"),tree:{},...sessionRead("gem_dashboard_"+data.stage)};if(!["pre","partial","hold","unresolved"].includes(state.policy))state.policy="unresolved";state.tree=state.tree||{};state.criteriaCollapsed=state.criteriaCollapsed===true;if(!priorityCriteria().some(x=>x[0]===state.focus))state.focus=null;state.chartFocus=false;}render();});
+window.addEventListener("message",event=>{if(event.source!==window.parent||event.data?.type!=="streamlit:render")return;const payload=event.data.args?.payload;if(!payload||!Array.isArray(payload.candidates))return;const changed=!data||data.stage!==payload.stage;data=payload;if(changed){state={search:"",status:"All Statuses",sort:null,desc:false,focus:null,criteriaCollapsed:false,historySearch:"",historyMove:"all",historyScope:"all",alertScope:"selected",page:0,selected:null,companyTrialTicker:null,companyTrialSearch:"",companyTrialPage:0,range:"6M",chartMode:"saved",rulesTab:"rules",financeTab:"financing",policy:read("gem_pdufa_exit_policy","unresolved"),tree:{},...sessionRead("gem_dashboard_"+data.stage)};if(!["pre","partial","hold","unresolved"].includes(state.policy))state.policy="unresolved";state.tree=state.tree||{};state.criteriaCollapsed=state.criteriaCollapsed===true;if(!priorityCriteria().some(x=>x[0]===state.focus))state.focus=null;state.chartFocus=false;}render();});
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&state?.chartFocus){ev.preventDefault();state.chartFocus=false;render();document.getElementById("candidate-review")?.querySelector('[data-action="open-chart"]')?.focus();}});
 new ResizeObserver(()=>resize()).observe(document.body);
 window.parent.postMessage({isStreamlitMessage:true,type:"streamlit:componentReady",apiVersion:1},"*");
