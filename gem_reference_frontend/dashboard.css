@@ -87,3 +87,27 @@
 .criteria-card .criteria-intro::after{content:" Scroll this panel to choose more criteria.";font-weight:700;color:#156b9d}
 @media(max-width:960px){.criteria-card .criteria-list.scroll{grid-template-columns:repeat(2,minmax(0,1fr));max-height:440px}}
 @media(max-width:560px){.criteria-card .criteria-list.scroll{grid-template-columns:1fr;max-height:385px}}
+
+/* Section 4 — company-wide trial references and exact-stage badges */
+.profile .card-body{overflow-y:auto;scrollbar-width:thin}
+.company-trial-list{border-top:1px solid #c7deeb;margin-top:9px;padding-top:8px;min-width:0}
+.company-trial-header{display:flex;justify-content:space-between;gap:7px;align-items:center;flex-wrap:wrap;color:#153b6a;margin-bottom:5px}
+.company-trial-header h3{font-size:12px}
+.company-trial-header>span{font-size:10px;background:#e5f5ff;border-radius:3px;padding:3px 6px;font-weight:700}
+.company-trial-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:10px;margin-bottom:5px}
+.company-trial-controls input{flex:1;min-width:125px;max-width:260px;border:1px solid #b9d7e6;border-radius:4px;padding:4px 6px;font-size:10px}
+.company-trial-scroll{max-height:253px;border:1px solid #d8eaf2;border-radius:4px;overflow:auto}
+.company-trial-table{min-width:370px;font-size:9px;table-layout:fixed}
+.company-trial-table th{position:sticky;top:0;z-index:1}
+.company-trial-table td{white-space:normal;overflow-wrap:anywhere;vertical-align:top;padding:5px 4px}
+.company-trial-table td:nth-child(3){white-space:nowrap}
+.company-trial-table .trial-muted{font-size:9px;color:#4f6c83;margin-top:3px}
+.company-trial-table tr.company-trial-current{background:#e3f6ff!important;box-shadow:inset 3px 0 #1784d6}
+.trial-stage-tag{display:inline-block;font-weight:750;white-space:nowrap;font-size:9px;padding:2px 5px;border-radius:3px;margin:1px 2px 1px 0}
+.trial-stage-tag.gem{background:#c5f1d9;color:#075930}
+.trial-stage-tag.junior{background:#dfebff;color:#124782}
+.company-trial-pagination{display:flex;justify-content:space-between;align-items:center;gap:5px;margin:5px 0;font-size:9px;flex-wrap:wrap}
+.company-trial-pagination button{font-size:9px;padding:4px 6px}
+.company-trial-coverage{color:#516b84;font-size:9px;line-height:1.35;margin-top:5px}
+.jr-top,.gem-top{min-height:350px}
+@media(max-width:700px){.company-trial-scroll{max-height:300px}.company-trial-controls input{min-width:110px}.company-trial-table{min-width:410px}}
