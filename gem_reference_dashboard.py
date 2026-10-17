@@ -237,45 +237,136 @@ def _all_company_trials(root, *, gem, junior):
     return by_ticker, coverage
 
 
-def _hierarchy(record, event, company, registry, pvalues):
-    """Company → actual drug/indication → NCT. Siblings keep their own evidence."""
-    ticker, selected_nct = record["Ticker"], str(record.get("NCT ID") or "")
-    own = [r for r in registry if r.get("ticker") == ticker and
-           ("3" in str(r.get("phase") or "") or r.get("nct_id") == selected_nct)]
-    by_nct = _unique(own, "nct_id")
-    # The selected exact application may not be in this registry snapshot.
-    if selected_nct and selected_nct not in by_nct:
-        by_nct[selected_nct] = {"nct_id": selected_nct, "drug": record.get("Drug"),
-                                "indication": record.get("Indication"), "phase": "Phase 3"}
+def _hierarchy(record, event, company, registry, pvalues, company_trials=None):
+    """Company -> drug/indication -> exact NCT, including all saved phases.
+
+    Membership is an exact ticker+NCT join to the current GEM/GEM JR queues.
+    Trial registry status alone never means a successful primary endpoint.
+    """
+    ticker = clean_ticker(record.get("Ticker"))
+    selected_ncts = set(re.findall(
+        r"NCT\d{8}", str(record.get("NCT ID") or "").upper()
+    ))
+    by_nct = {}
+
+    # A company-level inventory is also used by Section 4. Use it here to
+    # expose Phase 1/2/3/4 siblings, not just Phase 3 observations.
+    for item in company_trials or []:
+        nct = str(item.get("nct") or "").strip().upper()
+        if not re.fullmatch(r"NCT\d{8}", nct):
+            continue
+        by_nct[nct] = {
+            "nct_id": nct, "drug": item.get("drug") or "",
+            "indication": item.get("indication") or "",
+            "phase": item.get("phase") or "",
+            "source_url": item.get("selected_source") or "",
+            "status": item.get("status") or "",
+            "results_posted": item.get("results_posted") or "",
+            "stage_labels": [x for x in ("GEM JR", "GEM")
+                             if x in (item.get("stage_labels") or [])],
+        }
+
+    # Keep exact same-issuer registry rows when the company inventory is not
+    # supplied by a caller, and enrich missing registry details when it is.
+    for trial in registry:
+        if clean_ticker(trial.get("ticker")) != ticker:
+            continue
+        nct = str(trial.get("nct_id") or "").strip().upper()
+        if not re.fullmatch(r"NCT\d{8}", nct):
+            continue
+        entry = by_nct.setdefault(nct, {
+            "nct_id": nct, "drug": "", "indication": "", "phase": "",
+            "source_url": "", "status": "", "results_posted": "",
+            "stage_labels": [],
+        })
+        for field in ("drug", "indication", "status", "results_posted", "source_url"):
+            if not entry.get(field) and trial.get(field):
+                entry[field] = trial[field]
+        if (not entry.get("phase") or
+                entry["phase"] == "Not verified in saved sources"):
+            entry["phase"] = trial.get("phase") or trial.get("phases") or ""
+
+    # A current research candidate can have no full clinical registry record.
+    # Never backfill "Phase 3" merely because the selected card is in GEM.
+    for nct in selected_ncts:
+        by_nct.setdefault(nct, {
+            "nct_id": nct, "drug": record.get("Drug") or "",
+            "indication": record.get("Indication") or "",
+            "phase": "", "source_url": "", "status": "",
+            "results_posted": "", "stage_labels": [],
+        })
+
     groups = {}
     for nct, trial in by_nct.items():
-        selected = nct == selected_nct
-        drug = _text(record.get("Drug") if selected else trial.get("drug"))
-        indication = _text(record.get("Indication") if selected else trial.get("indication"))
+        selected = nct in selected_ncts
+        drug = _text((record.get("Drug") if selected else trial.get("drug"))
+                     or trial.get("drug"), "Drug not recorded")
+        indication = _text((record.get("Indication") if selected
+                            else trial.get("indication")) or trial.get("indication"),
+                           "Indication not recorded")
         group = groups.setdefault((drug, indication), {
-            "drug": drug, "indication": indication, "selected": False, "trials": [],
+            "drug": drug, "indication": indication, "selected": False,
+            "trials": [],
         })
         group["selected"] = group["selected"] or selected
-        statistics = [r for r in pvalues if r.get("nct_id") == nct and r.get("ticker") == ticker]
-        endpoints = "; ".join(dict.fromkeys(_text(r.get("primary_endpoint"), "") for r in statistics)).strip("; ")
-        pvals = "; ".join(dict.fromkeys(_text(r.get("p_value"), "") for r in statistics)).strip("; ")
-        verified = selected and str(record.get("Phase 3 status") or "") == "PRIMARY_MET_VERIFIED"
-        source = ((record.get("Phase 3 source") or record.get("Clinical source") or
-                   event.get("trial_evidence_url")) if selected else trial.get("source_url"))
-        group["trials"].append({
-            "nct": nct, "phase": _text(trial.get("phase"), "Phase 3"),
-            "selected": selected, "url": source or f"https://clinicaltrials.gov/study/{nct}",
-            "endpoint": endpoints or "Not available in saved feed",
-            "p_value": pvals or (_text(event.get("reported_p_values")) if selected else "—"),
-            "readout": (record.get("Phase 3 date") or event.get("phase3_date") or "")
-                       if selected else trial.get("results_posted", ""),
-            "patients": None, "result": "Primary met" if verified else _text(trial.get("status"), "Review source"),
-            "result_type": "pass" if verified else "unknown",
-            "note": ("Successful Phase 3 is source-cleared for this exact program." if verified
-                     else "A registry status alone does not establish a successful primary endpoint."),
-        })
-    return sorted(groups.values(), key=lambda x: (not x["selected"], x["drug"], x["indication"]))
 
+        # Endpoint evidence must match this trial ID and issuer: no inheritance
+        # across siblings or from other stocks reporting the same NCT.
+        matched = [row for row in pvalues
+                   if clean_ticker(row.get("ticker")) == ticker
+                   and str(row.get("nct_id") or "").strip().upper() == nct]
+        endpoints = "; ".join(dict.fromkeys(
+            str(row.get("primary_endpoint") or "").strip() for row in matched
+            if str(row.get("primary_endpoint") or "").strip()
+        ))
+        pvals = "; ".join(dict.fromkeys(
+            str(row.get("p_value") or "").strip() for row in matched
+            if str(row.get("p_value") or "").strip()
+        ))
+        pval_provenance = "Trial-matched saved endpoint evidence" if pvals else ""
+        if not pvals and selected and len(selected_ncts) == 1:
+            # This is a *program-level* value, not validated trial evidence.
+            pvals = str(event.get("reported_p_values") or "").strip()
+            if pvals:
+                pval_provenance = "Program-level reported p-value; exact endpoint not independently checked"
+        verified = (selected and len(selected_ncts) == 1
+                    and str(record.get("Phase 3 status") or "") == "PRIMARY_MET_VERIFIED")
+        primary_source = str(trial.get("source_url") or "").strip()
+        if not primary_source and selected:
+            primary_source = str(
+                record.get("Phase 3 source") or record.get("Clinical source")
+                or event.get("trial_evidence_url") or ""
+            ).strip()
+        if not primary_source.startswith("https://"):
+            primary_source = ""
+
+        stage_labels = [x for x in ("GEM JR", "GEM")
+                        if x in (trial.get("stage_labels") or [])]
+        group["trials"].append({
+            "nct": nct,
+            "phase": _text(trial.get("phase"), "Phase not verified"),
+            "selected": selected,
+            "url": f"https://clinicaltrials.gov/study/{nct}",
+            "evidence_url": primary_source,
+            "endpoint": endpoints or "Not available in saved sources",
+            "p_value": pvals or "Not available in saved sources",
+            "p_value_note": pval_provenance,
+            "readout": ((record.get("Phase 3 date") or event.get("phase3_date") or "")
+                        if selected else trial.get("results_posted") or ""),
+            "patients": None,
+            "result": ("Primary met — source-cleared" if verified
+                       else _text(trial.get("status"), "Result not verified")),
+            "result_type": "pass" if verified else "unknown",
+            "stage_labels": stage_labels,
+            "note": ("Source-cleared only for this exact program; does not authorize a trade."
+                     if verified else
+                     "Clinical trial phase and completion status do not prove endpoint success."),
+        })
+    for group in groups.values():
+        group["trials"].sort(key=lambda t: (not t["selected"], t["nct"]))
+    return sorted(groups.values(), key=lambda x: (
+        not x["selected"], x["drug"].casefold(), x["indication"].casefold()
+    ))
 
 
 def _criterion_facts(record, event, master, profile, funding, pvalues, ticker, clinical_url):
@@ -502,7 +593,8 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "financings": financings_display, "sources": sources, "profile": info,
         "entry_checks": _checks(score.get("entry_factors"), record, event, profile, junior=junior),
         "exit_checks": _checks(score.get("exit_factors"), record, event, profile, junior=junior, exit_risk=True),
-        "hierarchy": _hierarchy(record, event, company, registry, pvalues), "alerts": alerts,
+        "hierarchy": _hierarchy(record, event, company, registry, pvalues,
+                                (company_trials or {}).get(ticker, [])), "alerts": alerts,
         "bars": [{"date": b["date"].isoformat(), "close": b["close"], "volume": b["volume"]}
                  for b in profile.get("bars", [])],
         "market_date": profile["date"].isoformat() if profile.get("date") else "",
