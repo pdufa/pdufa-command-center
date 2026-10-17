@@ -10,6 +10,7 @@ const REPO = "pdufa/pdufa-command-center";
 const CONTROL = "pdufa-scan-control.yml";
 const OVERNIGHT = "pdufa-overnight-sequential.yml";
 const GMAIL = "pdufa-gmail-section-audit.yml";
+const GMAIL_REPAIR = "pdufa-gmail-repair-cleanup.yml";
 const GMAIL_SECTIONS = ["ALL", "INBOX", "SENT_MAIL", "PDUFA", "SCAN_START", "SCAN_END", "SCAN_ERROR", "DAILY_REPORT", "WEEKLY_REPORT"] as const;
 const ACTIONS = ["VERIFY_ALL", "REVERIFY_PARTIAL", "RESCAN_ALL"] as const;
 const SCANS = ["ALL", "PIPELINE", "GEM_JR", "GEM"] as const;
@@ -63,10 +64,10 @@ async function recent(workflow: string): Promise<Run[]> {
 export async function GET(req: NextRequest) {
   if (!authenticated(req)) return json({ error: "Authentication required" }, 401);
   try {
-    const [manual, overnight, gmail] = await Promise.all([recent(CONTROL), recent(OVERNIGHT), recent(GMAIL)]);
+    const [manual, overnight, gmail, gmailRepair] = await Promise.all([recent(CONTROL), recent(OVERNIGHT), recent(GMAIL), recent(GMAIL_REPAIR)]);
     return json({
       dispatchEnabled: Boolean(process.env.PDUFA_GITHUB_TOKEN?.trim()),
-      manual: manual.slice(0, 5), overnight: overnight.slice(0, 5), gmail: gmail.slice(0, 5),
+      manual: manual.slice(0, 5), overnight: overnight.slice(0, 5), gmail: gmail.slice(0, 5), gmailRepair: gmailRepair.slice(0, 5),
       workflowUrl: WORKFLOW_URL,
     });
   } catch {
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
   const input: unknown = await req.json().catch(() => null);
   if (!input || typeof input !== "object" || Array.isArray(input)) return json({ error: "Invalid scan request" }, 422);
   const { action, scan, section } = input as Record<string, unknown>;
-  const isGmail = action === "GMAIL_AUDIT" && typeof section === "string" &&
+  const isGmail = (action === "GMAIL_AUDIT" || action === "GMAIL_REPAIR_CLEANUP") && typeof section === "string" &&
     GMAIL_SECTIONS.includes(section as typeof GMAIL_SECTIONS[number]);
   const isScan = typeof action === "string" && ACTIONS.includes(action as typeof ACTIONS[number]) &&
     typeof scan === "string" && SCANS.includes(scan as typeof SCANS[number]);
@@ -101,15 +102,15 @@ export async function POST(req: NextRequest) {
   }
   try {
     // Fail closed on uncertainty: do not create a second overnight/interactive chain.
-    const [manual, overnight, gmail] = await Promise.all([recent(CONTROL), recent(OVERNIGHT), recent(GMAIL)]);
-    const active = [...manual, ...overnight, ...gmail].find(run => ACTIVE.has(run.status));
+    const [manual, overnight, gmail, gmailRepair] = await Promise.all([recent(CONTROL), recent(OVERNIGHT), recent(GMAIL), recent(GMAIL_REPAIR)]);
+    const active = [...manual, ...overnight, ...gmail, ...gmailRepair].find(run => ACTIVE.has(run.status));
     if (active) {
       return json({
         error: "An existing scan is queued or running; another scan was not started",
         activeRunUrl: active.html_url,
       }, 409);
     }
-    const workflow = isGmail ? GMAIL : CONTROL;
+    const workflow = action === "GMAIL_REPAIR_CLEANUP" ? GMAIL_REPAIR : isGmail ? GMAIL : CONTROL;
     const inputs = isGmail ? { section } : { action, scan };
     const response = await github("/actions/workflows/" + workflow + "/dispatches", {
       method: "POST",
@@ -121,8 +122,9 @@ export async function POST(req: NextRequest) {
     }
     return json({
       accepted: true, action, scan: isScan ? scan : undefined, section: isGmail ? section : undefined,
-      workflowUrl: isGmail ? "https://github.com/" + REPO + "/actions/workflows/" + GMAIL : WORKFLOW_URL,
-      message: isGmail ? "Read-only Gmail header audit accepted, not yet completed. Review the GitHub run summary and retained aggregate artifact." :
+      workflowUrl: isGmail ? "https://github.com/" + REPO + "/actions/workflows/" + workflow : WORKFLOW_URL,
+      message: action === "GMAIL_REPAIR_CLEANUP" ? "Safe-repair and resolved-notice cleanup requested. Only the exact failed GitHub run successfully retried may have its failure notice moved to Trash; unresolved messages remain. Review job summary." :
+        isGmail ? "Read-only Gmail header audit accepted, not yet completed. Review the GitHub run summary and retained aggregate artifact." :
         "Scan request accepted by GitHub Actions, not yet completed. Review the run and published evidence before relying on its output.",
     }, 202);
   } catch {
