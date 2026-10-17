@@ -45,8 +45,21 @@ async function audit() {
       ? ["GEM JR — Research Entry Checklist", "GEM JR — Exit / Downgrade Review", "12 · Scan Diagnostics"]
       : ["GEM — Entry Qualification Checklist", "GEM — Exit / Risk Checklist", "12 · Scan Diagnostics"];
     for(const label of expected) {
-      if(!await dashboard.getByRole("heading",{name:label,exact:true}).count())
-        throw Error(stage+" missing current dashboard section "+label);
+      // Streamlit components can re-mount after the stage tab becomes visible.
+      // Retry the exact same assertion, never substitute a weaker section title.
+      let visible=false;
+      for(let attempt=0;attempt<18;attempt++) {
+        if(await dashboard.getByRole("heading",{name:label,exact:true}).count()) {
+          visible=true;
+          break;
+        }
+        await delay(700);
+      }
+      if(!visible) {
+        const headings=await dashboard.locator("h1,h2,h3").allInnerTexts().catch(()=>[]);
+        throw Error(stage+" missing current dashboard section "+label+
+          "; rendered headings: "+JSON.stringify(headings.slice(0,50)));
+      }
     }
     const table=dashboard.locator(".candidate-table");
     const rows=await table.locator("tbody tr").count();
