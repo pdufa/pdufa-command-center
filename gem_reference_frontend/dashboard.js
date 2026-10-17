@@ -319,7 +319,8 @@ function criteriaCard(){
   }).join("");
   const active=criterionName();
   const collapsed=state.criteriaCollapsed===true;
-  const tools='<button type="button" class="criteria-collapse-toggle" data-action="criteria-toggle" aria-controls="stage-rating-content" aria-expanded="'+(!collapsed)+'" title="'+(collapsed?'Expand rating criteria':'Collapse rating criteria')+'">'+(collapsed?'▸ Expand':'▾ Collapse')+'</button>';
+  const tools=(collapsed?'<span class="criteria-compact" title="Active rating order">'+esc(active||"Default priority")+'</span>':'')+
+    '<button type="button" class="criteria-collapse-toggle" data-action="criteria-toggle" aria-controls="stage-rating-content" aria-expanded="'+(!collapsed)+'" title="'+(collapsed?'Expand rating criteria':'Collapse rating criteria')+'">'+(collapsed?'▸ Expand':'▾ Collapse')+'</button>';
   return card("Rating / Ranked Criteria ("+data.stage+")","check",
     '<div class="criteria-intro"><strong>1 = highest importance.</strong> Click a criterion to reorder '+esc(data.stage)+' candidates by recorded evidence, without changing stage membership.</div>'+
     '<ol class="criteria-list scroll" aria-label="Scroll through all criterion ranking controls">'+list+'</ol>'+
@@ -327,7 +328,7 @@ function criteriaCard(){
     '<div class="criteria-reset"><button data-action="criteria-reset" '+(active?'':'disabled')+'>↺ Restore original order</button></div>'+
     '<div class="criteria-foot">Current candidates: <strong>'+data.candidates.length+'</strong> · Held for review: <strong>'+data.held_count+'</strong><br>Sort priority is advisory. Source qualification, missing-data holds and trading restrictions never change.</div>',
     "criteria-card"+(collapsed?" is-collapsed":""),tools).replace('<div class="card-body">','<div class="card-body" id="stage-rating-content"'+(collapsed?' hidden':'')+'>')+
-    (collapsed?'<div class="criteria-collapsed-summary" role="status">'+esc(active?'Sorting by: '+active:'Default priority · '+priorityCriteria().length+' criteria')+'</div>':'');
+    '';
 }
 function stageSummary(){
   const label=data.junior?"Earlier Setups — Post Phase 3 / Pre-PDUFA":"Higher Conviction — Near PDUFA";
