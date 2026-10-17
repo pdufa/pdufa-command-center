@@ -39,8 +39,14 @@ async function audit() {
   for(const stage of ["GEM JR","GEM"]) {
     await host.getByRole("tab",{name:stage,exact:true}).click();
     let dashboard=await ready(page,stage);
-    for(const label of ["Entry Checklist ("+stage+")","Exit Checklist ("+stage+")","Scan Diagnostics"]) {
-      if(!await dashboard.getByRole("heading",{name:label,exact:true}).count())throw Error(stage+" missing "+label);
+    // Verify the actual numbered research sections, not retired checklist labels.
+    // Exact headings are stage-specific and intentionally differ for GEM JR/GEM.
+    const expected = stage==="GEM JR"
+      ? ["GEM JR — Research Entry Checklist", "GEM JR — Exit / Downgrade Review", "12 · Scan Diagnostics"]
+      : ["GEM — Entry Qualification Checklist", "GEM — Exit / Risk Checklist", "12 · Scan Diagnostics"];
+    for(const label of expected) {
+      if(!await dashboard.getByRole("heading",{name:label,exact:true}).count())
+        throw Error(stage+" missing current dashboard section "+label);
     }
     const table=dashboard.locator(".candidate-table");
     const rows=await table.locator("tbody tr").count();
