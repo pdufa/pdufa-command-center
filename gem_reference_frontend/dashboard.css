@@ -79,3 +79,11 @@
 @media(min-width:1180px){.reference-top-layout{grid-template-columns:minmax(260px,25%) minmax(0,1fr)}}
 @media(max-width:960px){.criteria-card .criteria-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.criteria-card .criteria-list{grid-template-columns:1fr}.criteria-card .criterion-button{min-height:44px}}
+
+/* Scrollable full criterion library: every ranking remains individually clickable. */
+.criteria-card .criteria-list.scroll{display:grid;grid-template-columns:1fr;max-height:510px;min-height:120px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#74aacb #f4f9fd;padding:3px 4px 4px 1px;align-content:start}
+.criteria-card .criteria-list.scroll .criterion-button{min-width:0}
+.criteria-card .criteria-list.scroll .criterion-button:focus-visible{outline:3px solid #006fe6;outline-offset:1px}
+.criteria-card .criteria-intro::after{content:" Scroll this panel to choose more criteria.";font-weight:700;color:#156b9d}
+@media(max-width:960px){.criteria-card .criteria-list.scroll{grid-template-columns:repeat(2,minmax(0,1fr));max-height:440px}}
+@media(max-width:560px){.criteria-card .criteria-list.scroll{grid-template-columns:1fr;max-height:385px}}
