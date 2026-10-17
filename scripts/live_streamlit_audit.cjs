@@ -201,9 +201,9 @@ async function audit() {
 
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
-    ["GEM JR", ["GEM JR Candidates", "Trial Structure (3-Level View)", "Entry Checklist (GEM JR)", "Exit Checklist (GEM JR)"]],
-    ["GEM", ["GEM Candidates", "GEM Qualification Rules", "Two-Financing Verification", "Hard Stop / PDUFA Exit Policy"]],
-    ["SCANS", ["GEMS — GITHUB SCAN LOGS", "GEM — MASTER STOCK LIST", "NIGHTLY SCAN REPORT"]],
+    ["GEM JR", ["GEM JR Candidates", "Trial Structure (3-Level View)", "GEM JR — Research Entry Checklist", "GEM JR — Exit / Downgrade Review"]],
+    ["GEM", ["GEM Candidates", "GEM Qualification Rules", "Two-Financing Verification", "PDUFA Exit Policy · GEM only"]],
+    ["SCANS", ["UNIFIED SCANS — CONTROL CENTER", "Start scans", "Section scorecards", "Operational details — 10 PM start, jobs and Gmail"]],
     // WT chart/widget content lives in a nested components iframe.
     ["WT", []]
   ];
@@ -288,9 +288,9 @@ async function audit() {
       if (!await dashboard.getByRole("heading", {name:/1M Trading Chart/}).count())
         throw Error("Chart timeframe did not update");
     }
-    if (!await dashboard.getByRole("heading", {name:"Entry Checklist (GEM)",exact:true}).count())
+    if (!await dashboard.getByRole("heading", {name:"GEM — Entry Qualification Checklist",exact:true}).count())
       throw Error("Entry checklist missing");
-    if (!await dashboard.getByRole("heading", {name:"Exit Checklist (GEM)",exact:true}).count())
+    if (!await dashboard.getByRole("heading", {name:"GEM — Exit / Risk Checklist",exact:true}).count())
       throw Error("Exit checklist missing");
     report.checked.push({screen:"GEM reference dashboard", result:"PASS", candidate_controls:count});
     await screenshot(page,"gem-reference-dashboard");
