@@ -32,7 +32,7 @@ const show = (value?:string|null) => value && value.trim()?value.trim():unavaila
 const count = (value?:number|null,dec=2) => typeof value==="number" && Number.isFinite(value)?value.toFixed(dec):unavailable;
 const money = (value?:number|null) => typeof value==="number" && Number.isFinite(value)?"$"+(value>=1e9?(value/1e9).toFixed(2)+"B":value>=1e6?(value/1e6).toFixed(1)+"M":value.toLocaleString("en-US")):unavailable;
 const grade = (condition?:boolean|null):Grade => condition==null?"review":condition?"pass":"hold";
-const observed = (label:string,goal:string,actual?:string|null,pass?:boolean|null):Item=>({label,goal,actual:show(actual),grade:grade(pass)});
+const observed = (label:string,goal:string,actual?:string|null,pass?:boolean|null,source?:string):Item=>({label,goal,actual:show(actual),grade:grade(pass),source});
 const plain = (label:string,goal:string):Item=>observed(label,goal);
 function daysUntil(d?:string){
   if(!d||!/^\d{4}-\d{2}-\d{2}$/.test(d))return null;
@@ -56,7 +56,7 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
   const riskNote=t?.riskAlerts?.length?t.riskAlerts.join("; "):undefined;
   return [
     {code:"A",title:"CLINICAL & FDA ANALYSIS",tone:"blue",items:[
-      observed("Phase 3 Primary Endpoint","Successful, verified",show(row.phase3Status),phase==null?null:phase),
+      observed("Phase 3 Primary Endpoint","Successful, verified",show(row.phase3Status),phase==null?null:phase,row.phase3Source),
       plain("Trial Design Quality","Robust, low bias"),
       observed("P-values (Primary)","< 0.05",row.pValues),
       plain("Secondary Endpoints","Positive trend"),
@@ -73,12 +73,12 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
       observed("Market Cap","$300M–$10B",money(cap),cap==null?null:row.capInRange),
       observed("Cash Runway","≥12 months",runway==null?t?.runwayGate:count(runway,1)+" months",runway==null?null:runway>=12),
       observed("Financing 1","Verified completed (dated)",t?.benchmarks?.secondFinancing?t?.benchmarks?.warning:undefined),
-      observed("Financing 2","Verified completed (dated)",show(row.financingStatus),financing==null?null:financing),
+      observed("Financing 2","Verified completed (dated)",show(row.financingStatus),financing==null?null:financing,row.financingSource),
       plain("Financing Terms","No material anti-dilution"),
       plain("Shelf Registration","≥12 months"),
       plain("Warrant Overhang","Minimal"),
       plain("Debt Obligations","Manageable"),
-      observed("Catalyst Date (PDUFA)","30–90 days (focus 30–60)",row.pdufaDate,days==null?null:days>=30&&days<=90),
+      observed("Catalyst Date (PDUFA)","30–90 days (focus 30–60)",row.pdufaDate,days==null?null:days>=30&&days<=90,row.fdaSource),
       plain("Catalyst Type","PDUFA / Phase 3 data"),
       observed("Catalyst Timeline","Confirmed date",row.pdufaDate,catalystConfirmed?true:null),
       plain("Probability-weighted Upside","Attractive vs. downside")
@@ -193,6 +193,14 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
       plain("Data Integrity","No missing critical fields"),
       plain("Performance Alerts","Track accuracy and results")
     ]},
+    {code:"O",title:"EXECUTION & RISK MANAGEMENT",tone:"teal",items:[
+      plain("Position Sizing Risk","≤1–2% of portfolio per trade (illustrative)"),
+      plain("Maximum Loss","Predefined from a validated stop"),
+      observed("Trading Liquidity","≥$5M average daily traded $ volume",t?.avgDollarVolume20==null?undefined:money(t.avgDollarVolume20),t?.avgDollarVolume20==null?null:t.avgDollarVolume20>=5000000),
+      plain("Bid/Ask Spread","Narrow relative to position size"),
+      plain("Slippage","Estimate expected fill-cost impact"),
+      plain("Portfolio Correlation","Avoid concentrated correlated biotech risk")
+    ]},
     {code:"P",title:"CANDIDATE STATUS & WEEKLY TRACKING",tone:"purple",items:[
       observed("Date / Ticker","Current selection",(row.programId||"UNREGISTERED")+" · "+row.ticker),
       observed("Stage","Exact published membership",row.membershipStatus),
@@ -208,10 +216,10 @@ function panelRows(row:ChartRecord,history:History[],watch:string[],trade:string
 function MatrixPanel({value}:{value:Panel}){
   return <section className={"gold-chart-panel gold-chart-"+value.tone} aria-label={value.title}>
     <header><span className="gold-chart-index">{value.code}</span><strong>{value.code}. {value.title}</strong></header>
-    <div className="gold-chart-table-wrap"><table><thead><tr><th>#</th><th>Indicator</th><th className="gold-column">Goal</th><th>Actual</th><th>Status</th></tr></thead>
+    <div className="gold-chart-table-wrap"><table><thead><tr><th>#</th><th>Indicator</th><th className="gold-column">Goal</th><th>Actual</th><th>Status</th><th>Source / Notes</th></tr></thead>
       <tbody>{value.items.map((item,i)=><tr key={value.code+"-"+i}><td>{i+1}</td><td>{item.label}</td><td className="gold-column">{item.goal}</td>
         <td className={item.actual===unavailable||!item.actual?"gold-chart-unknown":"gold-chart-actual"}>{item.actual||unavailable}</td>
-        <td><span className={"gold-chart-state state-"+(item.grade||"review")}>{item.grade==="pass"?"PASS":item.grade==="hold"?"HOLD":"REVIEW"}</span></td></tr>)}</tbody>
+        <td><span className={"gold-chart-state state-"+(item.grade||"review")}>{item.grade==="pass"?"PASS":item.grade==="hold"?"HOLD":"REVIEW"}</span></td><td>{sourceLink(item.source)?<a href={item.source} target="_blank" rel="noopener noreferrer">Verify source ↗</a>:<span className="gold-chart-unknown">SOURCE NOT PROVIDED</span>}</td></tr>)}</tbody>
     </table></div>
   </section>;
 }
