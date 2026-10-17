@@ -353,3 +353,11 @@ button.secondary { background: white; color: #172b1b; }
  .parity-check-table table{min-width:470px;}
  .parity-external,.parity-external iframe{min-height:240px;}
 }
+
+.parity-eight{border-top:1px solid #bcdde3;padding:8px 10px;background:#f7fbff}
+.parity-eight>summary{font-size:11px;font-weight:800;color:#203c61;cursor:pointer}
+.parity-eight p{font-size:10px;margin:6px 0;color:#56758a;line-height:1.4}
+.parity-signal-modes{display:flex;gap:5px;margin:8px 0}
+.parity-signal-modes button{background:#fff;border:1px solid #aaccdf;border-radius:3px;padding:5px 8px;color:#29465b;font-size:10px;font-weight:700}
+.parity-signal-modes button[aria-pressed=true]{background:#5c95bd;color:#fff}
+.parity-eight td:nth-child(2),.parity-eight td:nth-child(3){color:#8a7260}
