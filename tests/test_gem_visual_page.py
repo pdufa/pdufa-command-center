@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
-from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy
+from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -177,6 +177,60 @@ class GemVisualPageTests(unittest.TestCase):
             self.assertEqual(item["p_value"], "Not available in saved sources")
             self.assertEqual(item["url"],
                              f"https://clinicaltrials.gov/study/{item['nct']}")
+
+    def test_section8_junior_readiness_is_ordered_and_never_claims_two_financing_pass(self):
+        record = {
+            "Ticker": "TEST", "Pipeline ID": "APPLICATION|TEST|DRUGA",
+            "NCT ID": "NCT00000001", "Phase 3 status": "PRIMARY_MET_VERIFIED",
+            "Phase 3 date": "2026-08-01",
+            "Clinical source": "https://www.sec.gov/trial",
+            "SEC documents rechecked": 2,
+            "Financing SEC source": "https://www.sec.gov/second",
+            "Still needed": "Confirm both distinct closings after the readout",
+        }
+        event = {
+            "market_cap": "800000000", "new_dilution_flag": "NO",
+            "pdufa_confirmation": "REPORTED_ONLY",
+            "pdufa_date": "2027-02-16",
+        }
+        profile = {"fresh": True, "dollar_volume": 2500000}
+        runway = {"Cash runway (months)": None,
+                  "Cash runway reason": "Missing source"}
+        sources = [
+            {"label": "Financing #1", "url": "https://www.sec.gov/first"},
+            {"label": "Financing #2", "url": "https://www.sec.gov/second"},
+            {"label": "PDUFA target", "url": ""},
+        ]
+        checks = _junior_section8_checks(record, event, profile,
+                                          runway, sources, {})
+        self.assertEqual(len(checks), 11)
+        self.assertEqual([x["priority"] for x in checks], list(range(1, 12)))
+        self.assertTrue(checks[0]["status"])  # Pipeline + valid exact NCT
+        self.assertTrue(checks[1]["status"])  # Source-linked dated Phase 3 label
+        self.assertIsNone(checks[3]["status"])  # Saved SEC link does not qualify
+        self.assertIsNone(checks[4]["status"])  # 2 checked docs != 2 verified closes
+        self.assertIsNone(checks[5]["status"])  # Missing cash source
+        self.assertIsNone(checks[6]["status"])  # Saved market cap needs independent check
+        self.assertIsNone(checks[7]["status"])  # No flag != risk-free
+        self.assertIsNone(checks[9]["status"])  # Reported PDUFA != verified
+        self.assertTrue(all(x["points"] == "—" for x in checks))
+
+    def test_section8_junior_flags_explicit_risks_without_faking_success(self):
+        record = {
+            "Ticker": "TEST", "Pipeline ID": "TRIAL|NCT00000001",
+            "NCT ID": "NCT00000001",
+        }
+        event = {
+            "market_cap": "250000000", "new_dilution_flag": "YES",
+            "pdufa_confirmation": "REPORTED_ONLY",
+        }
+        checks = _junior_section8_checks(record, event, {"fresh": False},
+                                          {}, [], {})
+        self.assertEqual(checks[6]["status"], False)  # Outside saved cap range
+        self.assertEqual(checks[7]["status"], False)  # Explicit dilution alert
+        self.assertIsNone(checks[1]["status"])  # Missing Phase 3 verification
+        self.assertIsNone(checks[5]["status"])  # Missing cash assessment
+        self.assertIsNone(checks[9]["status"])  # No FDA date verification
 
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
