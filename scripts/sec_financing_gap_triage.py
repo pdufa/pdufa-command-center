@@ -31,6 +31,16 @@ FIELDS = [
     "second_post_phase3_financing_verified", "trade_entry_authorized",
 ]
 SEC_FORMS = "8-K/8-K-A/10-Q/10-K/6-K/20-F/exhibits"
+# Official issuer websites checked against their public Investor Relations pages.
+# Research discovery only; not evidence that any financing occurred.
+REVIEWED_IR_DOMAINS = {
+    "ZLAB": "ir.zailaboratory.com",
+    "CORT": "ir.corcept.com",
+    "IBRX": "ir.immunitybio.com",
+    "ARQT": "investors.arcutis.com",
+    "APMD": "ir.apnimed.com",
+    "AXSM": "www.axsome.com",
+}
 DATE_RE = re.compile(r"20\d\d-\d\d-\d\d\Z")
 
 
@@ -166,7 +176,7 @@ def triage(queue, companies, config):
         # Mandatory company-first escalation for every difficult claim.
         # These are DISCOVERY ROUTES on configured official hosts only.
         # Neither an IR home page nor a search result proves a closing.
-        official_hosts = config.get(ticker, {}).get("hosts") or []
+        official_hosts = config.get(ticker, {}).get("hosts") or ([REVIEWED_IR_DOMAINS[ticker]] if ticker in REVIEWED_IR_DOMAINS else [])
         ir_host = next((
             host.lower() for host in official_hosts
             if isinstance(host, str) and re.fullmatch(
