@@ -28,6 +28,7 @@ WORKFLOWS = {
     "GEM": "gem-research-quality.yml",
     **{k: "pdufa-individual-source-scan.yml" for k in SOURCE_NAMES},
     "SCAN ALL": "pdufa-overnight-sequential.yml",
+    "SCAN HEALTH": "pdufa-adhoc-error-check.yml",
 }
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 SCOPES = {
@@ -254,6 +255,8 @@ def workflow_request(section, mode):
         args = {"scan": "PIPELINE", "scan_mode": mode}
     elif section == "GEM JR":
         args = {"scan": "GEM_JR", "scan_mode": mode}
+    elif section == "SCAN HEALTH":
+        args = {}  # Standalone Gmail/GitHub status audit (not a collector).
     else:
         args = {"action": "RESCAN_ALL" if mode == "FULL" else "REVERIFY_PARTIAL"}
     return WORKFLOWS[section], args
@@ -424,9 +427,11 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                 if name in SOURCE_NAMES and card.get("not_applicable"):
                     st.caption(f"Plus {_print_count(card['not_applicable'])} resolved as N/A.")
             with button_col:
-                if name != "SCAN HEALTH":
+                if True:
                     busy = recent_active(runs, name)
-                    if st.button("RUN " + name + " SCAN", key="unified_run_"+name.replace(" ","_"),
+                    if st.button(("RUN SCAN HEALTH CHECK" if name == "SCAN HEALTH" else
+                                  "RUN " + name + " SCAN"),
+                                 key="unified_run_"+name.replace(" ","_"),
                                  disabled=not authorized or bool(busy),
                                  use_container_width=True):
                         _submit(name, mode, token, clinical_loader, sources_loader)
@@ -434,11 +439,12 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                         st.caption("Already queued or running")
                     elif name in SOURCE_NAMES:
                         st.caption("Section-only source run")
+                    elif name == "SCAN HEALTH":
+                        st.caption("Gmail/GitHub error audit only")
                     else:
                         st.caption("Individual clinical/GEM run")
-                else:
-                    st.link_button("OPEN GITHUB", "https://github.com/"+REPO+"/actions",
-                                   use_container_width=True)
+            if pct is None or pct < 100:
+                st.info("WHY NOT 100% — " + " ".join(card["reasons"][:2]))
             with st.expander("WHY NOT 100%? · NUMBERS · SOURCE / OUTSTANDING DETAILS", expanded=False):
                 for reason in card["reasons"]:
                     st.write("• " + reason)
