@@ -201,6 +201,28 @@ async def lifespan(app: FastAPI):
             from .source_workspace import workspace
             from .program_registry import number_workspace
             published = number_workspace(workspace())
+            # Direct Pipeline-to-WT clinical trial path must work even when a
+            # trial never entered GEM JR or GEM. Read-only startup smoke check.
+            try:
+                trial = next(
+                    (r for r in published.get("pipeline", [])
+                     if str(r.get("id") or "").startswith("TRIAL|")), None
+                )
+                if trial:
+                    from .wt_research import for_exact_program
+                    profile = for_exact_program(trial["id"])
+                    tech = profile.get("technical")
+                    if not isinstance(tech, dict) or "indicatorModel" not in tech:
+                        raise ValueError("Trial indicator calculation unavailable")
+                    logging.getLogger(__name__).warning(
+                        "WT_TRIAL_INDICATOR_CHECK status=PASS source=%s entry_coverage=%d exit_coverage=%d",
+                        profile.get("source"), tech.get("indicatorEntryCoverage", 0),
+                        tech.get("indicatorExitCoverage", 0),
+                    )
+            except Exception as exc:
+                logging.getLogger(__name__).error(
+                    "WT_TRIAL_INDICATOR_CHECK_FAILED error_type=%s", type(exc).__name__
+                )
             logging.getLogger(__name__).warning(
                 "PDUFA_IDENTITY_CHECK registered=%d numbered_pipeline=%d",
                 published["identityRegistry"]["registeredExactPrograms"],
