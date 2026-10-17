@@ -183,6 +183,44 @@ def _market_for_ticker(ticker: str, published: dict, today) -> dict:
     return {**published, ticker: recent}
 
 
+# Exact replication of app.py's eight ENTRY / EXIT watchlist columns.
+# Original ticker-level scanner output may legitimately be absent.
+_SIGNAL_ROWS: dict = {"at": 0.0, "by_key": {}}
+_SIGNAL_LOCK = threading.Lock()
+_SIGNAL_NAMES = (
+    "Volume / RVOL", "Bollinger (20,2)", "Phase 3 AVWAP",
+    "EMA (10/20/50)", "RSI (14)", "MACD (12/26/9)", "OBV", "ATR (14)"
+)
+
+
+def _signals_for_ticker(ticker: str) -> dict:
+    with _SIGNAL_LOCK:
+        if time.monotonic() - _SIGNAL_ROWS["at"] > 300:
+            index = {}
+            try:
+                raw = fetch("watchlist_indicator_signals.csv")
+                for record in as_rows(raw):
+                    symbol = str(record.get("ticker") or "").strip().upper()
+                    mode = str(record.get("mode") or "").strip().upper()
+                    if _VALID_TICKER.fullmatch(symbol) and mode in {"ENTRY", "EXIT"}:
+                        index[(symbol, mode)] = record
+            except (OSError, UnicodeError, ValueError):
+                # Streamlit also displays NOT SCANNED when the optional file is missing.
+                pass
+            _SIGNAL_ROWS.update(at=time.monotonic(), by_key=index)
+        result = {}
+        for mode in ("ENTRY", "EXIT"):
+            record = _SIGNAL_ROWS["by_key"].get((ticker, mode), {})
+            result[mode] = {
+                "signals": {
+                    name: str(record.get(name) or "").strip() or "NOT SCANNED"
+                    for name in _SIGNAL_NAMES
+                },
+                "updated": str(record.get("updated_at") or "").strip() or "NOT SCANNED",
+            }
+        return result
+
+
 def for_exact_program(exact_key: str) -> dict:
     if not exact_key.startswith(("APPLICATION|", "TRIAL|")):
         raise ValueError("Invalid exact program")
@@ -193,6 +231,7 @@ def for_exact_program(exact_key: str) -> dict:
                 # Return GEM's actual existing score, not a separate WT formula.
                 return {
                     "source": "SAME_GEM_JR_GEM_PROFILE",
+                    "watchlistSignals": _signals_for_ticker(row["ticker"]),
                     "stage": stage,
                     "technical": row["technical"],
                     "asOf": snapshot.get("asOf"),
@@ -202,6 +241,7 @@ def for_exact_program(exact_key: str) -> dict:
     if row is None:
         return {
             "source": "PUBLISHED_PROGRAM_NOT_CURRENT",
+            "watchlistSignals": {"ENTRY": {"signals": {}, "updated": "NOT SCANNED"}, "EXIT": {"signals": {}, "updated": "NOT SCANNED"}},
             "technical": None, "asOf": snapshot.get("asOf"),
             "scope": "Historical program identity retained. No current trial evidence.",
         }
@@ -231,12 +271,14 @@ def for_exact_program(exact_key: str) -> dict:
         LOG.warning("WT exact research unavailable: %s", type(exc).__name__)
         return {
             "source": "WT_MARKET_RESEARCH_UNAVAILABLE",
+            "watchlistSignals": _signals_for_ticker(row["ticker"]),
             "technical": None,
             "asOf": snapshot.get("asOf"),
             "missingSources": context["missingSources"],
         }
     return {
         "source": "ORIGINAL_GEM_INDICATOR_MODEL_ON_EXACT_PIPELINE_TRIAL",
+        "watchlistSignals": _signals_for_ticker(row["ticker"]),
         "technical": technical,
         "asOf": snapshot.get("asOf"),
         "missingSources": context["missingSources"],
