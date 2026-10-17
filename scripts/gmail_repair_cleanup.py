@@ -157,16 +157,68 @@ def parse_headers(client: imaplib.IMAP4_SSL, batch: list[bytes]) -> tuple[list[t
     return matched, returned == set(batch)
 
 
+# Priority always comes from the validated GitHub workflow name, never
+# solely from subject claims or email arrival order.
+PRIORITY_LABELS = {
+    1: "Critical overnight / PIPELINE / GEM JR / GEM scans",
+    2: "FDA / SEC / clinical / financial evidence",
+    3: "Gmail authentication / notification delivery",
+    4: "Dashboard / API / CI / integrations",
+    5: "Resolved / superseded / other historical notices",
+}
+
+
+def workflow_priority(name: str) -> int:
+    """Operational severity of the actual GitHub workflow."""
+    value = str(name).casefold()
+    if re.search(r"\b(?:overnight|nightly clinical|pipeline|gem(?:[ -]?jr)?|phase\s*3\s*(?:readout|scan)|sequential scans|clinical scan)\b", value):
+        return 1
+    if re.search(r"\b(?:fda|sec|financial|financing|clinical evidence|source|filings|evidence|registry|runway)\b", value):
+        return 2
+    if re.search(r"\b(?:gmail|email|inbox|smtp|imap|notification|delivery|alert)\b", value):
+        return 3
+    if re.search(r"\b(?:dashboard|api|ci|streamlit|vercel|render|deploy|bootstrap|integration|acceptance|test|validation|frontend|backend)\b", value):
+        return 4
+    return 5
+
+
+def notice_priority(run: dict, main_sha: str) -> int:
+    """Confirmed resolved retries and superseded main failures are last."""
+    if confirmed_fixed(run, run.get("id")):
+        return 5
+    if (run.get("head_branch") == "main" and run.get("conclusion") == "failure"
+            and run.get("head_sha") != main_sha):
+        return 5
+    return workflow_priority(run.get("name", ""))
+
+
+def prioritized_queue(items: list[tuple[bytes, int, dict, int]]) -> list[tuple[bytes, int, dict, int]]:
+    """Serve highest severity first; newest UID first within a band."""
+    return sorted(items, key=lambda item: (item[3], -int(item[0])))
+
+
 def process_section(section: str, token: str, *, repair: bool = True, trash: bool = True) -> dict:
+    priority_stats = {
+        str(rank): {
+            "label": label, "notices": 0, "repair_requests": 0,
+            "confirmed_resolved_trashed": 0, "manual_review_or_pending": 0,
+        }
+        for rank, label in PRIORITY_LABELS.items()
+    }
     result = {
         "section": section, "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": "PARTIAL", "headers_checked": 0, "failure_notifications": 0,
         "confirmed_resolved_trashed": 0, "repair_requests": 0,
         "pending_or_unresolved": 0, "unmatched_run_reference": 0, "safety_blocks": 0,
-        "fetch_errors": 0, "notes": [
-            "Only GitHub failure notifications for the exact PDUFA repository qualify.",
-            "Trash requires the SAME GitHub run to be successfully rerun; newer unrelated successes do not qualify.",
-            "Rerun requests do not count as fixes; all unverified emails are preserved.",
+        "fetch_errors": 0, "skipped_due_to_limit": 0,
+        "processing_priority": list(PRIORITY_LABELS.values()),
+        "priority_stats": priority_stats,
+        "notes": [
+            "Inventory every mailbox header before any repair or cleanup.",
+            "Check exact linked GitHub run IDs; process validated notices by severity, not arrival order.",
+            "Only transient approved workflow failures are retried. No source scans are automatically rerun.",
+            "An email goes to Trash only after the SAME GitHub run succeeds on a later attempt.",
+            "Unresolved, unmatched and source-evidence alerts stay visible.",
         ],
     }
     username = os.environ.get("PDUFA_GMAIL_USER", "").strip()
@@ -174,7 +226,6 @@ def process_section(section: str, token: str, *, repair: bool = True, trash: boo
     if not (username and password and token):
         result["status"] = "BLOCKED_MISSING_CREDENTIALS"
         return result
-    # The existing repo commit must match for any repair. A stale failed run is not retried.
     main_sha = github_json("/commits/main", token).get("sha", "")
     client = imaplib.IMAP4_SSL("imap.gmail.com", timeout=20)
     try:
@@ -189,8 +240,8 @@ def process_section(section: str, token: str, *, repair: bool = True, trash: boo
             return result
         uids = matches[0].split() if matches and matches[0] else []
         errors = False
-        repair_attempted = set()
-        run_cache: dict[int, dict] = {}
+        candidates: list[tuple[bytes, str]] = []
+        # Pass 1: examine ALL headers in 100-item batches BEFORE touching mail.
         for pos in range(0, len(uids), 100):
             batch = uids[pos:pos + 100]
             found, complete = parse_headers(client, batch)
@@ -199,51 +250,68 @@ def process_section(section: str, token: str, *, repair: bool = True, trash: boo
                 errors = True
                 result["fetch_errors"] += 1
                 continue
-            for uid, _ in found:
-                result["failure_notifications"] += 1
-                if result["failure_notifications"] > MAX_FAILURE_NOTICES:
-                    result["safety_blocks"] += 1
+            candidates.extend(found)
+        result["failure_notifications"] = len(candidates)
+        # Bound per-run work but prioritize potential critical messages.
+        # Classification from the email SUBJECT is preliminary only; actual
+        # repair and cleanup rely on the VERIFIED GitHub run metadata.
+        preliminary = sorted(candidates, key=lambda item: (
+            workflow_priority(item[1]), -int(item[0])))
+        if len(preliminary) > MAX_FAILURE_NOTICES:
+            result["skipped_due_to_limit"] = len(preliminary) - MAX_FAILURE_NOTICES
+            errors = True
+        queue: list[tuple[bytes, int, dict, int]] = []
+        run_cache: dict[int, dict] = {}
+        # Pass 2: validate exact run metadata for every candidate.
+        # Do not mutate emails or initiate reruns during this phase.
+        for uid, _ in preliminary[:MAX_FAILURE_NOTICES]:
+            body = retrieve_message(client, uid)
+            ids = exact_run_ids(body or "")
+            if len(ids) != 1:
+                result["unmatched_run_reference"] += 1
+                continue
+            run_id = next(iter(ids))
+            if run_id not in run_cache:
+                try:
+                    run_cache[run_id] = github_json(f"/actions/runs/{run_id}", token)
+                except Exception:
+                    result["fetch_errors"] += 1
                     errors = True
                     continue
-                body = retrieve_message(client, uid)
-                ids = exact_run_ids(body or "")
-                if len(ids) != 1:
-                    result["unmatched_run_reference"] += 1
-                    continue
-                run_id = next(iter(ids))
-                if run_id not in run_cache:
-                    try:
-                        run_cache[run_id] = github_json(f"/actions/runs/{run_id}", token)
-                    except Exception:
+            run = run_cache[run_id]
+            if not source_run_valid(run, run_id):
+                result["safety_blocks"] += 1
+                continue
+            queue.append((uid, run_id, run, notice_priority(run, main_sha)))
+        repair_attempted: set[int] = set()
+        # Pass 3: sequence by VERIFIED severity, processing P1 before P2...
+        for uid, run_id, run, rank in prioritized_queue(queue):
+            group = priority_stats[str(rank)]
+            group["notices"] += 1
+            if confirmed_fixed(run, run_id):
+                if trash:
+                    move_status, _ = client.uid("MOVE", uid, '"[Gmail]/Trash"')
+                    if move_status == "OK":
+                        result["confirmed_resolved_trashed"] += 1
+                        group["confirmed_resolved_trashed"] += 1
+                    else:
                         result["fetch_errors"] += 1
                         errors = True
-                        continue
-                run = run_cache[run_id]
-                if not source_run_valid(run, run_id):
-                    result["safety_blocks"] += 1
-                    continue
-                if confirmed_fixed(run, run_id):
-                    if trash:
-                        # Gmail's server-side UID MOVE puts only this exact message in Trash.
-                        move_status, _ = client.uid("MOVE", uid, '"[Gmail]/Trash"')
-                        if move_status == "OK":
-                            result["confirmed_resolved_trashed"] += 1
-                        else:
-                            result["fetch_errors"] += 1
-                            errors = True
-                    continue
-                result["pending_or_unresolved"] += 1
-                if repair and run_id not in repair_attempted and result["repair_requests"] < MAX_REPAIR_REQUESTS:
-                    repair_attempted.add(run_id)
-                    try:
-                        answer = safe_repair(run_id, run, token, main_sha)
-                        if answer == "RERUN_REQUESTED_NOT_YET_FIXED":
-                            result["repair_requests"] += 1
-                        else:
-                            result["safety_blocks"] += 1
-                    except Exception:
-                        result["fetch_errors"] += 1
-                        errors = True
+                continue
+            result["pending_or_unresolved"] += 1
+            group["manual_review_or_pending"] += 1
+            if repair and run_id not in repair_attempted and result["repair_requests"] < MAX_REPAIR_REQUESTS:
+                repair_attempted.add(run_id)
+                try:
+                    answer = safe_repair(run_id, run, token, main_sha)
+                    if answer == "RERUN_REQUESTED_NOT_YET_FIXED":
+                        result["repair_requests"] += 1
+                        group["repair_requests"] += 1
+                    else:
+                        result["safety_blocks"] += 1
+                except Exception:
+                    result["fetch_errors"] += 1
+                    errors = True
         result["status"] = "PARTIAL_ERRORS" if errors else "CHECKED"
     except (imaplib.IMAP4.error, OSError, TimeoutError):
         result["status"] = "MAILBOX_UNAVAILABLE"
@@ -275,9 +343,17 @@ def main() -> int:
             output.write("## PDUFA Gmail safe repair & cleanup\n\n")
             for key in ("section", "status", "headers_checked", "failure_notifications",
                         "repair_requests", "confirmed_resolved_trashed", "pending_or_unresolved",
-                        "unmatched_run_reference", "safety_blocks", "fetch_errors"):
+                        "unmatched_run_reference", "safety_blocks", "fetch_errors", "skipped_due_to_limit"):
                 output.write(f"- **{key.replace('_',' ').title()}:** {result.get(key, 0)}\n")
-            output.write("\nNo source evidence was mutated. Repaired jobs must complete successfully before their failure notice may be trashed.\n")
+            output.write("\n### Priority order (highest first)\n\n")
+            for rank, counts in result.get("priority_stats", {}).items():
+                output.write(
+                    f"- **P{rank} {counts['label']}**: {counts['notices']} notice(s), "
+                    f"{counts['repair_requests']} repair requests, "
+                    f"{counts['confirmed_resolved_trashed']} verified notices moved to Trash, "
+                    f"{counts['manual_review_or_pending']} pending / manual-review.\n"
+                )
+            output.write("\nOnly independently confirmed resolved failure notifications move to Trash.\n")
     print("Gmail safe-repair status:", result["status"])
     for key in ("failure_notifications", "repair_requests", "confirmed_resolved_trashed",
                 "pending_or_unresolved", "safety_blocks", "fetch_errors"):
