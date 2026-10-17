@@ -2870,6 +2870,7 @@ def _step7_snapshot(signature):
 def render_pre_phase3():
     """Step 7: collector-synced Phase 1–3 research + exact-event financing review."""
     st.markdown("## PIPELINE — EARLY CLINICAL SOURCE MONITOR")
+    st.caption("Saved clinical snapshots must match today\u2019s Pacific reporting date; stale or mismatched files remain blocked.")
     st.caption(
         "Source-dated scanner snapshots from scheduled jobs. This is not a real-time "
         "price service, a confirmed corporate readout calendar, or a trade recommendation."
