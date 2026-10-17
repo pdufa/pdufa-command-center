@@ -42,6 +42,7 @@ def _ctx():
 
 
 def test_wt_pipeline_trials_keep_trial_specific_benchmarks(monkeypatch):
+    monkeypatch.setattr(wt_research, "_signals_for_ticker", lambda ticker: {})
     monkeypatch.setattr(wt_research, "workspace", _source_snapshot)
     monkeypatch.setattr(wt_research, "_context", _ctx)
     monkeypatch.setattr(wt_research, "_market_for_ticker", lambda ticker, market, today: market)
@@ -67,6 +68,7 @@ def test_wt_pipeline_trials_keep_trial_specific_benchmarks(monkeypatch):
 
 
 def test_existing_gem_profile_remains_identical(monkeypatch):
+    monkeypatch.setattr(wt_research, "_signals_for_ticker", lambda ticker: {})
     saved = {"entry": None, "exitRisk": None, "indicatorEntry": 45, "indicatorExitRisk": 15}
     data = _source_snapshot()
     data["members"]["GEM"]["rows"] = [{
@@ -80,6 +82,7 @@ def test_existing_gem_profile_remains_identical(monkeypatch):
 
 
 def test_historical_trial_keeps_id_without_fake_market_data(monkeypatch):
+    monkeypatch.setattr(wt_research, "_signals_for_ticker", lambda ticker: {})
     monkeypatch.setattr(wt_research, "workspace", _source_snapshot)
     result = wt_research.for_exact_program("TRIAL|NCT99999999")
     assert result["technical"] is None
@@ -159,3 +162,19 @@ def test_on_demand_market_uses_exact_ticker_and_refuses_invalid(monkeypatch):
     market = wt_research._market_for_ticker("AAA",{},date(2026,10,16))
     assert called == ["AAA"]
     assert "AAA" in market
+
+
+def test_streamlit_optional_watchlist_indicator_snapshot(monkeypatch):
+    from app import wt_research as mod
+    sample = ("ticker,mode,Volume / RVOL,Bollinger (20\,2),RSI (14),updated_at\n"
+              "AAA,ENTRY,BUY,,52.5,2026-10-16T12:00:00Z\n"
+              "AAA,EXIT,WAIT,,48.2,2026-10-16T12:00:01Z\n").replace("20\\,2", "20,2")
+    # The test file is CSV, and mode-specific ticker matching is never
+    # derived from the trial's unrelated clinical outcome.
+    with mod._SIGNAL_LOCK:
+        mod._SIGNAL_ROWS.update(at=0.0, by_key={})
+    monkeypatch.setattr(mod, "fetch", lambda name: "ticker,mode,Volume / RVOL,RSI (14),updated_at\nAAA,ENTRY,BUY,52.5,2026-10-16\nAAA,EXIT,WAIT,48.2,2026-10-16")
+    values = mod._signals_for_ticker("AAA")
+    assert values["ENTRY"]["signals"]["Volume / RVOL"] == "BUY"
+    assert values["EXIT"]["signals"]["RSI (14)"] == "48.2"
+    assert values["ENTRY"]["signals"]["ATR (14)"] == "NOT SCANNED"
