@@ -27,7 +27,7 @@ type Report = {
 type ScanAction = "VERIFY_ALL" | "REVERIFY_PARTIAL" | "RESCAN_ALL";
 type ScanTarget = "ALL" | "PIPELINE" | "GEM_JR" | "GEM";
 type ActionRun = { id: number; status: string; conclusion: string | null; created_at: string; html_url: string };
-type ControlStatus = { dispatchEnabled: boolean; manual?: ActionRun[]; overnight?: ActionRun[]; gmail?: ActionRun[]; error?: string };
+type ControlStatus = { dispatchEnabled: boolean; manual?: ActionRun[]; overnight?: ActionRun[]; gmail?: ActionRun[]; gmailRepair?: ActionRun[]; error?: string };
 
 function value(v?: number | string) { return v === undefined || v === null ? "Not reported" : typeof v === "number" ? v.toLocaleString("en-US") : v; }
 function score(due?: number, verified?: number, na?: number) {
@@ -37,6 +37,7 @@ function score(due?: number, verified?: number, na?: number) {
 }
 const SCAN_WORKFLOW = "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-scan-control.yml";
 const GMAIL_WORKFLOW = "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-gmail-section-audit.yml";
+const GMAIL_REPAIR_WORKFLOW = "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-gmail-repair-cleanup.yml";
 const GMAIL_SECTIONS: [string, string][] = [
   ["INBOX", "Inbox"], ["SENT_MAIL", "Sent mail"], ["PDUFA", "PDUFA label"],
   ["SCAN_START", "PDUFA / Scan START"], ["SCAN_END", "PDUFA / Scan END"],
@@ -110,14 +111,16 @@ export default function PublishedScansPanel() {
     }
   }
 
-  async function checkGmail(section: string) {
+  async function checkGmail(section: string, repairAndTrash = false) {
     setGmailMessage("");
+    const workflow = repairAndTrash ? GMAIL_REPAIR_WORKFLOW : GMAIL_WORKFLOW;
     if (!runs?.dispatchEnabled) {
       setGmailMessage(
-        "Opened the Gmail read-only audit in GitHub. Choose branch main, section " + section +
-        ", then press Run workflow. This page has not started a Gmail audit."
+        "Opened the " + (repairAndTrash ? "guarded repair + resolved-email Trash" : "read-only audit") +
+        " workflow in GitHub. Choose branch main, section " + section +
+        ", then press Run workflow. No action has started from this page."
       );
-      window.open(GMAIL_WORKFLOW, "_blank", "noopener,noreferrer");
+      window.open(workflow, "_blank", "noopener,noreferrer");
       return;
     }
     setGmailSending(true);
@@ -125,10 +128,10 @@ export default function PublishedScansPanel() {
       const response = await fetch("/api/scans/control", {
         method: "POST", cache:"no-store",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "GMAIL_AUDIT", section }),
+        body: JSON.stringify({ action: repairAndTrash ? "GMAIL_REPAIR_CLEANUP" : "GMAIL_AUDIT", section }),
       });
       const reply: { message?: string; error?: string } = await response.json();
-      setGmailMessage(response.ok ? reply.message || "Gmail check accepted; not yet completed" :
+      setGmailMessage(response.ok ? reply.message || "Gmail request accepted; not yet completed" :
         reply.error || "Gmail audit was not started");
       setScanRefresh(n => n + 1);
     } catch {
@@ -214,7 +217,7 @@ export default function PublishedScansPanel() {
     <VerificationLedgerPanel />
     <section className="source-health" aria-label="Gmail per-section and all-email checks">
       <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
-      <p className="subtle">Check Gmail's existing PDUFA monitoring folders without deleting, archiving, marking messages read or sending anything. All-history checks use read-only headers in batches of 100, deduplicated across labels. They count relevant PDUFA/scan messages; they do not examine arbitrary private email bodies or prove individual delivery.</p>
+      <p className="subtle">CHECK controls audit headers in 100-message batches without changing any email. FIX &amp; TRASH invokes a separate guarded repair workflow: retry only approved transient failures and move an exact GitHub failure notice to Gmail Trash only after its same workflow run has been successfully rerun. Unresolved failures and source-data warnings remain untouched; no permanent deletion.</p>
       <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:"0.65rem"}}>
         <label>Gmail section
           <select value={gmailSection} onChange={e => setGmailSection(e.target.value)}>
@@ -227,12 +230,19 @@ export default function PublishedScansPanel() {
         <button type="button" disabled={gmailSending} onClick={() => checkGmail("ALL")}>
           {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "CHECK ALL EMAILS" : "OPEN ALL-EMAIL GMAIL CHECK ↗"}
         </button>
+        <button type="button" disabled={gmailSending} onClick={() => checkGmail(gmailSection, true)}>
+          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "FIX ISSUES & TRASH RESOLVED — SECTION" : "OPEN FIX & TRASH SECTION ↗"}
+        </button>
+        <button type="button" disabled={gmailSending} onClick={() => checkGmail("ALL", true)}>
+          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "FIX ISSUES & TRASH RESOLVED — ALL" : "OPEN FIX & TRASH ALL ↗"}
+        </button>
         <button type="button" className="secondary" onClick={() => setScanRefresh(n=>n+1)}>REFRESH GMAIL AUDIT STATUS</button>
       </div>
-      {!runs?.dispatchEnabled && <p className="subtle">Without a server-side GitHub token, both buttons open GitHub's manual Gmail audit form; sign in, choose main and the requested section, and press Run workflow. Direct one-click dispatch requires PDUFA_GITHUB_TOKEN in Vercel.</p>}
+      {!runs?.dispatchEnabled && <p className="subtle">Without a server-side GitHub token, the check and repair buttons open their respective manual GitHub forms; sign in, choose main and the requested section, and press Run workflow. Direct one-click dispatch requires PDUFA_GITHUB_TOKEN in Vercel.</p>}
       {gmailMessage && <p role="status">{gmailMessage}</p>}
+      {runs?.gmailRepair?.[0] && <p className="subtle">Latest FIX &amp; TRASH action: <a href={runs.gmailRepair[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmailRepair[0].id}</a> — {runs.gmailRepair[0].status} / {runs.gmailRepair[0].conclusion || "not concluded"}. Inspect the run summary to see how many were retried, confirmed resolved, or moved to Trash.</p>}
       {runs?.gmail?.[0] && <p className="subtle">Latest Gmail audit: <a href={runs.gmail[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmail[0].id}</a> — {runs.gmail[0].status} / {runs.gmail[0].conclusion || "not concluded"}. Open the run summary for counts or its audit artifact.</p>}
-      <p><a href={GMAIL_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN GMAIL AUDIT WORKFLOW / HISTORY ↗</a></p>
+      <p><a href={GMAIL_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN READ-ONLY AUDIT HISTORY ↗</a> · <a href={GMAIL_REPAIR_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN FIX &amp; TRASH HISTORY ↗</a></p>
     </section>
   </section>;
 }
