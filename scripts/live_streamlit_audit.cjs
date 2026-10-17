@@ -158,6 +158,47 @@ async function audit() {
     await screenshot(page,"pdufa-pipeline");
   });
 
+  // Verify the *visible* Pipeline trial table really has a separate round ?
+  // next to each column's sort/dropdown arrow. Native st.dataframe labels
+  // cannot be used to prove this because they paint headings on canvas.
+  await safely("Pipeline column circled-question-mark controls", async() => {
+    let sheet = null;
+    for (let attempt = 0; attempt < 30 && !sheet; attempt++) {
+      for (const frame of page.frames()) {
+        try {
+          if (await frame.locator(".pipeline-question").count() > 0) {
+            sheet = frame;
+            break;
+          }
+        } catch (_) {}
+      }
+      if (!sheet) await delay(900);
+    }
+    if (!sheet) throw Error("No visible Pipeline table with circled question marks was mounted.");
+    const headingCount = await sheet.locator(".pipeline-column-name").count();
+    const helpCount = await sheet.locator(".pipeline-question").count();
+    const sortCount = await sheet.locator(".pipeline-sort-button").count();
+    if (!headingCount || helpCount !== headingCount || !sortCount) {
+      throw Error("Pipeline header count mismatch: " + JSON.stringify({
+        headingCount, helpCount, sortCount
+      }));
+    }
+    const first = sheet.locator(".pipeline-question").first();
+    if (!await first.isVisible()) throw Error("First column help button is not visible.");
+    await first.click({timeout: 15000});
+    if (!await sheet.locator("#pipeline-help-popup").isVisible()) {
+      throw Error("Clicking Pipeline ? did not reveal the explanation popup.");
+    }
+    const explanation = (await sheet.locator("#pipeline-help-copy").innerText()).trim();
+    if (explanation.length < 20) throw Error("Pipeline column explanation was empty.");
+    await sheet.locator("#pipeline-help-close").click();
+    report.checked.push({
+      screen:"Pipeline visible circled ? for every column", result:"PASS",
+      columns:headingCount, question_marks:helpCount, sort_buttons:sortCount
+    });
+    await screenshot(page, "pipeline-column-question-mark-controls");
+  });
+
   // Inspect every current subtab. A failed tab does not stop unrelated tabs.
   const tabs = [
     ["GEM JR", ["GEM JR Candidates", "Trial Structure (3-Level View)", "Entry Checklist (GEM JR)", "Exit Checklist (GEM JR)"]],
