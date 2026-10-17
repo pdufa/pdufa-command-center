@@ -30,7 +30,9 @@ VALID_STATUSES = {FUNDED} | OPEN | CLOSED
 
 def load_tranches(root):
     """Read user-maintained tranche rows without modifying or promoting them."""
-    path = Path(root) / "financing_tranches.csv"
+    path = Path(root) / "data" / "financing_tranches.csv"
+    if not path.is_file():
+        path = Path(root) / "financing_tranches.csv"
     if not path.is_file():
         return {}
     with path.open(newline="", encoding="utf-8-sig") as stream:
@@ -172,6 +174,23 @@ def assess_tranche_runway(ticker, snapshot, tranches, *, as_of, event_key=None):
     monthly_burn = -flow / months
     elapsed_months = (as_at - period_end).days / 30.4375
     cash_estimate = max(0.0, cash + added - monthly_burn * elapsed_months)
+    # Unknown net cash from any actual post-report funded tranche means an
+    # exact current-cash projection would omit money. Do not publish a numeric
+    # result or treat undocumented principal as cash received.
+    incomplete_post_period = any(
+        row.get("status") == FUNDED and
+        row.get("reason") == "Pending or unverified net funding; excluded" and
+        _day(row.get("funded_date")) is not None and
+        period_end < _day(row.get("funded_date")) <= as_at
+        for row in details
+    )
+    if incomplete_post_period:
+        result["reason"] = (
+            "Funded post-report tranche has unverified net proceeds; "
+            "numeric pro-forma runway withheld to avoid understated or "
+            "overstated cash. Review SEC loan fees and cash receipts."
+        )
+        return result
     result.update({
         "reported_cash_usd": cash,
         "funded_net_added_usd": round(added, 2),
