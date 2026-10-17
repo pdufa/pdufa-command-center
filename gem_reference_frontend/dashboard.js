@@ -567,7 +567,7 @@ function gemHistoryCard(){
     '</tr></thead><tbody>'+filtered.map(r=>'<tr>'+
     '<td>'+dateLabel(r.found)+'</td><td>'+dateLabel(r.left)+'</td>'+
     '<td class="wrap"><strong>'+esc(r.ticker)+'</strong><div>'+esc(r.drug)+'</div></td>'+
-    '<td class="wrap">'+(/^NCT\\d{8}$/.test(String(r.nct||""))?safeLink("https://clinicaltrials.gov/study/"+r.nct,r.nct):r.nct?esc(r.nct):'<span class="muted">NCT not recorded</span>')+
+    '<td class="wrap">'+(/^NCT\d{8}$/.test(String(r.nct||""))?safeLink("https://clinicaltrials.gov/study/"+r.nct,r.nct):r.nct?esc(r.nct):'<span class="muted">NCT not recorded</span>')+
     '<div class="history-id" title="'+esc(r.id)+'">'+esc(r.id)+'</div></td>'+
     '<td class="wrap">'+badge(r.movement,r.movement==="LEFT GEM"?"review":"pass")+
     '<div>Current: '+esc(r.current_stage)+'</div></td>'+
@@ -627,10 +627,10 @@ function gemExitCard(r){
 }
 function alertsCard(r){
   const scope=state.alertScope==="all"?"all":"selected";
-  const selected=scope==="selected"&&r;
+  const selected=scope==="selected";
   const stageRows=Array.isArray(data.candidates)?
     data.candidates.flatMap(x=>Array.isArray(x.alerts)?x.alerts:[]):[];
-  const raw=selected?(Array.isArray(r.alerts)?r.alerts:[]):stageRows;
+  const raw=selected?(r&&Array.isArray(r.alerts)?r.alerts:[]):stageRows;
   const sorted=[...raw].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
   const rows=sorted.slice(0,40);
   const picker='<label class="alerts-filter-label" for="alert-scope">Show </label>'+
@@ -683,7 +683,7 @@ function render(focusSearch=false,focusTrialSearch=false,focusHistorySearch=fals
   if(focusSearch){const input=document.getElementById("candidate-search");input.focus();input.setSelectionRange(input.value.length,input.value.length);}if(focusTrialSearch){const input=document.getElementById("company-trial-search");input?.focus();input?.setSelectionRange(input.value.length,input.value.length);}if(focusHistorySearch){const input=document.getElementById("history-search");input?.focus();input?.setSelectionRange(input.value.length,input.value.length);}resize();
 }
 app.addEventListener("input",ev=>{if(ev.target.id==="candidate-search"){state.search=ev.target.value;state.page=0;render(true);}else if(ev.target.id==="history-search"){state.historySearch=ev.target.value;render(false,false,true);}else if(ev.target.id==="company-trial-search"){state.companyTrialSearch=ev.target.value;state.companyTrialPage=0;render(false,true);}});
-app.addEventListener("change",ev=>{if(ev.target.id==="status-filter"){state.status=ev.target.value;state.page=0;render();}if(ev.target.id==="history-move"){state.historyMove=ev.target.value;render();}if(ev.target.id==="history-scope"){state.historyScope=ev.target.value;render();}if(ev.target.id==="alert-scope"){state.alertScope=ev.target.value==="all"?"all":"selected";render();}if(ev.target.id==="candidate-jump"){chooseCandidate(ev.target.value,"details");}if(ev.target.name==="exit-policy"){state.policy=ev.target.value;write("gem_pdufa_exit_policy",state.policy);persist();send("policy",{policy:state.policy});announce("Research exit policy saved.");}});
+app.addEventListener("change",ev=>{if(ev.target.id==="status-filter"){state.status=ev.target.value;state.page=0;render();}if(ev.target.id==="history-move"){state.historyMove=ev.target.value;render();}if(ev.target.id==="history-scope"){state.historyScope=ev.target.value;render();}if(ev.target.id==="alert-scope"){state.alertScope=ev.target.value==="all"?"all":"selected";render();}if(ev.target.id==="candidate-jump"){chooseCandidate(ev.target.value,"details");}if(ev.target.name==="exit-policy"){state.policy=ev.target.value;write("gem_pdufa_exit_policy",state.policy);persist();send("policy",{policy:state.policy});render();announce("Research exit policy saved.");}});
 app.addEventListener("click",ev=>{
   const button=ev.target.closest("button[data-action]");if(!button||button.disabled)return;
   const action=button.dataset.action,id=button.dataset.id,r=data.candidates.find(x=>x.id===(id||state.selected));
