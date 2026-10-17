@@ -266,6 +266,25 @@ async def lifespan(app: FastAPI):
                 "PDUFA_TECHNICAL_CHECK profiles=%d/%d eod_profiles=%d",
                 verified_profiles, len(member_rows), market_profiles,
             )
+            exact_programs = published["pipeline"]
+            same_ids = {r["id"] for r in exact_programs}
+            source_parity = health.get("streamlitPipelineParity", {})
+            if (len(same_ids) != len(exact_programs)
+                    or len(exact_programs) != source_parity.get("exactPrograms")
+                    or len(exact_programs) != (source_parity.get("clinicalAndResults", 0)
+                                               + source_parity.get("regulatoryPrograms", 0))):
+                raise ValueError("Published Pipeline IDs or current-stage count mismatch")
+            from collections import Counter
+            stage_distribution = Counter(r.get("stage", "Unknown") for r in exact_programs)
+            logging.getLogger(__name__).warning(
+                "PDUFA_STREAMLIT_PIPELINE_PARITY status=PASS total=%d registered_and_results=%d "
+                "regulatory=%d phase3=%d phase3_results=%d unknown=%d",
+                len(exact_programs), source_parity["clinicalAndResults"],
+                source_parity["regulatoryPrograms"],
+                stage_distribution.get("Phase 3", 0),
+                stage_distribution.get("Phase 3 Results", 0),
+                stage_distribution.get("Unknown", 0),
+            )
             logging.getLogger(__name__).warning(
                 "PDUFA_SOURCE_CHECK state=%s programs=%d gem_jr=%d gem=%d clinical_rows=%d issues=%d payload_bytes=%d",
                 health.get("state", "UNKNOWN"),
