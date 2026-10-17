@@ -33,7 +33,7 @@ def test_overlapping_nct_records_merge_without_disappearing():
     }
     assert universe["TRIAL|NCT00000001"]["stage"] == "Phase 3 Results"
     assert universe["TRIAL|NCT00000001"]["drug"] == "Drug A"
-    assert universe["TRIAL|NCT00000001"]["trialStatus"] if "trialStatus" in universe["TRIAL|NCT00000001"] else universe["TRIAL|NCT00000001"]["status"] == "COMPLETED"
+    assert universe["TRIAL|NCT00000001"]["status"] == "COMPLETED"
 
 
 def test_source_announcements_enrich_existing_nct_and_keep_no_nct_results():
