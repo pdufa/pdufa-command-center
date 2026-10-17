@@ -666,7 +666,9 @@ def _junior_section9_exit_checks(record, event, profile, runway_result,
                                 "FLAGGED", "HIGH"}
     runway = _number(runway_result.get("Cash runway (months)"))
     runway_url = str(runway_result.get("Cash runway source") or "")
-    fresh_runway = runway is not None and runway_url.startswith("https://")
+    runway_day = _section9_date(runway_result.get("Cash runway as of"))
+    fresh_runway = (runway is not None and runway_url.startswith("https://")
+                    and runway_day is not None and 0 <= (today - runway_day).days <= 90)
     fresh_price = bool(profile.get("fresh")) and profile.get("date") is not None
     close = _number(profile.get("close"))
     sma50 = _number(profile.get("sma50"))
@@ -756,7 +758,7 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
     p3_day = _section9_date(record.get("Phase 3 date") or
                             event.get("phase3_date"))
     p3_status = str(record.get("Phase 3 status") or "").upper()
-    phase3_observed = (len(ncts) == 1 and p3_day is not None and
+    phase3_observed = (len(ncts) == 1 and p3_day is not None and p3_day <= today and
                        p3_status == "PRIMARY_MET_VERIFIED" and
                        trial_url.startswith("https://"))
     first_day = _section9_date(record.get("First close"))
@@ -764,7 +766,7 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
     first_url = str(record.get("First SEC source") or "")
     second_url = str(record.get("Second SEC source") or "")
     two_closes = (phase3_observed and first_day is not None and
-                  second_day is not None and p3_day < first_day < second_day and
+                  second_day is not None and p3_day < first_day < second_day <= today and
                   first_url.startswith("https://") and second_url.startswith("https://")
                   and first_url != second_url)
     review_day = _section9_date(record.get("Source review as of") or
@@ -774,7 +776,9 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
                    0 <= review_age <= 7)
     runway = _number(runway_result.get("Cash runway (months)"))
     cash_url = str(runway_result.get("Cash runway source") or "")
-    cash_current = runway is not None and cash_url.startswith("https://")
+    cash_day = _section9_date(runway_result.get("Cash runway as of"))
+    cash_current = (runway is not None and cash_url.startswith("https://")
+                    and cash_day is not None and 0 <= (today - cash_day).days <= 90)
     cap = _number(event.get("market_cap"))
     dilution = str(event.get("new_dilution_flag") or "").upper().strip()
     dilution_flag = dilution in {"YES", "TRUE", "1", "ACTIVE", "UNRESOLVED",
