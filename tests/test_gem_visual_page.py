@@ -1,11 +1,12 @@
 """Reference-image GEM page contract: source data, ranked controls and disclosures."""
 import unittest
+import tempfile
 from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
-from gem_reference_dashboard import resolve_dashboard_action, _candidate
+from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -61,6 +62,55 @@ class GemVisualPageTests(unittest.TestCase):
                       {"action": "navigate", "tab": "BROKER"},
                       {"action": "policy", "policy": "automatic"}):
             self.assertIsNone(resolve_dashboard_action({"nonce": "x", **event}, payload))
+
+    def test_section4_lists_saved_company_trials_with_stage_specific_exact_nct_flags(self):
+        import csv
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as root:
+            registry = [
+                {"ticker": "ABCD", "nct_id": "NCT00000001", "phase": "Phase 1",
+                 "drug": "Alpha", "indication": "Disease 1", "source_url": "https://clinicaltrials.gov/study/NCT00000001"},
+                {"ticker": "ABCD", "nct_id": "NCT00000002", "phase": "Phase 2",
+                 "drug": "Beta", "indication": "Disease 2"},
+                {"ticker": "ABCD", "nct_id": "NCT00000003", "phase": "Phase 3",
+                 "drug": "Gamma", "indication": "Disease 3"},
+                {"ticker": "OTHER", "nct_id": "NCT00000002", "phase": "Phase 3",
+                 "drug": "Unrelated", "indication": "Other disease"},
+            ]
+            with (Path(root) / "all_phase_trials.csv").open("w", newline="") as fh:
+                writer = csv.DictWriter(fh, fieldnames=registry[0].keys())
+                writer.writeheader()
+                for row in registry:
+                    writer.writerow(row)
+            gem = [{"Ticker": "ABCD", "NCT ID": "NCT00000003",
+                    "Exact program": "ABCD|DRUG3"}]
+            junior = [{"Ticker": "ABCD", "NCT ID": "NCT00000002",
+                       "Exact program": "ABCD|DRUG2"}]
+            by_ticker, coverage = _all_company_trials(root, gem=gem, junior=junior)
+            abcd = {trial["nct"]: trial for trial in by_ticker["ABCD"]}
+            self.assertEqual(len(abcd), 3)
+            self.assertEqual(abcd["NCT00000001"]["phase"], "Phase 1")
+            self.assertEqual(abcd["NCT00000001"]["stage_labels"], [])
+            self.assertEqual(abcd["NCT00000002"]["phase"], "Phase 2")
+            self.assertEqual(abcd["NCT00000002"]["stage_labels"], ["GEM JR"])
+            self.assertEqual(abcd["NCT00000003"]["stage_labels"], ["GEM"])
+            self.assertEqual(by_ticker["OTHER"][0]["stage_labels"], [])
+            self.assertEqual(abcd["NCT00000003"]["url"],
+                             "https://clinicaltrials.gov/study/NCT00000003")
+            self.assertNotIn("PARTIAL", coverage)
+
+    def test_section4_absent_full_registry_does_not_claim_complete_inventory(self):
+        with tempfile.TemporaryDirectory() as root:
+            gem = [{"Ticker": "ABCD", "NCT ID": "NCT00000004 | NCT00000005",
+                    "Exact program": "ABCD|DRUG4"}]
+            by_ticker, coverage = _all_company_trials(root, gem=gem, junior=[])
+            self.assertIn("PARTIAL", coverage)
+            self.assertEqual({t["nct"] for t in by_ticker["ABCD"]},
+                             {"NCT00000004", "NCT00000005"})
+            self.assertTrue(all(t["stage_labels"] == ["GEM"]
+                                for t in by_ticker["ABCD"]))
+            self.assertTrue(all(t["phase"] == "Not verified in saved sources"
+                                for t in by_ticker["ABCD"]))
 
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
