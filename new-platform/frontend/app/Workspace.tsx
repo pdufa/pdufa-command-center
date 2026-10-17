@@ -5,6 +5,7 @@ import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
+import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES } from "../lib/pipeline-data";
 
@@ -646,7 +647,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           </div>)}
       </section>}
     </div>}
-    {snapshot && top==="PDUFA" && nav==="SCANS" && <section className="panel"><h2>SCANS — Published original-system status</h2><p className="subtle">The new dashboard reads published scanner results. The original Streamlit 10 PM Pacific scans continue independently; no second scanner or Alpaca orders are enabled here.</p><p><strong>Last published overnight scan:</strong> {stated(snapshot.sourceHealth?.publishedScan?.finishedAt, "NOT VERIFIED")} · <strong>Status:</strong> {stated(snapshot.sourceHealth?.publishedScan?.state, "NOT AVAILABLE")}</p><p><strong>Live published-source health:</strong> {stated(snapshot.sourceHealth?.state, "UNKNOWN")}</p>{Object.entries(snapshot.sourceHealth?.publishedScan?.sources || {}).map(([name,result])=><div key={name} className="scan-result"><span>{name.replaceAll("_"," ")}</span><strong>{stated(result.status)}</strong></div>)}<p className="subtle">PARTIAL and missing source families are not marked COMPLETE. These are the saved original reports, not proof of a successful new scan.</p></section>}
+    {top==="PDUFA" && nav==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
       <p className="subtle">Reported dates only, not FDA-confirmed future events unless the source explicitly verifies them.</p>
       <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
