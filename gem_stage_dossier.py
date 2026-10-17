@@ -159,6 +159,10 @@ def scan_diagnostics(root, *, now=None):
 
     def state(raw):
         upper = str(raw or "").strip().upper()
+        # A scoped collector can report errors needing review without its
+        # parent having a formally failed run. Preserve that distinction.
+        if upper.startswith("REVIEW"):
+            return "review"
         if any(marker in upper for marker in (
             "FAILED", "FAILURE", "ERROR", "BLOCKED", "STALE", "CANCELLED",
         )):
