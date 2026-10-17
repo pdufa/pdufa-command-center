@@ -3540,7 +3540,7 @@ if page == "PDUFA":
                     )
                 with reset_col:
                     st.button(
-                        "CLEAR STAGE / DATE", on_click=_reset_pipeline_filters_v9,
+                        "CLEAR SELECTIONS", on_click=_reset_pipeline_filters_v9,
                         use_container_width=True, key="pipeline_clear_v9",
                     )
 
@@ -3676,7 +3676,7 @@ if page == "PDUFA":
             with st.container(border=True, key="pipeline_trials_card"):
                 st.markdown("### PDUFA TRIALS / PROGRAMS")
                 render_ticker_toggle_panel("pipeline_2", prepared, title="TICKER WATCH / TRADE")
-                st.caption("Displayed count always equals the exact number of table rows.")
+                st.caption("Click a trial row to see its details and source links. Sort using column headers. Displayed count equals the table rows.")
                 empty_chart = prepare_pdufa_grid(
                     pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values())),
                     view="PIPELINE", as_of=pipeline_today,
@@ -3710,7 +3710,7 @@ if page == "PDUFA":
                     st.metric("Trials / programs displayed", len(shown))
                     trial_selection = pdufa_dataframe(
                         finance_style(shown), hide_index=True, use_container_width=True, height=540,
-                        key="pipeline_trial_results_v10",
+                        key=f"pipeline_trial_results_v10_{hash(selection_signature)}",
                         on_select="rerun", selection_mode="single-row",
                         column_config={
                             "Source": st.column_config.LinkColumn("Source"),
