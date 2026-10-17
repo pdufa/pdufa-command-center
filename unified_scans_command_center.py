@@ -389,6 +389,14 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
         "A successful run is not a verified FDA decision, a valid trading signal "
         "or evidence of complete coverage. Unknown denominators show N/A."
     )
+    if st.button("↻ REFRESH SCAN SCORES & LIVE JOB STATUS", key="unified_scans_refresh"):
+        recent_github_runs.clear()
+        current_job_steps.clear()
+        individual_snapshot.clear()
+        individual_clinical_snapshot.clear()
+        clinical_loader.clear()
+        sources_loader.clear()
+        st.rerun()
     clinical, note = clinical_loader()
     clinical = clinical if isinstance(clinical, dict) else {}
     sources = sources_loader() or {}
