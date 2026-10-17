@@ -57,3 +57,25 @@
   .chart.focused-chart .chart-signals{display:none}
   .chart.focused-chart .chart-caption{flex-wrap:wrap}
 }
+
+/* Stage-isolated clickable criterion priorities */
+.criteria-card .criteria-intro{font-size:11px;line-height:1.4;margin:0 0 9px;color:#214767}
+.criteria-card .criteria-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:4px}
+.criteria-card .criteria-list li{display:block;margin:0;min-width:0}
+.criteria-card .criterion-button{width:100%;min-height:42px;display:flex;align-items:center;gap:7px;padding:6px;border-radius:5px;background:#f5faff;border:1px solid #c4dcea;text-align:left;white-space:normal;color:#1a3651}
+.criteria-card .criterion-button:hover{background:#e4f3ff;border-color:#4da4e4}
+.criteria-card .criterion-button.active,.criteria-card .criterion-button[aria-pressed=true]{background:#d7ecff;border:2px solid #067cd5;box-shadow:inset 3px 0 #036daf}
+.criteria-card .criterion-rank{min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:#174b92;color:#fff;border-radius:50%;font-size:12px;font-weight:800;flex:none}
+.criteria-card .criterion-content{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.criteria-card .criterion-content strong{font-size:10px;line-height:1.22;overflow-wrap:anywhere}
+.criteria-card .criterion-content small{font-size:9px;line-height:1.25;color:#54718a;font-weight:400;overflow-wrap:anywhere}
+.criteria-card .criterion-effect{font-weight:700;font-size:9px;color:#1365a0;flex:none}
+.criteria-card .criteria-focus{padding:7px;background:#f0f6fb;border:1px solid #d0e5f5;margin-top:8px;font-size:10px;line-height:1.4}
+.criteria-card .criteria-reset{margin-top:7px}
+.criteria-card .criteria-reset button{font-size:10px;padding:5px 9px}
+.criteria-card .criteria-foot{font-size:9px;line-height:1.45}
+.candidate-table td:nth-child(2){white-space:normal;line-height:1.2;font-size:9px}
+.candidates .toolbar-footer{flex-wrap:wrap}
+@media(min-width:1180px){.reference-top-layout{grid-template-columns:minmax(260px,25%) minmax(0,1fr)}}
+@media(max-width:960px){.criteria-card .criteria-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.criteria-card .criteria-list{grid-template-columns:1fr}.criteria-card .criterion-button{min-height:44px}}
