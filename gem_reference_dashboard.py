@@ -924,6 +924,130 @@ def _junior_section10_history(state):
                                           r["ticker"], r["id"]), reverse=True)
 
 
+def _gem_section10_exit_checks(record, event, profile, runway_result,
+                                today, source_current=None):
+    """Source-dated exit risk observations, not sell instructions."""
+    def check(priority, name, detail, triggered=None, source="", next_step="",
+              kind="Risk"):
+        return {
+            "priority": priority, "label": name, "detail": str(detail),
+            "triggered": triggered,
+            "url": source if str(source).startswith("https://") else "",
+            "next_step": next_step, "kind": kind,
+        }
+
+    outcome = str(event.get("outcome") or record.get("FDA outcome") or "").strip().upper()
+    settled = outcome in {"APPROVED", "CRL", "REJECTED", "REFUSED",
+                          "WITHDRAWN", "COMPLETE_RESPONSE"}
+    pdufa = _section9_date(record.get("PDUFA saved") or event.get("pdufa_date"))
+    days = (pdufa - today).days if pdufa else None
+    adverse = str(event.get("conflict_flag") or "").strip().upper()
+    dilute = str(event.get("new_dilution_flag") or "").strip().upper()
+    flags = {"YES", "TRUE", "1", "ACTIVE", "UNRESOLVED", "FLAGGED", "HIGH"}
+    safety = adverse in flags | {"CONFLICT", "REVIEW"}
+    dilution = dilute in flags
+    fda_link = str(event.get("pdufa_evidence_url") or "")
+    trial_link = str(record.get("Phase 3 source") or event.get("trial_evidence_url") or "")
+    sec_link = str(record.get("Second SEC source") or "")
+    runway = _number(runway_result.get("Cash runway (months)"))
+    cash_link = str(runway_result.get("Cash runway source") or "")
+    cash_day = _section9_date(runway_result.get("Cash runway as of"))
+    cash_current = (runway is not None and cash_link.startswith("https://")
+                    and cash_day is not None and 0 <= (today - cash_day).days <= 90)
+    last = profile.get("date")
+    if isinstance(last, datetime):
+        last = last.date()
+    fresh = (profile.get("fresh") is True and isinstance(last, date)
+             and 0 <= (today - last).days <= 5)
+    close = _number(profile.get("close"))
+    support = _number((profile.get("base") or {}).get("support"))
+    sma50 = _number(profile.get("sma50"))
+    rsi = _number(profile.get("rsi"))
+    macd = profile.get("macd")
+    macd_direction = macd.get("bullish") if isinstance(macd, dict) else None
+    market_rows = []
+    for bar in profile.get("bars") or []:
+        if not isinstance(bar, dict):
+            continue
+        day = bar.get("date")
+        if isinstance(day, datetime):
+            day = day.date()
+        if not isinstance(day, date):
+            day = _section9_date(day)
+        value = _number(bar.get("close"))
+        if day is not None and value is not None:
+            market_rows.append((day, value))
+    market_rows.sort(key=lambda r: r[0])
+    # Refuse duplicate dates rather than constructing a false two-day sequence.
+    unique_dates = len({x[0] for x in market_rows}) == len(market_rows)
+    two_below = None
+    if fresh and unique_dates and len(market_rows) >= 21 and market_rows[-1][0] == last:
+        values = [v for _, v in market_rows]
+        two_below = (values[-2] < sum(values[-21:-1])/20
+                     and values[-1] < sum(values[-20:])/20)
+    sec_day = _section9_date(record.get("Source review as of") or
+                             record.get("Source review date"))
+    sec_current = (source_current is True and sec_day is not None
+                   and 0 <= (today - sec_day).days <= 7)
+
+    return [
+        check(1, "FDA outcome / material decision",
+              "Saved FDA outcome: " + (outcome or "unverified"),
+              True if settled else None, fda_link,
+              "Confirm the actual decision from dated primary sources", "Event"),
+        check(2, "PDUFA event window (policy-dependent)",
+              str(days) + " days to saved PDUFA" if days is not None
+              else "PDUFA date unavailable",
+              days <= 3 if days is not None else None, fda_link,
+              "Use the separately selected PDUFA exit policy; no automatic order", "Event"),
+        check(3, "Clinical safety / program risk",
+              "Saved safety flag: " + (adverse or "unverified"),
+              True if safety else None, trial_link,
+              "Review clinical adverse events and exact-trial evidence", "Clinical"),
+        check(4, "Dilution, warrants, convertibles",
+              "Saved dilution flag: " + (dilute or "unverified"),
+              True if dilution else None, sec_link,
+              "Inspect SEC terms and financing overhang", "Financing"),
+        check(5, "Cash runway below 6 months",
+              f"Saved SEC cash runway {runway:g} months" if cash_current
+              else "Current source-backed cash assessment unavailable",
+              runway < 6 if cash_current else None, cash_link,
+              "Verify cash burn, runway date and new offering risk", "Financing"),
+        check(6, "Closing support lost",
+              f"Close {_money(close)}; support {_money(support)}"
+              if fresh and close is not None and support is not None
+              else "Current closing support unavailable",
+              close < support if fresh and close is not None and support is not None
+              else None, "", "Review support and the manually defined hard stop", "Technical"),
+        check(7, "Two closes below daily SMA20",
+              "Daily SMA20 recomputed separately for prior and latest close"
+              if two_below is not None else "Requires 21 distinct, current closing-price observations",
+              two_below, "", "Advisory trend warning, not a hard stop", "Technical"),
+        check(8, "Close below SMA50",
+              f"Close {_money(close)}; SMA50 {_money(sma50)}"
+              if fresh and close is not None and sma50 is not None else
+              "Current SMA50 unavailable",
+              close < sma50 if fresh and close is not None and sma50 is not None
+              else None, "", "Review longer trend and corroborating sources", "Technical"),
+        check(9, "Saved MACD bearish direction",
+              "Bearish" if macd_direction is False else
+              "Bullish" if macd_direction is True else "Unavailable",
+              macd_direction is False if fresh and macd_direction in (True, False)
+              else None, "", "Momentum indicator, not an independently proven exit", "Technical"),
+        check(10, "RSI elevated / reversal context",
+              f"RSI(14) {rsi:g}" if fresh and rsi is not None else "Fresh RSI unavailable",
+              rsi >= 70 if fresh and rsi is not None else None, "",
+              "An RSI reference of 70 is not an automatic sell", "Technical"),
+        check(11, "ATR trail / intraday VWAP",
+              "Not available from saved close-only price bars", None, "",
+              "Requires OHLC / intraday market data; never infer", "Unavailable"),
+        check(12, "Current SEC and primary-source health",
+              "Source recheck current" if sec_current else "Missing, stale or partial source verification",
+              False if sec_current else True, "",
+              "Refresh program-specific and global SEC source checks", "Sources"),
+    ]
+
+
 def _candidate(stage, ranked, root, today, companies, financings, runway, registry, pvalues, company_trials=None, trial_coverage="Trial source coverage not independently verified", source_current=None):
     record, event, master, profile, score = ranked
     junior = stage == "GEM JR"
@@ -993,6 +1117,9 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         _gem_section9_entry_checks(record, event, profile, runway_result, today,
                                    source_current=source_current)
     )
+    section10_checks = (_gem_section10_exit_checks(
+        record, event, profile, runway_result, today, source_current=source_current)
+        if not junior else [])
     info.extend([
         ("Cash Runway", f"{runway_months:g} months" if runway_months is not None else "Unverified"),
         ("Market Cap (saved)", _money(event.get("market_cap"))),
@@ -1027,6 +1154,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "entry_checks": _checks(score.get("entry_factors"), record, event, profile, junior=junior),
         "junior_research_checks": junior_research_checks,
         "section9_checks": section9_checks,
+        "section10_checks": section10_checks,
         "exit_checks": _checks(score.get("exit_factors"), record, event, profile, junior=junior, exit_risk=True),
         "hierarchy": _hierarchy(record, event, company, registry, pvalues,
                                 (company_trials or {}).get(ticker, [])), "alerts": alerts,
