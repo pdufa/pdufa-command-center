@@ -404,6 +404,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "fresh": bool(profile.get("fresh")), "close": profile.get("close"),
         "sma20": profile.get("sma20"), "sma50": profile.get("sma50"),
         "rsi": profile.get("rsi"), "rvol": profile.get("rvol"),
+        "dollar_volume": profile.get("dollar_volume"),
         "macd": ("Bullish" if profile["macd"]["bullish"] else "Bearish") if profile.get("macd") else "—",
         "support": profile.get("base", {}).get("support"),
         "resistance": profile.get("base", {}).get("resistance"),
