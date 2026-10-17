@@ -19,7 +19,7 @@ from email.header import decode_header, make_header
 from email.utils import parseaddr
 from pathlib import Path
 
-from scripts.pdufa_auto_repair import decide
+from scripts.pdufa_auto_repair import decide, RERUN_ALLOWLIST
 
 REPOSITORY = "pdufa/pdufa-command-center"
 FAILURE_SUBJECT = re.compile(r"^\[pdufa/pdufa-command-center\]\s+(?:PR )?Run failed:", re.I)
@@ -108,6 +108,13 @@ def safe_repair(run_id: int, run: dict, token: str, main_sha: str) -> str:
         return "BLOCKED_RUN_IDENTITY"
     if run.get("status") != "completed" or run.get("conclusion") != "failure":
         return "NOT_ELIGIBLE"
+    # Cheap fail-closed screening before downloading any private failure logs.
+    if (run.get("name") not in RERUN_ALLOWLIST or
+            run.get("head_branch") != "main" or
+            run.get("head_sha") != main_sha or
+            run.get("event") not in {"push", "schedule", "workflow_dispatch"} or
+            run.get("run_attempt") != 1):
+        return "REQUIRES_MANUAL_REPAIR"
     jobs = github_json(f"/actions/runs/{run_id}/jobs?per_page=100", token).get("jobs", [])
     if not isinstance(jobs, list):
         return "BLOCKED_JOBS"
