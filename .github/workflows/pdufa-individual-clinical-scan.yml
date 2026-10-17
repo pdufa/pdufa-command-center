@@ -65,8 +65,10 @@ jobs:
           for scan in $scans; do
             echo "Collecting clinical scan $scan in $SECTION mode $SCAN_MODE"
             set +e
+            notify_mode="DELTA"
+            if [ "$SCAN_MODE" = "FULL" ]; then notify_mode="BASELINE"; fi
             python scripts/run_scan_with_email.py \
-              --scan "$scan" --mode "$SCAN_MODE" \
+              --scan "$scan" --mode "$notify_mode" \
               --status-file "reports/nightly-clinical-${scan}.json" \
               --audit-dir reports/scan_notifications \
               --timeout-seconds 7100 -- \
