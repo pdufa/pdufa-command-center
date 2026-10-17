@@ -139,6 +139,7 @@ type WTResearchReply = {
   programId: string; exactKey?: string;
   source: string; technical: ResearchTechnical | null; asOf?: string;
   scope?: string; missingSources?: string[];
+  watchlistSignals?: Partial<Record<"ENTRY"|"EXIT",{signals?:Record<string,string>;updated?:string}>>;
 };
 function WTIndicatorDetails({programId, record, ticker}: {programId:string;record?:Candidate;ticker:string}) {
   const [reply,setReply] = useState<WTResearchReply|null>(null);
@@ -165,7 +166,7 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
   return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
-    <GemParityChart ticker={ticker} programKey={record?.id||reply?.exactKey||programId} data={x} />
+    <GemParityChart ticker={ticker} programKey={record?.id||reply?.exactKey||programId} data={x} watchlistSignals={reply?.watchlistSignals}/>
     <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3/financing eligibility and does not authorize a trade.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
     : !reply ? <p className="subtle">Checking verified price, volume, trend, technical risks and source dates…</p>
