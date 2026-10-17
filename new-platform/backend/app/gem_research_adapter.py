@@ -152,6 +152,10 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
             "breakoutRvol": _float(base["breakout_rvol"]),
         },
         "dataGaps": profile["gaps"],
+        # Expose observed factor points even when coverage is below the 50/100
+        # threshold for publishing a formal score. These are not 100-point scores.
+        "indicatorEntryObservedPoints": sum(v for _, _, v, _ in observed["entry_factors"] if v is not None),
+        "indicatorExitObservedPoints": sum(v for _, _, v, _ in observed["exit_factors"] if v is not None),
         "indicatorEntry": observed["entry"],
         "indicatorEntryCoverage": observed["entry_coverage"],
         "indicatorExitRisk": observed["exit_risk"],
