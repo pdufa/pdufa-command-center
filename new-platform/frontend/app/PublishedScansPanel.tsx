@@ -217,7 +217,8 @@ export default function PublishedScansPanel() {
     <VerificationLedgerPanel />
     <section className="source-health" aria-label="Gmail per-section and all-email checks">
       <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
-      <p className="subtle">CHECK controls audit headers in 100-message batches without changing any email. FIX &amp; TRASH invokes a separate guarded repair workflow: retry only approved transient failures and move an exact GitHub failure notice to Gmail Trash only after its same workflow run has been successfully rerun. Unresolved failures and source-data warnings remain untouched; no permanent deletion.</p>
+      <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least: <strong>P1</strong> overnight / PIPELINE / GEM JR / GEM; <strong>P2</strong> FDA / SEC / financial / source evidence; <strong>P3</strong> Gmail authentication and notifications; <strong>P4</strong> dashboard / API / CI; <strong>P5</strong> already-resolved, superseded and miscellaneous historical alerts. Critical items receive the limited repair attempts first.</p>
+      <p className="subtle">Only approved transient workflow failures can be retried. FDA/SEC/financial evidence gaps need source verification, not automatic data changes. Emails move to Gmail Trash only when the <strong>same exact GitHub run</strong> has succeeded on a later attempt. Unresolved issues stay visible. No permanent deletion.</p>
       <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:"0.65rem"}}>
         <label>Gmail section
           <select value={gmailSection} onChange={e => setGmailSection(e.target.value)}>
