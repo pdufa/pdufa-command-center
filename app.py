@@ -3457,6 +3457,51 @@ if page == "PDUFA":
                 "The SHOW MATCHING TRIALS button also reapplies the current selection."
             )
 
+            # Immediate, non-iframe help controls. The trial grid below has the
+            # same real circled ? in every header, but is below tall count panels.
+            # Show this help rail here so definitions are accessible at page top.
+            pipeline_help_items = []
+            for field_label in dict.fromkeys(PIPELINE_DISPLAY_FIELDS.values()):
+                field_text = html.escape(str(field_label), quote=True)
+                help_text = html.escape(pdufa_column_help(field_label), quote=True)
+                pipeline_help_items.append(
+                    '<details class="pipeline-quick-help">'
+                    '<summary aria-label="Explain ' + field_text + '">'
+                    '<span class="pipeline-help-field">' + field_text + '</span>'
+                    '<span class="pipeline-help-circle" aria-hidden="true">?</span>'
+                    '</summary><div class="pipeline-help-answer">' + help_text
+                    + '</div></details>'
+                )
+            st.markdown(
+                """<style>
+                .pipeline-help-rail{background:#fff;border:2px solid #111;
+                    border-radius:10px;padding:8px 10px;margin:6px 0 10px;color:#111}
+                .pipeline-help-rail-title{font-size:14px;font-weight:800;margin:0 0 7px}
+                .pipeline-help-rail-scroller{display:flex;gap:9px;overflow-x:auto;
+                    padding:3px 2px 10px;align-items:flex-start}
+                details.pipeline-quick-help{flex:0 0 auto;position:relative;
+                    border:1px solid #111;border-radius:6px;background:#f6faf7;
+                    min-width:max-content;max-width:310px}
+                details.pipeline-quick-help summary{display:flex;align-items:center;
+                    gap:9px;padding:6px 8px;cursor:pointer;list-style:none;
+                    color:#111;font-size:13px;font-weight:700}
+                details.pipeline-quick-help summary::-webkit-details-marker{display:none}
+                .pipeline-help-circle{display:inline-flex!important;align-items:center;
+                    justify-content:center;min-width:23px;width:23px;height:23px;
+                    border:2px solid #111;border-radius:50%;background:#fff;
+                    color:#111;font-size:14px;font-weight:900;line-height:1}
+                .pipeline-help-answer{max-width:310px;width:250px;padding:7px 9px;
+                    background:#fff;color:#111;font-size:12px;line-height:1.45;
+                    white-space:normal;overflow-wrap:anywhere;border-top:1px solid #111}
+                </style><div class="pipeline-help-rail" aria-label="Pipeline column definitions">
+                <div class="pipeline-help-rail-title">COLUMN DEFINITIONS —
+                click a circled ? to explain the field. Every trial-table header below
+                also has its own ? and a separate sort arrow.</div>
+                <div class="pipeline-help-rail-scroller">"""
+                + "".join(pipeline_help_items) + "</div></div>",
+                unsafe_allow_html=True,
+            )
+
             def _clear_pipeline_results_v9():
                 st.session_state["pipeline_applied_v9"] = None
 
@@ -3677,7 +3722,7 @@ if page == "PDUFA":
             with st.container(border=True, key="pipeline_trials_card"):
                 st.markdown("### PDUFA TRIALS / PROGRAMS")
                 render_ticker_toggle_panel("pipeline_2", prepared, title="TICKER WATCH / TRADE")
-                st.caption("Click a trial row to see its details and source links. Sort using column headers. Displayed count equals the table rows.")
+                st.caption("In the table below, each column name has a black circled ? for an explanation and a separate arrow for sorting. Click a trial to inspect its exact record. You can also use COLUMN DEFINITIONS at the top of PIPELINE.")
                 empty_chart = prepare_pdufa_grid(
                     pd.DataFrame(columns=list(PIPELINE_DISPLAY_FIELDS.values())),
                     view="PIPELINE", as_of=pipeline_today,
