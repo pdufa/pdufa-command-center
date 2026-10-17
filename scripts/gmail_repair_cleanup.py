@@ -64,7 +64,7 @@ def source_run_valid(run: dict, run_id: int) -> bool:
         isinstance(run.get("name"), str) and bool(run["name"]) and
         run.get("status") == "completed" and
         isinstance(run.get("html_url"), str) and
-        run["html_url"].startswith(f"https://github.com/{REPOSITORY}/actions/runs/{run_id}")
+        run["html_url"] == f"https://github.com/{REPOSITORY}/actions/runs/{run_id}"
     )
 
 
