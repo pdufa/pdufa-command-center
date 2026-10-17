@@ -17,6 +17,9 @@ from collections import Counter
 from datetime import date, datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlsplit
+from urllib.request import Request, urlopen
 
 FIELDS = [
     "priority", "event_key", "ticker", "company", "category", "claim",
@@ -27,6 +30,7 @@ FIELDS = [
     "official_ir_host", "official_ir_home",
     "official_ir_news_search", "official_ir_sec_filings_search",
     "official_ir_financial_results_search", "investor_relations_review_required",
+    "official_ir_live_status", "official_ir_live_links", "official_ir_last_checked_utc",
     "next_evidence_required", "source_claim_verified",
     "second_post_phase3_financing_verified", "trade_entry_authorized",
 ]
@@ -79,6 +83,96 @@ def sec_document_url(url, cik):
         ).group(1)) == int(cik)
         and p.path.lower().endswith((".htm", ".html", ".txt"))
     )
+
+
+class IRLinkCollector(HTMLParser):
+    """Bounded links from an official issuer page, never verified claims."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.current = None
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a" and self.current is None:
+            url = dict(attrs).get("href", "")
+            self.current = {"url": url if isinstance(url, str) else "", "parts": []}
+
+    def handle_data(self, data):
+        if self.current is not None:
+            self.current["parts"].append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "a" and self.current is not None:
+            self.links.append((self.current["url"], " ".join(self.current["parts"])))
+            self.current = None
+
+
+def live_issuer_ir_research(rows, timeout=5):
+    """Visit each official IR homepage once, surfacing actual same-host leads.
+
+    Successful page retrieval does not prove an offering, cash, FDA decision,
+    or GEM readiness. A blocked site does not mean the evidence is absent.
+    """
+    cache = {}
+    relevant = re.compile(
+        r"(?i)\b(?:investor|press|news|release|filings?|financial|earnings|"
+        r"quarterly|offering|financing|placement|clos(?:ed|ing)|report|"
+        r"annual|results|cash)\b"
+    )
+    for row in rows:
+        host = row.get("official_ir_host", "")
+        row["official_ir_last_checked_utc"] = datetime.now(timezone.utc).isoformat()
+        if not host:
+            row["official_ir_live_status"] = "OFFICIAL_SITE_NEEDS_DISCOVERY"
+            row["official_ir_live_links"] = ""
+            continue
+        if host not in cache:
+            try:
+                req = Request(row["official_ir_home"], headers={
+                    "User-Agent": "PDUFACommandCenter/1.0 (public issuer research)",
+                    "Accept": "text/html",
+                })
+                with urlopen(req, timeout=timeout) as response:
+                    final = response.geturl()
+                    site_host = (urlsplit(final).hostname or "").lower()
+                    if site_host.removeprefix("www.") != host.removeprefix("www."):
+                        raise ValueError("Official IR home redirected to a different domain")
+                    if "text/html" not in response.headers.get("Content-Type", ""):
+                        raise ValueError("Official IR response was not HTML")
+                    body = response.read(650001)
+                    if not body or len(body) > 650000:
+                        raise ValueError("Official IR response empty or too large")
+                collector = IRLinkCollector()
+                collector.feed(body.decode("utf-8", errors="replace"))
+                leads = []
+                for href, title in collector.links:
+                    clean = re.sub(r"\s+", " ", title).strip()
+                    if not relevant.search(clean) or len(clean) < 5:
+                        continue
+                    target = urljoin(final, href)
+                    parsed = urlsplit(target)
+                    # SEC links are primary-record discovery; other third
+                    # party links are deliberately not treated as issuer IR.
+                    if parsed.scheme != "https" or parsed.username or parsed.password:
+                        continue
+                    target_host = (parsed.hostname or "").lower()
+                    if (target_host.removeprefix("www.") != host.removeprefix("www.")
+                            and target_host not in {"www.sec.gov", "sec.gov"}):
+                        continue
+                    item = clean[:70] + " (" + target[:220] + ")"
+                    if item not in leads:
+                        leads.append(item)
+                    if len(leads) >= 8:
+                        break
+                cache[host] = (
+                    "FETCHED_DISCOVERY_ONLY" if leads else "FETCHED_NO_MATCHING_LINKS",
+                    " | ".join(leads),
+                )
+            except Exception as exc:
+                cache[host] = ("RETRIEVAL_BLOCKED_OR_UNAVAILABLE", type(exc).__name__[:55])
+        row["official_ir_live_status"], row["official_ir_live_links"] = cache[host]
+    return rows
 
 
 def triage(queue, companies, config):
@@ -220,7 +314,7 @@ def triage(queue, companies, config):
     return sorted(result, key=lambda row: (row["priority"], row["ticker"], row["event_key"]))
 
 
-def run(root, csv_output, json_output):
+def run(root, csv_output, json_output, live_ir=False):
     data = root / "data"
     report = json.loads((data / "pdufa_source_report.json").read_text())
     if not str(report.get("latest_run_id", "")).isdigit():
@@ -230,6 +324,8 @@ def run(root, csv_output, json_output):
         raise ValueError("Canonical issue queue/count mismatch; stop")
     cfg = json.loads((root / "config" / "issuer_sources.json").read_text())
     rows = triage(queue, read_csv(data / "company_registry.csv"), cfg)
+    if live_ir:
+        rows = live_issuer_ir_research(rows)
     expected_scoped = sum(r.get("category") in {"SEC", "FINANCIAL"} for r in queue)
     if len(rows) != expected_scoped or not rows:
         raise ValueError("Research coverage differs from canonical SEC/financial queue")
@@ -249,6 +345,9 @@ def run(root, csv_output, json_output):
         "issuer_ir_escalations_required": len(rows),
         "official_ir_hosts_configured": sum(bool(r["official_ir_host"]) for r in rows),
         "official_ir_hosts_missing": sum(not bool(r["official_ir_host"]) for r in rows),
+        "official_ir_live_checked": sum(bool(r["official_ir_live_status"]) for r in rows),
+        "official_ir_live_fetched": sum(r["official_ir_live_status"].startswith("FETCHED") for r in rows),
+        "official_ir_live_blocked": sum(r["official_ir_live_status"] == "RETRIEVAL_BLOCKED_OR_UNAVAILABLE" for r in rows),
         "canonical_source_ledger_modified": False,
         "source_claims_verified": 0,
         "second_post_phase3_financings_verified": 0,
@@ -264,10 +363,11 @@ def run(root, csv_output, json_output):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--root", type=Path, default=Path("."))
+    ap.add_argument("--live-ir", action="store_true", help="Visit each official investor site to collect research links, never verify claims")
     ap.add_argument("--output-csv", type=Path, default=Path("reports/sec_financing_gap_triage.csv"))
     ap.add_argument("--output-json", type=Path, default=Path("reports/sec_financing_gap_triage.json"))
     args = ap.parse_args()
-    print(json.dumps(run(args.root, args.output_csv, args.output_json), indent=2))
+    print(json.dumps(run(args.root, args.output_csv, args.output_json, live_ir=args.live_ir), indent=2))
 
 
 if __name__ == "__main__":
