@@ -83,6 +83,11 @@ button.secondary { background: white; color: #172b1b; }
 .pipeline-data-scroll {max-width:100%;}
 .pipeline-data-scroll > table {min-width:1650px;}
 .pipeline-data-scroll th {z-index:1;}
+.pipeline-data button.pipeline-sort-button {display:inline-flex;align-items:center;gap:7px;padding:0;border:0;border-radius:2px;background:transparent;color:inherit;font-weight:700;text-align:left;white-space:nowrap;}
+.pipeline-data button.pipeline-sort-button:hover {background:transparent;text-decoration:underline;}
+.pipeline-data button.pipeline-sort-button:focus-visible {outline:2px solid #247347;outline-offset:4px;}
+.pipeline-sort-button > span {font-size:10px;color:#3c7851;}
+.pipeline-sort-status {font-size:12px;color:#315b3b;padding:8px 10px;background:#edf5e9;border-radius:5px;}
 .pipeline-data-scroll td {max-width:310px;}
 .pipeline-data-scroll .pipeline-study-cell {min-width:160px;max-width:240px;overflow-wrap:anywhere;}
 .pipeline-data-scroll small {word-break:normal;overflow-wrap:anywhere;}

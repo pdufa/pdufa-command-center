@@ -7,7 +7,7 @@ const moduleFile = path.join(__dirname, "../lib/pipeline-data.ts");
 const compiled = ts.transpileModule(fs.readFileSync(moduleFile, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } });
 const compiledModule = { exports: {} };
 new Function("module", "exports", compiled.outputText)(compiledModule, compiledModule.exports);
-const { filterPipelineRows, pageRows, trialId, registrySections, reportedAnalyses } = compiledModule.exports;
+const { filterPipelineRows, pageRows, trialId, registrySections, reportedAnalyses, sortPipelineRows } = compiledModule.exports;
 
 for (const extension of [".ts", ".tsx"]) require.extensions[extension] = (loaded, file) => {
   const result = ts.transpileModule(fs.readFileSync(file, "utf8"), { compilerOptions: {
@@ -46,6 +46,32 @@ test("pagination covers every filtered record once and clamps an old page after 
   assert.equal(pageRows([], 0, 25).start, 0);
 });
 
+test("sorts the entire matching set numerically before pagination and keeps missing values last", () => {
+  const all = Array.from({ length: 107 }, (_, index) => ({ id: String(index), ticker: "T" + index, marketCap: index * 1e6 }));
+  const sorted = sortPipelineRows(all, { key: "marketCap", direction: "desc" });
+  assert.equal(pageRows(sorted, 0, 25).rows[0].marketCap, 106e6);
+  assert.equal(pageRows(sorted, 4, 25).rows.at(-1).marketCap, 0);
+  const numericIds = [{ id: "a", ticker: "A", programId: "PDUFA-10" }, { id: "b", ticker: "B", programId: "PDUFA-2" }, { id: "c", ticker: "C" }];
+  assert.deepEqual(sortPipelineRows(numericIds, { key: "programId", direction: "asc" }).map(row => row.id), ["b", "a", "c"]);
+  assert.deepEqual(sortPipelineRows(numericIds, { key: "programId", direction: "desc" }).map(row => row.id), ["a", "b", "c"]);
+  assert.equal(all[0].id, "0");
+  const dates = [{ id: "1", ticker: "A", pdufaDate: "2027-01-01" }, { id: "2", ticker: "B", pdufaDate: "2026-12-31T00:00:00Z" }, { id: "3", ticker: "C" }];
+  assert.deepEqual(sortPipelineRows(dates, { key: "pdufaDate", direction: "asc" }).map(row => row.id), ["2", "1", "3"]);
+});
+
+test("registry date, status and p-value count sorting uses every trial, including reported zero", () => {
+  const index = {
+    NCT00000001: { status: "RECRUITING", primary_completion_date: "2027-02", p_value_count: 0 },
+    NCT00000002: { status: "COMPLETED", primary_completion_date: "2026-12-31", p_value_count: 12 },
+    NCT00000003: { status: "ACTIVE_NOT_RECRUITING", primary_completion_date: "2027-01-01", p_value_count: 2 },
+  };
+  assert.deepEqual(sortPipelineRows(records, { key: "pValueCount", direction: "desc" }, index).map(row => row.id), [records[1].id, records[2].id, records[0].id, records[3].id]);
+  assert.equal(sortPipelineRows(records, { key: "pValueCount", direction: "asc" }, index)[0].id, records[0].id);
+  assert.equal(sortPipelineRows(records, { key: "primaryCompletion", direction: "asc" }, index)[0].id, records[1].id);
+  assert.equal(sortPipelineRows(records, { key: "status", direction: "asc" }, index)[0].id, records[2].id);
+  assert.deepEqual(sortPipelineRows([records[2], records[1], records[0]], { key: "stage", direction: "asc" }).map(row => row.stage), ["Phase 1", "Phase 3", "Phase 3 Results"]);
+});
+
 test("the rendered data area lists only selected-phase rows and preserves an empty result state", () => {
   const React = require("react");
   const { renderToStaticMarkup } = require("react-dom/server");
@@ -56,6 +82,9 @@ test("the rendered data area lists only selected-phase rows and preserves an emp
   assert.match(html, /Drug A/);
   assert.doesNotMatch(html, /Drug B|Drug C/);
   assert.match(html, /All fields/);
+  assert.match(html, /aria-sort="ascending"/);
+  assert.match(html, /Sort by market cap/);
+  assert.doesNotMatch(html, /Sort by indication|Sort by drug/);
   assert.match(renderToStaticMarkup(React.createElement(PipelineData, { rows: [] })), /No trials or programs match these filters/);
   const many = Array.from({ length: 107 }, (_, index) => ({ id: String(index), ticker: String(index).padStart(3, "0") }));
   const paginated = renderToStaticMarkup(React.createElement(PipelineData, { rows: many }));

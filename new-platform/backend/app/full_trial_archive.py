@@ -27,7 +27,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import HTTPException
 from fastapi.responses import FileResponse, Response
-from sqlalchemy import or_, select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.orm import Session
 
 from . import main as db
@@ -334,6 +334,20 @@ def record_summaries(raw_ids):
             reported = values.pop("reported_p_values") or []
             records[row[0]] = {**values, "p_value_count": len(reported), "fetched_at": row[-1].isoformat()}
     return {"records": records, "missing": sorted(set(ids) - records.keys())}
+
+
+def record_sort_index():
+    """Compact keys for sorting the whole filtered list before pagination."""
+    summary = db.FullTrialRecord.summary
+    with Session(db.ENGINE) as session:
+        rows = session.execute(select(
+            db.FullTrialRecord.nct_id,
+            summary["status"].as_string(),
+            summary["primary_completion_date"]["date"].as_string(),
+            func.coalesce(func.json_array_length(summary["reported_p_values"]), 0),
+        ))
+        records = {row[0]: {"status": row[1], "primary_completion_date": row[2], "p_value_count": row[3]} for row in rows}
+    return {"records": records, "count": len(records)}
 
 
 def make_record_ticket(nct):

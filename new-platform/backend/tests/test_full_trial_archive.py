@@ -139,6 +139,14 @@ def test_record_view_http_flow_requires_app_auth_and_valid_exact_trial_ticket(is
     listing = client.get(path, headers=headers)
     assert listing.status_code == 200
     assert listing.json()["records"]["NCT00000001"]["p_value_count"] == 2
+    sort_path = "/api/pipeline-full-records/sort-index"
+    assert client.get(sort_path).status_code == 401
+    sort_index = client.get(sort_path, headers=headers)
+    assert sort_index.status_code == 200
+    assert sort_index.json()["count"] == 2
+    assert sort_index.json()["records"]["NCT00000001"] == {
+        "status": "", "primary_completion_date": None, "p_value_count": 2,
+    }
     link = client.get("/api/pipeline-full-records/NCT00000001/view-link", headers=headers)
     assert link.status_code == 200
     record = client.get(link.json()["path"], headers={"Origin": "https://pdufa-new-dashboard.vercel.app"})

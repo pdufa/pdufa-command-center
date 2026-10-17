@@ -382,6 +382,12 @@ def full_trial_rows(ids: str = ""):
     return record_summaries(ids)
 
 
+@app.get("/api/pipeline-full-records/sort-index", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def full_trial_sort_index():
+    from .full_trial_archive import record_sort_index
+    return record_sort_index()
+
+
 @app.get("/api/pipeline-full-records/{nct_id}/view-link", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def full_trial_record_link(nct_id: str):
     from .full_trial_archive import make_record_ticket

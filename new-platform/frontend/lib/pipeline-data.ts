@@ -4,6 +4,49 @@ export type PipelineRecord = {
   capInRange?: boolean; marketCap?: number | null;
 };
 
+export const PIPELINE_STAGES = ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision", "Phase 4", "Not Applicable", "Unknown"];
+export type PipelineSortKey = "programId" | "ticker" | "stage" | "nctId" | "status" | "primaryCompletion" | "pdufaDate" | "marketCap" | "pValueCount";
+export type PipelineSort = { key: PipelineSortKey; direction: "asc" | "desc" };
+export type RegistrySortIndex = Record<string, { status?: string; primary_completion_date?: string | null; p_value_count: number }>;
+const COLLATOR = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+
+export function needsRegistrySort(key: PipelineSortKey) {
+  return key === "status" || key === "primaryCompletion" || key === "pValueCount";
+}
+
+export function sortPipelineRows<T extends PipelineRecord>(rows: T[], sort: PipelineSort, registry: RegistrySortIndex = {}) {
+  function date(value?: string | null) {
+    const iso = value?.trim().slice(0, 10);
+    if (!iso || !/^\d{4}(-\d{2}){0,2}$/.test(iso)) return null;
+    const parsed = Date.parse(iso.length === 4 ? iso + "-01-01" : iso.length === 7 ? iso + "-01" : iso);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  function value(row: T): string | number | null | undefined {
+    const nct = trialId(row), saved = registry[nct];
+    switch (sort.key) {
+      case "programId": return row.programId;
+      case "ticker": return row.ticker;
+      case "stage": { const index = PIPELINE_STAGES.indexOf(row.stage || "Unknown"); return index < 0 ? PIPELINE_STAGES.length : index; }
+      case "nctId": return nct;
+      case "status": return saved?.status || (nct ? null : "REGULATORY PROGRAM");
+      case "primaryCompletion": return date(saved?.primary_completion_date);
+      case "pdufaDate": return date(row.pdufaDate);
+      case "marketCap": return row.marketCap;
+      case "pValueCount": return saved?.p_value_count;
+    }
+  }
+  const missing = (item: string | number | null | undefined) => item == null || item === "" || (typeof item === "number" && !Number.isFinite(item));
+  return [...rows].sort((a, b) => {
+    const left = value(a), right = value(b);
+    // Missing values stay last in either direction; a reported zero is data.
+    if (missing(left) !== missing(right)) return missing(left) ? 1 : -1;
+    const comparison = missing(left) ? 0 : typeof left === "number" && typeof right === "number" ?
+      left - right : COLLATOR.compare(String(left), String(right));
+    return comparison * (sort.direction === "asc" ? 1 : -1) ||
+      COLLATOR.compare(a.ticker, b.ticker) || COLLATOR.compare(a.drug || "", b.drug || "") || COLLATOR.compare(a.id, b.id);
+  });
+}
+
 export function trialId(row: PipelineRecord) {
   const value = row.nctId || row.id.match(/\bNCT\d{8}\b/)?.[0] || "";
   return /^NCT\d{8}$/.test(value) ? value : "";

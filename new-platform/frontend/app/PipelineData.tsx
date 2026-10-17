@@ -3,7 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candidate } from "./Workspace";
 import TrialFields from "./TrialFields";
-import { pageRows, trialId } from "../lib/pipeline-data";
+import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
+
+const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
+  { label: "#" }, { label: "Program ID", key: "programId" },
+  { label: "Ticker / company", key: "ticker", sortLabel: "ticker" },
+  { label: "Drug / study" }, { label: "Indication" }, { label: "Pipeline stage", key: "stage" },
+  { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
+  { label: "Primary completion", key: "primaryCompletion" }, { label: "PDUFA", key: "pdufaDate" },
+  { label: "Market cap", key: "marketCap" },
+  { label: "Registry p-values", key: "pValueCount", sortLabel: "number of reported p-values" },
+  { label: "All data" },
+];
 
 type TrialSummary = {
   study_title?: string; status?: string; phases?: string[];
@@ -20,10 +31,13 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
   const [summaries, setSummaries] = useState<Summaries>({ ids: "", records: {} });
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
+  const [sort, setSort] = useState<PipelineSort>({ key: "ticker", direction: "asc" });
+  const [sortIndex, setSortIndex] = useState<RegistrySortIndex | null>(null);
+  const [sortLoading, setSortLoading] = useState<PipelineSortKey | null>(null);
+  const [sortError, setSortError] = useState("");
+  const sortController = useRef<AbortController | null>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const ordered = useMemo(() => [...rows].sort((a, b) =>
-    a.ticker.localeCompare(b.ticker) || (a.drug || "").localeCompare(b.drug || "") || a.id.localeCompare(b.id)
-  ), [rows]);
+  const ordered = useMemo(() => sortPipelineRows(rows, sort, sortIndex || {}), [rows, sort, sortIndex]);
   const current = pageRows(ordered, page, size);
   const ids = [...new Set(current.rows.map(trialId).filter(Boolean))].sort().join(",");
   const selectedRow = current.rows.find(row => row.id === selected);
@@ -31,6 +45,31 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
   useEffect(() => {
     if (selected) detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [selected]);
+
+  useEffect(() => () => sortController.current?.abort(), []);
+
+  async function changeSort(key: PipelineSortKey) {
+    if (sortLoading) return;
+    const next: PipelineSort = { key, direction: sort.key === key && sort.direction === "asc" ? "desc" : "asc" };
+    setSortError("");
+    if (needsRegistrySort(key) && !sortIndex) {
+      const controller = new AbortController();
+      sortController.current = controller;
+      setSortLoading(key);
+      try {
+        const response = await fetch("/api/full-trials/sort-index", { cache: "no-store", signal: controller.signal });
+        if (!response.ok) throw new Error("Unable to load registry sorting data. Click the column header to retry.");
+        const data = await response.json() as { records: RegistrySortIndex };
+        if (!data.records || typeof data.records !== "object" || Array.isArray(data.records)) throw new Error("Registry sorting data is unavailable.");
+        if (controller.signal.aborted) return;
+        setSortIndex(data.records);
+      } catch (cause) {
+        if (!controller.signal.aborted) setSortError(cause instanceof Error ? cause.message : "Unable to sort registry fields.");
+        return;
+      } finally { if (!controller.signal.aborted) setSortLoading(null); }
+    }
+    setSort(next); setPage(0); setSelected("");
+  }
 
   useEffect(() => {
     if (!ids) return;
@@ -53,12 +92,15 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
   function navigate(next: number) { setPage(next); setSelected(""); }
   const enriched = summaries.ids === ids ? summaries.records : {};
   const loading = Boolean(ids && summaries.ids !== ids && !error);
-  return <section className="panel pipeline-data" aria-labelledby="pipeline-data-title">
+  return <section className="panel pipeline-data" aria-labelledby="pipeline-data-title" aria-busy={sortLoading !== null}>
     <div className="sectionhead"><div><h3 id="pipeline-data-title">PIPELINE DATA</h3>
       <p className="subtle">Results from DISPLAY TRIALS. Select <strong>All fields</strong> to browse each complete record.</p>
       {filterSummary && <p className="subtle pipeline-applied-filters">{filterSummary}</p>}</div>
       <span className="counter" aria-live="polite">{rows.length.toLocaleString("en-US")} matching trials / programs</span>
     </div>
+    <p className="subtle small">Click a column heading to sort all matching trials; click again to reverse the order.</p>
+    {sortLoading && <p role="status" className="pipeline-sort-status">Preparing {HEADERS.find(column => column.key === sortLoading)?.label.toLowerCase()} sorting for the complete list…</p>}
+    {sortError && <p role="alert" className="error">{sortError}</p>}
     <div className="pipeline-data-pagination">
       <p role="status">Showing {current.start.toLocaleString("en-US")}–{current.end.toLocaleString("en-US")} of {rows.length.toLocaleString("en-US")}{loading ? " · Loading registry summaries…" : ""}</p>
       <label>Rows per page <select value={size} onChange={event => { setSize(Number(event.target.value)); navigate(0); }}><option value={25}>25</option><option value={50}>50</option></select></label>
@@ -71,7 +113,15 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
     {error && <div role="alert" className="pipeline-data-error"><span className="error">{error}</span> <button type="button" className="secondary" onClick={() => setRetry(value => value + 1)}>Retry summaries</button></div>}
     {rows.length ? <div className="table-scroll pipeline-data-scroll"><table>
       <caption className="visually-hidden">Filtered Pipeline trials and programs. The matching count uses the same records as the phase and date totals.</caption>
-      <thead><tr><th>#</th><th>Program ID</th><th>Ticker / company</th><th>Drug / study</th><th>Indication</th><th>Pipeline stage</th><th>NCT ID</th><th>Trial status</th><th>Primary completion</th><th>PDUFA</th><th>Market cap</th><th>Registry p-values</th><th>All data</th></tr></thead>
+      <thead><tr>{HEADERS.map(column => {
+        const key = column.key, active = key === sort.key;
+        return <th key={column.label} aria-sort={key ? active ? sort.direction === "asc" ? "ascending" : "descending" : "none" : undefined}>
+          {key ? <button type="button" className="pipeline-sort-button" disabled={sortLoading !== null}
+            title={"Sort by " + (column.sortLabel || column.label.toLowerCase())}
+            aria-label={"Sort by " + (column.sortLabel || column.label.toLowerCase()) + ", " + (active && sort.direction === "asc" ? "descending" : "ascending")}
+            onClick={() => void changeSort(key)}>{column.label}<span aria-hidden="true">{active ? sort.direction === "asc" ? "▲" : "▼" : "↕"}</span></button> : column.label}
+        </th>;
+      })}</tr></thead>
       <tbody>{current.rows.map((row, index) => {
         const nct = trialId(row), saved = enriched[nct];
         const active = selected === row.id;

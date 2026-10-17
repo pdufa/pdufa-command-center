@@ -6,7 +6,7 @@ import AlpacaStockChart from "./AlpacaStockChart";
 import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
 import PipelineData from "./PipelineData";
-import { filterPipelineRows } from "../lib/pipeline-data";
+import { filterPipelineRows, PIPELINE_STAGES as STAGES } from "../lib/pipeline-data";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -53,7 +53,6 @@ type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
 const LEGACY_TAG_KEY = "pdufa_new_watch_trade_v1";
-const STAGES = ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision", "Phase 4", "Not Applicable", "Unknown"];
 const BANDS = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS", "NO PDUFA YET", "PAST / RECHECK"];
 
 function dateTodayPT() {
@@ -417,6 +416,14 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], query, onlyBand });
     setDisplayVersion(value => value + 1);
   }
+  function clearPipelineSelections() {
+    setStageFilters([]);
+    setDateFilters([]);
+    setQuery("");
+    setOnlyBand(false);
+    setDisplayFilters(null);
+    setDisplayVersion(0);
+  }
   const byProgram = useMemo(() => {
     const m=new Map<string,Candidate>();
     for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
@@ -577,7 +584,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional screening; OFF for Streamlit total)</label></div>
         <div className="pipeline-actions pipeline-display-actions">
           <button type="button" onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
-          <button type="button" className="secondary" onClick={()=>{setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(false)}}>CLEAR SELECTIONS</button>
+          <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
         </div>
         {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
       </section>
