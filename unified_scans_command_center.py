@@ -513,13 +513,21 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                           f"{pct:.1f}%" if pct is not None else "N/A")
                 if pct is not None:
                     st.progress(min(max(pct/100, 0), 1.0))
-                st.caption(
-                    "Resolved: " + _print_count(card.get("checked")) +
-                    " / " + _print_count(card.get("due")) +
-                    " · Outstanding: " + _print_count(card.get("outstanding"))
-                )
-                if name in SOURCE_NAMES and card.get("not_applicable"):
-                    st.caption(f"Plus {_print_count(card['not_applicable'])} resolved as N/A.")
+                if name in SOURCE_NAMES:
+                    st.caption("Available verified: " +
+                               _print_count(card.get("details", {}).get("Verified")) +
+                               " · Resolved (incl. N/A): " +
+                               _print_count(card.get("checked")) + "/" +
+                               _print_count(card.get("due")))
+                    st.caption("Outstanding: " + _print_count(card.get("outstanding")) +
+                               " · Required: " + _print_count(card.get("required")) +
+                               " · Supplemental unavailable: " + _print_count(card.get("optional")))
+                else:
+                    st.caption(
+                        "Available checked: " + _print_count(card.get("checked")) +
+                        " / " + _print_count(card.get("due")) +
+                        " · Outstanding: " + _print_count(card.get("outstanding"))
+                    )
             with button_col:
                 if name in WORKFLOWS:
                     busy = recent_active(runs, name)
