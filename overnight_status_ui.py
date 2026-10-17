@@ -191,6 +191,42 @@ def render_overnight_execution(report_loader, source_loader, run_loader):
         st.link_button("OPEN THIS EXACT OVERNIGHT GITHUB RUN", run["html_url"])
 
     jobs = current_job_steps(run_id) if isinstance(run_id, int) else []
+    # Show evidence of *actual* GitHub timer wake-ups for the same Pacific
+    # night. Missing early ticks are not proof of a cause; schedules are best
+    # effort, and GitHub's general run listing is bounded.
+    start_ticks = []
+    if scheduled is not None:
+        for tick in runs:
+            if (isinstance(tick, dict) and tick.get("event") == "schedule" and
+                    str(tick.get("path") or "").split("/")[-1] ==
+                    "pdufa-nightly-pacific-start.yml"):
+                slot = pacific_schedule_for(tick.get("created_at"))
+                if slot is not None and slot.date() == scheduled.date():
+                    start_ticks.append(tick)
+    with st.expander("10 PM SCHEDULER / RECOVERY ATTEMPTS", expanded=False):
+        st.caption(
+            "GitHub timer wake-ups recorded for this Pacific night, including "
+            "extra recovery checks. Successful timer jobs are not the same as "
+            "a successfully completed scan. The recent Actions list may omit "
+            "older timer attempts."
+        )
+        if start_ticks:
+            timer_rows = [{
+                "Timer invoked (Pacific)": _fmt_short(t.get("created_at")),
+                "Job status": _status(t),
+                "GitHub run": (
+                    t.get("html_url") if str(t.get("html_url", "")).startswith(
+                        "https://github.com/" + REPO + "/actions/runs/") else ""),
+            } for t in sorted(start_ticks, key=lambda x: x.get("created_at") or "")[:20]]
+            st.dataframe(pd.DataFrame(timer_rows), hide_index=True,
+                         use_container_width=True,
+                         column_config={
+                             "GitHub run": st.column_config.LinkColumn(
+                                 "GitHub run", display_text="Open timer")})
+        else:
+            st.info("No timer wake-up records for this scan night were found "
+                    "in the available recent GitHub results.")
+
     if jobs:
         details = pd.DataFrame(stage_rows(jobs))
         st.markdown("### EACH SCAN / STAGE — START, FINISH, RESULT")
