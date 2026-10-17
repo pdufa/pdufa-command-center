@@ -34,7 +34,7 @@ function score(due?: number, verified?: number, na?: number) {
   const cleared = verified + (na || 0);
   return cleared < 0 || cleared > due ? null : Math.round((cleared / due) * 1000) / 10;
 }
-const ORIGINAL = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/";
+const SCAN_WORKFLOW = "https://github.com/pdufa/pdufa-command-center/actions/workflows/pdufa-scan-control.yml";
 
 export default function PublishedScansPanel() {
   const [record, setRecord] = useState<Report | null>(null);
@@ -92,7 +92,7 @@ export default function PublishedScansPanel() {
   return <section className="panel">
     <h2>SCANS — Published source scores and outstanding evidence</h2>
     <p className="subtle">This staging platform reads original Streamlit scan reports independently of the database. It reads original scan reports and, when a server-only GitHub token is configured, can dispatch the existing scanners. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
-    <p><a href={ORIGINAL} target="_blank" rel="noopener noreferrer">OPEN ORIGINAL SCANS — INDIVIDUAL AND SCAN ALL CONTROLS ↗</a></p>
+    <p><a href={SCAN_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN EXISTING GITHUB SCAN RUN CONTROLS ↗</a></p>
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
     <div className="source-health">
       <strong>Run existing scanners from this dashboard</strong>
@@ -118,7 +118,7 @@ export default function PublishedScansPanel() {
         </button>
         <button type="button" className="secondary" onClick={() => setScanRefresh(x => x + 1)}>REFRESH RUN STATUS</button>
       </div>
-      {runs && !runs.dispatchEnabled && <p className="subtle">Manual controls require a server-only PDUFA_GITHUB_TOKEN with Actions write access in this staging dashboard. Existing nightly scans continue independently.</p>}
+      {runs && !runs.dispatchEnabled && <p className="subtle">The SCANS page is installed, but its START button is disabled until PDUFA_GITHUB_TOKEN is saved as a server-only Vercel environment variable (fine-grained GitHub token with Actions read/write on this repository), followed by a redeploy. In the meantime, use the linked GitHub Actions workflow → Run workflow. Existing nightly scans continue independently.</p>}
       {runError && <p className="risk-line">{runError}</p>}
       {scanMessage && <p role="status">{scanMessage}</p>}
       {runs?.manual?.[0] && <p className="subtle">Last manual control: <a href={runs.manual[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.manual[0].id}</a> — {runs.manual[0].status} / {runs.manual[0].conclusion || "not concluded"}.</p>}
