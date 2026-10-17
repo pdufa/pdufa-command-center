@@ -170,7 +170,7 @@ def triage(queue, companies, config):
         ir_host = next((
             host.lower() for host in official_hosts
             if isinstance(host, str) and re.fullmatch(
-                r"[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)+", host
+                r"[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+", host
             )
         ), "")
         ir_home = "https://" + ir_host + "/" if ir_host else ""
