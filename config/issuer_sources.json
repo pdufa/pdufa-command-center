@@ -144,7 +144,13 @@
         ],
         "financing_research_documents": [
           "https://www.sec.gov/Archives/edgar/data/1818794/000119312526323940/dyn-ex99_1.htm"
-        ]
+        ],
+        "individual_financing_close": {
+          "date": "2026-06-16",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1818794/000181879426000003/dyn-20260616.htm",
+          "evidence_type": "SINGLE_FUNDED_50M_DEBT_TRANCHE_ONLY",
+          "explanation": "June 16 SEC 8-K reports a completed $50m term-loan tranche borrowing. Do not count available $400m facility, undrawn tranches or post-Phase-3 financing #2; trade entry remains blocked."
+        }
       }
     },
     "hosts": [
