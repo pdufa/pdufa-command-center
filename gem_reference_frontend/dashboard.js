@@ -315,7 +315,112 @@ function financeCard(r,junior){
 function checklist(r,kind){const entry=kind==="entry",name=entry?"Entry Checklist":"Exit Checklist",value=r?.[entry?"entry":"exit_risk"],checks=r?.[entry?"entry_checks":"exit_checks"]||data.empty_checks[kind];return card(name+" ("+data.stage+")",entry?"check":"flag",table(["#","Criterion",entry?"Details / threshold":"Trigger / condition","Status","Points"],checks.map((x,i)=>[i+1,esc(x.label),`<span title="${esc(x.detail)}">${esc(x.detail)}</span>`,`<span class="${x.status===true?(entry?"check-mark":"check-fail"):x.status===false?(entry?"check-fail":"check-mark"):"check-unknown"}" title="${x.status===true?(entry?"Evidence observed":"Risk condition observed"):x.status===false?"Condition not met":"Unknown / unverified"}">${x.status===true?"☑":x.status===false?"✕":"—"}</span>`,esc(x.points)]))+`<div class="coverage">${esc(r?.[entry?"entry_status":"exit_status"]||"Source coverage unavailable")} · Coverage ${r?.[entry?"entry_coverage":"exit_coverage"]||0}/100. ${entry?"Provisional readiness":"Higher exit risk means more risk"}.</div>`,"checklist",`<span class="score-badge ${value==null?"unavailable":""}">${entry?"Total score":"Risk"}: ${value==null?"N/A":num(value,0)} / 100</span>`);}
 function getPlan(r){return r?read("gem_chart_plan_"+r.id,{}):{};}
 function signals(r,compact=false){const plan=getPlan(r);const rows=r?[["MACD",r.macd],["RVOL",r.rvol==null?"—":num(r.rvol)+"×"],["RSI (14)",num(r.rsi)],["SMA20",price(r.sma20)],["SMA50",price(r.sma50)],["Closing support",price(r.support)],["Closing resistance",price(r.resistance)],["Entry (plan)",price(plan.entry)],["Stop (plan)",price(plan.stop)],["Target (plan)",price(plan.target)],["Base status",r.base_status]]:[["MACD","—"],["RVOL","—"],["RSI (14)","—"],["Closing support","—"],["Closing resistance","—"],["Entry / stop / target","—"]];return `<table class="data-table ${compact?"":"signal-table"}"><tbody>${rows.map(([k,v])=>`<tr><td>${esc(k)}</td><td title="${esc(v)}">${esc(v)}</td></tr>`).join("")}</tbody></table>`;}
-function signalCard(r){return card("Key Signals"+(r?" ("+r.ticker+")":""),"check",signals(r)+`<p class="coverage">ATR / VWAP require OHLC / intraday data.</p>`,"signals");}
+function juniorEntryCard(r){
+  const checks=(r&&Array.isArray(r.junior_research_checks)&&r.junior_research_checks.length?
+    r.junior_research_checks:(r?.entry_checks||data.empty_checks?.entry||[]));
+  if(!r)return card("GEM JR — Research Entry Checklist","check",
+    empty("No candidate selected","Select a GEM JR candidate for source-linked readiness checks."),"jr-readiness");
+  const observed=checks.filter(x=>x.status===true).length;
+  const blocked=checks.filter(x=>x.status===false).length;
+  const unverified=checks.length-observed-blocked;
+  const rows=checks.map((x,i)=>{
+    const label=x.status===true?"Evidence recorded":x.status===false?"Risk warning":"Needs review";
+    const type=x.status===true?"pass":x.status===false?"hold":"unknown";
+    return '<tr><td class="number">'+esc(x.priority||i+1)+'</td>'+
+      '<td class="wrap"><strong>'+esc(x.label)+'</strong><div class="jr-check-detail">'+esc(x.detail)+'</div>'+
+      (x.next_step?'<div class="jr-check-next"><strong>Next:</strong> '+esc(x.next_step)+'</div>':"")+'</td>'+
+      '<td>'+badge(label,type)+'</td>'+
+      '<td>'+(x.url?safeLink(x.url,"Primary source"):'<span class="muted">Not saved</span>')+'</td></tr>';
+  });
+  const summary='<div class="jr-readiness-tally"><strong>'+checks.length+' prioritized checks</strong>'+
+    '<span>Observed '+observed+'</span><span>Review '+unverified+'</span><span>Warnings '+blocked+'</span></div>';
+  return card("GEM JR — Research Entry Checklist","check",
+    summary+'<div class="jr-readiness-scroll scroll">'+table(["#","Requirement / evidence / next step","Assessment","Document"],rows,"jr-checks-table",[5,58,19,18])+'</div>'+
+    '<p class="jr-readiness-disclaimer">Research observations only — GEM JR never receives a qualified GEM entry score from this checklist. Primary-source clearance, the second distinct post-readout financing and a position-specific trade plan remain separate requirements. An unknown is not a pass.</p>',
+    "jr-readiness",'<span class="score-badge unavailable">Entry score: N/A</span>');
+}
+function technicalSignalRows(r){
+  const plan=r?getPlan(r):{};
+  const current=r?.fresh===true;
+  const close=r?.close;
+  const defined=(x)=>finite(x);
+  const status=(pass,available=true)=>!available?"unknown":pass?"pass":"review";
+  const money=(x)=>defined(x)?"$"+num(x,0):"—";
+  const item=(rank,label,observation,guide,type,detail)=>({rank,label,observation,guide,type,detail});
+  if(!r)return [];
+  const trend=defined(close)&&defined(r.sma20)&&defined(r.sma50);
+  const support=defined(close)&&defined(r.support)&&defined(r.resistance)&&r.resistance>r.support;
+  const rvol=defined(r.rvol);
+  const rsi=defined(r.rsi);
+  const macd=r.macd==="Bullish"||r.macd==="Bearish";
+  const liquidity=defined(r.dollar_volume)&&r.dollar_volume>=0;
+  const entry=plan.entry,stop=plan.stop,target=plan.target;
+  const validPlan=defined(entry)&&defined(stop)&&defined(target)&&stop>0&&stop<entry&&entry<target;
+  const riskRatio=validPlan?(target-entry)/(entry-stop):null;
+  const base=String(r.base_status||"").trim();
+  const aboveSupport=support&&close>=r.support;
+  const baseRisk=!current||!support?"unknown":!aboveSupport?"hold":"review";
+  const freshNote=current
+    ?"Saved EOD snapshot is marked current, not a live quote."
+    :"Stale or missing saved EOD snapshot. No current technical clearance.";
+  const rows=[
+    item(1,"Saved price source",dateLabel(r.market_date),
+      "Current verified EOD observations required",current?"pass":"hold",freshNote),
+    item(2,"Trend · close / SMA20 / SMA50",
+      trend?`${price(close)} / ${price(r.sma20)} / ${price(r.sma50)}`:"—",
+      "Research guide: close > SMA20 > SMA50",
+      status(trend&&close>r.sma20&&r.sma20>r.sma50,current&&trend),
+      "Moving averages share trend information; they are not independent confirmations."),
+    item(3,"Base and closing support",
+      support?`Close ${price(close)} · support ${price(r.support)} · resistance ${price(r.resistance)}`:base||"—",
+      "Hold observed support; confirm a base before a breakout",
+      baseRisk,base||"No documented base setup in current saved feed."),
+    item(4,"Relative volume (RVOL)",rvol?num(r.rvol)+"×":"—",
+      "≥1.5× is an unvalidated research reference",
+      status(rvol&&r.rvol>=1.5,current&&rvol),
+      "Relative volume is context, not a stand-alone entry or exit trigger."),
+    item(5,"RSI (14)",rsi?num(r.rsi,1):"—",
+      "45–65 is an unvalidated research reference",
+      status(rsi&&r.rsi>=45&&r.rsi<=65,current&&rsi),
+      "Avoid double-counting RSI with moving averages and MACD."),
+    item(6,"MACD trend",macd?r.macd:"—",
+      "Bullish direction is a research observation",
+      status(r.macd==="Bullish",current&&macd),
+      "No independently verified crossover date or signal line is supplied."),
+    item(7,"Average dollar-volume liquidity",money(r.dollar_volume),
+      "Check against intended order size; no universal threshold",
+      liquidity&&current?"review":"unknown",
+      "Saved dollar volume is not a live bid/ask spread or fill guarantee."),
+    item(8,"Entry / stop / target reward-risk",
+      validPlan?`${num(riskRatio,2)}:1 · ${price(entry)} / ${price(stop)} / ${price(target)}`:"—",
+      "Plan-defined ≥2:1 is a reference, not a calibrated edge",
+      status(validPlan&&riskRatio>=2,validPlan),
+      "Personal reference levels only; saved plans do not place orders."),
+    item(9,"ATR volatility / trailing stop","—",
+      "Requires valid high, low and close series",
+      "unknown","Not calculable from close-only saved bars; do not substitute estimates."),
+    item(10,"VWAP and intraday activity","—",
+      "Requires intraday prices and volume",
+      "unknown","VWAP is unavailable in the EOD feed; do not treat it as zero."),
+  ];
+  if(!current)for(const row of rows){
+    if(row.rank>=2 && row.rank<=7)row.type="unknown";
+  }
+  return rows;
+}
+function signalCard(r){
+  const rows=technicalSignalRows(r);
+  const summary=r?`<div class="technical-heading"><span><strong>${esc(r.ticker)}</strong> · ${r.fresh?"Saved EOD research":"Source stale / unverified"}</span><span>As of ${dateLabel(r.market_date)}</span></div>`:"";
+  const body=r?summary+'<div class="technical-scroll scroll">'+rows.map(x=>
+    '<details class="technical-item"><summary><span class="tech-rank">'+x.rank+'</span><span class="tech-label">'+esc(x.label)+
+    '<small>'+esc(x.observation)+'</small></span>'+badge(x.type==="pass"?"Observed":x.type==="hold"?"Warning":x.type==="review"?"Review":"Unavailable",x.type)+
+    '</summary><div class="tech-explain"><strong>Reference:</strong> '+esc(x.guide)+
+    '<p>'+esc(x.detail)+'</p></div></details>').join("")+'</div>'+
+    '<p class="technical-disclaimer">All technical guides are advisory, not validated or automatically scored. Stale data suppresses favorable signals. Missing OHLC / intraday measurements remain unavailable. No trade authorization.</p>':
+    empty("No technical signals","Select a GEM candidate to review source-dated price and risk signals.");
+  return card("GEM — Prioritized Technical Signals"+(r?" ("+r.ticker+")":""),
+    "check",body,"signals technical-signals",r?'<button class="scan-open" data-action="plan">Entry / Stop / Target</button>':"");
+}
 function chartCard(r,junior){const ranges=["1M","3M","6M","1Y","ALL"].map(x=>`<button data-action="range" data-range="${x}" class="${state.range===x?"active":""}" aria-pressed="${state.range===x}">${x}</button>`).join("");return card((r?r.ticker+" — ":"")+state.range+" Trading Chart","chart",r?`<div class="chart-layout"><div class="chart-main"><div class="chart-subtitle"><strong>${esc(r.ticker)}</strong><span class="price">Close ${price(r.close)}</span><span class="pill-note">${r.fresh?"Saved EOD":"Saved EOD · stale / unverified"} · ${dateLabel(r.market_date)}</span></div><div class="chart-legend"><span style="--line:#05ab68">Close</span><span style="--line:#1673eb">SMA20 ${price(r.sma20)}</span><span style="--line:#f49429">SMA50 ${price(r.sma50)}</span></div><div class="chart-canvas" id="price-chart">${state.chartMode==="tv"?'<div id="tv-widget" style="height:100%"></div>':""}</div><div class="chart-caption"><span>${state.chartMode==="tv"?"External TradingView · may be delayed":r.bars.length+" saved sessions · closes and volume only"}</span><span><button data-action="chart-mode">${state.chartMode==="tv"?"Saved EOD":"Candles"}</button> <button data-action="plan">Reference levels</button> ${safeLink("https://www.tradingview.com/chart/?symbol="+encodeURIComponent(r.ticker),"Open chart")}</span></div></div>${junior?`<aside class="chart-signals"><h3>Key Signals</h3>${signals(r,true)}</aside>`:""}</div>`:empty("No chart selected","Select an active candidate to load its saved price history or external candlesticks."),"chart"+(state.chartFocus?" focused-chart":""),ranges+(state.chartFocus?'<button class="chart-close" data-action="close-chart" aria-label="Close enlarged chart">✕ Close</button>':""));}
 function drawPriceChart(r){
   const host=document.getElementById("price-chart");if(!host||!r)return;
@@ -378,7 +483,7 @@ function render(focusSearch=false,focusTrialSearch=false){if(!data)return;const 
   const intro=data.junior?"Earlier Setups (Post Phase 3 / Pre-PDUFA)":"Higher Conviction (Near PDUFA)";
   const subtitle=data.junior?"Earlier setups with more time to develop. Monitor trial evidence, financing progress and promotion to GEM.":"Later-stage research with stronger qualification requirements. Exact-program Phase 3 and two independently verified financing closures.";
   const notice=data.notice||(!data.source_current?"Published SEC / source coverage is partial or stale. Clinical and financing clearance does not clear new trading entries.":"");
-  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout ${state.criteriaCollapsed?"criteria-collapsed":""}">${criteriaCard()}${candidateCard(rows)}</div>${reviewNavigator(rows,r)}${state.chartFocus?'<button type="button" class="chart-backdrop" data-action="close-chart" aria-label="Close enlarged chart"></button>':""}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
+  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout ${state.criteriaCollapsed?"criteria-collapsed":""}">${criteriaCard()}${candidateCard(rows)}</div>${reviewNavigator(rows,r)}${state.chartFocus?'<button type="button" class="chart-backdrop" data-action="close-chart" aria-label="Close enlarged chart"></button>':""}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${juniorEntryCard(r)}${checklist(r,"exit")}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
   app.setAttribute("aria-busy","false");drawPriceChart(r);if(state.chartFocus){const enlarged=app.querySelector(".focused-chart");enlarged?.setAttribute("role","dialog");enlarged?.setAttribute("aria-modal","true");enlarged?.setAttribute("aria-label","Enlarged "+data.stage+" price chart");enlarged?.querySelector(".chart-close")?.focus();}persist();
   app.querySelectorAll("details[data-tree]").forEach(el=>{const key=r?.id+":"+el.dataset.tree;if(Object.hasOwn(state.tree,key))el.open=state.tree[key];el.addEventListener("toggle",()=>{state.tree[key]=el.open;persist();});});
   if(focusSearch){const input=document.getElementById("candidate-search");input.focus();input.setSelectionRange(input.value.length,input.value.length);}if(focusTrialSearch){const input=document.getElementById("company-trial-search");input?.focus();input?.setSelectionRange(input.value.length,input.value.length);}resize();
