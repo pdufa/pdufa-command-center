@@ -175,7 +175,7 @@ def workflow_priority(name: str) -> int:
         return 1
     if re.search(r"\b(?:fda|sec|financial|financing|clinical evidence|source|filings|evidence|registry|runway)\b", value):
         return 2
-    if re.search(r"\b(?:gmail|email|inbox|smtp|imap|notification|delivery|alert)\b", value):
+    if re.search(r"\b(?:gmail|email|inbox|smtp|imap|notification|delivery)\b", value):
         return 3
     if re.search(r"\b(?:dashboard|api|ci|streamlit|vercel|render|deploy|bootstrap|integration|acceptance|test|validation|frontend|backend)\b", value):
         return 4
