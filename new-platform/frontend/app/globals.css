@@ -286,3 +286,17 @@ button.secondary { background: white; color: #172b1b; }
   .wt-score-details .research-score-cards{grid-template-columns:1fr;}
   .wt-score-details .research-score-cards>div:last-child{grid-column:auto;}
 }
+
+/* Exact-trial WT indicator scores reusing GEM's underlying market factor model */
+.wt-indicator-title{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+.wt-indicator-title h3{margin:0;font-size:14px;color:#594215}
+.wt-score-details .wt-observed-scores{border-bottom:1px solid #bfad77;padding-bottom:12px}
+.wt-observed-scores>div:first-child{border-color:#428b69;background:#f0faf4}
+.wt-observed-scores>div:nth-child(2){border-color:#c28c45;background:#fff6e7}
+.wt-observed-scores>div:last-child{border-color:#a7b1c5;background:#f4f6fb}
+.wt-indicator-eligibility{background:#fff1cd;border-left:3px solid #b98b18;padding:9px}
+.wt-factors{border-top:1px solid #d5c9a9;margin:8px 0;padding:10px 0}
+.wt-factors summary{font-weight:800;font-size:12px;cursor:pointer;color:#4b422b}
+.wt-factors h4{margin:8px 0;font-size:12px}
+.wt-factors .score-factor small{line-height:1.45}
+.wt-score-details>a{font-size:12px;color:#15699c;font-weight:700}
