@@ -73,9 +73,9 @@ class ScoreSemanticsTests(unittest.TestCase):
 class DispatchRoutingTests(unittest.TestCase):
     def test_each_section_maps_to_a_real_specific_workflow(self):
         self.assertEqual(workflow_request("PIPELINE", "FULL"),
-                         ("pdufa-nightly-clinical.yml", {"scan": "PIPELINE", "scan_mode": "FULL"}))
+                         ("pdufa-individual-clinical-scan.yml", {"section": "PIPELINE", "scan_mode": "FULL"}))
         self.assertEqual(workflow_request("GEM JR", "DELTA"),
-                         ("pdufa-nightly-clinical.yml", {"scan": "GEM_JR", "scan_mode": "DELTA"}))
+                         ("pdufa-individual-clinical-scan.yml", {"section": "GEM_JR", "scan_mode": "DELTA"}))
         self.assertEqual(workflow_request("GEM", "FULL"),
                          ("gem-research-quality.yml", {"action": "RESCAN_ALL"}))
         for source in ("FDA", "SEC", "FINANCIAL", "MARKET", "ISSUER"):
