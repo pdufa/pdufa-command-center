@@ -5,6 +5,8 @@ import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
+import PipelineData from "./PipelineData";
+import { filterPipelineRows } from "../lib/pipeline-data";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -25,7 +27,7 @@ type ResearchTechnical = {
   riskAlerts?: string[]; researchOnly?: boolean;
 };
 
-type Candidate = {
+export type Candidate = {
   id: string; programId?: string; eventKey?: string; ticker: string; company?: string;
   drug?: string; indication?: string; nctId?: string; pdufaDate?: string;
   phase3Date?: string; phase3Status?: string; phase3Source?: string;
@@ -393,14 +395,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
 
   const pipeline = snapshot?.pipeline || [];
-  const possible = useMemo(() => pipeline.filter(r =>
-    (!onlyBand || r.capInRange) &&
-    (!query || [r.ticker,r.company,r.drug,r.indication,r.nctId,r.programId,r.id].some(t => (t || "").toLowerCase().includes(query.toLowerCase())))
-  ), [pipeline, onlyBand, query]);
-  const counted = useMemo(() => possible.filter(r =>
-    (stageFilters.length === 0 || stageFilters.includes(r.stage || "Unknown")) &&
-    (dateFilters.length === 0 || dateFilters.includes(dateBand(r)))
-  ), [possible, stageFilters, dateFilters]);
+  const possible = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand }, dateBand), [pipeline, onlyBand, query]);
+  const counted = useMemo(() => filterPipelineRows(possible, { stages: stageFilters, dates: dateFilters }, dateBand), [possible, stageFilters, dateFilters]);
   const byProgram = useMemo(() => {
     const m=new Map<string,Candidate>();
     for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
@@ -528,7 +524,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Select stages and dates to filter the PIPELINE counts.</p>
+        <p className="subtle">Select stages and dates to filter the PIPELINE counts and data below.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{possible.length.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
@@ -558,6 +554,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <div className="count-track" aria-hidden="true"><div style={{width:(item.count/Math.max(1,...group.map(v=>v.count))*100)+"%"}} /></div>
             <b>{item.count.toLocaleString("en-US")}</b></div>)}</div></div>)}
       </div>
+      <PipelineData key={JSON.stringify([stageFilters, dateFilters, query, onlyBand, snapshot.asOf])} rows={counted} />
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>

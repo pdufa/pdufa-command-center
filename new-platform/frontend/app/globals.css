@@ -57,6 +57,47 @@ button.secondary { background: white; color: #172b1b; }
 .pipeline-row label.cap-filter {display:flex;flex-direction:row;align-items:center;min-height:43px;}
 .pipeline-actions {display:flex;gap:10px;flex-wrap:wrap;}
 .pipeline-actions button:disabled {opacity:.44;cursor:not-allowed;}
+.pipeline-data {margin:18px 0;min-width:0;}
+.pipeline-data-pagination {display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap;margin:12px 0;font-size:12px;}
+.pipeline-data-pagination p {margin:0;}
+.pipeline-data-pagination label {display:flex;align-items:center;gap:8px;font-size:12px;}
+.pipeline-data-pagination select {padding:6px 9px;}
+.pipeline-data-pagination .pipeline-actions {align-items:center;}
+.pipeline-data button {font-size:12px;padding:7px 10px;}
+.pipeline-data button:disabled {opacity:.45;cursor:not-allowed;}
+.pipeline-data-scroll {max-width:100%;}
+.pipeline-data-scroll > table {min-width:1650px;}
+.pipeline-data-scroll th {z-index:1;}
+.pipeline-data-scroll td {max-width:310px;}
+.pipeline-data-scroll .pipeline-study-cell {min-width:160px;max-width:240px;overflow-wrap:anywhere;}
+.pipeline-data-scroll small {word-break:normal;overflow-wrap:anywhere;}
+.pipeline-data-scroll > table > thead > tr > th:last-child,.pipeline-data-scroll > table > tbody > tr > td:last-child {position:sticky;right:0;background:#f3f8f1;min-width:95px;border-left:1px solid #cbdacb;}
+.pipeline-data-scroll > table > thead > tr > th:last-child {z-index:2;}
+.pipeline-data-footer {padding-top:12px;border-top:1px solid #d6e5d7;font-weight:700;}
+.pipeline-data-empty,.pipeline-data-error {padding:15px;background:#f4f8f2;border-radius:6px;line-height:1.6;}
+.trial-full-details {padding:18px;max-width:100%;min-width:0;background:#f5faf5;border:1px solid #b8cdb6;border-radius:8px;scroll-margin-top:15px;}
+.trial-full-details .sectionhead {align-items:flex-start;}
+.trial-section-picker {display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0;padding:12px;background:#e6f0e4;border:1px solid #b8cdb6;border-radius:7px;}
+.trial-section-picker label {font-size:13px;}
+.trial-section-picker select {max-width:100%;font-size:13px;}
+.trial-section-picker .subtle {font-size:11px;}
+.trial-full-details h4 {font-size:14px;margin:12px 0;}
+.trial-section-fields,.trial-statistics {padding:14px;background:#fff;border:1px solid #cbdacb;border-radius:7px;}
+.trial-field-grid {margin:0;}
+.trial-field-grid > div {display:grid;grid-template-columns:minmax(120px,185px) minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid #e1e9df;}
+.trial-field-grid > div:last-child {border-bottom:0;}
+.trial-field-grid dt {font-weight:700;color:#31583b;overflow-wrap:anywhere;}
+.trial-field-grid dd {margin:0;min-width:0;overflow-wrap:anywhere;}
+.trial-field-value {white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere;}
+.trial-field-branch {border:1px solid #d6e3d3;border-radius:5px;margin:5px 0;background:#fbfdf9;}
+.trial-field-branch > summary {cursor:pointer;padding:9px;font-weight:700;overflow-wrap:anywhere;}
+.trial-field-branch > .trial-field-grid,.trial-field-branch > .trial-field-list {padding:0 10px 10px;}
+.trial-source-fields {margin-top:15px;padding:12px;border:1px solid #cbdacb;background:#fff;border-radius:7px;}
+.trial-source-fields > summary {cursor:pointer;font-weight:700;}
+.trial-raw-toggle {display:flex;gap:7px;align-items:center;margin-top:15px;font-size:12px;}
+.trial-raw-json {max-height:450px;max-width:100%;overflow:auto;background:#13271c;color:#e7f3e8;padding:15px;border-radius:7px;font-size:12px;line-height:1.5;}
+.visually-hidden {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+@media(max-width:650px) {.trial-full-details{padding:12px}.trial-field-grid > div{grid-template-columns:minmax(0,1fr);gap:5px}.trial-section-picker{align-items:stretch;flex-direction:column}.pipeline-data-pagination{gap:10px;}}
 .count-panels {display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
 .count-total {font-size:14px;color:#16643a;display:block;margin:6px 0 12px;}
 .count-bars {display:flex;flex-direction:column;gap:9px;}

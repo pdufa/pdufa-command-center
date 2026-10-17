@@ -376,6 +376,24 @@ def full_trial_export_link():
     return {"path": make_export_ticket()}
 
 
+@app.get("/api/pipeline-full-records/rows", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def full_trial_rows(ids: str = ""):
+    from .full_trial_archive import record_summaries
+    return record_summaries(ids)
+
+
+@app.get("/api/pipeline-full-records/{nct_id}/view-link", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def full_trial_record_link(nct_id: str):
+    from .full_trial_archive import make_record_ticket
+    return {"path": make_record_ticket(nct_id)}
+
+
+@app.get("/downloads/pipeline-trial/{nct_id}/{ticket}")
+def view_full_trial_record(nct_id: str, ticket: str):
+    from .full_trial_archive import record_response
+    return record_response(nct_id, ticket)
+
+
 @app.get("/downloads/pipeline-all-fields/{ticket}")
 def download_full_trials(ticket: str):
     from .full_trial_archive import export_response

@@ -97,3 +97,52 @@ def test_incomplete_export_and_forged_links_are_rejected(isolated, monkeypatch):
         archive.make_export_ticket()
     with pytest.raises(HTTPException):
         archive.export_response("v1.9999999999.forged")
+
+
+def test_paged_summaries_and_record_capabilities_preserve_every_field(isolated, monkeypatch):
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-record-key")
+    archive.start_download(launch=False)
+    originals = {nct: study(nct) for nct in archive._scope()}
+    archive.run_download(lambda ids: {nct: originals[nct] for nct in ids})
+    listing = archive.record_summaries("NCT00000001,NCT99999999")
+    assert listing["missing"] == ["NCT99999999"]
+    summary = listing["records"]["NCT00000001"]
+    assert summary["p_value_count"] == 2
+    assert summary["phases"] == ["PHASE1"]
+    assert "brief_summary" not in summary
+    path = archive.make_record_ticket("NCT00000001")
+    ticket = path.rsplit("/", 1)[-1]
+    response = archive.record_response("NCT00000001", ticket)
+    assert json.loads(response.body) == originals["NCT00000001"]
+    assert response.headers["access-control-allow-origin"] == "*"
+    # A trial ticket cannot read another NCT ID or download the all-trial ZIP.
+    with pytest.raises(HTTPException):
+        archive.record_response("NCT00000002", ticket)
+    with pytest.raises(HTTPException):
+        archive.export_response(ticket)
+    with pytest.raises(HTTPException):
+        archive.record_summaries("not-a-trial")
+    with pytest.raises(HTTPException):
+        archive.record_summaries(",".join(f"NCT{i:08d}" for i in range(51)))
+
+
+def test_record_view_http_flow_requires_app_auth_and_valid_exact_trial_ticket(isolated, monkeypatch):
+    from fastapi.testclient import TestClient
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-http-key")
+    monkeypatch.setattr(main, "REQUIRE_POSTGRES", False)
+    archive.start_download(launch=False)
+    archive.run_download(lambda ids: {nct: study(nct) for nct in ids})
+    client = TestClient(main.app)
+    path = "/api/pipeline-full-records/rows?ids=NCT00000001"
+    assert client.get(path).status_code == 401
+    headers = {"x-pdufa-internal-key": "test-only-http-key"}
+    listing = client.get(path, headers=headers)
+    assert listing.status_code == 200
+    assert listing.json()["records"]["NCT00000001"]["p_value_count"] == 2
+    link = client.get("/api/pipeline-full-records/NCT00000001/view-link", headers=headers)
+    assert link.status_code == 200
+    record = client.get(link.json()["path"], headers={"Origin": "https://pdufa-new-dashboard.vercel.app"})
+    assert record.status_code == 200
+    assert record.json() == study()
+    assert record.headers["x-record-sha256"]
+    assert record.headers["access-control-allow-origin"] == "*"

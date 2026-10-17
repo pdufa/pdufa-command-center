@@ -26,7 +26,7 @@ from urllib.request import Request, urlopen
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from sqlalchemy import or_, select, update
 from sqlalchemy.orm import Session
 
@@ -315,6 +315,69 @@ def make_export_ticket():
     payload = "v1." + str(int(time.time()) + 900)
     signature = hmac.new(key.encode(), ("full-trial-export:" + payload).encode(), hashlib.sha256).hexdigest()
     return "/downloads/pipeline-all-fields/" + payload + "." + signature
+
+
+def record_summaries(raw_ids):
+    ids = sorted(set(raw_ids.split(","))) if raw_ids else []
+    if len(ids) > 50 or any(not NCT.fullmatch(nct) for nct in ids):
+        raise HTTPException(status_code=422, detail="Request up to 50 exact NCT IDs")
+    fields = ("study_title", "status", "phases", "primary_completion_date", "last_update_posted",
+              "has_results", "statistical_analyses", "reported_p_values", "p_value_status")
+    with Session(db.ENGINE) as session:
+        rows = session.execute(select(
+            db.FullTrialRecord.nct_id, *[db.FullTrialRecord.summary[key] for key in fields],
+            db.FullTrialRecord.fetched_at,
+        ).where(db.FullTrialRecord.nct_id.in_(ids)))
+        records = {}
+        for row in rows:
+            values = dict(zip(fields, row[1:-1]))
+            reported = values.pop("reported_p_values") or []
+            records[row[0]] = {**values, "p_value_count": len(reported), "fetched_at": row[-1].isoformat()}
+    return {"records": records, "missing": sorted(set(ids) - records.keys())}
+
+
+def make_record_ticket(nct):
+    if not NCT.fullmatch(nct):
+        raise HTTPException(status_code=422, detail="Invalid NCT ID")
+    with Session(db.ENGINE) as session:
+        if session.scalar(select(db.FullTrialRecord.nct_id).where(db.FullTrialRecord.nct_id == nct)) is None:
+            raise HTTPException(status_code=404, detail="Full registry record has not been downloaded")
+    key = os.getenv("PDUFA_INTERNAL_API_KEY", "")
+    if not key:
+        raise HTTPException(status_code=503, detail="Record viewer is not configured")
+    payload = "v1." + str(int(time.time()) + 900)
+    signature = hmac.new(key.encode(), ("full-trial-record:" + nct + ":" + payload).encode(), hashlib.sha256).hexdigest()
+    return "/downloads/pipeline-trial/" + nct + "/" + payload + "." + signature
+
+
+def record_response(nct, ticket):
+    parts = ticket.split(".")
+    key = os.getenv("PDUFA_INTERNAL_API_KEY", "")
+    if not NCT.fullmatch(nct) or len(parts) != 3 or parts[0] != "v1" or not key:
+        raise HTTPException(status_code=401, detail="Invalid record link")
+    try:
+        expiry = int(parts[1])
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid record link") from None
+    payload = ".".join(parts[:2])
+    expected = hmac.new(key.encode(), ("full-trial-record:" + nct + ":" + payload).encode(), hashlib.sha256).hexdigest()
+    if not int(time.time()) < expiry <= int(time.time()) + 900 or not hmac.compare_digest(parts[2], expected):
+        raise HTTPException(status_code=401, detail="Record link expired or invalid")
+    with Session(db.ENGINE) as session:
+        record = session.get(db.FullTrialRecord, nct)
+        if record is None:
+            raise HTTPException(status_code=404, detail="Full record is not available")
+        raw = gzip.decompress(record.payload_gzip)
+        if hashlib.sha256(raw).hexdigest() != record.sha256:
+            raise HTTPException(status_code=503, detail="Record integrity check failed")
+        return Response(raw, media_type="application/json", headers={
+            "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer",
+            # This capability exposes public registry fields only, without app cookies.
+            # Direct reads keep even large trial records outside Vercel response limits.
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Expose-Headers": "X-Record-Fetched-At, X-Record-SHA256",
+            "X-Record-Fetched-At": record.fetched_at.isoformat(), "X-Record-SHA256": record.sha256,
+        })
 
 
 def _records(ids):
