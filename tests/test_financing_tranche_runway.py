@@ -67,10 +67,13 @@ class TrancheRunwayTests(unittest.TestCase):
         restricted = tranche("RESTRICTED", "2026-10-05", restricted="100000")
         valid = tranche("NET", "2026-10-10")
         out = self.assess([pending, future, gross_only, restricted, valid])
-        self.assertEqual(out["funded_net_added_usd"], 10_000_000)
+        # A partial sum can understate current cash when other already-funded
+        # post-report net proceeds remain unknown; withhold precise runway.
+        self.assertEqual(out["funded_net_added_usd"], 0)
         self.assertEqual(out["pending_rows"], 1)
         self.assertGreaterEqual(out["unverified_rows"], 3)
-        self.assertEqual(out["status"], "RESEARCH_ESTIMATE_INCOMPLETE")
+        self.assertEqual(out["status"], "RUNWAY_UNVERIFIED")
+        self.assertIsNone(out["estimated_runway_months"])
 
     def test_duplicate_agreement_tranche_stops_projection(self):
         first = tranche("REPEATED", "2026-10-06")
@@ -102,6 +105,26 @@ class TrancheRunwayTests(unittest.TestCase):
         self.assertEqual(out["agreement_count"], 2)
         self.assertTrue(out["gate_unchanged"])
         self.assertNotIn("entry_authorized", out)
+
+    def test_actual_post_statement_net_unknown_blocks_runway_estimate(self):
+        documented_gross = tranche("GROSS", "2026-10-08", net="",
+                                   verification="DOCUMENTED_GROSS_ONLY")
+        out = self.assess([tranche("NET", "2026-10-11"), documented_gross])
+        self.assertEqual(out["agreement_count"], 1)
+        self.assertEqual(out["status"], "RUNWAY_UNVERIFIED")
+        self.assertIsNone(out["estimated_cash_usd"])
+        self.assertIn("unverified net proceeds", out["reason"])
+
+    def test_load_data_folder_input(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            file = Path(tmp) / "data" / "financing_tranches.csv"
+            file.parent.mkdir()
+            sample = tranche("ONE", "2026-10-05")
+            with file.open("w", newline="") as stream:
+                w = csv.DictWriter(stream, fieldnames=list(sample))
+                w.writeheader()
+                w.writerow(sample)
+            self.assertEqual(len(load_tranches(tmp)["ABC"]), 1)
 
     def test_load_input_file_accepts_multiple_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
