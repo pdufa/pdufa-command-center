@@ -5,7 +5,7 @@ import Workspace from "./Workspace";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
-type Pending = { ticker: string; programId: string; stage: Stage; selections: Selections; notes: string };
+type Pending = { programId: string; stage: Stage; selections: Selections; notes: string };
 type AuthState = "checking" | "login" | "ready" | "unavailable";
 
 const items = [
@@ -29,18 +29,15 @@ const items = [
 
 const stages: Stage[] = ["PIPELINE", "GEM_JR", "GEM"];
 const stageName = (stage: Stage) => stage === "GEM_JR" ? "GEM JR" : stage;
-function stateUrl(ticker: string, stage: Stage, programId: string) {
-  return programId
-    ? "/api/program-state?programId=" + encodeURIComponent(programId) + "&stage=" + encodeURIComponent(stage)
-    : "/api/state?ticker=" + encodeURIComponent(ticker) + "&stage=" + encodeURIComponent(stage);
+function stateUrl(programId: string, stage: Stage) {
+  return "/api/program-state?programId=" + encodeURIComponent(programId) + "&stage=" + encodeURIComponent(stage);
 }
 
 export default function Home() {
   const [auth, setAuth] = useState<AuthState>("checking");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
-  const [tickerInput, setTickerInput] = useState("OCGN");
-  const [ticker, setTicker] = useState("OCGN");
+  const [ticker, setTicker] = useState("");
   const [programId, setProgramId] = useState("");
   const [stage, setStage] = useState<Stage>("GEM_JR");
   const [selections, setSelections] = useState<Selections>({});
@@ -51,7 +48,7 @@ export default function Home() {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const versions = useRef<Record<string, number>>({});
-  const activeKey = useRef("OCGN|GEM_JR");
+  const activeKey = useRef("");
 
   useEffect(() => {
     fetch("/api/auth", { cache: "no-store" }).then(async response => {
@@ -62,13 +59,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (auth !== "ready") return;
-    const key = (programId || "TICKER:" + ticker) + "|" + stage;
+    if (auth !== "ready" || !programId) return;
+    const key = programId + "|" + stage;
     activeKey.current = key;
     const controller = new AbortController();
     setLoaded(false);
     setStatus("Loading saved checklist…");
-    fetch(stateUrl(ticker, stage, programId), { signal: controller.signal, cache: "no-store" })
+    fetch(stateUrl(programId, stage), { signal: controller.signal, cache: "no-store" })
       .then(async response => {
         if (!response.ok) throw new Error(response.status === 503
           ? "Persistent storage is not configured on Render. Set DATABASE_URL before using autosave."
@@ -85,7 +82,11 @@ export default function Home() {
         if (!controller.signal.aborted) setStatus(String(error));
       });
     return () => controller.abort();
-  }, [auth, ticker, stage, programId]);
+  }, [auth, stage, programId]);
+
+  useEffect(() => {
+    if (programId) document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" });
+  }, [programId, stage]);
 
   function flushPending(): Promise<void> {
     if (timer.current) clearTimeout(timer.current);
@@ -93,12 +94,12 @@ export default function Home() {
     const change = pending.current;
     pending.current = null;
     if (!change) return queue.current;
-    const key = (change.programId || "TICKER:" + change.ticker) + "|" + change.stage;
+    const key = change.programId + "|" + change.stage;
     queue.current = queue.current.catch(() => {}).then(async () => {
       if (activeKey.current === key) setStatus("Saving…");
       const version = versions.current[key] ?? 0;
       try {
-        const response = await fetch(stateUrl(change.ticker, change.stage, change.programId), {
+        const response = await fetch(stateUrl(change.programId, change.stage), {
           method: "PUT", keepalive: true, headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ version, selections: change.selections, notes: change.notes })
         });
@@ -120,7 +121,8 @@ export default function Home() {
   }
 
   function queueChange(nextSelections: Selections, nextNotes: string, delay: number) {
-    pending.current = { ticker, programId, stage, selections: nextSelections, notes: nextNotes };
+    if (!programId || !loaded) return;
+    pending.current = { programId, stage, selections: nextSelections, notes: nextNotes };
     setStatus("Unsaved change…");
     if (timer.current) clearTimeout(timer.current);
     if (delay === 0) { void flushPending(); }
@@ -151,23 +153,28 @@ export default function Home() {
     setAuth("login");
     setSelections({});
     setNotes("");
+    setProgramId("");
+    setTicker("");
+    setLoaded(false);
   }
 
   function selectStage(next: Stage) {
     void flushPending();
+    setLoaded(false);
     setStage(next);
   }
 
-  function loadTicker(event: FormEvent) {
-    event.preventDefault();
-    const value = tickerInput.trim().toUpperCase();
-    if (!/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(value)) {
-      setStatus("Enter a valid ticker, e.g. OCGN");
+  function inspectProgram(nextTicker: string, nextStage: Stage, nextProgramId?: string) {
+    if (!nextProgramId) return;
+    if (nextProgramId === programId && nextStage === stage) {
+      document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" });
       return;
     }
     void flushPending();
-    setTicker(value);
-    setProgramId(""); // An arbitrary ticker cannot inherit a particular drug/trial identity.
+    setLoaded(false);
+    setTicker(nextTicker);
+    setStage(nextStage);
+    setProgramId(nextProgramId);
   }
 
   const checked = items.filter(item => selections[item.id]).length;
@@ -197,14 +204,9 @@ export default function Home() {
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <div className="banner"><strong>Streamlit is preserved.</strong> This is the new platform setup; survey execution and live trading remain disabled.</div>
-      <Workspace onInspect={(nextTicker, nextStage, nextProgramId) => { void flushPending(); setTickerInput(nextTicker); setTicker(nextTicker); setStage(nextStage); setProgramId(nextProgramId || ""); document.getElementById("checklist-workbench")?.scrollIntoView({ behavior: "smooth" }); }} />
-      <div id="checklist-workbench" className="checklist-workbench"><h2>{programId ? "PERMANENT PROGRAM · PERSISTENT CHECKLIST" : "TICKER-ONLY LEGACY CHECKLIST"}</h2><p className="subtle">{programId ? "Notes and checklist are stored in Neon by permanent Program ID and stage. Different drugs and trials under one ticker stay separate." : "Manual ticker lookup uses the preserved legacy ticker/stage checklist. Select an exact program from PIPELINE or GEM to use the permanent Program ID."}</p>{programId && <p><strong className="permanent-id">{programId}</strong></p>}
+      <Workspace onInspect={inspectProgram} />
+      {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
-        <form onSubmit={loadTicker}>
-          <label htmlFor="ticker">Ticker</label>
-          <input id="ticker" value={tickerInput} onChange={event => setTickerInput(event.target.value)} maxLength={15} />
-          <button type="submit">Load ticker</button>
-        </form>
         <label htmlFor="stage">Stage</label>
         <select id="stage" value={stage} onChange={event => selectStage(event.target.value as Stage)}>
           {stages.map(s => <option key={s} value={s}>{stageName(s)}</option>)}
@@ -227,7 +229,7 @@ export default function Home() {
         </section>
         <aside className="panel notes">
           <h2>Research notes</h2>
-          <p className="subtle">Typing saves after a short pause. Return to this exact Program ID and stage to restore program-specific notes (or ticker and stage in legacy mode).</p>
+          <p className="subtle">Typing saves after a short pause. Return to this exact Program ID and stage to restore program-specific notes.</p>
           <textarea disabled={!loaded} onBlur={() => void flushPending()} rows={13} value={notes} placeholder="Add entry rationale, financing evidence, risks, and next actions…" onChange={event => {
             const value = event.target.value;
             setNotes(value);
@@ -236,7 +238,7 @@ export default function Home() {
           <div className="subtle small">Database-backed. No cookies are used to store your checklist answers.</div>
         </aside>
       </div>
-      </div>
+      </div> : null}
     </main>
   );
 }

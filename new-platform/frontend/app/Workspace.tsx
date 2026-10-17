@@ -304,9 +304,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [onlyBand, setOnlyBand] = useState(false);
-  const [applied, setApplied] = useState(false);
-  const [sort, setSort] = useState("PDUFA");
-  const [pipelinePage, setPipelinePage] = useState(0);
   const [gemQuery, setGemQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [tags, setTags] = useState<Tags>({ watch: [], trade: [] });
@@ -403,15 +400,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     (stageFilters.length === 0 || stageFilters.includes(r.stage || "Unknown")) &&
     (dateFilters.length === 0 || dateFilters.includes(dateBand(r)))
   ), [possible, stageFilters, dateFilters]);
-  const shown = useMemo(() => {
-    if (!applied) return [];
-    return counted
-      .filter(r => stageFilters.includes(r.stage || "Unknown") && dateFilters.includes(dateBand(r)))
-      .sort((a,b) => sort === "TICKER" ? a.ticker.localeCompare(b.ticker) : (daysAway(a.pdufaDate) ?? 99999) - (daysAway(b.pdufaDate) ?? 99999));
-  }, [applied, counted, stageFilters, dateFilters, sort]);
-  const pageSize = 100;
-  const pageCount = Math.max(1, Math.ceil(shown.length / pageSize));
-  const visiblePipeline = shown.slice(Math.min(pipelinePage, pageCount - 1) * pageSize, (Math.min(pipelinePage, pageCount - 1) + 1) * pageSize);
   const byProgram = useMemo(() => {
     const m=new Map<string,Candidate>();
     for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
@@ -429,8 +417,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
 
   function toggleFilter(current: string[], item: string, setter: (value: string[])=>void) {
     setter(current.includes(item) ? current.filter(v => v !== item) : [...current, item]);
-    setApplied(false);
-    setPipelinePage(0);
   }
   const stageCounts = STAGES.map(stage => ({label:stage,count:counted.filter(r => (r.stage||"Unknown") === stage).length}));
   const dateCounts = BANDS.map(band => ({label:band,count:counted.filter(r => dateBand(r) === band).length}));
@@ -541,7 +527,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Streamlit-compatible workflow: choose both STAGES and DATES, then select SHOW MATCHING TRIALS.</p>
+        <p className="subtle">Select stages and dates to filter the PIPELINE counts.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{possible.length.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
@@ -558,11 +544,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div><strong>STAGES · current, not historical</strong><div className="filter-checks">{STAGES.map(s=><label key={s}><input type="checkbox" checked={stageFilters.includes(s)} onChange={()=>toggleFilter(stageFilters,s,setStageFilters)} />{s}</label>)}</div></div>
           <div><strong>DATES · PDUFA countdown</strong><div className="filter-checks">{BANDS.map(s=><label key={s}><input type="checkbox" checked={dateFilters.includes(s)} onChange={()=>toggleFilter(dateFilters,s,setDateFilters)} />{s}</label>)}</div></div>
         </div>
-        <div className="pipeline-row"><label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>{setQuery(e.target.value);setApplied(false)}} placeholder="Optional search" /></label>
-          <label>Order<select value={sort} onChange={e=>{setSort(e.target.value);setApplied(false)}}><option value="PDUFA">Closest PDUFA first</option><option value="TICKER">Ticker A–Z</option></select></label>
-          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>{setOnlyBand(e.target.checked);setApplied(false)}} />Market cap $300M–$10B only (optional screening; OFF for Streamlit total)</label></div>
-        <div className="pipeline-actions"><button type="button" disabled={!stageFilters.length||!dateFilters.length} onClick={()=>{setPipelinePage(0);setApplied(true);}}>SHOW MATCHING TRIALS</button>
-          <button type="button" className="secondary" onClick={()=>{setApplied(false);setPipelinePage(0);setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(false)}}>CLEAR STAGE / DATE</button></div>
+        <div className="pipeline-row"><label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
+          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional screening; OFF for Streamlit total)</label></div>
+        <div className="pipeline-actions"><button type="button" className="secondary" onClick={()=>{setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(false)}}>CLEAR STAGE / DATE</button></div>
       </div>
       <div className="count-panels">
         {([[ "STAGE COUNTS",stageCounts ],["DATE TRIAL COUNTS",dateCounts ]] as const).map(([title,group])=>
@@ -572,24 +556,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <div className="count-track" aria-hidden="true"><div style={{width:(item.count/Math.max(1,...group.map(v=>v.count))*100)+"%"}} /></div>
             <b>{item.count.toLocaleString("en-US")}</b></div>)}</div></div>)}
       </div>
-      <section className="panel">
-        <div className="sectionhead"><h3>PDUFA TRIALS / PROGRAMS</h3><span className="counter">{shown.length} matches · {visiblePipeline.length} shown</span></div>
-        <p className="subtle">{!applied ? "Nothing is displayed until both filters are chosen and SHOW MATCHING TRIALS is pressed." : "Results show up to 100 exact programs per page. Match total includes all pages."}</p>
-        <div className="table-scroll"><table><thead><tr><th>W/T</th><th>Program ID</th><th>Ticker</th><th>Current stage</th><th>Drug</th><th>Indication</th><th>Days</th><th>PDUFA</th><th>Cap</th><th>Evidence</th><th>Program</th></tr></thead>
-          <tbody>{visiblePipeline.map(r=><tr key={r.id}><td><div className="wt-pair">{wtButton(r,"watch")}{wtButton(r,"trade")}</div></td>
-          <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
-          <td><button type="button" className="ticker-select" onClick={()=>selectCandidate(r,"PIPELINE")}>{r.ticker}</button></td><td>{stated(r.stage)}</td><td>{stated(r.drug)}</td><td>{stated(r.indication)}</td>
-          <td>{daysAway(r.pdufaDate)??"—"}</td><td>{stated(r.pdufaDate,"—")}</td><td>{money(r.marketCap)}</td>
-          <td>{stated(r.checkStatus)}</td><td><details><summary>Trial/source</summary><SourceDetails record={r} /></details></td></tr>)}</tbody>
-        </table></div>
-        {applied && pageCount > 1 && <div className="page-controls">
-          <button type="button" className="secondary" disabled={pipelinePage<=0} onClick={()=>setPipelinePage(p=>Math.max(0,p-1))}>← Previous 100</button>
-          <strong>Page {Math.min(pipelinePage,pageCount-1)+1} / {pageCount}</strong>
-          <button type="button" className="secondary" disabled={pipelinePage>=pageCount-1} onClick={()=>setPipelinePage(p=>Math.min(pageCount-1,p+1))}>Next 100 →</button>
-        </div>}
-        {applied && <details className="nested-expander"><summary>Three-level Pipeline trial table</summary><Drilldown rows={visiblePipeline}/></details>}
-        <p className="subtle small">Pipeline loads the latest published clinical-trial and regulatory records from Streamlit's original sources; a PARTIAL scan does not count as a completed scan. Unknown market caps are excluded from the default screening view.</p>
-      </section>
     </section>}
     {snapshot && top==="PDUFA" && nav==="GEMS" && <div className="gems-page">
       <div className="sectionhead"><div><h2>GEM JR + GEM — One research tab, two stage blocks</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
