@@ -42,75 +42,147 @@ function spark(bars){if(!bars || bars.length<2)return '<span class="muted">No EO
 
 /* Priority controls reorder observations only; they never alter stage membership. */
 const MARKET_CAP_MIN=300000000, MARKET_CAP_MAX=10000000000;
+
 function priorityCriteria(){
-  return [
-    ["clinical",data.junior?"Phase 3 primary evidence":"Successful Phase 3 verified","Clinical results for the exact drug and indication"],
-    ["finance1",data.junior?"Financing #1 SEC review":"Financing #1 SEC verified","First distinct post-readout SEC closing evidence"],
-    ["finance2",data.junior?"Financing #2 SEC review":"Financing #2 SEC verified","Second independent post-readout closing evidence"],
-    ["risk","Clinical / dilution risk review","Only available source-gated risk factors; unknown is not low risk"],
-    ["runway","Cash runway","SEC-based months of runway, longest first within evidence tiers"],
-    ["pdufa","PDUFA date verification","Confirmed regulatory event date, earliest verified date first"],
-    ["cap","Market capitalization $300M–$10B","Saved capitalization in range first, not live valuation"],
-    ["volume","Relative trading volume","Recent saved RVOL; not confirmed bid/ask liquidity"],
-    ["trend","Price trend and chart setup","Fresh daily close and SMA20/SMA50 comparisons"],
-    ["plan","Entry / stop / target plan","Locally saved personal reference plan, not verified"]
-  ];
+  const entries={
+    clinical:["Phase 3 clinical evidence","Exact drug / indication; GEM requires source-verified positive Phase 3"],
+    endpoint:["Primary endpoint and p-value","Trial-matched numerical endpoint result where source-linked"],
+    clinical_quality:["Clinical science quality","Saved science score; research only, not a proven clinical ranking"],
+    safety:["Safety signals and adverse risks","Documented safety conflicts and saved safety score where available"],
+    finance1:["Financing #1 — SEC closing","First independent post-readout closing, or GEM JR research lead"],
+    finance2:["Financing #2 — SEC closing","Second distinct post-readout close required for GEM, tracked in GEM JR"],
+    dilution:["Share dilution and financing risk","Explicit saved dilution risk flags"],
+    warrants:["Warrant exposure","SEC review notes mentioning warrants; outstanding amount not inferred"],
+    convertibles:["Convertible debt / securities","SEC review notes mentioning convertibles, not an attested balance"],
+    runway:["Cash runway in months","Independent SEC-based cash runway, preferably longer"],
+    regulatory:["FDA regulatory history / risks","Recorded historical outcomes, regulatory gaps and saved assessment"],
+    cmc:["Manufacturing and CMC readiness","Saved CMC score, not evidence of FDA clearance"],
+    pdufa:["PDUFA timing / date verification","Source-verified FDA target date; nearest calendar date first"],
+    cap:["Market cap $300M–$10B","In-range saved market capitalization ranked first"],
+    liquidity:["Dollar-volume liquidity","20-day average daily dollar turnover from fresh saved price bars"],
+    volume:["Relative trading volume (RVOL)","Saved relative volume, source freshness required"],
+    short:["Short interest","Saved short-interest figure; smaller figures displayed first"],
+    float:["Public float","Saved tradable share float; larger figures shown first"],
+    institutional:["Institutional ownership","Saved institutional ownership figure; report not live holdings"],
+    hedge:["Hedge-fund accumulation / 13F","Source-linked quarterly holdings if independently saved"],
+    insider_buy:["Insider purchases","Saved Form 4 / insider acquisition evidence where available"],
+    insider_sell:["Insider sales","Saved Form 4 / insider disposition evidence where available"],
+    base:["Price-base formation","Observed daily-close base and support tests; not intraday proof"],
+    breakout:["Base breakout / volume confirmation","Saved breakout-volume observation, not confirmed trade signal"],
+    trend:["Price trend: SMA20 / SMA50","Fresh daily price and moving-average comparisons"],
+    macd:["MACD momentum signal","Fresh saved bullish/bearish indicator, not a buy permission"],
+    rsi:["RSI (14)","Fresh saved momentum value; descriptive and not a calibrated threshold"],
+    relative_strength:["Relative strength vs sector","Needs matching sector benchmark; otherwise unavailable"],
+    reward:["Reward-to-risk ratio","Calculated only from personal entry, stop and target reference levels"],
+    plan:["Entry / stop / target plan","Complete saved reference plan, separate from trade execution"],
+    poa:["Approval probability estimate","Saved uncalibrated probability; not a guarantee"],
+    updates:["Documented catalyst / source updates","Dated source-linked observations, not an independent news scan"]
+  };
+  const jr=["clinical","endpoint","safety","clinical_quality","finance1","finance2","dilution",
+    "warrants","convertibles","runway","regulatory","cmc","pdufa","institutional","hedge",
+    "insider_buy","insider_sell","cap","float","short","liquidity","volume","trend",
+    "base","breakout","macd","rsi","relative_strength","poa","updates","reward","plan"];
+  const gem=["clinical","endpoint","clinical_quality","finance1","finance2","safety",
+    "dilution","warrants","convertibles","runway","regulatory","cmc","pdufa","cap",
+    "liquidity","float","short","institutional","hedge","insider_buy","insider_sell",
+    "base","breakout","trend","volume","macd","rsi","relative_strength","reward",
+    "plan","poa","updates"];
+  const keys=data.junior?jr:gem;
+  return keys.map(key=>[key,...entries[key]]);
 }
 function criterionEvidence(r,key){
-  const missing=why=>({tier:0,metric:0,label:"Unknown",detail:why});
+  const missing=why=>({tier:0,metric:0,label:"Unavailable",detail:why||"This observation is missing or not source-verified"});
   const result=(tier,metric,label,detail)=>({tier,metric:Number.isFinite(metric)?metric:0,label,detail});
   const source=label=>r.sources?.find(s=>s.label===label);
   if(["clinical","finance1","finance2"].includes(key)){
     const label=key==="clinical"?"Phase 3 results":key==="finance1"?"Financing #1":"Financing #2";
     const s=source(label);
-    if(!s?.url||!s?.date)return missing("Dated primary evidence missing; no status invented");
+    if(!s?.url||!s?.date)return missing("Dated primary evidence missing; qualification is unchanged");
     const verified=!data.junior&&s.type==="pass";
-    return result(verified?2:1,0,verified?"Verified source":"Dated reference · review",
-      verified?"Source-verified under existing GEM gates":"Source found; GEM JR review is not qualification or proof of closing");
+    return result(verified?2:1,0,verified?"Verified source":"Dated source · review",
+      verified?"Saved source under existing GEM qualification":"GEM JR lead under review; a linked document alone does not verify Phase 3 success or SEC closing");
   }
   if(key==="risk"){
     const factor=r.exit_checks?.find(x=>x.label==="Clinical / financing risk");
     const raw=String(factor?.points||"");
-    if(!raw.endsWith("/20"))return missing("Clinical/financing risk assessment unavailable or stale");
+    if(!raw.endsWith("/20"))return missing("Current source-gated clinical/financing risk scoring unavailable");
     const points=Number(raw.slice(0,-3));
-    if(!Number.isFinite(points)||points<0||points>20)return missing("Risk factor has no valid recorded score");
-    return result(1,-points,points===0?"No flagged risk in saved data":"Risk: "+points+"/20",
-      "Lower known risk factor first; absence of a flag is not a verified safety clearance");
+    if(!Number.isFinite(points)||points<0||points>20)return missing("Unknown risk factor");
+    return result(1,-points,points===0?"No saved flag":"Observed risk: "+points+"/20",
+      "Absence of a source flag does not establish safety; lower recorded risk points first");
   }
   if(key==="runway"){
-    if(!Number.isFinite(r.runway))return missing("SEC-based cash runway not independently available");
+    if(!Number.isFinite(r.runway))return missing("Independent SEC-based runway unavailable");
     return result(r.runway>=12?2:1,r.runway,r.runway.toFixed(1)+" months",
-      "Twelve months is a research reference, not a new entry qualification threshold");
+      "12 months is a reference for research only, not an additional eligibility gate");
   }
   if(key==="pdufa"){
     const stamp=Date.parse(String(r.pdufa||"").slice(0,10)+"T00:00:00Z");
-    if(!r.pdufa_verified||!Number.isFinite(stamp))return missing("Date not source-verified");
-    return result(2,-stamp/86400000,dateLabel(r.pdufa),"Source-verified FDA date; earlier dates first (even historical)");
+    if(!r.pdufa_verified||!Number.isFinite(stamp))return missing("PDUFA date not independently source-confirmed");
+    return result(2,-stamp/86400000,dateLabel(r.pdufa),
+      "Earlier source-verified FDA decision date first; past and resolved outcomes still require separate exclusions");
   }
   if(key==="cap"){
-    if(!Number.isFinite(r.market_cap))return missing("Saved market capitalization absent");
-    const fit=r.market_cap>=MARKET_CAP_MIN&&r.market_cap<=MARKET_CAP_MAX;
-    return result(fit?2:1,0,fit?"Saved: in range":"Saved: outside range",
-      "Market cap is a saved value, may be stale and never changes qualification");
+    if(!Number.isFinite(r.market_cap))return missing("Saved market capitalization not recorded");
+    const fit=r.market_cap>=300000000&&r.market_cap<=10000000000;
+    return result(fit?2:1,0,fit?"In range (saved)":"Outside range (saved)",
+      "$300M–$10B saved market-cap screen; this sort does not add an eligibility gate");
   }
   if(key==="volume"){
-    if(!r.fresh||!Number.isFinite(r.rvol))return missing("Recent source-saved RVOL unavailable");
+    if(!r.fresh||!Number.isFinite(r.rvol))return missing("Fresh source-saved relative volume missing");
     return result(1,r.rvol,r.rvol.toFixed(2)+"× RVOL",
-      "Recent relative volume only; verified execution liquidity unavailable");
+      "Relative volume is not verified bid/ask execution liquidity");
+  }
+  if(key==="liquidity"){
+    if(!r.fresh||!Number.isFinite(r.dollar_volume))return missing("Source-current 20-day dollar turnover unavailable");
+    return result(1,r.dollar_volume,"$"+num(r.dollar_volume,0)+" / day",
+      "Saved 20-day average dollar turnover; not actual quoted market depth");
   }
   if(key==="trend"){
-    if(!r.fresh||![r.close,r.sma20,r.sma50].every(Number.isFinite))return missing("Fresh close and SMA20/SMA50 not all available");
-    const count=Number(r.close>=r.sma20)+Number(r.close>=r.sma50)+Number(r.sma20>=r.sma50);
-    return result(1,count,count+"/3 daily conditions",
-      "Close≥SMA20, close≥SMA50, SMA20≥SMA50; descriptive not validated");
+    if(!r.fresh||![r.close,r.sma20,r.sma50].every(Number.isFinite))return missing("Fresh close, SMA20 and SMA50 required");
+    const n=Number(r.close>=r.sma20)+Number(r.close>=r.sma50)+Number(r.sma20>=r.sma50);
+    return result(1,n,n+"/3 EOD conditions",
+      "Close≥SMA20; close≥SMA50; SMA20≥SMA50. No independently tested accuracy claim");
+  }
+  if(key==="macd"){
+    if(!r.fresh||!["Bullish","Bearish"].includes(r.macd))return missing("Fresh saved MACD directional signal missing");
+    return result(1,r.macd==="Bullish"?1:0,r.macd+" (saved)",
+      "Saved MACD directional state; bullish is not a mandatory trading signal");
+  }
+  if(key==="rsi"){
+    if(!r.fresh||!Number.isFinite(r.rsi))return missing("Fresh saved RSI 14 unavailable");
+    return result(1,r.rsi,r.rsi.toFixed(1)+" RSI",
+      "Higher recorded RSI first; overbought readings can increase risk");
+  }
+  if(key==="relative_strength")
+    return missing("No corresponding sector benchmark in this exact-program dataset; cannot calculate relative strength from absolute return");
+  if(key==="reward"){
+    const p=getPlan(r);
+    if(![p.entry,p.stop,p.target].every(Number.isFinite)||
+      !(p.stop<p.entry&&p.entry<p.target))return missing("Enter valid entry, stop and target in chart reference levels first");
+    const rr=(p.target-p.entry)/(p.entry-p.stop);
+    return result(1,rr,rr.toFixed(2)+":1 planned",
+      "Personal reference math only; planned reward-to-risk is not a forecast or executable fill");
   }
   if(key==="plan"){
-    const plan=getPlan(r);
-    if(![plan.entry,plan.stop,plan.target].every(Number.isFinite)||
-       !(plan.stop<plan.entry&&plan.entry<plan.target))return missing("No complete personal entry, stop, target plan");
-    return result(1,0,"Local plan · unverified","Reference levels from this browser only; not a live or authorized trade");
+    const p=getPlan(r);
+    if(![p.entry,p.stop,p.target].every(Number.isFinite)||
+      !(p.stop<p.entry&&p.entry<p.target))return missing("No complete locally saved entry/stop/target plan");
+    return result(1,0,"Local plan · unverified",
+      "Personal chart reference levels only, not current market or order authorization");
   }
-  return missing("Unknown criterion");
+  if(key==="updates"){
+    const links=(r.alerts||[]).filter(x=>x.url&&x.date).length;
+    if(!links)return missing("No dated source-linked observations in the saved program");
+    return result(1,links,links+" sourced item"+(links===1?"":"s"),
+      "Saved clinical/SEC/regulatory sources; not a comprehensive or real-time news scan");
+  }
+  const fact=r.criteria_facts?.[key];
+  if(fact&&Number.isFinite(fact.tier)&&fact.tier>0){
+    return result(fact.tier,fact.metric,esc(fact.label||"Observed"),
+      fact.detail||"Saved source observation; no independent certainty claim");
+  }
+  return missing("No unambiguous, program-specific recorded evidence for this criterion");
 }
 function criterionName(){return priorityCriteria().find(x=>x[0]===state.focus)?.[1]||null;}
 function matching(){let r=data.candidates.filter(x=>(state.status==="All Statuses"||x.status===state.status)&&(`${x.ticker} ${x.company} ${x.drug} ${x.indication} ${x.nct}`).toLowerCase().includes(state.search.toLowerCase()));if(state.focus){r=[...r].sort((a,b)=>{const x=criterionEvidence(a,state.focus),y=criterionEvidence(b,state.focus);return y.tier-x.tier||y.metric-x.metric||data.candidates.indexOf(a)-data.candidates.indexOf(b);});}else if(state.sort){r=[...r].sort((a,b)=>{let x=a[state.sort],y=b[state.sort];if(x==null)return y==null?0:1;if(y==null)return -1;return (typeof x==="number"?x-y:String(x).localeCompare(String(y)))*(state.desc?-1:1);});}return r;}
