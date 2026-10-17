@@ -67,6 +67,30 @@ class PacificAdmissionTests(unittest.TestCase):
                 self.assertTrue(decision('schedule', cron, [], now=clock(at))['run'])
         self.assertFalse(decision('schedule', '5 7 * * *', [], now=clock('2026-10-15T04:30:00Z'))['run'])
 
+    def test_frequent_recovery_sweep_is_dst_safe_and_deduplicates(self):
+        sweep = '3-53/10 5-10 * * *'
+        scheduler = read('pdufa-nightly-pacific-start.yml')
+        self.assertIn(f"cron: '{sweep}'", scheduler)
+        for when, expected in (
+            ('2026-10-16T05:03:00Z', True),   # 10:03 PM PDT
+            ('2026-01-16T05:03:00Z', False),  # 9:03 PM PST
+            ('2026-01-16T06:03:00Z', True),   # 10:03 PM PST
+            ('2026-10-16T09:53:00Z', True),   # 2:53 AM PDT recovery
+            ('2026-10-16T10:03:00Z', False),  # 3:03 AM PDT: closed
+            ('2026-01-16T10:53:00Z', True),   # 2:53 AM PST recovery
+        ):
+            with self.subTest(when=when):
+                self.assertEqual(
+                    decision('schedule', sweep, [], now=clock(when))['run'],
+                    expected,
+                )
+        prior = dict(id=33, path=WORKFLOW, head_branch='main',
+                     event='workflow_dispatch', display_title=RUN_TITLE,
+                     created_at='2026-10-16T05:02:00Z',
+                     status='completed', conclusion='success')
+        self.assertFalse(decision('schedule', sweep, [prior],
+                         now=clock('2026-10-16T05:13:00Z'))['run'])
+
     def test_dst_fall_back_uses_the_offset_at_that_nights_start(self):
         # The 10 PM start was PDT; by this retry Los Angeles has switched to PST.
         result = decision('schedule', '0 5 * * *', [], now=clock('2026-11-01T09:30:00Z'))
