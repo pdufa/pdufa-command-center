@@ -296,8 +296,14 @@ async def lifespan(app: FastAPI):
                 len(__import__("json").dumps(published, separators=(",", ":"), default=str).encode("utf-8")),
             )
         except Exception as exc:
+            traceback_entry = exc.__traceback__
+            while traceback_entry and traceback_entry.tb_next:
+                traceback_entry = traceback_entry.tb_next
             logging.getLogger(__name__).error(
-                "PDUFA_SOURCE_CHECK_FAILED error_type=%s", type(exc).__name__
+                "PDUFA_SOURCE_CHECK_FAILED error_type=%s final_function=%s final_line=%s",
+                type(exc).__name__,
+                traceback_entry.tb_frame.f_code.co_name if traceback_entry else "UNKNOWN",
+                traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
     threading.Thread(target=verify_published_sources, daemon=True).start()
     yield
