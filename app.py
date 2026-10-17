@@ -3704,13 +3704,43 @@ if page == "PDUFA":
                         sort_mode,
                     )
                     st.metric("Trials / programs displayed", len(shown))
-                    pdufa_dataframe(
+                    trial_selection = pdufa_dataframe(
                         finance_style(shown), hide_index=True, use_container_width=True, height=540,
+                        key="pipeline_trial_results_v10",
+                        on_select="rerun", selection_mode="single-row",
                         column_config={
                             "Source": st.column_config.LinkColumn("Source"),
                             "F": st.column_config.TextColumn("F", width="small"),
                         },
                     )
+                    # Click any record to inspect the exact trial/program instead
+                    # of guessing from the ticker (one company can have many trials).
+                    selected_rows = list(trial_selection.selection.rows)
+                    if selected_rows and 0 <= selected_rows[0] < len(shown):
+                        chosen_trial = shown.iloc[selected_rows[0]]
+                        with st.container(border=True):
+                            st.markdown("#### SELECTED TRIAL / PROGRAM")
+                            detail_cols = (
+                                "Ticker", "Company", "Drug", "Indication",
+                                "NCT ID", "Current Stage", "Record Type",
+                                "Registered Phase", "Trial Status", "Results Posted",
+                                "PDUFA Target", "Days to PDUFA", "Recorded Outcome",
+                                "Evidence Status", "Last Checked", "Evidence Note",
+                            )
+                            for detail in detail_cols:
+                                if detail in chosen_trial and pd.notna(chosen_trial[detail]):
+                                    value = str(chosen_trial[detail]).strip()
+                                    if value and value not in ("nan", "<NA>"):
+                                        st.write(f"**{detail}:** {value}")
+                            source_url = str(chosen_trial.get("Source", "")).strip()
+                            if source_url.startswith(("https://", "http://")):
+                                st.link_button("OPEN EXACT RECORD SOURCE", source_url)
+                            nct = str(chosen_trial.get("NCT ID", "")).strip().upper()
+                            if re.fullmatch(r"NCT\\d{8}", nct):
+                                st.link_button(
+                                    "OPEN TRIAL ON CLINICALTRIALS.GOV",
+                                    f"https://clinicaltrials.gov/study/{nct}",
+                                )
                     if shown.empty:
                         st.info("No matching programs for that STAGES + DATES selection.")
                     else:
