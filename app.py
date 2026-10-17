@@ -3452,8 +3452,8 @@ if page == "PDUFA":
         if pipeline_tab.open:
             st.markdown("## PDUFA — CLINICAL AND REGULATORY STAGES")
             st.caption(
-                "PIPELINE · Select STAGES and DATES, then "
-                "click SHOW MATCHING TRIALS. No clicks = zero displayed trials."
+                "PIPELINE · Choose STAGES and DATES to show matching programs. "
+                "The SHOW MATCHING TRIALS button also reapplies the current selection."
             )
 
             def _clear_pipeline_results_v9():
@@ -3466,15 +3466,8 @@ if page == "PDUFA":
                 st.session_state["pipeline_sort_v9"] = DISPLAY_ORDER_OPTIONS[0]
                 _clear_pipeline_results_v9()
 
-            def _select_pipeline_count_v10(field, category):
-                """Count buttons select one stage/date and immediately show a valid pair.
-
-                Streamlit callbacks run before widgets are instantiated, avoiding
-                changes to the multiselects after they have been rendered.
-                """
-                dimension = ("pipeline_stages_v9" if field == "current_stage"
-                             else "pipeline_dates_v9")
-                st.session_state[dimension] = [category]
+            def _apply_pipeline_filters_v10():
+                """Update the trial table as soon as both filter dimensions are set."""
                 stages = st.session_state.get("pipeline_stages_v9", [])
                 dates = st.session_state.get("pipeline_dates_v9", [])
                 if stages and dates:
@@ -3486,10 +3479,21 @@ if page == "PDUFA":
                 else:
                     _clear_pipeline_results_v9()
 
+            def _select_pipeline_count_v10(field, category):
+                """Count buttons select one stage/date and immediately show a valid pair.
+
+                Streamlit callbacks run before widgets are instantiated, avoiding
+                changes to the multiselects after they have been rendered.
+                """
+                dimension = ("pipeline_stages_v9" if field == "current_stage"
+                             else "pipeline_dates_v9")
+                st.session_state[dimension] = [category]
+                _apply_pipeline_filters_v10()
+
             # The filters are one white/black Pipeline control card; retain every key.
             with st.container(border=True, key="pipeline_filters_card"):
                 st.markdown("### PIPELINE FILTERS")
-                st.caption("Choose stages and dates, then display only matching trial records.")
+                st.caption("Select both a stage and date; results appear automatically. Counts below stay available.")
                 stage_col, date_col = st.columns(2, gap="medium")
                 with stage_col:
                     selected_stages = st.multiselect(
@@ -3497,7 +3501,7 @@ if page == "PDUFA":
                         options=list(PIPELINE_STAGES), default=[],
                         placeholder="Select stage (e.g. PDUFA Decision)",
                         key="pipeline_stages_v9",
-                        on_change=_clear_pipeline_results_v9,
+                        on_change=_apply_pipeline_filters_v10,
                         help="Select CURRENT stage, not any historical milestone.",
                     )
                 with date_col:
@@ -3506,7 +3510,7 @@ if page == "PDUFA":
                         options=list(PIPELINE_DATE_BANDS), default=[],
                         placeholder="Select PDUFA date window",
                         key="pipeline_dates_v9",
-                        on_change=_clear_pipeline_results_v9,
+                        on_change=_apply_pipeline_filters_v10,
                         help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
                     )
                 # Separate chart columns from selector columns. On iPhone, Streamlit
@@ -3517,14 +3521,14 @@ if page == "PDUFA":
                     query = st.text_input(
                         "Find ticker, drug, indication or NCT ID",
                         key="pipeline_query_v9",
-                        on_change=_clear_pipeline_results_v9,
+                        on_change=_apply_pipeline_filters_v10,
                         placeholder="Optional search",
                     ).strip()
                 with sort_col:
                     sort_mode = st.selectbox(
                         "Display order", options=DISPLAY_ORDER_OPTIONS,
                         key="pipeline_sort_v9",
-                        on_change=_clear_pipeline_results_v9,
+                        on_change=_apply_pipeline_filters_v10,
                     )
 
                 button_col, reset_col = st.columns([2, 1], gap="medium")
