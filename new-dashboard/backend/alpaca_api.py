@@ -98,7 +98,7 @@ def _bars_data(client, symbol, feed, lookback_days):
         timeframe=TimeFrame.Day,
         start=end - timedelta(days=lookback_days),
         end=end,
-        limit=400,
+        limit=1000,
         feed=_feed_enum(feed),
     )
     response = client.get_stock_bars(request)
