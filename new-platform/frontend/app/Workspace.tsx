@@ -6,7 +6,7 @@ import AlpacaStockChart from "./AlpacaStockChart";
 import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
 import PipelineData from "./PipelineData";
-import { filterPipelineRows, PIPELINE_STAGES as STAGES } from "../lib/pipeline-data";
+import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES } from "../lib/pipeline-data";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -398,7 +398,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
 
   const pipeline = snapshot?.pipeline || [];
-  const possible = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand }, dateBand), [pipeline, onlyBand, query]);
+  const availability = useMemo(() => pipelineAvailability(pipeline, { query, onlyBand }, dateBand, STAGES, BANDS), [pipeline, onlyBand, query]);
+  const possible = availability.rows;
   const counted = useMemo(() => filterPipelineRows(possible, { stages: stageFilters, dates: dateFilters }, dateBand), [possible, stageFilters, dateFilters]);
   const displayed = useMemo(() => displayFilters ? filterPipelineRows(pipeline, displayFilters, dateBand) : [], [pipeline, displayFilters]);
   const selectionKey = (selection: PipelineSelection) => JSON.stringify([
@@ -442,8 +443,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   function toggleFilter(current: string[], item: string, setter: (value: string[])=>void) {
     setter(current.includes(item) ? current.filter(v => v !== item) : [...current, item]);
   }
-  const stageCounts = STAGES.map(stage => ({label:stage,count:counted.filter(r => (r.stage||"Unknown") === stage).length}));
-  const dateCounts = BANDS.map(band => ({label:band,count:counted.filter(r => dateBand(r) === band).length}));
+  const stageCounts = availability.stageCounts;
+  const dateCounts = availability.dateCounts;
 
   function wtButton(record: Candidate,kind:"watch"|"trade"){
     const id=record.programId||"";
@@ -565,17 +566,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <FullTrialDownload />
       <section className="panel pipeline-filters" aria-labelledby="pipeline-filters-title">
         <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
-        <p className="subtle">Choose one or more stages and PDUFA date ranges. Counts preview your selections. Leave a group unchecked to include all of it.</p>
+        <p className="subtle">Counts show all available trials for the current search and market-cap screen. Check stages and dates, then press DISPLAY TRIALS to show your selections. Leave a group unchecked to include all of it.</p>
         <div className="filter-columns">
           {[
-            { title: "STAGE COUNTS", description: "Current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
-            { title: "DATE TRIAL COUNTS", description: "PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
+            { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
+            { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
           ].map(group => <fieldset className="filter-count-group" key={group.title}>
             <legend>{group.title}</legend>
-            <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{counted.length.toLocaleString("en-US")}</strong></div>
+            <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
             <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
               <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
-              <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Matching trials / programs">{item.count.toLocaleString("en-US")}</b>
+              <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
               <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
             </label>)}</div>
           </fieldset>)}

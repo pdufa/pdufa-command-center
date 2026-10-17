@@ -7,7 +7,7 @@ const moduleFile = path.join(__dirname, "../lib/pipeline-data.ts");
 const compiled = ts.transpileModule(fs.readFileSync(moduleFile, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } });
 const compiledModule = { exports: {} };
 new Function("module", "exports", compiled.outputText)(compiledModule, compiledModule.exports);
-const { filterPipelineRows, pageRows, trialId, registrySections, reportedAnalyses, sortPipelineRows } = compiledModule.exports;
+const { filterPipelineRows, pipelineAvailability, pageRows, trialId, registrySections, reportedAnalyses, sortPipelineRows } = compiledModule.exports;
 
 for (const extension of [".ts", ".tsx"]) require.extensions[extension] = (loaded, file) => {
   const result = ts.transpileModule(fs.readFileSync(file, "utf8"), { compilerOptions: {
@@ -36,6 +36,30 @@ test("checked phases use OR; date, cap and text use AND; clear includes every pr
   assert.equal(select({ stages: ["Phase 4"] }).length, 0);
   assert.equal(trialId(records[0]), "NCT00000001");
   assert.equal(trialId(records[3]), "");
+});
+
+test("checking or clearing phases and dates never zeros their available counts", () => {
+  const stages = ["Phase 1", "Phase 3", "Phase 3 Results", "PDUFA Decision"];
+  const bands = ["NO PDUFA YET", "31–60 DAYS", "61–90 DAYS"];
+  const band = row => row.band;
+  const baseline = pipelineAvailability(records, {}, band, stages, bands);
+  assert.deepEqual(baseline.stageCounts.map(item => item.count), [1, 1, 1, 1]);
+  assert.deepEqual(baseline.dateCounts.map(item => item.count), [1, 2, 1]);
+  for (const selected of [
+    { stages: ["Phase 1", "Phase 3"], dates: [] },
+    { stages: ["Phase 3"], dates: ["NO PDUFA YET"] },
+    { stages: [], dates: [] },
+  ]) {
+    const available = pipelineAvailability(records, selected, band, stages, bands);
+    assert.deepEqual(available.stageCounts, baseline.stageCounts);
+    assert.deepEqual(available.dateCounts, baseline.dateCounts);
+    assert.equal(available.rows.length, 4);
+  }
+  assert.equal(filterPipelineRows(records, { stages: ["Phase 3"], dates: ["NO PDUFA YET"] }, band).length, 0);
+  const screened = pipelineAvailability(records, { onlyBand: true }, band, stages, bands);
+  assert.equal(screened.rows.length, 3);
+  assert.deepEqual(screened.stageCounts.map(item => item.count), [1, 0, 1, 1]);
+  assert.equal(pipelineAvailability(records, { query: "AAA" }, band, stages, bands).rows.length, 2);
 });
 
 test("pagination covers every filtered record once and clamps an old page after filters change", () => {

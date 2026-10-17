@@ -65,6 +65,23 @@ export function filterPipelineRows<T extends PipelineRecord>(rows: T[], filters:
   );
 }
 
+export function pipelineAvailability<T extends PipelineRecord>(rows: T[], filters: {
+  query?: string; onlyBand?: boolean;
+}, dateBand: (row: T) => string, stages: string[], bands: string[]) {
+  // Checkbox selections choose the displayed results, not the available totals.
+  const available = filterPipelineRows(rows, { query: filters.query, onlyBand: filters.onlyBand }, dateBand);
+  const stageTotals = new Map<string, number>(), dateTotals = new Map<string, number>();
+  for (const row of available) {
+    const stage = row.stage || "Unknown", band = dateBand(row);
+    stageTotals.set(stage, (stageTotals.get(stage) || 0) + 1);
+    dateTotals.set(band, (dateTotals.get(band) || 0) + 1);
+  }
+  return { rows: available,
+    stageCounts: stages.map(label => ({ label, count: stageTotals.get(label) || 0 })),
+    dateCounts: bands.map(label => ({ label, count: dateTotals.get(label) || 0 })),
+  };
+}
+
 export function pageRows<T>(rows: T[], requestedPage: number, size: number) {
   const pages = Math.max(1, Math.ceil(rows.length / size));
   const page = Math.min(Math.max(0, requestedPage), pages - 1);
