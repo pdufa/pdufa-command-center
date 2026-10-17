@@ -1,28 +1,22 @@
 {
-  "started_at": "2026-10-16T12:54:29.350939+00:00",
-  "status": "COMPLETE WITH WARNINGS",
+  "started_at": "2026-10-17T09:14:24.925013+00:00",
+  "status": "COMPLETE",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-16",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-17",
   "source_max_age_days": 180,
-  "studies_scanned": 15617,
+  "studies_scanned": 15607,
   "matched_trials": 3108,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "ACAD",
-      "drug": "Carbetocin",
-      "nct_id": "NCT06173531"
-    }
-  ],
-  "finished_at": "2026-10-16T12:55:05.356493+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-10-17T09:14:57.983105+00:00",
   "stored_trials": 3113,
-  "phase2_programs": 420,
+  "phase2_programs": 452,
   "master_programs": 118,
   "review_trials": 1210,
   "market_cap_verified_tickers": 383,
   "market_cap_listing_excluded_tickers": 1,
-  "market_cap_source_unavailable": 1,
-  "market_cap_recent_cache_retained": 1
+  "market_cap_source_unavailable": 0,
+  "market_cap_recent_cache_retained": 0
 }
