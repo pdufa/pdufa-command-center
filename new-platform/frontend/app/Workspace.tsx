@@ -464,17 +464,33 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <Goals record={chosen} />
         </aside>
         <div className="gem-table-panel">
-          <div className="sectionhead"><h3>Saved exact-program candidates</h3><button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button></div>
+          <div className="sectionhead"><h3>STREAMLIT GEM CANDIDATE TABLE · source-qualified order · exact permanent program IDs</h3><button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button></div>
           <div className="table-scroll">
-            <table><thead><tr><th>W/T</th><th>Program ID</th><th>Ticker</th><th>Drug / exact program</th><th>PDUFA</th><th>Cap</th><th>Status</th></tr></thead>
-              <tbody>{rows.map(r => <tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
-                <td><div className="wt-pair">{wtButton(r,"watch")}{wtButton(r,"trade")}</div></td>
+            <table className="gem-source-parity-table">
+              <thead><tr>
+                {["#","Program ID","Ticker","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Exit Risk","Status","Trend (source)","W","T","Details"].map(h=><th key={h}>{h}</th>)}
+              </tr></thead>
+              <tbody>{rows.map((r,i)=><tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
+                <td className="numeric">{i+1}</td>
                 <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td><button type="button" className="ticker-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{r.ticker}</button></td>
-                <td><button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{stated(r.drug)}<small>{r.id}</small></button></td>
-                <td>{stated(r.pdufaDate,"—")}</td>
+                <td>{stated(r.company,"—")}</td>
+                <td title={stated(r.drug)}>{stated(r.indication,"—")}</td>
+                <td>{stated(r.stage,"P3")}</td>
+                <td>{stated(r.phase3Date,"—")}</td>
+                <td title={stated(r.fdaSource,"FDA date unverified")}>{stated(r.pdufaDate,"—")}</td>
+                <td>{stated(r.financingStatus,"—")}</td>
+                <td title={stated(r.technical?.runwayReason)}>{r.technical?.runwayMonths == null?"—":r.technical.runwayMonths.toFixed(1)+" mo"}</td>
                 <td>{money(r.marketCap)}</td>
-                <td>{r.candidateLinked===false?"UNLINKED":stated(r.phase3Status)}</td>
+                <td>{stated(r.approvalProbability,"—")}</td>
+                <td>—</td>
+                <td title={stated(r.technical?.entryStatus)}>{r.technical?.entry??"—"}</td>
+                <td title={stated(r.technical?.exitStatus)}>{r.technical?.exitRisk??"—"}</td>
+                <td>{r.candidateLinked===false?"UNLINKED":stated(r.membershipStatus||r.phase3Status,"—")}</td>
+                <td><button type="button" className="secondary" onClick={()=>setSelected({...selected,[stage]:r.id})}>Alpaca chart ↓</button></td>
+                <td>{wtButton(r,"watch")}</td>
+                <td>{wtButton(r,"trade")}</td>
+                <td><button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>Details ↗<small>{stated(r.drug)} · {r.id}</small></button></td>
               </tr>)}</tbody></table>
             {!rows.length && <p className="subtle">No matching saved GEM candidates.</p>}
           </div>
