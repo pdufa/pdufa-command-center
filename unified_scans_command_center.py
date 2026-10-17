@@ -372,6 +372,27 @@ def recent_active(runs, section):
     return None
 
 
+def latest_section_run(runs, section):
+    """The last matching *requested* section scan, never a different source."""
+    if section not in WORKFLOWS:
+        return {}
+    for run in runs:
+        if not isinstance(run, dict) or str(run.get("path") or "").split("/")[-1] != WORKFLOWS[section]:
+            continue
+        title = str(run.get("display_title") or "")
+        if section in SOURCE_NAMES and not title.startswith(section + " —"):
+            continue
+        if section in ("PIPELINE", "GEM JR") and not title.startswith(
+            ("GEM_JR" if section == "GEM JR" else "PIPELINE") + " —"
+        ):
+            continue
+        if section == "SCAN ALL" and (run.get("event") != "workflow_dispatch"
+                                      or title != "ALL + GEM — PDUFA overnight"):
+            continue
+        return run
+    return {}
+
+
 def _print_count(value):
     if value is None:
         return "Not reported"
@@ -502,6 +523,7 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
             with button_col:
                 if name in WORKFLOWS:
                     busy = recent_active(runs, name)
+                    last = latest_section_run(runs, name)
                     if st.button(("RUN SCAN HEALTH CHECK" if name == "SCAN HEALTH" else
                                   "RUN " + name + " SCAN"),
                                  key="unified_run_"+name.replace(" ","_"),
@@ -516,6 +538,17 @@ def render_unified_scans(clinical_loader, sources_loader, latest_night_loader):
                         st.caption("Gmail/GitHub error audit only")
                     else:
                         st.caption("Individual clinical/GEM run")
+                    if last:
+                        conclusion = (str(last.get("conclusion") or "UNKNOWN").upper()
+                                      if last.get("status") == "completed"
+                                      else str(last.get("status") or "UNKNOWN").upper())
+                        st.caption("Latest request: " + conclusion +
+                                   " · " + pacific_time(last.get("created_at")))
+                        href = last.get("html_url")
+                        if isinstance(href, str) and href.startswith(
+                            "https://github.com/" + REPO + "/actions/runs/"
+                        ):
+                            st.link_button("VIEW RUN LOG", href, use_container_width=True)
             if pct is None or pct < 100:
                 st.info("WHY NOT 100% — " + " ".join(card["reasons"][:2]))
             with st.expander("WHY NOT 100%? · NUMBERS · SOURCE / OUTSTANDING DETAILS", expanded=False):
