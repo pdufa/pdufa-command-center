@@ -132,8 +132,8 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
         # Reuse the exact GEM source-verified daily bars for a matching chart,
         # including closing prices and volumes; never invent candles or OHLC.
         "chartBars": [
-            {"date": bar["date"].isoformat(), "close": _float(bar["close"], 5),
-             "volume": _float(bar["volume"], 0)}
+            {"date": bar["date"].isoformat(), "close": float(bar["close"]),
+             "volume": float(bar["volume"])}
             for bar in profile["bars"]
         ],
         "eodFresh": profile["fresh"],
