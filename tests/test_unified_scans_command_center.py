@@ -54,6 +54,37 @@ class ScoreSemanticsTests(unittest.TestCase):
         self.assertIsNone(result["GEM"]["score"])
         self.assertIn("6", str(result["GEM"]["details"]["Potential two-benchmark candidates"]))
 
+    def test_individual_clinical_score_and_id_are_labeled_only_for_its_section(self):
+        base = {"updated_at_utc": "2026-10-17T09:20:00Z",
+                "scans": [{"scan": "2", "run_id": 99, "metrics": {
+                    "tracked_trials_checked": 5, "tracked_trials_total": 10}},
+                    {"scan": "4", "run_id": 99, "metrics": {
+                        "studies_checked": 10, "matched_posted_results": 2}}]}
+        fresh = {"schema_version": 1, "section": "PIPELINE", "run_id": 123,
+                 "published_at_utc": "2026-10-17T10:20:00Z",
+                 "collector_reports": {
+                     "2": {"scan": "2", "collector_status": "COMPLETE",
+                           "tracked_trials_checked": 100,
+                           "tracked_trials_total": 100},
+                     "3": {"scan": "3", "collector_status": "COMPLETE",
+                           "studies_checked": 40}}}
+        cards = {x["name"]: x for x in collect_cards(
+            base, {}, {}, individual_clinical={"PIPELINE": fresh})}
+        self.assertEqual(cards["PIPELINE"]["score"], 100)
+        self.assertEqual(cards["PIPELINE"]["source_run_id"], 123)
+        self.assertEqual(cards["GEM JR"]["source_run_id"], 99)
+        self.assertIn("Newer individual", cards["PIPELINE"]["details"]["Evidence origin"])
+        self.assertEqual(base["scans"][0]["metrics"]["tracked_trials_checked"], 5)
+        jr = {"schema_version": 1, "section": "GEM_JR", "run_id": 234,
+              "published_at_utc": "2026-10-17T10:21:00Z",
+              "collector_reports": {"4": {"scan": "4", "collector_status": "COMPLETE",
+                                          "studies_checked": 20,
+                                          "matched_posted_results": 4}}}
+        update = {x["name"]: x for x in collect_cards(
+            base, {}, {}, individual_clinical={"GEM JR": jr})}
+        self.assertEqual(update["GEM JR"]["source_run_id"], 234)
+        self.assertIsNone(update["GEM JR"]["score"])
+
     def test_standalone_result_does_not_silently_rewrite_source_aggregate(self):
         older = {"updated_at_utc": "2026-10-17T09:20:00Z", "sources": [{
             "source": "SEC", "findings_due": 100, "findings_verified": 90,
