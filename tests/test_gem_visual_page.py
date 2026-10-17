@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from gem_visual_page import _show, _rankings
-from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks, _gem_section9_entry_checks, _junior_section9_exit_checks, _junior_section10_history, _gem_section10_exit_checks
+from gem_reference_dashboard import resolve_dashboard_action, _candidate, _all_company_trials, _hierarchy, _junior_section8_checks, _gem_section9_entry_checks, _junior_section9_exit_checks, _junior_section10_history, _gem_section10_exit_checks, _gem_history_timeline
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -470,6 +470,74 @@ class GemVisualPageTests(unittest.TestCase):
         self.assertIsNone(checks[10]["triggered"])
         self.assertIs(checks[11]["triggered"], True)
         self.assertTrue(all("url" in c and "next_step" in c for c in checks))
+
+    def test_shared_section10_11_contract_and_separate_gem_policy(self):
+        source = (ROOT / "gem_reference_frontend" / "dashboard.js").read_text(
+            encoding="utf-8"
+        )
+        styles = (ROOT / "gem_reference_frontend" / "dashboard.css").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('"10 · Candidate History — GEM JR → GEM"', source)
+        self.assertIn('"10 · Candidate History — GEM"', source)
+        self.assertIn('"11 · Alerts / Watchlist"', source)
+        common_order = "$" + "{historyCard()}" + "$" + "{alertsCard(r)}" + "$" + "{scansCard()}"
+        self.assertEqual(source.count(common_order), 2)
+        self.assertIn('class="grid footer gem-footer">' + common_order, source)
+        self.assertIn('class="grid footer">' + common_order, source)
+        self.assertIn('class="gem-only-controls"', source)
+        self.assertIn("PDUFA Exit Policy · GEM only", source)
+        self.assertNotIn('gem-footer">' + "$" + "{policyCard()}", source)
+        self.assertNotIn("PDUFA policy is configured separately in Section 11", source)
+        self.assertIn('if(ev.target.id==="alert-scope")', source)
+        self.assertIn('data-tab="WT"', source)
+        self.assertIn(".gem-only-controls", styles)
+        self.assertIn(".stage-timeline", styles)
+        self.assertIn(".shared-alerts", styles)
+
+    def test_gem_candidate_history_retains_exact_scan_observed_periods(self):
+        state = {
+            "stages": {
+                "GEM": {
+                    "entries": {
+                        "TRIAL|NCT00000002": {
+                            "ticker": "TEST", "drug": "Drug 2",
+                            "nct_id": "NCT00000002", "status": "ACTIVE",
+                            "periods": [
+                                {"found": "2026-10-01", "left": "2026-10-03",
+                                 "reason": "NO_LONGER_IN_VERIFIED_STAGE_SNAPSHOT"},
+                                {"found": "2026-10-10", "left": None, "reason": ""},
+                            ],
+                        },
+                        "TRIAL|NCT00000003": {
+                            "ticker": "OTHER", "drug": "Drug 3",
+                            "nct_id": "NCT00000003", "status": "LEFT",
+                            "periods": [
+                                {"found": "2026-10-02", "left": "2026-10-09",
+                                 "reason": "PDUFA_EXPIRED"},
+                            ],
+                        },
+                    }
+                },
+            },
+        }
+        rows = _gem_history_timeline(state)
+        self.assertEqual(len(rows), 3)
+        by_trial = [r for r in rows if r["id"] == "TRIAL|NCT00000002"]
+        self.assertEqual(
+            {r["movement"] for r in by_trial},
+            {"LEFT GEM", "RE-ENTERED GEM"}
+        )
+        self.assertTrue(all(r["ticker"] == "TEST" for r in by_trial))
+        self.assertEqual(
+            next(r for r in by_trial if r["movement"] == "RE-ENTERED GEM")["found"],
+            "2026-10-10"
+        )
+        self.assertEqual(
+            next(r for r in rows if r["id"] == "TRIAL|NCT00000003")["reason"],
+            "PDUFA_EXPIRED"
+        )
+        self.assertEqual(_gem_history_timeline({"stages": {}}), [])
 
     @patch("gem_reference_dashboard.assess_runway", return_value={
         "Cash runway (months)": None, "Cash runway reason": "No audited assessment",
