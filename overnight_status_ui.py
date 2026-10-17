@@ -123,7 +123,7 @@ def source_matches_run(run, report):
 
 
 @st.fragment(run_every="120s")
-def render_overnight_execution(report_loader, source_loader):
+def render_overnight_execution(report_loader, source_loader, run_loader):
     """Active and last completed real scan, stage timings, source gaps, email proof."""
     st.markdown("## 10 PM PACIFIC — OVERNIGHT SCAN CONTROL & DETAILS")
     st.caption(
@@ -137,13 +137,18 @@ def render_overnight_execution(report_loader, source_loader):
         current_job_steps.clear()
         report_loader.clear()
         source_loader.clear()
+        run_loader.clear()
         st.rerun(scope="fragment")
     clinical, clinical_note = report_loader()
     sources = source_loader()
     clinical = clinical if isinstance(clinical, dict) else {}
     sources = sources if isinstance(sources, dict) else {}
     runs, runs_note = recent_github_runs()
-    run = choose_run(runs, clinical, sources)
+    # Dedicated workflow endpoint avoids unrelated CI/repair runs pushing the
+    # latest complete overnight chain out of the general GitHub results page.
+    direct = run_loader()
+    verified_runs = ([direct] if isinstance(direct, dict) and direct.get('id') else [])
+    run = choose_run(verified_runs + runs, clinical, sources)
     if not run:
         st.error("No verified nightly scan found in current GitHub results or saved audits.")
         if runs_note:
