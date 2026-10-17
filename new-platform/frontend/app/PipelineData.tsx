@@ -13,7 +13,7 @@ type TrialSummary = {
 };
 type Summaries = { ids: string; records: Record<string, TrialSummary> };
 
-export default function PipelineData({ rows }: { rows: Candidate[] }) {
+export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(25);
   const [selected, setSelected] = useState("");
@@ -55,7 +55,8 @@ export default function PipelineData({ rows }: { rows: Candidate[] }) {
   const loading = Boolean(ids && summaries.ids !== ids && !error);
   return <section className="panel pipeline-data" aria-labelledby="pipeline-data-title">
     <div className="sectionhead"><div><h3 id="pipeline-data-title">PIPELINE DATA</h3>
-      <p className="subtle">Matches the checked stages and all other Pipeline filters. No checked stages means all stages. Select <strong>All fields</strong> to browse each complete record.</p></div>
+      <p className="subtle">Results from DISPLAY TRIALS. Select <strong>All fields</strong> to browse each complete record.</p>
+      {filterSummary && <p className="subtle pipeline-applied-filters">{filterSummary}</p>}</div>
       <span className="counter" aria-live="polite">{rows.length.toLocaleString("en-US")} matching trials / programs</span>
     </div>
     <div className="pipeline-data-pagination">

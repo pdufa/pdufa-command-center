@@ -50,6 +50,7 @@ type Snapshot = {
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
+type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
 const LEGACY_TAG_KEY = "pdufa_new_watch_trade_v1";
 const STAGES = ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision", "Phase 4", "Not Applicable", "Unknown"];
@@ -307,6 +308,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [onlyBand, setOnlyBand] = useState(false);
+  const [displayFilters, setDisplayFilters] = useState<PipelineSelection | null>(null);
+  const [displayVersion, setDisplayVersion] = useState(0);
+  const pipelineDataRef = useRef<HTMLDivElement>(null);
   const [gemQuery, setGemQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [tags, setTags] = useState<Tags>({ watch: [], trade: [] });
@@ -397,6 +401,22 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const pipeline = snapshot?.pipeline || [];
   const possible = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand }, dateBand), [pipeline, onlyBand, query]);
   const counted = useMemo(() => filterPipelineRows(possible, { stages: stageFilters, dates: dateFilters }, dateBand), [possible, stageFilters, dateFilters]);
+  const displayed = useMemo(() => displayFilters ? filterPipelineRows(pipeline, displayFilters, dateBand) : [], [pipeline, displayFilters]);
+  const selectionKey = (selection: PipelineSelection) => JSON.stringify([
+    [...selection.stages].sort(), [...selection.dates].sort(), selection.query, selection.onlyBand,
+  ]);
+  const draftKey = selectionKey({ stages: stageFilters, dates: dateFilters, query, onlyBand });
+  const appliedKey = displayFilters ? selectionKey(displayFilters) : "";
+  const selectionsChanged = displayFilters !== null && draftKey !== appliedKey;
+
+  useEffect(() => {
+    if (displayVersion) pipelineDataRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [displayVersion]);
+
+  function displayTrials() {
+    setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], query, onlyBand });
+    setDisplayVersion(value => value + 1);
+  }
   const byProgram = useMemo(() => {
     const m=new Map<string,Candidate>();
     for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
@@ -524,7 +544,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Select stages and dates to filter the PIPELINE counts and data below.</p>
+        <p className="subtle">Select stages and dates, then press DISPLAY TRIALS to list the matching records below.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{possible.length.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
@@ -536,25 +556,37 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         {" · As of "+snapshot.asOf}
       </p>
       <FullTrialDownload />
-      <div className="panel pipeline-filters">
-        <h3>PIPELINE FILTERS</h3>
+      <section className="panel pipeline-filters" aria-labelledby="pipeline-filters-title">
+        <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
+        <p className="subtle">Choose one or more stages and PDUFA date ranges. Counts preview your selections. Leave a group unchecked to include all of it.</p>
         <div className="filter-columns">
-          <div><strong>STAGES · current, not historical</strong><div className="filter-checks">{STAGES.map(s=><label key={s}><input type="checkbox" checked={stageFilters.includes(s)} onChange={()=>toggleFilter(stageFilters,s,setStageFilters)} />{s}</label>)}</div></div>
-          <div><strong>DATES · PDUFA countdown</strong><div className="filter-checks">{BANDS.map(s=><label key={s}><input type="checkbox" checked={dateFilters.includes(s)} onChange={()=>toggleFilter(dateFilters,s,setDateFilters)} />{s}</label>)}</div></div>
+          {[
+            { title: "STAGE COUNTS", description: "Current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
+            { title: "DATE TRIAL COUNTS", description: "PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
+          ].map(group => <fieldset className="filter-count-group" key={group.title}>
+            <legend>{group.title}</legend>
+            <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{counted.length.toLocaleString("en-US")}</strong></div>
+            <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
+              <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
+              <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Matching trials / programs">{item.count.toLocaleString("en-US")}</b>
+              <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
+            </label>)}</div>
+          </fieldset>)}
         </div>
         <div className="pipeline-row"><label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional screening; OFF for Streamlit total)</label></div>
-        <div className="pipeline-actions"><button type="button" className="secondary" onClick={()=>{setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(false)}}>CLEAR STAGE / DATE</button></div>
+        <div className="pipeline-actions pipeline-display-actions">
+          <button type="button" onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
+          <button type="button" className="secondary" onClick={()=>{setStageFilters([]);setDateFilters([]);setQuery("");setOnlyBand(false)}}>CLEAR SELECTIONS</button>
+        </div>
+        {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
+      </section>
+      <div ref={pipelineDataRef} className="pipeline-results-anchor">
+        {displayFilters ? <PipelineData key={appliedKey + "|" + displayVersion + "|" + snapshot.asOf} rows={displayed}
+          filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
+            + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")} /> :
+          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stages and dates above, then press DISPLAY TRIALS to show the relevant trials and programs.</p></section>}
       </div>
-      <div className="count-panels">
-        {([[ "STAGE COUNTS",stageCounts ],["DATE TRIAL COUNTS",dateCounts ]] as const).map(([title,group])=>
-          <div className="panel" key={title}><h3>{title}</h3><strong className="count-total">{title==="STAGE COUNTS"?"PHASE TOTAL":"DATE TOTAL"} · {counted.length.toLocaleString("en-US")}</strong>
-          <div className="count-bars" role="list" aria-label={title}>{group.map(item=><div className="count-row" role="listitem" aria-label={item.label+": "+item.count.toLocaleString("en-US")+" trials / programs"} key={item.label}>
-            <span title={item.label}>{item.label}</span>
-            <div className="count-track" aria-hidden="true"><div style={{width:(item.count/Math.max(1,...group.map(v=>v.count))*100)+"%"}} /></div>
-            <b>{item.count.toLocaleString("en-US")}</b></div>)}</div></div>)}
-      </div>
-      <PipelineData key={JSON.stringify([stageFilters, dateFilters, query, onlyBand, snapshot.asOf])} rows={counted} />
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
