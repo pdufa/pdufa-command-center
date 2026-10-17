@@ -68,6 +68,17 @@ export default function PublishedScansPanel() {
     return () => ctrl.abort();
   }, [scanRefresh]);
 
+  // No GitHub token on Vercel? Preserve a usable, honest operator path.
+  // GitHub itself requires the signed-in repository owner to confirm the workflow.
+  function openGitHubScan() {
+    setScanMessage(
+      "GitHub Actions opened. Sign in if prompted, choose Run workflow on branch main, then set action to " +
+      action + " and scan to " + target +
+      ". Press Run workflow in GitHub to actually start the scan. No scan was started from this page."
+    );
+    window.open(SCAN_WORKFLOW, "_blank", "noopener,noreferrer");
+  }
+
   async function requestScan() {
     setSending(true);
     setScanMessage("");
@@ -91,7 +102,7 @@ export default function PublishedScansPanel() {
   const sources = record?.sources;
   return <section className="panel">
     <h2>SCANS — Published source scores and outstanding evidence</h2>
-    <p className="subtle">This staging platform reads original Streamlit scan reports independently of the database. It reads original scan reports and, when a server-only GitHub token is configured, can dispatch the existing scanners. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
+    <p className="subtle">This dashboard reads the original published GitHub scan reports independently of the database. With server-side GitHub authorization, it can directly dispatch the existing scanners; otherwise it opens GitHub's own manual run form. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
     <p><a href={SCAN_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN EXISTING GITHUB SCAN RUN CONTROLS ↗</a></p>
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
     <div className="source-health">
@@ -113,12 +124,15 @@ export default function PublishedScansPanel() {
             <option value="GEM">GEM only</option>
           </select>
         </label>
-        <button type="button" onClick={requestScan} disabled={sending || !runs?.dispatchEnabled}>
-          {sending ? "REQUESTING…" : "START SELECTED SCAN"}
+        <button type="button"
+          onClick={runs?.dispatchEnabled ? requestScan : openGitHubScan}
+          disabled={sending}
+          title={runs?.dispatchEnabled ? "Request a scan through GitHub Actions" : "Open the existing GitHub Actions scan form"}>
+          {sending ? "REQUESTING…" : runs?.dispatchEnabled ? "START SELECTED SCAN" : "OPEN GITHUB TO RUN SCAN ↗"}
         </button>
         <button type="button" className="secondary" onClick={() => setScanRefresh(x => x + 1)}>REFRESH RUN STATUS</button>
       </div>
-      {runs && !runs.dispatchEnabled && <p className="subtle">The SCANS page is installed, but its START button is disabled until PDUFA_GITHUB_TOKEN is saved as a server-only Vercel environment variable (fine-grained GitHub token with Actions read/write on this repository), followed by a redeploy. In the meantime, use the linked GitHub Actions workflow → Run workflow. Existing nightly scans continue independently.</p>}
+      {!runs?.dispatchEnabled && <p className="subtle">Direct dispatch from Vercel is not yet authorized. The primary button opens GitHub's authenticated Run workflow form; select branch <strong>main</strong>, action <strong>{action}</strong>, and scan <strong>{target}</strong>, then confirm Run workflow. To enable true one-click launch here, privately add server-only <code>PDUFA_GITHUB_TOKEN</code> in the Vercel Production environment and redeploy. Streamlit and the 10 PM Pacific nightly schedule remain unchanged.</p>}
       {runError && <p className="risk-line">{runError}</p>}
       {scanMessage && <p role="status">{scanMessage}</p>}
       {runs?.manual?.[0] && <p className="subtle">Last manual control: <a href={runs.manual[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.manual[0].id}</a> — {runs.manual[0].status} / {runs.manual[0].conclusion || "not concluded"}.</p>}
