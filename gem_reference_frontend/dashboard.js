@@ -313,6 +313,51 @@ function financeCard(r,junior){
   return card(junior?"Financing Verification / Source Check":"Two-Financing Verification ("+r.ticker+")","target",tabs+`<div class="finance-scroll">${body}</div><div class="source-actions"><span>Source review: ${dateLabel(r.source_review)}</span><button data-action="refresh" title="Reload saved source records; run live collectors in SCANS">↻ Refresh sources</button></div>`,"financing");
 }
 function checklist(r,kind){const entry=kind==="entry",name=entry?"Entry Checklist":"Exit Checklist",value=r?.[entry?"entry":"exit_risk"],checks=r?.[entry?"entry_checks":"exit_checks"]||data.empty_checks[kind];return card(name+" ("+data.stage+")",entry?"check":"flag",table(["#","Criterion",entry?"Details / threshold":"Trigger / condition","Status","Points"],checks.map((x,i)=>[i+1,esc(x.label),`<span title="${esc(x.detail)}">${esc(x.detail)}</span>`,`<span class="${x.status===true?(entry?"check-mark":"check-fail"):x.status===false?(entry?"check-fail":"check-mark"):"check-unknown"}" title="${x.status===true?(entry?"Evidence observed":"Risk condition observed"):x.status===false?"Condition not met":"Unknown / unverified"}">${x.status===true?"☑":x.status===false?"✕":"—"}</span>`,esc(x.points)]))+`<div class="coverage">${esc(r?.[entry?"entry_status":"exit_status"]||"Source coverage unavailable")} · Coverage ${r?.[entry?"entry_coverage":"exit_coverage"]||0}/100. ${entry?"Provisional readiness":"Higher exit risk means more risk"}.</div>`,"checklist",`<span class="score-badge ${value==null?"unavailable":""}">${entry?"Total score":"Risk"}: ${value==null?"N/A":num(value,0)} / 100</span>`);}
+function section9Card(r){
+  const junior=data.junior;
+  const title=junior?"GEM JR — Exit / Downgrade Review":"GEM — Entry Qualification Checklist";
+  if(!r)return card(title,"flag",
+    empty("No candidate selected","Choose a candidate to review its current saved research evidence."),
+    "section9-card");
+  const checks=Array.isArray(r.section9_checks)?r.section9_checks:[];
+  if(!checks.length)return card(title,"flag",
+    empty("Section 9 source checks missing","Rerun or refresh saved research data before any entry or exit decision."),
+    "section9-card",badge("Not verified","hold"));
+  const verified=checks.filter(x=>x.status===true).length;
+  const risk=checks.filter(x=>x.status===false).length;
+  const pending=checks.length-verified-risk;
+  const hard=checks.filter(x=>x.group==="Hard gate");
+  const status=junior?(risk?"Risk flags recorded":"Review outstanding"):
+    (hard.some(x=>x.status===false)?"ENTRY HOLD — blocking risk":
+     hard.some(x=>x.status!==true)?"ENTRY HOLD — unverified gates":
+     "Benchmarks observed — independent trade review required");
+  const head='<div class="section9-status"><strong>'+esc(status)+'</strong>'+
+    '<div><span>'+checks.length+' prioritized</span><span>'+verified+' observed</span><span>'+risk+' warnings</span><span>'+pending+' unknown</span></div></div>';
+  const list=checks.map((x,i)=>{
+    const kind=x.status===true?"pass":x.status===false?"hold":"unknown";
+    const label=junior?(x.status===false?"Risk flagged":x.status===true?"Observed":"Review required"):
+      (x.status===true?"Evidence recorded":x.status===false?"Hold / risk":"Unverified");
+    const source=x.url?safeLink(x.url,"Open evidence"):'<span class="muted">No source link saved</span>';
+    return '<details class="section9-item" data-check-priority="'+esc(x.priority||i+1)+'">'+
+      '<summary><span class="section9-rank">'+esc(x.priority||i+1)+'</span>'+
+      '<span class="section9-name">'+esc(x.label)+'<small>'+esc(x.detail)+'</small></span>'+
+      badge(label,kind)+'</summary>'+
+      '<div class="section9-detail"><p><strong>Review next:</strong> '+esc(x.next_step||"Verify original sources")+'</p>'+
+      '<div class="section9-source"><strong>Source:</strong> '+source+'</div>'+
+      '<small>Category: '+esc(x.group||"Research")+'</small></div></details>';
+  }).join("");
+  const caution=junior?
+    "This is a GEM JR research downgrade / exit-warning list, not a recommendation to sell. A negative outcome needs primary-source confirmation. Portfolio-level stops and PDUFA decisions remain manual.":
+    "Saved source-qualified Phase 3 and two SEC financings do not authorize buying. Unknown or stale hard gates require a hold. Entry scores are provisional; technical setups and trading plans are advisory.";
+  const plan=junior?'':'<button class="section9-plan" data-action="plan">Set entry / stop / target</button>';
+  const scroll='<div class="section9-scroll scroll">'+list+'</div>';
+  const footer='<div class="section9-footer"><span>As of saved review '+dateLabel(r.source_review)+'</span>'+plan+'</div>'+
+    '<p class="section9-disclaimer">'+esc(caution)+'</p>';
+  const score=junior?'<span class="score-badge unavailable">Exit score: N/A</span>':
+    '<span class="score-badge unavailable">Entry score: '+(finite(r.entry)?num(r.entry,0)+"/100 · provisional":"N/A")+'</span>';
+  return card(title+(r?" ("+r.ticker+")":""),"flag",head+scroll+footer,
+    "section9-card"+(junior?" section9-junior":" section9-gem"),score);
+}
 function getPlan(r){return r?read("gem_chart_plan_"+r.id,{}):{};}
 function signals(r,compact=false){const plan=getPlan(r);const rows=r?[["MACD",r.macd],["RVOL",r.rvol==null?"—":num(r.rvol)+"×"],["RSI (14)",num(r.rsi)],["SMA20",price(r.sma20)],["SMA50",price(r.sma50)],["Closing support",price(r.support)],["Closing resistance",price(r.resistance)],["Entry (plan)",price(plan.entry)],["Stop (plan)",price(plan.stop)],["Target (plan)",price(plan.target)],["Base status",r.base_status]]:[["MACD","—"],["RVOL","—"],["RSI (14)","—"],["Closing support","—"],["Closing resistance","—"],["Entry / stop / target","—"]];return `<table class="data-table ${compact?"":"signal-table"}"><tbody>${rows.map(([k,v])=>`<tr><td>${esc(k)}</td><td title="${esc(v)}">${esc(v)}</td></tr>`).join("")}</tbody></table>`;}
 function juniorEntryCard(r){
@@ -483,7 +528,7 @@ function render(focusSearch=false,focusTrialSearch=false){if(!data)return;const 
   const intro=data.junior?"Earlier Setups (Post Phase 3 / Pre-PDUFA)":"Higher Conviction (Near PDUFA)";
   const subtitle=data.junior?"Earlier setups with more time to develop. Monitor trial evidence, financing progress and promotion to GEM.":"Later-stage research with stronger qualification requirements. Exact-program Phase 3 and two independently verified financing closures.";
   const notice=data.notice||(!data.source_current?"Published SEC / source coverage is partial or stale. Clinical and financing clearance does not clear new trading entries.":"");
-  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout ${state.criteriaCollapsed?"criteria-collapsed":""}">${criteriaCard()}${candidateCard(rows)}</div>${reviewNavigator(rows,r)}${state.chartFocus?'<button type="button" class="chart-backdrop" data-action="close-chart" aria-label="Close enlarged chart"></button>':""}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${juniorEntryCard(r)}${checklist(r,"exit")}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${checklist(r,"entry")}${checklist(r,"exit")}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
+  app.innerHTML=`${stageSummary()}<header class="hero">${icon("leaf","hero-icon")}<div><h1>${esc(data.stage)} — ${intro}</h1><p>${subtitle}</p></div><div class="hero-tools"><button data-action="navigate" data-tab="SCANS">Scans</button><button data-action="navigate" data-tab="WT">Watchlist / Trade</button></div></header>${notice?`<aside class="notice"><span>${esc(notice)}</span><button data-action="navigate" data-tab="SCANS">Review sources ↗</button></aside>`:""}<div class="page"><div class="reference-top-layout ${state.criteriaCollapsed?"criteria-collapsed":""}">${criteriaCard()}${candidateCard(rows)}</div>${reviewNavigator(rows,r)}${state.chartFocus?'<button type="button" class="chart-backdrop" data-action="close-chart" aria-label="Close enlarged chart"></button>':""}${data.junior?`<div class="grid jr-top">${profileCard(r)}${clinicalCard(r)}${chartCard(r,true)}</div><div class="grid jr-bottom">${financeCard(r,true)}${juniorEntryCard(r)}${section9Card(r)}</div><div class="grid footer">${historyCard()}${alertsCard(r)}${scansCard()}</div>`:`<div class="grid gem-top">${profileCard(r)}${rulesCard(r)}${financeCard(r,false)}</div><div class="grid gem-bottom">${chartCard(r,false)}${signalCard(r)}${section9Card(r)}${checklist(r,"exit")}</div><div class="grid footer gem-footer">${policyCard()}${historyCard()}${alertsCard(r)}${scansCard()}</div>`}</div><p class="footnote">Saved source observations · Missing values stay unavailable · W = Watchlist · T = existing trade research workspace · No orders are placed</p>`;
   app.setAttribute("aria-busy","false");drawPriceChart(r);if(state.chartFocus){const enlarged=app.querySelector(".focused-chart");enlarged?.setAttribute("role","dialog");enlarged?.setAttribute("aria-modal","true");enlarged?.setAttribute("aria-label","Enlarged "+data.stage+" price chart");enlarged?.querySelector(".chart-close")?.focus();}persist();
   app.querySelectorAll("details[data-tree]").forEach(el=>{const key=r?.id+":"+el.dataset.tree;if(Object.hasOwn(state.tree,key))el.open=state.tree[key];el.addEventListener("toggle",()=>{state.tree[key]=el.open;persist();});});
   if(focusSearch){const input=document.getElementById("candidate-search");input.focus();input.setSelectionRange(input.value.length,input.value.length);}if(focusTrialSearch){const input=document.getElementById("company-trial-search");input?.focus();input?.setSelectionRange(input.value.length,input.value.length);}resize();
