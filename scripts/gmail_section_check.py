@@ -23,7 +23,7 @@ FOLDERS = {
     "DAILY_REPORT": ('"PDUFA/Daily Report"',),
     "WEEKLY_REPORT": ('"PDUFA/Weekly Report"',),
 }
-FOLDERS["ALL"] = tuple(dict.fromkeys(folder for group in FOLDERS.values() for folder in group))
+FOLDERS["ALL"] = tuple(dict.fromkeys(('"[Gmail]/All Mail"',) + tuple(folder for group in FOLDERS.values() for folder in group)))
 
 
 def main() -> int:
@@ -44,7 +44,7 @@ def main() -> int:
         "section": options.section,
         "folders_requested": list(FOLDERS[options.section]),
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
-        "range": "All available PDUFA-relevant headers since 2000; no 36-hour limit",
+        "range": "All available PDUFA-relevant headers since 2000; ALL includes Gmail All Mail and configured PDUFA folders",
         "status": checked.get("status", "UNAVAILABLE"),
         "reason": checked.get("reason", ""),
         "relevant_messages": checked.get("relevant_messages", 0),
