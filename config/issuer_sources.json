@@ -115,6 +115,14 @@
           "evidence_type": "SINGLE_FUNDED_DEBT_TRANSACTION_ONLY",
           "explanation": "Dated same-issuer SEC transaction validated by live recheck; verifies ONE closing only, not financing #2 after Phase 3, and never authorizes trade entry."
         }
+      },
+      "COGT|BEZUCLASTINIB_NONADVSM_20261230": {
+        "individual_financing_close": {
+          "date": "2025-11-18",
+          "sec_url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526053334/cogt-20251231.htm",
+          "evidence_type": "INDIVIDUAL_CLOSED_CONVERTIBLE_DEBT_ONLY",
+          "explanation": "Company's 2025 Form 10-K states that on November 18 2025 it completed a $230m convertible-note offering; a separate November 13 common-stock offering is disclosed. The issuer/program-specific Phase 3 chronology for NONADVSM and whether these financings qualify as two distinct post-readout closes are NOT established. Research only; do not authorize trade entry."
+        }
       }
     },
     "hosts": [
