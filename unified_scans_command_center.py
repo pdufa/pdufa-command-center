@@ -122,7 +122,9 @@ def collect_cards(clinical, sources, gem, jobs=None, standalone=None, individual
     # never the archived all-night clinical or five-source aggregate.
     for section, raw in (individual_clinical or {}).items():
         expected = ("2", "3") if section == "PIPELINE" else ("4",)
-        if not isinstance(raw, dict) or raw.get("section") != section or raw.get("schema_version") != 1:
+        if not isinstance(raw, dict) or raw.get("section") != (
+            "GEM_JR" if section == "GEM JR" else section
+        ) or raw.get("schema_version") != 1:
             continue
         if not _when(raw.get("published_at_utc")) or (
             _when(clinical.get("updated_at_utc")) and
