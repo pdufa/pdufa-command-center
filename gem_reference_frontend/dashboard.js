@@ -650,7 +650,61 @@ function alertsCard(r){
     '<div class="alerts-controls">'+picker+'</div>'+listing+note,
     "alerts shared-alerts",'<button class="scan-open" data-action="navigate" data-tab="WT">Open Watchlist</button>');
 }
-function scansCard(){return card("Scan Diagnostics","pulse",table(["Scan Type","Last Update","Status"],data.scans.map(s=>[esc(s.label),`<span title="${esc(s.date)}">${dateLabel(s.date)}</span>`,badge(s.status,s.type)]))+`<div class="source-note">10 PM Pacific sequential schedule · ${esc(data.scan_note)}</div>`,"diagnostics",'<button class="scan-open" data-action="navigate" data-tab="SCANS">Open scans</button>');}
+function scansCard(){
+  const rows=Array.isArray(data.scans)?data.scans:[];
+  const warnings=rows.filter(s=>s.type!=="pass").length;
+  const stale=rows.filter(s=>s.freshness==="STALE"||s.freshness==="FUTURE DATE").length;
+  const unavailable=rows.filter(s=>s.status==="UNAVAILABLE"||s.freshness==="UNKNOWN").length;
+  const available=rows.filter(s=>s.type==="pass"&&s.freshness==="CURRENT"&&
+    ["VERIFIED","FULLY VERIFIED"].includes(String(s.coverage||"").toUpperCase())).length;
+  const totalIssues=rows.reduce((total,s)=>total+(Array.isArray(s.issues)?s.issues.length:0),0);
+  const counts='<div class="scan-diagnostic-counts"><strong>'+rows.length+' saved reports</strong>'+
+    '<span>'+warnings+' require review</span><span>'+stale+' stale</span>'+
+    '<span>'+unavailable+' unavailable</span><span>'+available+' fully verified</span></div>';
+  const summaries=rows.map((s,i)=>{
+    const children=Array.isArray(s.details)?s.details:[];
+    const issues=Array.isArray(s.issues)?s.issues:[];
+    const time=s.date||"Report time unknown";
+    const age=Number.isFinite(s.age_hours)?
+      " · "+(s.age_hours<0?"Future-dated":num(s.age_hours,1)+"h since report"):"";
+    const url=s.run_url?safeLink(s.run_url,"Open recorded GitHub run"):
+      '<span class="muted">Run URL not saved</span>';
+    const tasks=children.length?'<div class="scan-diagnostic-children">'+children.map((item,i)=>
+      '<details class="scan-diagnostic-child"><summary><span class="scan-diagnostic-index">'+(i+1)+'</span>'+
+      '<span class="scan-diagnostic-task">'+esc(item.label)+'</span>'+
+      badge(item.status||"UNVERIFIED",item.type||"unknown")+'</summary>'+
+      '<div class="scan-diagnostic-child-detail">'+
+      '<div><strong>Coverage:</strong> '+esc(item.coverage||"Not verified")+'</div>'+
+      (item.date?'<div><strong>Saved timestamp:</strong> '+esc(item.date)+'</div>':'')+
+      (item.detail?'<div>'+esc(item.detail)+'</div>':'')+
+      ((item.errors||[]).length?'<div class="scan-diagnostic-errors">'+
+       (item.errors||[]).map(v=>'<p>'+esc(v)+'</p>').join("")+'</div>':'')+
+      '</div></details>').join("")+'</div>':
+      '<div class="scan-diagnostic-no-children">No individual collector results in this saved report.</div>';
+    const issueHtml=issues.length?
+      '<div class="scan-diagnostic-issues"><strong>Needs attention ('+issues.length+')</strong>'+
+      '<ul>'+issues.slice(0,12).map(issue=>'<li>'+esc(issue)+'</li>').join("")+'</ul>'+
+      (issues.length>12?'<span>+'+(issues.length-12)+' more recorded findings. Open SCANS for full report.</span>':'')+
+      '</div>':'<div class="scan-diagnostic-issues">No issues recorded in this saved report; coverage must still be independently checked.</div>';
+    return '<details class="scan-diagnostic-group"'+(i===0?' open':'')+'><summary>'+
+      '<span class="scan-diagnostic-name">'+esc(s.label)+'</span>'+
+      badge(s.status||"UNVERIFIED",s.type||"unknown")+
+      '<span class="scan-diagnostic-freshness">'+esc(s.freshness||"UNKNOWN")+'</span></summary>'+
+      '<div class="scan-diagnostic-meta"><strong>Saved:</strong> '+esc(time)+age+
+      '<div><strong>Overall source verification:</strong> '+esc(s.coverage||"NOT VERIFIED")+'</div>'+
+      '<div><strong>Scope:</strong> '+esc(s.scope||"Saved collectors")+'</div>'+
+      '<div><strong>Report file:</strong> '+esc(s.file||"Not available")+'</div>'+
+      '<div>'+url+'</div></div>'+issueHtml+tasks+'</details>';
+  }).join("");
+  const view=rows.length?'<div class="scan-diagnostic-scroll scroll">'+summaries+'</div>':
+    empty("Scan reports unavailable","No saved per-scan status data. Check the SCANS page for run and recovery diagnostics.");
+  const disclosure='<p class="scan-diagnostic-disclosure">'+totalIssues+' saved findings across '+
+    rows.length+' reports. Published collector completion does NOT imply independent FDA/SEC/full-universe verification. This view does not track live running tasks or progress.</p>';
+  return card("12 · Scan Diagnostics","pulse",counts+view+disclosure,
+    "diagnostics scan-diagnostics",
+    '<button class="scan-open" data-action="refresh" title="Reload saved report files (not start a scan)">Reload reports</button>'+
+    '<button class="scan-open" data-action="navigate" data-tab="SCANS">Open SCANS</button>');
+}
 function policyCard(){const value=state.policy;return card("PDUFA Exit Policy · GEM only","flag",`<p>${value==="unresolved"?"Policy decision required:":"Selected research policy:"}</p><div class="policy-options">${[["pre","Exit before PDUFA (reduce event risk)"],["partial","Hold a partial position through PDUFA"],["hold","Hold the full position through PDUFA"]].map(([id,label])=>`<label><input type="radio" name="exit-policy" value="${id}"${value===id?" checked":""}>${esc(label)}</label>`).join("")}</div><div class="callout warning"><span>! ${value==="unresolved"?"Unresolved. Define a consistent exit policy.":"Saved as a research preference. Apply manually with your position and risk plan."}</span></div>`,"policy-card");}
 function criteriaCard(){
   const list=priorityCriteria().map((item,index)=>{
