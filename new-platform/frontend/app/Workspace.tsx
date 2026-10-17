@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import MasterChart from "./MasterChart";
-import GemParityChart from "./GemParityChart";
-import WTStreamlitChart from "./WTStreamlitChart";
+import AlpacaStockChart from "./AlpacaStockChart";
+import IndicatorParityTables from "./IndicatorParityTables";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -167,7 +167,7 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
   return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
-    <GemParityChart ticker={ticker} programKey={record?.id||reply?.exactKey||programId} data={x} watchlistSignals={reply?.watchlistSignals}/>
+    <IndicatorParityTables programId={programId} tech={x} signals={reply?.watchlistSignals}/>
     <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3/financing eligibility and does not authorize a trade.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
     : !reply ? <p className="subtle">Checking verified price, volume, trend, technical risks and source dates…</p>
@@ -289,13 +289,6 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
       </details>
     ))}
     {grouped.length === 0 && <p className="subtle">No exact-program records match these filters.</p>}
-  </div>;
-}
-function Chart({ ticker }: { ticker: string }) {
-  const url = "https://s.tradingview.com/widgetembed/?symbol=" + encodeURIComponent(ticker) + "&interval=D&symboledit=1&saveimage=0&toolbarbg=F1F3F6&theme=light&style=1";
-  return <div className="chart-wrap">
-    <iframe title={ticker + " TradingView stock chart"} loading="lazy" src={url} referrerPolicy="strict-origin-when-cross-origin" />
-    <a href={"https://www.tradingview.com/symbols/" + encodeURIComponent(ticker) + "/"} target="_blank" rel="noopener noreferrer">Open full TradingView chart ↗</a>
   </div>;
 }
 
@@ -490,7 +483,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <button type="button" onClick={()=>{setMasterProgram(chosen.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
               <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
             <SourceDetails record={chosen} />
-            <GemParityChart ticker={chosen.ticker} programKey={chosen.id} data={chosen.technical}/>
+            {chosen.programId ? <AlpacaStockChart programId={chosen.programId} ticker={chosen.ticker} /> : <p className="subtle">Alpaca chart awaits permanent Program ID</p>}
+            <IndicatorParityTables programId={chosen.programId||"UNREGISTERED"} tech={chosen.technical}/>
             <TechnicalPanel record={chosen} />
             <PriorityIndicators record={chosen} />
           </div>}
@@ -602,7 +596,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             </div>
             <div className="wt-research-column">
               {ticker ? <>
-                <WTStreamlitChart ticker={ticker} />
+                <AlpacaStockChart ticker={ticker} programId={programId} compact />
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
               </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
             </div>
