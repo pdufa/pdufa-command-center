@@ -253,7 +253,8 @@ class GemVisualPageTests(unittest.TestCase):
             "dollar_volume": 3000000,
         }
         runway = {"Cash runway (months)": 16,
-                  "Cash runway source": "https://www.sec.gov/cash"}
+                  "Cash runway source": "https://www.sec.gov/cash",
+                  "Cash runway as of": "2026-09-30"}
         checks = _gem_section9_entry_checks(
             record, event, profile, runway,
             date(2026, 10, 17), source_current=True
@@ -303,6 +304,28 @@ class GemVisualPageTests(unittest.TestCase):
         self.assertIs(checks[4]["status"], False)
         self.assertIsNone(checks[5]["status"])
 
+    def test_section9_future_financings_and_stale_cash_do_not_pass(self):
+        record = {
+            "Ticker": "TEST", "NCT ID": "NCT00000001",
+            "Phase 3 status": "PRIMARY_MET_VERIFIED",
+            "Phase 3 date": "2026-04-01",
+            "Phase 3 source": "https://clinicaltrials.gov/study/NCT00000001",
+            "First close": "2026-11-01",
+            "Second close": "2026-12-01",
+            "First SEC source": "https://www.sec.gov/first",
+            "Second SEC source": "https://www.sec.gov/second",
+        }
+        runway = {
+            "Cash runway (months)": 24,
+            "Cash runway source": "https://www.sec.gov/cash",
+            "Cash runway as of": "2025-06-01",
+        }
+        checks = _gem_section9_entry_checks(record, {}, {}, runway,
+                                            date(2026, 10, 17), source_current=True)
+        self.assertIsNone(checks[1]["status"])
+        self.assertIsNone(checks[2]["status"])
+        self.assertIsNone(checks[5]["status"])
+
     def test_section9_junior_exit_flags_specific_adverse_evidence_only(self):
         record = {
             "Ticker": "TEST", "NCT ID": "NCT00000001",
@@ -323,6 +346,7 @@ class GemVisualPageTests(unittest.TestCase):
         runway = {
             "Cash runway (months)": 3.5,
             "Cash runway source": "https://www.sec.gov/cash",
+            "Cash runway as of": "2026-09-30",
         }
         checks = _junior_section9_exit_checks(
             record, event, profile, runway, date(2026, 10, 17)
