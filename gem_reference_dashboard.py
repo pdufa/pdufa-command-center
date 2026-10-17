@@ -549,7 +549,7 @@ def _junior_section8_checks(record, event, profile, runway_result, sources,
     pdufa_saved = str(record.get("PDUFA date (saved)") or
                       record.get("PDUFA saved") or event.get("pdufa_date") or "")
     pdufa_verified = bool(
-        record.get("PDUFA verified") or
+        record.get("PDUFA verified") is True or
         (str(event.get("pdufa_confirmation") or "").startswith("VERIFIED")
          and str(event.get("pdufa_evidence_url") or "").startswith("https://"))
     )
@@ -597,11 +597,10 @@ def _junior_section8_checks(record, event, profile, runway_result, sources,
               cash_source,
               "Verify cash-only runway and dilution assumptions"),
         entry(7, "Market cap $300M–$10B",
-              f"USD {market_cap:,.0f} saved · "
-              f"{'market feed current' if market_fresh else 'market feed stale/unknown'}"
+              f"USD {market_cap:,.0f} saved · independent current cap check pending"
               if market_cap is not None else "Market cap unavailable",
-              (300_000_000 <= market_cap <= 10_000_000_000
-               if market_cap is not None and market_fresh else None),
+              (False if market_cap is not None and not
+               300_000_000 <= market_cap <= 10_000_000_000 else None),
               "", "Refresh market cap before applying the selection filter"),
         entry(8, "Dilution / warrants / convertibles",
               ("Recorded dilution warning · investigate" if has_dilution_alert
