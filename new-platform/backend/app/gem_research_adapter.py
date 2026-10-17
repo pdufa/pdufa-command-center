@@ -114,6 +114,12 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
     }
     profile = assess_gem_trade(trading_row, market, eod_status, today)
     scores = _score_gem_trade(trading_row, profile, eod_status)
+    # Same GEM weighted model on verified EOD observations, separately from
+    # eligibility. Never interpret observed indicator points as a BUY signal.
+    indicator_status = {"feed_current": bool(profile["fresh"]),
+                        "sec_financing_source_current": bool(profile["fresh"])}
+    indicator_row = {**trading_row, "_eligible": True, "GEM Status": ""}
+    observed = _score_gem_trade(indicator_row, profile, indicator_status)
     second_close = benchmarks["secondClose"] if benchmarks["secondFinancing"] else None
     cash = assess_runway(ticker, runway, as_of=today, second_close=second_close)
     base = profile["base"]
@@ -146,6 +152,14 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
             "breakoutRvol": _float(base["breakout_rvol"]),
         },
         "dataGaps": profile["gaps"],
+        "indicatorEntry": observed["entry"],
+        "indicatorEntryCoverage": observed["entry_coverage"],
+        "indicatorExitRisk": observed["exit_risk"],
+        "indicatorExitCoverage": observed["exit_coverage"],
+        "indicatorEntryFactors": _factors(observed["entry_factors"]),
+        "indicatorExitFactors": _factors(observed["exit_factors"]),
+        "indicatorModel": "SAME_GEM_WEIGHTED_EOD_MODEL_RESEARCH_ONLY",
+        "indicatorDisclaimer": "Observable GEM technical points only; clinical eligibility and full FDA/SEC survey must still pass.",
         "entry": scores["entry"],
         "entryCoverage": scores["entry_coverage"],
         "entryStatus": scores["entry_status"],
