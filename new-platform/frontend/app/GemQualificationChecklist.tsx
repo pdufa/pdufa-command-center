@@ -130,7 +130,7 @@ export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJ
   rows:[...livePreview.passes,...livePreview.needsReview],
   reviewIds:new Set(livePreview.needsReview.map(row=>row.id)),
   sourceKind:"GEM_JR_LIVE" as const,
-  label:"current GEM JR checkbox-screen candidates (not a completed scan)",
+  label:"current GEM JR checkbox screen candidates (not a completed scan)",
   scanAvailable:false
  };
  return {
