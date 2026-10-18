@@ -1,6 +1,6 @@
 """Pure, testable filters for the Streamlit Pipeline page.
 
-Only a CURRENT stage plus a selected date band can produce trial rows.
+Empty stage and date selections mean all stages or date bands.
 The page decides whether the user has pressed the explicit Show button.
 """
 import pandas as pd
@@ -69,14 +69,14 @@ def prepare_pipeline(frame, as_of):
 
 
 def filter_pipeline(frame, stages, date_bands, query=""):
-    """Filter both dimensions; never interpret no selection as all."""
-    if frame.empty or not stages or not date_bands:
-        return frame.iloc[:0].copy()
+    """Apply selected dimensions; an empty dimension means unrestricted."""
+    if frame.empty:
+        return frame.copy()
     if "current_stage" not in frame or "DATES" not in frame:
         return frame.iloc[:0].copy()
     selected = frame.loc[
-        frame["current_stage"].fillna("").isin(list(stages))
-        & frame["DATES"].isin(list(date_bands))
+        (frame["current_stage"].fillna("").isin(list(stages)) if stages else True)
+        & (frame["DATES"].isin(list(date_bands)) if date_bands else True)
     ].copy()
     if "record_id" in selected:
         selected = selected.drop_duplicates(subset=["record_id"])
