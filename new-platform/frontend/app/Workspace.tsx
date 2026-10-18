@@ -126,12 +126,11 @@ function candidateDecision(record: Candidate | null, stage: "GEM_JR" | "GEM"): C
     tone: "warning"
   };
   const benchmark = tech.benchmarks;
-  if (benchmark?.bothConfirmed !== true || benchmark.phase3 !== true || benchmark.secondFinancing !== true) {
+  if (benchmark?.phase3 !== true) {
     return {
-      title: "ENTRY BENCHMARKS NOT CLEARED",
-      reason: prefix + ": Phase 3 " + (benchmark?.phase3 === true ? "verified" : "NOT VERIFIED") +
-        " · second SEC-financing benchmark " + (benchmark?.secondFinancing === true ? "verified" : "NOT VERIFIED") +
-        ". Membership does not establish trading eligibility.",
+      title: "PHASE 3 ELIGIBILITY NOT VERIFIED",
+      reason: prefix + ": independently verified successful Phase 3 evidence is required. "
+        + "Second financing is optional; this does not clear cash, dilution or other trading risks.",
       tone: "hold"
     };
   }
@@ -142,13 +141,14 @@ function candidateDecision(record: Candidate | null, stage: "GEM_JR" | "GEM"): C
   };
   if (tech.entryStatus?.startsWith("UNAVAILABLE") || tech.tradeCall?.startsWith("WAIT — SOURCE RECHECK")) return {
     title: "SOURCES REQUIRE RECHECK",
-    reason: prefix + ": both entry benchmarks are verified, but source freshness or required inputs have not cleared review.",
+    reason: prefix + ": Phase 3 is verified, but source freshness or other required inputs have not cleared review.",
     tone: "hold"
   };
   return {
-    title: "BENCHMARKS VERIFIED · ENTRY REVIEW",
-    reason: prefix + ": source-verified positive Phase 3 and post-readout SEC-financing benchmarks. " +
-      "Cash runway, market evidence, exit overrides and manual trade review remain independent gates.",
+    title: "PHASE 3 VERIFIED · ENTRY REVIEW",
+    reason: prefix + ": successful Phase 3 verified. Second financing is OPTIONAL (" +
+      (benchmark?.secondFinancing === true ? "verified" : "not verified") + "). " +
+      "Cash runway, dilution, market evidence, exit overrides and manual review remain separate safeguards.",
     tone: "review"
   };
 }
@@ -177,7 +177,7 @@ function Goals({ record }: { record: Candidate | null }) {
   const rows: [string,string,string,boolean][] = [
     ["Market capitalization", money(record?.marketCap), "$300M–$10B",pass(record?.capInRange)],
     ["Phase 3 verified positive", tech?.benchmarks?.phase3 ? "PASS — source checked" : stated(record?.phase3Status), "Exact successful primary endpoint + source", pass(tech?.benchmarks?.phase3)],
-    ["Second post-readout financing", tech?.benchmarks?.secondFinancing ? "PASS — SEC checked" : "NOT CLEARED", "Two distinct SEC-verified funded closes after readout", pass(tech?.benchmarks?.secondFinancing)],
+    ["Second financing (OPTIONAL)", tech?.benchmarks?.secondFinancing ? "VERIFIED — SEC reviewed" : "NOT VERIFIED — MONITOR RISK", "Not required for GEM/GEM JR research eligibility; assess cash and dilution separately", pass(tech?.benchmarks?.secondFinancing)],
     ["SEC cash-only runway", tech?.runwayMonths == null ? stated(tech?.runwayGate) : scoreNum(tech.runwayMonths,1," months"), "≥12 months; source current and reconciled", pass(tech?.runwayGate?.startsWith("PASS"))],
     ["EOD closing price", scoreNum(tech?.close,2," USD"), "Compare SMA20 and SMA50; not executable quote", false],
     ["SMA20 / SMA50", scoreNum(tech?.sma20)+" / "+scoreNum(tech?.sma50), "Close above SMA20 & SMA50", false],
@@ -261,7 +261,7 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
     <IndicatorParityTables programId={programId} tech={x} signals={reply?.watchlistSignals}/>
-    <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3/financing eligibility and does not authorize a trade.</p>
+    <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3 eligibility and does not authorize a trade. Second financing is optional.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
     : !reply ? <p className="subtle">Checking verified price, volume, trend, technical risks and source dates…</p>
     : !x ? <p className="risk-line">Current exact-program indicator evidence unavailable. Scores withheld.</p>
@@ -277,7 +277,7 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
           <span>{x.eodFresh?stated(x.marketDate,"CHECK DATE"):"STALE / MISSING"}</span>
           <small>{x.eodFresh?"Recent, source-consistent EOD":"Unverified / old observations"}</small></div>
       </div>
-      <p className="wt-indicator-eligibility"><strong>Clinical/financing entry gate:</strong> {stated(x.entryStatus,"NOT VERIFIED")}</p>
+      <p className="wt-indicator-eligibility"><strong>Clinical entry / source-risk gate:</strong> {stated(x.entryStatus,"NOT VERIFIED")}</p>
       <p><strong>Exit overrides:</strong> {stated(x.exitStatus,"NOT VERIFIED")}{x.riskAlerts?.length?" · "+x.riskAlerts.join("; "):""}</p>
       <details className="wt-factors"><summary>Expand indicator scoring factors, weights, actual evidence and gaps</summary>
         <div className="score-factor-groups">{([
@@ -682,7 +682,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
-          <p>{stage==="GEM"?"Two-benchmark membership; independent dilution/entry gates still required":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
+          <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} programs · {stated(group?.asOf, "snapshot undated")}</span>
       </div>
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
