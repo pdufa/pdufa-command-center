@@ -709,8 +709,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         }} />
       {activeScan && <div className="panel" role="status" aria-live="polite" style={{marginBottom:12,padding:14,border:"1px solid #76947d",borderRadius:7,background:"#f3fcf5"}}>
         <strong>{activeScan.sourceKind==="GEM_JR"?"GEM JR INPUT":"PIPELINE"} SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
-        <p>{activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"saved GEM JR candidates":"PIPELINE records"} assessed · <strong>{activeScan.passes.length.toLocaleString("en-US")} {activeScan.audits.length?"passed all selected checks":"unrestricted matches"}</strong> · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} failed.</p>
-        <p className="subtle">Checked requirements: {activeScan.audits.map(a=>a.label).join("; ")||"None — unrestricted"}. The table shows passes first, then programs needing evidence review. Nothing is automatically added to GEM membership. Source {stated(activeScan.asOf)}; run finished {new Date(activeScan.evaluatedAt).toLocaleString()}.</p>
+        <p><strong>{(activeScan.passes.length+activeScan.needsReview.length).toLocaleString("en-US")} TOTAL COMBINED CANDIDATES</strong> · intersection of all checked requirements (AND), no duplicate counting. Of {activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"saved GEM JR candidates":"PIPELINE records"} assessed: {activeScan.passes.length.toLocaleString("en-US")} verified matches · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} excluded.</p>
+        <p className="subtle">Checked requirements: {activeScan.audits.map(a=>a.label).join("; ")||"None — unrestricted"}. Only programs satisfying every selected check or needing verification are included in the table, never a sum of independent criterion totals. Nothing is automatically added to GEM membership. Source {stated(activeScan.asOf)}; run finished {new Date(activeScan.evaluatedAt).toLocaleString()}.</p>
         <button type="button" className="secondary" onClick={()=>setGemScans(current=>{const next={...current};delete next[stage];return next})}>SHOW SAVED {stage==="GEM"?"GEM":"GEM JR"} LIST</button>
       </div>}
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
@@ -743,7 +743,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </aside>
         <div className="gem-table-panel">
           <div className="sectionhead gem-table-heading">
-            <h3>{activeScan?"PIPELINE SCREEN RESULTS · passes then evidence review · not saved stage membership":"GEM CANDIDATE TABLE · published membership · exact permanent program IDs"}</h3>
+            <h3>{activeScan?"COMBINED SCREEN RESULTS · passed all checks or require evidence review · not saved stage membership":"GEM CANDIDATE TABLE · published membership · exact permanent program IDs"}</h3>
             <div className="gem-table-controls" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" table rows"}>
               <span className="gem-table-visible" role="status" aria-live="polite">
                 Selected row {rows.length?focusedIndex+1:0} of {rows.length} · {chosen?.ticker||"No candidate"}
