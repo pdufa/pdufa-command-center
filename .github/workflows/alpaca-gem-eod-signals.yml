@@ -1,0 +1,87 @@
+name: Alpaca GEM / GEM JR EOD Signals
+
+on:
+  schedule:
+    # Tuesday-Saturday 01:00 UTC = Monday-Friday after 5/6 PM Pacific.
+    # GitHub scheduled execution can be delayed.
+    - cron: '0 1 * * 2-6'
+  workflow_dispatch:
+  push:
+    paths:
+      - alpaca_data_provider.py
+      - scripts/alpaca_gem_eod_scan.py
+      - tests/test_alpaca_data_provider.py
+      - .github/workflows/alpaca-gem-eod-signals.yml
+  pull_request:
+    paths:
+      - alpaca_data_provider.py
+      - scripts/alpaca_gem_eod_scan.py
+      - tests/test_alpaca_data_provider.py
+      - .github/workflows/alpaca-gem-eod-signals.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alpaca-gem-eod-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  safety-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run Alpaca mock-provider and signal tests
+        run: |
+          python -m unittest discover -s tests -p 'test_alpaca_data_provider.py' -v
+          python scripts/alpaca_gem_eod_scan.py --help >/dev/null
+
+  eod:
+    needs: safety-tests
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ALPACA_PAPER: 'true'
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Require configured Alpaca paper-market-data credentials
+        run: |
+          if [[ -z "$ALPACA_API_KEY" || -z "$ALPACA_SECRET_KEY" ]]; then
+            echo 'ALPACA CONNECTION NOT ACTIVE: configure repository Actions Secrets.' >> "$GITHUB_STEP_SUMMARY"
+            exit 2
+          fi
+      - name: Scan active GEM and GEM JR with split-adjusted SIP EOD prices
+        run: |
+          python scripts/alpaca_gem_eod_scan.py --feed sip --output output/alpaca_gem_eod.json
+          python - <<'PY'
+          import json, os
+          with open('output/alpaca_gem_eod.json',encoding='utf-8') as f:
+              report=json.load(f)
+          lines=['## GEM/JR Alpaca EOD signal monitoring',
+                 '', 'Read-only paper-account data; no trades placed.',
+                 '', '| Symbol | Status | Reason |', '|---|---|---|']
+          for row in report['report']:
+              fields=[str(row.get(k,'')) for k in ('ticker','signal','reason')]
+              lines.append('| ' + ' | '.join(s.replace('|','/').replace(chr(10),' ') for s in fields) + ' |')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:
+              f.write(chr(10).join(lines)+chr(10))
+          if report['data_blocked']:
+              raise SystemExit('One or more ticker market data checks failed; inspect report artifact')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alpaca-gem-eod-results
+          path: output/alpaca_gem_eod.json
+          retention-days: 30
+          if-no-files-found: warn
