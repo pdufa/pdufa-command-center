@@ -57,13 +57,19 @@ class ExactGEMClearanceTests(unittest.TestCase):
             next(r for r in active if r["Ticker"] == "ZBIO")["NCT ID"],
             "NCT05662241")
 
-    def test_source_cleared_gem_summary_cannot_bypass_pipeline_origin(self):
+    def test_pre_oct15_gem_clearance_without_pipeline_does_not_bypass_two_benchmarks(self):
         root = Path(__file__).resolve().parents[1] / "data"
         with patch("gem_verified_snapshot.pipeline_origins", return_value=(set(), {})):
             active, historical, _ = source_cleared_gems(
                 root, as_of=date(2026, 10, 14))
-        self.assertEqual(active, [])
-        self.assertEqual(historical, [])
+        self.assertEqual({r["Ticker"] for r in active},
+                         {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA"})
+        self.assertIn("SRRK", {r["Ticker"] for r in historical})
+        self.assertTrue(all(r["Two-benchmark status"] ==
+                            "PASS — BOTH BENCHMARKS SOURCE-CLEARED" for r in active))
+        self.assertTrue(all(r["Pipeline linkage"] ==
+                            "SOURCE-CLEARED — PIPELINE INTAKE PENDING" for r in active))
+        self.assertTrue(all("ON HOLD" in r["Trade status"] for r in active))
 
     def test_no_cross_program_financing_borrow(self):
         with tempfile.TemporaryDirectory() as directory:
