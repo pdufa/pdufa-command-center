@@ -79,10 +79,10 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
     potential = enrich_stage_rows(potential, "GEM_JR", membership)
     timing_hold = enrich_stage_rows(timing_hold, "GEM_JR", membership)
 
-    # GEM active cards are TWO-BENCHMARK cleared only. JR research,
+    # GEM active cards require source-verified successful Phase 3. JR research,
     # expired/resolved items and historical holds do not appear in active GEM.
     render_trial_hierarchy(source_cleared, namespace=namespace, title="GEM")
-    st.markdown("### GEM — TWO BENCHMARKS VERIFIED")
+    st.markdown("### GEM — VERIFIED SUCCESSFUL PHASE 3")
     st.caption(
         f"{len(source_cleared)} ACTIVE PROGRAMS VERIFIED · "
         f"{len(historical_cleared)} HISTORICAL / RESOLVED. "
@@ -93,7 +93,7 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
         for count, lead in enumerate(source_cleared, 1):
             st.markdown(
                 f"{count}. **{lead['Ticker']} · {lead['Drug']}** "
-                "— Phase 3 and financing #2 VERIFIED"
+                "— Successful Phase 3 verified; financing #2 optional"
             )
             st.caption(
                 "Phase 3 " + lead["Phase 3 date"] + " · " + lead["NCT ID"] +
@@ -124,7 +124,7 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 },
             )
     else:
-        st.caption("No source-cleared two-benchmark GEMs in current saved evidence.")
+        st.caption("No source-cleared successful Phase 3 GEMs in current saved evidence.")
     if historical_cleared:
         with st.expander(
             f"VERIFIED HISTORICAL GEM EVIDENCE — NOT TRADABLE ({len(historical_cleared)})",
@@ -138,7 +138,7 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
             "GLOBAL SEC SOURCE CHECK PARTIAL/STALE — verified program-level "
             "evidence does not clear fresh all-source trading-entry gates."
         )
-    # GEM WT only shows active, exact-program, two-benchmark-cleared leads.
+    # GEM WT only shows active, exact-program, successful Phase 3 leads.
     # Research leads remain in GEM JR and do not inherit GEM eligibility.
     render_stage_wt_tables(
         "GEM", source_cleared, namespace="gem", controls=True)
@@ -235,7 +235,7 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 chosen, load_market_rows(root),
                 datetime.now(ZoneInfo("America/Los_Angeles")).date(),
             )
-            st.caption("Both research-only leads and verified two-benchmark programs "
+            st.caption("Both research-only leads and Phase 3-verified GEM programs "
                        "are shown here; a technical base cannot establish GEM eligibility.")
     if research_universe:
         with st.expander("INVESTOR RELATIONS + SOCIAL RESEARCH — SELECT GEM PROGRAM",
@@ -302,9 +302,9 @@ def render_gem_potential(root="data", *, compact=False, namespace="gem_potential
                 st.caption(source_research_policy())
                 st.markdown(
                     "**#2 PIPELINE → #1 GEM:** Use these leads to locate an "
-                    "issuer readout and two source-verifiable post-readout "
-                    "financing closings. Only those independently checked "
-                    "events can clear the first two GEM benchmarks."
+                    "issuer Phase 3 readout with verified successful endpoints. "
+                    "Two separately funded SEC closings remain optional "
+                    "risk evidence, not GEM qualification requirements."
                 )
 
     with st.expander("ALL POTENTIAL GEM EVIDENCE + SOURCE LINKS", expanded=False):
