@@ -225,10 +225,26 @@ def main(argv=None):
     args.output_dir.mkdir(parents=True,exist_ok=True)
     write_csv(args.output_dir/"every_saved_trial_eligibility.csv",
               AUDIT_FIELDS,records)
+    priority=[
+        dict(row, research_priority=(
+            "P1_PAST_DECISION_SOURCE_BACKFILL" if
+            row["blocker"]=="MISSING_AUDITED_HISTORICAL_EVENT" else
+            "P2_FUTURE_PDUFA_TRACK_NOT_BACKTESTABLE_YET"))
+        for row in records if row["blocker"] in (
+            "MISSING_AUDITED_HISTORICAL_EVENT","FUTURE_PDUFA_NOT_COMPLETED")
+    ]
+    priority.sort(key=lambda x: (
+        x["research_priority"], x["pdufa_date"],
+        x["ticker"], x["event_key"]))
+    write_csv(args.output_dir/"pdufa_historical_backfill_priorities.csv",
+              ("research_priority",)+AUDIT_FIELDS,priority)
     write_csv(args.output_dir/"qualified_historical_trade_scenarios.csv",
               TRADE_FIELDS,trades)
     write_csv(args.output_dir/"entry_exit_returns.csv",RETURN_FIELDS,trades)
     write_csv(args.output_dir/"strategy_grid_summary.csv",SUMMARY_FIELDS,summary)
+    audit_report["historical_backfill_priority_rows"]=len(priority)
+    (args.output_dir/"coverage_and_blockers.json").write_text(
+        json.dumps(audit_report,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     (args.output_dir/"coverage_and_blockers.json").write_text(
         json.dumps(audit_report,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(audit_report,sort_keys=True))
