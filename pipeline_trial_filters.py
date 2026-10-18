@@ -280,3 +280,104 @@ def filter_public_trials(frame, settings, today=None):
             mask &= nums.lt(upper)
         selected = selected.loc[mask]
     return selected.copy()
+
+def evaluate_public_trial_screen(frame, settings, today=None):
+    """Audit selected criteria without mistaking absent evidence for failure.
+
+    PASS requires every selected check to pass. FAIL means a supported check
+    contradicts the requested setting. NEEDS VERIFICATION means one or more
+    selected checks lack evidence, with no known failure. No filters means all
+    records are PASS (unrestricted), not zero results.
+    """
+    result = frame.copy()
+    if result.empty:
+        result["Screen status"] = pd.Series(dtype="str")
+        return result
+    if not has_active_filter(settings):
+        result["Screen status"] = "PASS"
+        return result
+
+    failures = pd.Series(False, index=result.index)
+    unknown = pd.Series(False, index=result.index)
+
+    def test(values, acceptable, known=None):
+        nonlocal failures, unknown
+        known = values.notna() if known is None else known
+        known = known.fillna(False).astype(bool)
+        failures |= known & ~acceptable.fillna(False).astype(bool)
+        unknown |= ~known
+
+    for key, col in (("pipeline_trial_phases_v1", "registered_phase"),
+                     ("pipeline_trial_statuses_v1", "status")):
+        chosen = settings.get(key) or []
+        if chosen:
+            values = result[col].fillna("").astype(str).str.strip()
+            test(values, values.str.upper().isin([str(x).upper() for x in chosen]),
+                 values.ne("") & values.str.upper().ne("UNKNOWN"))
+    indication = str(settings.get("pipeline_trial_indication_v1") or "").strip()
+    if indication:
+        values = result["indication"].fillna("").astype(str).str.strip()
+        test(values, values.str.contains(indication, case=False, regex=False),
+             values.ne(""))
+    modalities = settings.get("pipeline_trial_modalities_v1") or []
+    if modalities:
+        values = result["drug_modality"].fillna("").astype(str).str.strip()
+        matched = pd.concat([
+            values.str.contains(str(word), case=False, regex=False)
+            for word in modalities
+        ], axis=1).any(axis=1)
+        test(values, matched, values.ne(""))
+    for key, col, affirmative, negative in (
+        ("pipeline_trial_results_v1", "filter_phase3_result_sourced",
+         "Sourced Phase 3 results", "Not confirmed"),
+        ("pipeline_trial_financing_v1", "filter_second_financing_verified",
+         "Verified second financing closed", "Not verified"),
+    ):
+        choice = settings.get(key, "Any")
+        if choice == affirmative:
+            # The False cache state means no verification, not a proven failure.
+            values = result[col].fillna(False).astype(bool)
+            test(values, values, values)
+        elif choice == negative:
+            # A sourced positive contradicts an explicitly negative selection;
+            # absence of a positive is not proof of a negative.
+            values = result[col].fillna(False).astype(bool)
+            test(values, ~values, values)
+
+    milestone = settings.get("pipeline_trial_milestone_v1", "Any")
+    window = settings.get("pipeline_trial_window_v1", "Any")
+    if milestone in MILESTONE_COLUMNS and window != "Any":
+        values = pd.to_datetime(
+            result[MILESTONE_COLUMNS[milestone]].astype(str).str[:10],
+            errors="coerce",
+        )
+        days = (values - pd.Timestamp(today or date.today())).dt.days
+        choices = {
+            "Already passed": days.lt(0),
+            "Next 30 days": days.between(0, 30),
+            "Next 90 days": days.between(0, 90),
+            "More than 90 days away": days.gt(90),
+            "Date not recorded": values.isna(),
+        }
+        if window == "Date not recorded":
+            # Explicitly searching for missing dates is a valid positive match.
+            test(values, choices[window], pd.Series(True, index=result.index))
+        elif window in choices:
+            test(values, choices[window], values.notna())
+    for _, key, col, bands in NUMERIC_SPECS:
+        bound = bands.get(settings.get(key, "Any"))
+        if bound is None:
+            continue
+        values = _numeric(result[col])
+        lower, upper = bound
+        matched = pd.Series(True, index=result.index)
+        if lower is not None:
+            matched &= values.ge(lower)
+        if upper is not None:
+            matched &= values.lt(upper)
+        test(values, matched, values.notna())
+
+    result["Screen status"] = "PASS"
+    result.loc[unknown, "Screen status"] = "NEEDS VERIFICATION"
+    result.loc[failures, "Screen status"] = "FAIL"
+    return result
