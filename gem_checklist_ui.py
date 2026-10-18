@@ -12,6 +12,7 @@ import streamlit as st
 
 from gem_benchmark_checklist import (
     ADVISORIES, BENCHMARKS, CHECK_LABELS, FILTERABLE, UMBRELLA,
+    TRADING_ADVISORIES, RESEARCH_ADVISORIES,
     build_checklist_map, filter_programs, program_key, research_candidate_rows,
 )
 
@@ -49,7 +50,17 @@ def checklist_filters(master_rows, source_items, *, financing_rechecks=(),
             "The other filters require an affirmative, source-grounded check. "
             "None is a new entry benchmark."
         )
-        for idx, (key, label) in enumerate(UMBRELLA + ADVISORIES):
+        for key, label in UMBRELLA + RESEARCH_ADVISORIES:
+            if st.checkbox("Show only: " + label, value=False,
+                           key=namespace + "_filter_" + key):
+                selected.append(key)
+    with st.expander("TRADING — OPTIONAL CHECKBOX FILTERS",expanded=False):
+        st.caption(
+            "Market setup, cash/dilution risk, PDUFA timing, specialist fund "
+            "and insider trading research. All checked filters combine into "
+            "one total result; none changes clinical qualification."
+        )
+        for key, label in TRADING_ADVISORIES:
             if st.checkbox("Show only: " + label, value=False,
                            key=namespace + "_filter_" + key):
                 selected.append(key)
@@ -84,7 +95,7 @@ def stock_checkboxes(row, states, *, namespace="gem"):
             "Lead checkmarks show data observed, not proof that the GEM "
             "entry benchmark passed. Advisory checks are NOT eligibility gates."
         )
-        for key, label in UMBRELLA + ADVISORIES:
+        for key, label in UMBRELLA + RESEARCH_ADVISORIES:
             x = states.get(key, {})
             checked = x.get("checked") is True or (
                 key in dict(UMBRELLA) and x.get("observed") is True
@@ -93,6 +104,16 @@ def stock_checkboxes(row, states, *, namespace="gem"):
                         value=checked, disabled=True,
                         key=f"{namespace}_stock_{uid}_{key}_{int(checked)}")
             st.caption(x.get("detail", "Source not verified"))
+    with st.expander("TRADING — OPTIONAL EVIDENCE CHECKBOXES",expanded=False):
+        st.caption("Read-only market and financial-risk evidence. "
+                   "These are advisory, not GEM eligibility gates.")
+        for key, label in TRADING_ADVISORIES:
+            x=states.get(key,{})
+            checked=x.get("checked") is True
+            st.checkbox(label+" — "+x.get("status","NOT VERIFIED"),
+                        value=checked,disabled=True,
+                        key=f"{namespace}_stock_{uid}_{key}_{int(checked)}")
+            st.caption(x.get("detail","Source not verified"))
 
 
 def checkbox_table(rows, checklists):
