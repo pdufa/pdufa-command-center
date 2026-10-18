@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from pipeline_source_scope import pipeline_origins, source_scope, gem_pipeline_id
+from pipeline_source_scope import pipeline_origins, source_scope, gem_pipeline_id, gem_research_id
 
 
 def write_rows(path, rows):
@@ -57,6 +57,20 @@ class PipelineOriginPolicyTests(unittest.TestCase):
         self.assertEqual(gem_pipeline_id({**trial, "Ticker": "AAA"}, ids, tickers), "")
         self.assertEqual(gem_pipeline_id(
             {"Exact event": "ORPHAN|EVENT", "Ticker": "ORPHAN"}, ids, tickers), "")
+
+    def test_pre_oct15_research_accepts_missing_pipeline_but_rejects_conflicts(self):
+        ids, tickers = pipeline_origins(self.root, today=date(2026, 10, 15))
+        self.assertEqual(gem_research_id(
+            {"Exact event": "NEW|PROGRAM", "Ticker": "NEW"}, ids, tickers),
+            "APPLICATION|NEW|PROGRAM")
+        self.assertEqual(gem_research_id(
+            {"NCT ID": "NCT98765432", "Ticker": "NEW"}, ids, tickers),
+            "TRIAL|NCT98765432")
+        self.assertEqual(gem_research_id(
+            {"NCT ID": "NCT01234567", "Ticker": "WRONG"}, ids, tickers), "")
+        self.assertEqual(gem_research_id(
+            {"Exact event": "AAA|DRUG_20261130", "Ticker": "WRONG"}, ids, tickers), "")
+        self.assertEqual(gem_research_id({"Ticker": "NEW"}, ids, tickers), "")
 
     def test_sec_verification_scope_rejects_non_pipeline_and_ticker_conflicts(self):
         with patch("pipeline_source_scope.pipeline_origins", return_value=(
