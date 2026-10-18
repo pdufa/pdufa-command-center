@@ -7,7 +7,7 @@ import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
-import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES } from "../lib/pipeline-data";
+import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -80,6 +80,10 @@ function stated(value?: string | null, fallback = "NOT VERIFIED") {
   return value && value.trim() ? value.trim() : fallback;
 }
 function evidence(url?: string) { return url && /^https:\/\/[^\s]+$/.test(url) ? url : undefined; }
+function trialSheetUrl(record: Candidate) {
+  const nct = trialId(record);
+  return nct ? "/trial/" + encodeURIComponent(nct) : "";
+}
 function uniqueRows(rows: Candidate[]) {
   const seen = new Set<string>();
   return rows.filter(row => { if (!row.id || seen.has(row.id)) return false; seen.add(row.id); return true; });
@@ -336,7 +340,9 @@ function SourceDetails({ record }: { record: Candidate }) {
         <div><strong>Permanent Program ID</strong><span className="permanent-id">{stated(record.programId,"REGISTRY UNAVAILABLE")}</span></div>
         <div><strong>Exact Pipeline source key</strong><span>{record.id}</span></div>
         <div><strong>Drug / indication</strong><span>{stated(record.drug)} / {stated(record.indication)}</span></div>
-        <div><strong>ClinicalTrials.gov NCT</strong><span>{stated(record.nctId || (record.id.startsWith("TRIAL|") ? record.id.slice(6) : ""))}</span></div>
+        <div><strong>ClinicalTrials.gov NCT</strong><span>{trialSheetUrl(record)
+          ? <a href={trialSheetUrl(record)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">{trialId(record)} · OPEN FULL TRIAL SHEET ↗</a>
+          : "NO EXACT TRIAL LINKED"}</span></div>
         <div><strong>Phase 3</strong><span>{stated(record.phase3Status)} · {stated(record.phase3Date, "date unavailable")}</span></div>
         <div><strong>Second financing</strong><span>{stated(record.financingStatus)} · {stated(record.financingDate, "date unavailable")}</span></div>
         <div><strong>PDUFA</strong><span>{stated(record.pdufaDate)}</span></div>
@@ -365,7 +371,10 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
         <div className="drill-program-grid">{companies.map(item => (
           <details key={item.id} className="drill-program">
             <summary><strong>{stated(item.drug)}</strong><span><strong className="permanent-id">{stated(item.programId)}</strong> · {stated(item.indication, "program research")} · {stated(item.pdufaDate, "no date")}</span></summary>
-            <div className="drill-evidence"><strong>Trial details and verification</strong><SourceDetails record={item} /></div>
+            <div className="drill-evidence"><strong>Trial details and verification</strong>
+              {trialSheetUrl(item) && <a href={trialSheetUrl(item)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">OPEN FULL TRIAL SHEET · {trialId(item)} ↗</a>}
+              <SourceDetails record={item} />
+            </div>
           </details>
         ))}</div>
       </details>
@@ -382,6 +391,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Rows shown inside GEM and GEM JR are independent. Full CSV exports
+  // and nested clinical-trial drilldowns always retain the complete list.
+  const [gemTableLimit,setGemTableLimit]=useState<Record<"GEM_JR"|"GEM",number>>({GEM_JR:10,GEM:10});
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -583,6 +595,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const group = snapshot?.members[stage];
     const rows = (group?.rows || []).filter(r => r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
     const chosen = rows.find(r => r.id === selected[stage]) || rows[0] || null;
+    const visibleCount = Math.min(rows.length,gemTableLimit[stage]);
+    const visibleRows = rows.slice(0,visibleCount);
+    const changeLimit = (direction: -1 | 1) => setGemTableLimit(current => ({
+      ...current,[stage]:Math.max(10,Math.min(Math.max(10,rows.length),current[stage] + direction*10))
+    }));
     return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
@@ -610,13 +627,23 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <Goals record={chosen} />
         </aside>
         <div className="gem-table-panel">
-          <div className="sectionhead"><h3>STREAMLIT GEM CANDIDATE TABLE · source-qualified order · exact permanent program IDs</h3><button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button></div>
+          <div className="sectionhead gem-table-heading">
+            <h3>STREAMLIT GEM CANDIDATE TABLE · source-qualified order · exact permanent program IDs</h3>
+            <div className="gem-table-controls" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" table rows"}>
+              <span className="gem-table-visible" role="status">Showing {visibleCount} of {rows.length}</span>
+              <button type="button" className="secondary" disabled={visibleCount<=10}
+                onClick={()=>changeLimit(-1)} aria-label="Show 10 fewer candidates">LESS −10</button>
+              <button type="button" className="secondary" disabled={visibleCount>=rows.length}
+                onClick={()=>changeLimit(1)} aria-label="Show 10 more candidates">MORE +10</button>
+              <button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button>
+            </div>
+          </div>
           <div className="table-scroll">
             <table className="gem-source-parity-table">
               <thead><tr>
                 {["#","Program ID","W","T","Ticker","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
               </tr></thead>
-              <tbody>{rows.map((r,i)=><tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
+              <tbody>{visibleRows.map((r,i)=><tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
                 <td className="numeric">{i+1}</td>
                 <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td>{wtButton(r,"watch")}</td>
@@ -625,7 +652,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td><span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
                   title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span></td>
                 <td>{stated(r.company,"—")}</td>
-                <td title={stated(r.drug)}>{stated(r.indication,"—")}</td>
+                <td title={stated(r.drug)}>{trialSheetUrl(r)
+                  ? <a href={trialSheetUrl(r)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">{stated(r.indication,"—")} ↗<small>{trialId(r)} · Full trial sheet</small></a>
+                  : stated(r.indication,"—")}</td>
                 <td>{stated(r.stage,"P3")}</td>
                 <td>{stated(r.phase3Date,"—")}</td>
                 <td title={stated(r.fdaSource,"FDA date unverified")}>{stated(r.pdufaDate,"—")}</td>
@@ -640,7 +669,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td><EvidenceCoverage label="Exit" coverage={r.technical?.exitCoverage} compact /></td>
                 <td>{r.candidateLinked===false?"UNLINKED":stated(r.membershipStatus||r.phase3Status,"—")}</td>
                 <td><button type="button" className="secondary" onClick={()=>setSelected({...selected,[stage]:r.id})}>Alpaca chart ↓</button></td>
-                <td><button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>Details ↗<small>{stated(r.drug)} · {r.id}</small></button></td>
+                <td>
+                  {trialSheetUrl(r) && <a href={trialSheetUrl(r)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">Full trial sheet ↗</a>}
+                  <button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>Research details ↓<small>{stated(r.drug)} · {r.id}</small></button>
+                </td>
               </tr>)}</tbody></table>
             {!rows.length && <p className="subtle">No matching saved GEM candidates.</p>}
           </div>
