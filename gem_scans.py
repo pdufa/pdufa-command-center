@@ -11,7 +11,7 @@ from datetime import date
 from pathlib import Path
 
 from post_phase3_unified import build_queue, read_rows, parsed_date, https_source, RESOLVED
-from pipeline_source_scope import pipeline_origins, gem_pipeline_id
+from pipeline_source_scope import pipeline_origins, gem_research_id
 from post_phase3_priority import assign_priority_ranks
 from post_phase3_review_priority import assign_review_ranks
 from trade_window import EXIT_DAYS_BEFORE_PDUFA, LAST_ENTRY_MIN_DAYS
@@ -260,14 +260,17 @@ def build_gem_scans(root="data", as_of=None):
     out-of-window records stay visible as REVIEW rows with no score or rank.
     """
     records, source_status = build_queue(root, as_of=as_of)
-    # Source leads enrich Pipeline identities; they cannot mint GEM records.
+    # Research leads can be discovered before Pipeline intake (pre-Oct-15).
+    # Preserve exact issuer/study identity; known Pipeline ticker conflicts remain excluded.
     pipeline_ids, pipeline_tickers = pipeline_origins(root, today=as_of)
     valid_rows = []
     rejected_rows = []
     for row in records:
-        pipeline_id = gem_pipeline_id(row, pipeline_ids, pipeline_tickers)
+        pipeline_id = gem_research_id(row, pipeline_ids, pipeline_tickers)
         if pipeline_id:
-            valid_rows.append({**row, "Pipeline ID": pipeline_id})
+            valid_rows.append({**row, "Pipeline ID": pipeline_id,
+                               "Pipeline linkage": ("IN PIPELINE" if pipeline_id in pipeline_ids
+                                                    else "PENDING PIPELINE INTAKE — RESEARCH ONLY")})
         else:
             rejected_rows.append(row)
     records = valid_rows
@@ -288,7 +291,8 @@ def build_gem_scans(root="data", as_of=None):
             str(r.get("Entry qualification") or "").startswith("REVIEW") for r in records
         ),
         "pipeline_origin_total": len(pipeline_ids),
-        "excluded_outside_pipeline": len(rejected_rows),
+        "excluded_invalid_or_conflicting_identity": len(rejected_rows),
+        "pending_pipeline_intake": sum(r.get("Pipeline linkage", "").startswith("PENDING") for r in records),
     }
     sec_current = sec_recheck_current(root, as_of=source_status.get("as_of") or as_of)
     events = _event_map(root)
