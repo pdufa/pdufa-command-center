@@ -391,9 +391,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  // Rows shown inside GEM and GEM JR are independent. Full CSV exports
-  // and nested clinical-trial drilldowns always retain the complete list.
-  const [gemTableLimit,setGemTableLimit]=useState<Record<"GEM_JR"|"GEM",number>>({GEM_JR:10,GEM:10});
+  // Each GEM table shows up to 10 rows around its independently selected
+  // candidate. Previous / Next move exactly one source-ordered row at a time.
+  // The complete list remains available to CSV and nested trial drilldowns.
+  const highlightedGemRow=useRef<HTMLTableRowElement|null>(null);
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -590,16 +591,26 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     </button>;
   }
   function selectCandidate(record: Candidate, stage: Stage) { onInspect(record.ticker,stage,record.programId); }
+  useEffect(()=>{
+    if (nav!=="GEM" && nav!=="GEM_JR") return;
+    if (!selected[nav]) return;
+    const row=highlightedGemRow.current;
+    if (!row) return;
+    row.scrollIntoView({behavior:"smooth",block:"nearest",inline:"nearest"});
+  },[nav,selected.GEM,selected.GEM_JR,gemQuery]);
 
   function gemBlock(stage: "GEM_JR" | "GEM") {
     const group = snapshot?.members[stage];
     const rows = (group?.rows || []).filter(r => r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
-    const chosen = rows.find(r => r.id === selected[stage]) || rows[0] || null;
-    const visibleCount = Math.min(rows.length,gemTableLimit[stage]);
-    const visibleRows = rows.slice(0,visibleCount);
-    const changeLimit = (direction: -1 | 1) => setGemTableLimit(current => ({
-      ...current,[stage]:Math.max(10,Math.min(Math.max(10,rows.length),current[stage] + direction*10))
-    }));
+    const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
+    const chosen = rows[focusedIndex] || null;
+    const visibleCount = Math.min(rows.length,10);
+    const firstVisible = Math.max(0,Math.min(focusedIndex-4,rows.length-visibleCount));
+    const visibleRows = rows.slice(firstVisible,firstVisible+visibleCount);
+    const moveRow = (delta:-1|1) => {
+      const next = rows[focusedIndex+delta];
+      if(next) setSelected(current=>({...current,[stage]:next.id}));
+    };
     return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
@@ -630,11 +641,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div className="sectionhead gem-table-heading">
             <h3>STREAMLIT GEM CANDIDATE TABLE · source-qualified order · exact permanent program IDs</h3>
             <div className="gem-table-controls" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" table rows"}>
-              <span className="gem-table-visible" role="status">Showing {visibleCount} of {rows.length}</span>
-              <button type="button" className="secondary" disabled={visibleCount<=10}
-                onClick={()=>changeLimit(-1)} aria-label="Show 10 fewer candidates">LESS −10</button>
-              <button type="button" className="secondary" disabled={visibleCount>=rows.length}
-                onClick={()=>changeLimit(1)} aria-label="Show 10 more candidates">MORE +10</button>
+              <span className="gem-table-visible" role="status" aria-live="polite">
+                Selected row {rows.length?focusedIndex+1:0} of {rows.length} · {chosen?.ticker||"No candidate"}
+              </span>
+              <button type="button" className="secondary" disabled={focusedIndex<=0||!rows.length}
+                onClick={()=>moveRow(-1)} aria-label="Select previous candidate row">↑ PREVIOUS ROW</button>
+              <button type="button" className="secondary" disabled={focusedIndex>=rows.length-1||!rows.length}
+                onClick={()=>moveRow(1)} aria-label="Select next candidate row">↓ NEXT ROW</button>
               <button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button>
             </div>
           </div>
@@ -643,8 +656,22 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <thead><tr>
                 {["#","Program ID","W","T","Ticker","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
               </tr></thead>
-              <tbody>{visibleRows.map((r,i)=><tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
-                <td className="numeric">{i+1}</td>
+              <tbody>{visibleRows.map((r,i)=><tr key={r.id}
+                ref={chosen?.id===r.id && selected[stage] ? highlightedGemRow : undefined}
+                className={chosen?.id===r.id?"selected-record gem-focused-row":"gem-selectable-row"}
+                aria-selected={chosen?.id===r.id} tabIndex={0}
+                onClick={event=>{
+                  if ((event.target as HTMLElement).closest("a,button,input,select,textarea,label")) return;
+                  setSelected(current=>({...current,[stage]:r.id}));
+                }}
+                onKeyDown={event=>{
+                  if (event.target!==event.currentTarget) return;
+                  if(event.key==="Enter"||event.key===" "){
+                    event.preventDefault();
+                    setSelected(current=>({...current,[stage]:r.id}));
+                  }
+                }}>
+                <td className="numeric">{firstVisible+i+1}</td>
                 <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
