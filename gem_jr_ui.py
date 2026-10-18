@@ -21,8 +21,8 @@ def render_gem_jr(root="data"):
     st.markdown("## GEM JR — RESEARCH & QUALIFICATION QUEUE")
     st.caption(
         "PIPELINE → GEM JR → GEM. This is a source review queue, not an entry signal. "
-        "GEM promotion still requires exact-program successful Phase 3 results and "
-        "two independently SEC-confirmed financing closures after the readout."
+        "GEM promotion requires exact-program verified successful Phase 3 results. "
+        "Second financing is optional, while dilution and runway risk remain under review."
     )
     active, held = build_potential_list(Path(root))
     # Promotion is an exact Pipeline ID transition; no ticker-only joins.
@@ -86,7 +86,7 @@ def render_gem_jr(root="data"):
                 datetime.now(ZoneInfo("America/Los_Angeles")).date(),
             )
             st.caption("GEM JR candidates remain UNVERIFIED research leads. "
-                       "Chart data availability never clears Phase 3 or financing benchmarks.")
+                       "Chart data availability never establishes successful Phase 3 or financing safety.")
     if held:
         with st.expander("RECONCILIATION HOLDS — NOT ACTIVE GEM JR", expanded=False):
             st.caption("These expired/resolved source leads are not in active GEM JR. "
