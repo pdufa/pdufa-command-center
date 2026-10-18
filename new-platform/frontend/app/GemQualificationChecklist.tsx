@@ -76,8 +76,12 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
   {key:"tam",title:"Large Addressable Market (TAM)",goal:"1000000000",unit:"minimum annual TAM in USD",number:true}]}
 ];
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
-const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
+const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["pdufa","window","volume","rsi","trend","liquidity"]};
 const FA_CRITERIA=["registry","marketcap"];
+// GEM JR owns the FS/FA qualification criteria. GEM only displays the
+// downstream checkboxes, while its GEM JR input control remains available.
+const GEM_JR_OWNED_CRITERIA=new Set([...suggestedByStage.GEM_JR,...FA_CRITERIA]);
+const visibleCriteriaByStage=(stage:"GEM_JR"|"GEM")=>stage==="GEM_JR"?criteria:criteria.filter(([key])=>!GEM_JR_OWNED_CRITERIA.has(key));
 export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,gemJrScan,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;gemJrScan:GemScanResult|null;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const [selected,setSelected]=useState<string[]>([]);
  const [showSuggestions,setShowSuggestions]=useState(false);
@@ -105,7 +109,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  // the full SCAN audit, so the two result totals cannot disagree.
  const chosen=useMemo(() => {
    const checked=new Set(selected);
-   const checks:[string,string,(x:Trial)=>boolean|null][]=criteria.filter(([key])=>checked.has(key));
+   const checks:[string,string,(x:Trial)=>boolean|null][]=visibleCriteriaByStage(stage).filter(([key])=>checked.has(key));
    if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){
      if(!checked.has(item.key))continue;
      // A screening target or an NCT ID is not verification of an FDA/clinical
@@ -215,7 +219,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  }
 
  return <section className="panel" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" qualification checklist"} style={{margin:"18px 0",padding:16,border:"2px solid #236847",borderRadius:10,background:"#f8fff8",color:"#163522"}}>
- <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} style={{width:"100%",textAlign:"left",fontWeight:800,fontSize:18,padding:10,background:"#d9efdf",color:"#123b25",border:"1px solid #6c9e78",borderRadius:6}}>{open?"▾":"▸"} {stage==="GEM"?"GEM":"GEM JR"} — 17 qualification requirements{stage==="GEM_JR"?" + 10 optional evidence alerts":""} ({selected.length} selected)</button>
+ <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} style={{width:"100%",textAlign:"left",fontWeight:800,fontSize:18,padding:10,background:"#d9efdf",color:"#123b25",border:"1px solid #6c9e78",borderRadius:6}}>{open?"▾":"▸"} {stage==="GEM"?"GEM":"GEM JR"} — {visibleCriteriaByStage(stage).length} qualification requirements{stage==="GEM_JR"?" + 10 optional evidence alerts":""} ({selected.length} selected)</button>
 
  <div role="status" aria-live="polite" aria-label="Total combined candidates across all selected qualification criteria" style={{border:"2px solid #4e8a5b",borderRadius:8,padding:14,margin:"12px 0",background:"#f1f9f2"}}>
    <strong style={{display:"block",fontSize:15,marginBottom:4}}>TOTAL COMBINED RESULTS — {stage==="GEM"?"GEM":"GEM JR"}</strong>
@@ -276,7 +280,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. In GEM JR, FS selects the earlier suggested criteria and FA selects Phase 3 trial status recorded plus Market cap $300M–$10B. Press either again to remove its criteria; any criterion shared with the other active preset remains selected. DESELECT ALL clears everything.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. GEM JR retains the FS and FA qualification criteria; GEM shows only downstream options not controlled by those presets. FS selects its suggested criteria; FA selects Phase 3 trial status recorded plus Market cap $300M–$10B in GEM JR. Press either again to remove its criteria; overlapping selections stay checked while the other preset is active. DESELECT ALL clears everything.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>
  {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white",gridColumn:"1"}}>
    <input type="checkbox" aria-label="Gem Jr Trials (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
@@ -285,7 +289,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      {useGemJrSource&&(!gemJrScan||gemJrRows.length===0)&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>{!gemJrScan?"No GEM JR scan available. Open GEM JR and run SCAN first.":"The GEM JR scan has no qualifying candidates to pass to GEM."}</small>}
    </span>
  </label>}
- {criteria.map(([key,label])=>{const recommended=suggestedByStage[stage].includes(key);const faCriterion=stage==="GEM_JR"&&FA_CRITERIA.includes(key);const highlighted=(showSuggestions&&recommended)||(faActive&&faCriterion);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:highlighted?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:highlighted?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{recommended&&(stage==="GEM_JR"||showSuggestions)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>Suggested</small>}{faCriterion&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>FA</small>}</span></label>})}</div>
+ {visibleCriteriaByStage(stage).map(([key,label])=>{const recommended=suggestedByStage[stage].includes(key);const faCriterion=stage==="GEM_JR"&&FA_CRITERIA.includes(key);const highlighted=(showSuggestions&&recommended)||(faActive&&faCriterion);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:highlighted?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:highlighted?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{recommended&&(stage==="GEM_JR"||showSuggestions)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>Suggested</small>}{faCriterion&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>FA</small>}</span></label>})}</div>
 
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button>{stage==="GEM_JR"&&<button type="button" onClick={toggleFa} disabled={running} aria-pressed={faActive} aria-label="FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes" title="FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:faActive?"#ffffff":"#176b39",color:faActive?"#176b39":"#ffffff",fontWeight:700}}>FA</button>}</div>
 
