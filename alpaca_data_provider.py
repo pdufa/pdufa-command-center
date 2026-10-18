@@ -322,11 +322,14 @@ def render_alpaca_panel(stage,root="data"):
                           key="alpaca_feed_"+stage_code)
         if st.button("REFRESH ALPACA SIGNAL",key="alpaca_refresh_"+stage_code):
             try:
-                # Never claim an account position: this view reads market data
-                # only; the scheduled research job can read paper positions.
+                # Only paper positions are read; never infer live broker holdings.
+                try:
+                    positions=paper_positions(keys)
+                except (ValueError,RuntimeError):
+                    positions=None
                 report=get_symbol_report(symbol,keys,read_historical_events(
                     Path(root)/"post_phase3_historical_trade_events.csv"),
-                    positions=None,feed=feed)
+                    positions=positions,feed=feed)
             except (ValueError,RuntimeError,OSError,TypeError):
                 report={"ticker":symbol,"feed":feed,
                         "signal":"DATA_BLOCKED",
