@@ -766,10 +766,13 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
     second_day = _section9_date(record.get("Second close"))
     first_url = str(record.get("First SEC source") or "")
     second_url = str(record.get("Second SEC source") or "")
-    two_closes = (phase3_observed and first_day is not None and
-                  second_day is not None and p3_day < first_day < second_day <= today and
-                  first_url.startswith("https://") and second_url.startswith("https://")
-                  and first_url != second_url)
+    two_closes = bool(
+        record.get("Second financing verified") is True
+        and phase3_observed and first_day is not None
+        and second_day is not None and p3_day < first_day < second_day <= today
+        and first_url.startswith("https://") and second_url.startswith("https://")
+        and first_url != second_url
+    )
     review_day = _section9_date(record.get("Source review as of") or
                                 record.get("Source review date"))
     review_age = (today - review_day).days if review_day else None
@@ -1082,15 +1085,18 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     trade_status = _text(record.get("Trade status") or record.get("Still needed"))
     if "NO NEW ENTRY" in trade_status:
         status, status_type = "Entry hold", "hold"
+    # A date + an SEC URL alone is not a verified funded close. Do not
+    # paint either transaction green without exact-event closing clearance.
+    verified_closes = bool(record.get("Second financing verified") is True and not junior)
     financings_display = [{"date": d, "url": u, "amount": "—", "price": "—", "warrants": "—",
-                           "status": "Confirmed" if not junior and d and u else "Review",
-                           "type": "pass" if not junior and d and u else "review"}
+                           "status": "Confirmed" if verified_closes and d and u else "Review",
+                           "type": "pass" if verified_closes and d and u else "review"}
                           for d, u in ((first, first_url), (second, second_url))]
     sources = [
         _source("Phase 3 results", "Primary clinical evidence", clinical_url, p3_date,
                 not junior and bool(clinical_url)),
-        _source("Financing #1", "SEC closing evidence", first_url, first, not junior and bool(first_url)),
-        _source("Financing #2", "SEC closing evidence", second_url, second, not junior and bool(second_url)),
+        _source("Financing #1", "SEC closing evidence (optional)", first_url, first, verified_closes and bool(first_url)),
+        _source("Financing #2", "SEC closing evidence (optional)", second_url, second, verified_closes and bool(second_url)),
         _source("PDUFA target", "Primary regulatory source", pdufa_url, pdufa, pdufa_verified),
         _source("Cash runway", "SEC Companyfacts", runway_result.get("Cash runway source"),
                 runway_result.get("Cash runway as of"), runway_months is not None),
