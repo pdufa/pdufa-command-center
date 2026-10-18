@@ -1,8 +1,9 @@
 """Exact-program GEM JR / GEM evidence and trading research adapter.
 
 Uses the original verified Streamlit analytical functions verbatim, without its UI.
-Scores remain unavailable whenever source health, positive Phase 3 evidence,
-second SEC financing, or end-of-day market observations cannot be verified.
+Scores remain unavailable whenever required source health, successful exact-program
+Phase 3 evidence, or end-of-day market observations cannot be verified.
+A second SEC financing is optional research evidence, never an entry benchmark.
 """
 from __future__ import annotations
 
@@ -67,14 +68,17 @@ def verify_benchmarks(row, event, financing, recheck, today):
     return {
         "phase3": phase3,
         "secondFinancing": sec,
-        "bothConfirmed": bool(phase3 and sec),
+        "bothConfirmed": phase3,  # legacy field: now means Phase 3 clinical qualification only
+        "clinicalQualified": phase3,
+        "financingOptional": True,
         "readoutDate": readout.isoformat() if readout else "",
         "firstClose": first.isoformat() if first else "",
         "secondClose": second.isoformat() if second else "",
         "warning": (
-            "Source-verified positive Phase 3 and both SEC-funded post-readout closes"
-            if phase3 and sec
-            else "One or both positive entry benchmarks are not currently independently cleared"
+            "Successful Phase 3 verified; second financing verified (optional risk evidence)"
+            if phase3 and sec else
+            "Successful Phase 3 verified; second financing not established (OPTIONAL — assess cash/dilution)"
+            if phase3 else "Exact-program successful Phase 3 result is not independently verified"
         ),
     }
 
@@ -95,8 +99,12 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
         risk.append("FDA event already resolved")
     if (event or {}).get("new_dilution_flag", "").upper() in {"YES", "TRUE", "UNRESOLVED"}:
         risk.append("New or unresolved dilution")
-    if not benchmarks["bothConfirmed"]:
-        risk.append("Exact-program Phase 3/financing entry benchmarks unverified")
+    if not benchmarks["phase3"]:
+        risk.append("Exact-program successful Phase 3 result not verified")
+    if not benchmarks["secondFinancing"]:
+        risk.append("Second financing unverified — optional, monitor funding and dilution")
+    if (event or {}).get("new_dilution_flag", "").upper() not in {"NO", "NONE", "FALSE", "0"}:
+        risk.append("Dilution exposure not independently cleared")
     if not source_status.get("complete"):
         risk.append("Global published scan is partial or stale")
 
@@ -106,7 +114,7 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
     }
     trading_row = {
         "Ticker": ticker,
-        "_eligible": benchmarks["bothConfirmed"],
+        "_eligible": benchmarks["phase3"],
         "Days to PDUFA": days,
         "PDUFA Date Verified": bool(verified_date),
         "GEM Status": "EXIT / FDA DECISION WARNING" if (days is not None and days <= 3) else "",
@@ -170,7 +178,7 @@ def analyze_member(row, event, financing, recheck, market, runway, source_status
         "indicatorEntryFactors": _factors(observed["entry_factors"]),
         "indicatorExitFactors": _factors(observed["exit_factors"]),
         "indicatorModel": "SAME_GEM_WEIGHTED_EOD_MODEL_RESEARCH_ONLY",
-        "indicatorDisclaimer": "Observable GEM technical points only; clinical eligibility and full FDA/SEC survey must still pass.",
+        "indicatorDisclaimer": "Observable GEM technical points only; positive Phase 3 and source/risk review still required. Second financing is optional; absence does not clear dilution.",
         "entry": scores["entry"],
         "entryCoverage": scores["entry_coverage"],
         "entryStatus": scores["entry_status"],
