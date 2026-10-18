@@ -26,7 +26,7 @@ RECHECK = {
 }
 
 
-def test_requires_exact_positive_phase3_and_two_funded_closings():
+def test_successful_exact_phase3_qualifies_with_optional_financing_recorded():
     result = verify_benchmarks(ROW, EVENT, FINANCING, RECHECK, TODAY)
     assert result["bothConfirmed"] is True
     assert result["phase3"] and result["secondFinancing"]
@@ -39,17 +39,21 @@ def test_generic_verified_readout_is_not_positive():
     assert not result["phase3"]
 
 
-def test_financing_recheck_hold_cannot_pass():
+def test_financing_recheck_hold_does_not_block_phase3_but_financing_stays_unverified():
     changed = {**RECHECK, "gem_entry_authorized": "NO"}
     result = verify_benchmarks(ROW, EVENT, FINANCING, changed, TODAY)
-    assert not result["bothConfirmed"]
+    assert result["clinicalQualified"] is True
+    assert result["bothConfirmed"] is True
     assert not result["secondFinancing"]
+    assert result["financingOptional"] is True
 
 
-def test_financings_before_readout_do_not_count():
+def test_financings_before_readout_cannot_be_verified_but_do_not_block_phase3():
     changed = {**FINANCING, "first_financing_date": "2025-07-25"}
     result = verify_benchmarks(ROW, EVENT, changed, RECHECK, TODAY)
-    assert not result["bothConfirmed"]
+    assert result["clinicalQualified"] is True
+    assert result["bothConfirmed"] is True
+    assert not result["secondFinancing"]
 
 
 def test_exact_identity_is_required():
@@ -76,3 +80,25 @@ def test_runway_duplicate_ticker_is_quarantined():
     parsed = parse_runway(raw)
     assert "A" not in parsed
     assert "B" in parsed
+
+
+def test_no_financings_phase3_can_enter_manual_research_review_only():
+    result = analyze_member(
+        ROW, EVENT, {}, {}, {},
+        None, {"complete": False}, TODAY,
+    )
+    assert result["benchmarks"]["phase3"] is True
+    assert result["benchmarks"]["clinicalQualified"] is True
+    assert result["benchmarks"]["secondFinancing"] is False
+    assert "optional" in " ".join(result["riskAlerts"]).lower()
+    assert result["entry"] is None
+    assert result["researchOnly"] is True
+
+
+def test_missing_successful_phase3_never_qualifies_even_with_financing():
+    changed = {**EVENT, "phase3_status": "RESULTS_VERIFIED"}
+    result = analyze_member(ROW, changed, FINANCING, RECHECK, {},
+                            None, {"complete": True}, TODAY)
+    assert result["benchmarks"]["clinicalQualified"] is False
+    assert result["entry"] is None
+    assert result["researchOnly"] is True
