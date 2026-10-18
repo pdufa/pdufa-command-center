@@ -103,10 +103,10 @@ export function checkboxGroupsForStage(stage:"GEM_JR"|"GEM") {
 export type GemJrLivePreview={asOf:string;sourceTotal:number;selected:string[];passes:Trial[];needsReview:Trial[]};
 export type GemJrUiDraft={asOf:string;sourceTotal:number;selected:string[];showSuggestions:boolean;faActive:boolean;optionalGoals:Record<string,string>;twoTrialIds:[string,string]};
 // Current GEM JR checkbox intersection; UNKNOWN is not a verified PASS.
-export function buildGemJrLivePreview(rows:Trial[],checks:[string,string,(x:Trial)=>boolean|null][],asOf:string,sourceTotal:number):GemJrLivePreview {
+export function buildGemJrLivePreview(rows:Trial[],checks:[string,string,(x:Trial)=>boolean|null][],asOf:string,sourceTotal:number,inheritedReviewIds:ReadonlySet<string>=new Set()):GemJrLivePreview {
  const passes:Trial[]=[],needsReview:Trial[]=[];
  for(const row of rows){
-  let unknown=false,failed=false;
+  let unknown=inheritedReviewIds.has(row.id),failed=false;
   for(const [, ,evaluate] of checks){
    const status=evaluate(row);
    if(status===false){failed=true;break;}
@@ -143,8 +143,9 @@ export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJ
  };
 }
 
-export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
- const draft=stage==="GEM_JR"&&gemJrDraft?.asOf===asOf&&gemJrDraft.sourceTotal===pipeline.length?gemJrDraft:null;
+export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
+ const storedDraft=stage==="GEM_JR"?gemJrDraft:gemDraft;
+ const draft=storedDraft?.asOf===asOf&&storedDraft.sourceTotal===pipeline.length?storedDraft:null;
  const [selected,setSelected]=useState<string[]>(()=>draft?.selected||[]);
  const [showSuggestions,setShowSuggestions]=useState(()=>draft?.showSuggestions||false);
  const [faActive,setFaActive]=useState(()=>draft?.faActive||false);
@@ -184,11 +185,20 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    }
    return checks;
  },[selected,stage,optionalGoals,twoTrialIds]);
- const livePreview=useMemo(()=>stage==="GEM_JR"?buildGemJrLivePreview(sourceRows,chosen,asOf,pipeline.length):null,[stage,sourceRows,chosen,asOf,pipeline.length]);
- useEffect(()=>{if(stage==="GEM_JR"&&livePreview)onGemJrLivePreviewChange?.(livePreview);},[stage,livePreview,onGemJrLivePreviewChange]);
- useEffect(()=>{if(stage==="GEM_JR")onGemJrDraftChange?.({asOf,sourceTotal:pipeline.length,selected,showSuggestions,faActive,optionalGoals,twoTrialIds});},[stage,asOf,pipeline.length,selected,showSuggestions,faActive,optionalGoals,twoTrialIds,onGemJrDraftChange]);
+ const livePreview=useMemo(()=>buildGemJrLivePreview(
+  sourceRows,chosen,asOf,pipeline.length,useGemJrSource?gemJrNeedsReview:undefined
+ ),[sourceRows,chosen,asOf,pipeline.length,useGemJrSource,gemJrNeedsReview]);
+ useEffect(()=>{
+  if(stage==="GEM_JR")onGemJrLivePreviewChange?.(livePreview);
+  else onGemLivePreviewChange?.(livePreview);
+ },[stage,livePreview,onGemJrLivePreviewChange,onGemLivePreviewChange]);
+ useEffect(()=>{
+  const draft={asOf,sourceTotal:pipeline.length,selected,showSuggestions,faActive,optionalGoals,twoTrialIds};
+  if(stage==="GEM_JR")onGemJrDraftChange?.(draft);
+  else onGemDraftChange?.(draft);
+ },[stage,asOf,pipeline.length,selected,showSuggestions,faActive,optionalGoals,twoTrialIds,onGemJrDraftChange,onGemDraftChange]);
  const liveCounts=useMemo(() => {
-   if(stage==="GEM_JR"&&livePreview){const passes=livePreview.passes.length,needsReview=livePreview.needsReview.length;return {passes,needsReview,fails:sourceRows.length-passes-needsReview,total:passes+needsReview};}
+   if(livePreview){const passes=livePreview.passes.length,needsReview=livePreview.needsReview.length;return {passes,needsReview,fails:sourceRows.length-passes-needsReview,total:passes+needsReview};}
    let passes=0,needsReview=0,fails=0;
    for(const row of sourceRows){
      let hasFail=false,hasUnknown=useGemJrSource&&gemJrNeedsReview.has(row.id);
@@ -296,16 +306,16 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    <strong style={{display:"block",fontSize:15,marginBottom:4}}>TOTAL COMBINED RESULTS — {stage==="GEM"?"GEM":"GEM JR"}</strong>
    <div style={{display:"flex",alignItems:"baseline",gap:12,flexWrap:"wrap"}}>
      <strong style={{fontSize:32}}>{liveCounts.total.toLocaleString("en-US")}</strong>
-     <span>candidates not excluded by the {chosen.length.toLocaleString("en-US")} checked qualification {chosen.length===1?"criterion":"criteria"} together</span>
+     <span>candidates in current research screen · {selected.length.toLocaleString("en-US")} selected requirement{selected.length===1?"":"s"}</span>
    </div>
    <div style={{display:"flex",gap:18,flexWrap:"wrap",fontSize:13,marginTop:6}}>
-     <span><strong>{liveCounts.passes.toLocaleString("en-US")}</strong> verified matches</span>
+     <span><strong>{liveCounts.passes.toLocaleString("en-US")}</strong> passed selected checks (not clinical eligibility)</span>
      <span><strong>{liveCounts.needsReview.toLocaleString("en-US")}</strong> require evidence review</span>
      <span><strong>{liveCounts.fails.toLocaleString("en-US")}</strong> excluded</span>
    </div>
    <small style={{display:"block",marginTop:8}}>{sourceRows.length.toLocaleString("en-US")} {sourceLabel} considered. {chosen.length===0?"No qualification criteria checked; all input records are included.":"Each candidate is counted once, only if it has no failed checked criterion. This is the intersection (AND), not a sum of individual checkbox matches."} Missing evidence, including verification gaps inherited from a GEM JR scan, never counts as a verified match. Counts update when any checkbox, FS, or FA changes.</small>
  </div>
- <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} candidates</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{sourceRows.length.toLocaleString("en-US")}</strong><div>{useGemJrSource?juniorSource.label:"Full PIPELINE records available to scan"}</div></div></div>
+ <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} saved stage members (not screened total)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{sourceRows.length.toLocaleString("en-US")}</strong><div>{useGemJrSource?juniorSource.label:"Full PIPELINE records available to scan"}</div></div></div>
  {open&&<><p>Every SCAN evaluates {sourceRows.length.toLocaleString("en-US")} {sourceLabel} against <strong>only your selected qualification checkboxes</strong>. No qualification checks selected means all records from the chosen input source are included. Phase 3 is not silently required; select its checkbox to enforce verified Phase 3 success. The source has {phase3ResearchCount.toLocaleString("en-US")} Phase 3/readout indicators, which are not the same as independently verified successful Phase 3 programs. Unknown source evidence is not treated as passing. Published data as of {asOf||"unverified"}; no live-market fetches, membership changes or trades.</p>
  {stage==="GEM_JR"&&<div style={{marginBottom:14,border:"1px solid #b8d4c0",borderRadius:8,padding:12,background:"#ffffff"}}>
    <h3 style={{margin:"0 0 7px"}}>Optional GEM JR evidence alerts</h3>
