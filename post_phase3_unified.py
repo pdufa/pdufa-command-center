@@ -88,7 +88,7 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "2nd Financing Completed": "NOT VERIFIED",
         "Financing cycle (separate)": "REVIEW — FINANCING UNVERIFIED",
         "Entry qualification": "REVIEW — RESEARCH LEAD",
-        "Trade entry gate": "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED",
+        "Trade entry gate": "RESEARCH ONLY — PHASE 3 AND SAFETY GATES UNVERIFIED",
         "Verified 2nd financing close date": "",
         "Research rank": None, "Research priority /100": 0,
         "Research priority status": "RESEARCH TRIAGE ONLY — NOT TRADE READY",
@@ -102,7 +102,7 @@ def _blank(lane, ticker, drug, indication, nct, today):
         "PDUFA verification": "REVIEW — SOURCE MISSING",
         "Days to PDUFA": None, "PDUFA date": "",
         "Planned exit (-3 days)": "", "Next action": "Verify exact Phase 3 result and issuer",
-        "Blockers": "No exact-event clinical/financing gate review",
+        "Blockers": "No exact-event clinical and source-risk review",
         "Registry source": "", "Phase 3 source": "", "Financing source": "",
         "PDUFA source": "", "As of Pacific": today.isoformat(),
     }
@@ -204,23 +204,23 @@ def build_queue(root, as_of=None):
         gate = clean(funding.get("Current gate"))
         details = clean(funding.get("Audited gate details"))
         scan = clean(funding.get("Source scan")).upper()
-        attested_ready = (
-            gate.startswith("ENTRY READY") and
-            clean(funding.get("Proposed trade status")).startswith("ENTRY READY") and
-            all(f"{gate_name}: PASS" in details for gate_name in GATES) and
+        # Entry-review evidence must pass all NON-financing Step 7 gates.
+        # The optional second closing is independently recorded below, but
+        # never required to qualify verified successful Phase 3 candidates.
+        attested_ready = bool(
+            funding and
+            all(f"{gate_name}: PASS" in details for gate_name in GATES
+                if gate_name != "second_financing") and
             clean(funding.get("Recheck freshness")) == "RECENT" and
             scan not in {"", "NOT_CHECKED", "SOURCE_UNAVAILABLE", "NO_SOURCE"} and
-            not any(term in scan for term in ("BLOCKED", "ERROR", "PARTIAL")) and
-            clean(funding.get("Historical second closing")).startswith("DOCUMENTED") and
-            safe_source(funding.get("Second source"), sec=True)
+            not any(term in scan for term in ("BLOCKED", "ERROR", "PARTIAL"))
         )
         fin_stage = finance_stages.get(key, {})
         stage_name = clean(fin_stage.get("second_financing_status")).upper()
         fin_review_date = parsed_date(fin_stage.get("verified_as_of"))
         stage_fresh = bool(fin_review_date and 0 <= (today - fin_review_date).days <= 7)
-        # This absolute trade-entry prerequisite requires TWO chronological
-        # post-readout CLOSINGS, exact-program SEC evidence and a current review.
-        # A historical CLOSED badge by itself can NEVER clear the trade gate.
+        # Keep exact-event second-close verification for optional evidence.
+        # A historical CLOSED badge is not proof of funding or dilution safety.
         second_financing_verified, second_close_date, finance_hold_reason = (
             second_post_phase3_close(key, event.get("phase3_date"), fin_stage, as_of=today)
         )
@@ -232,32 +232,36 @@ def build_queue(root, as_of=None):
             financing_cycle = "GREEN — FINANCING STARTED (AS OF REVIEW)"
         else:
             financing_cycle = "REVIEW — FINANCING UNVERIFIED"
-        green = (current_feed and sec_current and funding and attested_ready and second_financing_verified and stage_fresh and verified_date and
-                 clinical and not conflict and pdufa is not None and days >= LAST_ENTRY_MIN_DAYS)
+        dilution_clear = clean(event.get("new_dilution_flag")).upper() in (
+            "NO", "NONE", "FALSE", "0"
+        )
+        green = bool(current_feed and sec_current and attested_ready and verified_date
+                     and clinical and not conflict and dilution_clear
+                     and pdufa is not None and days >= LAST_ENTRY_MIN_DAYS)
         if excluded:
             status, action = "EXCLUDED — FDA DECIDED / DATE PASSED", "Historical only; do not open a position"
         elif pdufa is not None and days <= EXIT_DAYS_BEFORE_PDUFA:
             status, action = "RED WINDOW — NO NEW ENTRY", "Scheduled exit window; do not initiate a new trade"
         elif not current_feed:
-            status, action = "REVIEW — SOURCE SNAPSHOT STALE", "Refresh saved source feed and financing checks"
+            status, action = "REVIEW — SOURCE SNAPSHOT STALE", "Refresh saved clinical, financial and SEC source checks"
         elif green:
             status, action = "GREEN — GATES ATTESTED", "Review evidence and execution plan before any trade"
         elif not sec_current:
             status, action = "REVIEW — SEC FINANCING RECHECK HOLD", "No entry: restore fresh, complete, unblocked SEC source verification"
         else:
             status = "REVIEW — ENTRY BLOCKED"
-            if not second_financing_verified:
-                action = "WATCH ONLY — independently verify two distinct post-Phase-3 financing closes"
-            elif not funding:
-                action = "Verify financing sequence for exact clinical program"
+            if not funding:
+                action = "Review clinical, cash, dilution and market data (second financing optional)"
             elif not verified_date:
                 action = "Verify PDUFA date against dated primary source"
             elif not clinical:
                 action = "Review successful Phase 3 primary endpoint, benefit and safety"
             elif conflict:
                 action = "Resolve conflicting clinical/regulatory evidence"
+            elif not dilution_clear:
+                action = "Resolve new or unverified dilution exposure"
             else:
-                action = "Clear missing clinical, financing, dilution and market gates"
+                action = "Clear remaining clinical, dilution, SEC and market evidence gates"
         item = _blank("SAVED REGULATORY PIPELINE", ticker, drug, indication, nct, today)
         item.update({
             "Exact event": key,
@@ -276,10 +280,10 @@ def build_queue(root, as_of=None):
             "Days to PDUFA": days, "PDUFA date": pdufa.isoformat() if pdufa else "",
             "Planned exit (-3 days)": exit_date.isoformat() if exit_date else "",
             "Next action": action,
-            "Blockers": ("SEC financing source blocked, partial or stale" if not sec_current
-                         else finance_hold_reason if not second_financing_verified
+            "Blockers": ("SEC source blocked, partial or stale" if not sec_current
+                         else "Dilution exposure not independently cleared" if not dilution_clear
                          else clean(funding.get("Gate reasons")) or (
-                             "No exact-event financing review available" if not funding
+                             "No exact-event safety review available" if not funding
                              else clean(funding.get("Why blocked")))),
             "Registry source": "https://clinicaltrials.gov/study/" + nct if NCT.fullmatch(nct) else "",
             "Phase 3 source": clean(event.get("trial_evidence_url")),
