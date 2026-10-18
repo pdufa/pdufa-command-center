@@ -109,6 +109,8 @@ def assess_symbol(symbol, *, credentials, verified_events=None,
                 "trading_orders_placed":0}
     result=evaluate(symbol,bars,verified_events or {},paper_positions or {},
                     today=cutoff,feed=feed)
+    if result.get("stage")=="DATA_BLOCKED":
+        result["alert"]="DATA_BLOCKED"
     result.update({"provider":"ALPACA","feed":feed,
                    "as_of":candles[-1]["session"].isoformat(),
                    "bars_count":len(candles),
