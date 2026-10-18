@@ -76,7 +76,7 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
   {key:"tam",title:"Large Addressable Market (TAM)",goal:"1000000000",unit:"minimum annual TAM in USD",number:true}]}
 ];
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
-const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["registry","marketcap"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
+const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
 export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,gemJrCandidates,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;gemJrCandidates:Trial[];onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const [selected,setSelected]=useState<string[]>([]);
  const [showSuggestions,setShowSuggestions]=useState(false);
@@ -236,7 +236,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes, including Gem Jr Trials in GEM, start unchecked. SUGGESTED shows green guidance without checking boxes; DESELECT ALL clears all selections.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. In GEM JR, earlier recommendations have green Suggested labels beside their names (regardless of what you check). SUGGESTED toggles highlighting without selecting boxes; DESELECT ALL clears all selections.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>
  {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white",gridColumn:"1"}}>
    <input type="checkbox" aria-label="Gem Jr Trials (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
@@ -244,7 +244,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      {useGemJrSource&&gemJrCandidates.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>No saved GEM JR trials available — cannot run the scan.</small>}
    </span>
  </label>}
- {criteria.map(([key,label])=>{const suggested=showSuggestions&&suggestedByStage[stage].includes(key);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:suggested?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:suggested?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{suggested&&<small style={{display:"block",fontSize:11,color:"#175a35",fontWeight:700}}>Suggested · optional</small>}</span></label>})}</div>
+ {criteria.map(([key,label])=>{const recommended=suggestedByStage[stage].includes(key);const highlighted=showSuggestions&&recommended;return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:highlighted?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:highlighted?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{recommended&&(stage==="GEM_JR"||showSuggestions)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>Suggested</small>}</span></label>})}</div>
 
  <div role="status" aria-live="polite" aria-label="Combined count for all checked GEM qualification requirements" style={{border:"1px solid #9dbda5",borderRadius:8,padding:12,marginBottom:14,background:"#f1f9f2"}}>
    <strong style={{display:"block",marginBottom:7}}>LIVE COMBINED RESULT — {selected.length.toLocaleString("en-US")} checked {selected.length===1?"option":"options"} (all selected requirements together)</strong>
