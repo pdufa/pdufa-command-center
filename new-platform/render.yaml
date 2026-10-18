@@ -1,0 +1,32 @@
+# Isolated PDUFA Next-Generation STAGING backend. No changes to Streamlit.
+# Render Dashboard > New > Blueprint > pick this file on new-platform-bootstrap.
+# CAUTION: Render free Postgres expires in 30 days, with no backups.
+# This Blueprint is for temporary testing; upgrade/export before expiration.
+services:
+  - type: web
+    name: pdufa-new-api-staging
+    runtime: python
+    plan: free
+    repo: https://github.com/pdufa/pdufa-command-center
+    branch: new-platform-bootstrap
+    rootDir: new-platform/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pdufa-new-staging-db
+          property: connectionString
+      - key: PDUFA_INTERNAL_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.12.7
+
+databases:
+  - name: pdufa-new-staging-db
+    plan: free
+    databaseName: pdufa_new_staging
+    user: pdufa_new
+    ipAllowList: []

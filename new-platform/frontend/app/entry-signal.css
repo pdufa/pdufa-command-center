@@ -1,0 +1,18 @@
+/* Entry light: independent of research scores; text conveys every color state. */
+.entry-signal{margin:0 0 14px;padding:14px 16px;border:2px solid #94a3b8;border-radius:12px;background:#f8fafc;color:#263747}
+.entry-signal-title{display:flex;align-items:center;gap:10px;font-size:14px;line-height:1.4}
+.entry-signal-light{width:16px;height:16px;flex:0 0 16px;border-radius:50%;background:#94a3b8;border:2px solid #64748b}
+.entry-signal-green{border-color:#167544;background:#ecfdf3;color:#14532d}
+.entry-signal-green .entry-signal-light{background:#16a34a;border-color:#14532d;box-shadow:0 0 0 4px #bbf7d0}
+.entry-signal-wait{border-color:#b7791f;background:#fffbeb;color:#744210}
+.entry-signal-wait .entry-signal-light{background:#d69e2e;border-color:#975a16}
+.entry-signal p{margin:9px 0;font-size:13px;line-height:1.5}
+.entry-signal>small{display:block;margin-top:10px;font-size:11px;line-height:1.5}
+.entry-signal-prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.entry-signal-prices>span{display:flex;flex-direction:column;gap:5px;border:1px solid currentColor;border-radius:7px;padding:9px;font-size:10px}
+.entry-signal-prices strong{font-size:20px;line-height:1.2}
+.entry-signal details summary{cursor:pointer;font-weight:700;font-size:13px}
+.entry-signal ul{margin:10px 0;padding:0;list-style:none}
+.entry-signal li{display:flex;flex-direction:column;gap:3px;padding:7px 0;border-bottom:1px solid #d6dfd7;font-size:12px}
+.entry-signal li small{font-variant-numeric:tabular-nums}
+@media(max-width:520px){.entry-signal{padding:12px}.entry-signal-prices{gap:5px}.entry-signal-prices>span{padding:7px 5px;font-size:9px}.entry-signal-prices strong{font-size:17px}}
