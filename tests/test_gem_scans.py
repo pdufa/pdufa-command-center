@@ -19,7 +19,7 @@ def sample(ticker="AAA", market=10, second=True, days=40):
         "Verified 2nd financing close date": "2026-09-15" if second else "",
         "PDUFA verification": "VERIFIED — SOURCE LINKED",
         "Days to PDUFA": days, "Evidence score /100": 85,
-        "Clinical evidence /30": 30, "Financing evidence /20": 20,
+        "Clinical evidence /30": 30, "Financing evidence /20": 20 if second else 0,
         "Trading setup /20": 20, "PDUFA evidence /15": 15,
         "Market activity /10": market, "As of Pacific": "2026-10-13",
     }
@@ -88,25 +88,22 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert all(status["scan_counts"][stage]["qualified"] == 2 for stage in STAGES)
 
 
-    def test_only_fully_qualified_all_stage_and_second_closed_programs_enter_shortlist(self):
+    def test_full_clinical_cash_and_market_qualification_without_second_close(self):
         best = sample("AAA", market=10)
         one_short = sample("BBB", market=7)
         one_short["Entry qualification"] = "REVIEW — ENTRY BLOCKED"
         before_second = sample("CCC", second=False)
         on_exit = sample("DDD", days=3)
         rows, status = run([best, one_short, before_second, on_exit])
-        self.assertEqual(status["strict_entry_gate_shortlist_count"], 1)
-        self.assertEqual(sum(all_mandatory_entry_gates_pass(row) for row in rows), 1)
-        self.assertEqual(rows[0]["GEM strict shortlist rank"], 1)
-        self.assertEqual(rows[0]["GEM ALL ENTRY GATES"], "PASS — MANUAL REVIEW ONLY")
-        self.assertTrue(all(row["GEM strict shortlist rank"] is None for row in rows[1:]))
-        self.assertTrue(all(row["GEM ALL ENTRY GATES"] == "NOT MET — WATCH / REVIEW"
-                            for row in rows[1:]))
-        # A high research rank is explicitly insufficient without Stage 1 GREEN.
-        self.assertIsNotNone(rows[1]["PDUFA rank"])
-        self.assertFalse(all_mandatory_entry_gates_pass(rows[1]))
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 3)
+        self.assertEqual(sum(all_mandatory_entry_gates_pass(row) for row in rows), 3)
+        self.assertEqual([row["GEM strict shortlist rank"] for row in rows], [1, 2, 3, None])
+        self.assertEqual(rows[2]["2nd Financing Completed"], "NOT VERIFIED")
+        self.assertEqual(rows[2]["GEM ALL ENTRY GATES"], "PASS — MANUAL REVIEW ONLY")
+        self.assertEqual(rows[3]["GEM ALL ENTRY GATES"], "NOT MET — WATCH / REVIEW")
+        self.assertEqual(rows[1]["Entry qualification"], "REVIEW — ENTRY BLOCKED")
 
-    def test_strict_shortlist_empty_if_sec_blocked_or_financing_not_closed(self):
+    def test_strict_shortlist_requires_source_and_window_not_second_close(self):
         for kwargs in (
             {"sec_current": False},
             {"fresh": False},
@@ -115,13 +112,14 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
             self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
             self.assertIsNone(rows[0]["GEM strict shortlist rank"])
         rows, status = run([sample(second=False)])
-        self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 1)
+        self.assertIn("SECOND FINANCING OPTIONAL", rows[0]["GEM trade entry gate"])
         rows, status = run([sample(days=3)])
         self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
         row = sample()
         row["Verified 2nd financing close date"] = ""
         rows, status = run([row])
-        self.assertEqual(status["strict_entry_gate_shortlist_count"], 0)
+        self.assertEqual(status["strict_entry_gate_shortlist_count"], 1)
 
     def test_global_sec_blocked_cannot_produce_post_financing_or_pdufa_entry(self):
         rows, status = run([sample(second=True)], sec_current=False)
@@ -150,12 +148,13 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
                 as_of="2026-10-13", second_close="2026-09-15")
             assert assessed["Cash runway gate"].startswith("HOLD")
 
-    def test_financing_is_only_scored_when_exact_second_closing_verified(self):
+    def test_missing_second_close_does_not_block_qualified_research_or_manual_review(self):
         rows, _ = run([sample(second=False)])
         assert rows[0]["Phase 3 rank"] == 1
-        assert rows[0]["GEM trade entry gate"] == "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
-        assert rows[0]["Post-Financing score"] is None
-        assert "Second separate" in rows[0]["Post-Financing missing"]
+        assert rows[0]["GEM trade entry gate"].startswith("ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL")
+        assert rows[0]["Post-Financing score"] == 65
+        assert "Second separate" not in rows[0]["Post-Financing missing"]
+        assert rows[0]["GEM ALL ENTRY GATES"] == "PASS — MANUAL REVIEW ONLY"
 
 
     def test_pdufa_trade_window_runs_from_verified_finance_until_minus_three(self):
@@ -236,7 +235,7 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[0]["Financing watch"].startswith("SECOND FINANCING NOT VERIFIED")
         assert rows[0]["Phase 3 rank"] is None  # Technical entry gates still missing.
         assert rows[0]["Post-Financing rank"] is None
-        assert rows[0]["GEM trade entry gate"] == "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
+        assert rows[0]["GEM trade entry gate"].startswith("REVIEW — OTHER ENTRY GATES NOT MET")
         assert meta["phase3_tracking_count"] == 1
         assert meta["phase3_tracking_before_second_financing"] == 1
 
