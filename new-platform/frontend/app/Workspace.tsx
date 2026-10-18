@@ -4,6 +4,8 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "
 import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import AlpacaTrialSelection from "./AlpacaTrialSelection";
+import GemQualificationCheckboxes from "./GemQualificationCheckboxes";
+import {gemMatchesCheckedFilters} from "../lib/gem-qualification-checks";
 import EntrySignal from "./EntrySignal";
 import StayExitSignal from "./StayExitSignal";
 import IndicatorParityTables from "./IndicatorParityTables";
@@ -423,6 +425,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // Mobile-only qualification criteria: initially collapsed for both stages.
   // On desktop CSS keeps the complete criteria visible, regardless of this state.
   const [gemCriteriaExpanded,setGemCriteriaExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
+  const [gemCheckedFilters,setGemCheckedFilters]=useState<Record<"GEM_JR"|"GEM",string[]>>({GEM_JR:[],GEM:[]});
+  const toggleGemCheck=(stage:"GEM_JR"|"GEM",key:string,enabled:boolean)=>setGemCheckedFilters(old=>({
+    ...old,[stage]:enabled?[...new Set([...old[stage],key])]:old[stage].filter(x=>x!==key)
+  }));
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -661,7 +667,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
 
   function gemBlock(stage: "GEM_JR" | "GEM") {
     const group = snapshot?.members[stage];
-    const rows = (group?.rows || []).filter(r => r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
+    const availableRows=(group?.rows || []).filter(r => r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
+    const rows=availableRows.filter(r=>gemMatchesCheckedFilters(r,gemCheckedFilters[stage]));
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
     // Track the exact current stage-membership cycle (including re-entry).
@@ -720,6 +727,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} programs · {stated(group?.asOf, "snapshot undated")}</span>
       </div>
+      <GemQualificationCheckboxes stage={stage} records={availableRows}
+        checked={gemCheckedFilters[stage]} onCheckedChange={(key,value)=>toggleGemCheck(stage,key,value)} />
       <AlpacaTrialSelection stage={stage} records={rows}
         onChoose={record=>selectTrial(record,"chart")} />
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
