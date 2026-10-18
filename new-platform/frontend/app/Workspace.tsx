@@ -697,9 +697,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
-        <span className="gem-count">{rows.length} {activeScan?"PIPELINE scan results":"saved programs"} · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
+        <span className="gem-count">{rows.length} {activeScan?(activeScan.sourceKind==="GEM_JR"?"GEM JR input scan results":"PIPELINE scan results"):"saved programs"} · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
-      <GemQualificationChecklist stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0}
+      <GemQualificationChecklist stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} gemJrCandidates={snapshot?.members.GEM_JR.rows || []}
         onReset={()=>setGemScans(current=>{if(!current[stage])return current;const next={...current};delete next[stage];return next;})}
         onScan={result=>{
           setGemScans(current=>({...current,[stage]:result}));
@@ -708,8 +708,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           setGemTrialSections(current=>Object.fromEntries(Object.entries(current).filter(([key])=>!key.startsWith(stage+"|"))));
         }} />
       {activeScan && <div className="panel" role="status" aria-live="polite" style={{marginBottom:12,padding:14,border:"1px solid #76947d",borderRadius:7,background:"#f3fcf5"}}>
-        <strong>PIPELINE SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
-        <p>{activeScan.baseline.toLocaleString("en-US")} PIPELINE records assessed · <strong>{activeScan.passes.length.toLocaleString("en-US")} {activeScan.selected.length?"passed all selected checks":"unrestricted matches"}</strong> · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} failed.</p>
+        <strong>{activeScan.sourceKind==="GEM_JR"?"GEM JR INPUT":"PIPELINE"} SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
+        <p>{activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"saved GEM JR candidates":"PIPELINE records"} assessed · <strong>{activeScan.passes.length.toLocaleString("en-US")} {activeScan.audits.length?"passed all selected checks":"unrestricted matches"}</strong> · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} failed.</p>
         <p className="subtle">Checked requirements: {activeScan.audits.map(a=>a.label).join("; ")||"None — unrestricted"}. The table shows passes first, then programs needing evidence review. Nothing is automatically added to GEM membership. Source {stated(activeScan.asOf)}; run finished {new Date(activeScan.evaluatedAt).toLocaleString()}.</p>
         <button type="button" className="secondary" onClick={()=>setGemScans(current=>{const next={...current};delete next[stage];return next})}>SHOW SAVED {stage==="GEM"?"GEM":"GEM JR"} LIST</button>
       </div>}
