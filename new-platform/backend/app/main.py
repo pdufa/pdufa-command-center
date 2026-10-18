@@ -556,6 +556,59 @@ def read_wt_research(program_id: str):
     return {"programId": program_id, "exactKey": exact_key, **result}
 
 
+@app.get("/api/trial-source-workspace", dependencies=[Depends(require_internal_key)])
+def read_trial_sources_without_storage():
+    """Read-only source inventory during DB quota outages; NO Program ID synthesis."""
+    from .source_workspace import workspace
+    try:
+        snapshot = workspace()
+        clean = {
+            **snapshot,
+            "degradedReadOnly": True,
+            "disclaimer": ("READ-ONLY SOURCE VIEW. Persistent Program ID storage is unavailable "
+                           "or bypassed. No saved checklist/trade changes are possible. "
+                           + str(snapshot.get("disclaimer") or "")),
+            "members": {
+                stage: {**group,
+                        "rows": [{k:v for k,v in row.items() if k!="programId"}
+                                 for row in group.get("rows",[])],
+                        "history": [{k:v for k,v in row.items() if k!="programId"}
+                                    for row in group.get("history",[])]}
+                for stage,group in snapshot.get("members",{}).items()},
+            "pipeline": [{k:v for k,v in row.items() if k!="programId"}
+                         for row in snapshot.get("pipeline",[])],
+        }
+        return clean
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).error(
+            "PDUFA_SOURCE_READONLY_UNAVAILABLE error_type=%s",type(exc).__name__)
+        raise HTTPException(status_code=503,detail="Trial source inventory unavailable") from None
+
+
+@app.get("/api/trial-market/{stage}/{ticker}", dependencies=[Depends(require_internal_key)])
+def trial_market_data(stage: str, ticker: str, feed: str = "sip"):
+    """Alpaca issuer indicators for a current GEM/JR program, independent of DB."""
+    from .source_workspace import workspace
+    from .alpaca_trial_selection import for_ticker
+    stage=stage.upper()
+    ticker=ticker.upper()
+    if stage not in {"GEM", "GEM_JR"} or not TICKER_PATTERN.fullmatch(ticker):
+        raise HTTPException(status_code=422,detail="Invalid GEM stage or ticker")
+    if feed not in {"sip", "iex"}:
+        raise HTTPException(status_code=422,detail="Invalid Alpaca feed")
+    try:
+        member_rows=workspace().get("members",{}).get(stage,{}).get("rows",[])
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).error(
+            "TRIAL_MARKET_SOURCE_UNAVAILABLE error_type=%s", type(exc).__name__)
+        raise HTTPException(status_code=503,detail="Trial membership source unavailable") from None
+    if not any(str(row.get("ticker") or "").upper()==ticker for row in member_rows):
+        raise HTTPException(status_code=404,detail="Ticker not in this GEM stage")
+    return {"stage":stage, **for_ticker(ticker,feed)}
+
+
 @app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace():
     from .source_workspace import workspace
