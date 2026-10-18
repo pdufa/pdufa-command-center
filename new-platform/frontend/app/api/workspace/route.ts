@@ -30,6 +30,11 @@ export async function GET(req: NextRequest) {
         { status: 503, headers: { "Cache-Control": "private, no-store" } });
     }
     const data = await response.json();
+    // Accept the live Render backend's original parity field during the
+    // backend/frontend branch transition. Normalize before client validation.
+    if (data.sourceHealth?.streamlitPipelineParity && !data.sourceHealth.pipelineSourceParity) {
+      data.sourceHealth.pipelineSourceParity = data.sourceHealth.streamlitPipelineParity;
+    }
     if (!Array.isArray(data.pipeline) ||
         !data.sourceHealth?.pipelineSourceParity ||
         data.pipeline.length !== data.sourceHealth.pipelineSourceParity.exactPrograms) {
