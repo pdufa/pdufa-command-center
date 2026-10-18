@@ -1,13 +1,25 @@
 """Native stage-specific scan checklists on GEM JR and GEM tabs."""
 import csv,io
 import streamlit as st
-from gem_730_requirement_scan import CRITERIA,read_rows,scan
+from gem_730_requirement_scan import CRITERIA,TRIAL_CRITERIA,TRADING_CRITERIA,read_rows,scan
 
 def render_stage_scan(stage):
  if stage not in ("GEM JR","GEM"):raise ValueError("Unknown GEM stage")
  with st.expander(stage+" — REQUIREMENTS CHECKLIST & SCAN",expanded=False):
   st.caption("Select requirements, then click SCAN "+stage+". Every checkbox affects the scan count. Unverified evidence cannot pass a selected requirement.")
-  selected=[key for key,label in CRITERIA.items() if st.checkbox(label,key="stage_scan_"+stage+"_"+key,value=False)]
+  selected=[]
+  with st.expander("TRIAL / CLINICAL / REGULATORY CHECKBOXES",expanded=True):
+   st.caption("Clinical trials, exact-program evidence, financing verification, and source checks.")
+   for key,label in TRIAL_CRITERIA.items():
+    if st.checkbox(label,key="stage_scan_"+stage+"_"+key,value=False):
+     selected.append(key)
+  with st.expander("TRADING",expanded=False):
+   st.caption("Optional market, financing-risk, timing and accumulation requirements. "
+              "Selected Trading checkboxes combine with the clinical checks in ONE scan; "
+              "an unverified item cannot pass.")
+   for key,label in TRADING_CRITERIA.items():
+    if st.checkbox(label,key="stage_scan_"+stage+"_"+key,value=False):
+     selected.append(key)
   if st.button("SCAN "+stage+" — ALL 730 TRIALS",key="stage_scan_button_"+stage,type="primary"):
    try:
     rows=read_rows()
