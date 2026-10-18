@@ -84,6 +84,27 @@ class EntryGateTests(unittest.TestCase):
         self.assertFalse(out["gates"]["second_financing"].startswith("PASS"))
         self.assertFalse(out["gates"]["no_unresolved_dilution"].startswith("PASS"))
 
+    def test_second_financing_is_optional_but_sec_dilution_review_is_mandatory(self):
+        reg, att, fin, sec, market = sample()
+        fin = {}  # No first or second post-readout financing documented
+        att["financing_closures_attested"] = ""
+        att["financing_closure_review_source"] = ""
+        out = evaluate_entry(reg, att, fin, sec, market, TODAY)
+        self.assertFalse(out["gates"]["second_financing"].startswith("PASS"))
+        self.assertTrue(out["gates"]["no_unresolved_dilution"].startswith("PASS"))
+        self.assertTrue(out["verdict"].startswith("ENTRY READY"))
+        self.assertTrue(any("OPTIONAL financing" in note for note in out["missing"]))
+
+        # A missing ATM review, a future review, or blocked SEC coverage
+        # independently holds entry even when financing is optional.
+        att["atm_dilution_source"] = ""
+        self.assertFalse(evaluate_entry(reg, att, fin, sec, market, TODAY)
+                         ["verdict"].startswith("ENTRY READY"))
+        att["atm_dilution_source"] = "https://www.sec.gov/Archives/edgar/data/1234/00012345/b.htm"
+        sec["financing_status"] = "SOURCE_BLOCKED_RETAINED"
+        self.assertFalse(evaluate_entry(reg, att, fin, sec, market, TODAY)
+                         ["gates"]["no_unresolved_dilution"].startswith("PASS"))
+
     def test_second_financing_must_be_after_readout_and_after_first(self):
         reg,att,fin,sec,market=sample()
         fin["second_financing_date"]="2026-09-13"
