@@ -245,8 +245,6 @@ def main(argv=None):
     audit_report["historical_backfill_priority_rows"]=len(priority)
     (args.output_dir/"coverage_and_blockers.json").write_text(
         json.dumps(audit_report,sort_keys=True,indent=2)+"\n",encoding="utf-8")
-    (args.output_dir/"coverage_and_blockers.json").write_text(
-        json.dumps(audit_report,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(audit_report,sort_keys=True))
     return 0
 
