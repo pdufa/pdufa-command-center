@@ -36,11 +36,11 @@ class FakeSECVerifier:
 
 class GEMEvidenceTests(unittest.TestCase):
     def test_all_four_groups_are_derived_only_from_original_benchmarks(self):
-        rows = [master(True, True, True), master(True), master(False, True), master()]
+        rows = [master(True, True, True), master(True, False, True), master(False, True), master()]
         details = report_rows(rows, sec_current=False, feed_current=False)
         self.assertEqual([r["Verification group"] for r in details], list(GROUPS))
         self.assertEqual(group_counts(details), dict.fromkeys(GROUPS, 1))
-        self.assertEqual(sum(r["GEM eligible — saved"] for r in details), 1)
+        self.assertEqual(sum(r["GEM eligible — saved"] for r in details), 2)
         self.assertIn("Current SEC recheck unavailable", details[0]["Missing / recheck needed"])
 
     def test_stale_source_never_confers_or_revokes_historical_eligibility(self):
