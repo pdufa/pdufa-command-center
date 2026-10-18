@@ -10,7 +10,7 @@
     "saved_scan_feed_current": true,
     "sec_financing_source_current": false
   },
-  "action": "RESCAN_ALL",
+  "action": "REVERIFY_PARTIAL",
   "artifact_integrity": "NOT INDEPENDENTLY CHECKED",
   "awaiting_second_financing": 0,
   "blocking_or_review_flags": [
@@ -25,40 +25,40 @@
     "deteriorating": 0,
     "dilution_alerts": 37,
     "minimum_entry_months": 12.0,
-    "missing_or_stale": 346,
-    "source_backed_pass": 10,
+    "missing_or_stale": 1921,
+    "source_backed_pass": 16,
     "target_count": 34,
-    "under_12_months": 16
+    "under_12_months": 31
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-18T00:44:40.140163+00:00",
-    "matched_posted_results": 2483,
+    "finished_at": "2026-10-18T05:12:49.319566+00:00",
+    "matched_posted_results": 99,
     "new_records": 0,
     "stored_results": 2491,
-    "studies_checked": 50033
+    "studies_checked": 3989
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-18T00:47:44.614465+00:00",
+  "generated_at_utc": "2026-10-18T05:15:28.468240+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
     "managers_complete": 4,
     "managers_targeted": 4,
-    "matched_programs": 261,
-    "with_manager_accumulation": 116
+    "matched_programs": 1249,
+    "with_manager_accumulation": 430
   },
   "historical_return_edge_validated": false,
   "insider_form4": {
     "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
     "issuers_complete": 32,
     "issuers_targeted": 34,
-    "matched_program_rows": 88,
+    "matched_program_rows": 314,
     "source_errors": 2,
-    "with_open_market_purchases": 4
+    "with_open_market_purchases": 11
   },
   "label": "BLOCK 4 \u2014 GEMS",
   "market_source_health": {
@@ -74,8 +74,8 @@
     "Post-Financing": 0
   },
   "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 39083281274,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39083281274",
+  "run_id": 39099443986,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39099443986",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
