@@ -1,0 +1,10 @@
+{
+  "census_trials": 730,
+  "matched_existing_gem": 5,
+  "matched_existing_gem_jr": 3,
+  "unmatched_pipeline": 722,
+  "existing_active_gem": 6,
+  "existing_active_gem_jr": 11,
+  "method": "exact ticker and NCT intersection with existing GEM stage membership; does not requalify trials",
+  "note": "This is the actual 730-to-existing-GEM overlap, NOT a fresh 730-trial clinical/financial qualification scan."
+}
