@@ -166,12 +166,13 @@ export default function PublishedScansPanel() {
   }
 
   const sources = record?.sources;
-  return <section className="panel">
+  return <section className="panel scans-page">
     <h2>SCANS — Published source scores and outstanding evidence</h2>
     <p className="subtle">This dashboard reads the original published GitHub scan reports independently of the database. With server-side GitHub authorization, it can directly dispatch the existing scanners; otherwise it opens GitHub's own manual run form. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
     <p><a href={SCAN_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN EXISTING GITHUB SCAN RUN CONTROLS ↗</a></p>
     <LiveScansProgress />
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
+    <div className="scans-actions-grid">
     <div className="source-health">
       <strong>Run existing scanners from this dashboard</strong>
       <p className="subtle">Manual commands use the original GitHub Actions workflows; the only automated schedule remains the original 10 PM Pacific chain. An accepted request is not a completed scan.</p>
@@ -206,10 +207,42 @@ export default function PublishedScansPanel() {
       {runs?.manual?.[0] && <p className="subtle">Last manual control: <a href={runs.manual[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.manual[0].id}</a> — {runs.manual[0].status} / {runs.manual[0].conclusion || "not concluded"}.</p>}
       {runs?.overnight?.[0] && <p className="subtle">Last full overnight chain: <a href={runs.overnight[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.overnight[0].id}</a> — {runs.overnight[0].status} / {runs.overnight[0].conclusion || "not concluded"}.</p>}
     </div>
+    <section className="source-health" aria-label="Gmail per-section and all-email checks">
+      <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
+      <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least: <strong>P1</strong> overnight / PIPELINE / GEM JR / GEM; <strong>P2</strong> FDA / SEC / financial / source evidence; <strong>P3</strong> Gmail authentication and notifications; <strong>P4</strong> dashboard / API / CI; <strong>P5</strong> already-resolved, superseded and miscellaneous historical alerts. Critical items receive the limited repair attempts first.</p>
+      <p className="subtle">Only approved transient workflow failures can be retried. FDA/SEC/financial evidence gaps need source verification, not automatic data changes. Emails move to Gmail Trash only when the <strong>same exact GitHub run</strong> has succeeded on a later attempt. Unresolved issues stay visible. No permanent deletion.</p>
+      <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:"0.65rem"}}>
+        <label>Gmail section
+          <select value={gmailSection} onChange={e => setGmailSection(e.target.value)}>
+            {GMAIL_SECTIONS.map(([value,name]) => <option key={value} value={value}>{name}</option>)}
+          </select>
+        </label>
+        <button type="button" disabled={gmailSending} onClick={() => checkGmail(gmailSection)}>
+          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "CHECK SELECTED GMAIL SECTION" : "OPEN SECTION GMAIL CHECK ↗"}
+        </button>
+        <button type="button" disabled={gmailSending} onClick={() => checkGmail("ALL")}>
+          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "CHECK ALL EMAILS" : "OPEN ALL-EMAIL GMAIL CHECK ↗"}
+        </button>
+        <button type="button" disabled={gmailSending} onClick={() => checkGmail(gmailSection, true)}>
+          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "FIX ISSUES & TRASH RESOLVED — SECTION" : "OPEN FIX & TRASH SECTION ↗"}
+        </button>
+        <button type="button" disabled={gmailSending} onClick={() => checkGmail("ALL", true)}>
+          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "FIX ISSUES & TRASH RESOLVED — ALL" : "OPEN FIX & TRASH ALL ↗"}
+        </button>
+        <button type="button" className="secondary" onClick={() => setScanRefresh(n=>n+1)}>REFRESH GMAIL AUDIT STATUS</button>
+      </div>
+      {!runs?.dispatchEnabled && <p className="subtle">Without a server-side GitHub token, the check and repair buttons open their respective manual GitHub forms; sign in, choose main and the requested section, and press Run workflow. Direct one-click dispatch requires PDUFA_GITHUB_TOKEN in Vercel.</p>}
+      {gmailMessage && <p role="status">{gmailMessage}</p>}
+      {runs?.gmailRepair?.[0] && <p className="subtle">Latest FIX &amp; TRASH action: <a href={runs.gmailRepair[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmailRepair[0].id}</a> — {runs.gmailRepair[0].status} / {runs.gmailRepair[0].conclusion || "not concluded"}. Inspect the run summary to see how many were retried, confirmed resolved, or moved to Trash.</p>}
+      {runs?.gmail?.[0] && <p className="subtle">Latest Gmail audit: <a href={runs.gmail[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmail[0].id}</a> — {runs.gmail[0].status} / {runs.gmail[0].conclusion || "not concluded"}. Open the run summary for counts or its audit artifact.</p>}
+      <p><a href={GMAIL_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN READ-ONLY AUDIT HISTORY ↗</a> · <a href={GMAIL_REPAIR_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN FIX &amp; TRASH HISTORY ↗</a></p>
+    </section>
+    </div>
     {error && <p className="risk-line">{error}</p>}
     {!record && !error && <p className="subtle">Loading original published scan reports…</p>}
     {record && <>
       <p className="subtle">Report coverage: {value(record.status)} · Evidence updated {value(sources?.updated_at_utc)} · Source workflow #{value(sources?.latest_run_id)}. These scores do not indicate investment or FDA-approval probability.</p>
+      <div className="scans-evidence-masonry">
       <div className="source-health">
         <strong>Five-source audit: {value(sources?.status)}</strong>
         <span>{value(sources?.findings_verified)} findings verified / {value(sources?.findings_due)} examined; {value(sources?.required_findings_unresolved)} required findings unresolved.</span>
@@ -241,37 +274,9 @@ export default function PublishedScansPanel() {
         </details>;
       })}
       <p className="subtle">If the new platform's persistent database is unavailable, source reports can remain readable here while saved checklists, program IDs, and other database-dependent operations stay blocked to prevent data loss.</p>
+      </div>
     </>}
     <VerificationLedgerPanel />
-    <section className="source-health" aria-label="Gmail per-section and all-email checks">
-      <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
-      <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least: <strong>P1</strong> overnight / PIPELINE / GEM JR / GEM; <strong>P2</strong> FDA / SEC / financial / source evidence; <strong>P3</strong> Gmail authentication and notifications; <strong>P4</strong> dashboard / API / CI; <strong>P5</strong> already-resolved, superseded and miscellaneous historical alerts. Critical items receive the limited repair attempts first.</p>
-      <p className="subtle">Only approved transient workflow failures can be retried. FDA/SEC/financial evidence gaps need source verification, not automatic data changes. Emails move to Gmail Trash only when the <strong>same exact GitHub run</strong> has succeeded on a later attempt. Unresolved issues stay visible. No permanent deletion.</p>
-      <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:"0.65rem"}}>
-        <label>Gmail section
-          <select value={gmailSection} onChange={e => setGmailSection(e.target.value)}>
-            {GMAIL_SECTIONS.map(([value,name]) => <option key={value} value={value}>{name}</option>)}
-          </select>
-        </label>
-        <button type="button" disabled={gmailSending} onClick={() => checkGmail(gmailSection)}>
-          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "CHECK SELECTED GMAIL SECTION" : "OPEN SECTION GMAIL CHECK ↗"}
-        </button>
-        <button type="button" disabled={gmailSending} onClick={() => checkGmail("ALL")}>
-          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "CHECK ALL EMAILS" : "OPEN ALL-EMAIL GMAIL CHECK ↗"}
-        </button>
-        <button type="button" disabled={gmailSending} onClick={() => checkGmail(gmailSection, true)}>
-          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "FIX ISSUES & TRASH RESOLVED — SECTION" : "OPEN FIX & TRASH SECTION ↗"}
-        </button>
-        <button type="button" disabled={gmailSending} onClick={() => checkGmail("ALL", true)}>
-          {gmailSending ? "REQUESTING…" : runs?.dispatchEnabled ? "FIX ISSUES & TRASH RESOLVED — ALL" : "OPEN FIX & TRASH ALL ↗"}
-        </button>
-        <button type="button" className="secondary" onClick={() => setScanRefresh(n=>n+1)}>REFRESH GMAIL AUDIT STATUS</button>
-      </div>
-      {!runs?.dispatchEnabled && <p className="subtle">Without a server-side GitHub token, the check and repair buttons open their respective manual GitHub forms; sign in, choose main and the requested section, and press Run workflow. Direct one-click dispatch requires PDUFA_GITHUB_TOKEN in Vercel.</p>}
-      {gmailMessage && <p role="status">{gmailMessage}</p>}
-      {runs?.gmailRepair?.[0] && <p className="subtle">Latest FIX &amp; TRASH action: <a href={runs.gmailRepair[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmailRepair[0].id}</a> — {runs.gmailRepair[0].status} / {runs.gmailRepair[0].conclusion || "not concluded"}. Inspect the run summary to see how many were retried, confirmed resolved, or moved to Trash.</p>}
-      {runs?.gmail?.[0] && <p className="subtle">Latest Gmail audit: <a href={runs.gmail[0].html_url} target="_blank" rel="noopener noreferrer">GitHub run #{runs.gmail[0].id}</a> — {runs.gmail[0].status} / {runs.gmail[0].conclusion || "not concluded"}. Open the run summary for counts or its audit artifact.</p>}
-      <p><a href={GMAIL_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN READ-ONLY AUDIT HISTORY ↗</a> · <a href={GMAIL_REPAIR_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN FIX &amp; TRASH HISTORY ↗</a></p>
-    </section>
+
   </section>;
 }
