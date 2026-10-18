@@ -1,4 +1,4 @@
-"""Two released-results/second-financing benchmarks, then advisory candidate ranking."""
+"""Only verified positive Phase 3 qualifies research; financing is optional risk evidence."""
 import unittest
 from unittest.mock import patch
 
@@ -66,12 +66,13 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
                 ))
         self.assertTrue(phase3_results_released(row, event(), as_of=DATE))
 
-    def test_unevidenced_second_financing_never_unlocks_rank(self):
+    def test_unevidenced_second_financing_is_optional_and_retains_risk_flag(self):
         row = sample(financed=False)
         found = assess(row, event(), as_of=DATE)
-        self.assertFalse(found["Two-benchmark eligible"])
-        self.assertIsNone(found["Two-benchmark priority /100"])
+        self.assertTrue(found["Two-benchmark eligible"])
+        self.assertIsNotNone(found["Two-benchmark priority /100"])
         self.assertIn("PENDING", found["Benchmark 2 — Financing #2 closed"])
+        self.assertIn("OPTIONAL", found["Two-benchmark risk flags"])
         row = sample()
         row["Verified 2nd financing close date"] = ""
         self.assertFalse(second_financing_closed(row, event(), as_of=DATE))
@@ -127,9 +128,9 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
             row.update(assess(row, event(row["Ticker"]), as_of=DATE))
             rows.append(row)
         ranked = assign_ranks(rows)
-        self.assertEqual([r["Ticker"] for r in ranked], ["AAA", "BBB"])
-        self.assertEqual([r["Two-benchmark rank"] for r in ranked], [1, 2])
-        self.assertIsNone(c["Two-benchmark rank"])
+        self.assertEqual([r["Ticker"] for r in ranked], ["AAA", "BBB", "CCC"])
+        self.assertEqual([r["Two-benchmark rank"] for r in ranked], [1, 2, 3])
+        self.assertIn("OPTIONAL", c["Two-benchmark risk flags"])
 
     def test_scanner_primary_shortlist_does_not_inherit_old_financial_gate(self):
         row = sample()
