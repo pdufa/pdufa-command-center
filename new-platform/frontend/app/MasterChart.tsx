@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Technical = {
   benchmarks?: {phase3:boolean;secondFinancing:boolean;bothConfirmed:boolean;warning:string};
@@ -232,6 +232,11 @@ const stages=[
 export default function MasterChart({records,gemJr,gem,history=[],watch,trade,sourceHealth,asOf,selectedId,onSelect,onInspect}:{records:ChartRecord[];gemJr:ChartRecord[];gem:ChartRecord[];history?:History[];watch:string[];trade:string[];sourceHealth?:SourceStatus;asOf:string;selectedId:string;onSelect:(id:string)=>void;onInspect?:(r:ChartRecord)=>void}){
   const [view,setView]=useState<"poster"|"readable">("poster");
   const [filter,setFilter]=useState("");
+  // Phone/tablet default: fit chart panels to the viewport.
+  // Users can still explicitly choose the wide reference poster.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 900px)").matches) setView("readable");
+  }, []);
   const catalog=useMemo(()=>{
     const cache=new Map<string,ChartRecord>();
     for(const item of [...gem,...gemJr,...records.filter(r=>r.id.startsWith("APPLICATION|"))])if(!cache.has(item.id))cache.set(item.id,item);
