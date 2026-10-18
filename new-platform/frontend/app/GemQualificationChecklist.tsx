@@ -12,7 +12,7 @@ export type GemScanResult = {
   evaluatedAt: string;
   baseline: number;
   sourceTotal: number;
-  sourceKind: "PIPELINE" | "GEM_JR" | "GEM_JR_LIVE" | "GEM_JR_SAVED";
+  sourceKind: "PIPELINE" | "GEM_JR" | "GEM_JR_LIVE" | "GEM_JR_UNSCREENED";
   selected: string[];
   passes: Candidate[];
   needsReview: Candidate[];
@@ -116,32 +116,31 @@ export function buildGemJrLivePreview(rows:Trial[],checks:[string,string,(x:Tria
  }
  return {asOf,sourceTotal,selected:checks.map(([key])=>key),passes,needsReview};
 }
-// Saved GEM JR membership and session-scoped scanner output are different
-// source types. Without a recent JR scan, the optional GEM checkbox uses
-// the published exact-program GEM JR membership and marks qualification
-// unverified, not as an imaginary completed scan.
-export function resolveGemJrSource(gemJrScan:GemScanResult|null, saved:Trial[],livePreview:GemJrLivePreview|null=null){
-  if(gemJrScan) return {
-    rows:[...gemJrScan.passes,...gemJrScan.needsReview],
-    reviewIds:new Set(gemJrScan.needsReview.map(row=>row.id)),
-    sourceKind:"GEM_JR" as const,
-    label:"GEM JR combined scan candidates",
-    scanAvailable:true
-  };
-  if(livePreview) return {
-    rows:[...livePreview.passes,...livePreview.needsReview],
-    reviewIds:new Set(livePreview.needsReview.map(row=>row.id)),
-    sourceKind:"GEM_JR_LIVE" as const,
-    label:"current GEM JR checkbox screen (not completed SCAN)",
-    scanAvailable:false
-  };
-  return {
-    rows:saved,
-    reviewIds:new Set(saved.map(row=>row.id)),
-    sourceKind:"GEM_JR_SAVED" as const,
-    label:"saved GEM JR programs (qualification not re-scanned)",
-    scanAvailable:false
-  };
+// GEM JR membership saved to a stage and the research candidate universe
+// are not the same list. Never substitute 11 saved for ~694 screened rows.
+export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJrLivePreview|null,fullPipeline:Trial[]){
+ if(gemJrScan) return {
+  rows:[...gemJrScan.passes,...gemJrScan.needsReview],
+  reviewIds:new Set(gemJrScan.needsReview.map(row=>row.id)),
+  sourceKind:"GEM_JR" as const,
+  label:"completed GEM JR combined scan candidates",
+  scanAvailable:true
+ };
+ if(livePreview) return {
+  rows:[...livePreview.passes,...livePreview.needsReview],
+  reviewIds:new Set(livePreview.needsReview.map(row=>row.id)),
+  sourceKind:"GEM_JR_LIVE" as const,
+  label:"current GEM JR checkbox-screen candidates (not a completed scan)",
+  scanAvailable:false
+ };
+ return {
+  rows:fullPipeline,
+  // Unscreened research universe never qualifies as passed GEM JR evidence.
+  reviewIds:new Set(fullPipeline.map(row=>row.id)),
+  sourceKind:"GEM_JR_UNSCREENED" as const,
+  label:"full published research universe — no GEM JR screen yet; all need verification",
+  scanAvailable:false
+ };
 }
 
 export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
@@ -162,7 +161,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  // the independent saved membership list or a ticker-level approximation.
  // Both passed and needs-verification candidates feed GEM; failed do not.
  const useGemJrSource=stage==="GEM"&&selected.includes("gem_jr_source");
- const juniorSource=useMemo(()=>resolveGemJrSource(gemJrScan,gemJrSavedRows,gemJrLivePreview),[gemJrScan,gemJrSavedRows,gemJrLivePreview]);
+ const juniorSource=useMemo(()=>resolveGemJrSource(gemJrScan,gemJrLivePreview,pipeline),[gemJrScan,gemJrLivePreview,pipeline]);
  const gemJrRows=juniorSource.rows;
  // Saved membership is evidence that GEM JR tracked the exact program,
  // not proof that the user's selected GEM JR screening checks have passed.
@@ -360,8 +359,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white",gridColumn:"1"}}>
    <input type="checkbox" aria-label="Gem Jr Trials (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
    <span>Gem Jr Trials <small style={{fontSize:12,color:"#175a35",fontWeight:700}}>Optional</small>
-     {useGemJrSource&&<small style={{display:"block",marginTop:4,color:"#215b40"}}>{gemJrScan?"GEM JR completed scan: "+gemJrRows.length.toLocaleString("en-US")+" candidates":gemJrLivePreview?"GEM JR live checkbox results: "+gemJrRows.length.toLocaleString("en-US")+" candidates (not yet SCAN run)":"Published GEM JR saved programs: "+gemJrRows.length.toLocaleString("en-US")+" (qualification not re-scanned)"}</small>}
-     {useGemJrSource&&gemJrRows.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>{gemJrScan?"The current GEM JR scan produced no eligible or review candidates.":gemJrLivePreview?"The GEM JR checkbox results exclude all candidates.":"No saved GEM JR programs are available in the current source snapshot."}</small>}
+     {useGemJrSource&&<small style={{display:"block",marginTop:4,color:"#215b40"}}>{gemJrScan?"GEM JR completed scan: "+gemJrRows.length.toLocaleString("en-US")+" candidates":gemJrLivePreview?"GEM JR live checkbox results: "+gemJrRows.length.toLocaleString("en-US")+" candidates (not yet SCAN run)":"GEM JR full research universe: "+gemJrRows.length.toLocaleString("en-US")+" candidates (unscreened; verification required). Saved GEM JR stage: "+gemJrSavedRows.length.toLocaleString("en-US")+" programs."}</small>}
+     {useGemJrSource&&gemJrRows.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>{gemJrScan?"The current GEM JR scan produced no eligible or review candidates.":gemJrLivePreview?"The GEM JR checkbox results exclude all candidates.":"The full pipeline research universe has no published candidates."}</small>}
    </span>
  </label>}
 
@@ -381,7 +380,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
 
  <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+"."}</p>
  {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}>
-  <strong>{result.sourceKind==="GEM_JR"?"GEM JR scan":result.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox preview":result.sourceKind==="GEM_JR_SAVED"?"Saved GEM JR membership":"Full PIPELINE"} evidence screen complete · Run #{result.runNumber}</strong>
+  <strong>{result.sourceKind==="GEM_JR"?"GEM JR scan":result.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox preview":result.sourceKind==="GEM_JR_UNSCREENED"?"Unscreened pipeline research universe":"Full PIPELINE"} evidence screen complete · Run #{result.runNumber}</strong>
   <p><strong style={{fontSize:22}}>{(result.passes.length+result.needsReview.length).toLocaleString("en-US")} total combined candidates</strong> across all selected requirements (AND), counted once each. Of {result.baseline.toLocaleString("en-US")} {result.sourceKind==="GEM_JR"?"GEM JR scan candidates":result.sourceKind==="GEM_JR_SAVED"?"saved GEM JR programs (not re-scanned)":"PIPELINE records"} evaluated: {result.passes.length.toLocaleString("en-US")} verified matches · {result.needsReview.length.toLocaleString("en-US")} need evidence review · {result.fails.length.toLocaleString("en-US")} excluded. Completed at {new Date(result.evaluatedAt).toLocaleTimeString()}.</p>
   <p><strong>Applied requirements:</strong> {result.audits.length?result.audits.map(x=>x.label).join(" · "):"None (all records included)"}</p>
 
