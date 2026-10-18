@@ -112,7 +112,7 @@ def render_gem_scans(root="data"):
     m1, m2, m3 = st.columns(3)
     m1.metric("Phase 3 readout verified", status.get("two_benchmark_phase3_count", 0))
     m2.metric("Second financing closed", status.get("two_benchmark_financing_count", 0))
-    m3.metric("Both benchmarks met", status.get("two_benchmark_candidate_count", 0))
+    m3.metric("Phase 3 qualified (financing optional)", status.get("two_benchmark_candidate_count", 0))
     st.markdown("### GEM — UNIFIED MASTER LIST")
     st.caption(
         "ONE stock-program list for Phase 3 → Post-Financing → PDUFA. "
@@ -617,7 +617,7 @@ def render_gem_scans(root="data"):
         "at or inside that boundary is a serious timing warning, rather than "
         "a third qualification benchmark. The separate legacy Stage 1 "
         "workspace still has an older -7 entry filter; it is not the "
-        "two-benchmark GEM eligibility policy."
+        "Phase 3 GEM qualification policy (second financing optional)."
     )
     discrimination = gem_discrimination_audit(items, STAGES)
     with st.expander("GEM RANKING QUALITY — TIES & EVIDENCE LIMITS", expanded=False):
