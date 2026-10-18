@@ -11,12 +11,16 @@ import argparse
 import json
 import math
 import os
+import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from statistics import mean
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
 
 from gem_historical_signal_backtest import atr_at
 from post_phase3_trade_backtest import day, validate_event
