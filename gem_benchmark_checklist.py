@@ -13,7 +13,7 @@ from gem_master_list import PHASE3_OK, FINANCING_OK
 
 BENCHMARKS = (
     ("phase3_verified", "1. Phase 3 RESULTS released — exact-program verified"),
-    ("financing_verified", "2. SECOND financing CLOSED — distinct post-readout transactions"),
+    ("financing_verified", "OPTIONAL. Second financing CLOSED — distinct post-readout transactions"),
 )
 UMBRELLA = (
     ("phase3_data", "Phase 3 data / issuer lead observed (research umbrella)"),
@@ -262,7 +262,7 @@ def research_candidate_rows(master_rows, checklist_map, *, clinical_rechecks=(),
                  "Financing lead — Phase 3 review" if fin_lead else
                  "Phase 3 lead — financing review")
         state = (
-            "BOTH BENCHMARKS VERIFIED" if row.get("_eligible") is True else
+            "PHASE 3 VERIFIED — FINANCING OPTIONAL" if row.get("_eligible") is True else
             "RESEARCH ONLY — NOT GEM ELIGIBLE"
         )
         result.append({
