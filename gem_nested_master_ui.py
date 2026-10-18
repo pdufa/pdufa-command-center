@@ -187,7 +187,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     st.caption(
         "Stock → six 100-point factors → individual saved inputs, formulas and evidence. "
         "Every saved GEM candidate stays in this single sortable-ranked universe. "
-        "Only source-verified Phase 3 results release AND second distinct post-readout "
+        "Only source-verified successful Phase 3 results are required; second financing OPTIONAL. "
         "financing closure enable a GEM rank or score; W/T choices are manual labels, "
         "never trade execution or another qualification benchmark."
     )
@@ -258,7 +258,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
         )
     m1, m2, m3 = (st, st, st) if compact else st.columns(3)
     m1.metric("GEM programs", len(rows))
-    m2.metric("Verified 2-benchmark eligible", sum(r["_eligible"] for r in rows))
+    m2.metric("Verified successful Phase 3 eligible", sum(r["_eligible"] for r in rows))
     m3.metric("Watch / source review", sum(not r["_eligible"] for r in rows))
     checkbox_rows, checkbox_states = checklist_filters(
         rows, items,
@@ -377,7 +377,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                      "Verification": _value(r.get("Phase 3 Verified")),
                      "Date": _value(r.get("Phase 3 Result Date")),
                      "Evidence": _value(r.get("Phase 3 Source"))},
-                    {"Entry benchmark": "2. Second separate financing closed",
+                    {"Entry benchmark": "2. Second financing closed (OPTIONAL)",
                      "Verification": _value(r.get("Second Financing Closed")),
                      "Date": _value(r.get("Second Financing Close Date")),
                      "Evidence": _value(r.get("Financing Source"))},
