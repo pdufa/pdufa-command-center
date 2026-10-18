@@ -71,7 +71,7 @@ test("Alpaca metrics need 61 valid, dated, complete and recent bars",()=>{
 test("two complete closes below SMA20 and prior range are explicitly computed",()=>{
  const x=data();
  for(let i=x.bars.length-2;i<x.bars.length;i++){
-  x.bars[i].close=x.bars[i].open-4;
+  x.bars[i].close=x.bars[i].open-(i===x.bars.length-1?6:4);
   x.bars[i].low=x.bars[i].close-.3;
  }
  const result=base.sessionSnapshot(x,today);
