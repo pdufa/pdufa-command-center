@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
+import AlpacaTrialSelection from "./AlpacaTrialSelection";
 import EntrySignal from "./EntrySignal";
 import StayExitSignal from "./StayExitSignal";
 import IndicatorParityTables from "./IndicatorParityTables";
@@ -50,7 +51,7 @@ export type Candidate = {
 type StageHistory = { id: string; programId?: string; ticker: string; drug: string; enteredOn: string; leftOn: string; reason: string; status: string; cycle: number };
 type StageData = { asOf?: string; rows: Candidate[]; history?: StageHistory[] };
 type Snapshot = {
-  mode: string; asOf: string; disclaimer: string;
+  mode: string; asOf: string; disclaimer: string; degradedReadOnly?: boolean;
   marketCapRange: { min: number; max: number };
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
   trialFilterSchema?: number;
@@ -448,6 +449,25 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         try {
           const response = await fetch("/api/workspace", { cache: "no-store", signal: ctrl.signal });
           if (!response.ok) {
+            // Clinical/market research must remain visible even when Neon
+            // cannot assign permanent Program IDs. Never fabricate IDs.
+            if (response.status === 503) {
+              try {
+                const fallback = await fetch("/api/trial-source-workspace",
+                  {cache:"no-store",signal:ctrl.signal});
+                if (fallback.ok) {
+                  const data:Snapshot=await fallback.json();
+                  if (!ctrl.signal.aborted) {
+                    setSnapshot(data);
+                    setFetchError("");
+                    setRefreshing(false);
+                  }
+                  return;
+                }
+              } catch {
+                if(ctrl.signal.aborted)return;
+              }
+            }
             const transient = [502, 503, 504].includes(response.status);
             if (transient && attempt < retryDelays.length - 1) continue;
             throw new Error("Published source unavailable: " + response.status +
@@ -686,6 +706,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} programs · {stated(group?.asOf, "snapshot undated")}</span>
       </div>
+      <AlpacaTrialSelection stage={stage} records={rows}
+        onChoose={record=>selectTrial(record,"chart")} />
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
         <div className="gem-decision-summary">
           <span className="gem-decision-program">{chosen.ticker} · {stated(chosen.programId, "PROGRAM ID UNVERIFIED")} · {stage==="GEM"?"GEM":"GEM JR"}</span>
@@ -869,6 +891,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="workspace-overview">
       <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
       <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
+      {snapshot?.degradedReadOnly && <p className="workspace-banner"><strong>READ-ONLY TRIAL SELECTION.</strong> Persistent Program IDs and saved checklists are unavailable; source clinical records and Alpaca stock metrics can still be researched without making up IDs.</p>}
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
     {!snapshot && <div className="panel">{fetchError || "Loading saved Streamlit candidates…"}</div>}
