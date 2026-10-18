@@ -1,5 +1,5 @@
 "use client";
-import {useRef, useState} from "react";
+import {useMemo, useRef, useState} from "react";
 import type {Candidate} from "./Workspace";
 import {normalizeTrialId, twoTrialInputError} from "../lib/two-trial-programs";
 
@@ -94,6 +94,37 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const useGemJrSource=stage==="GEM"&&selected.includes("gem_jr_source");
  const sourceRows=useGemJrSource?gemJrCandidates:pipeline;
  const sourceLabel=useGemJrSource?"saved GEM JR candidates":"PIPELINE records";
+ // Use the same criterion evaluators for the live intersection count and
+ // the full SCAN audit, so the two result totals cannot disagree.
+ const chosen=useMemo(() => {
+   const checked=new Set(selected);
+   const checks:[string,string,(x:Trial)=>boolean|null][]=criteria.filter(([key])=>checked.has(key));
+   if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){
+     if(!checked.has(item.key))continue;
+     // A screening target or an NCT ID is not verification of an FDA/clinical
+     // fact. These optional alerts remain UNKNOWN until sourced evidence exists.
+     const goal=item.key==="two_trial"
+       ? "trial 1 "+normalizeTrialId(twoTrialIds[0])+"; trial 2 "+normalizeTrialId(twoTrialIds[1])+"; verify independent pivotal evidence"
+       : (optionalGoals[item.key]||"unset")+" "+item.unit;
+     checks.push([item.key,item.title+" (goal: "+goal+")",()=>null]);
+   }
+   return checks;
+ },[selected,stage,optionalGoals,twoTrialIds]);
+ const liveCounts=useMemo(() => {
+   let passes=0,needsReview=0,fails=0;
+   for(const row of sourceRows){
+     let hasFail=false,hasUnknown=false;
+     for(const [, , evaluate] of chosen){
+       const status=evaluate(row);
+       if(status===false){hasFail=true;break;}
+       if(status===null)hasUnknown=true;
+     }
+     if(hasFail)fails++;
+     else if(hasUnknown)needsReview++;
+     else passes++;
+   }
+   return {passes,needsReview,fails,total:passes+needsReview};
+ },[sourceRows,chosen]);
  function selectRequirements(next:string[]){
    if(running)return;
    setSelected(next);
@@ -126,15 +157,6 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    // Paint SCANNING before the CPU-bound saved-data evaluation begins.
    await new Promise<void>(resolve=>setTimeout(resolve,25));
    try{
-     const chosen:[string,string,(x:Trial)=>boolean|null][]=criteria.filter(([key])=>selected.includes(key));
-     if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){if(selected.includes(item.key)){
-       // An operator target is not evidence. Until exact-program sourced fields are
-       // published and verified, this optional check must remain UNKNOWN.
-       const goal=item.key==="two_trial"
-         ? "trial 1 "+normalizeTrialId(twoTrialIds[0])+"; trial 2 "+normalizeTrialId(twoTrialIds[1])+"; verify independent pivotal evidence"
-         : (optionalGoals[item.key]||"unset")+" "+item.unit;
-       chosen.push([item.key,item.title+" (goal: "+goal+")",()=>null]);
-     }}
      const audits:GemCriterionAudit[]=chosen.map(([key,label])=>({key,label,passed:0,failed:0,unknown:0}));
      const passes:Trial[]=[],fails:Trial[]=[],needsReview:Trial[]=[];
      for(const record of sourceRows){
@@ -224,6 +246,16 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  </label>}
  {criteria.map(([key,label])=>{const suggested=showSuggestions&&suggestedByStage[stage].includes(key);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:suggested?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:suggested?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{suggested&&<small style={{display:"block",fontSize:11,color:"#175a35",fontWeight:700}}>Suggested · optional</small>}</span></label>})}</div>
 
+ <div role="status" aria-live="polite" aria-label="Combined count for all checked GEM qualification requirements" style={{border:"1px solid #9dbda5",borderRadius:8,padding:12,marginBottom:14,background:"#f1f9f2"}}>
+   <strong style={{display:"block",marginBottom:7}}>LIVE COMBINED RESULT — {selected.length.toLocaleString("en-US")} checked {selected.length===1?"option":"options"} (all selected requirements together)</strong>
+   <div style={{display:"flex",gap:14,flexWrap:"wrap",alignItems:"baseline"}}>
+     <span><strong style={{fontSize:24}}>{liveCounts.total.toLocaleString("en-US")}</strong> not ruled out</span>
+     <span><strong>{liveCounts.passes.toLocaleString("en-US")}</strong> verified matches</span>
+     <span><strong>{liveCounts.needsReview.toLocaleString("en-US")}</strong> need evidence</span>
+     <span><strong>{liveCounts.fails.toLocaleString("en-US")}</strong> excluded</span>
+   </div>
+   <small style={{display:"block",marginTop:6}}>{sourceRows.length.toLocaleString("en-US")} {sourceLabel} considered. {chosen.length===0?"No qualification filters selected; the entire input qualifies for review.":"All checked qualification rules must pass together. Unknown evidence is counted for review, never as a verified pass."} These numbers update when checkboxes change; SCAN displays the detailed results.</small>
+ </div>
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>DESELECT ALL</button><button type="button" onClick={()=>setShowSuggestions(value=>!value)} aria-pressed={showSuggestions} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:showSuggestions?"#bbe5c8":"#e4f3e8",fontWeight:700}}>{showSuggestions?"HIDE SUGGESTIONS":"SUGGESTED"}</button></div>
 
 
