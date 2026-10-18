@@ -49,6 +49,15 @@ def gem_research_id(record, record_ids, pipeline_tickers):
         identifier = "APPLICATION|" + event
     elif re.fullmatch(r"NCT\d{8}", nct):
         identifier = "TRIAL|" + nct
+        canonical = str(pipeline_tickers.get(identifier) or "").strip().upper()
+        if identifier in record_ids and canonical and canonical != ticker:
+            return ""
+        # Trial registries can omit an issuer or list shared trials.
+        # Never put multiple different tickers under the SAME membership key.
+        # Preserve canonical Pipeline ID only with a known matching issuer.
+        if identifier not in record_ids or not canonical:
+            return identifier + "|ISSUER|" + ticker
+        return identifier
     else:
         return ""
     if identifier in record_ids:
