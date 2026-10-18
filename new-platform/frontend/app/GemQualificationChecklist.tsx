@@ -214,15 +214,16 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- {stage==="GEM"&&<label style={{display:"flex",gap:10,alignItems:"flex-start",padding:12,marginBottom:14,border:"2px solid #3e8060",borderRadius:8,background:"#e7f5eb"}}>
-   <input type="checkbox" aria-label="Use saved GEM JR candidates for GEM scan" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
-   <span><strong>Use saved GEM JR candidates as GEM scan input</strong>
-     <small style={{display:"block",marginTop:4}}>Checked: evaluate the {gemJrCandidates.length.toLocaleString("en-US")} exact programs currently in GEM JR. Unchecked: evaluate the entire PIPELINE. This does not promote or change saved memberships.</small>
-     {useGemJrSource&&gemJrCandidates.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>No saved GEM JR candidates available — scan cannot proceed.</small>}
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes, including the optional GEM JR input at #1 in GEM, start unchecked. SUGGESTED shows green guidance without checking boxes; DESELECT ALL clears all selections.</p>
+ <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>
+ {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:9,alignItems:"flex-start",padding:11,border:"2px solid #31834b",borderRadius:6,background:"#eef9f0",gridColumn:"1"}}>
+   <input type="checkbox" aria-label="1. Use GEM JR trials for GEM scan (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
+   <span><strong>#1 — Use GEM JR trials for GEM scan (optional)</strong>
+     <small style={{display:"block",marginTop:4}}>Checked: scan {gemJrCandidates.length.toLocaleString("en-US")} saved GEM JR programs only. Unchecked: scan the full PIPELINE. No automatic promotion.</small>
+     {useGemJrSource&&gemJrCandidates.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>No saved GEM JR trials available — cannot run the scan.</small>}
    </span>
  </label>}
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All requirements start unchecked. SUGGESTED toggles green guidance highlights without checking any boxes. DESELECT ALL clears every checked requirement.</p>
- <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>{criteria.map(([key,label])=>{const suggested=showSuggestions&&suggestedByStage[stage].includes(key);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:suggested?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:suggested?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{suggested&&<small style={{display:"block",fontSize:11,color:"#175a35",fontWeight:700}}>Suggested · optional</small>}</span></label>})}</div>
+ {criteria.map(([key,label])=>{const suggested=showSuggestions&&suggestedByStage[stage].includes(key);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:suggested?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:suggested?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{suggested&&<small style={{display:"block",fontSize:11,color:"#175a35",fontWeight:700}}>Suggested · optional</small>}</span></label>})}</div>
 
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>DESELECT ALL</button><button type="button" onClick={()=>setShowSuggestions(value=>!value)} aria-pressed={showSuggestions} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:showSuggestions?"#bbe5c8":"#e4f3e8",fontWeight:700}}>{showSuggestions?"HIDE SUGGESTIONS":"SUGGESTED"}</button></div>
 
