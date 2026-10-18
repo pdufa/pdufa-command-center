@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 
 from gem_financing_gate import second_post_phase3_close, sec_recheck_current
 from gem_two_benchmark import phase3_results_released
-from pipeline_source_scope import pipeline_origins, gem_pipeline_id
+from pipeline_source_scope import pipeline_origins, gem_research_id
 
 CLOSED_OUTCOMES = {"APPROVED", "CRL", "REJECTED", "WITHDRAWN", "REFUSED"}
 
@@ -74,7 +74,7 @@ def source_cleared_gems(root="data", *, as_of=None):
         if not ticker or not nct:
             continue
         program = {"Ticker": ticker, "NCT ID": nct, "Exact event": key}
-        pipeline_id = gem_pipeline_id(program, pipeline_ids, pipeline_tickers)
+        pipeline_id = gem_research_id(program, pipeline_ids, pipeline_tickers)
         if not pipeline_id:
             continue
         phase3 = phase3_results_released(program, event, as_of=today)
@@ -130,6 +130,8 @@ def source_cleared_gems(root="data", *, as_of=None):
             "NCT ID": nct,
             "Exact program": key,
             "Pipeline ID": pipeline_id,
+            "Pipeline linkage": ("IN PIPELINE" if pipeline_id in pipeline_ids else
+                                 "SOURCE-CLEARED — PIPELINE INTAKE PENDING"),
             "Phase 3 date": str(event.get("phase3_date") or ""),
             "Phase 3 status": str(event.get("phase3_status") or ""),
             "Phase 3 source": str(event.get("trial_evidence_url") or ""),
