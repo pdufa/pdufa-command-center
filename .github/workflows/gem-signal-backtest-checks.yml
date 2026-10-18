@@ -1,0 +1,48 @@
+name: GEM Historical Signal Backtest Checks
+
+on:
+  push:
+    paths:
+      - gem_historical_signal_backtest.py
+      - tests/test_gem_historical_signal_backtest.py
+      - .github/workflows/gem-signal-backtest-checks.yml
+  pull_request:
+    paths:
+      - gem_historical_signal_backtest.py
+      - tests/test_gem_historical_signal_backtest.py
+      - .github/workflows/gem-signal-backtest-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-research-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run synthetic fixture tests
+        run: python -m unittest discover -s tests -p 'test_gem_historical_signal_backtest.py' -v
+      - name: Produce evidence-gated 2025 audit (no synthetic trades)
+        run: |
+          python gem_historical_signal_backtest.py --year 2025 --output-dir output/gem_backtest_2025
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path("output/gem_backtest_2025/readiness.json")
+          audit=json.loads(p.read_text())
+          assert "completed_trades" in audit
+          assert "candidate_event_rows" in audit
+          print("2025 readiness:", json.dumps(audit, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gem-2025-research-audit
+          path: output/gem_backtest_2025/
+          if-no-files-found: warn
+          retention-days: 30
