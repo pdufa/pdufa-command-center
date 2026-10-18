@@ -1,38 +1,22 @@
 {
-  "started_at": "2026-10-18T00:40:07.283932+00:00",
-  "status": "COMPLETE",
+  "started_at": "2026-10-18T05:11:15.212311+00:00",
+  "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2016-10-20",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-18",
   "source_max_age_days": 180,
-  "studies_scanned": 38252,
-  "matched_trials": 7365,
-  "pages_scanned": 39,
+  "studies_scanned": 15591,
+  "matched_trials": 3682,
+  "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "ARQT",
-      "drug": "Topical roflumilast",
-      "nct_id": "NCT04286607"
-    },
-    {
-      "ticker": "AXSM",
-      "drug": "AXS-12 (reboxetine)",
-      "nct_id": "NCT05059223"
-    },
-    {
-      "ticker": "EBS",
-      "drug": "AV7909",
-      "nct_id": "NCT03877926"
-    }
-  ],
-  "finished_at": "2026-10-18T00:41:17.426596+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-10-18T05:11:42.960934+00:00",
   "stored_trials": 7365,
   "phase2_programs": 1012,
   "master_programs": 121,
   "review_trials": 3078,
   "market_cap_verified_tickers": 417,
   "market_cap_listing_excluded_tickers": 1,
-  "market_cap_source_unavailable": 0,
-  "market_cap_recent_cache_retained": 0
+  "market_cap_source_unavailable": 218,
+  "market_cap_recent_cache_retained": 218
 }
