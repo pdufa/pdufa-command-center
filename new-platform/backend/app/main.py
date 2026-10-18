@@ -479,6 +479,23 @@ def save_checklist(ticker: str, stage: str, payload: ChecklistPayload):
     return {"saved": True, "version": payload.version + 1, "updated_at": now}
 
 
+@app.get("/api/entry-signal/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_entry_signal(program_id: str):
+    """Calculate entry conditions using a server-resolved exact program identity."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        ticker, exact_key = identity.ticker, identity.source_key
+    from .alpaca_entry_signal import entry_for_program
+    return {"programId": program_id, "exactKey": exact_key,
+            **entry_for_program(exact_key, ticker)}
+
+
 @app.get("/api/alpaca-chart/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
