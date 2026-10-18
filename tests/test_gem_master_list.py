@@ -55,7 +55,7 @@ class GemMasterListTests(unittest.TestCase):
         item["Two-benchmark priority /100"] = 99
         result = build_gem_master_list([item])[0]
         self.assertEqual(result["GEM Stage"], "PDUFA")
-        self.assertEqual(result["GEM Status"], "WATCH — FINANCING #2 UNVERIFIED")
+        self.assertEqual(result["GEM Status"], "PHASE 3 VERIFIED — REVIEW FINANCING RISK (OPTIONAL)")
         self.assertFalse(result["_eligible"])
         self.assertIsNone(result["GEM Rank"])
         self.assertIsNone(result["GEM Score /100"])
@@ -72,7 +72,7 @@ class GemMasterListTests(unittest.TestCase):
         record = row("NEW", phase3=True, closed=True, eligible=True,
                      days=50, verified_date=False, rank=1, score=70)
         self.assertEqual(gem_stage(record), "Post-Financing")
-        self.assertEqual(gem_status(record), "ELIGIBLE — RANKED; MANUAL REVIEW")
+        self.assertEqual(gem_status(record), "PHASE 3 QUALIFIED — RANKED; MANUAL REVIEW")
 
     def test_ui_has_single_stock_table_and_full_export(self):
         code = (ROOT / "gem_scans_ui.py").read_text(encoding="utf-8")
