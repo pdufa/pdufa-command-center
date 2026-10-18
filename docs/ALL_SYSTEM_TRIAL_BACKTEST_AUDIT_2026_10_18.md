@@ -67,6 +67,7 @@ The 'GEM Historical Signal Backtest Checks' GitHub Actions workflow uploads
 the `gem-all-system-trials-audit` artifact with:
 
 - `every_saved_trial_eligibility.csv` (all 19,257 source rows and blockers)
+- `pdufa_historical_backfill_priorities.csv` (7 past-event source backfills followed by 41 future-target rows)
 - `qualified_historical_trade_scenarios.csv` (headers only while no verification)
 - `entry_exit_returns.csv` (headers only while no verification)
 - `strategy_grid_summary.csv` (54 settings, unavailable performance)
