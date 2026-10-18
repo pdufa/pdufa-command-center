@@ -11,16 +11,16 @@ type EntryReply={
  programId:string;ticker:string;provider?:string;status:string;calculatedAt?:string;
  entryTrigger?:number;maximumEntry?:number;initialStop?:number;green?:boolean;
 };
-const emptyOpen:Record<GroupId,boolean>={entry:false,stay:false,exit:false};
+const emptyOpen:Record<GroupId,boolean>={entry:true,stay:true,exit:true};
 const verified=(text:string,source:WtObservation["source"]):WtObservation=>({text,source});
 const UNAVAILABLE=verified("NOT VERIFIED","UNAVAILABLE");
 const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
 const pct=(v:number)=>numeric(v,2)+"%";
 
 export default function WtTradingSections({
- programId,ticker,record,tech
+ programId,ticker,record,tech,autoFetch=false
 }:{
- programId:string;ticker:string;record?:Candidate;tech?:Candidate["technical"]|null;
+ programId:string;ticker:string;record?:Candidate;tech?:Candidate["technical"]|null;autoFetch?:boolean;
 }){
  const [expanded,setExpanded]=useState<Record<GroupId,boolean>>(emptyOpen);
  const [checked,setChecked]=useState<string[]>([]);
@@ -33,6 +33,13 @@ export default function WtTradingSections({
  const request=useRef<AbortController|null>(null);
  const pending=useRef(false);
  useEffect(()=>()=>request.current?.abort(),[programId,ticker]);
+ // Program changes remount this component with every checkbox unchecked.
+ // Defer until after StrictMode effect cleanup so preview/production agree.
+ useEffect(()=>{
+  if(!autoFetch||!programId||!ticker)return;
+  const handle=setTimeout(()=>void load(),50);
+  return()=>clearTimeout(handle);
+ },[autoFetch,programId,ticker]);
 
  async function load(){
   if(pending.current||!/^PDUFA-\d{6,}$/.test(programId)||!/^[A-Z][A-Z0-9.-]{0,12}$/.test(ticker))return;
@@ -126,7 +133,7 @@ export default function WtTradingSections({
    aria-label={programId+" WT Entry Stay Exit research checkboxes"}>
   <div className="wt-trading-intro">
    <strong>WT — ENTRY / STAY / EXIT INDICATORS</strong>
-   <small>{programId} · {ticker} · {selectedCount} of {WT_CHECK_KEYS.length} selected · all off initially</small>
+   <small>{programId||"NO PROGRAM SELECTED"} · {ticker||"SELECT TICKER FOR DATA"} · {selectedCount} of {WT_CHECK_KEYS.length} selected · all off initially</small>
   </div>
   <p className="subtle small">Select indicators for manual research review. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
@@ -165,7 +172,7 @@ export default function WtTradingSections({
    <button type="button" className="secondary" onClick={()=>setChecked([])}
     disabled={!selectedCount}>DESELECT ALL</button>
    <button type="button" className="secondary" onClick={()=>void load()}
-    disabled={loading}>REFRESH ALPACA</button>
+    disabled={loading||!programId||!ticker}>REFRESH ALPACA</button>
   </div>
   {(marketError||entryError)&&loaded&&<p className="subtle small">
     {marketError||"Alpaca market bars available."} {entryError}
