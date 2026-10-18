@@ -7,14 +7,14 @@
     "phase3_collector_current": true,
     "phase3_discovery_ledger_reconciled": true,
     "required_saved_sources_valid": true,
-    "saved_scan_feed_current": true,
+    "saved_scan_feed_current": false,
     "sec_financing_source_current": false
   },
   "action": "RESCAN_ALL",
   "artifact_integrity": "NOT INDEPENDENTLY CHECKED",
   "awaiting_second_financing": 0,
   "blocking_or_review_flags": [
-    "DISCOVERY_SOURCE_TIMESTAMPS_REQUIRE_REVIEW",
+    "CURRENT_RANKING_FEED_STALE_OR_UNVERIFIED",
     "UNVALIDATED_HISTORICAL_STOCK_RETURNS",
     "SEC_FINANCING_COVERAGE_BLOCKED_OR_STALE"
   ],
@@ -32,7 +32,7 @@
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-18T06:22:20.733859+00:00",
+    "finished_at": "2026-10-18T14:28:57.859503+00:00",
     "matched_posted_results": 2483,
     "new_records": 0,
     "stored_results": 2491,
@@ -42,7 +42,7 @@
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-18T06:25:25.735283+00:00",
+  "generated_at_utc": "2026-10-18T14:31:41.300786+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
@@ -63,7 +63,7 @@
   "label": "BLOCK 4 \u2014 GEMS",
   "market_source_health": {
     "blocked_records": 0,
-    "last_check_age_days": 0,
+    "last_check_age_days": 1,
     "source_completeness_not_guaranteed": true,
     "status": "CURRENT_SOURCE_ONLY"
   },
@@ -73,15 +73,15 @@
     "Phase 3": 0,
     "Post-Financing": 0
   },
-  "research_status": "RESEARCH_ONLY_RANKING_NOT_RETURN_VALIDATED",
-  "run_id": 39103617578,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39103617578",
+  "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
+  "run_id": 39135938775,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39135938775",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 12,
+    "last_check_age_days": 13,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },
@@ -89,7 +89,7 @@
   "status": "PARTIAL",
   "strict_entry_gate_shortlist_count": 0,
   "trade_entry_authorized": false,
-  "two_benchmark_candidate_count": 6,
-  "two_benchmark_policy": "VERIFIED PHASE 3 RESULTS RELEASE + SECOND SEPARATE POST-READOUT FINANCING CLOSE; OTHER MEASURES ARE RANKING/RISK ONLY",
+  "two_benchmark_candidate_count": 7,
+  "two_benchmark_policy": "VERIFIED PHASE 3 RESULTS RELEASE + SECOND SEPARATE POST-READOUT SUCCESSFUL PHASE 3 REQUIRED; SECOND FINANCING OPTIONAL; CASH AND DILUTION RISKS RETAINED",
   "verified_phase3_tracking": 0
 }
