@@ -231,12 +231,18 @@ const stages=[
 ];
 export default function MasterChart({records,gemJr,gem,history=[],watch,trade,sourceHealth,asOf,selectedId,onSelect,onInspect}:{records:ChartRecord[];gemJr:ChartRecord[];gem:ChartRecord[];history?:History[];watch:string[];trade:string[];sourceHealth?:SourceStatus;asOf:string;selectedId:string;onSelect:(id:string)=>void;onInspect?:(r:ChartRecord)=>void}){
   const [view,setView]=useState<"poster"|"readable">("poster");
+  const [manualView,setManualView]=useState(false);
   const [filter,setFilter]=useState("");
-  // Phone/tablet default: fit chart panels to the viewport.
-  // Users can still explicitly choose the wide reference poster.
+  // Track screen-width changes, not just the initial load. Once a user
+  // explicitly chooses poster/readable, respect that preference until
+  // the component is remounted.
   useEffect(() => {
-    if (window.matchMedia("(max-width: 900px)").matches) setView("readable");
-  }, []);
+    const media=window.matchMedia("(max-width: 900px)");
+    const onWidthChange=()=>{if(!manualView)setView(media.matches?"readable":"poster");};
+    onWidthChange();
+    media.addEventListener("change",onWidthChange);
+    return ()=>media.removeEventListener("change",onWidthChange);
+  }, [manualView]);
   const catalog=useMemo(()=>{
     const cache=new Map<string,ChartRecord>();
     for(const item of [...gem,...gemJr,...records.filter(r=>r.id.startsWith("APPLICATION|"))])if(!cache.has(item.id))cache.set(item.id,item);
@@ -253,8 +259,8 @@ export default function MasterChart({records,gemJr,gem,history=[],watch,trade,so
         {selected&&!options.some(o=>o.id===selected.id)&&<option value={selected.id}>{selected.programId||"NOT REGISTERED"} · {selected.ticker} — {selected.drug||selected.id}</option>}
         {options.map(r=><option key={r.id} value={r.id}>{r.programId||"NOT REGISTERED"} · {r.ticker} — {r.drug||r.id} ({r.id.startsWith("TRIAL|")?"TRIAL":"APPLICATION"})</option>)}
       </select></label></div>
-      <div className="gold-view-buttons">{selected?.programId && onInspect && <button type="button" onClick={()=>onInspect(selected)}>Open exact program checklist ↗</button>}<button type="button" className={view==="poster"?"chosen":""} onClick={()=>setView("poster")}>Full picture layout</button>
-        <button type="button" className={view==="readable"?"chosen":""} onClick={()=>setView("readable")}>Readable mobile</button></div>
+      <div className="gold-view-buttons">{selected?.programId && onInspect && <button type="button" onClick={()=>onInspect(selected)}>Open exact program checklist ↗</button>}<button type="button" className={view==="poster"?"chosen":""} onClick={()=>{setManualView(true);setView("poster");}}>Full picture layout</button>
+        <button type="button" className={view==="readable"?"chosen":""} onClick={()=>{setManualView(true);setView("readable");}}>Readable mobile</button></div>
     </div>
     <div className="gold-reference-scroller">
       <div className={"gold-master-poster "+(view==="readable"?"gold-master-readable":"")}>
