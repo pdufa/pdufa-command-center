@@ -187,8 +187,8 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     st.caption(
         "Stock → six 100-point factors → individual saved inputs, formulas and evidence. "
         "Every saved GEM candidate stays in this single sortable-ranked universe. "
-        "Only source-verified successful Phase 3 results are required; second financing OPTIONAL. "
-        "financing closure enable a GEM rank or score; W/T choices are manual labels, "
+        "Only source-verified successful Phase 3 results qualify for GEM research; "
+        "second financing is OPTIONAL. W/T choices are manual labels, "
         "never trade execution or another qualification benchmark."
     )
     data_path = Path(root)
