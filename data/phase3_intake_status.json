@@ -1,6 +1,6 @@
 {
   "mode": "backfill",
-  "started_at": "2026-10-18T14:27:56.665733+00:00",
+  "started_at": "2026-10-18T14:32:39.774273+00:00",
   "registry_companies": 717,
   "pages": 51,
   "studies_checked": 50033,
@@ -8,7 +8,7 @@
   "new_records": 0,
   "complete": true,
   "errors": [],
-  "finished_at": "2026-10-18T14:28:57.859503+00:00",
+  "finished_at": "2026-10-18T14:33:38.708991+00:00",
   "stored_results": 2491,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
