@@ -162,11 +162,12 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  {stage==="GEM_JR"&&<div style={{marginBottom:14,border:"1px solid #b8d4c0",borderRadius:8,padding:12,background:"#ffffff"}}>
    <h3 style={{margin:"0 0 7px"}}>Optional GEM JR evidence alerts</h3>
    <p style={{fontSize:13,margin:"0 0 10px"}}>Optional checks are off by default. Enter your desired threshold in the boxed goal column, or choose a goal. This is your screening target, not a verified result. Checked alerts without sourced application-specific evidence report NEEDS VERIFICATION, never PASS.</p>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,420px),1fr))",gap:12,alignItems:"start"}}>
    {OPTIONAL_GROUPS.map(group=><details key={group.heading} open style={{marginBottom:8,border:"1px solid #d6e7dc",borderRadius:5}}>
      <summary style={{padding:9,fontWeight:700,cursor:"pointer"}}>{group.heading}</summary>
      <div style={{overflowX:"auto",padding:8}}>
-       <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,minWidth:570}}>
-         <thead><tr><th style={{textAlign:"left",width:45}}>Use</th><th style={{textAlign:"left"}}>Indicator</th><th style={{textAlign:"left",width:"40%"}}>Goal / options</th><th style={{textAlign:"left"}}>Evidence</th></tr></thead>
+       <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:0}}>
+         <thead><tr><th style={{textAlign:"left",width:45}}>Use</th><th style={{textAlign:"left"}}>Indicator</th><th style={{textAlign:"left",width:"45%"}}>Goal / options</th><th style={{textAlign:"left"}}>Evidence</th></tr></thead>
          <tbody>{group.items.map(item=><tr key={item.key}>
            <td style={{padding:7,borderTop:"1px solid #e5eee7"}}><input aria-label={"Include "+item.title} type="checkbox" checked={selected.includes(item.key)} onChange={()=>toggle(item.key)} /></td>
            <td style={{padding:7,borderTop:"1px solid #e5eee7",paddingLeft:15}}>{item.title}</td>
@@ -199,6 +200,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
        </table>
      </div>
    </details>)}
+   </div>
  </div>}
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!pipeline.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>Clear selections</button><button type="button" onClick={()=>selectRequirements([...suggestedByStage[stage]])} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:"#e4f3e8",fontWeight:700}}>SUGGESTED</button></div>
 
