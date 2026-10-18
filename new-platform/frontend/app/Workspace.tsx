@@ -108,7 +108,9 @@ function Goals({ record }: { record: Candidate | null }) {
   return <div className="goal-table">
     <div className="goal-grid goal-header"><span>Indicator</span><span>Observed / status</span><span>Goal / rule</span></div>
     {rows.map(([label, observed, goal, verified])=><div key={label} className="goal-grid">
-      <span>{label}</span><span className={verified ? "verified" : "unknown-value"}>{observed}</span><span className="gold-goal">{goal}</span>
+      <span className="goal-row-heading">{label}</span>
+      <span className={verified ? "verified" : "unknown-value"}><small className="goal-mini-label">Observed / status</small>{observed}</span>
+      <span className="gold-goal"><small className="goal-mini-label">Goal / rule</small>{goal}</span>
     </div>)}
   </div>;
 }
@@ -123,16 +125,19 @@ function TechnicalPanel({ record }: { record: Candidate }) {
       <div><strong>Exit risk /100</strong><span>{x.exitRisk == null ? "UNSCORED" : x.exitRisk}</span><small>Evidence coverage {x.exitCoverage??0}/100</small></div>
       <div><strong>Market snapshot</strong><span>{x.eodFresh ? "RECENT EOD" : "STALE / REVIEW"}</span><small>{stated(x.marketDate,"No verified session")}</small></div>
     </div>
-    <p><strong>Entry:</strong> {stated(x.entryStatus)}</p><p><strong>Exit:</strong> {stated(x.exitStatus)}</p>
-    <p><strong>Closing base:</strong> {stated(x.base?.status)} · support {scoreNum(x.base?.support,2)} / resistance {scoreNum(x.base?.resistance,2)}</p>
-    <p><strong>MACD:</strong> {scoreNum(x.macd?.macd,3)} · Signal {scoreNum(x.macd?.signal,3)} (close-based; no intraday VWAP)</p>
-    <p><strong>SEC cash runway:</strong> {stated(x.runwayGate)} · {stated(x.runwayReason)}</p>
-    {x.riskAlerts?.length ? <div className="risk-warnings"><strong>Source warnings</strong>{x.riskAlerts.map(alert=><p key={alert}>{alert}</p>)}</div> : null}
+    <div className="research-facts-grid">
+      <p><strong>Entry:</strong> {stated(x.entryStatus)}</p>
+      <p><strong>Exit:</strong> {stated(x.exitStatus)}</p>
+      <p><strong>Closing base:</strong> {stated(x.base?.status)} · support {scoreNum(x.base?.support,2)} / resistance {scoreNum(x.base?.resistance,2)}</p>
+      <p><strong>MACD:</strong> {scoreNum(x.macd?.macd,3)} · Signal {scoreNum(x.macd?.signal,3)} (close-based; no intraday VWAP)</p>
+      <p><strong>SEC cash runway:</strong> {stated(x.runwayGate)} · {stated(x.runwayReason)}</p>
+    </div>
+    {x.riskAlerts?.length ? <div className="risk-warnings"><strong>Source warnings</strong><div className="risk-alert-grid">{x.riskAlerts.map(alert=><p key={alert}>{alert}</p>)}</div></div> : null}
     <details><summary>All weighted scoring factors and missing evidence</summary>
       <div className="score-factor-groups">{([["Entry strength",x.entryFactors||[]],["Exit risk",x.exitFactors||[]]] as [string,Factor[]][]).map(([name,items])=>
-        <div key={name}><h4>{name}</h4>{items.map(item=><div className="score-factor" key={item.label}><strong>{item.label}</strong>
+        <div key={name}><h4>{name}</h4><div className="factor-item-grid">{items.map(item=><div className="score-factor" key={item.label}><strong>{item.label}</strong>
           <span>{item.earned==null ? "NOT AVAILABLE" : item.earned} / {item.weight}</span>
-          <small>{item.evidence}</small></div>)}</div>)}</div>
+          <small>{item.evidence}</small></div>)}</div></div>)}</div>
     </details>
     <p className="subtle small">GEM membership and numerical scores do not authorize trading. No order, stop, ATR, spread or position is inferred. {stated(x.dataGaps,"Missing observations remain unscored.")}</p>
     {evidence(x.marketSource) && <a target="_blank" rel="noopener noreferrer" href={x.marketSource}>Saved market source ↗</a>}
@@ -196,9 +201,9 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
           ["Exit indicators",x.indicatorExitFactors||[]],
         ] as [string,Factor[]][]).map(([title,items])=><div key={title}>
           <h4>{title}</h4>
-          {items.length ? items.map(f=><div className="score-factor" key={f.label}>
+          {items.length ? <div className="factor-item-grid">{items.map(f=><div className="score-factor" key={f.label}>
             <strong>{f.label}</strong><span>{f.earned==null?"NOT VERIFIED":f.earned} / {f.weight}</span>
-            <small>{f.evidence}</small></div>) : <p className="subtle">No verified EOD observations yet.</p>}
+            <small>{f.evidence}</small></div>)}</div> : <p className="subtle">No verified EOD observations yet.</p>}
         </div>)}</div>
       </details>
       {record && <details className="wt-factors"><summary>Original GEM eligibility entry / exit monitor (same Program ID)</summary>
@@ -284,12 +289,12 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
     {grouped.map(([ticker, companies]) => (
       <details key={ticker} className="drill-company">
         <summary><strong>{ticker}</strong><span>{companies.length} exact program{companies.length === 1 ? "" : "s"}</span></summary>
-        {companies.map(item => (
+        <div className="drill-program-grid">{companies.map(item => (
           <details key={item.id} className="drill-program">
             <summary><strong>{stated(item.drug)}</strong><span><strong className="permanent-id">{stated(item.programId)}</strong> · {stated(item.indication, "program research")} · {stated(item.pdufaDate, "no date")}</span></summary>
             <div className="drill-evidence"><strong>Trial details and verification</strong><SourceDetails record={item} /></div>
           </details>
-        ))}
+        ))}</div>
       </details>
     ))}
     {grouped.length === 0 && <p className="subtle">No exact-program records match these filters.</p>}
