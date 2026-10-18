@@ -354,6 +354,8 @@ def gather(today: date | None = None) -> dict:
             "rows": sorted(rows, key=lambda v: (v["ticker"], v["id"])),
             "history": sorted(transitions, key=lambda v: (v["ticker"], v["enteredOn"], v["cycle"])),
         }
+    from .trial_qualification import attach_trial_filter_facts
+    attach_trial_filter_facts(candidates, original, funding, sec_recheck, runway, ledger, now)
     missing_trial_feeds = [
         name for name in ("all_phase_trials.csv", "phase_pipeline.csv")
         if not records.get(name)
@@ -367,6 +369,7 @@ def gather(today: date | None = None) -> dict:
         "fetchedAt": datetime.now(ZoneInfo("UTC")).isoformat(),
         "disclaimer": "Latest published Streamlit main-branch data, cached up to 5 minutes; not a confirmed complete live scan or authorization to trade.",
         "marketCapRange": {"min": _MIN, "max": _MAX},
+        "trialFilterSchema": 1,
         "pipeline": candidates,
         "members": members,
         "sourceHealth": {

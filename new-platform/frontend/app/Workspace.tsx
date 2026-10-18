@@ -8,8 +8,10 @@ import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
+import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
+import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -42,6 +44,7 @@ export type Candidate = {
   membershipStatus?: string; firstFound?: string; lastSeen?: string; candidateLinked?: boolean;
   listAddedOn?: string; listRemovedOn?: string;
   technical?: ResearchTechnical;
+  trialFilters?: TrialFilterFacts;
 };
 type StageHistory = { id: string; programId?: string; ticker: string; drug: string; enteredOn: string; leftOn: string; reason: string; status: string; cycle: number };
 type StageData = { asOf?: string; rows: Candidate[]; history?: StageHistory[] };
@@ -49,12 +52,13 @@ type Snapshot = {
   mode: string; asOf: string; disclaimer: string;
   marketCapRange: { min: number; max: number };
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
+  trialFilterSchema?: number;
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; streamlitPipelineParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
-type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean };
+type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
 const LEGACY_TAG_KEY = "pdufa_new_watch_trade_v1";
 const BANDS = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS", "NO PDUFA YET", "PAST / RECHECK"];
@@ -408,6 +412,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [onlyBand, setOnlyBand] = useState(false);
+  const [trialFilters, setTrialFilters] = useState<TrialFilterValues>({ ...EMPTY_TRIAL_FILTERS });
   const [displayFilters, setDisplayFilters] = useState<PipelineSelection | null>(null);
   const [displayVersion, setDisplayVersion] = useState(0);
   const pipelineDataRef = useRef<HTMLDivElement>(null);
@@ -540,14 +545,15 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
 
   const pipeline = snapshot?.pipeline || [];
-  const availability = useMemo(() => pipelineAvailability(pipeline, { query, onlyBand }, dateBand, STAGES, BANDS), [pipeline, onlyBand, query]);
+  const availability = useMemo(() => pipelineAvailability(pipeline, { query, onlyBand, trial: trialFilters, asOf: snapshot?.asOf }, dateBand, STAGES, BANDS), [pipeline, onlyBand, query, trialFilters, snapshot?.asOf]);
   const possible = availability.rows;
+  const qualificationBase = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand, stages: stageFilters, dates: dateFilters }, dateBand), [pipeline, query, onlyBand, stageFilters, dateFilters]);
   const counted = useMemo(() => filterPipelineRows(possible, { stages: stageFilters, dates: dateFilters }, dateBand), [possible, stageFilters, dateFilters]);
   const displayed = useMemo(() => displayFilters ? filterPipelineRows(pipeline, displayFilters, dateBand) : [], [pipeline, displayFilters]);
   const selectionKey = (selection: PipelineSelection) => JSON.stringify([
-    [...selection.stages].sort(), [...selection.dates].sort(), selection.query, selection.onlyBand,
+    [...selection.stages].sort(), [...selection.dates].sort(), selection.query, selection.onlyBand, selection.trial,
   ]);
-  const draftKey = selectionKey({ stages: stageFilters, dates: dateFilters, query, onlyBand });
+  const draftKey = selectionKey({ stages: stageFilters, dates: dateFilters, query, onlyBand, trial: trialFilters });
   const appliedKey = displayFilters ? selectionKey(displayFilters) : "";
   const selectionsChanged = displayFilters !== null && draftKey !== appliedKey;
 
@@ -556,7 +562,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }, [displayVersion]);
 
   function displayTrials() {
-    setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], query, onlyBand });
+    setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], query, onlyBand, trial: { ...trialFilters }, asOf: snapshot?.asOf });
     setDisplayVersion(value => value + 1);
   }
   function clearPipelineSelections() {
@@ -564,6 +570,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     setDateFilters([]);
     setQuery("");
     setOnlyBand(false);
+    setTrialFilters({ ...EMPTY_TRIAL_FILTERS });
     setDisplayFilters(null);
     setDisplayVersion(0);
   }
@@ -870,7 +877,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Select stages and dates, then press DISPLAY TRIALS to list the matching records below.</p>
+        <p className="subtle">Choose stage, date and trial filters, then press DISPLAY TRIALS to list matching records below.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{possible.length.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
@@ -886,16 +893,16 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <section className="panel pipeline-filters pipeline-filters-compact" aria-labelledby="pipeline-filters-title">
         <div className="pipeline-filter-heading">
           <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
-          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"}</span>
+          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters</span>
         </div>
         <div className="pipeline-row pipeline-filter-toolbar">
           <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
         </div>
-        <details className="pipeline-filter-details">
-          <summary>Choose stages and PDUFA dates <span>{stageFilters.length + dateFilters.length} selected · tap to {stageFilters.length + dateFilters.length ? "review" : "filter"}</span></summary>
-          <p className="subtle">Trial counts reflect the current search and market-cap screen. Leave a group unchecked to include every stage or date. Scroll within each group to see all choices.</p>
-          <div className="filter-columns">
+        <details className="pipeline-filter-details" open>
+          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
+          <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
+          <div className="filter-columns pipeline-three-filter-columns">
             {[
               { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
               { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
@@ -908,6 +915,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
               </label>)}</div>
             </fieldset>)}
+            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot.asOf} ready={snapshot.trialFilterSchema === 1} />
           </div>
         </details>
         <div className="pipeline-actions pipeline-display-actions">
@@ -920,8 +928,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div ref={pipelineDataRef} className="pipeline-results-anchor">
         {displayFilters ? <PipelineData key={appliedKey + "|" + displayVersion + "|" + snapshot.asOf} rows={displayed}
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
-            + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")} /> :
-          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stages and dates above, then press DISPLAY TRIALS to show the relevant trials and programs.</p></section>}
+            + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")
+            + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")} /> :
+          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stage, date and trial filters above, then press DISPLAY TRIALS to show the matching trials and programs.</p></section>}
       </div>
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">

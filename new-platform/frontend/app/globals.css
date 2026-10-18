@@ -1670,6 +1670,28 @@ button.secondary { background: white; color: #172b1b; }
   margin:7px 0 0;
   padding:0 9px 10px;
 }
+.pipeline-filters-compact .filter-columns.pipeline-three-filter-columns {grid-template-columns:repeat(3,minmax(0,1fr));}
+.pipeline-filters-compact .trial-qualification-filters .filter-checks.trial-qualification-checks {grid-template-columns:minmax(0,1fr);max-height:none;}
+.trial-filter-note {font-size:11px;line-height:1.45;color:#47604b;margin:7px 2px;overflow-wrap:anywhere;}
+.trial-more-filters {margin:9px 0 0;border:1px solid #a0b69f;border-radius:7px;background:#f6fbf4;}
+.trial-more-filters > summary {padding:9px;font-size:12px;font-weight:800;cursor:pointer;}
+.trial-filter-dropdowns {display:grid;gap:9px;padding:0 9px 10px;max-height:420px;overflow-y:auto;overscroll-behavior:contain;}
+.trial-filter-dropdowns h4 {font-size:12px;margin:9px 0 0;padding-top:8px;border-top:1px solid #c4d5bf;}
+.trial-filter-field {display:grid;gap:4px;font-size:11px;font-weight:700;min-width:0;}
+.trial-filter-field select,.trial-filter-field input {width:100%;min-width:0;max-width:100%;min-height:36px;padding:6px;border:1px solid #536a50;border-radius:5px;background:#fff;color:#142b16;font-size:12px;text-overflow:ellipsis;}
+.trial-first-financing {display:flex;align-items:center;gap:7px;font-size:12px;}
+.trial-qualification-filters input[type="checkbox"] {width:17px;height:17px;accent-color:#376d32;flex-shrink:0;}
+.trial-filter-reset {font-size:11px;margin-top:9px;}
+@container pipeline-compact (max-width:800px) {
+  .pipeline-filters-compact .filter-columns.pipeline-three-filter-columns {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .trial-qualification-filters {grid-column:1 / -1;}
+  .pipeline-filters-compact .trial-qualification-filters .filter-checks.trial-qualification-checks {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .trial-filter-dropdowns {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .trial-filter-dropdowns h4,.trial-filter-dropdowns .trial-filter-note {grid-column:1 / -1;}
+}
+@container pipeline-compact (max-width:480px) {
+  .pipeline-filters-compact .filter-columns.pipeline-three-filter-columns,.pipeline-filters-compact .trial-qualification-filters .filter-checks.trial-qualification-checks,.trial-filter-dropdowns {grid-template-columns:minmax(0,1fr);}
+}
 .pipeline-filters-compact .filter-count-group {
   min-width:0;
   padding:0;

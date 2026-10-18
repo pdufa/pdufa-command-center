@@ -1,5 +1,6 @@
 """Original Streamlit inventory and the complete hosted-response regression."""
 import hashlib
+import gzip
 import json
 from collections import Counter
 from datetime import date
@@ -42,7 +43,12 @@ def test_original_streamlit_full_fixture_and_hosted_response_budget(monkeypatch)
     # The API adds permanent IDs before proxying this JSON through Vercel.
     for index, row in enumerate(rows, start=1):
         row["programId"] = f"PDUFA-{index:06d}"
-    assert len(json.dumps(snapshot, ensure_ascii=False, separators=(",", ":")).encode()) < 4_400_000
+    # /api/workspace already sends gzip bytes through Vercel. Check its actual
+    # wire budget, including the added trial-evidence fields and permanent IDs.
+    encoded = json.dumps(snapshot, ensure_ascii=False, separators=(",", ":")).encode()
+    assert len(gzip.compress(encoded, compresslevel=6)) < 4_400_000
+    assert snapshot["trialFilterSchema"] == 1
+    assert all("trialFilters" in row for row in rows)
 
 
 def test_missing_original_feed_cannot_publish_an_artificially_smaller_total(monkeypatch):

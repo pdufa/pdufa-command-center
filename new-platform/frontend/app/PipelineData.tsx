@@ -8,7 +8,7 @@ import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSo
 const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
   { label: "#" }, { label: "Program ID", key: "programId" },
   { label: "Ticker / company", key: "ticker", sortLabel: "ticker" },
-  { label: "Drug / study" }, { label: "Indication" }, { label: "Pipeline stage", key: "stage" },
+  { label: "Drug / study" }, { label: "Indication" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
   { label: "Primary completion", key: "primaryCompletion" }, { label: "PDUFA", key: "pdufaDate" },
   { label: "Market cap", key: "marketCap" },
@@ -131,7 +131,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
           <td className="pipeline-study-cell"><strong>{nct ?
             <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{row.drug || saved?.study_title || nct} ↗</a> :
             row.drug || saved?.study_title || "Not reported"}</strong>{saved?.study_title && <small>{saved.study_title}</small>}</td>
-          <td className="pipeline-study-cell">{row.indication || "Not reported"}</td><td>{row.stage || "Unknown"}</td>
+          <td className="pipeline-study-cell">{row.indication || "Not reported"}</td><td>{row.trialFilters?.registeredPhase || "Unknown"}</td><td>{row.stage || "Unknown"}</td>
           <td>{nct ? <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{nct} · Full trial ↗</a> : "No linked trial"}</td>
           <td>{saved?.status?.replaceAll("_", " ") || (nct ? loading ? "Loading…" : "Not available" : "Regulatory program")}</td>
           <td>{saved?.primary_completion_date?.date || "Not reported"}<small>{saved?.primary_completion_date?.type}</small></td>
@@ -142,7 +142,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
             : <button type="button" className="secondary" aria-expanded={active} aria-controls={active ? "pipeline-expanded-record" : undefined} onClick={() => setSelected(active ? "" : row.id)}>{active ? "Close fields" : "Program fields"}</button>}</td>
         </tr>;
       })}</tbody>
-    </table></div> : <p className="pipeline-data-empty">No trials or programs match these filters. Uncheck a stage or date filter, or clear the search to broaden the list. No checked stages means all stages.</p>}
+    </table></div> : <p className="pipeline-data-empty">No trials or programs match these filters. Uncheck a stage, date or trial filter, or clear the search to broaden the list. Unknown evidence does not pass a selected qualification criterion.</p>}
     <div className="pipeline-data-pagination pipeline-data-footer"><span>Phase total · {rows.length.toLocaleString("en-US")}</span><div className="pipeline-actions">
       <button type="button" className="secondary" disabled={current.page === 0} onClick={() => navigate(current.page - 1)}>Previous</button>
       <button type="button" className="secondary" disabled={current.page + 1 >= current.pages} onClick={() => navigate(current.page + 1)}>Next</button>

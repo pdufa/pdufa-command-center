@@ -1,11 +1,14 @@
+import { matchesTrialFilters, type TrialFilterFacts, type TrialFilterValues } from "./trial-filters";
+
 export type PipelineRecord = {
   id: string; programId?: string; ticker: string; company?: string; drug?: string;
   indication?: string; nctId?: string; stage?: string; pdufaDate?: string;
   capInRange?: boolean; marketCap?: number | null;
+  trialFilters?: TrialFilterFacts;
 };
 
 export const PIPELINE_STAGES = ["Early Phase 1", "Phase 1", "Phase 1/2", "Phase 2", "Phase 2/3", "Phase 3", "Phase 3 Results", "NDA/BLA Submission", "FDA Acceptance", "PDUFA Decision", "Post-Decision", "Phase 4", "Not Applicable", "Unknown"];
-export type PipelineSortKey = "programId" | "ticker" | "stage" | "nctId" | "status" | "primaryCompletion" | "pdufaDate" | "marketCap" | "pValueCount";
+export type PipelineSortKey = "programId" | "ticker" | "stage" | "registeredPhase" | "nctId" | "status" | "primaryCompletion" | "pdufaDate" | "marketCap" | "pValueCount";
 export type PipelineSort = { key: PipelineSortKey; direction: "asc" | "desc" };
 export type RegistrySortIndex = Record<string, { status?: string; primary_completion_date?: string | null; p_value_count: number }>;
 const COLLATOR = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
@@ -27,6 +30,7 @@ export function sortPipelineRows<T extends PipelineRecord>(rows: T[], sort: Pipe
       case "programId": return row.programId;
       case "ticker": return row.ticker;
       case "stage": { const index = PIPELINE_STAGES.indexOf(row.stage || "Unknown"); return index < 0 ? PIPELINE_STAGES.length : index; }
+      case "registeredPhase": { const phase = row.trialFilters?.registeredPhase; return phase && phase !== "Unknown" ? PIPELINE_STAGES.indexOf(phase) : null; }
       case "nctId": return nct;
       case "status": return saved?.status || (nct ? null : "REGULATORY PROGRAM");
       case "primaryCompletion": return date(saved?.primary_completion_date);
@@ -53,7 +57,7 @@ export function trialId(row: PipelineRecord) {
 }
 
 export function filterPipelineRows<T extends PipelineRecord>(rows: T[], filters: {
-  query?: string; onlyBand?: boolean; stages?: string[]; dates?: string[];
+  query?: string; onlyBand?: boolean; stages?: string[]; dates?: string[]; trial?: TrialFilterValues; asOf?: string;
 }, dateBand: (row: T) => string) {
   const query = (filters.query || "").toLowerCase();
   return rows.filter(row =>
@@ -61,15 +65,16 @@ export function filterPipelineRows<T extends PipelineRecord>(rows: T[], filters:
     (!query || [row.ticker, row.company, row.drug, row.indication, row.nctId, row.programId, row.id]
       .some(value => (value || "").toLowerCase().includes(query))) &&
     (!filters.stages?.length || filters.stages.includes(row.stage || "Unknown")) &&
-    (!filters.dates?.length || filters.dates.includes(dateBand(row)))
+    (!filters.dates?.length || filters.dates.includes(dateBand(row))) &&
+    matchesTrialFilters(row, filters.trial, filters.asOf)
   );
 }
 
 export function pipelineAvailability<T extends PipelineRecord>(rows: T[], filters: {
-  query?: string; onlyBand?: boolean;
+  query?: string; onlyBand?: boolean; trial?: TrialFilterValues; asOf?: string;
 }, dateBand: (row: T) => string, stages: string[], bands: string[]) {
   // Checkbox selections choose the displayed results, not the available totals.
-  const available = filterPipelineRows(rows, { query: filters.query, onlyBand: filters.onlyBand }, dateBand);
+  const available = filterPipelineRows(rows, { query: filters.query, onlyBand: filters.onlyBand, trial: filters.trial, asOf: filters.asOf }, dateBand);
   const stageTotals = new Map<string, number>(), dateTotals = new Map<string, number>();
   for (const row of available) {
     const stage = row.stage || "Unknown", band = dateBand(row);

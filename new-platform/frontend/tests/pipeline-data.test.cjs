@@ -4,10 +4,6 @@ const fs = require("node:fs");
 const path = require("node:path");
 const ts = require("typescript");
 const moduleFile = path.join(__dirname, "../lib/pipeline-data.ts");
-const compiled = ts.transpileModule(fs.readFileSync(moduleFile, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } });
-const compiledModule = { exports: {} };
-new Function("module", "exports", compiled.outputText)(compiledModule, compiledModule.exports);
-const { filterPipelineRows, pipelineAvailability, pageRows, trialId, registrySections, reportedAnalyses, sortPipelineRows } = compiledModule.exports;
 
 for (const extension of [".ts", ".tsx"]) require.extensions[extension] = (loaded, file) => {
   const result = ts.transpileModule(fs.readFileSync(file, "utf8"), { compilerOptions: {
@@ -16,6 +12,8 @@ for (const extension of [".ts", ".tsx"]) require.extensions[extension] = (loaded
   } });
   loaded._compile(result.outputText, file);
 };
+
+const { filterPipelineRows, pipelineAvailability, pageRows, trialId, registrySections, reportedAnalyses, sortPipelineRows } = require(moduleFile);
 
 const records = [
   { id: "TRIAL|NCT00000001", programId: "PDUFA-000001", ticker: "AAA", drug: "Drug A", stage: "Phase 1", capInRange: true, band: "NO PDUFA YET" },
@@ -105,7 +103,7 @@ test("the rendered data area lists only selected-phase rows and preserves an emp
   assert.match(html, /1 matching trials \/ programs/);
   assert.match(html, /Drug A/);
   assert.doesNotMatch(html, /Drug B|Drug C/);
-  assert.match(html, /All fields/);
+  assert.match(html, /All data/);
   assert.match(html, /aria-sort="ascending"/);
   assert.match(html, /Sort by market cap/);
   assert.doesNotMatch(html, /Sort by indication|Sort by drug/);

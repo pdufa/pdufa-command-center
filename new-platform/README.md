@@ -2,6 +2,22 @@
 
 **Safety boundary:** Existing Streamlit production lives on the unchanged `main` branch. This bootstrap is on `new-platform-bootstrap` and under `new-platform/`. Do not merge or change production deployment until validated.
 
+## Pipeline trial filters
+
+Open **PIPELINE → PIPELINE FILTERS & COUNTS**. Stage Counts, Date Trial Counts,
+and Trial Filters combine when **DISPLAY TRIALS** is pressed. An unchecked
+group includes all records. The four qualification checkboxes cover registered
+Phase 3, publicly released results, verified primary-endpoint success, and a
+second separate post-readout financing close. Registered phase remains
+independent of the current regulatory stage; Phase 2/3 stays separate.
+
+**More trial filters** contains identity, recruitment status, results dates,
+safety, financing dates, regulatory milestones, runway, dilution, evidence
+quality, and list membership. Missing evidence does not pass a checked
+qualification. Closing filters use saved reviewed historical evidence; current
+source freshness is independently selectable. Filtering does not change GEM
+eligibility, list membership, or entry/exit rules.
+
 ## Architecture
 
 - Next.js 16 App Router frontend (port 3000), single-operator password session (HttpOnly cookie)
