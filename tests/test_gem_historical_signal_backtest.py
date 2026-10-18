@@ -185,6 +185,46 @@ class SignalResearchTests(unittest.TestCase):
                          "MISSING_VERIFIED_HISTORICAL_MARKET_CAP")
         self.assertTrue(audit["market_cap_filter_active"])
 
+    def test_completed_trade_has_dollar_and_percent_profit_loss(self):
+        history,_=bars_by_ticker(bars())
+        result=replay_trade(history["TEST"],(84,80,9.85),
+                            date(2025,9,30),None,3,10,
+                            investment_usd=10000)
+        self.assertEqual(result["status"],"COMPLETED")
+        self.assertEqual(result["hypothetical_investment_usd"],10000)
+        self.assertLessEqual(result["hypothetical_cost_usd"],10000)
+        self.assertEqual(result["hypothetical_shares"],
+                         int(10000/result["entry_price"]))
+        self.assertAlmostEqual(
+            result["hypothetical_profit_loss_usd"],
+            result["hypothetical_shares"]*
+            (result["exit_price"]-result["entry_price"]),delta=.15)
+        self.assertAlmostEqual(
+            result["net_return_pct"],
+            100*(result["exit_price"]/result["entry_price"]-1),
+            delta=.01)
+        self.assertAlmostEqual(
+            result["return_on_allocation_pct"],
+            100*result["hypothetical_profit_loss_usd"]/10000,
+            delta=.01)
+        self.assertIn("gross_return_pct",result)
+        self.assertIn("net_profit_per_share_usd",result)
+
+    def test_stop_or_early_fda_censor_never_claims_pnl(self):
+        history,_=bars_by_ticker(bars())
+        result=replay_trade(history["TEST"],(84,80,9.85),
+                            date(2025,9,30),date(2025,6,1),3,10,
+                            investment_usd=10000)
+        self.assertEqual(result["status"],"CENSORED")
+        self.assertNotIn("hypothetical_profit_loss_usd",result)
+        self.assertNotIn("net_return_pct",result)
+
+    def test_invalid_investment_rejected(self):
+        with self.assertRaisesRegex(ValueError,"Investment"):
+            run([],[],investment_usd=0)
+        with self.assertRaisesRegex(ValueError,"Investment"):
+            run([],[],investment_usd=float("nan"))
+
     def test_no_future_calendar_events(self):
         x=event()
         x["pdufa_date"]="2027-09-30"
