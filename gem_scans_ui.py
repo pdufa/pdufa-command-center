@@ -57,9 +57,9 @@ def _discovery(root, signature, pacific_day):
 def render_gem_scans(root="data"):
     st.markdown("## GEM — MASTER STOCK LIST")
     st.caption(
-        "The only two positive entry benchmarks are (1) dated, source-verified "
-        "released Phase 3 results for the exact program, and (2) verified close "
-        "of a second separate financing after that readout. Once both pass, "
+        "Successful source-verified Phase 3 for the exact program is the "
+        "positive GEM qualification benchmark. A verified second financing "
+        "is OPTIONAL evidence for funding and dilution review. After Phase 3, "
         "financial runway, dilution, clinical strength, price/volume activity, "
         "PDUFA timing and quarterly SEC hedge-fund holdings PRIORITIZE or WARN; "
         "they do not silently become "
@@ -116,7 +116,7 @@ def render_gem_scans(root="data"):
     st.markdown("### GEM — UNIFIED MASTER LIST")
     st.caption(
         "ONE stock-program list for Phase 3 → Post-Financing → PDUFA. "
-        "Only the two verified event benchmarks unlock GEM eligibility and "
+        "Verified successful Phase 3 unlocks research eligibility and "
         "the 100-point priority rank. The GEM Stage is a descriptive research "
         "milestone, NOT an extra eligibility condition. The PDUFA stage means "
         "a verified date within 90 calendar days; the trading exit warning "
@@ -142,11 +142,11 @@ def render_gem_scans(root="data"):
         st.warning(
             "Historical financing records are NOT current SEC confirmations. "
             "A blocked/stale SEC collector does not prove a transaction failed. "
-            "New source rechecks do not automatically refresh the original "
-            "two-close attestation or upgrade GEM eligibility."
+            "New source rechecks do not automatically certify dilution clearance "
+            "or update exact-program financing evidence."
         )
     st.caption(
-        "These groups use exactly the two required events, not cash runway, "
+        "These groups use clinical eligibility and optional financing evidence, not cash runway, "
         "market momentum or PDUFA timing. Registry postings are discovery "
         "only; a dated successful issuer Phase 3 readout still needs verification."
     )
@@ -327,8 +327,7 @@ def render_gem_scans(root="data"):
             "Perceptive Advisors. 13F shows reported long positions as of quarter "
             "end; filings can arrive up to 45 days later. Reported changes are "
             "NOT proof of purchases made today, and absence is not proof of "
-            "zero hedge-fund ownership. These signals never change the two "
-            "entry benchmarks."
+            "zero hedge-fund ownership. These signals never replace successful Phase 3 clinical qualification."
         )
         with st.expander("ALL WATCHLIST 13F MANAGER DETAILS AND SOURCES", expanded=False):
             hcols = ["Ticker", "Drug", "Hedge-fund signal",
@@ -457,7 +456,7 @@ def render_gem_scans(root="data"):
                 st.warning("SEC recheck source-report snapshot is unavailable.")
     counts = status["scan_counts"]
     st.caption(
-        "Cash runway is a ranking factor, NOT a minimum trading-entry benchmark. "
+        "Cash runway is a ranking factor for research and a separate safety gate for manual trading entry. "
         f"{status.get('cash_runway_passing_count', 0)} passes and "
         f"{status.get('cash_runway_unverified_count', 0)} missing/stale sources; "
         f"{status.get('cash_runway_deteriorating_count', 0)} declining runway trends; "
