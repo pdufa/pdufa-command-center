@@ -12,6 +12,7 @@ import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
 import GemQualificationChecklist, {type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
@@ -399,6 +400,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // Keep the exact candidate IDs and checklist draft while switching stage tabs.
   const [gemJrLivePreview,setGemJrLivePreview]=useState<GemJrLivePreview|null>(null);
   const [gemJrDraft,setGemJrDraft]=useState<GemJrUiDraft|null>(null);
+  const [gemLivePreview,setGemLivePreview]=useState<GemJrLivePreview|null>(null);
+  const [gemDraft,setGemDraft]=useState<GemJrUiDraft|null>(null);
+  const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
   const [fetchVersion, setFetchVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
@@ -642,21 +646,28 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   function gemBlock(stage: "GEM_JR" | "GEM") {
     const group = snapshot?.members[stage];
     const scanned=gemScans[stage];
-    // GEM may use the published saved GEM JR membership as an explicitly
-    // unverified input when no session-scoped GEM JR scan exists. If a current
-    // scan is available, it takes precedence without silently merging pools.
+    // Live research candidates and saved stage membership are different data.
     const juniorScan=gemScans.GEM_JR;
     const currentJuniorScan=juniorScan && juniorScan.asOf===snapshot?.asOf && juniorScan.sourceTotal===pipeline.length ? juniorScan : null;
     const currentJuniorPreview=gemJrLivePreview && gemJrLivePreview.asOf===snapshot?.asOf && gemJrLivePreview.sourceTotal===pipeline.length?gemJrLivePreview:null;
     const currentJuniorDraft=gemJrDraft && gemJrDraft.asOf===snapshot?.asOf && gemJrDraft.sourceTotal===pipeline.length?gemJrDraft:null;
+    const currentGemDraft=gemDraft && gemDraft.asOf===snapshot?.asOf && gemDraft.sourceTotal===pipeline.length?gemDraft:null;
+    const currentGemPreview=gemLivePreview && gemLivePreview.asOf===snapshot?.asOf && gemLivePreview.sourceTotal===pipeline.length?gemLivePreview:null;
+    const stageDraft=stage==="GEM_JR"?currentJuniorDraft:currentGemDraft;
+    const stagePreview=stage==="GEM_JR"?currentJuniorPreview:currentGemPreview;
+    const savedOnly=gemSavedOnly[stage];
+    const savedMemberIds=new Set((group?.rows||[]).map(row=>row.id));
     // A screen is an unsaved research view, never a change to saved membership.
     // Re-run after published source refresh; never reuse results from another snapshot.
     const activeScan=scanned && scanned.asOf===snapshot?.asOf && scanned.sourceTotal===pipeline.length ? scanned : null;
-    const scanStatuses=activeScan?new Map<string,"PASS"|"NEEDS VERIFICATION">([
-      ...activeScan.passes.map(r=>[r.id,"PASS"] as const),
-      ...activeScan.needsReview.map(r=>[r.id,"NEEDS VERIFICATION"] as const)
+    const researchResult=activeScan || stagePreview;
+    const screenStatuses=!savedOnly&&researchResult?new Map<string,"PASS"|"NEEDS VERIFICATION">([
+      ...researchResult.passes.map(r=>[r.id,"PASS"] as const),
+      ...researchResult.needsReview.map(r=>[r.id,"NEEDS VERIFICATION"] as const)
     ]):null;
-    const viewRows=activeScan?[...activeScan.passes,...activeScan.needsReview]:(group?.rows||[]);
+    // The candidate table and the live checkbox count must use one pool.
+    // Only an explicit VIEW SAVED MEMBERS action displays saved membership.
+    const viewRows=pickGemResearchRows({pipeline,savedStage:group?.rows||[],livePreview:stagePreview,completedScan:activeScan,savedOnly});
     const rows=viewRows.filter(r=>r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
@@ -667,7 +678,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       historyById.set(period.id,[...(historyById.get(period.id)||[]),period]);
     }
     const listDates = (record:Candidate) => {
-      if(activeScan)return {added:"",removed:""};
+      if(!savedMemberIds.has(record.id))return {added:"",removed:""};
       const active = (historyById.get(record.id)||[]).filter(period=>!period.leftOn && period.status==="ACTIVE")
         .sort((a,b)=>b.cycle-a.cycle)[0];
       return {added:active?.enteredOn || record.firstFound || "",removed:""};
@@ -715,17 +726,22 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
-        <span className="gem-count">{rows.length} {activeScan?(activeScan.sourceKind==="GEM_JR"?"GEM JR input scan results":activeScan.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox screen results":activeScan.sourceKind==="GEM_JR_UNSCREENED"?"unscreened GEM JR research universe (not saved stage)":"PIPELINE scan results"):"saved programs"} · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
+        <span className="gem-count">{rows.length.toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
-      <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft}
-        onReset={()=>setGemScans(current=>{
+      <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft} onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
+        onReset={()=>{
+          setGemSavedOnly(current=>current[stage]?{...current,[stage]:false}:current);
+          if(stage==="GEM_JR")setGemLivePreview(null);
+          setGemScans(current=>{
           // Changing GEM JR criteria invalidates both its old scan and any GEM
           // result derived from that old upstream candidate pool.
           if(stage==="GEM_JR")return current.GEM_JR||current.GEM?{}:current;
           if(!current.GEM)return current;
           const next={...current};delete next.GEM;return next;
-        })}
+          });
+        }}
         onScan={result=>{
+          setGemSavedOnly(current=>({...current,[stage]:false}));
           setGemScans(current=>stage==="GEM_JR"?{GEM_JR:result}:{...current,GEM:result});
           setGemQuery("");
           setGemTrialExpanded(current=>({...current,[stage]:false}));
@@ -735,7 +751,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         <strong>{activeScan.sourceKind==="GEM_JR"?"GEM JR SCAN INPUT":activeScan.sourceKind==="GEM_JR_LIVE"?"GEM JR LIVE CHECKBOX INPUT":activeScan.sourceKind==="GEM_JR_UNSCREENED"?"GEM JR RESEARCH UNIVERSE INPUT":"PIPELINE"} SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
         <p><strong>{(activeScan.passes.length+activeScan.needsReview.length).toLocaleString("en-US")} TOTAL COMBINED CANDIDATES</strong> · intersection of all checked requirements (AND), no duplicate counting. Of {activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"GEM JR scan candidates":activeScan.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox screen candidates":activeScan.sourceKind==="GEM_JR_UNSCREENED"?"unscreened GEM JR research universe":"PIPELINE records"} assessed: {activeScan.passes.length.toLocaleString("en-US")} verified matches · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} excluded.</p>
         <p className="subtle">Checked requirements: {activeScan.audits.map(a=>a.label).join("; ")||"None — unrestricted"}. Only programs satisfying every selected check or needing verification are included in the table, never a sum of independent criterion totals. Nothing is automatically added to GEM membership. Source {stated(activeScan.asOf)}; run finished {new Date(activeScan.evaluatedAt).toLocaleString()}.</p>
-        <button type="button" className="secondary" onClick={()=>setGemScans(current=>{const next={...current};delete next[stage];return next})}>SHOW SAVED {stage==="GEM"?"GEM":"GEM JR"} LIST</button>
+        <button type="button" className="secondary" onClick={()=>setGemScans(current=>{const next={...current};delete next[stage];return next})}>CLEAR SCAN — RETURN TO LIVE SCREEN</button>
       </div>}
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
         <div className="gem-decision-summary">
@@ -767,8 +783,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </aside>
         <div className="gem-table-panel">
           <div className="sectionhead gem-table-heading">
-            <h3>{activeScan?"COMBINED SCREEN RESULTS · passed all checks or require evidence review · not saved stage membership":"GEM CANDIDATE TABLE · published membership · exact permanent program IDs"}</h3>
+            <h3>{savedOnly?"SAVED STAGE MEMBERS · explicit saved-list view":activeScan?"COMPLETED SCAN RESULTS · research only · not saved stage membership":"LIVE RESEARCH SCREEN · not saved stage membership"}</h3>
             <div className="gem-table-controls" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" table rows"}>
+               <button type="button" className="secondary" aria-pressed={savedOnly}
+                 onClick={()=>setGemSavedOnly(current=>({...current,[stage]:!current[stage]}))}>
+                 {savedOnly?"BACK TO LIVE SCREEN":"VIEW SAVED MEMBERS ("+(group?.rows.length||0).toLocaleString("en-US")+")"}
+               </button>
               <span className="gem-table-visible" role="status" aria-live="polite">
                 Selected row {rows.length?focusedIndex+1:0} of {rows.length} · {chosen?.ticker||"No candidate"}
               </span>
@@ -805,9 +825,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
-                <td title="First confirmed appearance in this GEM-stage membership cycle">{stated(listDates(r).added,"NOT RECORDED")}</td>
+                <td title="Saved stage membership date (not screening date)">{savedMemberIds.has(r.id)?stated(listDates(r).added,"NOT RECORDED"):"NOT STAGE MEMBER"}</td>
                 <td title="No removal date while the exact program remains active in this list">—</td>
-                <td>{activeScan?<span className="gem-table-eligibility" style={{background:scanStatuses?.get(r.id)==="PASS"?"#d7f7e4":"#fff0d8",color:"#232323",padding:"5px 7px",borderRadius:5}}>{scanStatuses?.get(r.id)}</span>:<span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
+                <td>{screenStatuses?<span className="gem-table-eligibility" style={{background:screenStatuses.get(r.id)==="PASS"?"#d7f7e4":"#fff0d8",color:"#232323",padding:"5px 7px",borderRadius:5}}>{!stageDraft?.selected.length?"UNRESTRICTED / NOT QUALIFIED":screenStatuses.get(r.id)==="PASS"?"PASSED CHECKED RULES":"NEEDS VERIFICATION"}</span>:<span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
                   title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span>}</td>
                 <td>{stated(r.company,"—")}</td>
                 <td title={stated(r.drug)}>{trialSheetUrl(r)
@@ -838,7 +858,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                     <div className="gem-inline-detail-header">
                       <div><strong>TRIAL · {stated(r.drug,r.ticker)} · {r.ticker}</strong>
                         <small>{stated(r.programId)} · {stated(r.nctId,"NO EXACT NCT")} · {stated(r.indication)}</small>
-                        <small>{activeScan?"Screen only — no stage membership added":"Added to this list: "+stated(listDates(r).added,"NOT RECORDED")+" · Removed: — (active)"}</small>
+                        <small>{savedMemberIds.has(r.id)?"Saved stage member · Added: "+stated(listDates(r).added,"NOT RECORDED"):"Research screen candidate · NOT a saved stage member"}</small>
                         <span>Selected gold row · expand any detail category below</span></div>
                       <button type="button" className="secondary" onClick={()=>setGemTrialExpanded(current=>({...current,[stage]:false}))}>
                         COLLAPSE TRIAL ↑
