@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-10-18T15:32:06.626247+00:00",
+  "unique_census_trials": 730,
+  "gem_jr_unfiltered_review_queue": 730,
+  "gem_unfiltered_review_queue": 730,
+  "distinct_qualified_gem_jr": null,
+  "distinct_qualified_gem": null,
+  "filters_applied": [],
+  "note": "Each of 730 trials appears in BOTH unrestricted research queues. This is scan coverage, not clinical qualification, verified positive outcome, FDA approval probability, or a trading recommendation. Legacy GEM membership remains unchanged."
+}
