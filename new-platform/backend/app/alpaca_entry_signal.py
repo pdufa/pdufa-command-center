@@ -184,6 +184,7 @@ def entry_for_program(exact_key, ticker, *, now=None):
     from .source_workspace import workspace
     from .wt_research import _context
     from .gem_research_adapter import verify_benchmarks, RESOLVED
+    from .legacy_gem_runway_gate import assess_runway, PASS as RUNWAY_PASS
     now = now or datetime.now(timezone.utc)
     today = now.astimezone(TZ).date()
     result = {"provider": "ALPACA", "ticker": ticker, "model": MODEL,
@@ -230,6 +231,24 @@ def entry_for_program(exact_key, ticker, *, now=None):
         dilution = str(event.get("new_dilution_flag") or "").strip().upper()
         if dilution not in {"NO", "NONE", "FALSE", "0"}:
             result.update(status="WAIT", message="Current dilution is unresolved or not independently cleared; financing #2 is optional.")
+            return result
+        # Removing the optional second-close condition cannot eliminate the
+        # independent SEC cash-runway gate. Unknown or stale cash data HOLDs.
+        cash = assess_runway(ticker, (context.get("runway") or {}).get(ticker),
+                             as_of=today,
+                             second_close=benchmarks["secondClose"] if benchmarks["secondFinancing"] else None)
+        runway_pass = cash["Cash runway gate"] == RUNWAY_PASS
+        result["runwayMonths"] = cash["Cash runway (months)"]
+        result["runwayStatus"] = cash["Cash runway gate"]
+        result["checks"].append({
+            "label": "SEC cash-only runway at least 12 months",
+            "pass": runway_pass,
+            "actual": cash["Cash runway (months)"],
+            "target": 12.0,
+            "rule": "Current source-reconciled cash and operating burn; second financing is optional",
+        })
+        if not runway_pass:
+            result.update(status="WAIT", message="Cash runway review required: " + str(cash["Cash runway reason"]))
             return result
         # A verified financing close may supply the original anchor; without it,
         # anchor VWAP to the separately verified Phase 3 readout. Never use a
