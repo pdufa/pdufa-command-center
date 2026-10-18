@@ -216,7 +216,7 @@ export default function Home() {
         <section className="panel">
           <div className="sectionhead"><div><h2>{ticker} · {stageName(stage)} {programId && <span className="permanent-id">{programId}</span>}</h2><p className="subtle">Illustrative checklist — full scoring rules will migrate later</p></div><span className="counter">{checked}/{items.length}</span></div>
           <div aria-live="polite" className="saveState">{status}</div>
-          {loaded ? items.map(item => (
+          {loaded ? <div className="checklist-criteria-grid">{items.map(item => (
             <label key={item.id} className="criteria">
               <input type="checkbox" checked={Boolean(selections[item.id])} onChange={event => {
                 const updated = { ...selections, [item.id]: event.target.checked };
@@ -225,7 +225,7 @@ export default function Home() {
               }} />
               <span className="criterionText"><strong>{item.label}</strong><span className="goal">GOAL · {item.goal}</span></span>
             </label>
-          )) : <p role="status">{status}</p>}
+          ))}</div> : <p role="status">{status}</p>}
         </section>
         <aside className="panel notes">
           <h2>Research notes</h2>
