@@ -212,11 +212,12 @@ def _reasons(record, event, stage, feed_current, sec_current):
             reasons.append("PDUFA date and FDA event not source-verified")
         if days is None or days < MIN_NEW_ENTRY_DAYS:
             reasons.append("Inside PDUFA -3 exit boundary or PDUFA date missing")
-    if stage in ("Post-Financing", "PDUFA") and event:
-        if str(event.get("new_dilution_flag") or "").strip().upper() in (
-            "YES", "TRUE", "1", "ACTIVE", "UNRESOLVED", "UNKNOWN"
-        ):
-            reasons.append("Current dilution flag not cleared")
+    if stage in ("Post-Financing", "PDUFA"):
+        # Unknown, blank or absent dilution assessments are NOT a clearance.
+        # This gate is independent of the optional second financing close.
+        dilution = str((event or {}).get("new_dilution_flag") or "").strip().upper()
+        if dilution not in {"NO", "NONE", "FALSE", "0"}:
+            reasons.append("Current dilution flag not independently cleared")
     return reasons
 
 
