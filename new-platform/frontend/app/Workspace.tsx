@@ -480,11 +480,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div className="table-scroll">
             <table className="gem-source-parity-table">
               <thead><tr>
-                {["#","Program ID","Ticker","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Exit Risk","Status","Trend (source)","W","T","Details"].map(h=><th key={h}>{h}</th>)}
+                {["#","Program ID","W","T","Ticker","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Exit Risk","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
               </tr></thead>
               <tbody>{rows.map((r,i)=><tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
                 <td className="numeric">{i+1}</td>
                 <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
+                <td>{wtButton(r,"watch")}</td>
+                <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="ticker-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{r.ticker}</button></td>
                 <td>{stated(r.company,"—")}</td>
                 <td title={stated(r.drug)}>{stated(r.indication,"—")}</td>
@@ -500,8 +502,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td title={stated(r.technical?.exitStatus)}>{r.technical?.exitRisk??"—"}</td>
                 <td>{r.candidateLinked===false?"UNLINKED":stated(r.membershipStatus||r.phase3Status,"—")}</td>
                 <td><button type="button" className="secondary" onClick={()=>setSelected({...selected,[stage]:r.id})}>Alpaca chart ↓</button></td>
-                <td>{wtButton(r,"watch")}</td>
-                <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>Details ↗<small>{stated(r.drug)} · {r.id}</small></button></td>
               </tr>)}</tbody></table>
             {!rows.length && <p className="subtle">No matching saved GEM candidates.</p>}
