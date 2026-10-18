@@ -486,8 +486,8 @@ def render_stage_dossier(stage, root="data"):
                 st.warning("GEM JR is an unqualified research queue. Phase 3 "
                            "claims and financing leads cannot clear GEM benchmarks.")
             else:
-                st.success("Two program-level benchmarks were source-cleared in "
-                           "the saved records; fresh SEC and trading checks "
+                st.success("Successful Phase 3 was source-verified in the saved records; "
+                           "second financing is optional. Fresh SEC and trading checks "
                            "are still required before any order.")
             st.warning("PDUFA exit policy and broker hard-stop hierarchy "
                        "are NOT finalized. Saved PDUFA −3 is a research "
