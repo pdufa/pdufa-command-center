@@ -17,10 +17,10 @@ for(const ext of [".ts",".tsx"]){
   };
 }
 const Checklist=require("../app/GemQualificationChecklist.tsx");
-const {checkboxGroupsForStage}=Checklist;
+const {checkboxGroupsForStage,resolveGemJrSource}=Checklist;
 function page(stage){
   return renderToStaticMarkup(React.createElement(Checklist.default,{
-    stage,pipeline:[],asOf:"2026-10-18",stageTotal:0,gemJrScan:null,
+    stage,pipeline:[],asOf:"2026-10-18",stageTotal:0,gemJrScan:null,gemJrSavedRows:[],
     onScan:()=>{},onReset:()=>{}
   }));
 }
@@ -94,4 +94,36 @@ test("Original FS, FA, and combined AND scan evaluator remain in place",()=>{
     "for(let i=0;i<chosen.length;i++)", "result.audits.length"]){
     assert.ok(content.includes(unchanged),unchanged+" changed unexpectedly");
   }
+});
+
+test("GEM's optional GEM JR input uses the real published 11 program memberships before a scan",()=>{
+  const rows=Array.from({length:11},(_,i)=>({
+    id:"APPLICATION|PROGRAM-"+i,ticker:"TICK"+i,drug:"Distinct program "+i
+  }));
+  const result=resolveGemJrSource(null,rows);
+  assert.equal(result.sourceKind,"GEM_JR_SAVED");
+  assert.equal(result.rows.length,11);
+  assert.equal(result.reviewIds.size,11);
+  assert.equal(result.scanAvailable,false);
+  assert.match(result.label,/not re-scanned/);
+  assert.deepEqual(result.rows.map(x=>x.id),rows.map(x=>x.id));
+});
+
+test("If GEM JR scan exists, use its exact filtered set rather than merging all saved programs",()=>{
+  const saved=Array.from({length:11},(_,i)=>({id:"SAVED|"+i,ticker:"SAVE"+i}));
+  const passed={id:"APP|PASS",ticker:"GOOD"};
+  const review={id:"APP|REVIEW",ticker:"VERIFY"};
+  const scan={passes:[passed],needsReview:[review],fails:[{id:"APP|FAIL",ticker:"FAIL"}]};
+  const result=resolveGemJrSource(scan,saved);
+  assert.equal(result.sourceKind,"GEM_JR");
+  assert.deepEqual(result.rows,[passed,review]);
+  assert.deepEqual([...result.reviewIds],["APP|REVIEW"]);
+  assert.equal(result.scanAvailable,true);
+  assert.equal(result.rows.some(row=>row.id.startsWith("SAVED|")),false);
+});
+
+test("Absent both JR sources, GEM never fabricates a candidate list",()=>{
+  const result=resolveGemJrSource(null,[]);
+  assert.deepEqual(result.rows,[]);
+  assert.equal(result.reviewIds.size,0);
 });
