@@ -170,8 +170,10 @@ def test_no_green_for_extended_price_or_unavailable_quote(program, monkeypatch):
 
 
 def test_no_green_for_weekend_exit_window_or_stale_sources(program):
-    row, event, _, snapshot = program
+    row, event, context, snapshot = program
     saturday = NOW-timedelta(days=2)
+    # Time-travel fixtures cannot reference a future SEC assessment.
+    context["runway"]["TEST"]["as_of"] = saturday.date().isoformat()
     snapshot["sourceHealth"]["publishedScan"]["finishedAt"] = (saturday-timedelta(hours=1)).isoformat()
     result = entry.entry_for_program("APPLICATION|test", "TEST", now=saturday)
     assert result["status"] == "READY_NEXT_SESSION" and not result["green"]
