@@ -210,6 +210,16 @@ class GemScanRegressionTests(__import__('unittest').TestCase):
         assert rows[0]["PDUFA rank"] is None
 
 
+    def test_absent_dilution_review_blocks_entry_but_not_phase3_research(self):
+        row = sample()
+        rows, _ = run([row], events={
+            row["Exact event"]: {"conflict_flag": "NONE", "new_dilution_flag": ""}
+        })
+        assert rows[0]["Phase 3 rank"] == 1
+        assert rows[0]["Post-Financing rank"] is None
+        assert rows[0]["PDUFA rank"] is None
+        assert "not independently cleared" in rows[0]["PDUFA missing"]
+
     def test_equal_scores_share_rank_without_dropping_candidates(self):
         rows, _ = run([sample(), sample("BBB"), sample("CCC", market=7)])
         assert [r["Phase 3 rank"] for r in rows] == [1, 1, 3]
