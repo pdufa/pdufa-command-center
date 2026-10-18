@@ -1920,3 +1920,154 @@ button.secondary { background: white; color: #172b1b; }
 @media(prefers-reduced-motion:reduce) {
   .gem-evidence-meter-track > span {transition:none;}
 }
+
+
+/* GEM / GEM JR: place independent less/more navigation beside full-list CSV. */
+.gem-table-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 16px;
+  justify-content:space-between;
+}
+.gem-table-heading > h3 {
+  min-width:0;
+  flex:1 1 280px;
+  margin:0;
+}
+.gem-table-controls {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  flex:0 1 auto;
+  min-width:0;
+  max-width:100%;
+}
+.gem-table-visible {
+  padding:6px 8px;
+  border:1px solid #c6d8ca;
+  border-radius:5px;
+  background:#f3faf6;
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+  font-weight:750;
+  white-space:nowrap;
+}
+.gem-table-controls button {
+  white-space:nowrap;
+  min-height:36px;
+  font-size:12px;
+  padding:7px 10px;
+  flex:0 0 auto;
+}
+.gem-table-controls button:disabled {opacity:.45;cursor:not-allowed;}
+
+/* Exact trial links launch one independent full-record sheet in a new tab. */
+a.trial-sheet-link {
+  display:inline-block;
+  max-width:100%;
+  color:#165b84;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  overflow-wrap:anywhere;
+  font-weight:700;
+  line-height:1.5;
+}
+a.trial-sheet-link:hover {color:#0a4166;}
+a.trial-sheet-link:focus-visible {outline:2px solid #286a91;outline-offset:3px;}
+.trial-sheet-link > small {display:block;font-size:10px;font-weight:500;}
+.gem-source-parity-table .record-select {display:block;margin-top:5px;}
+.gem-source-parity-table .trial-sheet-link {font-size:11px;}
+a.trial-sheet-action {
+  color:#244832;
+  text-decoration:none;
+  padding:8px 10px;
+  border:1px solid #aacbb5;
+  border-radius:5px;
+  background:#f4fbf5;
+  min-width:105px;
+  text-align:center;
+}
+a.trial-sheet-action:hover {background:#e0f1e4;}
+
+/* Full trial sheet: standalone full ClinicalTrials.gov data, accessible
+   independently of the parent dashboard's filters and selected candidate. */
+.standalone-trial-sheet {max-width:none;width:100%;min-width:0;}
+.trial-sheet-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  border-bottom:2px solid #bdccc1;
+  margin-bottom:16px;
+  padding:3px 0 14px;
+}
+.trial-sheet-top > div {min-width:0;flex:1 1 250px;}
+.trial-sheet-top h1 {font-size:clamp(21px,2vw,32px);margin:7px 0;}
+.trial-sheet-top .subtle {margin:4px 0;}
+.trial-sheet-top nav {flex:0 0 auto;}
+.trial-sheet-top nav a {display:inline-flex;align-items:center;min-height:40px;}
+.standalone-trial-sheet > .trial-full-details {max-width:100%;width:100%;min-width:0;}
+.standalone-trial-sheet .trial-section-picker {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:end;
+  gap:8px 15px;
+}
+.standalone-trial-sheet .trial-section-picker select {
+  max-width:100%;
+  width:clamp(230px,45vw,650px);
+  min-width:0;
+}
+.trial-all-sections {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,470px),1fr));
+  gap:12px;
+  align-items:start;
+  min-width:0;
+  width:100%;
+  margin:14px 0;
+}
+.trial-all-sections > .subtle {
+  grid-column:1/-1;
+  margin:0;
+}
+.trial-full-module {
+  min-width:0;
+  max-width:100%;
+  border:1px solid #b7d0bf;
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+}
+.trial-full-module > summary {
+  cursor:pointer;
+  list-style:none;
+  padding:13px;
+  font-size:13px;
+  font-weight:850;
+  line-height:1.4;
+  color:#183e2d;
+  background:#ecf7ee;
+  overflow-wrap:anywhere;
+}
+.trial-full-module > summary::-webkit-details-marker {display:none;}
+.trial-full-module > summary::before {content:"▸ ";color:#396a4c;}
+.trial-full-module[open] > summary::before {content:"▾ ";}
+.trial-full-module > summary:focus-visible {outline:2px solid #2c7b4b;outline-offset:-2px;}
+.trial-full-module > :not(summary) {margin:10px;}
+.trial-full-module .trial-field-auto-columns {grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));}
+.trial-full-module .trial-field-grid.trial-field-auto-columns > div {padding:8px;}
+.trial-full-module :is(.trial-field-grid,.trial-field-list,.trial-field-branch) {min-width:0;max-width:100%;}
+@media(max-width:720px) {
+  .gem-table-heading {align-items:stretch;}
+  .gem-table-heading > h3 {flex-basis:100%;}
+  .gem-table-controls {justify-content:flex-start;width:100%;}
+  .gem-table-controls .gem-table-visible {flex:1 1 100%;text-align:center;}
+  .gem-table-controls button {flex:1 1 calc(33% - 8px);white-space:normal;font-size:11px;}
+  .trial-all-sections {grid-template-columns:minmax(0,1fr);}
+  .trial-sheet-top nav,.trial-sheet-top nav a {width:100%;justify-content:center;}
+}
