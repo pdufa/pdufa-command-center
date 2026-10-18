@@ -4607,10 +4607,14 @@ if page == "PDUFA":
 
     with gem_jr_tab:
         if gem_jr_tab.open:
+            from gem_stage_scan_controls import render_stage_scan
+            render_stage_scan("GEM JR")
             _render_reference_gem_page("GEM JR")
 
     with gem_tab:
         if gem_tab.open:
+            from gem_stage_scan_controls import render_stage_scan
+            render_stage_scan("GEM")
             _render_reference_gem_page("GEM")
 
     with nightly_report_tab:
