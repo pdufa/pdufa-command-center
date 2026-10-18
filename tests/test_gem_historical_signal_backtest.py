@@ -145,6 +145,21 @@ class SignalResearchTests(unittest.TestCase):
                        exit_days=(3,))
         self.assertEqual(trades[0]["reason"],"INVALID_PRICE_HISTORY")
 
+    def test_missing_cutoff_price_cannot_be_filled_from_months_earlier(self):
+        old=[b for b in bars() if b["session"]<"2025-07-01"]
+        trades,_,_=run([event()],old,score_thresholds=(60,),
+                       volume_thresholds=(1.5,),base_widths=(3,),
+                       exit_days=(3,))
+        self.assertEqual(trades[0]["reason"],"MISSING_CUTOFF_PRICE_DATA")
+
+    def test_long_gap_in_trading_history_blocks_trade(self):
+        broken=[b for b in bars()
+                if not "2025-06-01"<=b["session"]<="2025-06-30"]
+        trades,_,_=run([event()],broken,score_thresholds=(60,),
+                       volume_thresholds=(1.5,),base_widths=(3,),
+                       exit_days=(3,))
+        self.assertEqual(trades[0]["reason"],"UNAUDITED_PRICE_SESSION_GAP")
+
     def test_no_future_calendar_events(self):
         x=event()
         x["pdufa_date"]="2027-09-30"
