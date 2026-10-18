@@ -1,3 +1,11 @@
+# PDUFA Command Center — Next.js / Vercel
+
+The active dashboard is `new-platform/frontend` (Next.js on Vercel), with `new-platform/backend` (Render) and GitHub Actions source scans. **Streamlit is retired from the deployment setup.** Do not deploy `app.py` or create a Streamlit Cloud app. A pre-removal backup of the old implementation exists at branch `archive/streamlit-legacy-20261018`.
+
+The operational scanners and source archives are separate from the dashboard. Do not delete or disable scheduled GitHub Actions while retiring Streamlit.
+
+---
+
 # PDUFA Command Center
 
 ## Alpaca Paper Trading connection (read-only)
