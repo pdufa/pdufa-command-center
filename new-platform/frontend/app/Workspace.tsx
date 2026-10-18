@@ -87,6 +87,79 @@ function uniqueRows(rows: Candidate[]) {
 function scoreNum(number?: number | null, digits = 2, suffix = "") {
   return typeof number === "number" && Number.isFinite(number) ? number.toFixed(digits) + suffix : "NOT VERIFIED";
 }
+
+type EligibilityTone = "review" | "hold" | "warning";
+type CandidateDecision = { title: string; reason: string; tone: EligibilityTone };
+function candidateDecision(record: Candidate | null, stage: "GEM_JR" | "GEM"): CandidateDecision {
+  if (!record) return {title: "NO PROGRAM SELECTED", reason: "Select an exact program to review its source-verified entry benchmarks.", tone: "review"};
+  const prefix = stage === "GEM_JR" ? "GEM JR research" : "GEM research";
+  const tech = record.technical;
+  if (record.candidateLinked === false) return {
+    title: "PROGRAM LINK NOT VERIFIED",
+    reason: prefix + ": the exact program linkage has not been confirmed. Entry eligibility is withheld.",
+    tone: "hold"
+  };
+  if (!tech) return {
+    title: "ELIGIBILITY UNVERIFIED",
+    reason: prefix + ": current clinical, financing, and market research evidence is unavailable. No trade clearance.",
+    tone: "hold"
+  };
+  const hardExit = tech.exitStatus?.startsWith("HARD EXIT WARNING") ||
+    tech.entryStatus?.startsWith("NO NEW ENTRY") ||
+    tech.tradeCall?.startsWith("EXIT RISK") ||
+    (tech.riskAlerts || []).some(alert =>
+      /FDA decision within 3 days|FDA event already resolved|New or unresolved dilution/i.test(alert));
+  if (hardExit) return {
+    title: "HARD EXIT / NO NEW ENTRY",
+    reason: stated(tech.exitStatus || tech.tradeReason, "Recorded FDA, dilution, or market risk requires immediate review."),
+    tone: "warning"
+  };
+  const benchmark = tech.benchmarks;
+  if (benchmark?.bothConfirmed !== true || benchmark.phase3 !== true || benchmark.secondFinancing !== true) {
+    return {
+      title: "ENTRY BENCHMARKS NOT CLEARED",
+      reason: prefix + ": Phase 3 " + (benchmark?.phase3 === true ? "verified" : "NOT VERIFIED") +
+        " · second SEC-financing benchmark " + (benchmark?.secondFinancing === true ? "verified" : "NOT VERIFIED") +
+        ". Membership does not establish trading eligibility.",
+      tone: "hold"
+    };
+  }
+  if (tech.entryStatus?.startsWith("NOT ELIGIBLE")) return {
+    title: "ENTRY NOT CLEARED",
+    reason: stated(tech.entryStatus) + ". Verified benchmarks do not override clinical risk.",
+    tone: "warning"
+  };
+  if (tech.entryStatus?.startsWith("UNAVAILABLE") || tech.tradeCall?.startsWith("WAIT — SOURCE RECHECK")) return {
+    title: "SOURCES REQUIRE RECHECK",
+    reason: prefix + ": both entry benchmarks are verified, but source freshness or required inputs have not cleared review.",
+    tone: "hold"
+  };
+  return {
+    title: "BENCHMARKS VERIFIED · ENTRY REVIEW",
+    reason: prefix + ": source-verified positive Phase 3 and post-readout SEC-financing benchmarks. " +
+      "Cash runway, market evidence, exit overrides and manual trade review remain independent gates.",
+    tone: "review"
+  };
+}
+function EvidenceCoverage({label, coverage, compact=false}: {label:string;coverage?:number|null;compact?:boolean}) {
+  // Do not silently translate missing observations to zero or imply that
+  // evidence coverage measures likelihood of FDA approval or trade success.
+  const amount = typeof coverage === "number" && Number.isFinite(coverage) && coverage >= 0 && coverage <= 100
+    ? coverage : null;
+  return <div className={compact ? "gem-evidence-meter gem-evidence-meter-small" : "gem-evidence-meter"}>
+    <div className="gem-evidence-meter-label"><strong>{label}</strong><span>{amount === null ? "NOT REPORTED" : amount + "/100"}</span></div>
+    <div className="gem-evidence-meter-track"
+      role={amount === null ? undefined : "progressbar"}
+      aria-label={label + " weighted evidence coverage"}
+      aria-valuemin={amount === null ? undefined : 0}
+      aria-valuemax={amount === null ? undefined : 100}
+      aria-valuenow={amount === null ? undefined : amount}>
+      <span style={{width: amount === null ? "0%" : amount + "%"}} />
+    </div>
+    {!compact && <small>{amount === null ? "No published coverage figure." :
+      "Weighted evidence observed; not a probability of approval or a trading signal."}</small>}
+  </div>;
+}
 function Goals({ record }: { record: Candidate | null }) {
   const tech = record?.technical;
   const pass = (value?: boolean) => value === true;
@@ -516,6 +589,20 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Two-benchmark membership; independent dilution/entry gates still required":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} programs · {stated(group?.asOf, "snapshot undated")}</span>
       </div>
+      {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
+        <div className="gem-decision-summary">
+          <span className="gem-decision-program">{chosen.ticker} · {stated(chosen.programId, "PROGRAM ID UNVERIFIED")} · {stage==="GEM"?"GEM":"GEM JR"}</span>
+          <strong className={"gem-eligibility gem-eligibility-"+candidateDecision(chosen,stage).tone}>
+            {candidateDecision(chosen,stage).title}
+          </strong>
+          <p>{candidateDecision(chosen,stage).reason}</p>
+          <small>Entry decision: {stated(chosen.technical?.entryStatus)} · Exit override: {stated(chosen.technical?.exitStatus)}</small>
+        </div>
+        <div className="gem-decision-evidence">
+          <EvidenceCoverage label="ENTRY EVIDENCE" coverage={chosen.technical?.entryCoverage} />
+          <EvidenceCoverage label="EXIT EVIDENCE" coverage={chosen.technical?.exitCoverage} />
+        </div>
+      </div>}
       <div className="gem-body">
         <aside className="gem-criteria">
           <h3>Qualification criteria</h3>
@@ -527,7 +614,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div className="table-scroll">
             <table className="gem-source-parity-table">
               <thead><tr>
-                {["#","Program ID","W","T","Ticker","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Exit Risk","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
+                {["#","Program ID","W","T","Ticker","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
               </tr></thead>
               <tbody>{rows.map((r,i)=><tr key={r.id} className={chosen?.id===r.id?"selected-record":""}>
                 <td className="numeric">{i+1}</td>
@@ -535,6 +622,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="ticker-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{r.ticker}</button></td>
+                <td><span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
+                  title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span></td>
                 <td>{stated(r.company,"—")}</td>
                 <td title={stated(r.drug)}>{stated(r.indication,"—")}</td>
                 <td>{stated(r.stage,"P3")}</td>
@@ -546,7 +635,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td>{stated(r.approvalProbability,"—")}</td>
                 <td>—</td>
                 <td title={stated(r.technical?.entryStatus)}>{r.technical?.entry??"—"}</td>
+                <td><EvidenceCoverage label="Entry" coverage={r.technical?.entryCoverage} compact /></td>
                 <td title={stated(r.technical?.exitStatus)}>{r.technical?.exitRisk??"—"}</td>
+                <td><EvidenceCoverage label="Exit" coverage={r.technical?.exitCoverage} compact /></td>
                 <td>{r.candidateLinked===false?"UNLINKED":stated(r.membershipStatus||r.phase3Status,"—")}</td>
                 <td><button type="button" className="secondary" onClick={()=>setSelected({...selected,[stage]:r.id})}>Alpaca chart ↓</button></td>
                 <td><button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>Details ↗<small>{stated(r.drug)} · {r.id}</small></button></td>
