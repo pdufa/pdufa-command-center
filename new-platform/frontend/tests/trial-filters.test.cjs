@@ -75,3 +75,14 @@ test("the new filter section renders four accessible qualification checkboxes wi
   assert.match(html, /Unknown evidence does not pass/);
   assert.doesNotMatch(html, / disabled=""/);
 });
+
+
+test("GEM JR two-trial option requires two distinct valid NCT IDs", () => {
+  const { normalizeTrialId, twoTrialInputError } = require("../lib/two-trial-programs.ts");
+  assert.equal(twoTrialInputError(["", ""]), "Enter both Trial 1 and Trial 2 NCT IDs.");
+  assert.match(twoTrialInputError(["NCT12345678", ""] ), /Enter both/);
+  assert.match(twoTrialInputError(["NCT12345678", "trial-B"]), /valid ClinicalTrials/);
+  assert.match(twoTrialInputError(["NCT12345678", "NCT12345678"]), /different registered/);
+  assert.equal(normalizeTrialId(" nct12345678 "), "NCT12345678");
+  assert.equal(twoTrialInputError(["NCT12345678", "nct87654321"]), null);
+});
