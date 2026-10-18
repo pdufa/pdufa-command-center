@@ -2071,3 +2071,58 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .trial-all-sections {grid-template-columns:minmax(0,1fr);}
   .trial-sheet-top nav,.trial-sheet-top nav a {width:100%;justify-content:center;}
 }
+
+
+/* GEM/GEM JR: row-by-row navigation. Keep controls above an internally
+   scrollable table and show the exact row being inspected unmistakably. */
+.gem-table-panel .gem-row-scroller {
+  max-height:min(66vh,680px);
+  overflow-x:auto;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.gem-table-panel .gem-row-scroller thead th {
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+.gem-table-panel .gem-source-parity-table tbody tr.gem-focused-row > td,
+.gem-table-panel .gem-source-parity-table tbody tr.gem-focused-row:hover > td {
+  background:#ffeb9f !important;
+  border-top:2px solid #bb8500;
+  border-bottom:2px solid #bb8500;
+}
+.gem-table-panel .gem-source-parity-table tbody tr.gem-focused-row > td:first-child {
+  box-shadow:inset 5px 0 0 #b67b00;
+  font-size:13px;
+  font-weight:900;
+  color:#694800;
+}
+.gem-table-panel .gem-source-parity-table tbody tr.gem-focused-row > td:last-child {
+  box-shadow:inset -4px 0 0 #b67b00;
+}
+.gem-source-parity-table tbody tr.gem-selectable-row,
+.gem-source-parity-table tbody tr.gem-focused-row {cursor:pointer;}
+.gem-source-parity-table tbody tr:is(.gem-selectable-row,.gem-focused-row):focus-visible {
+  outline:3px solid #1d7593;
+  outline-offset:-3px;
+}
+.gem-table-controls .gem-table-visible {
+  background:#ffefbc;
+  border:1px solid #d5ab51;
+  color:#5b450e;
+  font-size:12px;
+  font-weight:850;
+}
+.gem-table-controls button:focus-visible {
+  outline:3px solid #266c94;
+  outline-offset:2px;
+}
+@media(max-width:720px) {
+  .gem-table-panel .gem-row-scroller {max-height:min(55vh,520px);}
+  .gem-table-controls button {min-height:42px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .gem-row-scroller {scroll-behavior:auto;}
+}
