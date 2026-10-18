@@ -2362,3 +2362,10 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .gem-criteria-responsive .gem-criteria-collapsible-content {display:none;padding:10px;}
   .gem-criteria-responsive[data-open="true"] .gem-criteria-collapsible-content {display:block;}
 }
+
+/* GEM and GEM JR share this Trading subsection inside qualification criteria. */
+.goal-groups > h4{font-size:12px;margin:12px 0 6px;font-weight:800;color:#214733;}
+.goal-trading-section{border:1px solid #9cb7a5;border-radius:7px;padding:9px;background:#f5fbf7;margin:12px 0;min-width:0;}
+.goal-trading-section > summary{cursor:pointer;font-size:12px;font-weight:850;color:#185632;padding:3px 0;}
+.goal-trading-section > summary:focus-visible{outline:2px solid #247347;outline-offset:3px;}
+.goal-trading-section .goal-table{margin:8px 0 0;}
