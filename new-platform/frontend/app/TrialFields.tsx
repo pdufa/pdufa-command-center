@@ -20,12 +20,12 @@ function FieldBranch({ value, index }: { value: Json; index: number }) {
 }
 
 function FieldTree({ value }: { value: Json }) {
-  if (Array.isArray(value)) return value.length ? <div className="trial-field-list">{value.map((item, index) =>
+  if (Array.isArray(value)) return value.length ? <div className="trial-field-list trial-field-auto-columns">{value.map((item, index) =>
     item && typeof item === "object" ? <FieldBranch key={index} value={item} index={index} /> :
       <div className="trial-field-value" key={index}>{text(item)}</div>)}</div> : <span className="subtle">None reported</span>;
   if (value && typeof value === "object") {
     const entries = Object.entries(value);
-    return entries.length ? <dl className="trial-field-grid">{entries.map(([key, item]) =>
+    return entries.length ? <dl className="trial-field-grid trial-field-auto-columns">{entries.map(([key, item]) =>
       <div key={key}><dt title={key}>{label(key)}</dt><dd><FieldTree value={item} /></dd></div>)}</dl> : <span className="subtle">None reported</span>;
   }
   if (typeof value === "string" && /^https:\/\/[^\s]+$/.test(value)) {
