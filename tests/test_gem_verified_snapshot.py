@@ -159,7 +159,7 @@ class ExactGEMClearanceTests(unittest.TestCase):
     def test_overview_presents_clearances_while_separating_candidates(self):
         root = Path(__file__).resolve().parents[1]
         ui = (root / "gem_potential_ui.py").read_text(encoding="utf-8")
-        self.assertIn("### GEM — TWO BENCHMARKS VERIFIED", ui)
+        self.assertIn("### GEM — VERIFIED SUCCESSFUL PHASE 3", ui)
         self.assertIn("source_cleared_gems(root)", ui)
         self.assertIn("GLOBAL SEC SOURCE CHECK PARTIAL/STALE", ui)
         self.assertIn("### POTENTIAL GEMs — PENDING RESEARCH", ui)
