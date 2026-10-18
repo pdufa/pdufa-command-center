@@ -17,6 +17,7 @@ for(const extension of [".ts",".tsx"]){
 }
 const base=require("../lib/wt-entry-stay-exit.ts");
 const WtSections=require("../app/WtTradingSections.tsx").default;
+const WtTopChecklist=require("../app/WtTopChecklist.tsx").default;
 const today=new Date("2026-10-18T19:00:00Z");
 
 function data(){
@@ -44,8 +45,8 @@ test("WT sections use exact three requested titles and every checkbox begins uns
  assert.match(page,/0\/7 selected/);
  assert.match(page,/0\/9 selected/);
  assert.match(page,/0 of 26 selected/);
- assert.equal((page.match(/aria-expanded="false"/g)||[]).length,3);
- assert.doesNotMatch(page,/aria-expanded="true"/);
+ assert.equal((page.match(/aria-expanded="true"/g)||[]).length,3);
+ assert.doesNotMatch(page,/aria-expanded="false"/);
  assert.deepEqual(base.WT_GROUPS.map(g=>g.items.length),[10,7,9]);
  assert.equal(new Set(base.WT_CHECK_KEYS).size,26);
 });
@@ -101,7 +102,7 @@ test("PDUFA T-minus calculations are labeled reported and based on Pacific calen
 
 test("WT retains original program management controls and research charts",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
- for(const term of ['<WtTradingSections key={programId+"|"+ticker}',
+ for(const term of ['<WtTopChecklist programs={trackedWtPrograms}/>',
   '<IndicatorParityTables programId={programId} tech={x}',
   '<AlpacaStockChart ticker={ticker} programId={programId} compact />',
   'MOVE PROGRAM TO TRADING RESEARCH',
@@ -115,4 +116,33 @@ test("WT retains original program management controls and research charts",()=>{
  assert.ok(checkboxSrc.includes('type="checkbox" checked={checked.includes(item.key)}'));
  assert.ok(checkboxSrc.includes("Checking a box"));
  assert.ok(!checkboxSrc.includes("method:\"POST\""));
+});
+
+test("Main WT page always renders ENTRY STAY EXIT and 26 unchecked boxes with zero tagged programs",()=>{
+ const html=renderToStaticMarkup(React.createElement(WtTopChecklist,{programs:[]}));
+ assert.match(html,/WT — ENTRY \/ STAY \/ EXIT CHECKLISTS/);
+ assert.match(html,/0 of 26 selected/);
+ assert.match(html,/ENTRY — Buy Setup/);
+ assert.match(html,/STAY — Hold Monitoring/);
+ assert.match(html,/EXIT — Sell \/ Risk Protection/);
+ assert.match(html,/No exact programs are saved in your WT Watchlist/);
+ assert.equal((html.match(/type="checkbox"/g)||[]).length,26);
+ assert.doesNotMatch(html,/checked=""/);
+ assert.match(html,/Choose a WT program to display its Alpaca readings/);
+});
+
+test("Top-level WT program chooser maps exact program IDs without selecting boxes",()=>{
+ const html=renderToStaticMarkup(React.createElement(WtTopChecklist,{programs:[
+  {programId:"PDUFA-000001",ticker:"ABCD",drug:"Drug A"},
+  {programId:"PDUFA-000002",ticker:"EFGH",drug:"Drug B"}
+ ]}));
+ assert.match(html,/ABCD · Drug A · PDUFA-000001/);
+ assert.match(html,/EFGH · Drug B · PDUFA-000002/);
+ assert.match(html,/0 of 26 selected/);
+ assert.equal((html.match(/type="checkbox"/g)||[]).length,26);
+ const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ const top=workspace.indexOf('<WtTopChecklist programs={trackedWtPrograms}/>');
+ const list=workspace.indexOf('<div className="wt-panels">');
+ assert.ok(top>=0&&list>top,"Top WT checklists must render BEFORE per-program stock panels");
+ assert.ok(!workspace.includes('<WtTradingSections key={programId+"|"+ticker}'),"Old nested section must be removed");
 });
