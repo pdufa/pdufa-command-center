@@ -777,3 +777,146 @@ button.secondary { background: white; color: #172b1b; }
   .worknav > button { font-size: 11px; padding: 9px 4px; }
   .goal-grid { gap: 3px; font-size: 9px; }
 }
+
+
+/* Compact section navigation, phone-first; mobile menu preserves all six tabs. */
+.nav-wrapper { min-width:0; }
+.mobile-nav-toggle { display:none; }
+.nav-wrapper .worknav {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:8px;
+  padding-bottom:11px;
+}
+.nav-wrapper .worknav > button {
+  flex:0 1 auto;
+  min-width:clamp(100px, 8vw, 142px);
+  max-width:188px;
+  min-height:42px;
+  line-height:1.25;
+  padding:9px 12px;
+  text-align:center;
+}
+.nav-wrapper .worknav > button[aria-current="page"] {
+  box-shadow:inset 0 -3px 0 #97c8a0;
+}
+
+/* Masonry columns: the next research card fills the space underneath a
+   shorter neighbor. Tables themselves never get split into separate cards. */
+.workspace-overview {
+  display:block;
+  columns:clamp(310px, 28vw, 520px);
+  column-gap:var(--fluid-gap);
+  column-fill:balance;
+  margin:14px 0 20px;
+}
+.workspace-overview > * {
+  display:inline-block;
+  width:100%;
+  vertical-align:top;
+  break-inside:avoid;
+  -webkit-column-break-inside:avoid;
+  margin:0 0 var(--fluid-gap);
+}
+.workspace-overview > .source-health { display:inline-flex; }
+.workspace-overview > .master-quicklink { display:inline-flex; }
+.gem-profile-masonry, .wt-program-masonry {
+  column-gap:var(--fluid-gap);
+  columns:clamp(360px, 33vw, 680px);
+  column-fill:balance;
+  min-width:0;
+}
+.gem-profile-masonry > .gem-profile-tile,
+.wt-program-masonry > .wt-stock {
+  display:inline-block;
+  vertical-align:top;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  break-inside:avoid;
+  -webkit-column-break-inside:avoid;
+  margin:0 0 var(--fluid-gap);
+}
+.gem-profile-tile {
+  border:1px solid #d1dfd6;
+  border-radius:9px;
+  padding:clamp(8px, .7vw, 14px);
+  background:#fbfdfb;
+  overflow-wrap:anywhere;
+}
+.gem-profile-tile > * {max-width:100%; min-width:0;}
+.wt-program-masonry > .wt-stock {
+  border:1px solid #cddbd0;
+  border-radius:9px;
+  padding:12px;
+  background:#fff;
+}
+.wt-program-masonry .wt-stock {
+  grid-template-columns:minmax(0, 1fr);
+}
+.wt-program-masonry .wt-identity {
+  display:flex;
+  flex-flow:row wrap;
+  gap:8px;
+  align-items:center;
+  margin-bottom:10px;
+}
+.wt-program-masonry .wt-identity h3 { margin:0; }
+.wt-program-masonry .wt-identity p { width:100%; }
+.wt-program-masonry .wt-identity > button { width:auto; flex:1 1 185px; }
+.wt-program-masonry .wt-research-column { width:100%; }
+
+/* Dense but readable navigation on phones — a single toggle replaces the
+   two-column stack until the user explicitly opens the menu. */
+@media(max-width:720px) {
+  .mobile-nav-toggle {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    min-width:0;
+    padding:9px 10px;
+    margin-bottom:8px;
+    border:1px solid #a8c7b1;
+    border-radius:9px;
+    background:#ecf7ee;
+  }
+  .mobile-nav-toggle strong {
+    min-width:0;
+    font-size:12px;
+    overflow-wrap:anywhere;
+    color:#214b2e;
+  }
+  .mobile-nav-toggle > button {
+    flex:0 0 auto;
+    min-width:0;
+    font-size:12px;
+    min-height:42px;
+    padding:9px 12px;
+  }
+  .nav-wrapper .worknav {
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:7px;
+    padding:0 0 10px;
+  }
+  .nav-wrapper .worknav[data-open="false"] { display:none; }
+  .nav-wrapper .worknav > button {
+    min-width:0;
+    width:100%;
+    max-width:none;
+    padding:9px 6px;
+    min-height:44px;
+  }
+  .workspace-overview, .gem-profile-masonry, .wt-program-masonry {columns:1;}
+  .workspace-overview > * { margin-bottom:9px; }
+  .gem-profile-tile { padding:8px; }
+  .wt-program-masonry > .wt-stock { padding:9px; }
+  .wt-program-masonry .wt-identity > button { flex:1 1 100%; width:100%; }
+}
+@media(max-width:380px) {
+  .mobile-nav-toggle { align-items:stretch; flex-direction:column; }
+  .mobile-nav-toggle > button { width:100%; }
+}
