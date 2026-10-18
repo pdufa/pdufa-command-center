@@ -213,7 +213,7 @@ class GemReadinessTests(unittest.TestCase):
         with patch("gem_scans.build_queue", return_value=(
             [row], {"feed_current": True, "as_of": TODAY.isoformat()}
         )), patch("gem_scans._event_map", return_value=event), \
-                patch("gem_scans.gem_pipeline_id", return_value="TRIAL|NCT01234567"):
+                patch("gem_scans.gem_research_id", return_value="TRIAL|NCT01234567"):
             scored, meta = build_gem_scans("fake", as_of=TODAY)
         self.assertTrue(scored[0]["Phase 3 tracking"].startswith("AWAITING"))
         self.assertEqual(meta["phase3_tracking_count"], 0)
@@ -236,7 +236,7 @@ class GemReadinessTests(unittest.TestCase):
         with patch("gem_scans.build_queue", return_value=(
             [row], {"feed_current": True, "as_of": TODAY.isoformat()}
         )), patch("gem_scans._event_map", return_value=event), \
-                patch("gem_scans.gem_pipeline_id", return_value="TRIAL|NCT01234567"):
+                patch("gem_scans.gem_research_id", return_value="TRIAL|NCT01234567"):
             scored, meta = build_gem_scans("fake", as_of=TODAY)
         self.assertIn("IDENTITY CONFLICT", scored[0]["Phase 3 tracking"])
         self.assertEqual(meta["phase3_tracking_count"], 0)
