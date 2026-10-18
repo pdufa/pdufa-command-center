@@ -4,6 +4,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "
 import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
+import StayExitSignal from "./StayExitSignal";
 import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
@@ -795,7 +796,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                     <div className="gem-inline-sections">
                       <GemInlineSection title="Stock price / Alpaca chart" description="Saved close and volume evidence for this exact permanent program"
                         open={isSectionOpen("chart")} onToggle={()=>toggleSection("chart")}>
-                        {r.programId ? <><EntrySignal programId={r.programId} ticker={r.ticker}/><AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} /></>
+                        {r.programId ? <><EntrySignal programId={r.programId} ticker={r.ticker}/><StayExitSignal programId={r.programId} ticker={r.ticker}/><AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} /></>
                           : <p className="subtle">Alpaca chart awaits a verified permanent Program ID.</p>}
                       </GemInlineSection>
                       <GemInlineSection title="Stock / program details" description="Company, drug, trial identity, SEC financing, FDA evidence"
@@ -965,6 +966,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <div className="wt-research-column">
               {ticker ? <>
                 <EntrySignal ticker={ticker} programId={programId}/>
+                <StayExitSignal ticker={ticker} programId={programId}/>
                 <AlpacaStockChart ticker={ticker} programId={programId} compact />
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
               </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
