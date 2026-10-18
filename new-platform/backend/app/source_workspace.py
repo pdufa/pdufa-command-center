@@ -225,7 +225,7 @@ def gather(today: date | None = None) -> dict:
         # Never publish an artificially low Pipeline total when the original
         # Streamlit feeds are temporarily unavailable. workspace() may reuse
         # its previous snapshot marked STALE, rather than losing trials.
-        raise RuntimeError("Required Streamlit Pipeline parity source unavailable")
+        raise RuntimeError("Required PIPELINE source unavailable")
 
     records = {name: as_rows(sources[name]) for name in SOURCES if name.endswith(".csv")}
     caps = unique(records["phase_pipeline_market_caps.csv"], "ticker")
@@ -246,7 +246,7 @@ def gather(today: date | None = None) -> dict:
     # source of truth for unique trial/event identities and current stages.
     # In particular, a repeated NCT across two clinical files is ENRICHED,
     # never dropped by unique()'s duplicate quarantine.
-    from .pipeline_streamlit_parity import original_pipeline_universe
+    from .pipeline_universe_rules import original_pipeline_universe
     original = original_pipeline_universe(records, now)
     candidates: list[dict] = []
     for exact_id, source in original.items():
@@ -367,7 +367,7 @@ def gather(today: date | None = None) -> dict:
         "mode": "LIVE_READ_ONLY_GITHUB_SOURCE",
         "asOf": now.isoformat(),
         "fetchedAt": datetime.now(ZoneInfo("UTC")).isoformat(),
-        "disclaimer": "Latest published Streamlit main-branch data, cached up to 5 minutes; not a confirmed complete live scan or authorization to trade.",
+        "disclaimer": "Latest published main-branch source data, cached up to 5 minutes; not a confirmed complete live scan or authorization to trade.",
         "marketCapRange": {"min": _MIN, "max": _MAX},
         "trialFilterSchema": 1,
         "pipeline": candidates,
@@ -377,7 +377,7 @@ def gather(today: date | None = None) -> dict:
             "issues": problems, "publishedScan": status,
             "clinicalRows": trial_count,
             "regulatoryRows": len(candidates) - trial_count,
-            "streamlitPipelineParity": {
+            "pipelineSourceParity": {
                 "exactPrograms": len(original),
                 "clinicalAndResults": trial_count,
                 "regulatoryPrograms": len(candidates) - trial_count,
