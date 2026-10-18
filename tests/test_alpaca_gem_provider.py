@@ -15,7 +15,7 @@ from alpaca_gem_provider import (
 
 def fake_prices():
     out=[]
-    dt=date(2026,7,1)
+    dt=date(2026,7,25)
     for i in range(85):
         t=dt+timedelta(days=i)
         if t.weekday()>=5:
