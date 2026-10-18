@@ -2408,3 +2408,19 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .wt-trading-sections>small{font-size:10px;color:#5b695e}
 @container wt-panel (max-width:740px){.wt-check-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:700px){.wt-check-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* WT's three entry/stay/exit checklists are primary page controls, not
+   individual stock-card details, and remain visible with an empty watchlist. */
+.wt-checklist-primary{width:100%;min-width:0;margin:12px 0 18px;
+ border:2px solid #29764b;padding:15px;background:#f4faf6}
+.wt-checklist-primary>.sectionhead{align-items:flex-start;flex-wrap:wrap}
+.wt-checklist-primary>.sectionhead h3{margin:0;font-size:17px;color:#174b30}
+.wt-checklist-primary>.sectionhead p{font-size:12px;max-width:70ch}
+.wt-checklist-primary>.sectionhead .counter{font-weight:700}
+.wt-checklist-program-picker{display:flex;align-items:flex-start;gap:8px;
+ flex-wrap:wrap;margin:10px 0;color:#234d34;font-size:12px}
+.wt-checklist-program-picker strong{padding:9px 0}
+.wt-checklist-program-picker select{min-height:40px;padding:8px;flex:1 1 240px;
+ min-width:0;max-width:100%;border:1px solid #8ba99a;border-radius:6px;
+ background:#fff;color:#12382a}
+.wt-checklist-primary .wt-trading-sections{margin:13px 0 0}
