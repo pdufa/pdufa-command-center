@@ -204,21 +204,30 @@ def evaluate(symbol,bars,events,positions,*,today,feed="iex"):
 
 
 def collect(events, *, today, credentials, watchlist_name=DEFAULT_NAME,
-            feed="iex", opener=None, data_fetch=None):
-    watchlist=get_watchlist(watchlist_name,credentials=credentials,opener=opener)
-    if watchlist is None:
-        raise AlpacaUnavailable("Named Alpaca paper watchlist does not exist")
-    assets=watchlist.get("assets",[])
-    if not isinstance(assets,list):
-        raise AlpacaUnavailable("Alpaca returned invalid watchlist assets")
-    symbols=sorted(set(str(a.get("symbol","")).strip().upper()
-                       for a in assets if isinstance(a,dict)
-                       and a.get("symbol")))
+            feed="sip", opener=None, data_fetch=None, symbols_override=None):
+    if symbols_override is None:
+        watchlist=get_watchlist(watchlist_name,credentials=credentials,opener=opener)
+        if watchlist is None:
+            raise AlpacaUnavailable("Named Alpaca paper watchlist does not exist")
+        assets=watchlist.get("assets",[])
+        if not isinstance(assets,list):
+            raise AlpacaUnavailable("Alpaca returned invalid watchlist assets")
+        symbols=sorted(set(str(a.get("symbol","")).strip().upper()
+                           for a in assets if isinstance(a,dict)
+                           and a.get("symbol")))
+    else:
+        from scripts.alpaca_gem_watchlist import SYMBOL
+        if not isinstance(symbols_override,(list,tuple,set)):
+            raise ValueError("Symbols override must be a list/set/tuple")
+        symbols=sorted(set(str(x).upper().strip() for x in symbols_override))
+        if len(symbols)>80 or any(not SYMBOL.fullmatch(x) for x in symbols):
+            raise ValueError("Too many or invalid GEM tickers")
+        watchlist_name="GEM_AND_GEM_JR_ACTIVE_MEMBERSHIP"
     positions=positions_readonly(credentials,opener=opener)
     output=[]
     for symbol in symbols:
         try:
-            start=(today-timedelta(days=185)).isoformat()
+            start=(today-timedelta(days=220)).isoformat()
             end=(today+timedelta(days=1)).isoformat()
             bars=request_bars(symbol,start,end,today.isoformat(),
                               credentials[0],credentials[1],
@@ -238,9 +247,12 @@ def collect(events, *, today, credentials, watchlist_name=DEFAULT_NAME,
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--universe",choices=["stages","watchlist"],default="stages",
+                   help="Default: automatically scan all active GEM/JR tickers")
+    p.add_argument("--stage-membership",default="data/gem_stage_membership.json")
     p.add_argument("--watchlist",default=DEFAULT_NAME)
     p.add_argument("--events",default="data/post_phase3_historical_trade_events.csv")
-    p.add_argument("--feed",choices=["iex","sip"],default="iex")
+    p.add_argument("--feed",choices=["iex","sip"],default="sip")
     p.add_argument("--output",default="output/alpaca_gem_daily_monitor.json")
     args=p.parse_args(argv)
     today=datetime.now(ZoneInfo("America/New_York")).date()
@@ -249,8 +261,18 @@ def main(argv=None):
         with open(args.events,encoding="utf-8",newline="") as f:
             import csv
             events=list(csv.DictReader(f))
+        if args.universe=="stages":
+            from alpaca_gem_provider import active_stage_programs
+            symbols=sorted({x["ticker"] for x in active_stage_programs(
+                args.stage_membership)})
+            if not symbols:
+                raise AlpacaUnavailable("No active GEM or GEM JR tickers found")
+        else:
+            symbols=None
         report=collect(events,today=today,credentials=credentials,
-                       watchlist_name=args.watchlist,feed=args.feed)
+                       watchlist_name=args.watchlist,feed=args.feed,
+                       symbols_override=symbols)
+        report["universe"]=args.universe
         path=Path(args.output)
         path.parent.mkdir(parents=True,exist_ok=True)
         path.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",
