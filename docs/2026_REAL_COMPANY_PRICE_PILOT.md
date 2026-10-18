@@ -100,3 +100,37 @@ are checked. Keep the $300M–$10B cap **OFF** in this 2026 run.
 **Next necessary data:** point-in-time first and second financing source
 filings, full verified split-adjusted OHLCV series, PDUFA original goal and
 all changes, clinical program/NCT and early FDA action timestamps.
+
+## Expanded June-August 2026 study: seven more real stocks
+
+Underlying per-stock dates, observed close prices, return calculations,
+historical price sources, original PDUFA sources and exclusion flags are
+in data/2026_real_company_calendar_price_pilot_additional.csv.
+
+| Stock | Original goal | Entry close | T-14 net return | T-3 descriptive return | Late-exit status |
+|---|---|---:|---:|---:|---|
+| ARQT | June 29 | $21.46 | +18.96% | +25.56% | clean |
+| VRDN | June 30 | $17.62 | -9.49% | +1.39% | FDA approval June 26: same-day action, exclude T-3 |
+| LNTH | June 29 | $99.30 | +5.20% | +10.35% | CRL announced June 26 at 4:01 PM ET; review timing |
+| VERA | July 7 | $32.29 | +18.07% | +27.34% | clean |
+| CELC | July 17 | $88.05 | +22.36% | +25.87% | early FDA approval July 14, exclude T-3 |
+| REPL | August 2 | $11.58 | -11.83% | -53.37% | July 30 had no trading-bar row; fallback July 29 before AdCom |
+| MRNA | August 5 | $81.80 | -29.15% | -33.12% | clean |
+
+All comparisons: buy at last available close on/before T-30, sell at
+last available close on/before T-14/T-3, 0.1% hypothetical price
+slippage per leg. There are no actual GEM historical-score buy fills.
+
+With three earlier calendar cases (CING, ACHV, UNCY), four clean new
+cases (ARQT, VERA, REPL, MRNA) form a seven-stock **convenience** cohort
+where both scheduled exits precede the known FDA action date. Their
+mean T-14 return is -1.63% versus -5.75% T-3, with 3 winners out
+of 7 under each exit choice. This is NOT an optimized policy: much
+of the mean gap is caused by REPL's very large late-window loss.
+VRDN, LNTH, CELC need separate early-action or same-day time review.
+These rows do not yet establish Phase3/two-financing source verification,
+fully adjusted historical OHLCV from Alpaca, or tradable GEM entries.
+
+Important original-goal corrections: VRDN was June 30 (not June 26
+FDA approval), and REPL was August 2 (not August 6 FDA approval).
+Market-cap requirement remains OFF for the 2026 study.
