@@ -1,6 +1,7 @@
 "use client";
 import {useRef, useState} from "react";
 import type {Candidate} from "./Workspace";
+import {normalizeTrialId, twoTrialInputError} from "../lib/two-trial-programs";
 
 type Trial = Candidate;
 export type GemCriterionAudit = {key:string;label:string;passed:number;failed:number;unknown:number};
@@ -64,7 +65,7 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
   {key:"star_pilot",title:"STAR Pilot Program",goal:"FDA participation verified",unit:"participation",options:["FDA participation verified","FDA announcement","Official correspondence"]}]},
  {heading:"2. Evaluate Clinical Trial Data Strength",items:[
   {key:"statistical_significance",title:"Statistical Significance",goal:"0.05",unit:"maximum adjusted p-value",number:true},
-  {key:"two_trial",title:"The Two-Trial Paradigm",goal:"2",unit:"successful pivotal studies",number:true},
+  {key:"two_trial",title:"The Two-Trial Paradigm",goal:"2",unit:"distinct pivotal trials"},
   {key:"safety_cleanliness",title:"Safety Cleanliness",goal:"No material safety imbalance",unit:"safety criterion",options:["No material safety imbalance","SAE risk difference reviewed","FDA safety review favorable"]}]},
  {heading:"3. Track Advisory Committee (AdCom) Scheduling",items:[
   {key:"no_adcom",title:"No AdCom Scheduled",goal:"FDA confirms no meeting planned",unit:"AdCom evidence",options:["FDA confirms no meeting planned","No meeting announced (unconfirmed)"]},
@@ -79,6 +80,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const [selected,setSelected]=useState<string[]>(()=>[...suggestedByStage[stage]]);
  const [result,setResult]=useState<GemScanResult|null>(null);
  const [optionalGoals,setOptionalGoals]=useState<Record<string,string>>(()=>Object.fromEntries(OPTIONAL_ALL.map(a=>[a.key,a.goal])));
+ const [twoTrialIds,setTwoTrialIds]=useState<[string,string]>(["",""]);
+ const twoTrialError=stage==="GEM_JR"&&selected.includes("two_trial")?twoTrialInputError(twoTrialIds):null;
  const [open,setOpen]=useState(true);
  const [running,setRunning]=useState(false);
  const [message,setMessage]=useState("");
@@ -92,8 +95,19 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    onReset();
  }
  function toggle(key:string){selectRequirements(selected.includes(key)?selected.filter(x=>x!==key):[...selected,key])}
+ function setTwoTrialId(index:0|1,value:string){
+   const normalized=value.toUpperCase();
+   setTwoTrialIds(current=>index===0?[normalized,current[1]]:[current[0],normalized]);
+   setResult(null);
+   setMessage("Trial IDs updated. Press SCAN after entering two distinct registered trials.");
+   onReset();
+ }
  async function scan(){
    if(running||!pipeline.length)return;
+   if(twoTrialError){
+     setMessage("Two-Trial Paradigm: "+twoTrialError);
+     return;
+   }
    setRunning(true);
    setMessage("Running the selected requirements across the full loaded PIPELINE…");
    setResult(null);
@@ -105,7 +119,10 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){if(selected.includes(item.key)){
        // An operator target is not evidence. Until exact-program sourced fields are
        // published and verified, this optional check must remain UNKNOWN.
-       chosen.push([item.key,item.title+" (goal: "+(optionalGoals[item.key]||"unset")+" "+item.unit+")",()=>null]);
+       const goal=item.key==="two_trial"
+         ? "trial 1 "+normalizeTrialId(twoTrialIds[0])+"; trial 2 "+normalizeTrialId(twoTrialIds[1])+"; verify independent pivotal evidence"
+         : (optionalGoals[item.key]||"unset")+" "+item.unit;
+       chosen.push([item.key,item.title+" (goal: "+goal+")",()=>null]);
      }}
      const audits:GemCriterionAudit[]=chosen.map(([key,label])=>({key,label,passed:0,failed:0,unknown:0}));
      const passes:Trial[]=[],fails:Trial[]=[],needsReview:Trial[]=[];
@@ -155,7 +172,21 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
            <td style={{padding:7,borderTop:"1px solid #e5eee7",paddingLeft:15}}>{item.title}</td>
            <td style={{padding:7,borderTop:"1px solid #e5eee7"}}>
              <div style={{border:"1px solid #7a9c81",borderRadius:5,padding:6,background:"#f3faf5"}}>
-               {item.number?<input aria-label={item.title+" target"} type="number" step="any" min="0" value={optionalGoals[item.key]??item.goal}
+               {item.key==="two_trial"?
+                 <div>
+                   <strong style={{display:"block",marginBottom:6}}>Goal: 2 separate successful pivotal trials</strong>
+                   {([0,1] as const).map(index=><label key={index} style={{display:"block",marginBottom:8,fontSize:12}}>
+                     {"Trial "+(index+1)+" — NCT ID"}
+                     <input type="text" value={twoTrialIds[index]} maxLength={11} placeholder={"NCT"+(index===0?"12345678":"87654321")}
+                       autoComplete="off" aria-label={"Two-Trial Paradigm Trial "+(index+1)+" NCT ID"}
+                       aria-invalid={Boolean(twoTrialError&&twoTrialIds[index])}
+                       onChange={event=>setTwoTrialId(index,event.target.value)}
+                       style={{display:"block",marginTop:3,width:"100%",padding:6,boxSizing:"border-box"}}/>
+                   </label>)}
+                   {selected.includes("two_trial")&&twoTrialError&&<small role="alert" style={{display:"block",color:"#8b2222"}}>{twoTrialError}</small>}
+                   <small style={{display:"block"}}>Enter two distinct ClinicalTrials.gov studies. IDs alone do not verify success.</small>
+                 </div>:
+                item.number?<input aria-label={item.title+" target"} type="number" step="any" min="0" value={optionalGoals[item.key]??item.goal}
                  onChange={event=>{setOptionalGoals(current=>({...current,[item.key]:event.target.value}));setResult(null);onReset();}}
                  style={{width:"100%",padding:5,boxSizing:"border-box"}}/>:
                  <select aria-label={item.title+" goal"} value={optionalGoals[item.key]??item.goal} onChange={event=>{setOptionalGoals(current=>({...current,[item.key]:event.target.value}));setResult(null);onReset();}}
@@ -163,7 +194,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
                <small style={{display:"block",marginTop:3}}>{item.unit}</small>
              </div>
            </td>
-           <td style={{padding:7,borderTop:"1px solid #e5eee7"}}>Needs verification</td>
+           <td style={{padding:7,borderTop:"1px solid #e5eee7"}}>{item.key==="two_trial"&&selected.includes("two_trial")&&twoTrialError?"IDs incomplete":"Needs verification"}</td>
          </tr>)}</tbody>
        </table>
      </div>
