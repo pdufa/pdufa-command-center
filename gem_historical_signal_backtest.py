@@ -269,8 +269,8 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
     audit = {
         "year":year,"as_of":as_of.isoformat(),
         "candidate_event_rows":len(candidates),
-        "audited_event_rows":sum(1 for r in trials[:len(variants)] if
-                                 r["status"]!="BLOCKED") if candidates else 0,
+        "audited_event_rows":len({r["event_key"] for r in trials
+                                  if r["status"]!="BLOCKED"}),
         "price_rows":len(raw_bars),
         "variants":len(variants),
         "completed_trades":sum(r["status"]=="COMPLETED" for r in trials),
