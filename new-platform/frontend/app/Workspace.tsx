@@ -318,21 +318,6 @@ function PriorityIndicators({ record }: { record: Candidate }) {
     <p className="subtle small">The market feed contains close/volume observations only. Intraday ATR, spread, actual stops, anchored VWAP and XBI comparisons are not fabricated.</p>
   </details>;
 }
-function exportCandidateCsv(rows: Candidate[], name: string) {
-  const columns = ["Permanent Program ID","Ticker","Pipeline ID","Drug","Indication","PDUFA","Market cap","Phase 3","Second financing","Entry score","Entry coverage","Exit risk","Exit coverage","Runway","Last seen"];
-  const quote = (value: unknown) => '"'+String(value??"").replaceAll('"','""')+'"';
-  const data = rows.map(x=>[x.programId,x.ticker,x.id,x.drug,x.indication,x.pdufaDate,x.marketCap,x.phase3Status,x.financingStatus,x.technical?.entry,x.technical?.entryCoverage,x.technical?.exitRisk,x.technical?.exitCoverage,x.technical?.runwayGate,x.lastSeen]);
-  const body = [columns,...data].map(a=>a.map(quote).join(",")).join("\r\n");
-  const blob = new Blob([body],{type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href=url;
-  link.download=name;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1200);
-}
 function SourceDetails({ record }: { record: Candidate }) {
   return (
     <div className="program-details">
@@ -393,7 +378,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   // Each GEM table shows up to 10 rows around its independently selected
   // candidate. Previous / Next move exactly one source-ordered row at a time.
-  // The complete list remains available to CSV and nested trial drilldowns.
+  // The complete list remains available to nested clinical trial drilldowns.
   const highlightedGemRow=useRef<HTMLTableRowElement|null>(null);
   const gemTableScrollViewport=useRef<HTMLDivElement|null>(null);
   const [masterProgram, setMasterProgram] = useState("");
@@ -659,7 +644,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 onClick={()=>moveRow(-1)} aria-label="Select previous candidate row">↑ PREVIOUS ROW</button>
               <button type="button" className="secondary" disabled={focusedIndex>=rows.length-1||!rows.length}
                 onClick={()=>moveRow(1)} aria-label="Select next candidate row">↓ NEXT ROW</button>
-              <button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button>
             </div>
           </div>
           <div className="table-scroll gem-row-scroller" ref={gemTableScrollViewport} aria-label={(stage==="GEM"?"GEM":"GEM JR")+" candidates scrollable table"}>
