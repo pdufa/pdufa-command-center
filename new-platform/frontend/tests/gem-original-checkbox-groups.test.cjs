@@ -17,7 +17,7 @@ for(const ext of [".ts",".tsx"]){
   };
 }
 const Checklist=require("../app/GemQualificationChecklist.tsx");
-const {checkboxGroupsForStage,resolveGemJrSource}=Checklist;
+const {checkboxGroupsForStage,resolveGemJrSource,buildGemJrLivePreview}=Checklist;
 function page(stage){
   return renderToStaticMarkup(React.createElement(Checklist.default,{
     stage,pipeline:[],asOf:"2026-10-18",stageTotal:0,gemJrScan:null,gemJrSavedRows:[],
@@ -126,4 +126,48 @@ test("Absent both JR sources, GEM never fabricates a candidate list",()=>{
   const result=resolveGemJrSource(null,[]);
   assert.deepEqual(result.rows,[]);
   assert.equal(result.reviewIds.size,0);
+});
+
+test("The current GEM JR combined 694 program checkbox screen feeds GEM, not the unrelated 11-member saved stage ledger",()=>{
+ const pipeline=Array.from({length:700},(_,i)=>({
+  id:"TRIAL|"+i,ticker:"T"+i,drug:"Drug "+i,
+  trialFilters:{registeredPhase:i<694?"Phase 3":"Phase 2"}
+ }));
+ const checks=[["registry","Phase 3 trial status recorded",
+  x=>x.trialFilters?.registeredPhase==="Phase 3"]];
+ const preview=buildGemJrLivePreview(pipeline,checks,"2026-10-18T16:10:00Z",700);
+ assert.equal(preview.passes.length,694);
+ assert.equal(preview.needsReview.length,0);
+ const saved=Array.from({length:11},(_,i)=>({id:"STAGE|"+i,ticker:"S"+i}));
+ const GEM=resolveGemJrSource(null,saved,preview);
+ assert.equal(GEM.sourceKind,"GEM_JR_LIVE");
+ assert.equal(GEM.rows.length,694);
+ assert.equal(GEM.reviewIds.size,0);
+ assert.equal(GEM.scanAvailable,false);
+ assert.match(GEM.label,/checkbox screen/);
+ const JR=renderToStaticMarkup(React.createElement(Checklist.default,{
+  stage:"GEM_JR",pipeline,asOf:"2026-10-18T16:10:00Z",stageTotal:11,
+  gemJrScan:null,gemJrSavedRows:saved,gemJrDraft:{
+   asOf:"2026-10-18T16:10:00Z",sourceTotal:700,
+   selected:["registry"],showSuggestions:false,faActive:false,
+   optionalGoals:{},twoTrialIds:["",""]
+  },onScan:()=>{},onReset:()=>{}
+ }));
+ assert.match(JR,/TOTAL COMBINED RESULTS/);
+ assert.match(JR,/>694</);
+});
+
+test("GEM JR preview does not elevate unknown trial evidence to verified pass",()=>{
+ const rows=[{id:"TRIAL|PASS",ticker:"PASS",phase3Status:"VERIFIED"},
+             {id:"TRIAL|UNKNOWN",ticker:"UNKNOWN"},
+             {id:"TRIAL|FAIL",ticker:"FAIL",phase3Status:"FAILED"}];
+ const preview=buildGemJrLivePreview(rows,[["positive","Phase 3",
+  r=>r.phase3Status==="VERIFIED"?true:r.phase3Status==="FAILED"?false:null]],
+  "2026-10-18",3);
+ assert.deepEqual(preview.passes.map(r=>r.id),["TRIAL|PASS"]);
+ assert.deepEqual(preview.needsReview.map(r=>r.id),["TRIAL|UNKNOWN"]);
+ const GEM=resolveGemJrSource(null,[],preview);
+ assert.equal(GEM.rows.length,2);
+ assert.deepEqual([...GEM.reviewIds],["TRIAL|UNKNOWN"]);
+ assert.equal(GEM.rows.some(r=>r.id==="TRIAL|FAIL"),false);
 });

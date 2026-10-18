@@ -11,7 +11,7 @@ type EntryReply={
  programId:string;ticker:string;provider?:string;status:string;calculatedAt?:string;
  entryTrigger?:number;maximumEntry?:number;initialStop?:number;green?:boolean;
 };
-const emptyOpen:Record<GroupId,boolean>={entry:true,stay:true,exit:true};
+const emptyOpen:Record<GroupId,boolean>={entry:false,stay:false,exit:false};
 const verified=(text:string,source:WtObservation["source"]):WtObservation=>({text,source});
 const UNAVAILABLE=verified("NOT VERIFIED","UNAVAILABLE");
 const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
