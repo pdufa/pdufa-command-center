@@ -15,7 +15,7 @@ from pathlib import Path
 from statistics import mean, median
 
 from post_phase3_trade_backtest import (
-    bars_by_ticker, day, number, prior_liquidity, read_csv, validate_event,
+    bars_by_ticker, day, https, number, prior_liquidity, read_csv, validate_event,
 )
 
 ROOT = Path(__file__).resolve().parent
@@ -25,6 +25,7 @@ TRADE_FIELDS = (
     "entry_date", "entry_price", "entry_score", "initial_stop", "exit_date",
     "exit_price", "exit_reason", "net_return_pct", "holding_sessions",
     "max_adverse_excursion_pct", "capture_of_runup_pct",
+    "historical_market_cap_usd", "market_cap_observed_on",
 )
 SUMMARY_FIELDS = (
     "score_threshold", "volume_threshold", "base_atr_width", "exit_days",
@@ -80,8 +81,56 @@ def score_at(bars, i, pdufa, *, rvol_min=1.5, base_width=3.0):
             "signal_close":x["close"]}
 
 
+# Historical issuer market cap snapshots are an independent, source-verified
+# input. A current GEM market_cap_bucket cannot qualify an old entry.
+MIN_MARKET_CAP_USD = 300_000_000
+MAX_MARKET_CAP_USD = 10_000_000_000
+MARKET_CAP_FIELDS = (
+    "ticker", "session", "market_cap_usd", "known_as_of",
+    "source_url", "verification_status",
+)
+
+
+def market_caps_by_ticker(rows):
+    """Only verified publicly known historical snapshots qualify."""
+    by_ticker = {}
+    invalid = set()
+    seen = set()
+    for r in rows:
+        ticker = str(r.get("ticker") or "").strip().upper()
+        if r.get("verification_status") != "POINT_IN_TIME_VERIFIED":
+            continue
+        observed = day(r.get("session"))
+        known = day(r.get("known_as_of"))
+        cap = number(r.get("market_cap_usd"))
+        if (not ticker or not observed or not known or known < observed
+                or cap is None or cap <= 0 or not https(r.get("source_url"))
+                or (ticker, observed) in seen):
+            invalid.add(ticker)
+            continue
+        seen.add((ticker, observed))
+        by_ticker.setdefault(ticker, []).append({
+            "session": observed, "known_as_of": known,
+            "market_cap_usd": cap,
+        })
+    for ticker in invalid:
+        by_ticker.pop(ticker, None)
+    for observations in by_ticker.values():
+        observations.sort(key=lambda x: (x["session"], x["known_as_of"]))
+    return by_ticker, invalid
+
+
+def market_cap_at(observations, decision_day, *, max_age_days=7):
+    """Latest known observation, never tomorrow's or future filing's number."""
+    eligible = [r for r in observations
+                if r["session"] <= decision_day and
+                r["known_as_of"] <= decision_day and
+                (decision_day-r["session"]).days <= max_age_days]
+    return eligible[-1] if eligible else None
+
+
 def first_signal(bars, event_dates, *, threshold, volume_threshold,
-                 base_atr_width, min_dollars):
+                 base_atr_width, min_dollars, cap_eligible=None):
     second_public = event_dates["second_financing_public_date"]
     pdufa = event_dates["pdufa_date"]
     cutoff = pdufa-timedelta(days=3)
@@ -108,6 +157,8 @@ def first_signal(bars, event_dates, *, threshold, volume_threshold,
         risk_ok = (0.5*s["atr"] <= risk <= 3*s["atr"] and risk/entry <= .08)
         score = s["score_before_risk"]+(20 if risk_ok else 0)
         if not risk_ok or score < threshold:
+            continue
+        if cap_eligible is not None and not cap_eligible(x["session"]):
             continue
         return i, score, s["stop"]
     return None
@@ -191,8 +242,13 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
 def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
         score_thresholds=(60,70,80), volume_thresholds=(1.25,1.5,2.0),
         base_widths=(2.0,3.0,4.0), exit_days=(14,3),
-        min_dollars=250000, slip_bps=10):
+        min_dollars=250000, slip_bps=10, market_caps=None,
+        min_cap_usd=MIN_MARKET_CAP_USD, max_cap_usd=MAX_MARKET_CAP_USD):
+    if min_cap_usd <= 0 or min_cap_usd > max_cap_usd:
+        raise ValueError("Invalid market-cap range")
     prices, invalid = bars_by_ticker(raw_bars)
+    cap_rows, invalid_cap = market_caps_by_ticker(market_caps or [])
+    require_cap = market_caps is not None
     candidates = [x for x in events
                   if day(x.get("pdufa_date")) and
                   day(x["pdufa_date"]).year == year]
@@ -210,8 +266,12 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
             reason = "INVALID_PRICE_HISTORY"
         if not reason and not prices.get(ticker):
             reason = "MISSING_SPLIT_ADJUSTED_OHLCV"
-        if not reason and dates["pdufa_date"] > as_of:
+        if day(event.get("pdufa_date")) > as_of:
             reason = "FUTURE_PDUFA_NOT_COMPLETED"
+        if require_cap and not reason and ticker in invalid_cap:
+            reason = "INVALID_MARKET_CAP_PROVENANCE"
+        if require_cap and not reason and not cap_rows.get(ticker):
+            reason = "MISSING_VERIFIED_HISTORICAL_MARKET_CAP"
         early = dates["early_fda_action_date"] if dates else None
         if not reason and early and early <= dates["second_financing_public_date"]:
             reason = "FDA_ACTION_BEFORE_ENTRY_ELIGIBILITY"
@@ -225,17 +285,28 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
                 row.update(status="BLOCKED",reason=reason)
             else:
                 history = prices[ticker]
+                def cap_eligible(signal_date):
+                    snap = market_cap_at(cap_rows.get(ticker, []), signal_date)
+                    return bool(snap and
+                                min_cap_usd <= snap["market_cap_usd"] <= max_cap_usd)
                 sig = first_signal(history, dates, threshold=threshold,
                                    volume_threshold=vol, base_atr_width=width,
-                                   min_dollars=min_dollars)
+                                   min_dollars=min_dollars,
+                                   cap_eligible=cap_eligible if require_cap else None)
                 if sig is None:
                     row.update(status="NO_SIGNAL",
-                               reason="NO_QUALIFYING_ENTRY_BEFORE_CUTOFF")
+                               reason="NO_QUALIFYING_ENTRY_WITH_CAP_FILTER"
+                               if require_cap else "NO_QUALIFYING_ENTRY_BEFORE_CUTOFF")
                 else:
                     i,score,stop = sig
                     row.update(entry_signal_date=history[i]["session"].isoformat(),
                                entry_date=history[i+1]["session"].isoformat(),
                                initial_stop=round(stop,4))
+                    if require_cap:
+                        cap = market_cap_at(cap_rows[ticker], history[i]["session"])
+                        row.update(historical_market_cap_usd=round(
+                                       cap["market_cap_usd"],2),
+                                   market_cap_observed_on=cap["session"].isoformat())
                     # If entry follows an early FDA action, no simulated fill.
                     if early and early <= history[i+1]["session"]:
                         row.update(status="CENSORED",
@@ -279,6 +350,13 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
         "audited_event_rows":len({r["event_key"] for r in trials
                                   if r["status"]!="BLOCKED"}),
         "price_rows":len(raw_bars),
+        "market_cap_snapshot_rows":len(market_caps or []),
+        "market_cap_min_usd":min_cap_usd if require_cap else None,
+        "market_cap_max_usd":max_cap_usd if require_cap else None,
+        "market_cap_filter_active":require_cap,
+        "historical_cap_requires_verified_public_date":True,
+        "pdufa_targets_after_asof":sum(
+            day(x.get("pdufa_date")) > as_of for x in candidates),
         "variants":len(variants),
         "completed_trades":sum(r["status"]=="COMPLETED" for r in trials),
         "unique_event_keys_with_completed_scenarios":len({
@@ -308,10 +386,20 @@ def main(argv=None):
     p.add_argument("--events",default="data/post_phase3_historical_trade_events.csv")
     p.add_argument("--bars",default="data/post_phase3_historical_adjusted_ohlcv.csv")
     p.add_argument("--year",type=int,default=2025)
+    p.add_argument("--as-of",default="2026-10-17")
+    p.add_argument("--market-caps",
+                   default="data/post_phase3_historical_market_caps.csv")
+    p.add_argument("--min-cap-usd",type=float,default=MIN_MARKET_CAP_USD)
+    p.add_argument("--max-cap-usd",type=float,default=MAX_MARKET_CAP_USD)
     p.add_argument("--output-dir",default="output/gem_historical_signal_2025")
     args=p.parse_args(argv)
-    trials, summaries, audit = run(read_csv(args.events), read_csv(args.bars),
-                                   year=args.year)
+    as_of=day(args.as_of)
+    if not as_of:
+        p.error("--as-of requires YYYY-MM-DD")
+    trials, summaries, audit = run(
+        read_csv(args.events), read_csv(args.bars), year=args.year,
+        as_of=as_of, market_caps=read_csv(args.market_caps),
+        min_cap_usd=args.min_cap_usd, max_cap_usd=args.max_cap_usd)
     dest=Path(args.output_dir)
     dest.mkdir(parents=True,exist_ok=True)
     for name, fields, rows in (
