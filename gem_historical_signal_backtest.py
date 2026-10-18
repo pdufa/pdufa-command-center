@@ -368,7 +368,7 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
         "limitations": [
             "Research-only hypothetical trades; no actual fills, fees, taxes or halted-market simulation.",
             "Source URL syntax and dates are validated, but primary documents still require manual event-level audit.",
-            "Only supplied PDUFA events are replayed; an incomplete 2025 universe causes selection bias.",
+            f"Only supplied PDUFA events are replayed; an incomplete {year} universe causes selection bias.",
             "Signals use one-day bars; intraday sequence and stop execution are uncertain.",
             "Parameter grid is exploratory; no optimal settings or predictive GREEN claim without chronological holdout.",
             "Early FDA actions censor hypothetical returns and remain in counts.",
