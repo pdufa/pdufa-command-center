@@ -496,6 +496,23 @@ def read_entry_signal(program_id: str):
             **entry_for_program(exact_key, ticker)}
 
 
+@app.get("/api/exit-signal/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_exit_signal(program_id: str):
+    """Paper-position STAY/EXIT check, never an order or external holding."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        ticker, exact_key = identity.ticker, identity.source_key
+    from .alpaca_exit_signal import exit_for_program
+    return {"programId": program_id,
+            **exit_for_program(exact_key, ticker)}
+
+
 @app.get("/api/alpaca-chart/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
