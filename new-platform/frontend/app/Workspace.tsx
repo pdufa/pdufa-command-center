@@ -36,6 +36,7 @@ type ResearchTechnical = {
 export type Candidate = {
   id: string; programId?: string; eventKey?: string; ticker: string; company?: string;
   drug?: string; indication?: string; nctId?: string; pdufaDate?: string;
+  priorityReview?: {status: string; source?: string; designationDate?: string};
   phase3Date?: string; phase3Status?: string; phase3Source?: string;
   stage?: string; outcome?: string; marketCap?: number | null; capInRange?: boolean;
   capChecked?: string; capSource?: string; financingStatus?: string; financingDate?: string;
