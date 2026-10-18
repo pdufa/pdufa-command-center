@@ -6,6 +6,11 @@ on:
     paths:
       - 'new-platform/**'
       - '.github/workflows/pdufa-new-platform-bootstrap-ci.yml'
+  pull_request:
+    branches: [new-platform-bootstrap]
+    paths:
+      - 'new-platform/**'
+      - '.github/workflows/pdufa-new-platform-bootstrap-ci.yml'
   workflow_dispatch:
 
 permissions:
