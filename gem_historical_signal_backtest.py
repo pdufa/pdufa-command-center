@@ -385,20 +385,23 @@ def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--events",default="data/post_phase3_historical_trade_events.csv")
     p.add_argument("--bars",default="data/post_phase3_historical_adjusted_ohlcv.csv")
-    p.add_argument("--year",type=int,default=2025)
+    p.add_argument("--year",type=int,default=2026)
     p.add_argument("--as-of",default="2026-10-17")
+    p.add_argument("--apply-market-cap-filter",action="store_true",
+                   help="OPTIONAL for future studies; disabled by default")
     p.add_argument("--market-caps",
                    default="data/post_phase3_historical_market_caps.csv")
     p.add_argument("--min-cap-usd",type=float,default=MIN_MARKET_CAP_USD)
     p.add_argument("--max-cap-usd",type=float,default=MAX_MARKET_CAP_USD)
-    p.add_argument("--output-dir",default="output/gem_historical_signal_2025")
+    p.add_argument("--output-dir",default="output/gem_historical_signal_2026")
     args=p.parse_args(argv)
     as_of=day(args.as_of)
     if not as_of:
         p.error("--as-of requires YYYY-MM-DD")
     trials, summaries, audit = run(
         read_csv(args.events), read_csv(args.bars), year=args.year,
-        as_of=as_of, market_caps=read_csv(args.market_caps),
+        as_of=as_of, market_caps=(read_csv(args.market_caps)
+                               if args.apply_market_cap_filter else None),
         min_cap_usd=args.min_cap_usd, max_cap_usd=args.max_cap_usd)
     dest=Path(args.output_dir)
     dest.mkdir(parents=True,exist_ok=True)
