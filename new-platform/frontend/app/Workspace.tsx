@@ -176,10 +176,15 @@ function EvidenceCoverage({label, coverage, compact=false}: {label:string;covera
 function Goals({ record }: { record: Candidate | null }) {
   const tech = record?.technical;
   const pass = (value?: boolean) => value === true;
-  const rows: [string,string,string,boolean][] = [
-    ["Market capitalization", money(record?.marketCap), "$300M–$10B",pass(record?.capInRange)],
+  type GoalRow = [string,string,string,boolean];
+  // Presentation-only grouping shared by GEM and GEM JR. All observations,
+  // thresholds and research scoring remain unchanged.
+  const clinicalRows:GoalRow[] = [
     ["Phase 3 verified positive", tech?.benchmarks?.phase3 ? "PASS — source checked" : stated(record?.phase3Status), "Exact successful primary endpoint + source", pass(tech?.benchmarks?.phase3)],
     ["Second financing (OPTIONAL)", tech?.benchmarks?.secondFinancing ? "VERIFIED — SEC reviewed" : "NOT VERIFIED — MONITOR RISK", "Not required for GEM/GEM JR research eligibility; assess cash and dilution separately", pass(tech?.benchmarks?.secondFinancing)],
+  ];
+  const tradingRows:GoalRow[] = [
+    ["Market capitalization", money(record?.marketCap), "$300M–$10B (optional screen)",pass(record?.capInRange)],
     ["SEC cash-only runway", tech?.runwayMonths == null ? stated(tech?.runwayGate) : scoreNum(tech.runwayMonths,1," months"), "≥12 months; source current and reconciled", pass(tech?.runwayGate?.startsWith("PASS"))],
     ["EOD closing price", scoreNum(tech?.close,2," USD"), "Compare SMA20 and SMA50; not executable quote", false],
     ["SMA20 / SMA50", scoreNum(tech?.sma20)+" / "+scoreNum(tech?.sma50), "Close above SMA20 & SMA50", false],
@@ -191,13 +196,22 @@ function Goals({ record }: { record: Candidate | null }) {
     ["Entry strength / coverage", tech?.entry == null ? stated(tech?.entryStatus,"UNAVAILABLE") : tech.entry+"/100 · "+tech.entryCoverage+"/100 observed", "Only when ≥50/100 evidence coverage and all gates pass", false],
     ["Exit risk / coverage", tech?.exitRisk == null ? stated(tech?.exitStatus,"UNAVAILABLE") : tech.exitRisk+"/100 · "+tech.exitCoverage+"/100 observed", "PDUFA −3 and hard-exit warnings override scores", false],
   ];
-  return <div className="goal-table">
+  const goalTable = (rows:GoalRow[]) => <div className="goal-table">
     <div className="goal-grid goal-header"><span>Indicator</span><span>Observed / status</span><span>Goal / rule</span></div>
     {rows.map(([label, observed, goal, verified])=><div key={label} className="goal-grid">
       <span className="goal-row-heading">{label}</span>
       <span className={verified ? "verified" : "unknown-value"}><small className="goal-mini-label">Observed / status</small>{observed}</span>
       <span className="gold-goal"><small className="goal-mini-label">Goal / rule</small>{goal}</span>
     </div>)}
+  </div>;
+  return <div className="goal-groups">
+    <h4>Clinical and financing qualifications</h4>
+    {goalTable(clinicalRows)}
+    <details className="goal-trading-section">
+      <summary>TRADING — market and risk criteria ({tradingRows.length})</summary>
+      <p className="subtle small">Trading observations are optional research checks, not new clinical eligibility gates. No market-cap restriction is imposed by this display.</p>
+      {goalTable(tradingRows)}
+    </details>
   </div>;
 }
 function TechnicalPanel({ record }: { record: Candidate }) {
