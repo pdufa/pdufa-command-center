@@ -65,8 +65,8 @@ def timeline_events(record, event, today):
     )
     items = [
         ("Phase 3 readout (saved)", phase3),
-        ("Financing #1 (SEC source required)", first),
-        ("Financing #2 (SEC source required)", second),
+        ("Financing #1 (optional SEC evidence)", first),
+        ("Financing #2 (optional SEC evidence)", second),
         ("PDUFA (date requires independent confirmation)", pdufa),
     ]
     rows = [{
