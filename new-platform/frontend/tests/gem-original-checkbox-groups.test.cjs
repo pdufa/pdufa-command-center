@@ -96,17 +96,19 @@ test("Original FS, FA, and combined AND scan evaluator remain in place",()=>{
   }
 });
 
-test("GEM's optional GEM JR input uses the real published 11 program memberships before a scan",()=>{
+test("GEM JR saved membership remains independent of the research input fallback",()=>{
   const rows=Array.from({length:11},(_,i)=>({
     id:"APPLICATION|PROGRAM-"+i,ticker:"TICK"+i,drug:"Distinct program "+i
   }));
-  const result=resolveGemJrSource(null,rows);
-  assert.equal(result.sourceKind,"GEM_JR_SAVED");
-  assert.equal(result.rows.length,11);
-  assert.equal(result.reviewIds.size,11);
+  const pipeline=Array.from({length:694},(_,i)=>({id:"PIPELINE|"+i,ticker:"T"+i}));
+  const result=resolveGemJrSource(null,null,pipeline);
+  assert.equal(result.sourceKind,"GEM_JR_UNSCREENED");
+  assert.equal(result.rows.length,694);
+  assert.equal(result.reviewIds.size,694);
   assert.equal(result.scanAvailable,false);
-  assert.match(result.label,/not re-scanned/);
-  assert.deepEqual(result.rows.map(x=>x.id),rows.map(x=>x.id));
+  assert.match(result.label,/no GEM JR screen yet/);
+  assert.deepEqual(result.rows.map(x=>x.id),pipeline.map(x=>x.id));
+  assert.equal(rows.length,11,"Saved stage membership still has 11, without restricting the research input");
 });
 
 test("If GEM JR scan exists, use its exact filtered set rather than merging all saved programs",()=>{
@@ -114,7 +116,7 @@ test("If GEM JR scan exists, use its exact filtered set rather than merging all 
   const passed={id:"APP|PASS",ticker:"GOOD"};
   const review={id:"APP|REVIEW",ticker:"VERIFY"};
   const scan={passes:[passed],needsReview:[review],fails:[{id:"APP|FAIL",ticker:"FAIL"}]};
-  const result=resolveGemJrSource(scan,saved);
+  const result=resolveGemJrSource(scan,null,saved);
   assert.equal(result.sourceKind,"GEM_JR");
   assert.deepEqual(result.rows,[passed,review]);
   assert.deepEqual([...result.reviewIds],["APP|REVIEW"]);
@@ -123,7 +125,7 @@ test("If GEM JR scan exists, use its exact filtered set rather than merging all 
 });
 
 test("Absent both JR sources, GEM never fabricates a candidate list",()=>{
-  const result=resolveGemJrSource(null,[]);
+  const result=resolveGemJrSource(null,null,[]);
   assert.deepEqual(result.rows,[]);
   assert.equal(result.reviewIds.size,0);
 });
@@ -139,7 +141,7 @@ test("The current GEM JR combined 694 program checkbox screen feeds GEM, not the
  assert.equal(preview.passes.length,694);
  assert.equal(preview.needsReview.length,0);
  const saved=Array.from({length:11},(_,i)=>({id:"STAGE|"+i,ticker:"S"+i}));
- const GEM=resolveGemJrSource(null,saved,preview);
+ const GEM=resolveGemJrSource(null,preview,pipeline);
  assert.equal(GEM.sourceKind,"GEM_JR_LIVE");
  assert.equal(GEM.rows.length,694);
  assert.equal(GEM.reviewIds.size,0);
@@ -166,8 +168,22 @@ test("GEM JR preview does not elevate unknown trial evidence to verified pass",(
   "2026-10-18",3);
  assert.deepEqual(preview.passes.map(r=>r.id),["TRIAL|PASS"]);
  assert.deepEqual(preview.needsReview.map(r=>r.id),["TRIAL|UNKNOWN"]);
- const GEM=resolveGemJrSource(null,[],preview);
+ const GEM=resolveGemJrSource(null,preview,[]);
  assert.equal(GEM.rows.length,2);
  assert.deepEqual([...GEM.reviewIds],["TRIAL|UNKNOWN"]);
  assert.equal(GEM.rows.some(r=>r.id==="TRIAL|FAIL"),false);
+});
+
+test("GEM source fallback cannot silently reduce a 694-row input to 11 saved entries",()=>{
+ const saved=Array.from({length:11},(_,i)=>({id:"SAVED|"+i,ticker:"S"+i}));
+ const universe=Array.from({length:694},(_,i)=>({id:"PIPELINE|"+i,ticker:"P"+i}));
+ const actual=resolveGemJrSource(null,null,universe);
+ assert.equal(actual.rows.length,694);
+ assert.equal(actual.reviewIds.size,694);
+ assert.equal(actual.sourceKind,"GEM_JR_UNSCREENED");
+ assert.ok(actual.rows.every(r=>r.id.startsWith("PIPELINE|")));
+ assert.equal(saved.length,11);
+ const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ assert.match(source,/<GemQualificationChecklist key=\{stage\} stage=\{stage\}/);
+ assert.match(source,/GEM JR RESEARCH UNIVERSE INPUT/);
 });
