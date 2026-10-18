@@ -1,4 +1,4 @@
-# Isolated PDUFA Next-Generation STAGING backend. No changes to Streamlit.
+# Next.js platform backend; Streamlit legacy deployment is retired.
 # Render Dashboard > New > Blueprint > pick this file on new-platform-bootstrap.
 # CAUTION: Render free Postgres expires in 30 days, with no backups.
 # This Blueprint is for temporary testing; upgrade/export before expiration.
