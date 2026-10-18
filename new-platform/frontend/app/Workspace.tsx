@@ -627,25 +627,33 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </p>
       <div className="pipeline-setup-grid">
       <FullTrialDownload />
-      <section className="panel pipeline-filters" aria-labelledby="pipeline-filters-title">
-        <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
-        <p className="subtle">Counts show all available trials for the current search and market-cap screen. Check stages and dates, then press DISPLAY TRIALS to show your selections. Leave a group unchecked to include all of it.</p>
-        <div className="filter-columns">
-          {[
-            { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
-            { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
-          ].map(group => <fieldset className="filter-count-group" key={group.title}>
-            <legend>{group.title}</legend>
-            <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
-            <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
-              <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
-              <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
-              <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
-            </label>)}</div>
-          </fieldset>)}
+      <section className="panel pipeline-filters pipeline-filters-compact" aria-labelledby="pipeline-filters-title">
+        <div className="pipeline-filter-heading">
+          <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
+          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"}</span>
         </div>
-        <div className="pipeline-row"><label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
-          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional screening; OFF for Streamlit total)</label></div>
+        <div className="pipeline-row pipeline-filter-toolbar">
+          <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
+          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
+        </div>
+        <details className="pipeline-filter-details">
+          <summary>Choose stages and PDUFA dates <span>{stageFilters.length + dateFilters.length} selected · tap to {stageFilters.length + dateFilters.length ? "review" : "filter"}</span></summary>
+          <p className="subtle">Trial counts reflect the current search and market-cap screen. Leave a group unchecked to include every stage or date. Scroll within each group to see all choices.</p>
+          <div className="filter-columns">
+            {[
+              { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
+              { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
+            ].map(group => <fieldset className="filter-count-group" key={group.title}>
+              <legend>{group.title}</legend>
+              <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
+              <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
+                <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
+                <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
+                <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
+              </label>)}</div>
+            </fieldset>)}
+          </div>
+        </details>
         <div className="pipeline-actions pipeline-display-actions">
           <button type="button" onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
           <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
