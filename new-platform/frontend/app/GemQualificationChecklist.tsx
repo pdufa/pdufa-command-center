@@ -133,6 +133,15 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    onReset();
  }
  function toggle(key:string){selectRequirements(selected.includes(key)?selected.filter(x=>x!==key):[...selected,key])}
+ function toggleFs(){
+   if(running)return;
+   const suggestions=suggestedByStage[stage];
+   const next=showSuggestions
+     ? selected.filter(key=>!suggestions.includes(key))
+     : [...new Set([...selected,...suggestions])];
+   setShowSuggestions(!showSuggestions);
+   selectRequirements(next);
+ }
  function setTwoTrialId(index:0|1,value:string){
    const normalized=value.toUpperCase();
    setTwoTrialIds(current=>index===0?[normalized,current[1]]:[current[0],normalized]);
@@ -236,7 +245,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. In GEM JR, earlier recommendations have green Suggested labels beside their names (regardless of what you check). FS toggles highlighting without selecting boxes; DESELECT ALL clears all selections.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. In GEM JR, earlier recommendations have green Suggested labels beside their names (regardless of what you check). FS selects the suggested checkboxes; press FS again to uncheck those suggestions. DESELECT ALL clears all selections.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>
  {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white",gridColumn:"1"}}>
    <input type="checkbox" aria-label="Gem Jr Trials (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
@@ -256,7 +265,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
    <small style={{display:"block",marginTop:6}}>{sourceRows.length.toLocaleString("en-US")} {sourceLabel} considered. {chosen.length===0?"No qualification filters selected; the entire input qualifies for review.":"All checked qualification rules must pass together. Unknown evidence is counted for review, never as a verified pass."} These numbers update when checkboxes change; SCAN displays the detailed results.</small>
  </div>
- <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>DESELECT ALL</button><button type="button" onClick={()=>setShowSuggestions(value=>!value)} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria highlighting" title="FS — toggle suggested criteria highlighting (does not check boxes)" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button></div>
+ <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button></div>
 
 
  <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+"."}</p>
