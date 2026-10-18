@@ -33,6 +33,19 @@ ADVISORIES = (
     ("sec_fresh", "Global SEC financing source recheck current"),
     ("clinical_fresh", "Clinical / market source feed current"),
 )
+# Display-only grouping. Optional trading-risk/advisory checks are not
+# clinical eligibility benchmarks, and moving them does not change scoring.
+TRADING_ADVISORY_KEYS=(
+    "cash_runway","dilution","price_base","market_quote",
+    "pdufa_window","hedge_funds","insiders"
+)
+TRADING_ADVISORIES=tuple((key,label) for key,label in ADVISORIES
+                          if key in TRADING_ADVISORY_KEYS)
+RESEARCH_ADVISORIES=tuple((key,label) for key,label in ADVISORIES
+                           if key not in TRADING_ADVISORY_KEYS)
+assert len(TRADING_ADVISORIES)+len(RESEARCH_ADVISORIES)==len(ADVISORIES)
+assert {key for key,_ in TRADING_ADVISORIES}==set(TRADING_ADVISORY_KEYS)
+
 CHECKS = BENCHMARKS + UMBRELLA + ADVISORIES
 CHECK_LABELS = dict(CHECKS)
 FILTERABLE = tuple(key for key, _ in CHECKS)
