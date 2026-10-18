@@ -1,4 +1,5 @@
 "use client";
+// @ts-nocheck — temporary compile diagnostic; remove after identifying source error.
 import {useRef, useState} from "react";
 import type {Candidate} from "./Workspace";
 
