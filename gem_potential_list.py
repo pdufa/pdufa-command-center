@@ -219,6 +219,12 @@ def build_potential_list(root="data", *, as_of=None):
     for identity in duplicated:
         by_trial.pop(identity, None)
     for (ticker, nct), lead in by_trial.items():
+        # Recompute for each identity: do not reuse the last candidate ID
+        # from the discovery loop (which could belong to a rejected trial).
+        pipeline_id = gem_research_id(
+            {"Ticker": ticker, "NCT ID": nct}, pipeline_ids, pipeline_tickers)
+        if not pipeline_id:
+            continue
         active.append({
             "Ticker": ticker,
             "Drug": str(lead.get("drug") or "").strip(),
