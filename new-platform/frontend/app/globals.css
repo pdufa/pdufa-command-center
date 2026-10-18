@@ -2374,3 +2374,37 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .gem-original-criteria-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
 .gem-original-criteria-grid label:focus-within{outline:2px solid #1475af;outline-offset:2px}
 @media(max-width:520px){.gem-original-criteria-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* WT only: standalone research checkbox sections; no changes to GEM or GEM JR. */
+.wt-trading-sections{border:2px solid #4d8965;border-radius:9px;background:#f7fbf8;
+  padding:12px;margin:12px 0;min-width:0;max-width:100%;overflow-wrap:anywhere}
+.wt-trading-intro{display:flex;align-items:center;justify-content:space-between;gap:7px;
+  flex-wrap:wrap;border-bottom:1px solid #b5d0bd;padding-bottom:8px}
+.wt-trading-intro>strong{font-size:13px;color:#144c2e}
+.wt-trading-intro>small{font-size:11px;color:#466357}
+.wt-trading-sections>.subtle{margin:8px 0 11px;font-size:11px}
+.wt-check-group{border:1px solid #b6cbbb;border-radius:6px;background:#fff;margin:7px 0;overflow:hidden}
+.wt-check-group-title{appearance:none;display:flex;align-items:center;gap:9px;width:100%;
+ background:#e5f2e8;color:#194d31;padding:12px;text-align:left;min-height:44px;
+ border:0;cursor:pointer;font-size:12px}
+.wt-check-group-title>small{margin-left:auto;font-size:11px;color:#476452;white-space:nowrap}
+.wt-check-group-title[aria-expanded=true]{background:#d2eeda}
+.wt-check-group-title:focus-visible,.wt-check-item:focus-within{outline:2px solid #1477a3;outline-offset:2px}
+.wt-check-group-body{padding:9px}
+.wt-check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.wt-check-item{display:flex;align-items:flex-start;gap:8px;padding:10px;background:#fff;
+ border:1px solid #c9dacf;border-radius:6px;min-width:0;cursor:pointer}
+.wt-check-item-checked{border-color:#23774b;background:#e1f5e7}
+.wt-check-item>input[type=checkbox]{appearance:auto;accent-color:#196b40;width:17px;height:17px;
+ flex:0 0 17px;margin:2px 0 0}
+.wt-check-item>span{display:grid;gap:4px;min-width:0}
+.wt-check-item>span>strong{font-size:12px;line-height:1.3}
+.wt-check-item .wt-check-observed{font-size:11px;line-height:1.3;color:#253d36}
+.wt-check-item small{font-size:10px;color:#607369}
+.wt-trading-foot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+ border-top:1px solid #c6decf;margin:10px 0 8px;padding-top:9px}
+.wt-trading-foot>span{flex:1 1 180px;font-size:11px}
+.wt-trading-foot>button{font-size:11px;min-height:34px}
+.wt-trading-sections>small{font-size:10px;color:#5b695e}
+@container wt-panel (max-width:740px){.wt-check-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:700px){.wt-check-grid{grid-template-columns:minmax(0,1fr)}}

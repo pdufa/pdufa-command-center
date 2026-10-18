@@ -5,6 +5,7 @@ import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
 import IndicatorParityTables from "./IndicatorParityTables";
+import WtTradingSections from "./WtTradingSections";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
@@ -262,6 +263,7 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
   return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
+    <WtTradingSections key={programId+"|"+ticker} programId={programId} ticker={ticker} record={record} tech={x}/>
     <IndicatorParityTables programId={programId} tech={x} signals={reply?.watchlistSignals}/>
     <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3 eligibility and does not authorize a trade. Second financing is optional.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
