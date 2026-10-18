@@ -274,8 +274,8 @@ def render_gem_scans(root="data"):
                 "to display them in the master list.")
     if not qualified:
         st.info(
-            "No saved program currently has BOTH required independently verified "
-            "events. The complete GEM watch/review universe remains visible "
+            "No saved program currently has the required successful Phase 3 evidence. "
+            "The complete GEM watch/review universe remains visible "
             "above; missing evidence is never treated as a failed trial."
         )
     comparable_file = path / "gem_bpw_comparable.json"
@@ -291,8 +291,8 @@ def render_gem_scans(root="data"):
     with st.expander("GEM SURVEY DIRECTORY — 7 PRIMARY SURVEYS", expanded=False):
         st.caption(
             "Seven GEM survey categories covering Pipeline-origin programs. "
-            "Only 1 (Phase 3) and 2 (second financing) determine GEM research "
-            "qualification. 13F and Form 4 evidence share one advisory category "
+            "Verified successful Phase 3 determines GEM research qualification; "
+            "second financing is OPTIONAL monitoring. 13F and Form 4 evidence share one advisory category "
             "but retain distinct sources. Market cap stays in Pipeline; "
             "unvalidated historical returns and BPW comparison are RESEARCH "
             "DIAGNOSTICS, not daily surveys."
@@ -368,8 +368,8 @@ def render_gem_scans(root="data"):
         "Public and company-site findings stay recorded even when SEC has not "
         "confirmed a closing. Only exact-company and exact-date SEC evidence "
         "can upgrade the independent transaction check. The second distinct "
-        "post-Phase-3 financing confirmation is still required. Dilution "
-        "is now an advisory risk/ranking factor, not a third entry benchmark."
+        "second post-Phase-3 financing is optional for research qualification. "
+        "Cash runway and dilution must still be assessed independently before entry."
     )
     with st.expander("RESEARCH STATUS — ALL 45 REVIEWED CLAIMS", expanded=False):
         research_file = (
@@ -482,7 +482,7 @@ def render_gem_scans(root="data"):
     st.caption(
         "Phase 3 watch programs stay in the ONE GEM master table; they are "
         "never promoted to entry-ready by a Phase 3 readout alone. The "
-        "second separate financing must be verified closed."
+        "second separate financing is optional; unresolved cash/dilution remains a hold."
     )
     st.markdown("### BROAD PHASE 3 DISCOVERY — BEFORE FINANCING #2")
     st.caption(
@@ -609,7 +609,7 @@ def render_gem_scans(root="data"):
             status.get("strict_entry_gate_shortlist_count", 0),
         )
         st.caption(
-            "These are diagnostic gates, not the two-entry-benchmark GEM policy. "
+            "These are stricter entry-review diagnostics, not Phase 3 GEM research eligibility. "
             "No separate qualified-stock list is generated here."
         )
     st.caption(
