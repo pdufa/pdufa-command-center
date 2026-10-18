@@ -3911,7 +3911,8 @@ if page == "PDUFA":
                     st.caption(
                         "Screened records: " + str(len(audit_rows)) +
                         ". Missing evidence is NEEDS VERIFICATION, not FAIL. "
-                        "PASS is a filter match, not an entry or clinical approval."
+                        "The trial list includes PASS and NEEDS VERIFICATION; "
+                        "only FAIL is excluded. PASS is not an entry or clinical approval."
                     )
                     with st.expander("VIEW ALL SCREEN RESULTS", expanded=False):
                         audit_cols = [x for x in
@@ -3938,10 +3939,17 @@ if page == "PDUFA":
                         )
                     st.info("Click SHOW MATCHING TRIALS to populate the chart; empty STAGES/DATES include all.")
                 else:
-                    filtered = filter_public_trials(
+                    # Use the SAME tri-state evaluation as the visible audit.
+                    # Include PASS and NEEDS VERIFICATION in the trial list;
+                    # only evidence-backed FAIL records are excluded.
+                    screened = evaluate_public_trial_screen(
                         filter_pipeline(prepared, selected_stages, selected_dates, query),
-                        pipeline_trial_selections(st.session_state), today=pipeline_today,
+                        pipeline_trial_selections(st.session_state),
+                        today=pipeline_today,
                     )
+                    filtered = screened.loc[
+                        screened["Screen status"].ne("FAIL")
+                    ].copy()
                     shown = chart_rows(filtered, sort_mode)
                     try:
                         _, post_links, post_health, pre_links, pre_fresh = load_unified_evidence(pipeline_today)
