@@ -28,10 +28,29 @@ def read_rows(root="data"):
  with (p/"phase3_all_years_300m_10b_trials.csv").open(encoding="utf-8-sig",newline="") as f: census=list(csv.DictReader(f))
  with (p/"phase3_730_full_assessment.csv").open(encoding="utf-8-sig",newline="") as f: assessment=list(csv.DictReader(f))
  indexed={(r["ticker"].upper(),r["nct_id"]):r for r in assessment}
+ events={}
+ ep=p/"pdufa_candidates.csv"
+ if ep.exists():
+  with ep.open(encoding="utf-8-sig",newline="") as f:
+   for e in csv.DictReader(f):
+    k=(e.get("ticker","").upper(),e.get("nct_id",""))
+    if k[0] and k[1]:
+     events.setdefault(k,[]).append(e)
+ finance={}
+ fp=p/"second_financing_status.csv"
+ if fp.exists():
+  with fp.open(encoding="utf-8-sig",newline="") as f:
+   finance={e.get("event_key",""):e for e in csv.DictReader(f)}
  rows=[]
  for r in census:
   k=(r["ticker"].upper(),r["nct_id"])
-  rows.append({**r,**{("evidence_"+key):value for key,value in indexed.get(k,{}).items()}})
+  matches=events.get(k,[])
+  event=matches[0] if len(matches)==1 else {}
+  funding=finance.get(event.get("event_key",""),{})
+  rows.append({**r,**{("evidence_"+key):value for key,value in indexed.get(k,{}).items()},
+   **{("event_"+key):value for key,value in event.items()},
+   **{("finance_"+key):value for key,value in funding.items()},
+   "exact_event_unique":len(matches)==1})
  return rows
 def evidence(row,key):
  status=row.get("status","").upper()
@@ -42,6 +61,31 @@ def evidence(row,key):
   except (ValueError,TypeError):return False
  if key=="issuer_positive_source":
   return bool(row.get("evidence_issuer_positive_source","").startswith("https://"))
+ if key=="phase3_verified":
+  if not row.get("exact_event_unique"):return None
+  status=row.get("event_phase3_status","").upper()
+  if status in {"PRIMARY_MET_VERIFIED","VERIFIED_SUCCESS"} and row.get("event_trial_evidence_url","").startswith("https://"):return True
+  return None
+ if key=="financing_verified":
+  if not row.get("exact_event_unique"):return None
+  if (row.get("finance_second_financing_audit_status")=="VERIFIED_SECOND_POST_PHASE3_FINANCING"
+      and row.get("finance_second_financing_source","").startswith("https://")):return True
+  return None
+ if key=="pdufa_source":
+  if not row.get("exact_event_unique"):return None
+  if row.get("event_pdufa_confirmation","").startswith("VERIFIED") and row.get("event_pdufa_evidence_url","").startswith("https://"):return True
+  return None
+ if key=="pdufa_window":
+  if not row.get("exact_event_unique"):return None
+  from datetime import date
+  if not (row.get("event_pdufa_confirmation","").startswith("VERIFIED") and row.get("event_pdufa_evidence_url","").startswith("https://")):return None
+  try:days=(date.fromisoformat(row["event_pdufa_date"])-date.today()).days
+  except (ValueError,KeyError):return None
+  return 30<=days<=90
+ if key=="cash_runway":
+  if not row.get("exact_event_unique"):return None
+  # A cash balance without quarterly burn and a dated SEC source is not a runway.
+  return None
  # The census and assessment do not establish these other requirements.
  # Missing evidence is unknown, not false clinical outcome.
  return None
