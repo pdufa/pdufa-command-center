@@ -394,7 +394,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // The complete list remains available to nested clinical trial drilldowns.
   const highlightedGemRow=useRef<HTMLTableRowElement|null>(null);
   const gemTableScrollViewport=useRef<HTMLDivElement|null>(null);
-  const [gemTrialExpanded,setGemTrialExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
+  const [gemTrialExpanded,setGemTrialExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:true,GEM:true});
   const [gemTrialSections,setGemTrialSections]=useState<Record<string,boolean>>({});
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
@@ -631,7 +631,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       setGemTrialExpanded(current=>({...current,[stage]:section?true:same?!current[stage]:true}));
       if(section) setGemTrialSections(current=>({...current,[stage+"|"+record.id+"|"+section]:true}));
     };
-    const isSectionOpen=(section:string)=>Boolean(chosen && gemTrialSections[stage+"|"+chosen.id+"|"+section]);
+    // The first (Alpaca stock chart) section opens automatically for every
+    // selected program, while a user's explicit collapse remains respected.
+    const isSectionOpen=(section:string)=>{
+      if(!chosen) return false;
+      const key=stage+"|"+chosen.id+"|"+section;
+      return section==="chart" ? gemTrialSections[key] !== false : gemTrialSections[key] === true;
+    };
     const toggleSection=(section:string)=>{
       if(!chosen) return;
       const key=stage+"|"+chosen.id+"|"+section;
@@ -740,6 +746,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                       </button>
                     </div>
                     <div className="gem-inline-sections">
+                      <GemInlineSection title="Stock price / Alpaca chart" description="Saved close and volume evidence for this exact permanent program"
+                        open={isSectionOpen("chart")} onToggle={()=>toggleSection("chart")}>
+                        {r.programId ? <AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} />
+                          : <p className="subtle">Alpaca chart awaits a verified permanent Program ID.</p>}
+                      </GemInlineSection>
                       <GemInlineSection title="Stock / program details" description="Company, drug, trial identity, SEC financing, FDA evidence"
                         open={isSectionOpen("overview")} onToggle={()=>toggleSection("overview")}>
                         <SourceDetails record={r}/>
@@ -752,11 +763,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                         open={isSectionOpen("trial")} onToggle={()=>toggleSection("trial")}>
                         {trialSheetUrl(r) ? <TrialFields key={r.id} row={r} onClose={()=>toggleSection("trial")}/>
                           : <p className="subtle">No exact NCT clinical-trial record linked to this program. Missing registry evidence is not inferred.</p>}
-                      </GemInlineSection>
-                      <GemInlineSection title="Stock price / Alpaca chart" description="Saved close and volume evidence for this exact permanent program"
-                        open={isSectionOpen("chart")} onToggle={()=>toggleSection("chart")}>
-                        {r.programId ? <AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} />
-                          : <p className="subtle">Alpaca chart awaits a verified permanent Program ID.</p>}
                       </GemInlineSection>
                       <GemInlineSection title="Entry and exit scores" description="Weighted evidence, completeness and risk overrides"
                         open={isSectionOpen("scores")} onToggle={()=>toggleSection("scores")}>
