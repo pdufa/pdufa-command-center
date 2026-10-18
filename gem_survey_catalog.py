@@ -1,14 +1,15 @@
 """Seven active GEM survey categories plus optional research diagnostics.
 
-The seven surveys observe existing PIPELINE-origin programs. Only the first
-two are GEM qualification benchmarks. Historical trade calibration and BPW
+The seven surveys observe existing PIPELINE-origin programs. Only verified
+successful Phase 3 is required for GEM research qualification; financing #2 is
+optional evidence. Historical trade calibration and BPW
 feature comparisons are diagnostics, not additional nightly surveys.
 """
 from __future__ import annotations
 
 SURVEYS = (
     (1, "Phase 3 Results", "Entry benchmark 1", "clinical"),
-    (2, "Second Financing Closure", "Entry benchmark 2", "financing"),
+    (2, "Second Financing Closure", "Optional financing / dilution evidence", "financing"),
     (3, "Financial Health", "Ranking / risk", "runway"),
     (4, "Dilution Risk", "Risk", "dilution"),
     (5, "Ownership & Insider Activity", "Advisory / ranking", ("hedge", "insider")),
@@ -21,9 +22,8 @@ RESEARCH_DIAGNOSTICS = (
 )
 assert len(SURVEYS) == 7
 assert [row[0] for row in SURVEYS] == list(range(1, 8))
-assert [row[2] for row in SURVEYS[:2]] == [
-    "Entry benchmark 1", "Entry benchmark 2",
-]
+assert SURVEYS[0][2] == "Entry benchmark 1"
+assert SURVEYS[1][2] == "Optional financing / dilution evidence"
 
 
 def _coverage(info):
