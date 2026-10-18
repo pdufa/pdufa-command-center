@@ -95,9 +95,8 @@ def render_gem_jr(root="data"):
             pdufa_dataframe(pd.DataFrame(held).reindex(columns=fields).fillna(""),
                             hide_index=True, use_container_width=True)
     st.caption(
-        "Only GEM's original two-benchmark gate assigns GEM eligibility. "
-        "Registry postings, claimed financings, stale evidence and these research leads "
-        "do not independently clear either benchmark."
+        "Successful verified exact-program Phase 3 results determine GEM research eligibility. "
+        "Second financing is optional; a registry result posting alone is not verified success."
     )
     departed = departed_stage_rows(membership, "GEM_JR")
     st.markdown("### GEM JR — PREVIOUS CANDIDATES")
