@@ -2362,3 +2362,15 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .gem-criteria-responsive .gem-criteria-collapsible-content {display:none;padding:10px;}
   .gem-criteria-responsive[data-open="true"] .gem-criteria-collapsible-content {display:block;}
 }
+
+/* Both original GEM and GEM JR checklists: move, do not replace, the
+   existing financial / market checkboxes. FS, FA and scan logic unchanged. */
+.gem-original-checklist-sections{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 14px;min-width:0}
+.gem-original-clinical,.gem-original-trading{min-width:0;border:1px solid #b8d4c0;border-radius:7px;background:#fff;padding:10px}
+.gem-original-clinical>h3{margin:0 0 9px;color:#235037;font-size:14px;font-weight:800}
+.gem-original-trading{background:#eff9f2;border:2px solid #30814c}
+.gem-original-trading>summary{color:#14582f;cursor:pointer;font-size:15px;font-weight:850;padding:3px 2px 10px}
+.gem-original-trading>summary:focus-visible{outline:2px solid #1475af;outline-offset:3px}
+.gem-original-criteria-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.gem-original-criteria-grid label:focus-within{outline:2px solid #1475af;outline-offset:2px}
+@media(max-width:520px){.gem-original-criteria-grid{grid-template-columns:minmax(0,1fr)}}
