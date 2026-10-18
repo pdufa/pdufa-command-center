@@ -6,7 +6,8 @@ type Check = {label:string;pass:boolean;actual?:number;target?:number;rule:strin
 type Signal = {programId:string;ticker:string;status:string;green:boolean;message:string;
   checks:Check[];entryTrigger?:number;maximumEntry?:number;initialStop?:number;
   signalSession?:string;entrySession?:string;entryOpen?:string;entryClose?:string;historyFeed:string;adjustment:string;
-  calculatedAt:string;disclaimer:string;quote?:{bid:number;ask:number;asOf:string;feed:string}};
+  calculatedAt:string;disclaimer:string;secondFinancingOptional?:boolean;secondFinancingVerified?:boolean;anchorType?:string;
+  quote?:{bid:number;ask:number;asOf:string;feed:string}};
 const price=(value?:number)=>typeof value==="number"&&Number.isFinite(value)?"$"+value.toFixed(value<1?4:2):"—";
 
 export default function EntrySignal({programId,ticker}:{programId:string;ticker:string}) {
@@ -51,7 +52,8 @@ export default function EntrySignal({programId,ticker}:{programId:string;ticker:
   return <section className={"entry-signal "+(green?"entry-signal-green":data?.status==="WAIT"||data?.status==="READY_NEXT_SESSION"?"entry-signal-wait":"entry-signal-missing")}
     aria-label={ticker+" calculated buy signal"} aria-live="polite">
     <div className="entry-signal-title"><span className="entry-signal-light" aria-hidden="true"/><strong>{label}</strong></div>
-    <p>{error||data?.message||"Checking this exact program’s clinical evidence, financing and Alpaca market data."}</p>
+    <p>{error||data?.message||"Checking this exact program’s Phase 3, dilution evidence and Alpaca market data."}</p>
+    {data?.secondFinancingOptional&&<p className="subtle small">Second financing: {data.secondFinancingVerified?"SEC verified":"not verified"} · OPTIONAL for this signal. VWAP anchor: {data.anchorType==="PHASE3_READOUT"?"verified Phase 3 results":"verified financing when available"}. Cash and dilution risks still require review.</p>}
     {data?.entryTrigger!=null&&<div className="entry-signal-prices">
       <span>ENTRY TRIGGER<strong>{price(data.entryTrigger)}</strong></span>
       <span>MAXIMUM BUY<strong>{price(data.maximumEntry)}</strong></span>
