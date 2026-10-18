@@ -898,7 +898,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
-    {!snapshot && <div className="panel">{fetchError || "Loading saved Streamlit candidates…"}</div>}
+    {!snapshot && <div className="panel">{fetchError || "Loading published PIPELINE, GEM JR and GEM candidates…"}</div>}
     {snapshot && top==="PDUFA" && nav==="MASTER" && <MasterChart records={pipeline} gemJr={snapshot.members.GEM_JR.rows} gem={snapshot.members.GEM.rows} history={[...(snapshot.members.GEM_JR.history||[]),...(snapshot.members.GEM.history||[])]} watch={tags.watch} trade={tags.trade} sourceHealth={snapshot.sourceHealth} asOf={snapshot.asOf} selectedId={masterProgram} onSelect={setMasterProgram} onInspect={record => {
       const stage: Stage = snapshot.members.GEM.rows.some(r=>r.id===record.id) ? "GEM" : snapshot.members.GEM_JR.rows.some(r=>r.id===record.id) ? "GEM_JR" : "PIPELINE";
       onInspect(record.ticker,stage,record.programId);
