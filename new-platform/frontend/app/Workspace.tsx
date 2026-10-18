@@ -394,7 +394,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // The complete list remains available to nested clinical trial drilldowns.
   const highlightedGemRow=useRef<HTMLTableRowElement|null>(null);
   const gemTableScrollViewport=useRef<HTMLDivElement|null>(null);
-  const [gemTrialExpanded,setGemTrialExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:true,GEM:true});
+  const [gemTrialExpanded,setGemTrialExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
   const [gemTrialSections,setGemTrialSections]=useState<Record<string,boolean>>({});
   // Mobile-only qualification criteria: initially collapsed for both stages.
   // On desktop CSS keeps the complete criteria visible, regardless of this state.
@@ -621,18 +621,29 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const visibleCount = Math.min(rows.length,10);
     const firstVisible = Math.max(0,Math.min(focusedIndex-4,rows.length-visibleCount));
     const visibleRows = rows.slice(firstVisible,firstVisible+visibleCount);
+    // A newly opened row starts with only its chart expanded. Collapsing it
+    // or moving to another row discards previously opened detail subsections.
+    const resetOpenSections = (record:Candidate,section?:string) => {
+      setGemTrialSections(current=>{
+        const reset=Object.fromEntries(Object.entries(current).filter(([key])=>!key.startsWith(stage+"|")));
+        if(section && section!=="chart") reset[stage+"|"+record.id+"|"+section]=true;
+        return reset;
+      });
+    };
     const moveRow = (delta:-1|1) => {
       const next = rows[focusedIndex+delta];
       if(next){
+        resetOpenSections(next);
         setSelected(current=>({...current,[stage]:next.id}));
         setGemTrialExpanded(current=>({...current,[stage]:true}));
       }
     };
     const selectTrial = (record:Candidate,section?:string) => {
       const same = chosen?.id===record.id && (selected[stage]===record.id || !selected[stage] && focusedIndex===0);
+      const opening = Boolean(section) || !same || !gemTrialExpanded[stage];
+      resetOpenSections(record,opening?section:undefined);
       setSelected(current=>({...current,[stage]:record.id}));
-      setGemTrialExpanded(current=>({...current,[stage]:section?true:same?!current[stage]:true}));
-      if(section) setGemTrialSections(current=>({...current,[stage+"|"+record.id+"|"+section]:true}));
+      setGemTrialExpanded(current=>({...current,[stage]:opening}));
     };
     // The first (Alpaca stock chart) section opens automatically for every
     // selected program, while a user's explicit collapse remains respected.
