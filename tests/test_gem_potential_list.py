@@ -201,7 +201,7 @@ class PotentialGEMTests(unittest.TestCase):
             self.assertEqual(extra["Evidence type"], "Issuer Phase 3 readout (review)")
             self.assertIn("verify two separate", extra["Still needed"])
 
-    def test_orphan_independent_source_leads_do_not_enter_gem_jr(self):
+    def test_pre_oct15_independent_leads_enter_research_without_pipeline(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             self.fixture(root)
@@ -217,8 +217,14 @@ class PotentialGEMTests(unittest.TestCase):
                 {"ticker": "RIGHT", "nct_id": "NCT44444444", "phase": "PHASE3"},
             ])
             active, held = build_potential_list(root, as_of=date(2026, 10, 14))
-            self.assertFalse(any(x["Ticker"] in {"ORPH", "WRONG"}
-                                 for x in active + held))
+            self.assertIn("ORPH", {x["Ticker"] for x in active})
+            # A known mismatched issuer for the same trial remains blocked.
+            self.assertNotIn("WRONG", {x["Ticker"] for x in active + held})
+            orphan = next(x for x in active if x["Ticker"] == "ORPH")
+            self.assertEqual(orphan["Pipeline ID"], "TRIAL|NCT33333333")
+            self.assertEqual(orphan["Pipeline linkage"],
+                             "PENDING PIPELINE INTAKE — RESEARCH ONLY")
+            self.assertEqual(orphan["SEC documents rechecked"], 0)
             self.assertTrue(all(x.get("Pipeline ID") for x in active + held))
 
     def test_without_regulatory_candidates_pipeline_trial_lead_still_allowed(self):
