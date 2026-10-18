@@ -11,6 +11,7 @@ const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = 
   { label: "Drug / study" }, { label: "Indication" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
   { label: "Primary completion", key: "primaryCompletion" }, { label: "PDUFA", key: "pdufaDate" },
+  { label: "Priority Review" },
   { label: "Market cap", key: "marketCap" },
   { label: "Registry p-values", key: "pValueCount", sortLabel: "number of reported p-values" },
   { label: "All data" },
@@ -135,7 +136,13 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
           <td>{nct ? <a className="trial-sheet-link" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">{nct} · Full trial ↗</a> : "No linked trial"}</td>
           <td>{saved?.status?.replaceAll("_", " ") || (nct ? loading ? "Loading…" : "Not available" : "Regulatory program")}</td>
           <td>{saved?.primary_completion_date?.date || "Not reported"}<small>{saved?.primary_completion_date?.type}</small></td>
-          <td>{row.pdufaDate || "Not reported"}</td><td>{row.marketCap == null ? "Not verified" : "$" + (row.marketCap / (row.marketCap >= 1e9 ? 1e9 : 1e6)).toFixed(1) + (row.marketCap >= 1e9 ? "B" : "M")}</td>
+          <td>{row.pdufaDate || "Not reported"}</td>
+          <td>{row.priorityReview?.status === "FDA_VERIFIED" && row.priorityReview.source
+            ? <a href={row.priorityReview.source} target="_blank" rel="noopener noreferrer" title="FDA document confirming this application's Priority Review designation">
+                <strong>IMP: Priority Review</strong> ↗
+              </a>
+            : <span title="No application-specific FDA Priority Review evidence has been verified">Not verified</span>}</td>
+          <td>{row.marketCap == null ? "Not verified" : "$" + (row.marketCap / (row.marketCap >= 1e9 ? 1e9 : 1e6)).toFixed(1) + (row.marketCap >= 1e9 ? "B" : "M")}</td>
           <td>{saved ? <><strong>{saved.p_value_count || 0} reported</strong><small>{saved.p_value_status?.replaceAll("_", " ")}</small></> : nct && loading ? "Loading…" : "Not available"}</td>
           <td>{nct
             ? <a className="secondary trial-sheet-link trial-sheet-action" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">Full sheet ↗</a>
