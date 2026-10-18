@@ -27,6 +27,37 @@ def pipeline_origins(data_dir, today=None):
     )
 
 
+def gem_research_id(record, record_ids, pipeline_tickers):
+    """Pre-Oct-15 GEM/GEM JR research admission: exact sourced identity,
+    without requiring prior inclusion in the canonical Pipeline feed.
+
+    This does NOT relax clinical, SEC, financing or trading-entry checks.
+    If the exact ID is already in Pipeline with a conflicting ticker, reject
+    it rather than borrow evidence from another issuer.
+    """
+    import re
+
+    ticker = str(record.get("Ticker") or "").strip().upper()
+    event = str(record.get("Exact event") or "").strip()
+    nct = str(record.get("NCT ID") or "").strip().upper()
+    if not ticker or not re.fullmatch(r"[A-Z0-9.-]{1,15}", ticker):
+        return ""
+    if event:
+        # Regulatory records carry the issuer ticker in the exact-event key.
+        if not event.startswith(ticker + "|"):
+            return ""
+        identifier = "APPLICATION|" + event
+    elif re.fullmatch(r"NCT\d{8}", nct):
+        identifier = "TRIAL|" + nct
+    else:
+        return ""
+    if identifier in record_ids:
+        canonical = str(pipeline_tickers.get(identifier) or "").strip().upper()
+        if canonical and canonical != ticker:
+            return ""
+    return identifier
+
+
 def source_scope(data_dir, today=None):
     """Enumerate scan targets only after Pipeline has minted their identity."""
     root = Path(data_dir)
