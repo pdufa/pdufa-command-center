@@ -170,8 +170,8 @@ def calculate(bars, *, anchor, calendar):
          "actual": signal["close"], "target": trigger, "rule": "Completed close > base high + 0.1 × ATR"},
         {"label": "Consolidated volume", "pass": signal["volume"] >= 1.5*average,
          "actual": signal["volume"]/average, "target": 1.5, "rule": "Session volume / preceding 20-session average ≥ 1.5"},
-        {"label": "Financing-anchored VWAP", "pass": signal["close"] > avwap,
-         "actual": signal["close"], "target": avwap, "rule": "Close > financing-date bar-based AVWAP"},
+        {"label": "Event-anchored VWAP", "pass": signal["close"] > avwap,
+         "actual": signal["close"], "target": avwap, "rule": "Close > verified financing or Phase 3 readout anchored VWAP"},
     ]
     return {"checks": checks, "setupConfirmed": all(c["pass"] for c in checks),
             "entryTrigger": trigger, "maximumEntry": maximum, "initialStop": stop,
@@ -207,10 +207,11 @@ def entry_for_program(exact_key, ticker, *, now=None):
                                        context["recheck"].get(event_key, {}), today)
         result["checks"] = [
             {"label": "Verified positive Phase 3", "pass": benchmarks["phase3"], "rule": "Exact program and source-verified successful readout"},
-            {"label": "Second financing closed", "pass": benchmarks["secondFinancing"], "rule": "Two distinct verified funded closes after readout"},
         ]
-        if not benchmarks["bothConfirmed"]:
-            result.update(status="WAIT", message="Clinical/financing entry requirements are not verified for this exact program.")
+        result["secondFinancingOptional"] = True
+        result["secondFinancingVerified"] = benchmarks["secondFinancing"]
+        if not benchmarks["phase3"]:
+            result.update(status="WAIT", message="Successful exact-program Phase 3 results are not independently verified.")
             return result
         health = snapshot.get("sourceHealth") or {}
         scan = health.get("publishedScan") or {}
@@ -226,11 +227,19 @@ def entry_for_program(exact_key, ticker, *, now=None):
         if (pd_date-today).days <= 14 or str(event.get("outcome") or "").upper() in RESOLVED:
             result.update(status="WAIT", message="Inside the 14-calendar-day pre-PDUFA exit window, or FDA event already resolved.")
             return result
-        if str(event.get("new_dilution_flag") or "").upper() in {"YES", "TRUE", "UNRESOLVED"}:
-            result.update(status="WAIT", message="New or unresolved dilution needs review before entry.")
+        dilution = str(event.get("new_dilution_flag") or "").strip().upper()
+        if dilution not in {"NO", "NONE", "FALSE", "0"}:
+            result.update(status="WAIT", message="Current dilution is unresolved or not independently cleared; financing #2 is optional.")
             return result
+        # A verified financing close may supply the original anchor; without it,
+        # anchor VWAP to the separately verified Phase 3 readout. Never use a
+        # claimed/unverified closing date to create a BUY signal.
         calendar = session_context(now)
-        anchor = _day(benchmarks["secondClose"])
+        anchor = (_day(benchmarks["secondClose"]) if benchmarks["secondFinancing"]
+                  else _day(benchmarks["readoutDate"]))
+        if anchor is None:
+            raise ValueError("No verified Phase 3 anchor available")
+        result["anchorType"] = "SECOND_FINANCING" if benchmarks["secondFinancing"] else "PHASE3_READOUT"
         bars = history(ticker, anchor, calendar["expectedSession"], now)
         calculated = calculate(bars, anchor=anchor, calendar=calendar)
         result["checks"] += calculated.pop("checks")
