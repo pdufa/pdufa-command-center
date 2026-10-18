@@ -12,6 +12,7 @@ export type GemScanResult = {
   evaluatedAt: string;
   baseline: number;
   sourceTotal: number;
+  sourceKind: "PIPELINE" | "GEM_JR";
   selected: string[];
   passes: Candidate[];
   needsReview: Candidate[];
@@ -76,7 +77,7 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
 ];
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["registry","marketcap"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
-export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
+export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,gemJrCandidates,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;gemJrCandidates:Trial[];onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const [selected,setSelected]=useState<string[]>([]);
  const [showSuggestions,setShowSuggestions]=useState(false);
  const [result,setResult]=useState<GemScanResult|null>(null);
@@ -88,6 +89,11 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const [message,setMessage]=useState("");
  const runSequence=useRef(0);
  const phase3ResearchCount=pipeline.filter(completedPhase3).length;
+ // GEM can screen the exact saved GEM JR list, without reclassifying any
+ // candidate or substituting a ticker-level match for a program identity.
+ const useGemJrSource=stage==="GEM"&&selected.includes("gem_jr_source");
+ const sourceRows=useGemJrSource?gemJrCandidates:pipeline;
+ const sourceLabel=useGemJrSource?"saved GEM JR candidates":"PIPELINE records";
  function selectRequirements(next:string[]){
    if(running)return;
    setSelected(next);
@@ -104,13 +110,17 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    onReset();
  }
  async function scan(){
-   if(running||!pipeline.length)return;
+   if(running)return;
+   if(!sourceRows.length){
+     setMessage(useGemJrSource?"No saved GEM JR candidates are available. GEM scan was not run.":"No PIPELINE candidates are loaded.");
+     return;
+   }
    if(twoTrialError){
      setMessage("Two-Trial Paradigm: "+twoTrialError);
      return;
    }
    setRunning(true);
-   setMessage("Running the selected requirements across the full loaded PIPELINE…");
+   setMessage("Running selected requirements across "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+"…");
    setResult(null);
    onReset();
    // Paint SCANNING before the CPU-bound saved-data evaluation begins.
@@ -127,7 +137,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      }}
      const audits:GemCriterionAudit[]=chosen.map(([key,label])=>({key,label,passed:0,failed:0,unknown:0}));
      const passes:Trial[]=[],fails:Trial[]=[],needsReview:Trial[]=[];
-     for(const record of pipeline){
+     for(const record of sourceRows){
        let hasFail=false,hasUnknown=false;
        for(let i=0;i<chosen.length;i++){
          const status=chosen[i][2](record);
@@ -142,12 +152,14 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      const runNumber=++runSequence.current;
      const next:GemScanResult={
        asOf,evaluatedAt:new Date().toISOString(),sourceTotal:pipeline.length,
-       runNumber,audits,baseline:pipeline.length,selected:[...selected],passes,needsReview,fails
+       sourceKind:useGemJrSource?"GEM_JR":"PIPELINE",
+       runNumber,audits,baseline:sourceRows.length,selected:[...selected],passes,needsReview,fails
      };
      setResult(next);
      onScan(next);
      setMessage("Run #"+runNumber+" completed at "+new Date(next.evaluatedAt).toLocaleTimeString()+
-       " — "+(selected.length?"selected requirements applied":"no restrictions; all records included")+".");
+       " — "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+" evaluated; "+
+       (audits.length?"selected requirements applied":"no qualification restrictions")+".");
    }catch(error){
      setMessage("Scan failed: "+(error instanceof Error?error.message:"Unknown error"));
    }finally{setRunning(false)}
@@ -156,8 +168,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  return <section className="panel" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" qualification checklist"} style={{margin:"18px 0",padding:16,border:"2px solid #236847",borderRadius:10,background:"#f8fff8",color:"#163522"}}>
  <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} style={{width:"100%",textAlign:"left",fontWeight:800,fontSize:18,padding:10,background:"#d9efdf",color:"#123b25",border:"1px solid #6c9e78",borderRadius:6}}>{open?"▾":"▸"} {stage==="GEM"?"GEM":"GEM JR"} — 17 qualification requirements{stage==="GEM_JR"?" + 10 optional evidence alerts":""} ({selected.length} selected)</button>
 
- <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} candidates</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Full source records available to scan</div></div></div>
- {open&&<><p>Every SCAN evaluates all {pipeline.length.toLocaleString("en-US")} currently loaded PIPELINE records against <strong>only your selected checkboxes</strong>. No boxes selected means an unrestricted scan. Phase 3 is not silently required; select its checkbox to enforce verified Phase 3 success. The source has {phase3ResearchCount.toLocaleString("en-US")} Phase 3/readout indicators, which are not the same as independently verified successful Phase 3 programs. Unknown source evidence is not treated as passing. Published data as of {asOf||"unverified"}; no live-market fetches, membership changes or trades.</p>
+ <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} candidates</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{sourceRows.length.toLocaleString("en-US")}</strong><div>{useGemJrSource?"Saved GEM JR input records":"Full PIPELINE records available to scan"}</div></div></div>
+ {open&&<><p>Every SCAN evaluates {sourceRows.length.toLocaleString("en-US")} {sourceLabel} against <strong>only your selected qualification checkboxes</strong>. No boxes selected means an unrestricted scan. Phase 3 is not silently required; select its checkbox to enforce verified Phase 3 success. The source has {phase3ResearchCount.toLocaleString("en-US")} Phase 3/readout indicators, which are not the same as independently verified successful Phase 3 programs. Unknown source evidence is not treated as passing. Published data as of {asOf||"unverified"}; no live-market fetches, membership changes or trades.</p>
  {stage==="GEM_JR"&&<div style={{marginBottom:14,border:"1px solid #b8d4c0",borderRadius:8,padding:12,background:"#ffffff"}}>
    <h3 style={{margin:"0 0 7px"}}>Optional GEM JR evidence alerts</h3>
    <p style={{fontSize:13,margin:"0 0 10px"}}>Optional checks are off by default. Enter your desired threshold in the boxed goal column, or choose a goal. This is your screening target, not a verified result. Checked alerts without sourced application-specific evidence report NEEDS VERIFICATION, never PASS.</p>
@@ -202,16 +214,23 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
+ {stage==="GEM"&&<label style={{display:"flex",gap:10,alignItems:"flex-start",padding:12,marginBottom:14,border:"2px solid #3e8060",borderRadius:8,background:"#e7f5eb"}}>
+   <input type="checkbox" aria-label="Use saved GEM JR candidates for GEM scan" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
+   <span><strong>Use saved GEM JR candidates as GEM scan input</strong>
+     <small style={{display:"block",marginTop:4}}>Checked: evaluate the {gemJrCandidates.length.toLocaleString("en-US")} exact programs currently in GEM JR. Unchecked: evaluate the entire PIPELINE. This does not promote or change saved memberships.</small>
+     {useGemJrSource&&gemJrCandidates.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>No saved GEM JR candidates available — scan cannot proceed.</small>}
+   </span>
+ </label>}
  <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All requirements start unchecked. SUGGESTED toggles green guidance highlights without checking any boxes. DESELECT ALL clears every checked requirement.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>{criteria.map(([key,label])=>{const suggested=showSuggestions&&suggestedByStage[stage].includes(key);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:suggested?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:suggested?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{suggested&&<small style={{display:"block",fontSize:11,color:"#175a35",fontWeight:700}}>Suggested · optional</small>}</span></label>})}</div>
 
- <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!pipeline.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>DESELECT ALL</button><button type="button" onClick={()=>setShowSuggestions(value=>!value)} aria-pressed={showSuggestions} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:showSuggestions?"#bbe5c8":"#e4f3e8",fontWeight:700}}>{showSuggestions?"HIDE SUGGESTIONS":"SUGGESTED"}</button></div>
+ <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>DESELECT ALL</button><button type="button" onClick={()=>setShowSuggestions(value=>!value)} aria-pressed={showSuggestions} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:showSuggestions?"#bbe5c8":"#e4f3e8",fontWeight:700}}>{showSuggestions?"HIDE SUGGESTIONS":"SUGGESTED"}</button></div>
 
 
- <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||"Ready to scan "+pipeline.length.toLocaleString("en-US")+" PIPELINE records."}</p>
+ <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+"."}</p>
  {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}>
-  <strong>Full PIPELINE evidence screen complete · Run #{result.runNumber}</strong>
-  <p>{result.baseline.toLocaleString("en-US")} PIPELINE records evaluated · {result.passes.length.toLocaleString("en-US")} {result.selected.length?"passed all checked requirements":"unrestricted matches"} · {result.fails.length.toLocaleString("en-US")} failed · {result.needsReview.length.toLocaleString("en-US")} need verification. Completed at {new Date(result.evaluatedAt).toLocaleTimeString()}.</p>
+  <strong>{result.sourceKind==="GEM_JR"?"Saved GEM JR":"Full PIPELINE"} evidence screen complete · Run #{result.runNumber}</strong>
+  <p>{result.baseline.toLocaleString("en-US")} {result.sourceKind==="GEM_JR"?"GEM JR candidates":"PIPELINE records"} evaluated · {result.passes.length.toLocaleString("en-US")} {result.audits.length?"passed all checked requirements":"unrestricted matches"} · {result.fails.length.toLocaleString("en-US")} failed · {result.needsReview.length.toLocaleString("en-US")} need verification. Completed at {new Date(result.evaluatedAt).toLocaleTimeString()}.</p>
   <p><strong>Applied requirements:</strong> {result.audits.length?result.audits.map(x=>x.label).join(" · "):"None (all records included)"}</p>
   {result.audits.length>0&&<div style={{maxWidth:"100%",overflowX:"auto"}}>
     <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
