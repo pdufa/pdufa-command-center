@@ -153,6 +153,27 @@ def make_candidate(source: dict, program_id: str, now: date,
         "indication": first(source, "indication"),
         "nctId": first(source, "nct_id"),
         "pdufaDate": target_date,
+        # Priority Review belongs to the exact NDA/BLA application, not the ticker.
+        # Only an explicit designation AND an FDA-hosted supporting document
+        # can produce the verified IMP alert. Do not infer it from PDUFA timing,
+        # a Fast Track label, trial status, or an unrelated FDA URL.
+        "priorityReview": (
+            {
+                "status": "FDA_VERIFIED",
+                "source": first(source, "priority_review_source_url", "priority_review_evidence_url"),
+                "designationDate": first(source, "priority_review_designation_date"),
+            }
+            if not clinical
+            and first(source, "priority_review", "priority_review_designation", "review_designation").upper()
+                in {"YES", "PRIORITY", "PRIORITY REVIEW", "PRIORITY_REVIEW", "GRANTED", "CONFIRMED"}
+            and re.match(
+                r"^https://(?:[a-z0-9-]+\\.)*(?:fda\\.gov|accessdata\\.fda\\.gov)/",
+                first(source, "priority_review_source_url", "priority_review_evidence_url"),
+                re.I,
+            )
+            else None
+        ),
+
         "phase3Date": first(source, "phase3_date", "results_posted", "results_first_posted"),
         "phase3Status": first(source, "phase3_status", "verification_status") or "NOT VERIFIED",
         "phase3Source": first(source, "trial_evidence_url", "source_url"),
