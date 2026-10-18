@@ -920,3 +920,313 @@ button.secondary { background: white; color: #172b1b; }
   .mobile-nav-toggle { align-items:stretch; flex-direction:column; }
   .mobile-nav-toggle > button { width:100%; }
 }
+
+
+/* Responsive audit — every block below the header.
+   Cards may reflow; entire source tables stay intact inside their own scrollers.
+   Container queries ensure a card responds to ITS width, not only viewport size. */
+.migration-workspace,
+.migration-workspace > *,
+.pipeline-page, .gems-page, .wt-page, .scans-page,
+.pipeline-setup-grid, .pipeline-results-anchor, .pipeline-filters,
+.gem-section, .gem-body, .gem-table-panel, .gem-profile,
+.gem-profile-tile, .wt-panels, .wt-program-masonry, .wt-stock,
+.wt-research-column, .wt-score-details, .scans-actions-grid,
+.scans-evidence-masonry, .pdufa-progress, .pdufa-progress-hero,
+.gold-master-container, .gold-control-bar, .gold-chart-panel,
+.source-health, .parity-chart, .indicator-tables-separate,
+.trial-full-details, .trial-section-fields, .panel, .layout > * {
+  min-width:0;
+  max-width:100%;
+}
+.migration-workspace :is(h2,h3,h4,p,summary,label,strong,small,a) {
+  overflow-wrap:anywhere;
+}
+.migration-workspace :is(input:not([type="checkbox"]), select, textarea) {
+  max-width:100%;
+  min-width:0;
+}
+.migration-workspace button {
+  white-space:normal;
+  max-width:100%;
+  min-width:0;
+}
+.migration-workspace .source-health > * {min-width:0;max-width:100%;}
+.migration-workspace .sectionhead > div {min-width:0;flex:1 1 260px;}
+.migration-workspace .sectionhead :is(button, a) {flex-shrink:0;}
+.migration-workspace .table-scroll,
+.migration-workspace .priority-scroll,
+.migration-workspace .parity-check-table,
+.migration-workspace .gold-reference-scroller,
+.migration-workspace .pipeline-data-scroll {
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.migration-workspace .table-scroll table {max-width:none;}
+.migration-workspace .table-scroll :is(td,th) {overflow-wrap:break-word;}
+.migration-workspace :is(.nested-expander, .drill-company, .drill-program) {
+  min-width:0;
+  max-width:100%;
+}
+.migration-workspace :is(.nested-expander, .drill-company, .drill-program) > summary {
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.migration-workspace .program-details,
+.migration-workspace .source-links,
+.migration-workspace .trial-details {min-width:0;max-width:100%;}
+
+/* PIPELINE: lift the download/control block alongside filtering when it fits.
+   Keep the clinical records table below both at full row width. */
+.pipeline-setup-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:var(--fluid-gap);
+  align-items:start;
+  margin:14px 0 18px;
+}
+.pipeline-setup-grid > .panel {margin:0;width:100%;min-width:0;}
+.pipeline-filters {container: pipeline-filters / inline-size;}
+.pipeline-filters .filter-columns {grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);}
+.pipeline-filters .filter-checks {grid-template-columns:repeat(auto-fit,minmax(min(100%,175px),1fr));}
+.pipeline-row > label {min-width:0;max-width:100%;flex:1 1 270px;}
+.pipeline-row > label > input {min-width:0;max-width:100%;width:100%;}
+.pipeline-row > label.cap-filter {flex:1 1 310px;max-width:100%;}
+.pipeline-data-pagination,
+.pipeline-actions {min-width:0;max-width:100%;}
+.pipeline-data-pagination > *, .pipeline-actions > * {min-width:0;}
+.pipeline-applied-filters, .pipeline-reconciliation {overflow-wrap:anywhere;}
+@container pipeline-filters (max-width:650px) {
+  .filter-columns {grid-template-columns:1fr;}
+  .filter-checks {grid-template-columns:repeat(auto-fit,minmax(min(100%,195px),1fr));}
+}
+@media(min-width:1550px) {
+  .pipeline-setup-grid {grid-template-columns:minmax(290px,.6fr) minmax(0,2fr);}
+}
+/* Candidate tables remain research-grade and can scroll, rather than
+   collapsing 20 columns to unreadable microtext. */
+.gem-table-panel .table-scroll {scrollbar-gutter:stable;}
+.gem-criteria .goal-table {min-width:0;max-width:100%;}
+.gem-profile-masonry {container-type:normal;}
+.gem-profile-tile .trial-details {grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));}
+.gem-profile-tile :is(.parity-chart, .alpaca-stock-chart, .indicator-tables-separate) {width:100%;max-width:100%;}
+.gem-profile-tile .research-score-cards,
+.wt-score-details .research-score-cards {grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr));}
+.gem-profile-tile .score-factor-groups {grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));}
+.gem-profile-tile .goal-grid {grid-template-columns:minmax(0,.85fr) minmax(0,1fr) minmax(0,1.3fr);}
+.wt-panels > .panel {container:wt-panel / inline-size;}
+.wt-program-masonry .wt-stock {width:100%;}
+.wt-stock .alpaca-header, .wt-stock .alpaca-range,
+.wt-stock .wt-indicator-title {min-width:0;max-width:100%;flex-wrap:wrap;}
+.wt-stock .alpaca-plot-tooltip {max-width:calc(100% - 20px);overflow-wrap:anywhere;}
+.wt-stock .wt-streamlit-chart, .wt-stock .alpaca-stock-chart {width:100%;min-width:0;}
+@container wt-panel (max-width:760px) {
+  .wt-program-masonry {columns:1;}
+  .wt-stock {grid-template-columns:minmax(0,1fr);}
+}
+@container wt-panel (max-width:450px) {
+  .wt-score-details .research-score-cards {grid-template-columns:minmax(0,1fr);}
+  .wt-identity > button {width:100%;flex:1 1 100%;}
+}
+
+/* SCANS: actions and Gmail audit rise into available columns; each saved
+   source-audit card fills the next open space rather than leaving tall gaps. */
+.scans-page {width:100%;min-width:0;}
+.scans-actions-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,570px),1fr));
+  gap:var(--fluid-gap);
+  align-items:start;
+  margin:13px 0;
+}
+.scans-actions-grid > .source-health {margin:0;width:100%;min-width:0;}
+.scans-actions-grid .source-health > div[style] {
+  min-width:0;
+  max-width:100%;
+}
+.scans-actions-grid label {
+  min-width:0;
+  max-width:100%;
+  flex:1 1 190px;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.scans-actions-grid select {max-width:100%;min-width:0;width:100%;}
+.scans-actions-grid button {min-height:40px;flex:1 1 200px;}
+.scans-evidence-masonry {
+  columns:clamp(295px,29vw,530px);
+  column-gap:var(--fluid-gap);
+  column-fill:balance;
+  margin:12px 0;
+}
+.scans-evidence-masonry > * {
+  display:inline-block;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  vertical-align:top;
+  break-inside:avoid;
+  -webkit-column-break-inside:avoid;
+  margin:0 0 var(--fluid-gap);
+  border:1px solid #cbdbce;
+  border-radius:8px;
+  padding:11px;
+  background:#f9fcfa;
+}
+.scans-evidence-masonry > .source-health {display:inline-flex; margin:0 0 var(--fluid-gap);}
+.scans-evidence-masonry > p {font-size:12px;}
+.scans-page > .panel,
+.scans-page .table-scroll,
+.scans-page .pipeline-row,
+.scans-page .source-health,
+.scans-page .pdufa-progress {min-width:0;max-width:100%;}
+.scans-page .pdufa-progress-top,
+.scans-page .pdufa-progress-runline,
+.scans-page .pdufa-progress-taskhead {min-width:0;flex-wrap:wrap;}
+.scans-page .pdufa-progress-hero {grid-template-columns:minmax(0,.7fr) minmax(0,1.6fr);}
+.scans-page .pdufa-stage-flow {grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));}
+.scans-page .pdufa-stage-arrow {display:none;}
+.scans-page .pdufa-progress-controls {max-width:100%;flex-wrap:wrap;}
+.scans-page .pdufa-progress-controls label {min-width:0;flex:1 1 200px;}
+.scans-page .pdufa-progress-controls select {min-width:0;max-width:100%;width:100%;}
+.scans-page .pdufa-stage-cell,
+.scans-page .pdufa-stage-card {min-width:0;max-width:100%;}
+.scans-page .pdufa-current-stage,
+.scans-page .pdufa-current-step,
+.scans-page .pdufa-run-meta {overflow-wrap:anywhere;}
+
+/* Chart legend/filters and evidence tables respect their containing card. */
+.gem-profile-tile .parity-actions,
+.gem-profile-tile .parity-plan,
+.gem-profile-tile .parity-plan-fields,
+.gem-profile-tile .parity-ranges,
+.gem-profile-tile .parity-legend,
+.gem-profile-tile .parity-heading {min-width:0;max-width:100%;flex-wrap:wrap;}
+.gem-profile-tile .parity-plan-fields input {width:min(170px,100%);min-width:0;}
+.gem-profile-tile .parity-svg-wrap {min-width:0;max-width:100%;}
+.gem-profile-tile .parity-svg {max-width:100%;height:auto;}
+.gem-profile-tile .entryexit-table-grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));}
+.gem-profile-tile .indicator-target-matrix {max-width:none;}
+.gold-control-bar > * {min-width:0;max-width:100%;}
+.gold-master-container .gold-selectors {min-width:0;max-width:100%;}
+.gold-master-container .gold-view-buttons {max-width:100%;min-width:0;}
+.gold-master-container .gold-master-readable .gold-chart-table-wrap {overflow-x:auto;max-width:100%;}
+.gold-master-container .gold-master-readable .gold-chart-panel {min-width:0;max-width:100%;}
+.gold-master-container .gold-master-readable .gold-chart-panel header strong {overflow-wrap:anywhere;}
+.gold-master-container .gold-master-readable .gold-overall-goal strong {white-space:normal;overflow-wrap:anywhere;}
+.gold-master-container .gold-master-readable .gold-master-footer {overflow-wrap:anywhere;}
+@media(min-width:1700px) {
+  .gold-master-container .gold-master-readable .gold-matrix-five,
+  .gold-master-container .gold-master-readable .gold-matrix-second,
+  .gold-master-container .gold-master-readable .gold-matrix-third {
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));
+  }
+}
+
+/* Tablet + phone: real one-column reflow for EACH region, not a
+   desktop layout merely scaled down. */
+@media(max-width:1000px) {
+  .filter-columns, .pipeline-filters .filter-columns {grid-template-columns:minmax(0,1fr);}
+  .scans-page .pdufa-progress-hero {grid-template-columns:minmax(0,1fr);}
+  .scans-actions-grid {grid-template-columns:minmax(0,1fr);}
+  .scans-evidence-masonry {columns:1;}
+  .gem-profile-masonry {columns:1;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap {width:100%;}
+}
+@media(max-width:720px) {
+  .migration-workspace :is(input:not([type="checkbox"]),select,textarea) {font-size:16px;}
+  .migration-workspace .sectionhead > * {width:100%;min-width:0;}
+  .migration-workspace .sectionhead button {flex:1 1 100%;width:100%;}
+  .migration-workspace .sectionhead .counter {align-self:start;width:auto;max-width:100%;}
+  .pipeline-setup-grid {grid-template-columns:minmax(0,1fr);gap:10px;}
+  .pipeline-filters .filter-columns,
+  .pipeline-filters .filter-checks {grid-template-columns:minmax(0,1fr);}
+  .pipeline-row > label {flex:1 1 100%;max-width:100%;}
+  .pipeline-data-pagination > label,
+  .pipeline-data-pagination select {min-width:0;max-width:100%;}
+  .pipeline-data-pagination select {width:auto;}
+  .gem-profile-masonry, .wt-program-masonry, .workspace-overview {columns:1;}
+  .gem-profile-masonry > .gem-profile-tile,
+  .wt-program-masonry > .wt-stock {margin-bottom:10px;}
+  .gem-profile-tile .trial-details,
+  .gem-profile-tile .score-factor-groups {grid-template-columns:minmax(0,1fr);}
+  .gem-profile .sectionhead > button {width:100%;}
+  .scans-page {padding:12px 9px;}
+  .scans-actions-grid {gap:11px;}
+  .scans-actions-grid .source-health > div[style] {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr);
+    gap:8px!important;
+  }
+  .scans-actions-grid .source-health > div[style] > * {width:100%;min-width:0;max-width:100%;}
+  .scans-actions-grid label,
+  .scans-actions-grid button {width:100%;min-width:0;max-width:100%;}
+  .scans-evidence-masonry {columns:1;}
+  .scans-page .pdufa-progress-hero {grid-template-columns:minmax(0,1fr);}
+  .scans-page .pdufa-stage-flow {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .scans-page .pdufa-time-grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr));}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap table,
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap tbody {display:block;width:100%;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap thead {
+    position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;
+  }
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap tr {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+    padding:6px;
+    border-bottom:2px solid #b9cfda;
+    width:100%;
+  }
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td {
+    display:block;
+    width:100%!important;
+    min-width:0;
+    padding:5px!important;
+    overflow-wrap:anywhere;
+    font-size:12px;
+    border:1px solid #d5e4ed;
+  }
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:first-child {display:none;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:nth-child(2) {
+    grid-column:1/-1;
+    background:#e1eef7;
+    font-weight:900;
+  }
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:nth-child(6) {grid-column:1/-1;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:nth-child(3)::before {content:"GOAL";display:block;font-weight:800;font-size:10px;margin-bottom:3px;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:nth-child(4)::before {content:"ACTUAL";display:block;font-weight:800;font-size:10px;margin-bottom:3px;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:nth-child(5)::before {content:"STATUS";display:block;font-weight:800;font-size:10px;margin-bottom:3px;}
+  .gold-master-container .gold-master-readable .gold-chart-table-wrap td:nth-child(6)::before {content:"SOURCE / NOTES";display:block;font-weight:800;font-size:10px;margin-bottom:3px;}
+  .count-panels .count-bars {grid-auto-rows:minmax(34px,auto);}
+  .count-panels .count-row {
+    grid-template-columns:minmax(0,1.25fr) minmax(22px,.75fr) minmax(30px,auto);
+    min-height:34px;height:auto;
+  }
+  .count-panels .count-row>span,
+  .count-panels .count-row>b {
+    white-space:normal!important;
+    height:auto;
+    min-height:18px;
+    line-height:1.2!important;
+    overflow-wrap:anywhere;
+  }
+  .count-panels .count-row>span {text-align:left;}
+  .count-panels .count-row>b {text-align:right;font-size:11px!important;}
+}
+@media(max-width:390px) {
+  .migration-workspace .panel {padding:9px;}
+  .gem-body, .gem-heading {padding:8px;}
+  .gem-criteria,.gem-table-panel,.gem-profile {padding:7px;}
+  .scans-page .pdufa-stage-flow {grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}
+  .scans-page .pdufa-stage-card {padding:7px 5px;}
+  .scans-page .pdufa-time-grid {grid-template-columns:minmax(0,1fr);}
+  .scans-page .pdufa-progress-top {padding:12px 9px;}
+}
