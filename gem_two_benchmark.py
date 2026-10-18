@@ -1,11 +1,10 @@
-"""Two-benchmark GEM trading-candidate queue with separate, advisory ranking.
+"""Phase-3-qualified GEM research queue with advisory financing monitoring.
 
-The user's only positive eligibility benchmarks:
-  (1) verified, publicly released SUCCESSFUL Phase 3 results for the exact drug;
-  (2) SEC-attested closing of the SECOND separate post-readout financing.
-No cash-runway, market, clinical-success, safety, dilution or FDA-window score
-can silently become a third positive benchmark. Scores rank candidates,
-not expected returns or an instruction to trade.
+Eligibility requires independently verified SUCCESSFUL Phase 3 results for the
+exact drug/program. A second separate SEC-verified financing closure is OPTIONAL.
+Cash runway, dilution, market conditions and FDA timing remain explicit research
+risks and independent trade-review safeguards; none is inferred from missing data.
+Scores rank candidates, not expected returns or an instruction to trade.
 """
 from __future__ import annotations
 
@@ -130,8 +129,10 @@ def assess(row, event, *, as_of, feed_current=True, sec_current=True):
     """Return two hard benchmarks and a scored priority on qualifying programs."""
     released = phase3_results_released(row, event, as_of=as_of)
     financed = second_financing_closed(row, event, as_of=as_of)
-    eligible = bool(released and financed)
+    eligible = bool(released)
     flags = []
+    if released and not financed:
+        flags.append("Second post-readout financing not verified — OPTIONAL; monitor cash, dilution and funding needs")
     if not feed_current:
         flags.append("Saved clinical/market feed stale — refresh before acting")
     if not sec_current:
@@ -174,9 +175,10 @@ def assess(row, event, *, as_of, feed_current=True, sec_current=True):
                                           else "PENDING — SECOND CLOSE UNVERIFIED",
         "Two-benchmark entry status": (
             "QUALIFIED — PRIORITIZE FOR MANUAL ENTRY REVIEW"
-            if eligible else "WATCH — TWO BENCHMARKS NOT YET MET"
+            if eligible else "WATCH — SUCCESSFUL PHASE 3 NOT VERIFIED"
         ),
         "Two-benchmark eligible": eligible,
+        "Financing required for GEM": False,
         "Two-benchmark priority /100": None,
         "Two-benchmark rank": None,
         "Two-benchmark risk flags": "; ".join(flags) or "No flagged issue in saved data",
