@@ -177,9 +177,9 @@ def assess_gem_trade(row, market_rows, status, today):
         call, reason = ("EXIT RISK — REVIEW NOW",
                         "FDA timing/resolution warning; check positions and news immediately.")
     elif not eligible:
-        missing = ("Phase 3 result and/or distinct second financing close "
-                   "not independently verified for this exact program.")
-        call, reason = "WAIT — BENCHMARKS UNVERIFIED", missing
+        missing = ("Successful exact-program Phase 3 result not independently verified. "
+                   "A second financing closure is optional; risk checks remain separate.")
+        call, reason = "WAIT — PHASE 3 NOT VERIFIED", missing
     elif not fundamental_current:
         call, reason = ("WAIT — SOURCE RECHECK",
                         "Clinical/SEC source refresh is partial or stale.")
@@ -366,7 +366,7 @@ def _score_gem_trade(row, profile, status):
     exit_total, exit_coverage = summary(exit_risk)
     if row.get("_eligible") is not True or negative:
         entry_total = None
-        entry_status = "NOT ELIGIBLE — VERIFIED GEM BENCHMARKS / CLINICAL RISK"
+        entry_status = "NOT ELIGIBLE — VERIFIED PHASE 3 / CLINICAL RISK"
     elif is_exit_warning:
         entry_total = None
         entry_status = "NO NEW ENTRY — PDUFA EXIT / FDA DECISION"
