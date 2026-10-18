@@ -113,7 +113,7 @@ def _fallback_checks(record, event, profile, *, junior, exit_risk=False):
         values = [
             ("Successful Phase 3", _text(record.get("Phase 3 status") or record.get("Evidence type")), True if p3 else None),
             ("PDUFA date confirmed", _text(record.get("PDUFA saved") or record.get("PDUFA date (saved)")), True if record.get("PDUFA verified") else None),
-            ("Financing verified", "Track / verify" if junior else "Two distinct post-readout SEC closes", None if junior else True),
+            ("Financing #2 (OPTIONAL)", "Review SEC-funded transactions; not a GEM admission gate", None),
             ("Cash runway", "Independent cash-only SEC assessment", None),
             ("Market cap / float", "Review saved values and liquidity", None),
             ("Approval probability", "Saved estimate; not a calibrated trade score", None),
@@ -739,7 +739,7 @@ def _junior_section9_exit_checks(record, event, profile, runway_result,
                        "Sources"),
         _section9_item(9, "Research list / GEM promotion review",
                        "GEM JR is research only; moving to GEM requires the exact "
-                       "positive Phase 3 program and two independent post-readout financings",
+                       "successful Phase 3 program; financing history optional",
                        None, "", "Check current GEM membership and qualification separately",
                        "Workflow"),
     ]
@@ -1156,7 +1156,7 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
         "exit_status": score.get("exit_status", "Unverified"),
         "entry_coverage": score.get("entry_coverage", 0), "exit_coverage": score.get("exit_coverage", 0),
         "status": status, "status_type": status_type, "trade_status": trade_status,
-        "financing_label": "Track / verify" if junior else "Two SEC closes",
+        "financing_label": "OPTIONAL · SEC financing review",
         "financing_detail": _text(record.get("Still needed"), "Independent source recheck required before trading"),
         "source_review": record.get("Source review as of") or record.get("Source review date") or "",
         "financings": financings_display, "sources": sources, "profile": info,
@@ -1276,8 +1276,8 @@ def build_dashboard(stage, root="data", *, as_of=None):
         "scan_note": "Saved reports only; collector completion is not full-source verification. Open SCANS for live job status.",
         "rules": [
             "Successful Phase 3 for the exact drug + indication, with primary-source results.",
-            "Two distinct post-readout financing closures.",
-            "Both financing closures independently confirmed through SEC evidence.",
+            "Second financing is OPTIONAL clinical-qualification context; record SEC closes if verified.",
+            "Clear current dilution risk and independently verify available cash runway before entry."
             "Review cash-only runway and the date of the latest SEC assessment.",
             "Evaluate saved approval estimates, valuation and market liquidity separately.",
             "Resolve safety, dilution and regulatory gaps before a trading decision.",
