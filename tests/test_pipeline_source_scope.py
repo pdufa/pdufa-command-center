@@ -65,7 +65,17 @@ class PipelineOriginPolicyTests(unittest.TestCase):
             "APPLICATION|NEW|PROGRAM")
         self.assertEqual(gem_research_id(
             {"NCT ID": "NCT98765432", "Ticker": "NEW"}, ids, tickers),
-            "TRIAL|NCT98765432")
+            "TRIAL|NCT98765432|ISSUER|NEW")
+        self.assertEqual(gem_research_id(
+            {"NCT ID": "NCT98765432", "Ticker": "OTHER"}, ids, tickers),
+            "TRIAL|NCT98765432|ISSUER|OTHER")
+        self.assertEqual(gem_research_id(
+            {"NCT ID": "NCT01234567", "Ticker": "BBB"}, ids, tickers),
+            "TRIAL|NCT01234567")
+        self.assertEqual(gem_research_id(
+            {"NCT ID": "NCT87654321", "Ticker": "NEW"},
+            {"TRIAL|NCT87654321"}, {"TRIAL|NCT87654321": ""}),
+            "TRIAL|NCT87654321|ISSUER|NEW")
         self.assertEqual(gem_research_id(
             {"NCT ID": "NCT01234567", "Ticker": "WRONG"}, ids, tickers), "")
         self.assertEqual(gem_research_id(
