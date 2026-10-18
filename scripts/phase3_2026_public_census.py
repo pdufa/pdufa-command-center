@@ -30,9 +30,9 @@ for r in rows:
  # A registry posting is not a dated issuer announcement and does not prove endpoint success.
  if source_type!="ISSUER_TOPLINE_RELEASE":
   reasons["registry_posting_not_issuer_readout"]+=1;review.append(item);continue
- if re.search(r"\\b(NEGATIVE|FAILED|MISSED|NOT MET|MIXED|INCONCLUSIVE)\\b",outcome):
+ if re.search(r"\b(NEGATIVE|FAILED|MISSED|NOT MET|MIXED|INCONCLUSIVE)\b",outcome):
   reasons["nonpositive_or_mixed"]+=1;review.append(item);continue
- if not re.search(r"\\b(PRIMARY_MET_VERIFIED|PRIMARY ENDPOINT MET|MET PRIMARY ENDPOINT|POSITIVE VERIFIED)\\b",outcome):
+ if not re.search(r"\b(PRIMARY_MET_VERIFIED|PRIMARY ENDPOINT MET|MET PRIMARY ENDPOINT|POSITIVE VERIFIED)\b",outcome):
   reasons["issuer_outcome_requires_manual_verification"]+=1;review.append(item);continue
  accepted.append(item)
 accepted.sort(key=lambda r:(r["ticker"],r["nct_id"],r["phase3_results_posted_at"]))
