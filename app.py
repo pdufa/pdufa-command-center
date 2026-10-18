@@ -13,7 +13,7 @@ from pipeline_trial_filters import (DEFAULTS as PIPELINE_TRIAL_DEFAULTS, EVIDENC
                                     FINANCING_OPTIONS as PIPELINE_FINANCING_OPTIONS, MILESTONE_OPTIONS as PIPELINE_MILESTONE_OPTIONS,
                                     WINDOW_OPTIONS as PIPELINE_WINDOW_OPTIONS, selection_signature as pipeline_trial_signature,
                                     selections as pipeline_trial_selections, has_active_filter as pipeline_trial_filter_active,
-                                    add_public_filter_columns, filter_public_trials)
+                                    add_public_filter_columns, filter_public_trials, evaluate_public_trial_screen)
 def render_post_phase3_workspace(*args, **kwargs):
     """Load the POST3 workspace on demand; retry one module-eviction race."""
     for attempt in range(2):
@@ -3894,6 +3894,34 @@ if page == "PDUFA":
 
             with st.container(border=True, key="pipeline_trials_card"):
                 st.markdown("### PDUFA TRIALS / PROGRAMS")
+                if applied and not prepared.empty:
+                    audit_population = filter_pipeline(
+                        prepared, selected_stages, selected_dates, query
+                    )
+                    audit_rows = evaluate_public_trial_screen(
+                        audit_population, pipeline_trial_selections(st.session_state),
+                        today=pipeline_today,
+                    )
+                    audit_counts = audit_rows["Screen status"].value_counts()
+                    a1, a2, a3 = st.columns(3)
+                    a1.metric("PASS", int(audit_counts.get("PASS", 0)))
+                    a2.metric("FAIL", int(audit_counts.get("FAIL", 0)))
+                    a3.metric("NEEDS VERIFICATION",
+                              int(audit_counts.get("NEEDS VERIFICATION", 0)))
+                    st.caption(
+                        "Screened records: " + str(len(audit_rows)) +
+                        ". Missing evidence is NEEDS VERIFICATION, not FAIL. "
+                        "PASS is a filter match, not an entry or clinical approval."
+                    )
+                    with st.expander("VIEW ALL SCREEN RESULTS", expanded=False):
+                        audit_cols = [x for x in
+                                      ("ticker", "company", "record_id", "registered_phase",
+                                       "status", "Screen status")
+                                      if x in audit_rows.columns]
+                        st.dataframe(
+                            audit_rows[audit_cols], hide_index=True,
+                            use_container_width=True,
+                        )
                 render_ticker_toggle_panel("pipeline_2", prepared, title="TICKER WATCH / TRADE")
                 st.caption("In the table below, each column name has a black circled ? for an explanation and a separate arrow for sorting. Click a trial to inspect its exact record. You can also use COLUMN DEFINITIONS at the top of PIPELINE.")
                 empty_chart = prepare_pdufa_grid(
