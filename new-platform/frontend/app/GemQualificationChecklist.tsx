@@ -175,14 +175,14 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
                {item.key==="two_trial"?
                  <div>
                    <strong style={{display:"block",marginBottom:6}}>Goal: 2 separate successful pivotal trials</strong>
-                   {([0,1] as const).map(index=><label key={index} style={{display:"block",marginBottom:8,fontSize:12}}>
+                   {selected.includes("two_trial")?([0,1] as const).map(index=><label key={index} style={{display:"block",marginBottom:8,fontSize:12}}>
                      {"Trial "+(index+1)+" — NCT ID"}
                      <input type="text" value={twoTrialIds[index]} maxLength={11} placeholder={"NCT"+(index===0?"12345678":"87654321")}
                        autoComplete="off" aria-label={"Two-Trial Paradigm Trial "+(index+1)+" NCT ID"}
                        aria-invalid={Boolean(twoTrialError&&twoTrialIds[index])}
                        onChange={event=>setTwoTrialId(index,event.target.value)}
                        style={{display:"block",marginTop:3,width:"100%",padding:6,boxSizing:"border-box"}}/>
-                   </label>)}
+                   </label>):<small style={{display:"block",marginBottom:7}}>Select this checkbox to enter two trial IDs.</small>}
                    {selected.includes("two_trial")&&twoTrialError&&<small role="alert" style={{display:"block",color:"#8b2222"}}>{twoTrialError}</small>}
                    <small style={{display:"block"}}>Enter two distinct ClinicalTrials.gov studies. IDs alone do not verify success.</small>
                  </div>:
