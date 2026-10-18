@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import IndicatorParityTables from "./IndicatorParityTables";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
+import TrialFields from "./TrialFields";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
@@ -318,6 +319,18 @@ function PriorityIndicators({ record }: { record: Candidate }) {
     <p className="subtle small">The market feed contains close/volume observations only. Intraday ATR, spread, actual stops, anchored VWAP and XBI comparisons are not fabricated.</p>
   </details>;
 }
+function GemInlineSection({title,description,open,onToggle,children}:{
+  title:string;description:string;open:boolean;onToggle:()=>void;children:ReactNode
+}) {
+  return <section className={"gem-inline-section"+(open?" gem-inline-section-open":"")}>
+    <button type="button" className="gem-inline-section-trigger" onClick={onToggle} aria-expanded={open}>
+      <span className="gem-inline-section-heading"><span aria-hidden="true">{open?"▾":"▸"}</span> {title}</span>
+      <small>{description}</small>
+    </button>
+    {open && <div className="gem-inline-section-content">{children}</div>}
+  </section>;
+}
+
 function SourceDetails({ record }: { record: Candidate }) {
   return (
     <div className="program-details">
@@ -381,6 +394,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // The complete list remains available to nested clinical trial drilldowns.
   const highlightedGemRow=useRef<HTMLTableRowElement|null>(null);
   const gemTableScrollViewport=useRef<HTMLDivElement|null>(null);
+  const [gemTrialExpanded,setGemTrialExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
+  const [gemTrialSections,setGemTrialSections]=useState<Record<string,boolean>>({});
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -605,7 +620,22 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const visibleRows = rows.slice(firstVisible,firstVisible+visibleCount);
     const moveRow = (delta:-1|1) => {
       const next = rows[focusedIndex+delta];
-      if(next) setSelected(current=>({...current,[stage]:next.id}));
+      if(next){
+        setSelected(current=>({...current,[stage]:next.id}));
+        setGemTrialExpanded(current=>({...current,[stage]:true}));
+      }
+    };
+    const selectTrial = (record:Candidate,section?:string) => {
+      const same = chosen?.id===record.id && (selected[stage]===record.id || !selected[stage] && focusedIndex===0);
+      setSelected(current=>({...current,[stage]:record.id}));
+      setGemTrialExpanded(current=>({...current,[stage]:section?true:same?!current[stage]:true}));
+      if(section) setGemTrialSections(current=>({...current,[stage+"|"+record.id+"|"+section]:true}));
+    };
+    const isSectionOpen=(section:string)=>Boolean(chosen && gemTrialSections[stage+"|"+chosen.id+"|"+section]);
+    const toggleSection=(section:string)=>{
+      if(!chosen) return;
+      const key=stage+"|"+chosen.id+"|"+section;
+      setGemTrialSections(current=>({...current,[key]:!current[key]}));
     };
     return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
       <div className="gem-heading">
@@ -651,26 +681,28 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <thead><tr>
                 {["#","Program ID","W","T","Ticker","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
               </tr></thead>
-              <tbody>{visibleRows.map((r,i)=><tr key={r.id}
+              <tbody>{visibleRows.map((r,i)=><Fragment key={r.id}><tr
                 ref={chosen?.id===r.id && selected[stage] ? highlightedGemRow : undefined}
                 className={chosen?.id===r.id?"selected-record gem-focused-row":"gem-selectable-row"}
                 aria-selected={chosen?.id===r.id} tabIndex={0}
                 onClick={event=>{
                   if ((event.target as HTMLElement).closest("a,button,input,select,textarea,label")) return;
-                  setSelected(current=>({...current,[stage]:r.id}));
+                  selectTrial(r);
                 }}
                 onKeyDown={event=>{
                   if (event.target!==event.currentTarget) return;
                   if(event.key==="Enter"||event.key===" "){
                     event.preventDefault();
-                    setSelected(current=>({...current,[stage]:r.id}));
+                    selectTrial(r);
                   }
-                }}>
+                }}
+                aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]}
+                aria-label={"Trial "+r.ticker+" · click to expand or collapse stock details"}>
                 <td className="numeric">{firstVisible+i+1}</td>
                 <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
-                <td><button type="button" className="ticker-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>{r.ticker}</button></td>
+                <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
                 <td><span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
                   title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span></td>
                 <td>{stated(r.company,"—")}</td>
@@ -690,26 +722,59 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td title={stated(r.technical?.exitStatus)}>{r.technical?.exitRisk??"—"}</td>
                 <td><EvidenceCoverage label="Exit" coverage={r.technical?.exitCoverage} compact /></td>
                 <td>{r.candidateLinked===false?"UNLINKED":stated(r.membershipStatus||r.phase3Status,"—")}</td>
-                <td><button type="button" className="secondary" onClick={()=>setSelected({...selected,[stage]:r.id})}>Alpaca chart ↓</button></td>
+                <td><button type="button" className="secondary" onClick={()=>selectTrial(r,"chart")}>Alpaca chart ↓</button></td>
                 <td>
                   {trialSheetUrl(r) && <a href={trialSheetUrl(r)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">Full trial sheet ↗</a>}
-                  <button type="button" className="record-select" onClick={()=>setSelected({...selected,[stage]:r.id})}>Research details ↓<small>{stated(r.drug)} · {r.id}</small></button>
+                  <button type="button" className="record-select" onClick={()=>selectTrial(r,"overview")}>Research details ↓<small>{stated(r.drug)} · {r.id}</small></button>
                 </td>
-              </tr>)}</tbody></table>
+              </tr>
+              {chosen?.id===r.id && gemTrialExpanded[stage] && <tr className="gem-inline-detail-row">
+                <td colSpan={23}>
+                  <div className="gem-inline-detail-panel" aria-label={r.ticker+" expandable clinical trial and stock details"}>
+                    <div className="gem-inline-detail-header">
+                      <div><strong>TRIAL · {stated(r.drug,r.ticker)} · {r.ticker}</strong>
+                        <small>{stated(r.programId)} · {stated(r.nctId,"NO EXACT NCT")} · {stated(r.indication)}</small>
+                        <span>Selected gold row · expand any detail category below</span></div>
+                      <button type="button" className="secondary" onClick={()=>setGemTrialExpanded(current=>({...current,[stage]:false}))}>
+                        COLLAPSE TRIAL ↑
+                      </button>
+                    </div>
+                    <div className="gem-inline-sections">
+                      <GemInlineSection title="Stock / program details" description="Company, drug, trial identity, SEC financing, FDA evidence"
+                        open={isSectionOpen("overview")} onToggle={()=>toggleSection("overview")}>
+                        <SourceDetails record={r}/>
+                        <div className="gem-inline-detail-actions">
+                          <button type="button" onClick={()=>{setMasterProgram(r.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
+                          <button type="button" onClick={()=>selectCandidate(r,stage)}>Open autosaved checklist ↗</button>
+                        </div>
+                      </GemInlineSection>
+                      <GemInlineSection title="Clinical trial full record" description="Exact NCT registry fields, results and reported p-values"
+                        open={isSectionOpen("trial")} onToggle={()=>toggleSection("trial")}>
+                        {trialSheetUrl(r) ? <TrialFields key={r.id} row={r} onClose={()=>toggleSection("trial")}/>
+                          : <p className="subtle">No exact NCT clinical-trial record linked to this program. Missing registry evidence is not inferred.</p>}
+                      </GemInlineSection>
+                      <GemInlineSection title="Stock price / Alpaca chart" description="Saved close and volume evidence for this exact permanent program"
+                        open={isSectionOpen("chart")} onToggle={()=>toggleSection("chart")}>
+                        {r.programId ? <AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} />
+                          : <p className="subtle">Alpaca chart awaits a verified permanent Program ID.</p>}
+                      </GemInlineSection>
+                      <GemInlineSection title="Entry and exit scores" description="Weighted evidence, completeness and risk overrides"
+                        open={isSectionOpen("scores")} onToggle={()=>toggleSection("scores")}>
+                        <TechnicalPanel record={r}/>
+                      </GemInlineSection>
+                      <GemInlineSection title="Indicators / targets" description="Market indicators, goal comparison and source gaps"
+                        open={isSectionOpen("indicators")} onToggle={()=>toggleSection("indicators")}>
+                        <IndicatorParityTables programId={r.programId||"UNREGISTERED"} tech={r.technical}/>
+                        <PriorityIndicators record={r}/>
+                      </GemInlineSection>
+                    </div>
+                  </div>
+                </td>
+              </tr>}
+              </Fragment>)}</tbody></table>
             {!rows.length && <p className="subtle">No matching saved GEM candidates.</p>}
           </div>
-          {chosen && <div className="gem-profile">
-            <div className="sectionhead"><h3>{chosen.ticker} · {stated(chosen.drug)}</h3>
-              <button type="button" onClick={()=>{setMasterProgram(chosen.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
-              <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
-            <div className="gem-profile-masonry">
-              <div className="gem-profile-tile"><SourceDetails record={chosen} /></div>
-              <div className="gem-profile-tile">{chosen.programId ? <AlpacaStockChart programId={chosen.programId} ticker={chosen.ticker} /> : <p className="subtle">Alpaca chart awaits permanent Program ID</p>}</div>
-              <div className="gem-profile-tile"><IndicatorParityTables programId={chosen.programId||"UNREGISTERED"} tech={chosen.technical}/></div>
-              <div className="gem-profile-tile"><TechnicalPanel record={chosen} /></div>
-              <div className="gem-profile-tile"><PriorityIndicators record={chosen} /></div>
-            </div>
-          </div>}
+
         </div>
       </div>
       <details className="nested-expander">
