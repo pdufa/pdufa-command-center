@@ -41,7 +41,7 @@ def fixture(tmp_path, *, due=40, outcome="", stage="VERIFIED_SUCCESS", gate="ENT
         "pdufa_evidence_url": "https://www.sec.gov/Archives/edgar/data/1/x",
         "phase3_status": stage, "phase3_date": "2026-01-01",
         "trial_evidence_url": "https://issuer.example/results",
-        "outcome": outcome, "conflict_flag": "NONE",
+        "outcome": outcome, "conflict_flag": "NONE", "new_dilution_flag": "NO",
     }])
     write_csv(tmp_path, "step7_financing_review.csv", [{
         "Exact financing event": EVENT,
@@ -110,8 +110,8 @@ def test_second_financing_completed_requires_audited_exact_event(tmp_path):
     fixture(tmp_path, closed=False)
     rows, _ = build_queue(tmp_path, TODAY)
     assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
-    assert rows[0]["Trade entry gate"] == "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
-    assert rows[0]["Entry qualification"].startswith("REVIEW")
+    assert rows[0]["Trade entry gate"].startswith("ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL")
+    assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
     closed = {
         "event_key": EVENT,
         "second_financing_status": "CLOSED",
@@ -254,13 +254,14 @@ def test_sec_blocked_cannot_be_green_even_if_second_financing_closed(tmp_path):
     assert status["green_count"] == 0
 
 
-def test_unverified_second_financing_cannot_be_green(tmp_path):
+def test_unverified_second_financing_does_not_block_clinical_qualification(tmp_path):
     rows, status = build_queue(fixture(tmp_path, closed=False), TODAY)
-    assert rows[0]["Entry qualification"].startswith("REVIEW")
-    assert status["green_count"] == 0
+    assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
+    assert status["green_count"] == 1
+    assert rows[0]["Trade entry gate"].startswith("ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL")
 
 
-def test_old_second_financing_audit_cannot_be_green(tmp_path):
+def test_old_second_financing_audit_remains_unverified_but_optional(tmp_path):
     fixture(tmp_path)
     write_csv(tmp_path, "second_financing_status.csv", [{
         "event_key": EVENT, "second_financing_status": "CLOSED",
@@ -270,8 +271,9 @@ def test_old_second_financing_audit_cannot_be_green(tmp_path):
         "verified_as_of": (TODAY - timedelta(days=45)).isoformat(),
     }])
     rows, status = build_queue(tmp_path, TODAY)
-    assert rows[0]["Entry qualification"].startswith("REVIEW")
-    assert status["green_count"] == 0
+    assert rows[0]["Entry qualification"] == "GREEN — GATES ATTESTED"
+    assert rows[0]["2nd Financing Completed"] == "NOT VERIFIED"
+    assert status["green_count"] == 1
 
 
 def test_resolved_event_is_not_eligible(tmp_path):
@@ -357,8 +359,8 @@ class TestUnifiedPostPhase3Stage1(unittest.TestCase):
             test_no_new_entry_at_pdufa_minus_three,
             test_four_days_remaining_is_eligible_when_financing_verified,
             test_sec_blocked_cannot_be_green_even_if_second_financing_closed,
-            test_unverified_second_financing_cannot_be_green,
-            test_old_second_financing_audit_cannot_be_green,
+            test_unverified_second_financing_does_not_block_clinical_qualification,
+            test_old_second_financing_audit_remains_unverified_but_optional,
             test_resolved_event_is_not_eligible,
             test_missing_exact_financing_event_is_not_ticker_matched,
             test_trial_registry_posting_is_never_called_phase3_success,
