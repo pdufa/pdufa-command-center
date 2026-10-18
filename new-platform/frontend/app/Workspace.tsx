@@ -39,6 +39,7 @@ export type Candidate = {
   lastChecked?: string; approvalProbability?: string; checkStatus?: string;
   pValues?: string; evidenceSummary?: string; signal?: string;
   membershipStatus?: string; firstFound?: string; lastSeen?: string; candidateLinked?: boolean;
+  listAddedOn?: string; listRemovedOn?: string;
   technical?: ResearchTechnical;
 };
 type StageHistory = { id: string; programId?: string; ticker: string; drug: string; enteredOn: string; leftOn: string; reason: string; status: string; cycle: number };
@@ -337,6 +338,8 @@ function SourceDetails({ record }: { record: Candidate }) {
       <div className="trial-details">
         <div><strong>Permanent Program ID</strong><span className="permanent-id">{stated(record.programId,"REGISTRY UNAVAILABLE")}</span></div>
         <div><strong>Exact Pipeline source key</strong><span>{record.id}</span></div>
+        {record.listAddedOn !== undefined && <div><strong>Date added to this list</strong><span>{stated(record.listAddedOn,"NOT RECORDED")}</span></div>}
+        {record.listRemovedOn !== undefined && <div><strong>Date removed from this list</strong><span>{stated(record.listRemovedOn,"— Still listed")}</span></div>}
         <div><strong>Drug / indication</strong><span>{stated(record.drug)} / {stated(record.indication)}</span></div>
         <div><strong>ClinicalTrials.gov NCT</strong><span>{trialSheetUrl(record)
           ? <a href={trialSheetUrl(record)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">{trialId(record)} · OPEN FULL TRIAL SHEET ↗</a>
@@ -618,6 +621,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const rows = (group?.rows || []).filter(r => r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
+    // Track the exact current stage-membership cycle (including re-entry).
+    // No clinical readout, FDA date or scan-last-seen date is substituted.
+    const historyById = new Map<string,StageHistory[]>();
+    for(const period of group?.history||[]){
+      historyById.set(period.id,[...(historyById.get(period.id)||[]),period]);
+    }
+    const listDates = (record:Candidate) => {
+      const active = (historyById.get(record.id)||[]).filter(period=>!period.leftOn && period.status==="ACTIVE")
+        .sort((a,b)=>b.cycle-a.cycle)[0];
+      return {added:active?.enteredOn || record.firstFound || "",removed:""};
+    };
     const visibleCount = Math.min(rows.length,10);
     const firstVisible = Math.max(0,Math.min(focusedIndex-4,rows.length-visibleCount));
     const visibleRows = rows.slice(firstVisible,firstVisible+visibleCount);
@@ -707,7 +721,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div className="table-scroll gem-row-scroller" ref={gemTableScrollViewport} aria-label={(stage==="GEM"?"GEM":"GEM JR")+" candidates scrollable table"}>
             <table className="gem-source-parity-table">
               <thead><tr>
-                {["#","Program ID","W","T","Ticker","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
+                {["#","Program ID","W","T","Ticker","Date Added","Date Removed","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
               </tr></thead>
               <tbody>{visibleRows.map((r,i)=><Fragment key={r.id}><tr
                 ref={chosen?.id===r.id && selected[stage] ? highlightedGemRow : undefined}
@@ -731,6 +745,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
+                <td title="First confirmed appearance in this GEM-stage membership cycle">{stated(listDates(r).added,"NOT RECORDED")}</td>
+                <td title="No removal date while the exact program remains active in this list">—</td>
                 <td><span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
                   title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span></td>
                 <td>{stated(r.company,"—")}</td>
@@ -757,11 +773,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 </td>
               </tr>
               {chosen?.id===r.id && gemTrialExpanded[stage] && <tr className="gem-inline-detail-row">
-                <td colSpan={23}>
+                <td colSpan={25}>
                   <div className="gem-inline-detail-panel" aria-label={r.ticker+" expandable clinical trial and stock details"}>
                     <div className="gem-inline-detail-header">
                       <div><strong>TRIAL · {stated(r.drug,r.ticker)} · {r.ticker}</strong>
                         <small>{stated(r.programId)} · {stated(r.nctId,"NO EXACT NCT")} · {stated(r.indication)}</small>
+                        <small>Added to this list: {stated(listDates(r).added,"NOT RECORDED")} · Removed: — (active)</small>
                         <span>Selected gold row · expand any detail category below</span></div>
                       <button type="button" className="secondary" onClick={()=>setGemTrialExpanded(current=>({...current,[stage]:false}))}>
                         COLLAPSE TRIAL ↑
@@ -775,7 +792,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                       </GemInlineSection>
                       <GemInlineSection title="Stock / program details" description="Company, drug, trial identity, SEC financing, FDA evidence"
                         open={isSectionOpen("overview")} onToggle={()=>toggleSection("overview")}>
-                        <SourceDetails record={r}/>
+                        <SourceDetails record={{...r,listAddedOn:listDates(r).added,listRemovedOn:listDates(r).removed}}/>
                         <div className="gem-inline-detail-actions">
                           <button type="button" onClick={()=>{setMasterProgram(r.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
                           <button type="button" onClick={()=>selectCandidate(r,stage)}>Open autosaved checklist ↗</button>
@@ -807,10 +824,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </div>
       <details className="nested-expander">
         <summary>Historical stage transitions — recorded entries, departures and re-entries ({group?.history?.length||0})</summary>
-        <div className="table-scroll"><table><thead><tr><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Entry</th><th>Departure</th><th>Cycle</th><th>Reason / status</th></tr></thead>
+        <div className="table-scroll"><table><thead><tr><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Date Added</th><th>Date Removed</th><th>Cycle</th><th>Reason / status</th></tr></thead>
           <tbody>{(group?.history||[]).map((t,i)=><tr key={t.id+"|"+t.cycle+"|"+i}><td className="permanent-id">{stated(t.programId)}</td><td>{t.ticker}</td><td>{t.drug}</td><td>{stated(t.enteredOn,"Not recorded")}</td>
             <td>{stated(t.leftOn,"Currently listed")}</td><td>{t.cycle}</td><td>{stated(t.reason,t.status)}</td></tr>)}</tbody></table></div>
-        <p className="subtle small">Dates come only from complete published stage snapshots; no historical membership dates are inferred from Phase 3 or SEC evidence.</p>
+        <p className="subtle small">Date Added and Date Removed record source-verified GEM-stage list membership (including separate re-entry cycles), not trial registration, Phase 3, FDA, or financing dates. A blank removal date means this listing cycle is still active.</p>
       </details>
       <details className="nested-expander">
         <summary>Three-level clinical trials and evidence table · ticker → drug/program → trial</summary>
