@@ -56,10 +56,29 @@ const criteria:[string,string,(x:Trial)=>boolean|null][]=[
 ["institutions","Institutional accumulation verified",()=>null],
 ["sec","Fresh SEC source reconciliation",()=>null]
 ];
+type OptionalAlert = {key:string;title:string;goal:string;unit:string;options?:string[];number?:boolean};
+const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
+ {heading:"1. Identify Regulatory Fast-Track Indicators",items:[
+  {key:"priority_review",title:"Priority Review",goal:"6",unit:"month FDA review goal",number:true},
+  {key:"breakthrough_rmat",title:"Breakthrough Therapy / RMAT",goal:"Either designation verified",unit:"designation",options:["Either designation verified","Breakthrough Therapy","RMAT"]},
+  {key:"star_pilot",title:"STAR Pilot Program",goal:"FDA participation verified",unit:"participation",options:["FDA participation verified","FDA announcement","Official correspondence"]}]},
+ {heading:"2. Evaluate Clinical Trial Data Strength",items:[
+  {key:"statistical_significance",title:"Statistical Significance",goal:"0.05",unit:"maximum adjusted p-value",number:true},
+  {key:"two_trial",title:"The Two-Trial Paradigm",goal:"2",unit:"successful pivotal studies",number:true},
+  {key:"safety_cleanliness",title:"Safety Cleanliness",goal:"No material safety imbalance",unit:"safety criterion",options:["No material safety imbalance","SAE risk difference reviewed","FDA safety review favorable"]}]},
+ {heading:"3. Track Advisory Committee (AdCom) Scheduling",items:[
+  {key:"no_adcom",title:"No AdCom Scheduled",goal:"FDA confirms no meeting planned",unit:"AdCom evidence",options:["FDA confirms no meeting planned","No meeting announced (unconfirmed)"]},
+  {key:"favorable_adcom",title:"Favorable AdCom Vote",goal:"0.5",unit:"minimum favorable vote fraction (0–1)",number:true}]},
+ {heading:"4. Analyze Commercial Viability & Competition",items:[
+  {key:"orphan_unmet",title:"Unmet Medical Need / Orphan Status",goal:"FDA orphan designation confirmed",unit:"evidence",options:["FDA orphan designation confirmed","Unmet need independently supported","Both verified"]},
+  {key:"tam",title:"Large Addressable Market (TAM)",goal:"1000000000",unit:"minimum annual TAM in USD",number:true}]}
+];
+const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
 export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const [selected,setSelected]=useState<string[]>(()=>[...suggestedByStage[stage]]);
  const [result,setResult]=useState<GemScanResult|null>(null);
+ const [optionalGoals,setOptionalGoals]=useState<Record<string,string>>(()=>Object.fromEntries(OPTIONAL_ALL.map(a=>[a.key,a.goal])));
  const [open,setOpen]=useState(true);
  const [running,setRunning]=useState(false);
  const [message,setMessage]=useState("");
@@ -82,7 +101,12 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    // Paint SCANNING before the CPU-bound saved-data evaluation begins.
    await new Promise<void>(resolve=>setTimeout(resolve,25));
    try{
-     const chosen=criteria.filter(([key])=>selected.includes(key));
+     const chosen:[string,string,(x:Trial)=>boolean|null][]=criteria.filter(([key])=>selected.includes(key));
+     if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){if(selected.includes(item.key)){
+       // An operator target is not evidence. Until exact-program sourced fields are
+       // published and verified, this optional check must remain UNKNOWN.
+       chosen.push([item.key,item.title+" (goal: "+(optionalGoals[item.key]||"unset")+" "+item.unit+")",()=>null]);
+     }}
      const audits:GemCriterionAudit[]=chosen.map(([key,label])=>({key,label,passed:0,failed:0,unknown:0}));
      const passes:Trial[]=[],fails:Trial[]=[],needsReview:Trial[]=[];
      for(const record of pipeline){
@@ -112,12 +136,39 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  }
 
  return <section className="panel" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" qualification checklist"} style={{margin:"18px 0",padding:16,border:"2px solid #236847",borderRadius:10,background:"#f8fff8",color:"#163522"}}>
- <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} style={{width:"100%",textAlign:"left",fontWeight:800,fontSize:18,padding:10,background:"#d9efdf",color:"#123b25",border:"1px solid #6c9e78",borderRadius:6}}>{open?"▾":"▸"} {stage==="GEM"?"GEM":"GEM JR"} — 17 qualification requirements ({selected.length} selected)</button>
+ <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} style={{width:"100%",textAlign:"left",fontWeight:800,fontSize:18,padding:10,background:"#d9efdf",color:"#123b25",border:"1px solid #6c9e78",borderRadius:6}}>{open?"▾":"▸"} {stage==="GEM"?"GEM":"GEM JR"} — 17 qualification requirements{stage==="GEM_JR"?" + 10 optional evidence alerts":""} ({selected.length} selected)</button>
 
  <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} candidates</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Full source records available to scan</div></div></div>
  {open&&<><p>Every SCAN evaluates all {pipeline.length.toLocaleString("en-US")} currently loaded PIPELINE records against <strong>only your selected checkboxes</strong>. No boxes selected means an unrestricted scan. Phase 3 is not silently required; select its checkbox to enforce verified Phase 3 success. The source has {phase3ResearchCount.toLocaleString("en-US")} Phase 3/readout indicators, which are not the same as independently verified successful Phase 3 programs. Unknown source evidence is not treated as passing. Published data as of {asOf||"unverified"}; no live-market fetches, membership changes or trades.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:9,marginBottom:14}}>{criteria.map(([key,label])=><label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}</span></label>)}</div>
 
+ {stage==="GEM_JR"&&<div style={{marginBottom:14,border:"1px solid #b8d4c0",borderRadius:8,padding:12,background:"#ffffff"}}>
+   <h3 style={{margin:"0 0 7px"}}>Optional GEM JR evidence alerts</h3>
+   <p style={{fontSize:13,margin:"0 0 10px"}}>Optional checks are off by default. Enter your desired threshold in the boxed goal column, or choose a goal. This is your screening target, not a verified result. Checked alerts without sourced application-specific evidence report NEEDS VERIFICATION, never PASS.</p>
+   {OPTIONAL_GROUPS.map(group=><details key={group.heading} open style={{marginBottom:8,border:"1px solid #d6e7dc",borderRadius:5}}>
+     <summary style={{padding:9,fontWeight:700,cursor:"pointer"}}>{group.heading}</summary>
+     <div style={{overflowX:"auto",padding:8}}>
+       <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,minWidth:570}}>
+         <thead><tr><th style={{textAlign:"left",width:45}}>Use</th><th style={{textAlign:"left"}}>Indicator</th><th style={{textAlign:"left",width:"40%"}}>Goal / options</th><th style={{textAlign:"left"}}>Evidence</th></tr></thead>
+         <tbody>{group.items.map(item=><tr key={item.key}>
+           <td style={{padding:7,borderTop:"1px solid #e5eee7"}}><input aria-label={"Include "+item.title} type="checkbox" checked={selected.includes(item.key)} onChange={()=>toggle(item.key)} /></td>
+           <td style={{padding:7,borderTop:"1px solid #e5eee7",paddingLeft:15}}>{item.title}</td>
+           <td style={{padding:7,borderTop:"1px solid #e5eee7"}}>
+             <div style={{border:"1px solid #7a9c81",borderRadius:5,padding:6,background:"#f3faf5"}}>
+               {item.number?<input aria-label={item.title+" target"} type="number" step="any" min="0" value={optionalGoals[item.key]??item.goal}
+                 onChange={event=>{setOptionalGoals(current=>({...current,[item.key]:event.target.value}));setResult(null);onReset();}}
+                 style={{width:"100%",padding:5,boxSizing:"border-box"}}/>:
+                 <select aria-label={item.title+" goal"} value={optionalGoals[item.key]??item.goal} onChange={event=>{setOptionalGoals(current=>({...current,[item.key]:event.target.value}));setResult(null);onReset();}}
+                   style={{width:"100%",padding:5}}>{item.options?.map(choice=><option key={choice} value={choice}>{choice}</option>)}</select>}
+               <small style={{display:"block",marginTop:3}}>{item.unit}</small>
+             </div>
+           </td>
+           <td style={{padding:7,borderTop:"1px solid #e5eee7"}}>Needs verification</td>
+         </tr>)}</tbody>
+       </table>
+     </div>
+   </details>)}
+ </div>}
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!pipeline.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>Clear selections</button><button type="button" onClick={()=>selectRequirements([...suggestedByStage[stage]])} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:"#e4f3e8",fontWeight:700}}>SUGGESTED</button></div>
 
 
