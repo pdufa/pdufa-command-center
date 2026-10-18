@@ -161,7 +161,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  // the independent saved membership list or a ticker-level approximation.
  // Both passed and needs-verification candidates feed GEM; failed do not.
  const useGemJrSource=stage==="GEM"&&selected.includes("gem_jr_source");
- const juniorSource=useMemo(()=>resolveGemJrSource(gemJrScan,gemJrLivePreview,pipeline),[gemJrScan,gemJrLivePreview,pipeline]);
+ const juniorSource=useMemo(()=>resolveGemJrSource(gemJrScan,gemJrLivePreview??null,pipeline),[gemJrScan,gemJrLivePreview,pipeline]);
  const gemJrRows=juniorSource.rows;
  // Saved membership is evidence that GEM JR tracked the exact program,
  // not proof that the user's selected GEM JR screening checks have passed.
@@ -381,7 +381,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+"."}</p>
  {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}>
   <strong>{result.sourceKind==="GEM_JR"?"GEM JR scan":result.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox preview":result.sourceKind==="GEM_JR_UNSCREENED"?"Unscreened pipeline research universe":"Full PIPELINE"} evidence screen complete · Run #{result.runNumber}</strong>
-  <p><strong style={{fontSize:22}}>{(result.passes.length+result.needsReview.length).toLocaleString("en-US")} total combined candidates</strong> across all selected requirements (AND), counted once each. Of {result.baseline.toLocaleString("en-US")} {result.sourceKind==="GEM_JR"?"GEM JR scan candidates":result.sourceKind==="GEM_JR_SAVED"?"saved GEM JR programs (not re-scanned)":"PIPELINE records"} evaluated: {result.passes.length.toLocaleString("en-US")} verified matches · {result.needsReview.length.toLocaleString("en-US")} need evidence review · {result.fails.length.toLocaleString("en-US")} excluded. Completed at {new Date(result.evaluatedAt).toLocaleTimeString()}.</p>
+  <p><strong style={{fontSize:22}}>{(result.passes.length+result.needsReview.length).toLocaleString("en-US")} total combined candidates</strong> across all selected requirements (AND), counted once each. Of {result.baseline.toLocaleString("en-US")} {result.sourceKind==="GEM_JR"?"GEM JR scan candidates":result.sourceKind==="GEM_JR_LIVE"?"current GEM JR checkbox-screen candidates":result.sourceKind==="GEM_JR_UNSCREENED"?"unscreened full research universe":"PIPELINE records"} evaluated: {result.passes.length.toLocaleString("en-US")} verified matches · {result.needsReview.length.toLocaleString("en-US")} need evidence review · {result.fails.length.toLocaleString("en-US")} excluded. Completed at {new Date(result.evaluatedAt).toLocaleTimeString()}.</p>
   <p><strong>Applied requirements:</strong> {result.audits.length?result.audits.map(x=>x.label).join(" · "):"None (all records included)"}</p>
 
   {result.audits.some(a=>a.unknown===result.baseline)&&<p style={{fontWeight:700}}>Some selected requirements have no verifiable evidence for any of these records. They cannot produce verified passes until that evidence is available, regardless of how many times you scan.</p>}
