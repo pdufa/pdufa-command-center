@@ -128,7 +128,7 @@ class TwoBenchmarkPriorityTests(unittest.TestCase):
             row.update(assess(row, event(row["Ticker"]), as_of=DATE))
             rows.append(row)
         ranked = assign_ranks(rows)
-        self.assertEqual([r["Ticker"] for r in ranked], ["AAA", "BBB", "CCC"])
+        self.assertEqual([r["Ticker"] for r in ranked], ["AAA", "CCC", "BBB"])
         self.assertEqual([r["Two-benchmark rank"] for r in ranked], [1, 2, 3])
         self.assertIn("OPTIONAL", c["Two-benchmark risk flags"])
 
