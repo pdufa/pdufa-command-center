@@ -36,7 +36,10 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate daily monitor without brokerage credentials
-        run: python -m unittest discover -s tests -p 'test_alpaca_gem_daily_monitor.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_alpaca_gem_daily_monitor.py' -v
+          python scripts/alpaca_gem_daily_monitor.py --help > /dev/null
+          python scripts/alpaca_gem_watchlist.py --help > /dev/null
 
   daily-paper-watchlist:
     needs: regression
