@@ -112,7 +112,11 @@ def program(monkeypatch, fixture):
         "state":"CURRENT", "publishedScan":{"complete":True,"finishedAt":(NOW-timedelta(hours=1)).isoformat()}}}
     monkeypatch.setattr(source_workspace, "workspace", lambda: snapshot)
     monkeypatch.setattr(wt_research, "_context", lambda: context)
-    monkeypatch.setattr(entry, "history", lambda *args: bars)
+    # Include a real pre-readout anchor observation in the mocked history;
+    # without it, the Phase 3 AVWAP must remain unavailable rather than guess.
+    historic = [dict(date="2025-12-31", open=4.85, high=5., low=4.7,
+                     close=4.85, volume=200000., vwap=4.85)] + bars
+    monkeypatch.setattr(entry, "history", lambda *args: historic)
     monkeypatch.setattr(entry, "live_quote", lambda *args: {"bid":5.04,"ask":5.05,"asOf":NOW.isoformat(),"feed":"IEX"})
     return row, event, context, snapshot
 
