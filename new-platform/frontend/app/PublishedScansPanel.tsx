@@ -62,6 +62,8 @@ export default function PublishedScansPanel() {
   const [target, setTarget] = useState<ScanTarget>("ALL");
   const [runs, setRuns] = useState<ControlStatus | null>(null);
   const [runError, setRunError] = useState("");
+  const [refreshingRuns, setRefreshingRuns] = useState(true);
+  const [runFeedback, setRunFeedback] = useState("Checking GitHub Actions connection…");
   const [scanMessage, setScanMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [scanRefresh, setScanRefresh] = useState(0);
@@ -70,14 +72,37 @@ export default function PublishedScansPanel() {
   const [gmailSending, setGmailSending] = useState(false);
   useEffect(() => {
     const ctrl = new AbortController();
+    setRefreshingRuns(true);
+    setRunFeedback("Checking GitHub Actions connection…");
     fetch("/api/scans/control", { cache: "no-store", signal: ctrl.signal })
       .then(async response => {
         const data: ControlStatus = await response.json();
         if (!response.ok) throw new Error(data.error || "Scan status unavailable");
         return data;
       })
-      .then(data => { if (!ctrl.signal.aborted) { setRuns(data); setRunError(""); } })
-      .catch(() => { if (!ctrl.signal.aborted) { setRunError("Live GitHub run status unavailable"); } });
+      .then(data => {
+        if (ctrl.signal.aborted) return;
+        setRuns(data);
+        setRunError("");
+        const checkedAt = new Date().toLocaleTimeString();
+        setRunFeedback(
+          "GitHub Actions status refreshed at " + checkedAt + ". " +
+          (data.dispatchEnabled
+            ? "Dashboard token detected. GitHub run listing works; scan launching has not been tested."
+            : "No dashboard dispatch token detected. Manual GitHub controls remain available.")
+        );
+      })
+      .catch(error => {
+        if (ctrl.signal.aborted) return;
+        setRuns(null);
+        setRunError("Live GitHub run status unavailable");
+        setRunFeedback(
+          "GitHub status check failed at " + new Date().toLocaleTimeString() +
+          ": " + String(error instanceof Error ? error.message : error) +
+          ". No scan was started."
+        );
+      })
+      .finally(() => { if (!ctrl.signal.aborted) setRefreshingRuns(false); });
     return () => ctrl.abort();
   }, [scanRefresh]);
 
@@ -172,8 +197,9 @@ export default function PublishedScansPanel() {
           title={runs?.dispatchEnabled ? "Request a scan through GitHub Actions" : "Open the existing GitHub Actions scan form"}>
           {sending ? "REQUESTING…" : runs?.dispatchEnabled ? "START SELECTED SCAN" : "OPEN GITHUB TO RUN SCAN ↗"}
         </button>
-        <button type="button" className="secondary" onClick={() => setScanRefresh(x => x + 1)}>REFRESH RUN STATUS</button>
+        <button type="button" className="secondary" disabled={refreshingRuns} onClick={() => setScanRefresh(x => x + 1)}>{refreshingRuns ? "CHECKING GITHUB…" : "REFRESH RUN STATUS"}</button>
       </div>
+      <p className="subtle" role="status" aria-live="polite">{runFeedback}</p>
       {!runs?.dispatchEnabled && <p className="subtle">Direct dispatch from Vercel is not yet authorized. The primary button opens GitHub's authenticated Run workflow form; select branch <strong>main</strong>, action <strong>{action}</strong>, and scan <strong>{target}</strong>, then confirm Run workflow. To enable true one-click launch here, privately add server-only <code>PDUFA_GITHUB_TOKEN</code> in the Vercel Production environment and redeploy. Streamlit and the 10 PM Pacific nightly schedule remain unchanged.</p>}
       {runError && <p className="risk-line">{runError}</p>}
       {scanMessage && <p role="status">{scanMessage}</p>}
