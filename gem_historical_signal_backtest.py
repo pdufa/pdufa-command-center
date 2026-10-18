@@ -118,6 +118,11 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
     entry_i = i+1
     entry = bars[entry_i]["open"]*(1+slip_bps/10000)
     cutoff = pdufa-timedelta(days=exit_days)
+    scheduled = [y["session"] for y in bars if y["session"] <= cutoff]
+    scheduled_exit = max(scheduled) if scheduled else None
+    if scheduled_exit is None or (cutoff-scheduled_exit).days > 5:
+        return {"status":"BLOCKED", "reason":"MISSING_CUTOFF_PRICE_DATA",
+                "entry_score":score, "entry_price":round(entry,4)}
     stops = start_stop
     peak_close = bars[entry_i]["open"]
     worst_low = entry
@@ -127,6 +132,9 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
         b = bars[j]
         if b["session"] > cutoff:
             break
+        if j > entry_i and (b["session"]-bars[j-1]["session"]).days > 7:
+            return {"status":"BLOCKED", "reason":"UNAUDITED_PRICE_SESSION_GAP",
+                    "entry_score":score, "entry_price":round(entry,4)}
         if early_action and b["session"] >= early_action:
             return {"status":"CENSORED", "reason":"EARLY_FDA_ACTION",
                     "entry_score":score, "entry_price":round(entry,4)}
@@ -137,8 +145,7 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
         if b["low"] <= stops:
             reason = "STOP_OR_TRAILING_STOP"
             fill = min(b["open"], stops)  # adverse opening gap
-        elif b["session"] == max((y["session"] for y in bars
-                                 if y["session"] <= cutoff), default=None):
+        elif b["session"] == scheduled_exit:
             reason = "MANDATORY_PDUFA_CUTOFF"
             fill = b["close"]
         elif j > entry_i and j >= 19:
@@ -274,6 +281,9 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
         "price_rows":len(raw_bars),
         "variants":len(variants),
         "completed_trades":sum(r["status"]=="COMPLETED" for r in trials),
+        "unique_event_keys_with_completed_scenarios":len({
+            r["event_key"] for r in trials if r["status"]=="COMPLETED"
+        }),
         "blocked_trades":sum(r["status"]=="BLOCKED" for r in trials),
         "no_signal_trades":sum(r["status"]=="NO_SIGNAL" for r in trials),
         "censored_trades":sum(r["status"]=="CENSORED" for r in trials),
