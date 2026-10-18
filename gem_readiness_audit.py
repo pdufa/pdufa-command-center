@@ -309,7 +309,7 @@ def build_readiness_report(root, items, scan_status, discovery, discovery_status
         ),
         "two_benchmark_policy": (
             "VERIFIED PHASE 3 RESULTS RELEASE + SECOND SEPARATE POST-READOUT "
-            "FINANCING CLOSE; OTHER MEASURES ARE RANKING/RISK ONLY"
+            "SUCCESSFUL PHASE 3 REQUIRED; SECOND FINANCING OPTIONAL; CASH AND DILUTION RISKS RETAINED"
         ),
         "strict_entry_gate_shortlist_count": sum(
             row.get("GEM ALL ENTRY GATES") == "PASS — MANUAL REVIEW ONLY"
