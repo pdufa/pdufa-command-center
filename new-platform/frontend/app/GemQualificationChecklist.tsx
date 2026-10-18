@@ -1,11 +1,13 @@
 "use client";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import type {Candidate} from "./Workspace";
 
 type Trial = Candidate;
 export type GemScanResult = {
   asOf: string;
   evaluatedAt: string;
+  runNumber: number;
+  elapsedMs: number;
   baseline: number;
   sourceTotal: number;
   selected: string[];
@@ -47,38 +49,65 @@ const criteria:[string,string,(x:Trial)=>boolean|null][]=[
 ["sec","Fresh SEC source reconciliation",()=>null]
 ];
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
-export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,onScan}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;onScan:(result:GemScanResult)=>void}) {
+export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const [selected,setSelected]=useState<string[]>(()=>[...suggestedByStage[stage]]);
- const [result,setResult]=useState<{total:number;pass:number;fail:number;unknown:number;matches:Trial[]}|null>(null);
- const [open,setOpen]=useState(true);
- function toggle(key:string){setSelected(v=>v.includes(key)?v.filter(x=>x!==key):[...v,key]);setResult(null)}
-
- const baseline=pipeline.filter(completedPhase3);
- function scan(){
-   const passes:Trial[]=[],needsReview:Trial[]=[],fails:Trial[]=[];
-   for(const record of baseline){
-     const checks=criteria.filter(([key])=>selected.includes(key)).map(([, ,test])=>test(record));
-     if(checks.includes(false)){fails.push(record);continue}
-     if(checks.includes(null)){needsReview.push(record);continue}
-     passes.push(record);
-   }
-   const result:GemScanResult={
-     asOf, evaluatedAt:new Date().toISOString(), sourceTotal:pipeline.length,
-     baseline:baseline.length, selected:[...selected],passes,needsReview,fails
-   };
-   setResult({total:baseline.length,pass:passes.length,fail:fails.length,unknown:needsReview.length,matches:passes});
-   onScan(result);
+ const [result,setResult]=useState<{total:number;pass:number;fail:number;unknown:number;unrestricted:boolean;runNumber:number;elapsedMs:number;at:string}|null>(null);
+ const [running,setRunning]=useState(false);
+ const [runStatus,setRunStatus]=useState("");
+ const runSequence=useRef(0);
+ const baseline=selected.includes("phase3")?pipeline.filter(completedPhase3):pipeline;
+ const unrestricted=selected.length===0;
+ function changeSelections(next:string[]){
+   setSelected(next);setResult(null);setRunStatus("");onReset();
+ }
+ function toggle(key:string){changeSelections(selected.includes(key)?selected.filter(x=>x!==key):[...selected,key])}
+ async function scan(){
+   if(running||!pipeline.length)return;
+   setRunning(true);setResult(null);setRunStatus("Scanning the loaded PIPELINE…");onReset();
+   // Allow React to paint the running status before evaluating the full source dataset.
+   await new Promise<void>(resolve=>setTimeout(resolve,30));
+   const start=performance.now();
+   try{
+     const passes:Trial[]=[],needsReview:Trial[]=[],fails:Trial[]=[];
+     const tests=criteria.filter(([key])=>selected.includes(key)).map(([, ,test])=>test);
+     const candidates=selected.includes("phase3")?pipeline.filter(completedPhase3):pipeline;
+     for(const record of candidates){
+       let failed=false,unknown=false;
+       for(const test of tests){
+         const verdict=test(record);
+         if(verdict===false){failed=true;break}
+         if(verdict===null)unknown=true;
+       }
+       if(failed)fails.push(record);
+       else if(unknown)needsReview.push(record);
+       else passes.push(record);
+     }
+     const runNumber=++runSequence.current;
+     const evaluatedAt=new Date().toISOString();
+     const elapsedMs=Math.round(performance.now()-start);
+     const next:GemScanResult={
+       asOf,evaluatedAt,runNumber,elapsedMs,sourceTotal:pipeline.length,
+       baseline:candidates.length,selected:[...selected],passes,needsReview,fails
+     };
+     setResult({total:candidates.length,pass:passes.length,fail:fails.length,
+       unknown:needsReview.length,unrestricted:tests.length===0,runNumber,elapsedMs,at:evaluatedAt});
+     onScan(next);
+     setRunStatus("Run #"+runNumber+" completed at "+new Date(evaluatedAt).toLocaleTimeString()+ " from published PIPELINE data");
+   }catch(error){
+     setRunStatus("Scan failed: "+(error instanceof Error?error.message:"Unknown error"));
+   }finally{setRunning(false)}
  }
 
  return <section className="panel" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" qualification checklist"} style={{margin:"18px 0",padding:16,border:"2px solid #236847",borderRadius:10,background:"#f8fff8",color:"#163522"}}>
  <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} style={{width:"100%",textAlign:"left",fontWeight:800,fontSize:18,padding:10,background:"#d9efdf",color:"#123b25",border:"1px solid #6c9e78",borderRadius:6}}>{open?"▾":"▸"} {stage==="GEM"?"GEM":"GEM JR"} — 17 qualification requirements ({selected.length} selected)</button>
 
- <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} candidates</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{baseline.length.toLocaleString("en-US")}</strong><div>Phase 3 completed · current source evidence</div></div></div>
- {open&&<><p>Select evidence checks, then scan {baseline.length.toLocaleString("en-US")} completed Phase 3 programs from the full published PIPELINE ({pipeline.length.toLocaleString("en-US")} total records). Unknown evidence stays in Needs verification, never counted as a pass. The scan runs on current loaded published records, not new live-market or SEC requests. Source as of {asOf||"unverified"}. No stage membership changes or trading orders.</p>
+ <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} candidates</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{baseline.length.toLocaleString("en-US")}</strong><div>{selected.includes("phase3")?"Phase 3 screening records":"Full PIPELINE · no Phase 3 prerequisite"}</div></div></div>
+ {open&&<><p>Select checks and press SCAN as often as needed. With every checkbox cleared, the scan includes ALL {pipeline.length.toLocaleString("en-US")} published PIPELINE records with no restrictions. With Phase 3 checked, it assesses {baseline.length.toLocaleString("en-US")} records with Phase 3 completion/readout indicators (not necessarily independently verified success). Unknown evidence stays in Needs verification, never counted as a pass. Source as of {asOf||"unverified"}; this scan uses loaded data, not fresh SEC or market requests. No stage membership changes or orders.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:9,marginBottom:14}}>{criteria.map(([key,label])=><label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}</span></label>)}</div>
 
- <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={scan} disabled={!selected.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>SCAN {stage==="GEM"?"GEM":"GEM JR"}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setSelected([]);setResult(null)}}>Clear selections</button><button type="button" onClick={()=>{setSelected([...suggestedByStage[stage]]);setResult(null)}} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:"#e4f3e8",fontWeight:700}}>SUGGESTED</button></div>
+ <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!pipeline.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":result?"SCAN AGAIN ":"SCAN "}{running?"":stage==="GEM"?"GEM":"GEM JR"}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>changeSelections([])}>Clear selections</button><button type="button" onClick={()=>changeSelections([...suggestedByStage[stage]])} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:"#e4f3e8",fontWeight:700}}>SUGGESTED</button></div>
 
- {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}><strong>Full PIPELINE evidence screen complete</strong><p>{result.total} Phase 3 records evaluated · {result.pass} verified passes · {result.fail} failed · {result.unknown} need verification</p><p>Passing and needs-verification records are displayed in the candidate table below. The scan does not promote trials into saved GEM membership.</p></div>}
+ <div role="status" aria-live="polite" style={{marginTop:10,fontWeight:700}}>{runStatus|| (unrestricted?"No restrictions selected — SCAN will show the full PIPELINE.":"Ready to scan selected requirements.")}</div>
+ {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}><strong>Full PIPELINE evidence screen complete · Run #{result.runNumber}</strong><p>{result.total.toLocaleString("en-US")} {result.unrestricted?"unrestricted PIPELINE records":"candidate records"} evaluated · {result.pass.toLocaleString("en-US")} {result.unrestricted?"unrestricted matches":"passed selected checks"} · {result.fail.toLocaleString("en-US")} failed · {result.unknown.toLocaleString("en-US")} need verification · {result.elapsedMs} ms</p><p>Passing and needs-verification records are displayed in the candidate table below. The scan does not promote trials into saved GEM membership.</p></div>}
  </>}</section>
 }
