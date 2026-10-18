@@ -246,7 +246,9 @@ def assess(ticker,bars,events,*,positions=None,as_of=None,feed="sip"):
         result["reason"]="NO_PROGRAMMED_EXIT_WARNING"
         result["paper_position"]=True
         result["position_scope"]="ALPACA_PAPER_ONLY"
-        if m["two_closes_below_sma20"]:
+        if len(qualified)==1 and qualified[0][1].get("early_fda_action_date") and qualified[0][1]["early_fda_action_date"]<=cutoff:
+            result.update(signal="EXIT_WARNING",reason="EARLY_FDA_ACTION_KNOWN_REVIEW_TIMESTAMP")
+        elif m["two_closes_below_sma20"]:
             result.update(signal="EXIT_WARNING",reason="TWO_CLOSES_BELOW_SMA20")
         elif len(qualified)==1 and (
              qualified[0][1]["pdufa_date"]-cutoff).days<=3:
@@ -259,6 +261,9 @@ def assess(ticker,bars,events,*,positions=None,as_of=None,feed="sip"):
                       reason="PHASE3_TWO_FINANCINGS_AND_PDUFA_NOT_ALL_VERIFIED")
         return result
     _,dates=qualified[0]
+    if dates.get("early_fda_action_date") and dates["early_fda_action_date"]<=cutoff:
+        result.update(signal="ENTRY_BLOCKED",reason="FDA_ACTION_ALREADY_PUBLIC_OR_DATE_AMBIGUOUS")
+        return result
     rem=(dates["pdufa_date"]-cutoff).days
     sessions=sum(dates["second_financing_public_date"]<b["session"]<=cutoff for b in bars)
     risk_ok=(m["provisional_risk_pct"] is not None and
