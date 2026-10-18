@@ -13,17 +13,23 @@ selected={}
 for tier in ("GEM JR","GEM"):
  with st.expander(tier+" — select requirements",expanded=True):
   selected[tier]=[key for key,label in CRITERIA.items() if st.checkbox(label,key=tier+"_"+key,value=False)]
-if st.button("RUN BOTH SCANS — ALL TRIALS",type="primary"):
- st.session_state["gem_730_selected"]=selected
-if "gem_730_selected" in st.session_state:
+jr_button,gem_button,both_button=st.columns(3)
+run_jr=jr_button.button("SCAN GEM JR",use_container_width=True)
+run_gem=gem_button.button("SCAN GEM",use_container_width=True)
+run_both=both_button.button("SCAN BOTH — ALL 730",type="primary",use_container_width=True)
+if run_jr or run_gem or run_both:
+ tiers=["GEM JR","GEM"] if run_both else (["GEM JR"] if run_jr else ["GEM"])
+ st.session_state["gem_730_results"]={}
+ for tier in tiers:
+  passed,details,reasons=scan(rows,selected[tier])
+  st.session_state["gem_730_results"][tier]={"count":len(passed),"details":details,"reasons":reasons}
+ st.session_state["gem_730_selected"]={tier:list(selected[tier]) for tier in tiers}
+if "gem_730_results" in st.session_state:
+ results=st.session_state["gem_730_results"]
  config=st.session_state["gem_730_selected"]
- results={}
- for tier in ("GEM JR","GEM"):
-  passed,details,reasons=scan(rows,config[tier])
-  results[tier]={"count":len(passed),"details":details,"reasons":reasons}
- a,b=st.columns(2)
- a.metric("GEM JR passing",results["GEM JR"]["count"])
- b.metric("GEM passing",results["GEM"]["count"])
+ cols=st.columns(len(results))
+ for col,(tier,result) in zip(cols,results.items()):
+  col.metric(tier+" passing",result["count"])
  st.caption("Counts are independent; a trial may pass both. No filters = all trials pass. This is evidence screening, not a trade signal.")
  for tier in ("GEM JR","GEM"):
   with st.expander(tier+" — all trial outcomes",expanded=False):
