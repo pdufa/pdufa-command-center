@@ -65,16 +65,16 @@ SCAN_QUALIFIERS = {
     ),
     "Post-Financing": (
         "All Phase 3 scan qualifiers",
-        "Two separate post-Phase-3 financings with exact-event SEC evidence",
-        "Second financing independently marked closed; dilution gate verified",
-        "SEC cash-only runway >=12 months, using post-second-close cash evidence",
+        "Second financing OPTIONAL; preserve exact-event SEC evidence when available",
+        "Unresolved dilution independently checked (never inferred safe from missing evidence)",
+        "SEC cash-only runway >=12 months, using verified available cash",
         "Verified PDUFA date with at least 4 calendar days remaining (planned exit: PDUFA -3)",
     ),
     "PDUFA": (
         "All Phase 3 scan qualifiers",
         "Source-verified future PDUFA date: at least 4 days remaining; no arbitrary 90-day maximum",
-        "Second post-Phase-3 financing independently verified closed",
-        "Financing and unresolved-dilution evidence gates verified",
+        "Second financing OPTIONAL; review any offering, debt or warrants",
+        "Current SEC evidence and unresolved-dilution safeguards verified",
         "Rechecked SEC cash-only runway >=12 months",
         "Active unresolved FDA application (not decided, CRL or expired)",
     ),
@@ -204,10 +204,6 @@ def _reasons(record, event, stage, feed_current, sec_current):
     if stage == "Post-Financing":
         if record.get("PDUFA verification") != "VERIFIED — SOURCE LINKED":
             reasons.append("PDUFA date and planned -3 exit not source verified")
-        if str(record.get("2nd Financing Completed") or "") != "YES — VERIFIED (HISTORICAL)":
-            reasons.append("Second separate post-Phase-3 financing closure not verified")
-        if _number(record.get("Financing evidence /20")) != 20:
-            reasons.append("Exact-event SEC closing / unresolved-dilution clearance incomplete")
         if days is None or days < MIN_NEW_ENTRY_DAYS:
             reasons.append("No verified future trading window through PDUFA -3")
     if stage == "PDUFA":
@@ -216,10 +212,6 @@ def _reasons(record, event, stage, feed_current, sec_current):
             reasons.append("PDUFA date and FDA event not source-verified")
         if days is None or days < MIN_NEW_ENTRY_DAYS:
             reasons.append("Inside PDUFA -3 exit boundary or PDUFA date missing")
-        if str(record.get("2nd Financing Completed") or "") != "YES — VERIFIED (HISTORICAL)":
-            reasons.append("Verified post-Phase-3 second financing required")
-        if _number(record.get("Financing evidence /20")) != 20:
-            reasons.append("Verified financing / dilution clearance missing")
     if stage in ("Post-Financing", "PDUFA") and event:
         if str(event.get("new_dilution_flag") or "").strip().upper() in (
             "YES", "TRUE", "1", "ACTIVE", "UNRESOLVED", "UNKNOWN"
@@ -231,22 +223,21 @@ def _reasons(record, event, stage, feed_current, sec_current):
 def all_mandatory_entry_gates_pass(item):
     """Ultra-selective GEM shortlist; ranks alone never satisfy entry gates.
 
-    Requires attested Stage 1 GREEN, all three independently source-qualified
-    GEM research stages, actual independently checked second financing #2
-    close, and >=4 days until PDUFA -3. A PASS permits human due diligence
-    only and is NOT a buy order or predicted return.
+    Requires all three independently source-qualified research stages,
+    source-verified successful Phase 3, current SEC source health, cleared
+    dilution risk, cash runway and a safe PDUFA/market window. Closure of a
+    second financing is optional. PASS is manual research review, not a buy order.
     """
     days = item.get("Days to PDUFA")
     return bool(
         isinstance(days, int) and not isinstance(days, bool)
         and days >= MIN_NEW_ENTRY_DAYS
         and str(item.get("Phase 3 tracking") or "").startswith("TRACKING")
-        and item.get("Entry qualification") == "GREEN — GATES ATTESTED"
-        and item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
-        and bool(item.get("Verified 2nd financing close date"))
         and runway_passes(item)
-        and item.get("GEM trade entry gate")
-            == "POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER"
+        and item.get("GEM trade entry gate") in (
+            "POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER",
+            "ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL — NOT A TRADE ORDER",
+        )
         and all(item.get(stage + " qualifier") == "QUALIFIED — RESEARCH ONLY"
                 and type(item.get(stage + " score")) is int
                 for stage in STAGES)
@@ -358,9 +349,9 @@ def build_gem_scans(root="data", as_of=None):
             item[stage + " score"] = _score(item, stage) if not reasons else None
             item[stage + " rank"] = None
             item[stage + " GEM"] = "—"
-        # Every candidate may be researched from verified Phase 3 onwards,
-        # but NO NEW ENTRY is considered before second-financing CLOSURE.
-        # This is not broker permission or an automated buy recommendation.
+        # Successful Phase 3 starts research eligibility. A second financing
+        # is OPTIONAL; remaining source, cash, dilution and technical holds
+        # independently block any manual entry-review status.
         finance_closed = item.get("2nd Financing Completed") == "YES — VERIFIED (HISTORICAL)"
         postclose_qualified = any(item[k + " score"] is not None
                                   for k in ("Post-Financing", "PDUFA"))
@@ -372,7 +363,7 @@ def build_gem_scans(root="data", as_of=None):
             excluded=status.startswith("CLOSED") and
                      "PDUFA -3" not in status,
         )
-        if (finance_closed and source_status["feed_current"] and sec_current
+        if (source_status["feed_current"] and sec_current
                 and not runway_passes(item) and isinstance(days, int)
                 and days > TRADE_EXIT_DAYS_BEFORE_PDUFA):
             item["GEM trade entry gate"] = "HOLD — 12-MONTH CASH RUNWAY NOT VERIFIED"
@@ -384,10 +375,9 @@ def build_gem_scans(root="data", as_of=None):
             ticker, insider_signals.get(ticker),
             as_of=source_status.get("as_of") or as_of,
         ))
-        # Primary trading-candidate policy: only (1) released source-verified
-        # Phase 3 results and (2) the independently verified second financing
-        # closing are eligibility benchmarks. All other evidence is advisory
-        # ranking / risk context, not hidden third entry requirements.
+        # Positive research eligibility requires successful source-verified
+        # Phase 3. Second financing is OPTIONAL risk evidence; scores and cash,
+        # dilution, SEC and market gate holds remain separate.
         item.update(assess_two_benchmarks(
             item, event, as_of=source_status.get("as_of") or as_of,
             feed_current=source_status["feed_current"], sec_current=sec_current,
@@ -410,8 +400,8 @@ def build_gem_scans(root="data", as_of=None):
             item[stage + " rank"] = rank
             item[stage + " GEM"] = f"#{rank} ({item[stage + ' score']})"
 
-    # Entry shortlist is deliberately the INTERSECTION of all mandatory
-    # verified program / financing / market / FDA gates, not the UNION of
+    # Entry review shortlist intersects clinical, cash, source, market and
+    # FDA safety gates; a second closing is NOT required. This is not the UNION of
     # candidates ranked in one research stage.
     shortlist = sorted(
         (item for item in results if all_mandatory_entry_gates_pass(item)),
@@ -436,8 +426,8 @@ def build_gem_scans(root="data", as_of=None):
     details = dict(source_status)
     details["two_benchmark_candidate_count"] = len(two_benchmark_shortlist)
     details["two_benchmark_policy"] = (
-        "SOURCE-VERIFIED PHASE 3 RESULTS RELEASE + VERIFIED DISTINCT POST-READOUT "
-        "SECOND FINANCING CLOSE; OTHER FACTORS RANK / FLAG ONLY"
+        "SOURCE-VERIFIED SUCCESSFUL PHASE 3 REQUIRED; SECOND FINANCING "
+        "OPTIONAL; SEC CASH, DILUTION, MARKET AND FDA SAFETY GATES STILL APPLY"
     )
     details["two_benchmark_ranked"] = len(two_benchmark_shortlist)
     details["insider_form4_covered_rows"] = sum(
