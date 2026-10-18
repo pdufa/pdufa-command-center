@@ -5,7 +5,7 @@ import MasterChart from "./MasterChart";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
 import IndicatorParityTables from "./IndicatorParityTables";
-import WtTradingSections from "./WtTradingSections";
+import WtTopChecklist, {type TrackedWtProgram} from "./WtTopChecklist";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
@@ -263,7 +263,6 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
   return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
-    <WtTradingSections key={programId+"|"+ticker} programId={programId} ticker={ticker} record={record} tech={x}/>
     <IndicatorParityTables programId={programId} tech={x} signals={reply?.watchlistSignals}/>
     <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3 eligibility and does not authorize a trade. Second financing is optional.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
@@ -594,6 +593,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     });
     return m;
   }, [snapshot, pipeline]);
+
+  const trackedWtPrograms:TrackedWtProgram[]=[...new Set([...tags.watch,...tags.trade])].map(programId=>{
+    const record=byProgram.get(programId);
+    const saved=storedIdentities.find(x=>x.programId===programId);
+    return {programId,ticker:record?.ticker||saved?.ticker||"",drug:record?.drug||saved?.drug||"",record};
+  }).filter(x=>/^[A-Z][A-Z0-9.-]{0,12}$/.test(x.ticker));
 
   function toggleFilter(current: string[], item: string, setter: (value: string[])=>void) {
     setter(current.includes(item) ? current.filter(v => v !== item) : [...current, item]);
@@ -983,6 +988,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <h2>WT — Permanent Program ID Watchlist & Trading Research</h2>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
+      <WtTopChecklist programs={trackedWtPrograms}/>
       <div className="wt-panels">
       {(["watch","trade"] as const).map(kind=><section className="panel" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
