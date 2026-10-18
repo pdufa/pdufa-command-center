@@ -33,22 +33,24 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_gem_historical_signal_backtest.py' -v
       - name: Validate Alpaca history staging without credentials
         run: python -m unittest discover -s tests -p 'test_gem_2025_alpaca_review.py' -v
-      - name: Produce evidence-gated 2025 audit (no synthetic trades)
+      - name: Produce evidence-gated 2026 audit (market cap off, no synthetic trades)
         run: |
-          python gem_historical_signal_backtest.py --year 2025 --output-dir output/gem_backtest_2025
+          python gem_historical_signal_backtest.py --year 2026 --as-of 2026-10-17 --output-dir output/gem_backtest_2026
           python - <<'PY'
           import json
           from pathlib import Path
-          p=Path("output/gem_backtest_2025/readiness.json")
+          p=Path("output/gem_backtest_2026/readiness.json")
           audit=json.loads(p.read_text())
           assert "completed_trades" in audit
           assert "candidate_event_rows" in audit
-          print("2025 readiness:", json.dumps(audit, sort_keys=True))
+          assert audit["year"] == 2026
+          assert audit["market_cap_filter_active"] is False
+          print("2026 readiness:", json.dumps(audit, sort_keys=True))
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: gem-2025-research-audit
-          path: output/gem_backtest_2025/
+          name: gem-2026-research-audit
+          path: output/gem_backtest_2026/
           if-no-files-found: warn
           retention-days: 30
