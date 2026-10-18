@@ -83,3 +83,25 @@ https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2025
 
 Alpaca daily historical bar parameters:
 https://docs.alpaca.markets/us/reference/stockbars
+
+
+## Historical starting queue and Alpaca staging
+
+A separate, NONTRADABLE 13-row initial research queue is available at
+data/gem_2025_pdufa_research_queue.csv. These are sourced candidates for
+verification, not a complete PDUFA population and not eligible GEM trades.
+The PDUFA dates and issuer associations require date-by-date original
+disclosure review; no rows are auto-promoted to the historical event template.
+
+After the relevant historical ticker is authenticated, authorized users can
+stage market bars using environment variables APCA_API_KEY_ID and
+APCA_API_SECRET_KEY (or ALPACA_API_KEY and ALPACA_SECRET_KEY):
+
+    python scripts/fetch_gem_2025_alpaca_review.py --symbols LENZ,CAPR --start 2024-07-01 --end 2026-01-01 --asof 2025-12-31 --output output/gem_2025_alpaca_review.csv
+
+The staging CSV is marked PENDING_TICKER_AND_SPLIT_AUDIT deliberately. Only
+after individual verification against ticker history, SEC issuer identity,
+provider completeness, and corporate actions may the required existing
+backtest field be set to SPLIT_ADJUSTED_VERIFIED. The script prints neither
+secrets nor raw responses. GitHub Actions unit tests use fake responses and
+require no Alpaca credentials.
