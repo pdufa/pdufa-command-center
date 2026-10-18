@@ -221,7 +221,7 @@ class PotentialGEMTests(unittest.TestCase):
             # A known mismatched issuer for the same trial remains blocked.
             self.assertNotIn("WRONG", {x["Ticker"] for x in active + held})
             orphan = next(x for x in active if x["Ticker"] == "ORPH")
-            self.assertEqual(orphan["Pipeline ID"], "TRIAL|NCT33333333")
+            self.assertEqual(orphan["Pipeline ID"], "TRIAL|NCT33333333|ISSUER|ORPH")
             self.assertEqual(orphan["Pipeline linkage"],
                              "PENDING PIPELINE INTAKE — RESEARCH ONLY")
             self.assertEqual(orphan["SEC documents rechecked"], 0)
