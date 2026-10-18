@@ -20,12 +20,20 @@ export async function GET(req: NextRequest) {
       cache: "no-store",
       signal: AbortSignal.timeout(30000)
     });
-    if (!response.ok) throw new Error("Upstream source unavailable");
+    if (!response.ok) {
+      const reason = response.status === 503
+        ? "Backend returned 503 (database unavailable, program registry unavailable, or source processing failed)"
+        : response.status === 401 || response.status === 403
+        ? "Backend rejected internal API authentication"
+        : "Backend returned HTTP " + response.status;
+      return NextResponse.json({ error: reason, sourceHealth: { state: "UNAVAILABLE" } },
+        { status: 503, headers: { "Cache-Control": "private, no-store" } });
+    }
     const data = await response.json();
     if (!Array.isArray(data.pipeline) ||
         !data.sourceHealth?.pipelineSourceParity ||
         data.pipeline.length !== data.sourceHealth.pipelineSourceParity.exactPrograms) {
-      throw new Error("PIPELINE source count not verified by backend");
+      throw new Error("PIPELINE count or parity metadata failed validation");
     }
     // The full published-source 9k+ trial universe is too large for
     // Vercel's uncompressed Serverless Function response limit. Send
@@ -39,11 +47,15 @@ export async function GET(req: NextRequest) {
         "Vary": "Accept-Encoding",
       }
     });
-  } catch {
+  } catch (cause) {
     // Do not silently substitute an obsolete tiny bundle. Old source
     // snapshots made the Pipeline total look wrong even after a backend fix.
     return NextResponse.json({
-      error: "Pipeline temporarily unavailable; current published-source count could not be verified",
+      error: cause instanceof Error && cause.message === "PIPELINE count or parity metadata failed validation"
+        ? "PIPELINE data and source totals disagree"
+        : cause instanceof Error && cause.name === "TimeoutError"
+        ? "Backend request timed out after 30 seconds"
+        : "Backend unreachable or invalid workspace response",
       sourceHealth: { state: "UNAVAILABLE" }
     }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
   }
