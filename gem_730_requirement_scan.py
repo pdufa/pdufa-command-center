@@ -23,6 +23,20 @@ CRITERIA={
  "sec_fresh":"Current SEC verification",
  "clinical_fresh":"Current clinical feed"
 }
+# Presentation-only sections, used by both GEM and GEM JR. A criterion may
+# appear in exactly one section; selected keys and the underlying scan are
+# unchanged. PDUFA source verification stays with the regulatory checks,
+# while the optional 30-90-day TRADING window is grouped with market timing.
+TRADING_CRITERION_KEYS=(
+ "cash_runway","dilution","price_base","market_quote","pdufa_window",
+ "hedge_funds","insiders"
+)
+TRIAL_CRITERIA={key:label for key,label in CRITERIA.items()
+                if key not in TRADING_CRITERION_KEYS}
+TRADING_CRITERIA={key:CRITERIA[key] for key in TRADING_CRITERION_KEYS}
+assert set(TRIAL_CRITERIA).isdisjoint(TRADING_CRITERIA)
+assert set(TRIAL_CRITERIA)|set(TRADING_CRITERIA)==set(CRITERIA)
+
 def read_rows(root="data"):
  p=Path(root)
  with (p/"phase3_all_years_300m_10b_trials.csv").open(encoding="utf-8-sig",newline="") as f: census=list(csv.DictReader(f))
