@@ -40,6 +40,18 @@ SUMMARY_FIELDS = (
     "profit_factor", "mean_max_adverse_excursion_pct", "status",
 )
 
+RETURN_FIELDS = (
+    "event_key", "ticker", "status", "reason",
+    "score_threshold", "volume_threshold", "base_atr_width", "exit_days",
+    "entry_signal_date", "entry_date", "gross_entry_open", "entry_price",
+    "exit_date", "gross_exit_fill", "exit_price", "exit_reason",
+    "holding_sessions", "gross_return_pct", "net_return_pct",
+    "net_profit_per_share_usd", "hypothetical_investment_usd",
+    "hypothetical_shares", "hypothetical_cost_usd",
+    "hypothetical_profit_loss_usd", "return_on_allocation_pct",
+)
+
+
 
 def atr_at(bars, i, length=14):
     """ATR known only after session i closes."""
@@ -448,6 +460,7 @@ def main(argv=None):
     dest.mkdir(parents=True,exist_ok=True)
     for name, fields, rows in (
         ("per_event_signals.csv",TRADE_FIELDS,trials),
+        ("entry_exit_returns.csv",RETURN_FIELDS,trials),
         ("parameter_grid_summary.csv",SUMMARY_FIELDS,summaries),
     ):
         with (dest/name).open("w",encoding="utf-8",newline="") as f:
