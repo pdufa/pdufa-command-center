@@ -160,6 +160,31 @@ class SignalResearchTests(unittest.TestCase):
                        exit_days=(3,))
         self.assertEqual(trades[0]["reason"],"UNAUDITED_PRICE_SESSION_GAP")
 
+    def test_market_cap_filter_off_for_2026_as_requested(self):
+        trades, summary, audit=run([],[],year=2026,
+                                    market_caps=None)
+        self.assertFalse(audit["market_cap_filter_active"])
+        self.assertIsNone(audit["market_cap_min_usd"])
+        self.assertEqual(audit["completed_trades"],0)
+        self.assertEqual(len(summary),54)
+
+    def test_market_cap_filter_remains_opt_in_for_future(self):
+        unfiltered,_,audit=run(
+            [event()],bars(),year=2025,market_caps=None,
+            score_thresholds=(60,),volume_thresholds=(1.5,),
+            base_widths=(3,),exit_days=(3,))
+        self.assertNotEqual(unfiltered[0]["reason"],
+                            "MISSING_VERIFIED_HISTORICAL_MARKET_CAP")
+        self.assertFalse(audit["market_cap_filter_active"])
+        filtered,_,audit=run(
+            [event()],bars(),year=2025,market_caps=[],
+            score_thresholds=(60,),volume_thresholds=(1.5,),
+            base_widths=(3,),exit_days=(3,))
+        self.assertEqual(filtered[0]["status"],"BLOCKED")
+        self.assertEqual(filtered[0]["reason"],
+                         "MISSING_VERIFIED_HISTORICAL_MARKET_CAP")
+        self.assertTrue(audit["market_cap_filter_active"])
+
     def test_no_future_calendar_events(self):
         x=event()
         x["pdufa_date"]="2027-09-30"
