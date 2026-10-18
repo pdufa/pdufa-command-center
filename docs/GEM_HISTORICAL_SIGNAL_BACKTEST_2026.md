@@ -41,3 +41,19 @@ was verified on synthetic test fixtures but had zero audited 2025 trades;
 there is therefore no verified 2025 performance to claim 2026 beat.
 
 Research-only; no trades or changes to active GEM/GEM JR scores or scan timing.
+
+## Entry-to-exit return report
+
+The 2026 audit also writes `entry_exit_returns.csv` with one row for each
+candidate and parameter setting. For completed simulated trades it shows:
+entry and exit dates, observed entry OPEN and exit fill, slippage-adjusted
+buy/sell prices, gross return %, **net return %**, net profit per share,
+number of hypothetical whole shares affordable with $10,000, dollars actually
+invested, dollar profit/loss and % return on the original $10,000 allocation.
+Change the hypothetical per-trade allocation using `--investment-usd 10000`.
+The unused cash earns zero return and no fees/taxes are modelled. The net
+return includes 10 basis points of slippage per leg by default. These are
+**per-individual-trade illustrations, not simultaneous portfolio totals**.
+Returns remain empty for BLOCKED/NO_SIGNAL/CENSORED rows, which must not
+be counted as winning trades. Data templates are currently unpopulated, so
+no actual 2026 historical returns are established yet.
