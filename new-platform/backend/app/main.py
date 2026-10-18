@@ -313,7 +313,7 @@ async def lifespan(app: FastAPI):
                 for row in member_rows
             )
             logging.getLogger(__name__).warning(
-                "PDUFA_STREAMLIT_CHART_CHECK saved_eod_series=%d/%d same_gem_chart_source=True",
+                "PDUFA_CHART_SOURCE_CHECK saved_eod_series=%d/%d same_gem_chart_source=True",
                 logged_charts, len(member_rows),
             )
             logging.getLogger(__name__).warning(
@@ -322,7 +322,7 @@ async def lifespan(app: FastAPI):
             )
             exact_programs = published["pipeline"]
             same_ids = {r["id"] for r in exact_programs}
-            source_parity = health.get("streamlitPipelineParity", {})
+            source_parity = health.get("pipelineSourceParity", {})
             if (len(same_ids) != len(exact_programs)
                     or len(exact_programs) != source_parity.get("exactPrograms")
                     or len(exact_programs) != (source_parity.get("clinicalAndResults", 0)
@@ -331,7 +331,7 @@ async def lifespan(app: FastAPI):
             from collections import Counter
             stage_distribution = Counter(r.get("stage", "Unknown") for r in exact_programs)
             logging.getLogger(__name__).warning(
-                "PDUFA_STREAMLIT_PIPELINE_PARITY status=PASS total=%d registered_and_results=%d "
+                "PDUFA_PIPELINE_SOURCE_PARITY status=PASS total=%d registered_and_results=%d "
                 "regulatory=%d phase3=%d phase3_results=%d unknown=%d",
                 len(exact_programs), source_parity["clinicalAndResults"],
                 source_parity["regulatoryPrograms"],
