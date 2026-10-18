@@ -610,3 +610,170 @@ button.secondary { background: white; color: #172b1b; }
 .pdufa-step-info small{font-size:10px;color:#667980;overflow-wrap:anywhere;}
 @media(max-width:1050px){.pdufa-stage-flow{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:8px}.pdufa-stage-arrow{display:none;}}
 @media(max-width:640px){.pdufa-progress-top{padding:15px 13px}.pdufa-progress-controls{width:100%}.pdufa-progress-controls label,.pdufa-progress-controls select{width:100%}.pdufa-progress-hero{grid-template-columns:1fr;padding:12px}.pdufa-stage-flow{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 12px 12px}.pdufa-stage-card{min-height:113px}.pdufa-time-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pdufa-task-count{display:none}.pdufa-progress-tasks{padding:12px}.pdufa-progress-runline a{margin-left:0}.pdufa-progress-runline{padding:10px 12px}.pdufa-gauge-circle{width:162px;}}
+
+
+/* Fluid dashboard — uses the complete viewport on ultrawide / dual-monitor windows.
+   Cards fill the next open column; compact layouts stack without losing controls. */
+:root {
+  --fluid-gutter: clamp(12px, 1.15vw, 42px);
+  --fluid-gap: clamp(10px, .9vw, 26px);
+}
+.shell {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0 auto;
+  padding: var(--fluid-gutter);
+  padding-bottom: clamp(36px, 4vw, 70px);
+}
+.head, .head > div, .migration-workspace, .pipeline-page, .gems-page,
+.gem-section, .gem-body, .gem-table-panel, .gem-profile,
+.wt-page, .wt-stock, .wt-research-column, .panel, .layout > *,
+.table-scroll, .gold-reference-scroller { min-width: 0; }
+.head { flex-wrap: wrap; }
+.head > div { flex: 1 1 360px; }
+.head h1, .head .subtle { overflow-wrap: anywhere; }
+.sectionhead > * { min-width: 0; }
+.migration-workspace .sectionhead { gap: 10px; }
+.migration-workspace button { max-width: 100%; overflow-wrap: anywhere; }
+.worknav, .worktop { min-width: 0; }
+.worknav button, .worktop button { min-width: 0; white-space: normal; }
+.workspace-stage { overflow-wrap: anywhere; }
+.workspace-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+  gap: var(--fluid-gap);
+  align-items: stretch;
+  margin: 14px 0 20px;
+}
+.workspace-overview > * {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.workspace-overview .master-quicklink { gap: 12px; align-content: start; }
+.workspace-overview .workspace-banner { line-height: 1.5; }
+.gems-two-blocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 820px), 1fr));
+  gap: var(--fluid-gap);
+  align-items: start;
+}
+.gems-two-blocks .gem-section { min-width: 0; }
+.wt-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 900px), 1fr));
+  align-items: start;
+  gap: var(--fluid-gap);
+  margin: 16px 0;
+}
+.wt-page .wt-panels > .panel { min-width: 0; margin: 0; }
+.wt-panels .wt-stock { min-width: 0; }
+.table-scroll, .pipeline-data-scroll, .priority-scroll {
+  max-width: 100%;
+  min-width: 0;
+  overscroll-behavior-x: contain;
+}
+.gold-master-poster:not(.gold-master-readable) { width: max(100%, 1770px); }
+
+/* On ultrawide monitors, give the goals a sidebar and the data table the
+   remaining fluid space. Between phone and ultrawide, the table gets full width. */
+@media (min-width: 2300px) {
+  .gems-two-blocks .gem-body {
+    grid-template-columns: minmax(290px, .45fr) minmax(0, 2.6fr);
+  }
+  .gems-two-blocks .gem-profile .trial-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 950px) {
+  .gems-two-blocks .gem-body { grid-template-columns: minmax(0, 1fr); }
+  .wt-panels { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .shell {
+    padding: 12px 10px 38px;
+  }
+  .topline { font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+  .head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: start;
+    margin: 10px 0 14px;
+  }
+  .head > div { min-width: 0; }
+  .head h1 { font-size: clamp(21px, 6vw, 29px); line-height: 1.12; }
+  .head .subtle { font-size: 12px; }
+  .head > button { min-width: 0; padding: 9px 10px; font-size: 12px; }
+  .banner { padding: 10px 12px; font-size: 13px; overflow-wrap: anywhere; }
+  .migration-workspace { margin: 12px 0 28px; }
+  .worktop {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    align-items: stretch;
+  }
+  .worktop > button { width: 100%; min-height: 44px; padding: 9px 6px; font-size: 12px; }
+  .worktop > button:nth-of-type(3) { grid-column: 1 / -1; }
+  .worktop > .workspace-stage {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin: 0;
+    line-height: 1.4;
+    font-size: 11px;
+  }
+  .worknav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding-bottom: 9px;
+  }
+  .worknav > button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 6px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .workspace-overview, .gems-two-blocks, .wt-panels { grid-template-columns: minmax(0, 1fr); }
+  .workspace-overview { gap: 9px; margin: 12px 0 16px; }
+  .workspace-overview .master-quicklink { display: grid; grid-template-columns: 1fr; }
+  .workspace-overview .master-quicklink button { width: 100%; min-height: 44px; }
+  .workspace-banner { padding: 11px; }
+  .source-health { padding: 11px; }
+  .migration-workspace .panel { padding: 12px; }
+  .migration-workspace .sectionhead { align-items: stretch; flex-direction: column; }
+  .migration-workspace .sectionhead > label { width: 100%; }
+  .migration-workspace .sectionhead input { max-width: 100%; width: 100%; min-width: 0; }
+  .counter, .gem-count { white-space: normal; overflow-wrap: anywhere; }
+  .filter-columns, .count-panels, .wt-stock { grid-template-columns: minmax(0, 1fr); }
+  .filter-checks { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
+  .pipeline-row { gap: 10px; }
+  .pipeline-row label, .pipeline-row input:not([type="checkbox"]) { width: 100%; min-width: 0; }
+  .pipeline-row label.cap-filter { width: 100%; overflow-wrap: anywhere; }
+  .pipeline-actions > button { flex: 1 1 100%; width: 100%; }
+  .gem-heading, .gem-body { padding: 11px; }
+  .gem-criteria, .gem-table-panel, .gem-profile { padding: 9px; }
+  .goal-grid { grid-template-columns: minmax(0, .9fr) minmax(0, 1fr) minmax(0, 1.3fr); }
+  .wt-identity, .wt-research-column, .chart-wrap { min-width: 0; }
+  .wt-identity > button { width: 100%; min-height: 42px; }
+  .gold-control-bar { padding: 10px; gap: 10px; }
+  .gold-selectors { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+  .gold-selectors label, .gold-selectors input, .gold-selectors select { width: 100%; max-width: 100%; min-width: 0; }
+  .gold-view-buttons { width: 100%; }
+  .gold-view-buttons > button { flex: 1 1 auto; min-height: 42px; }
+  .trial-section-picker select { width: 100%; min-width: 0; }
+  .pdufa-progress { min-width: 0; }
+  .pdufa-progress-controls select { min-width: 0; }
+  .pdufa-progress-refresh { white-space: normal; }
+  .checklist-workbench .layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 370px) {
+  .shell { padding: 10px 8px 30px; }
+  .head h1 { font-size: 20px; }
+  .head > button { font-size: 11px; padding: 8px; }
+  .worknav > button { font-size: 11px; padding: 9px 4px; }
+  .goal-grid { gap: 3px; font-size: 9px; }
+}
