@@ -1740,3 +1740,183 @@ button.secondary { background: white; color: #172b1b; }
   .pipeline-filters-compact .filter-checks {max-height:160px;grid-template-columns:minmax(0,1fr);}
   .pipeline-filter-details > summary {padding:9px;}
 }
+
+
+/* GEM + GEM JR: prominent source-based eligibility and distinct weighted
+   evidence completeness, without inferring an approval probability or trade. */
+.gem-decision-band {
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(310px,.85fr);
+  gap:clamp(10px,1.1vw,20px);
+  align-items:center;
+  margin:10px 0 12px;
+  padding:clamp(11px,1vw,18px);
+  background:#f5faf6;
+  border:2px solid #abc7b4;
+  border-radius:10px;
+  color:#1b3930;
+}
+.gem-purple .gem-decision-band {
+  background:#faf7ff;
+  border-color:#b4a5d2;
+}
+.gem-decision-summary {min-width:0;}
+.gem-decision-program {
+  display:block;
+  font-size:11px;
+  font-weight:750;
+  letter-spacing:.02em;
+  margin:0 0 8px;
+  overflow-wrap:anywhere;
+}
+.gem-eligibility {
+  display:inline-flex;
+  align-items:center;
+  max-width:100%;
+  min-width:0;
+  border-radius:6px;
+  padding:7px 10px;
+  border:1px solid transparent;
+  font-size:clamp(12px,.85vw,15px);
+  font-weight:850;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.gem-eligibility-review {
+  color:#254f65;
+  background:#e6f4ff;
+  border-color:#9cc6dd;
+}
+.gem-eligibility-hold {
+  color:#73520c;
+  background:#fff1ce;
+  border-color:#d9bc75;
+}
+.gem-eligibility-warning {
+  color:#892b2a;
+  background:#ffe7e6;
+  border-color:#dda2a1;
+}
+.gem-decision-summary p {
+  margin:9px 0 7px;
+  font-size:12px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.gem-decision-summary > small {
+  display:block;
+  font-size:11px;
+  line-height:1.45;
+  color:#4c6257;
+  overflow-wrap:anywhere;
+}
+.gem-decision-evidence {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  align-items:stretch;
+  min-width:0;
+}
+.gem-evidence-meter {
+  min-width:0;
+  width:100%;
+  padding:10px;
+  border:1px solid #b9d2c4;
+  border-radius:8px;
+  background:#fff;
+  color:#183e2b;
+}
+.gem-evidence-meter-label {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  min-width:0;
+  font-size:11px;
+  line-height:1.3;
+}
+.gem-evidence-meter-label strong {
+  font-weight:800;
+  overflow-wrap:anywhere;
+}
+.gem-evidence-meter-label > span {
+  font-weight:850;
+  font-variant-numeric:tabular-nums;
+  white-space:normal;
+  font-size:13px;
+}
+.gem-evidence-meter-track {
+  position:relative;
+  width:100%;
+  height:10px;
+  overflow:hidden;
+  border-radius:100px;
+  margin:10px 0 8px;
+  background:#e7ecea;
+  border:1px solid #d4e0da;
+}
+.gem-evidence-meter-track > span {
+  display:block;
+  height:100%;
+  background:#4d9378;
+  border-radius:100px;
+  transition:width .18s ease;
+}
+.gem-evidence-meter > small {
+  display:block;
+  font-size:10px;
+  line-height:1.5;
+  color:#506a60;
+  overflow-wrap:anywhere;
+}
+.gem-evidence-meter-small {
+  min-width:125px;
+  padding:5px 6px;
+  border-radius:5px;
+  border-color:#dbe4de;
+}
+.gem-evidence-meter-small .gem-evidence-meter-label {
+  font-size:10px;
+  flex-wrap:nowrap;
+}
+.gem-evidence-meter-small .gem-evidence-meter-label > span {font-size:11px;}
+.gem-evidence-meter-small .gem-evidence-meter-track {
+  margin:5px 0 0;
+  height:7px;
+}
+.gem-table-eligibility {
+  display:inline-block;
+  max-width:225px;
+  min-width:135px;
+  border:1px solid #d1dae4;
+  border-radius:6px;
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:850;
+  line-height:1.4;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.gem-source-parity-table td .gem-evidence-meter,
+.gem-source-parity-table td .gem-table-eligibility {
+  vertical-align:middle;
+}
+.gem-source-parity-table th:nth-child(6) {min-width:175px;}
+.gem-source-parity-table th:nth-child(18),
+.gem-source-parity-table th:nth-child(20) {min-width:135px;}
+@media(max-width:1100px) {
+  .gem-decision-band {grid-template-columns:minmax(0,1fr);}
+}
+@media(max-width:720px) {
+  .gem-decision-band {padding:10px;gap:9px;}
+  .gem-decision-evidence {grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  .gem-evidence-meter {padding:8px;}
+  .gem-eligibility {font-size:12px;padding:6px 8px;}
+}
+@media(max-width:390px) {
+  .gem-decision-evidence {grid-template-columns:minmax(0,1fr);}
+}
+@media(prefers-reduced-motion:reduce) {
+  .gem-evidence-meter-track > span {transition:none;}
+}
