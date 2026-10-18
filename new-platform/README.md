@@ -15,8 +15,11 @@ independent of the current regulatory stage; Phase 2/3 stays separate.
 safety, financing dates, regulatory milestones, runway, dilution, evidence
 quality, and list membership. Missing evidence does not pass a checked
 qualification. Closing filters use saved reviewed historical evidence; current
-source freshness is independently selectable. Filtering does not change GEM
-eligibility, list membership, or entry/exit rules.
+source freshness is independently selectable. The optional financing checkbox
+narrows displayed Pipeline matches but is NOT a GEM/GEM JR eligibility gate.
+GEM research requires successful exact-program Phase 3 evidence. Manual entry
+signals also require fresh sourced cash runway, dilution clearance, PDUFA timing,
+and technical confirmation. No orders are placed.
 
 ## Architecture
 
