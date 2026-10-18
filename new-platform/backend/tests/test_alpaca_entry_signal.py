@@ -100,7 +100,8 @@ def program(monkeypatch, fixture):
     event = {"event_key":"test", "ticker":"TEST", "phase3_date":"2026-01-01",
              "phase3_status":"VERIFIED_SUCCESS", "trial_evidence_url":"https://issuer.test/readout",
              "nct_id":"NCT00000001", "pdufa_date":"2026-12-15",
-             "pdufa_confirmation":"VERIFIED", "pdufa_evidence_url":"https://issuer.test/pdufa"}
+             "pdufa_confirmation":"VERIFIED", "pdufa_evidence_url":"https://issuer.test/pdufa",
+             "new_dilution_flag":"NO"}
     context = {"events":{"test":event}, "financing":{"test":{
         "first_financing_date":"2026-02-01", "second_financing_date":anchor.isoformat(),
         "second_financing_audit_status":"VERIFIED_SECOND_POST_PHASE3_FINANCING"}},
@@ -122,11 +123,24 @@ def test_green_only_for_all_checks_and_current_entry_price(program):
     assert result["orderExecutionEnabled"] is False
 
 
-def test_no_green_for_unverified_financing_or_different_program(program):
+def test_optional_financing_does_not_block_green_or_borrow_unverified_anchor(program):
     _, _, context, _ = program
     context["recheck"]["test"]["gem_entry_authorized"] = "NO"
-    assert not entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)["green"]
+    result = entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)
+    assert result["green"] is True
+    assert result["secondFinancingVerified"] is False
+    assert result["anchorType"] == "PHASE3_READOUT"
     assert not entry.entry_for_program("TRIAL|NCT00000001", "TEST", now=NOW)["green"]
+
+
+def test_unknown_or_unresolved_dilution_still_blocks_buy(program):
+    _, event, context, _ = program
+    for status in ("", "UNKNOWN", "UNRESOLVED", "YES"):
+        event["new_dilution_flag"] = status
+        result = entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)
+        assert result["green"] is False
+        assert result["status"] == "WAIT"
+    event["new_dilution_flag"] = "NO"
 
 
 def test_no_green_for_extended_price_or_unavailable_quote(program, monkeypatch):
