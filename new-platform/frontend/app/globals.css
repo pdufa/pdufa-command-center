@@ -2126,3 +2126,164 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 @media(prefers-reduced-motion:reduce) {
   .gem-row-scroller {scroll-behavior:auto;}
 }
+
+
+/* Double-collapsible GEM/GEM JR stock research directly beneath its selected
+   gold candidate row: row -> trial -> independent individual research sections. */
+.gem-table-panel {container: gem-inline-width / inline-size;}
+.gem-source-parity-table tbody tr.gem-inline-detail-row > td {
+  position:sticky;
+  left:0;
+  z-index:1;
+  min-width:0;
+  max-width:none;
+  padding:0!important;
+  background:#fff8df!important;
+  border-bottom:3px solid #bc9028;
+  border-left:3px solid #bc9028;
+  vertical-align:top;
+}
+.gem-source-parity-table tbody tr.gem-inline-detail-row:hover > td {
+  background:#fff8df!important;
+}
+.gem-inline-detail-panel {
+  box-sizing:border-box;
+  display:block;
+  width:min(100%,calc(100vw - 85px));
+  width:min(100%,calc(100cqw - 36px));
+  min-width:0;
+  margin:0;
+  padding:clamp(9px,1vw,17px);
+  background:#fff8df;
+  color:#213a2c;
+}
+.gem-inline-detail-header {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:2px solid #cbb66f;
+  padding-bottom:11px;
+  margin-bottom:10px;
+}
+.gem-inline-detail-header > div {flex:1 1 250px;min-width:0;}
+.gem-inline-detail-header strong {
+  display:block;
+  font-size:clamp(13px,1.1vw,18px);
+  line-height:1.4;
+  color:#47390c;
+  overflow-wrap:anywhere;
+}
+.gem-inline-detail-header small {
+  display:block;
+  font-size:11px;
+  font-weight:650;
+  overflow-wrap:anywhere;
+}
+.gem-inline-detail-header span {
+  display:block;
+  font-size:11px;
+  color:#6b571f;
+  margin-top:5px;
+}
+.gem-inline-detail-header button {
+  min-height:38px;
+  padding:8px 12px;
+  font-size:12px;
+  white-space:normal;
+}
+.gem-inline-sections {display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-width:0;}
+.gem-inline-section {
+  min-width:0;
+  max-width:100%;
+  border:1px solid #cfc9a5;
+  border-radius:7px;
+  background:#fff;
+  overflow:hidden;
+}
+.gem-inline-section-open {
+  border-color:#8dad98;
+  box-shadow:0 1px 6px rgba(28,70,42,.08);
+}
+.gem-inline-section-trigger {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:7px 12px;
+  width:100%;
+  min-height:48px;
+  padding:10px 12px;
+  margin:0;
+  background:#f7f9ee;
+  color:#244332;
+  border:0;
+  border-radius:0;
+  cursor:pointer;
+  text-align:left;
+}
+.gem-inline-section-trigger:hover {background:#e8f2e7;}
+.gem-inline-section-trigger:focus-visible {outline:3px solid #267f91;outline-offset:-3px;}
+.gem-inline-section-open .gem-inline-section-trigger {
+  background:#e5f1e6;
+  border-bottom:1px solid #bbd6c1;
+}
+.gem-inline-section-heading {
+  font-size:13px;
+  line-height:1.4;
+  font-weight:850;
+  overflow-wrap:anywhere;
+}
+.gem-inline-section-trigger small {
+  font-size:11px;
+  line-height:1.35;
+  color:#52685b;
+  font-weight:500;
+  overflow-wrap:anywhere;
+  text-align:right;
+}
+.gem-inline-section-content {
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  padding:clamp(9px,1.1vw,18px);
+  box-sizing:border-box;
+}
+.gem-inline-section-content > * {min-width:0;max-width:100%;}
+.gem-inline-section-content .trial-full-details {padding:12px;}
+.gem-inline-section-content .source-links {flex-wrap:wrap;}
+.gem-inline-section-content .research-score-cards,
+.gem-inline-section-content .score-factor-groups,
+.gem-inline-section-content .trial-details {
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));
+}
+.gem-inline-section-content :is(.table-scroll,.priority-scroll,.alpaca-stock-chart,.indicator-tables-separate) {
+  max-width:100%;
+  min-width:0;
+}
+.gem-inline-detail-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:12px;
+}
+.gem-inline-detail-actions > button {flex:1 1 220px;min-width:0;min-height:39px;}
+.gem-source-parity-table tbody tr.gem-focused-row > td .ticker-select {
+  font-weight:900;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+@container gem-inline-width (max-width:650px) {
+  .gem-inline-detail-panel {width:min(100%,calc(100cqw - 15px));padding:8px;}
+  .gem-inline-detail-header > button {width:100%;}
+  .gem-inline-section-trigger {align-items:flex-start;flex-direction:column;gap:2px;}
+  .gem-inline-section-trigger small {text-align:left;}
+  .gem-inline-section-content {padding:8px;}
+  .gem-inline-section-content .research-score-cards,
+  .gem-inline-section-content .score-factor-groups,
+  .gem-inline-section-content .trial-details {
+    grid-template-columns:minmax(0,1fr);
+  }
+}
