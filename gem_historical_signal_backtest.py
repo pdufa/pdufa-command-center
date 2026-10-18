@@ -292,7 +292,7 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
     require_cap = market_caps is not None
     candidates = [x for x in events
                   if day(x.get("pdufa_date")) and
-                  day(x["pdufa_date"]).year == year]
+                  (year is None or day(x["pdufa_date"]).year == year)]
     duplicate_keys = Counter(x.get("event_key") for x in candidates)
     trials = []
     variants = [(score, vol, width, days)
