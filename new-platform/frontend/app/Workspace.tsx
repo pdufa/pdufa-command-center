@@ -12,6 +12,7 @@ import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
 import GemQualificationChecklist, {type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
@@ -666,8 +667,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     ]):null;
     // The candidate table and the live checkbox count must use one pool.
     // Only an explicit VIEW SAVED MEMBERS action displays saved membership.
-    const viewRows=savedOnly?(group?.rows||[]):researchResult
-      ?[...researchResult.passes,...researchResult.needsReview]:pipeline;
+    const viewRows=pickGemResearchRows({pipeline,savedStage:group?.rows||[],livePreview:stagePreview,completedScan:activeScan,savedOnly});
     const rows=viewRows.filter(r=>r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
