@@ -395,6 +395,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // candidate. Previous / Next move exactly one source-ordered row at a time.
   // The complete list remains available to CSV and nested trial drilldowns.
   const highlightedGemRow=useRef<HTMLTableRowElement|null>(null);
+  const gemTableScrollViewport=useRef<HTMLDivElement|null>(null);
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -595,8 +596,18 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     if (nav!=="GEM" && nav!=="GEM_JR") return;
     if (!selected[nav]) return;
     const row=highlightedGemRow.current;
-    if (!row) return;
-    row.scrollIntoView({behavior:"smooth",block:"nearest",inline:"nearest"});
+    const viewport=gemTableScrollViewport.current;
+    if (!row || !viewport) return;
+    // Scroll only the table viewport, not the full page or its wide
+    // horizontal table position. Keep PREVIOUS / NEXT on screen.
+    const bounds=viewport.getBoundingClientRect();
+    const position=row.getBoundingClientRect();
+    const stickyHeader=viewport.querySelector("thead")?.getBoundingClientRect().height || 38;
+    if (position.top<bounds.top+stickyHeader+6) {
+      viewport.scrollBy({top:position.top-bounds.top-stickyHeader-8,behavior:"smooth"});
+    } else if (position.bottom>bounds.bottom-6) {
+      viewport.scrollBy({top:position.bottom-bounds.bottom+8,behavior:"smooth"});
+    }
   },[nav,selected.GEM,selected.GEM_JR,gemQuery]);
 
   function gemBlock(stage: "GEM_JR" | "GEM") {
@@ -651,7 +662,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <button type="button" className="secondary" onClick={()=>exportCandidateCsv(rows,stage.toLowerCase()+"-programs.csv")}>Export CSV</button>
             </div>
           </div>
-          <div className="table-scroll">
+          <div className="table-scroll gem-row-scroller" ref={gemTableScrollViewport} aria-label={(stage==="GEM"?"GEM":"GEM JR")+" candidates scrollable table"}>
             <table className="gem-source-parity-table">
               <thead><tr>
                 {["#","Program ID","W","T","Ticker","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
