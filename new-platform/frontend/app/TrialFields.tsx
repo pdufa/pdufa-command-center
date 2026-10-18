@@ -34,14 +34,14 @@ function FieldTree({ value }: { value: Json }) {
   return <span className="trial-field-value">{text(value)}</span>;
 }
 
-export default function TrialFields({ row, onClose }: { row: Candidate; onClose: () => void }) {
+export default function TrialFields({ row, onClose, standalone = false }: { row: Candidate; onClose?: () => void; standalone?: boolean }) {
   const nct = trialId(row);
   const [study, setStudy] = useState<{ [key: string]: Json } | null>(null);
   const [fetchedAt, setFetchedAt] = useState("");
   const [loading, setLoading] = useState(Boolean(nct));
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
-  const [section, setSection] = useState("reported-statistics");
+  const [section, setSection] = useState(standalone ? "all-sections" : "reported-statistics");
   const [raw, setRaw] = useState(false);
 
   useEffect(() => {
@@ -71,6 +71,8 @@ export default function TrialFields({ row, onClose }: { row: Candidate; onClose:
   const sections = useMemo(() => study ? registrySections(study) : [], [study]);
   const analyses = useMemo(() => study ? reportedAnalyses(study) : [], [study]);
   const active = sections.find(item => item.id === section);
+  const identification = object(object(study?.protocolSection).identificationModule);
+  const studyTitle = typeof identification.briefTitle === "string" ? identification.briefTitle : nct;
   function downloadRecord() {
     if (!study) return;
     const url = URL.createObjectURL(new Blob([JSON.stringify(study, null, 2)], { type: "application/json" }));
@@ -79,12 +81,12 @@ export default function TrialFields({ row, onClose }: { row: Candidate; onClose:
   }
 
   return <section className="trial-full-details" aria-label={"All fields for " + (nct || row.programId || row.id)}>
-    <div className="sectionhead"><div><h3>{row.ticker} · {row.drug || row.company || nct}</h3>
-      <p className="subtle"><strong>{row.programId}</strong>{nct ? " · " + nct : " · Regulatory / source program"}</p></div>
+    <div className="sectionhead"><div><h3>{standalone ? studyTitle : row.ticker + " · " + (row.drug || row.company || nct)}</h3>
+      <p className="subtle">{!standalone && row.programId && <strong>{row.programId} · </strong>}{nct ? nct : "Regulatory / source program"}</p></div>
       <div className="pipeline-actions">
         {study && <button type="button" className="secondary" onClick={downloadRecord}>Download this record · JSON</button>}
         {nct && <a href={"https://clinicaltrials.gov/study/" + nct} target="_blank" rel="noopener noreferrer">Registry source ↗</a>}
-        <button type="button" className="secondary" onClick={onClose}>Close details</button>
+        {!standalone && onClose && <button type="button" className="secondary" onClick={onClose}>Close details</button>}
       </div>
     </div>
     {loading && <p role="status">Loading all saved registry fields…</p>}
@@ -93,12 +95,19 @@ export default function TrialFields({ row, onClose }: { row: Candidate; onClose:
     {study && <>
       <div className="trial-section-picker"><label htmlFor="pipeline-trial-section">Browse all registry fields</label>
         <select id="pipeline-trial-section" value={section} onChange={event => { setSection(event.target.value); setRaw(false); }}>
+          {standalone && <option value="all-sections">All trial sections · {sections.length}</option>}
           <option value="reported-statistics">Reported p-values · {analyses.length}</option>
           {sections.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
         </select>
         {fetchedAt && <span className="subtle">Saved {new Date(fetchedAt).toLocaleString()}</span>}
       </div>
-      {section === "reported-statistics" ? <div className="trial-statistics">
+      {section === "all-sections" ? <div className="trial-all-sections">
+        <p className="subtle">Complete saved ClinicalTrials.gov record, grouped by registry section. Expand any module to view every saved field. Unavailable fields are not inferred.</p>
+        {sections.map((item, index) => <details key={item.id} className="trial-full-module"
+          open={index === 0}>
+          <summary>{item.title}</summary><FieldTree value={item.data} />
+        </details>)}
+      </div> : section === "reported-statistics" ? <div className="trial-statistics">
         <h4>Reported p-values with endpoints and comparison groups</h4>
         {analyses.length ? <div className="table-scroll"><table><thead><tr><th>Endpoint</th><th>Type / time frame</th><th>Comparison groups</th><th>p-value</th><th>Method</th><th>All analysis fields</th></tr></thead>
           <tbody>{analyses.map(item => <tr key={item.outcomeIndex + "-" + item.analysisIndex}>
@@ -111,6 +120,6 @@ export default function TrialFields({ row, onClose }: { row: Candidate; onClose:
       <label className="trial-raw-toggle"><input type="checkbox" checked={raw} onChange={event => setRaw(event.target.checked)} />Show complete original registry JSON</label>
       {raw && <pre className="trial-raw-json">{JSON.stringify(study, null, 2)}</pre>}
     </>}
-    <details className="trial-source-fields" open={!nct}><summary>All Pipeline program fields</summary><FieldTree value={row as unknown as Json} /></details>
+    {!standalone && <details className="trial-source-fields" open={!nct}><summary>All Pipeline program fields</summary><FieldTree value={row as unknown as Json} /></details>}
   </section>;
 }
