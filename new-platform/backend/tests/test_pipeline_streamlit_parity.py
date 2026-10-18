@@ -1,7 +1,7 @@
 """Regression tests for the original Streamlit Pipeline universe, not scanner output."""
 from datetime import date
 
-from app.pipeline_streamlit_parity import original_pipeline_universe
+from app.pipeline_universe_rules import original_pipeline_universe
 
 
 TODAY = date(2026, 10, 16)
