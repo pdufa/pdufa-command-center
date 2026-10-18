@@ -641,7 +641,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const toggleSection=(section:string)=>{
       if(!chosen) return;
       const key=stage+"|"+chosen.id+"|"+section;
-      setGemTrialSections(current=>({...current,[key]:!current[key]}));
+      setGemTrialSections(current=>({...current,[key]: !(section==="chart" ? current[key] !== false : current[key] === true)}));
     };
     return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
       <div className="gem-heading">
