@@ -10,6 +10,7 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
+import GemQualificationChecklist from "./GemQualificationChecklist";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
@@ -685,6 +686,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} programs · {stated(group?.asOf, "snapshot undated")}</span>
       </div>
+      <GemQualificationChecklist stage={stage} rows={rows} />
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
         <div className="gem-decision-summary">
           <span className="gem-decision-program">{chosen.ticker} · {stated(chosen.programId, "PROGRAM ID UNVERIFIED")} · {stage==="GEM"?"GEM":"GEM JR"}</span>
