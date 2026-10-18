@@ -2362,3 +2362,58 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .gem-criteria-responsive .gem-criteria-collapsible-content {display:none;padding:10px;}
   .gem-criteria-responsive[data-open="true"] .gem-criteria-collapsible-content {display:block;}
 }
+
+
+/* Move optional market and financing screens into a distinct Trading section.
+   Visual organization only; the existing trial filters and AND logic remain. */
+.trial-filter-section-heading {
+  margin: 10px 0 8px;
+  font-size: 12px;
+  letter-spacing: .035em;
+  font-weight: 800;
+  color: #26462c;
+}
+.trial-trading-section {
+  margin-top: 14px;
+  padding: 12px;
+  border: 2px solid #446648;
+  border-radius: 10px;
+  background: #f5f9f3;
+  min-width: 0;
+}
+.trial-trading-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.trial-trading-heading h4 {
+  font-size: 14px;
+  color: #254729;
+  margin: 0;
+  letter-spacing: .04em;
+}
+.trial-trading-heading span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #315b3d;
+  font-variant-numeric: tabular-nums;
+}
+.trial-trading-section .trial-trading-checks {
+  margin: 10px 0;
+}
+.trial-trading-section .trial-trading-details {
+  border-top: 1px solid #b2c8b3;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+.trial-trading-details > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #235331;
+}
+.trial-trading-details .trial-filter-dropdowns {
+  padding-top: 12px;
+}
