@@ -686,7 +686,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} programs · {stated(group?.asOf, "snapshot undated")}</span>
       </div>
-      <GemQualificationChecklist stage={stage} rows={rows} />
+      <GemQualificationChecklist stage={stage} rows={rows} universeCount={pipeline.length} stageTotal={group?.rows?.length || 0} />
       {chosen && <div className="gem-decision-band" aria-label={stage==="GEM"?"GEM candidate eligibility and evidence coverage":"GEM JR candidate eligibility and evidence coverage"}>
         <div className="gem-decision-summary">
           <span className="gem-decision-program">{chosen.ticker} · {stated(chosen.programId, "PROGRAM ID UNVERIFIED")} · {stage==="GEM"?"GEM":"GEM JR"}</span>
