@@ -3607,18 +3607,15 @@ if page == "PDUFA":
                 _clear_pipeline_results_v9()
 
             def _apply_pipeline_filters_v10():
-                """Update the trial table as soon as both filter dimensions are set."""
+                """Update results for any selection, including unrestricted dimensions."""
                 stages = st.session_state.get("pipeline_stages_v9", [])
                 dates = st.session_state.get("pipeline_dates_v9", [])
-                if stages and dates:
-                    st.session_state["pipeline_applied_v9"] = (
-                        tuple(stages), tuple(dates),
-                        str(st.session_state.get("pipeline_query_v9", "")).strip(),
-                        st.session_state.get("pipeline_sort_v9", DISPLAY_ORDER_OPTIONS[0]),
-                        pipeline_trial_signature(st.session_state),
-                    )
-                else:
-                    _clear_pipeline_results_v9()
+                st.session_state["pipeline_applied_v9"] = (
+                    tuple(stages), tuple(dates),
+                    str(st.session_state.get("pipeline_query_v9", "")).strip(),
+                    st.session_state.get("pipeline_sort_v9", DISPLAY_ORDER_OPTIONS[0]),
+                    pipeline_trial_signature(st.session_state),
+                )
 
             def _select_pipeline_count_v10(field, category):
                 """Count buttons select one stage/date and immediately show a valid pair.
@@ -3634,7 +3631,7 @@ if page == "PDUFA":
             # The filters are one white/black Pipeline control card; retain every key.
             with st.container(border=True, key="pipeline_filters_card"):
                 st.markdown("### PIPELINE FILTERS")
-                st.caption("Select a stage and PDUFA date band; optionally refine by public-data TRIAL FILTERS below.")
+                st.caption("Leave STAGES or DATES empty to include all; optional TRIAL FILTERS narrow the results.")
                 stage_col, date_col = st.columns(2, gap="medium")
                 with stage_col:
                     selected_stages = st.multiselect(
@@ -3755,7 +3752,7 @@ if page == "PDUFA":
                 with button_col:
                     show_clicked = st.button(
                         "SHOW MATCHING TRIALS", type="primary", use_container_width=True,
-                        disabled=not (selected_stages and selected_dates),
+                        disabled=False,
                         key="pipeline_show_v9",
                     )
                 with reset_col:
@@ -3773,9 +3770,9 @@ if page == "PDUFA":
                 tuple(selected_stages), tuple(selected_dates), query, sort_mode,
                 pipeline_trial_signature(st.session_state),
             )
-            if show_clicked and selected_stages and selected_dates:
+            if show_clicked:
                 st.session_state["pipeline_applied_v9"] = selection_signature
-            applied = bool(selected_stages and selected_dates) and (
+            applied = (
                 st.session_state.get("pipeline_applied_v9") == selection_signature
             )
 
@@ -3885,8 +3882,7 @@ if page == "PDUFA":
                             st.button(
                                 f"{category} · {int(counts.get(category, 0)):,}",
                                 key=f"pipeline_count_button_v10_{field}_{index}",
-                                help=f"Select {category} and show trials when both a stage "
-                                     "and a date are chosen.",
+                                help=f"Select {category} to narrow the displayed trials.",
                                 type="primary" if active else "secondary",
                                 use_container_width=True,
                                 on_click=_select_pipeline_count_v10,
@@ -3912,10 +3908,7 @@ if page == "PDUFA":
                             finance_style(empty_chart), hide_index=True, use_container_width=True,
                             height=220, survey_source=prepared,
                         )
-                    if not selected_stages or not selected_dates:
-                        st.info("Select both STAGES and DATES to unlock SHOW MATCHING TRIALS.")
-                    else:
-                        st.info("Click SHOW MATCHING TRIALS to populate the chart.")
+                    st.info("Click SHOW MATCHING TRIALS to populate the chart; empty STAGES/DATES include all.")
                 else:
                     filtered = filter_public_trials(
                         filter_pipeline(prepared, selected_stages, selected_dates, query),
