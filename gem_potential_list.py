@@ -13,7 +13,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 from datetime import datetime
 
-from pipeline_source_scope import pipeline_origins, gem_pipeline_id
+from pipeline_source_scope import pipeline_origins, gem_research_id
 
 POSITIVE_RESULT_LABELS = {
     "RESULTS_VERIFIED", "VERIFIED_SUCCESS", "PRIMARY_MET_VERIFIED",
@@ -65,9 +65,8 @@ def build_potential_list(root="data", *, as_of=None):
     events = _unique(_rows(root / "pdufa_candidates.csv"))
     trials = _unique(_rows(root / "gem_phase3_exact_recheck.csv"))
     financing = _unique(_rows(root / "gem_two_close_recheck.csv"))
-    # The PIPELINE tab is the sole origin of trial/application IDs. Independent
-    # issuer discoveries are evidence suggestions only until the exact trial
-    # has been ingested into the canonical Pipeline universe.
+    # Pre-Oct-15 research admission: Pipeline linkage is helpful but not mandatory.
+    # Keep exact issuer/program evidence and reject known canonical ticker conflicts.
     pipeline_ids, pipeline_tickers = pipeline_origins(root, today=today)
 
     active, holds = [], []
@@ -83,7 +82,7 @@ def build_potential_list(root="data", *, as_of=None):
         ticker = str(event.get("ticker") or "").strip().upper()
         if not ticker or not str(event.get("drug") or "").strip():
             continue
-        pipeline_id = gem_pipeline_id(
+        pipeline_id = gem_research_id(
             {"Ticker": ticker, "Exact event": key}, pipeline_ids, pipeline_tickers)
         if not pipeline_id:
             continue
@@ -175,6 +174,8 @@ def build_potential_list(root="data", *, as_of=None):
             "Timing / resolution": timing_note,
             "Exact program": key,
             "Pipeline ID": pipeline_id,
+            "Pipeline linkage": ("IN PIPELINE" if pipeline_id in pipeline_ids else
+                                 "PENDING PIPELINE INTAKE — RESEARCH ONLY"),
             "Clinical source": str(event.get("trial_evidence_url") or trial.get("saved_trial_source") or ""),
             "Financing SEC source": str(funding.get("second_sec_url") or ""),
             "Source review date": str(trial.get("checked_at_utc") or funding.get("checked_at_utc") or "")[:10],
@@ -207,7 +208,7 @@ def build_potential_list(root="data", *, as_of=None):
         identity = (ticker, nct)
         if identity in mapped_ncts:
             continue
-        pipeline_id = gem_pipeline_id(
+        pipeline_id = gem_research_id(
             {"Ticker": ticker, "NCT ID": nct}, pipeline_ids, pipeline_tickers)
         if not pipeline_id:
             continue
@@ -237,7 +238,9 @@ def build_potential_list(root="data", *, as_of=None):
             "PDUFA date (saved)": "",
             "Timing / resolution": "No verified PDUFA timing linked to this exact trial",
             "Exact program": "TRIAL|" + ticker + "|" + nct,
-            "Pipeline ID": "TRIAL|" + nct,
+            "Pipeline ID": pipeline_id,
+            "Pipeline linkage": ("IN PIPELINE" if pipeline_id in pipeline_ids else
+                                 "PENDING PIPELINE INTAKE — RESEARCH ONLY"),
             "Clinical source": str(lead.get("source_url") or "").strip(),
             "Financing SEC source": "",
             "Source review date": str(lead.get("readout_date") or "").strip(),
