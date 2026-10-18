@@ -319,7 +319,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
     )
     if not visible:
         if view == "Entry-eligible only" and lead_event_keys:
-            st.info("No two-benchmark GEM entries verified yet. "
+            st.info("No successful Phase 3-qualified GEM entries verified yet. Second financing is optional. "
                     "Switch to Research candidates (source leads) to see "
                     "the program evidence review list shown above.")
         else:
@@ -394,7 +394,7 @@ def render_gem_nested_master(root="data", *, selections_ready=False, compact=Fal
                     + " · " + str(diagnosis.get("Missing / recheck needed", ""))
                 )
                 if not r["_eligible"]:
-                    st.info("WATCH / REVIEW — one or both benchmarks not verified. Raw inputs "
+                    st.info("WATCH / REVIEW — successful Phase 3 not verified. Second financing optional. Raw inputs "
                             "are available below, but no GEM rank or score has been assigned.")
                 else:
                     score_ok = _score_check(r)
