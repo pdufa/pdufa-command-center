@@ -366,12 +366,14 @@ function SourceDetails({ record }: { record: Candidate }) {
   );
 }
 function Drilldown({ rows }: { rows: Candidate[] }) {
+  const [visibleLimit,setVisibleLimit]=useState(100);
   const grouped = useMemo(() => {
     const map = new Map<string, Candidate[]>();
-    uniqueRows(rows).forEach(item => map.set(item.ticker, [...(map.get(item.ticker) || []), item]));
+    uniqueRows(rows.slice(0,visibleLimit)).forEach(item => map.set(item.ticker, [...(map.get(item.ticker) || []), item]));
     return [...map].sort(([a], [b]) => a.localeCompare(b));
-  }, [rows]);
+  }, [rows,visibleLimit]);
   return <div className="nested-records">
+    <p className="subtle">Showing {Math.min(visibleLimit,rows.length).toLocaleString("en-US")} of {rows.length.toLocaleString("en-US")} records in the nested trial view. Use the candidate table above to browse all records.</p>
     {grouped.map(([ticker, companies]) => (
       <details key={ticker} className="drill-company">
         <summary><strong>{ticker}</strong><span>{companies.length} exact program{companies.length === 1 ? "" : "s"}</span></summary>
@@ -387,6 +389,7 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
       </details>
     ))}
     {grouped.length === 0 && <p className="subtle">No exact-program records match these filters.</p>}
+    {visibleLimit<rows.length && <button type="button" className="secondary" onClick={()=>setVisibleLimit(count=>count+100)}>SHOW NEXT 100 TRIAL RECORDS</button>}
   </div>;
 }
 
@@ -698,6 +701,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         <span className="gem-count">{rows.length} {activeScan?"PIPELINE scan results":"saved programs"} · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
       <GemQualificationChecklist stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0}
+        onReset={()=>setGemScans(current=>{if(!current[stage])return current;const next={...current};delete next[stage];return next})}
         onScan={result=>{
           setGemScans(current=>({...current,[stage]:result}));
           setGemQuery("");
@@ -705,8 +709,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           setGemTrialSections(current=>Object.fromEntries(Object.entries(current).filter(([key])=>!key.startsWith(stage+"|"))));
         }} />
       {activeScan && <div className="panel" role="status" aria-live="polite" style={{marginBottom:12,padding:14,border:"1px solid #76947d",borderRadius:7,background:"#f3fcf5"}}>
-        <strong>PIPELINE SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"}</strong>
-        <p>{activeScan.baseline.toLocaleString("en-US")} completed Phase 3 programs assessed · <strong>{activeScan.passes.length.toLocaleString("en-US")} passed all selected checks</strong> · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} failed.</p>
+        <strong>PIPELINE SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
+        <p>{activeScan.baseline.toLocaleString("en-US")} {activeScan.selected.length?"screened candidate records":"unrestricted PIPELINE records"} assessed · <strong>{activeScan.passes.length.toLocaleString("en-US")} {activeScan.selected.length?"passed all selected checks":"unrestricted matches"}</strong> · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} failed.</p>
         <p className="subtle">The research table below shows verified passes first, then candidates needing verification. These are not added to saved GEM membership. Source {stated(activeScan.asOf)}; screen executed {new Date(activeScan.evaluatedAt).toLocaleString()}.</p>
         <button type="button" className="secondary" onClick={()=>setGemScans(current=>{const next={...current};delete next[stage];return next})}>SHOW SAVED {stage==="GEM"?"GEM":"GEM JR"} LIST</button>
       </div>}
@@ -780,7 +784,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
                 <td title="First confirmed appearance in this GEM-stage membership cycle">{stated(listDates(r).added,"NOT RECORDED")}</td>
                 <td title="No removal date while the exact program remains active in this list">—</td>
-                <td>{activeScan?<span className="gem-table-eligibility" style={{background:scanStatuses?.get(r.id)==="PASS"?"#d7f7e4":"#fff0d8",color:"#232323",padding:"5px 7px",borderRadius:5}}>{scanStatuses?.get(r.id)}</span>:<span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
+                <td>{activeScan?<span className="gem-table-eligibility" style={{background:scanStatuses?.get(r.id)==="PASS"?"#d7f7e4":"#fff0d8",color:"#232323",padding:"5px 7px",borderRadius:5}}>{activeScan.selected.length?scanStatuses?.get(r.id):"UNRESTRICTED"}</span>:<span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
                   title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span>}</td>
                 <td>{stated(r.company,"—")}</td>
                 <td title={stated(r.drug)}>{trialSheetUrl(r)
