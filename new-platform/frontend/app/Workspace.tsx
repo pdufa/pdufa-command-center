@@ -303,6 +303,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -551,11 +552,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <div className="sectionhead"><h3>{chosen.ticker} · {stated(chosen.drug)}</h3>
               <button type="button" onClick={()=>{setMasterProgram(chosen.id);setNav("MASTER");window.scrollTo({top:0,behavior:"smooth"});}}>Gold Master Chart ↗</button>
               <button type="button" onClick={()=>selectCandidate(chosen,stage)}>Open autosaved checklist ↗</button></div>
-            <SourceDetails record={chosen} />
-            {chosen.programId ? <AlpacaStockChart programId={chosen.programId} ticker={chosen.ticker} /> : <p className="subtle">Alpaca chart awaits permanent Program ID</p>}
-            <IndicatorParityTables programId={chosen.programId||"UNREGISTERED"} tech={chosen.technical}/>
-            <TechnicalPanel record={chosen} />
-            <PriorityIndicators record={chosen} />
+            <div className="gem-profile-masonry">
+              <div className="gem-profile-tile"><SourceDetails record={chosen} /></div>
+              <div className="gem-profile-tile">{chosen.programId ? <AlpacaStockChart programId={chosen.programId} ticker={chosen.ticker} /> : <p className="subtle">Alpaca chart awaits permanent Program ID</p>}</div>
+              <div className="gem-profile-tile"><IndicatorParityTables programId={chosen.programId||"UNREGISTERED"} tech={chosen.technical}/></div>
+              <div className="gem-profile-tile"><TechnicalPanel record={chosen} /></div>
+              <div className="gem-profile-tile"><PriorityIndicators record={chosen} /></div>
+            </div>
           </div>}
         </div>
       </div>
@@ -580,10 +583,20 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>{setRefreshing(true);setFetchVersion(v=>v+1);}}>{refreshing ? "Reloading…" : "Reload published sources"}</button>
       <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
-    {top==="PDUFA" && <nav className="worknav" aria-label="PDUFA sections">
-      {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
-        <button type="button" key={key} className={nav===key?"nav-selected":""} onClick={()=>setNav(key)}>{label}</button>)}
-    </nav>}
+    {top==="PDUFA" && <div className="nav-wrapper">
+      <div className="mobile-nav-toggle">
+        <strong>Section: {nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
+        <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
+          onClick={()=>setMobileNavOpen(current=>!current)}>
+          {mobileNavOpen ? "Close menu ×" : "☰ Browse sections"}
+        </button>
+      </div>
+      <nav id="pdufa-section-navigation" className="worknav" aria-label="PDUFA sections" data-open={mobileNavOpen?"true":"false"}>
+        {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
+          <button type="button" key={key} className={nav===key?"nav-selected":""} aria-current={nav===key?"page":undefined}
+            onClick={()=>{setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
+      </nav>
+    </div>}
     <div className="workspace-overview">
       <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
       <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
@@ -653,6 +666,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {(["watch","trade"] as const).map(kind=><section className="panel" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
         {tags[kind].length===0 && <p className="subtle">No exact programs selected yet. Use W/T buttons beside Program IDs in PIPELINE or GEM.</p>}
+        <div className="wt-program-masonry">
         {tags[kind].map(programId=>{
           const selectedRecord=byProgram.get(programId);
           const saved=storedIdentities.find(x=>x.programId===programId);
@@ -676,6 +690,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             </div>
           </div>;
         })}
+        </div>
       </section>)}
       </div>
       {(legacyTags.watch.length>0||legacyTags.trade.length>0) && <section className="panel legacy-tags">
