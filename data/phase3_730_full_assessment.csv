@@ -1,0 +1,731 @@
+nct_id,ticker,company,status,source_url,assessment,existing_membership,issuer_positive_source,registry_result_record_count,assessment_reason
+NCT02249988,ABVX,Abivax S.A.,COMPLETED,https://clinicaltrials.gov/study/NCT02249988,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03905109,ABVX,Abivax S.A.,WITHDRAWN,https://clinicaltrials.gov/study/NCT03905109,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04393038,ABVX,Abivax S.A.,TERMINATED,https://clinicaltrials.gov/study/NCT04393038,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05507203,ABVX,Abivax S.A.,COMPLETED,https://clinicaltrials.gov/study/NCT05507203,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05507216,ABVX,Abivax S.A.,COMPLETED,https://clinicaltrials.gov/study/NCT05507216,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05535946,ABVX,Abivax S.A.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05535946,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00477672,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00477672,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00550238,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00550238,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00658567,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00658567,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01174004,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT01174004,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02970292,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT02970292,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03121586,ACAD,ACADIA Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT03121586,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03325556,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03325556,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03575052,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03575052,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03623321,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03623321,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03968159,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03968159,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04000009,ACAD,ACADIA Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04000009,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04181723,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04181723,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04279314,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04279314,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04531982,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04531982,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04776746,ACAD,ACADIA Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04776746,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04988867,ACAD,ACADIA Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04988867,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05523895,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT05523895,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05555615,ACAD,ACADIA Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT05555615,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06159673,ACAD,ACADIA Pharmaceuticals Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT06159673,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06173531,ACAD,ACADIA Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT06173531,GEM_JR_RESEARCH,NONE,,2,Active/completed Phase 3; successful endpoint not verified
+NCT06194799,ACAD,ACADIA Pharmaceuticals Inc.,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT06194799,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06420297,ACAD,ACADIA Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT06420297,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07095465,ACAD,ACADIA Pharmaceuticals Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07095465,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00251095,ACHV,Achieve Life Sciences,TERMINATED,https://clinicaltrials.gov/study/NCT00251095,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT01083615,ACHV,Achieve Life Sciences,TERMINATED,https://clinicaltrials.gov/study/NCT01083615,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT01188187,ACHV,Achieve Life Sciences,COMPLETED,https://clinicaltrials.gov/study/NCT01188187,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01578655,ACHV,Achieve Life Sciences,COMPLETED,https://clinicaltrials.gov/study/NCT01578655,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01630733,ACHV,Achieve Life Sciences,COMPLETED,https://clinicaltrials.gov/study/NCT01630733,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04576949,ACHV,Achieve Life Sciences,COMPLETED,https://clinicaltrials.gov/study/NCT04576949,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05206370,ACHV,Achieve Life Sciences,COMPLETED,https://clinicaltrials.gov/study/NCT05206370,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06435221,ACHV,Achieve Life Sciences,COMPLETED,https://clinicaltrials.gov/study/NCT06435221,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07392125,ACHV,Achieve Life Sciences,NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07392125,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT02667236,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02667236,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02667275,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02667275,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02667288,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02667288,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03687372,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03687372,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03691831,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03691831,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03812510,ACRS,"Aclaris Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03812510,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00538915,ADMA,"ADMA Biologics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00538915,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01814800,ADMA,"ADMA Biologics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01814800,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03548220,AGIO,"Agios Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03548220,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03559699,AGIO,"Agios Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03559699,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03853798,AGIO,"Agios Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03853798,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04770753,AGIO,"Agios Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04770753,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04770779,AGIO,"Agios Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04770779,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05031780,AGIO,"Agios Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05031780,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05144256,AGIO,"Agios Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05144256,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05175105,AGIO,"Agios Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05175105,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07506863,AGIO,"Agios Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07506863,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07517133,AGIO,"Agios Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07517133,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07656415,AGIO,"Agios Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07656415,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07859423,AGIO,"Agios Pharmaceuticals, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07859423,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00156923,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00156923,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00156936,ALKS,"Alkermes, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT00156936,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT00501631,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00501631,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00678418,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00678418,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00834080,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00834080,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01218958,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01218958,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01218971,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01218971,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01218997,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01218997,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01436032,ALKS,"Alkermes, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT01436032,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT01469039,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01469039,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01626456,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01626456,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01895452,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01895452,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02085135,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02085135,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02141399,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02141399,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02158533,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02158533,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02158546,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02158546,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02218008,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02218008,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02537574,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02537574,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02634346,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02634346,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02669758,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02669758,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02694328,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02694328,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02696434,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02696434,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02873208,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02873208,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03187769,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03187769,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03188185,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03188185,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03201757,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03201757,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03345979,ALKS,"Alkermes, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03345979,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03610048,ALKS,"Alkermes, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03610048,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04987229,ALKS,"Alkermes, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT04987229,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05303064,ALKS,"Alkermes, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05303064,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06767683,ALKS,"Alkermes, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06767683,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07455383,ALKS,"Alkermes, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07455383,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07502443,ALKS,"Alkermes, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07502443,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07540897,ALKS,"Alkermes, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07540897,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06586112,ALMS,Alumis Inc,COMPLETED,https://clinicaltrials.gov/study/NCT06586112,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06588738,ALMS,Alumis Inc,COMPLETED,https://clinicaltrials.gov/study/NCT06588738,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06846541,ALMS,Alumis Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06846541,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07795164,ALT,"Altimmune, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07795164,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04516096,AMLX,Amylyx Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04516096,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05021536,AMLX,Amylyx Pharmaceuticals Inc.,UNKNOWN,https://clinicaltrials.gov/study/NCT05021536,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05619783,AMLX,Amylyx Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT05619783,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06122662,AMLX,Amylyx Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT06122662,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06747468,AMLX,Amylyx Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06747468,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00634517,AMPH,"Amphastar Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT00634517,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00634829,AMPH,"Amphastar Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT00634829,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00635505,AMPH,"Amphastar Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT00635505,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT01357642,AMPH,"Amphastar Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01357642,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01460511,AMPH,"Amphastar Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01460511,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01476904,AMPH,"Amphastar Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01476904,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01737905,AMPH,"Amphastar Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01737905,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05539872,AMPH,"Amphastar Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05539872,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07560150,AMPH,"Amphastar Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT07560150,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01064024,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT01064024,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01650051,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT01650051,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01779947,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT01779947,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02072954,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02072954,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02103322,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02103322,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02110368,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02110368,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02121002,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02121002,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02125253,AMRX,"Amneal Pharmaceuticals, LLC",COMPLETED,https://clinicaltrials.gov/study/NCT02125253,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05401357,AMRX,"Amneal Pharmaceuticals, LLC",RECRUITING,https://clinicaltrials.gov/study/NCT05401357,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04701164,ANNX,"Annexon, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04701164,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06510816,ANNX,"Annexon, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06510816,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07020819,ANNX,"Annexon, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07020819,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07807969,ANNX,"Annexon, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07807969,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05811247,APMD,Apnimed,COMPLETED,https://clinicaltrials.gov/study/NCT05811247,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05813275,APMD,Apnimed,COMPLETED,https://clinicaltrials.gov/study/NCT05813275,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06566820,APMD,Apnimed,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT06566820,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03428360,AQST,Aquestive Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03428360,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01923428,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT01923428,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02621892,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT02621892,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02675998,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT02675998,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02686138,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT02686138,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02727751,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT02727751,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03427125,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT03427125,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03824587,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT03824587,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05643534,ARDX,Ardelyx,COMPLETED,https://clinicaltrials.gov/study/NCT05643534,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05905926,ARDX,Ardelyx,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05905926,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07382167,ARDX,Ardelyx,RECRUITING,https://clinicaltrials.gov/study/NCT07382167,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04211363,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04211363,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04211389,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04211389,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04286607,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04286607,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04773587,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04773587,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04773600,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04773600,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04804605,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04804605,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04845620,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04845620,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04973228,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04973228,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05028582,ARQT,"Arcutis Biotherapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05028582,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05089084,ARWR,Arrowhead Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT05089084,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06347003,ARWR,Arrowhead Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT06347003,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06347016,ARWR,Arrowhead Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT06347016,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06347133,ARWR,Arrowhead Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT06347133,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06822790,ARWR,Arrowhead Pharmaceuticals,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06822790,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06880770,ARWR,Arrowhead Pharmaceuticals,RECRUITING,https://clinicaltrials.gov/study/NCT06880770,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07037771,ARWR,Arrowhead Pharmaceuticals,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07037771,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07473843,ARWR,Arrowhead Pharmaceuticals,RECRUITING,https://clinicaltrials.gov/study/NCT07473843,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00244842,AUPH,Aurinia Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00244842,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00258713,AUPH,Aurinia Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00258713,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00408187,AUPH,Aurinia Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT00408187,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01586845,AUPH,Aurinia Pharmaceuticals Inc.,WITHDRAWN,https://clinicaltrials.gov/study/NCT01586845,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT03021499,AUPH,Aurinia Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03021499,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03597464,AUPH,Aurinia Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03597464,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04147650,AUPH,Aurinia Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04147650,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05288855,AUPH,Aurinia Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT05288855,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05962788,AUPH,Aurinia Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT05962788,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06007690,AURA,Aura Biosciences,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06007690,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05607550,AVBP,"ArriVent BioPharma, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05607550,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07185997,AVBP,"ArriVent BioPharma, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07185997,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05629962,AVIR,"Atea Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05629962,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06868264,AVIR,"Atea Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06868264,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07037277,AVIR,"Atea Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07037277,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02504008,AXSM,"Axsome Therapeutics, Inc.",UNKNOWN,https://clinicaltrials.gov/study/NCT02504008,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT02741791,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02741791,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02746068,AXSM,"Axsome Therapeutics, Inc.",UNKNOWN,https://clinicaltrials.gov/study/NCT02746068,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT03226522,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03226522,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03896009,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03896009,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04019704,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04019704,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04039022,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04039022,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04068051,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04068051,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04163185,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04163185,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04797715,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04797715,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04947553,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04947553,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05059223,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05059223,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05113745,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05113745,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05550207,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05550207,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05557409,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05557409,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05972044,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05972044,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06360419,AXSM,"Axsome Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT06360419,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06413433,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06413433,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06568367,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06568367,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06736509,AXSM,"Axsome Therapeutics, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT06736509,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06878976,AXSM,"Axsome Therapeutics, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT06878976,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07398417,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07398417,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07484217,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07484217,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07637162,AXSM,"Axsome Therapeutics, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07637162,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07717879,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07717879,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07717892,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07717892,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07766655,AXSM,"Axsome Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07766655,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07773883,AXSM,"Axsome Therapeutics, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07773883,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06788990,BCAX,Bicara Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06788990,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00486980,BCRX,BioCryst Pharmaceuticals,WITHDRAWN,https://clinicaltrials.gov/study/NCT00486980,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00610935,BCRX,BioCryst Pharmaceuticals,TERMINATED,https://clinicaltrials.gov/study/NCT00610935,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT00957996,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT00957996,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00958776,BCRX,BioCryst Pharmaceuticals,TERMINATED,https://clinicaltrials.gov/study/NCT00958776,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT01224795,BCRX,BioCryst Pharmaceuticals,WITHDRAWN,https://clinicaltrials.gov/study/NCT01224795,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT02303626,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02303626,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02369159,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02369159,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02635724,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02635724,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02670720,BCRX,BioCryst Pharmaceuticals,TERMINATED,https://clinicaltrials.gov/study/NCT02670720,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT03472040,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03472040,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03485911,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03485911,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03873116,BCRX,BioCryst Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03873116,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04933721,BCRX,BioCryst Pharmaceuticals,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT04933721,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05453968,BCRX,BioCryst Pharmaceuticals,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05453968,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05244304,BLTE,"Belite Bio, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05244304,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05949593,BLTE,"Belite Bio, Inc",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05949593,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06388083,BLTE,"Belite Bio, Inc",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06388083,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07755904,BRVE,"Braveheart Bio, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07755904,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01436968,CADL,"Candel Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT01436968,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07660094,CADL,"Candel Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07660094,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01438112,CGON,"CG Oncology, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT01438112,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04452591,CGON,"CG Oncology, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04452591,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06111235,CGON,"CG Oncology, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06111235,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01480479,CLDX,Celldex Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT01480479,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06445023,CLDX,Celldex Therapeutics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06445023,GEM_JR_RESEARCH,GEM_JR,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06455202,CLDX,Celldex Therapeutics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06455202,GEM_JR_RESEARCH,GEM_JR,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07256392,CLDX,Celldex Therapeutics,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07256392,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07266402,CLDX,Celldex Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07266402,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05624268,CMPS,COMPASS Pathways,COMPLETED,https://clinicaltrials.gov/study/NCT05624268,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05711940,CMPS,COMPASS Pathways,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05711940,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07570654,CMPS,COMPASS Pathways,RECRUITING,https://clinicaltrials.gov/study/NCT07570654,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05208047,COGT,"Cogent Biosciences, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05208047,GEM_JR_RESEARCH,GEM,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01685684,COLL,"Collegium Pharmaceutical, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01685684,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04734873,CRVS,"Corvus Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT04734873,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06561048,CRVS,"Corvus Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06561048,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02496767,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT02496767,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02929329,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT02929329,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02936635,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT02936635,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03759392,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT03759392,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04464525,CYTK,Cytokinetics,WITHDRAWN,https://clinicaltrials.gov/study/NCT04464525,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04848506,CYTK,Cytokinetics,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT04848506,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04944784,CYTK,Cytokinetics,TERMINATED,https://clinicaltrials.gov/study/NCT04944784,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05186818,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT05186818,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05442775,CYTK,Cytokinetics,TERMINATED,https://clinicaltrials.gov/study/NCT05442775,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05767346,CYTK,Cytokinetics,COMPLETED,https://clinicaltrials.gov/study/NCT05767346,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06081894,CYTK,Cytokinetics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06081894,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06412666,CYTK,Cytokinetics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06412666,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06736574,CYTK,Cytokinetics,RECRUITING,https://clinicaltrials.gov/study/NCT06736574,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05065216,DMAC,DiaMedica Therapeutics Inc,RECRUITING,https://clinicaltrials.gov/study/NCT05065216,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05371613,DNLI,Denali Therapeutics Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05371613,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06075537,DNLI,Denali Therapeutics Inc.,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT06075537,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07486934,DYN,Dyne Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07486934,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07608432,DYN,Dyne Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07608432,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00877656,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study/NCT00877656,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01158157,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study/NCT01158157,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01311674,EBS,Emergent BioSolutions,TERMINATED,https://clinicaltrials.gov/study/NCT01311674,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT01491607,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study/NCT01491607,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03877926,EBS,Emergent BioSolutions,COMPLETED,https://clinicaltrials.gov/study/NCT03877926,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06697301,EIKN,Eikon Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06697301,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07365319,EIKN,Eikon Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07365319,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02334423,EOLS,"Evolus, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02334423,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02334436,EOLS,"Evolus, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02334436,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06346067,ERAS,"Erasca, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06346067,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05416307,ETRA,Electra Therapeutics Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT05416307,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06864988,FDMT,4D Molecular Therapeutics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06864988,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07064759,FDMT,4D Molecular Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07064759,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07867080,FDMT,4D Molecular Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07867080,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04365868,GALT,Galectin Therapeutics Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04365868,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT07276724,GENB,Generate Biomedicines,RECRUITING,https://clinicaltrials.gov/study/NCT07276724,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07359846,GENB,Generate Biomedicines,RECRUITING,https://clinicaltrials.gov/study/NCT07359846,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02598661,GERN,Geron Corporation,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT02598661,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04576156,GERN,Geron Corporation,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04576156,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07832552,HROW,Harrow Inc,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07832552,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02049905,IBRX,"ImmunityBio, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02049905,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03022825,IBRX,"ImmunityBio, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT03022825,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03520686,IBRX,"ImmunityBio, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03520686,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06022224,IBRX,"ImmunityBio, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT06022224,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06745908,IBRX,"ImmunityBio, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06745908,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07492875,IBRX,"ImmunityBio, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT07492875,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07524257,IBRX,"ImmunityBio, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT07524257,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07551544,IBRX,"ImmunityBio, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT07551544,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05987332,IDYA,IDEAYA Biosciences,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05987332,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07015190,IDYA,IDEAYA Biosciences,RECRUITING,https://clinicaltrials.gov/study/NCT07015190,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07804186,IDYA,IDEAYA Biosciences,RECRUITING,https://clinicaltrials.gov/study/NCT07804186,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04871282,IMNM,"Immunome, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04871282,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06295731,INBX,"Inhibrx Biosciences, Inc",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06295731,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00017407,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00017407,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00048113,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00048113,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00048295,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00048295,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01737398,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01737398,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02175004,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02175004,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02211209,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02211209,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02300233,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02300233,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04136171,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04136171,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04136184,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04136184,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04568434,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04568434,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04768972,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04768972,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04849741,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04849741,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05071300,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05071300,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05079919,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05079919,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05130450,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05130450,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05139810,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05139810,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05185843,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05185843,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05392114,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05392114,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05552326,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05552326,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05610280,IONS,"Ionis Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05610280,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05667493,IONS,"Ionis Pharmaceuticals, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05667493,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05681351,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05681351,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06914609,IONS,"Ionis Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06914609,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07298447,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07298447,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07727538,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07727538,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07782827,IONS,"Ionis Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07782827,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05727904,IOVA,"Iovance Biotherapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05727904,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04620213,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT04620213,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04638660,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT04638660,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05134974,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05134974,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05223478,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05223478,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05646719,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT05646719,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06349759,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06349759,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06542497,IRD,"Opus Genetics, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06542497,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07140783,IRD,"Opus Genetics, Inc",RECRUITING,https://clinicaltrials.gov/study/NCT07140783,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05883748,IRON,"Disc Medicine, Inc",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05883748,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06910358,IRON,"Disc Medicine, Inc",COMPLETED,https://clinicaltrials.gov/study/NCT06910358,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00730015,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00730015,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00730171,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00730171,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00938717,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00938717,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02291679,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02291679,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03561090,IRWD,"Ironwood Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03561090,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03561883,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03561883,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03573908,IRWD,"Ironwood Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03573908,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07001800,KARD,"Kardigan, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07001800,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07210723,KARD,"Kardigan, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07210723,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07771465,KARD,"Kardigan, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07771465,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00460096,KMDA,"Kamada, Ltd.",COMPLETED,https://clinicaltrials.gov/study/NCT00460096,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01217671,KMDA,"Kamada, Ltd.",COMPLETED,https://clinicaltrials.gov/study/NCT01217671,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02040090,KMDA,"Kamada, Ltd.",COMPLETED,https://clinicaltrials.gov/study/NCT02040090,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02912845,KMDA,"Kamada, Ltd.",COMPLETED,https://clinicaltrials.gov/study/NCT02912845,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04204252,KMDA,"Kamada, Ltd.",TERMINATED,https://clinicaltrials.gov/study/NCT04204252,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04447469,KNSA,"Kiniksa Pharmaceuticals International, plc",COMPLETED,https://clinicaltrials.gov/study/NCT04447469,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07010159,KNSA,"Kiniksa Pharmaceuticals International, plc",RECRUITING,https://clinicaltrials.gov/study/NCT07010159,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04049266,KOD,Kodiak Sciences Inc,TERMINATED,https://clinicaltrials.gov/study/NCT04049266,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04592419,KOD,Kodiak Sciences Inc,COMPLETED,https://clinicaltrials.gov/study/NCT04592419,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04603937,KOD,Kodiak Sciences Inc,TERMINATED,https://clinicaltrials.gov/study/NCT04603937,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04611152,KOD,Kodiak Sciences Inc,TERMINATED,https://clinicaltrials.gov/study/NCT04611152,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04964089,KOD,Kodiak Sciences Inc,COMPLETED,https://clinicaltrials.gov/study/NCT04964089,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05066230,KOD,Kodiak Sciences Inc,TERMINATED,https://clinicaltrials.gov/study/NCT05066230,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06270836,KOD,Kodiak Sciences Inc,COMPLETED,https://clinicaltrials.gov/study/NCT06270836,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06556368,KOD,Kodiak Sciences Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06556368,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06990399,KOD,Kodiak Sciences Inc,RECRUITING,https://clinicaltrials.gov/study/NCT06990399,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06996080,KOD,Kodiak Sciences Inc,RECRUITING,https://clinicaltrials.gov/study/NCT06996080,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07734844,KOD,Kodiak Sciences Inc,RECRUITING,https://clinicaltrials.gov/study/NCT07734844,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04491604,KRYS,"Krystal Biotech, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04491604,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04917874,KRYS,"Krystal Biotech, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04917874,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07016750,KRYS,"Krystal Biotech, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07016750,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07007312,KURA,"Kura Oncology, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07007312,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06193889,KYTX,Kyverna Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06193889,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07363577,LBRX,LB Pharmaceuticals Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07363577,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07369154,LBRX,LB Pharmaceuticals Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07369154,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00141323,LGND,Ligand Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT00141323,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00163137,LGND,Ligand Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT00163137,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02914561,LKFT,Lakefront Biotherapeutics NV,COMPLETED,https://clinicaltrials.gov/study/NCT02914561,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02914600,LKFT,Lakefront Biotherapeutics NV,TERMINATED,https://clinicaltrials.gov/study/NCT02914600,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03711162,LKFT,Lakefront Biotherapeutics NV,TERMINATED,https://clinicaltrials.gov/study/NCT03711162,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03733444,LKFT,Lakefront Biotherapeutics NV,TERMINATED,https://clinicaltrials.gov/study/NCT03733444,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05479058,LKFT,Lakefront Biotherapeutics NV,TERMINATED,https://clinicaltrials.gov/study/NCT05479058,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06652633,LKFT,Lakefront Biotherapeutics NV,RECRUITING,https://clinicaltrials.gov/study/NCT06652633,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01677910,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT01677910,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02026063,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02026063,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02063659,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02063659,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02384941,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02384941,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02421510,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02421510,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02531035,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02531035,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02926937,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02926937,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02926950,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02926950,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03066830,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03066830,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03242018,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03242018,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03242252,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03242252,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03285594,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03285594,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03315143,LXRX,Lexicon Pharmaceuticals,TERMINATED,https://clinicaltrials.gov/study/NCT03315143,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03332771,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03332771,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03351478,LXRX,Lexicon Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03351478,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03386344,LXRX,Lexicon Pharmaceuticals,TERMINATED,https://clinicaltrials.gov/study/NCT03386344,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03521934,LXRX,Lexicon Pharmaceuticals,TERMINATED,https://clinicaltrials.gov/study/NCT03521934,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06481891,LXRX,Lexicon Pharmaceuticals,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06481891,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06724614,MANE,"Veradermics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06724614,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06972264,MANE,"Veradermics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06972264,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07146022,MANE,"Veradermics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07146022,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07699471,MBX,MBX Biosciences,RECRUITING,https://clinicaltrials.gov/study/NCT07699471,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00366145,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00366145,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00482092,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00482092,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00543374,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00543374,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00562497,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00562497,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01233960,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01233960,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01854567,MESO,"Mesoblast, Ltd.",COMPLETED,https://clinicaltrials.gov/study/NCT01854567,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02032004,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02032004,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02336230,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02336230,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02412735,MESO,"Mesoblast, Ltd.",COMPLETED,https://clinicaltrials.gov/study/NCT02412735,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02652130,MESO,"Mesoblast, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02652130,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06325566,MESO,"Mesoblast, Ltd.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06325566,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07568535,MESO,"Mesoblast, Ltd.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07568535,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00007020,MIRM,"Mirum Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00007020,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01115582,MIRM,"Mirum Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01115582,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01438411,MIRM,"Mirum Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01438411,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03353454,MIRM,"Mirum Pharmaceuticals, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT03353454,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT03905330,MIRM,"Mirum Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03905330,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04185363,MIRM,"Mirum Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04185363,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04270682,MIRM,"Mirum Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04270682,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06553768,MIRM,"Mirum Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06553768,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06907290,MIRM,"Mirum Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06907290,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07200908,MIRM,"Mirum Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07200908,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07298330,MIRM,"Mirum Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07298330,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07454837,MIRM,"Mirum Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07454837,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06411379,MLTX,MoonLake Immunotherapeutics AG,COMPLETED,https://clinicaltrials.gov/study/NCT06411379,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06411899,MLTX,MoonLake Immunotherapeutics AG,COMPLETED,https://clinicaltrials.gov/study/NCT06411899,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06641076,MLTX,MoonLake Immunotherapeutics AG,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06641076,GEM_JR_RESEARCH,GEM_JR,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06641089,MLTX,MoonLake Immunotherapeutics AG,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06641089,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06768671,MLTX,MoonLake Immunotherapeutics AG,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06768671,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07007637,MLTX,MoonLake Immunotherapeutics AG,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07007637,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07223138,MLTX,MoonLake Immunotherapeutics AG,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07223138,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05968430,MLYS,Mineralys Therapeutics Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05968430,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06153693,MLYS,Mineralys Therapeutics Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT06153693,GEM_JR_RESEARCH,GEM,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00308308,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00308308,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00308737,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00308737,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00309244,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00309244,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00332488,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00332488,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00332826,MNKD,Mannkind Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT00332826,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00539890,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00539890,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00642616,MNKD,Mannkind Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT00642616,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT00700622,MNKD,Mannkind Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT00700622,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT01196104,MNKD,Mannkind Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT01196104,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT01445951,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT01445951,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01451398,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT01451398,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04974528,MNKD,Mannkind Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT04974528,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06418711,MNKD,Mannkind Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT06418711,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04648020,MNPR,Monopar Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT04648020,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05898620,NGNE,Neurogene Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05898620,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01492101,NKTR,Nektar Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT01492101,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02362672,NKTR,Nektar Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02362672,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02367820,NKTR,Nektar Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02367820,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02915744,NKTR,Nektar Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02915744,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03729245,NKTR,Nektar Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT03729245,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04410445,NKTR,Nektar Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT04410445,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04969861,NKTR,Nektar Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT04969861,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05664217,NKTR,Nektar Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT05664217,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT07690371,NKTR,Nektar Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07690371,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07711418,NKTR,Nektar Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07711418,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07516093,NRIX,"Nurix Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07516093,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06128629,NTLA,Intellia Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06128629,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06634420,NTLA,Intellia Therapeutics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06634420,GEM_JR_RESEARCH,GEM,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06672237,NTLA,Intellia Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06672237,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05303519,NUVB,Nuvation Bio Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT05303519,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06564324,NUVB,Nuvation Bio Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT06564324,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07154706,NUVB,Nuvation Bio Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07154706,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07712757,NUVB,Nuvation Bio Inc.,NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07712757,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT02608502,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT02608502,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02624947,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT02624947,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04120194,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT04120194,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04583995,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT04583995,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04611802,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT04611802,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05372588,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05372588,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05463068,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05463068,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05468736,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05468736,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05875701,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05875701,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05925127,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05925127,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05973006,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05973006,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05975060,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT05975060,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06291857,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT06291857,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06409663,NVAX,Novavax,COMPLETED,https://clinicaltrials.gov/study/NCT06409663,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06482359,NVAX,Novavax,WITHDRAWN,https://clinicaltrials.gov/study/NCT06482359,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06485752,NVAX,Novavax,WITHDRAWN,https://clinicaltrials.gov/study/NCT06485752,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT01498224,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01498224,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02034019,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02034019,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02089113,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02089113,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02445326,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02445326,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02736175,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02736175,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02914509,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02914509,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02988882,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02988882,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04050865,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04050865,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04061044,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04061044,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04539548,OCUL,"Ocular Therapeutix, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04539548,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06223958,OCUL,"Ocular Therapeutix, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06223958,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06495918,OCUL,"Ocular Therapeutix, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06495918,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07235085,OCUL,"Ocular Therapeutix, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07235085,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07516132,OCUL,"Ocular Therapeutix, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07516132,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06016738,OLMA,"Olema Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06016738,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07085767,OLMA,"Olema Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07085767,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00226759,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00226759,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00226772,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00226772,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00245271,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00245271,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00624845,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00624845,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01406561,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT01406561,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01454063,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT01454063,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01579565,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT01579565,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02093689,OMER,Omeros Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT02093689,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02132312,OMER,Omeros Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT02132312,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03205995,OMER,Omeros Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT03205995,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03608033,OMER,Omeros Corporation,TERMINATED,https://clinicaltrials.gov/study/NCT03608033,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT00499590,OPK,"OPKO Health, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT00499590,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT00557791,OPK,"OPKO Health, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT00557791,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT01219855,OPK,"OPKO Health, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01219855,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01909479,OPK,"OPKO Health, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT01909479,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02282813,OPK,"OPKO Health, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02282813,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02968004,OPK,"OPKO Health, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02968004,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03874013,OPK,"OPKO Health, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03874013,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05543928,OPK,"OPKO Health, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT05543928,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT07723248,ORIC,ORIC Pharmaceuticals,RECRUITING,https://clinicaltrials.gov/study/NCT07723248,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04106557,OVID,Ovid Therapeutics Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT04106557,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00878709,PBYI,"Puma Biotechnology, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00878709,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01808573,PBYI,"Puma Biotechnology, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT01808573,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04124926,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04124926,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04167670,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04167670,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05195528,PHAT,"Phathom Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05195528,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07752407,PHAT,"Phathom Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07752407,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04832425,PRAX,Praxis Precision Medicines,COMPLETED,https://clinicaltrials.gov/study/NCT04832425,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05818553,PRAX,Praxis Precision Medicines,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05818553,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06087276,PRAX,Praxis Precision Medicines,RECRUITING,https://clinicaltrials.gov/study/NCT06087276,GEM_JR_RESEARCH,GEM,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06999902,PRAX,Praxis Precision Medicines,COMPLETED,https://clinicaltrials.gov/study/NCT06999902,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07010471,PRAX,Praxis Precision Medicines,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07010471,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07019922,PRAX,Praxis Precision Medicines,RECRUITING,https://clinicaltrials.gov/study/NCT07019922,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07287163,PRAX,Praxis Precision Medicines,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT07287163,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07505004,PRAX,Praxis Precision Medicines,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07505004,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05099770,PROK,Prokidney,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05099770,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05286853,PROK,Prokidney,WITHDRAWN,https://clinicaltrials.gov/study/NCT05286853,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT00803205,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT00803205,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01140451,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT01140451,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01247207,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT01247207,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT01557400,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT01557400,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01826487,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT01826487,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02090959,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT02090959,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02107859,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT02107859,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02139306,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02139306,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02456103,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT02456103,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03179631,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03179631,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03642145,PTCT,PTC Therapeutics,WITHDRAWN,https://clinicaltrials.gov/study/NCT03642145,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT03783923,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT03783923,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04378075,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT04378075,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04439071,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT04439071,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04577352,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT04577352,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05099640,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT05099640,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05166161,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT05166161,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05218655,PTCT,PTC Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT05218655,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05269355,PTCT,PTC Therapeutics,TERMINATED,https://clinicaltrials.gov/study/NCT05269355,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05515536,PTCT,PTC Therapeutics,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05515536,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06302348,PTCT,PTC Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT06302348,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07681713,PTCT,PTC Therapeutics,NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07681713,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05210790,PTGX,"Protagonist Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05210790,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06033586,PTGX,"Protagonist Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06033586,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03920228,PVLA,"Palvella Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03920228,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04520750,PVLA,"Palvella Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04520750,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05180708,PVLA,"Palvella Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05180708,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05643872,PVLA,"Palvella Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05643872,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06239480,PVLA,"Palvella Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06239480,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07563881,RAPP,Rapport Therapeutics Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07563881,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07594119,RAPP,Rapport Therapeutics Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07594119,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02230566,RARE,Ultragenyx Pharmaceutical Inc,COMPLETED,https://clinicaltrials.gov/study/NCT02230566,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02377921,RARE,Ultragenyx Pharmaceutical Inc,COMPLETED,https://clinicaltrials.gov/study/NCT02377921,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02432144,RARE,Ultragenyx Pharmaceutical Inc,COMPLETED,https://clinicaltrials.gov/study/NCT02432144,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02716246,RARE,Ultragenyx Pharmaceutical Inc,RECRUITING,https://clinicaltrials.gov/study/NCT02716246,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02736188,RARE,Ultragenyx Pharmaceutical Inc,TERMINATED,https://clinicaltrials.gov/study/NCT02736188,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02960217,RARE,Ultragenyx Pharmaceutical Inc,TERMINATED,https://clinicaltrials.gov/study/NCT02960217,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04360265,RARE,Ultragenyx Pharmaceutical Inc,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT04360265,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05125809,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05125809,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05139316,RARE,Ultragenyx Pharmaceutical Inc,COMPLETED,https://clinicaltrials.gov/study/NCT05139316,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05345171,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05345171,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05768854,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05768854,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05933200,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05933200,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06415344,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06415344,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06617429,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06617429,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06636071,RARE,Ultragenyx Pharmaceutical Inc,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06636071,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05568095,RCUS,"Arcus Biosciences, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05568095,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06608927,RCUS,"Arcus Biosciences, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06608927,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07011719,RCUS,"Arcus Biosciences, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07011719,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03566043,RGNX,REGENXBIO Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT03566043,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05693142,RGNX,REGENXBIO Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05693142,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07236606,RGNX,REGENXBIO Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07236606,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02076399,RIGL,Rigel Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02076399,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02076412,RIGL,Rigel Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02076412,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02077192,RIGL,Rigel Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT02077192,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03764618,RIGL,Rigel Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT03764618,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04138927,RIGL,Rigel Pharmaceuticals,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT04138927,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04629703,RIGL,Rigel Pharmaceuticals,COMPLETED,https://clinicaltrials.gov/study/NCT04629703,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06982521,RLAY,"Relay Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06982521,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04688164,RLMD,"Relmada Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04688164,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04855760,RLMD,"Relmada Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04855760,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05081167,RLMD,"Relmada Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05081167,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07313891,RLMD,"Relmada Therapeutics, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT07313891,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07342517,RLMD,"Relmada Therapeutics, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT07342517,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07464145,RLMD,"Relmada Therapeutics, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07464145,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05130866,RXRX,Recursion Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT05130866,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT02896192,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02896192,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03287960,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03287960,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03651765,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03651765,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03746522,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03746522,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04966741,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04966741,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05093634,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05093634,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05194124,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05194124,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05774756,RYTM,"Rhythm Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05774756,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06596135,RYTM,"Rhythm Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT06596135,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06760546,RYTM,"Rhythm Pharmaceuticals, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06760546,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06594523,SGMT,Sagimet Biosciences Inc.,WITHDRAWN,https://clinicaltrials.gov/study/NCT06594523,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06692283,SGMT,Sagimet Biosciences Inc.,WITHDRAWN,https://clinicaltrials.gov/study/NCT06692283,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07863193,SGMT,Sagimet Biosciences Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07863193,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07160634,SLDB,Solid Biosciences Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT07160634,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04229979,SLS,Sellas Life Sciences Group,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04229979,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07211958,SNDX,Syndax Pharmaceuticals,RECRUITING,https://clinicaltrials.gov/study/NCT07211958,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02255552,SRPT,"Sarepta Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02255552,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02500381,SRPT,"Sarepta Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02500381,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03532542,SRPT,"Sarepta Therapeutics, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03532542,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03992430,SRPT,"Sarepta Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT03992430,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05096221,SRPT,"Sarepta Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT05096221,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05881408,SRPT,"Sarepta Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05881408,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05967351,SRPT,"Sarepta Therapeutics, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05967351,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06246513,SRPT,"Sarepta Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06246513,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06952686,SRPT,"Sarepta Therapeutics, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT06952686,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06872125,STOK,"Stoke Therapeutics, Inc",RECRUITING,https://clinicaltrials.gov/study/NCT06872125,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00772603,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00772603,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT00908349,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT00908349,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02477618,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02477618,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02618408,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02618408,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02618434,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02618434,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02691182,SUPN,"Supernus Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT02691182,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02736656,SUPN,"Supernus Pharmaceuticals, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT02736656,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02942004,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02942004,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02942017,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02942017,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03247517,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03247517,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03247530,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03247530,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03247543,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03247543,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03247556,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03247556,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03597503,SUPN,"Supernus Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03597503,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03665038,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03665038,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04016779,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04016779,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04016792,SUPN,"Supernus Pharmaceuticals, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT04016792,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04143217,SUPN,"Supernus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04143217,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05655520,SUPN,"Supernus Pharmaceuticals, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT05655520,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT01507857,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT01507857,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT01636245,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT01636245,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02451969,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT02451969,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03526978,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT03526978,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03822754,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT03822754,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03822767,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT03822767,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03853993,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT03853993,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03859141,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT03859141,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03909074,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT03909074,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04386707,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT04386707,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05245552,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT05245552,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05386810,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT05386810,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05431725,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT05431725,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05850364,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT05850364,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06049927,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT06049927,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06734832,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT06734832,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07055295,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07055295,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07055893,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07055893,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07211152,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07211152,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07357545,SVA,"Sinovac Biotech Co., Ltd",COMPLETED,https://clinicaltrials.gov/study/NCT07357545,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07416110,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07416110,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07505810,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07505810,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07505823,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07505823,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07505836,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07505836,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07505888,SVA,"Sinovac Biotech Co., Ltd",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07505888,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07611513,SVA,"Sinovac Biotech Co., Ltd",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07611513,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07793227,SVA,"Sinovac Biotech Co., Ltd",RECRUITING,https://clinicaltrials.gov/study/NCT07793227,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03181932,SVRA,Savara Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT03181932,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03482752,SVRA,Savara Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT03482752,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04544293,SVRA,Savara Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04544293,GEM_JR_RESEARCH,GEM,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06431776,SVRA,Savara Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT06431776,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04475432,TARS,"Tarsus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04475432,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04784091,TARS,"Tarsus Pharmaceuticals, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04784091,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02301156,TGTX,"TG Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT02301156,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02612311,TGTX,"TG Therapeutics, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT02612311,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT02793583,TGTX,"TG Therapeutics, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT02793583,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT03277248,TGTX,"TG Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03277248,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03277261,TGTX,"TG Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03277261,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03801525,TGTX,"TG Therapeutics, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03801525,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04130997,TGTX,"TG Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04130997,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05877963,TGTX,"TG Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT05877963,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07211633,TGTX,"TG Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07211633,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07220252,TGTX,"TG Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT07220252,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02143648,TRVI,Trevi Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02143648,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02143973,TRVI,Trevi Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02143973,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02174419,TRVI,Trevi Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02174419,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT02174432,TRVI,Trevi Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT02174432,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03497975,TRVI,Trevi Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03497975,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT07671911,TRVI,Trevi Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07671911,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07868419,TRVI,Trevi Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07868419,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05606614,TSHA,"Taysha Gene Therapies, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05606614,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07480564,TSHA,"Taysha Gene Therapies, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07480564,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07355075,TTRX,Turn Therapeutics,RECRUITING,https://clinicaltrials.gov/study/NCT07355075,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03041116,TVTX,"Travere Therapeutics, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT03041116,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT03493685,TVTX,"Travere Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03493685,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03762850,TVTX,"Travere Therapeutics, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT03762850,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06247085,TVTX,"Travere Therapeutics, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06247085,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06431893,TVTX,"Travere Therapeutics, Inc.",ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT06431893,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT02793128,URGN,UroGen Pharma Ltd.,COMPLETED,https://clinicaltrials.gov/study/NCT02793128,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04006691,URGN,UroGen Pharma Ltd.,WITHDRAWN,https://clinicaltrials.gov/study/NCT04006691,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04688931,URGN,UroGen Pharma Ltd.,TERMINATED,https://clinicaltrials.gov/study/NCT04688931,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05136898,URGN,UroGen Pharma Ltd.,COMPLETED,https://clinicaltrials.gov/study/NCT05136898,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05243550,URGN,UroGen Pharma Ltd.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT05243550,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06331299,URGN,UroGen Pharma Ltd.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06331299,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT06774131,URGN,UroGen Pharma Ltd.,RECRUITING,https://clinicaltrials.gov/study/NCT06774131,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00505219,VCEL,Vericel Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00505219,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT00719576,VCEL,Vericel Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT00719576,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT01483898,VCEL,Vericel Corporation,COMPLETED,https://clinicaltrials.gov/study/NCT01483898,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03588975,VCEL,Vericel Corporation,RECRUITING,https://clinicaltrials.gov/study/NCT03588975,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06915233,VCEL,Vericel Corporation,RECRUITING,https://clinicaltrials.gov/study/NCT06915233,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04716231,VERA,"Vera Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT04716231,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT05609812,VERA,"Vera Therapeutics, Inc.",WITHDRAWN,https://clinicaltrials.gov/study/NCT05609812,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT04545060,VIR,"Vir Biotechnology, Inc.",COMPLETED,https://clinicaltrials.gov/study/NCT04545060,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT04913675,VIR,"Vir Biotechnology, Inc.",TERMINATED,https://clinicaltrials.gov/study/NCT04913675,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT06903338,VIR,"Vir Biotechnology, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06903338,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07128550,VIR,"Vir Biotechnology, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07128550,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07104383,VKTX,"Viking Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07104383,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07104500,VKTX,"Viking Therapeutics, Inc.",ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07104500,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07868835,VKTX,"Viking Therapeutics, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07868835,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT07868939,VKTX,"Viking Therapeutics, Inc.",NOT_YET_RECRUITING,https://clinicaltrials.gov/study/NCT07868939,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT05306574,VOR,Vor Biopharma,TERMINATED,https://clinicaltrials.gov/study/NCT05306574,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06456567,VOR,Vor Biopharma,WITHDRAWN,https://clinicaltrials.gov/study/NCT06456567,PIPELINE_REVIEW,NONE,,0,Trial inactive or status not sufficient to infer success
+NCT06456580,VOR,Vor Biopharma,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06456580,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07404865,VOR,Vor Biopharma,RECRUITING,https://clinicaltrials.gov/study/NCT07404865,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06072781,VSTM,"Verastem, Inc.",RECRUITING,https://clinicaltrials.gov/study/NCT06072781,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT04639310,XENE,Xenon Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04639310,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT04912856,XENE,Xenon Pharmaceuticals Inc.,TERMINATED,https://clinicaltrials.gov/study/NCT04912856,PIPELINE_REVIEW,NONE,,1,Trial inactive or status not sufficient to infer success
+NCT05614063,XENE,Xenon Pharmaceuticals Inc.,COMPLETED,https://clinicaltrials.gov/study/NCT05614063,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05667142,XENE,Xenon Pharmaceuticals Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT05667142,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05716100,XENE,Xenon Pharmaceuticals Inc.,RECRUITING,https://clinicaltrials.gov/study/NCT05716100,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT05718817,XENE,Xenon Pharmaceuticals Inc.,ENROLLING_BY_INVITATION,https://clinicaltrials.gov/study/NCT05718817,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06775379,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06775379,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT06922110,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT06922110,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07076407,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07076407,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07172516,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07172516,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT07217860,XENE,Xenon Pharmaceuticals Inc.,ACTIVE_NOT_RECRUITING,https://clinicaltrials.gov/study/NCT07217860,GEM_JR_RESEARCH,NONE,,0,Active/completed Phase 3; successful endpoint not verified
+NCT03292952,ZVRA,Zevra Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03292952,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified
+NCT03460652,ZVRA,Zevra Therapeutics,COMPLETED,https://clinicaltrials.gov/study/NCT03460652,GEM_JR_RESEARCH,NONE,,1,Active/completed Phase 3; successful endpoint not verified

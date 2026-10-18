@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-10-18T15:31:23.718440+00:00",
+  "assessed_trials": 730,
+  "gem_evidence_candidates": 0,
+  "gem_jr_research": 608,
+  "pipeline_review": 122,
+  "reconciled": true,
+  "existing_gem_overlap": 5,
+  "existing_gem_jr_overlap": 3,
+  "warning": "Every trial assessed with available saved evidence. GEM_EVIDENCE_CANDIDATE is NOT verified full GEM qualification. GEM_JR_RESEARCH is a broad research bucket, not proof of successful Phase 3. Clinical endpoint/FDA/financing checks still missing for many trials."
+}
