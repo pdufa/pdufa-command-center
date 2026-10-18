@@ -216,7 +216,12 @@ def evaluate_entry(event, evidence, financing, sec_recheck, market, now):
                    and safe_source(attested.get("financing_closure_review_source"),sec=True))
     if closures_ok:
         gates["second_financing"] = "PASS — REVIEWED ORDERED POST-READOUT SEC CLOSURES"
-    if closures_ok and dated_source(attested, "atm_dilution_source", "atm_reviewed_at", now, days=7, sec=True):
+    # The current issuer ATM/dilution audit is an INDEPENDENT SEC safeguard:
+    # neither its review nor a clean result proves two financing closes.
+    # Require exact clinical identity, recent unblocked SEC checks and
+    # program-specific dated SEC dilution documentation instead.
+    if (identity_ok and sec_ok and
+            dated_source(attested, "atm_dilution_source", "atm_reviewed_at", now, days=7, sec=True)):
         if str(attested.get("atm_dilution_status") or "").upper() == "NO_ACTIVE_UNRESOLVED":
             gates["no_unresolved_dilution"] = "PASS — REVIEWER ATTESTED NO UNRESOLVED ATM/DILUTION"
     market_now = day(market.get("checked_at_utc"))
@@ -243,13 +248,16 @@ def evaluate_entry(event, evidence, financing, sec_recheck, market, now):
         verdict = "EXCLUDED — DECIDED OR PAST PDUFA"
     elif not pdufa:
         verdict = "REVIEW — VERIFIED PDUFA DATE MISSING"
-    elif all(g.startswith("PASS") for g in gates.values()):
-        verdict = "ENTRY READY — ATTESTED EVIDENCE / NOT INDEPENDENTLY AUDITED"
+    elif all(value.startswith("PASS") for key, value in gates.items()
+             if key != "second_financing"):
+        verdict = "ENTRY READY — ATTESTED NON-FINANCING EVIDENCE / NOT INDEPENDENTLY AUDITED"
     else:
         verdict = "REVIEW — ENTRY GATES NOT CLEARED"
     for name,val in gates.items():
-        if not val.startswith("PASS"):
+        if not val.startswith("PASS") and name != "second_financing":
             reasons.append(name+": "+val)
+    if not gates["second_financing"].startswith("PASS"):
+        reasons.append("OPTIONAL financing #2: independently verified second close not recorded")
     return {"event_key":key,"verdict":verdict,"gates":gates,
             "market_observations":observation,"missing":reasons,
             "clinical_verification":"REVIEWER ATTESTED, NOT AUTOMATICALLY VERIFIED BY ISSUER API"
