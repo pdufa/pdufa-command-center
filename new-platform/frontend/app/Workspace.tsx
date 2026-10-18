@@ -631,6 +631,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   function gemBlock(stage: "GEM_JR" | "GEM") {
     const group = snapshot?.members[stage];
     const scanned=gemScans[stage];
+    // Only a current GEM JR scan may supply GEM input. Never silently
+    // substitute saved GEM JR membership if no scan is available.
+    const juniorScan=gemScans.GEM_JR;
+    const currentJuniorScan=juniorScan && juniorScan.asOf===snapshot?.asOf && juniorScan.sourceTotal===pipeline.length ? juniorScan : null;
     // A screen is an unsaved research view, never a change to saved membership.
     // Re-run after published source refresh; never reuse results from another snapshot.
     const activeScan=scanned && scanned.asOf===snapshot?.asOf && scanned.sourceTotal===pipeline.length ? scanned : null;
@@ -699,17 +703,23 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{rows.length} {activeScan?(activeScan.sourceKind==="GEM_JR"?"GEM JR input scan results":"PIPELINE scan results"):"saved programs"} · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
-      <GemQualificationChecklist stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} gemJrCandidates={snapshot?.members.GEM_JR.rows || []}
-        onReset={()=>setGemScans(current=>{if(!current[stage])return current;const next={...current};delete next[stage];return next;})}
+      <GemQualificationChecklist stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} gemJrScan={currentJuniorScan}
+        onReset={()=>setGemScans(current=>{
+          // Changing GEM JR criteria invalidates both its old scan and any GEM
+          // result derived from that old upstream candidate pool.
+          if(stage==="GEM_JR")return current.GEM_JR||current.GEM?{}:current;
+          if(!current.GEM)return current;
+          const next={...current};delete next.GEM;return next;
+        })}
         onScan={result=>{
-          setGemScans(current=>({...current,[stage]:result}));
+          setGemScans(current=>stage==="GEM_JR"?{GEM_JR:result}:{...current,GEM:result});
           setGemQuery("");
           setGemTrialExpanded(current=>({...current,[stage]:false}));
           setGemTrialSections(current=>Object.fromEntries(Object.entries(current).filter(([key])=>!key.startsWith(stage+"|"))));
         }} />
       {activeScan && <div className="panel" role="status" aria-live="polite" style={{marginBottom:12,padding:14,border:"1px solid #76947d",borderRadius:7,background:"#f3fcf5"}}>
         <strong>{activeScan.sourceKind==="GEM_JR"?"GEM JR INPUT":"PIPELINE"} SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
-        <p><strong>{(activeScan.passes.length+activeScan.needsReview.length).toLocaleString("en-US")} TOTAL COMBINED CANDIDATES</strong> · intersection of all checked requirements (AND), no duplicate counting. Of {activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"saved GEM JR candidates":"PIPELINE records"} assessed: {activeScan.passes.length.toLocaleString("en-US")} verified matches · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} excluded.</p>
+        <p><strong>{(activeScan.passes.length+activeScan.needsReview.length).toLocaleString("en-US")} TOTAL COMBINED CANDIDATES</strong> · intersection of all checked requirements (AND), no duplicate counting. Of {activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"GEM JR scan candidates":"PIPELINE records"} assessed: {activeScan.passes.length.toLocaleString("en-US")} verified matches · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} excluded.</p>
         <p className="subtle">Checked requirements: {activeScan.audits.map(a=>a.label).join("; ")||"None — unrestricted"}. Only programs satisfying every selected check or needing verification are included in the table, never a sum of independent criterion totals. Nothing is automatically added to GEM membership. Source {stated(activeScan.asOf)}; run finished {new Date(activeScan.evaluatedAt).toLocaleString()}.</p>
         <button type="button" className="secondary" onClick={()=>setGemScans(current=>{const next={...current};delete next[stage];return next})}>SHOW SAVED {stage==="GEM"?"GEM":"GEM JR"} LIST</button>
       </div>}
