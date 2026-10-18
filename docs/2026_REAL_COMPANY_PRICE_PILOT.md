@@ -134,3 +134,25 @@ fully adjusted historical OHLCV from Alpaca, or tradable GEM entries.
 Important original-goal corrections: VRDN was June 30 (not June 26
 FDA approval), and REPL was August 2 (not August 6 FDA approval).
 Market-cap requirement remains OFF for the 2026 study.
+
+## Two additional issuer-date corrections and stock comparisons
+
+| Stock | Original FDA goal | Entry close T-30 | T-14 net return | T-3 descriptive net return | Treatment |
+|---|---|---:|---:|---:|---|
+| OTLK | July 29 | $1.69 (June 29) | -7.88% (July 15) | -16.73% (July 24) | FDA approval July 24 on T-3 closing date: exclude as unverified pre-action |
+| TLX | Sept 11 | $11.97 (Aug 12) | -5.87% (Aug 28) | -0.12% (Sep 8) | Clean both, FDA approval announced Sep 14 |
+
+Original sponsor dates: OTLK June 16 2026 release states July 29 goal
+(https://ir.oncobiologics.com/news-releases/news-release-details/outlook-therapeutics-announces-fda-acceptance-resubmitted).
+TLX April 10 2026 release states September 11 goal
+(https://telixpharma.com/news-views/fda-accepts-nda-for-tlx101-px-pixclara/).
+Actual price-source links are in the companion CSV.
+
+**Updated**: combining the prior CING/ACHV/UNCY with the new clean
+ARQT/VERA/REPL/MRNA/TLX examples yields eight calendar-price cases with
+both late and early scheduled exits preceding documented FDA action.
+Average T-14 return -2.16%, T-3 -5.04%; wins 3/8 for each.
+These are descriptive tiny-sample statistics with major selection bias
+and depend strongly on the REPL drawdown. The other four calendar cases
+VRDN/LNTH/CELC/OTLK have late-window FDA same-day/censor caveats.
+**No fully qualified GEM two-financing entry has been backtested.**
