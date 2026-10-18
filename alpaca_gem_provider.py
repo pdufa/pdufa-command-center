@@ -127,9 +127,10 @@ def render_provider_panel(stage, root="data"):
     """Optional on-demand Streamlit chart metrics directly under each GEM page."""
     import streamlit as st
     from urllib.error import HTTPError
+    stage_code="GEM_JR" if stage in {"GEM JR", "GEM_JR"} else "GEM"
     programs=[p for p in active_stage_programs(
-        Path(root)/"gem_stage_membership.json") if p["stage"]==stage]
-    heading="GEM JR" if stage=="GEM_JR" else "GEM"
+        Path(root)/"gem_stage_membership.json") if p["stage"]==stage_code]
+    heading="GEM JR" if stage_code=="GEM_JR" else "GEM"
     with st.expander(f"ALPACA DAILY MARKET DATA — {heading}",expanded=False):
         st.caption(
             "Alpaca is the market-data provider. Read-only EOD historical bars; "
