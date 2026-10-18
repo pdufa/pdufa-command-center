@@ -396,6 +396,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const gemTableScrollViewport=useRef<HTMLDivElement|null>(null);
   const [gemTrialExpanded,setGemTrialExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:true,GEM:true});
   const [gemTrialSections,setGemTrialSections]=useState<Record<string,boolean>>({});
+  // Mobile-only qualification criteria: initially collapsed for both stages.
+  // On desktop CSS keeps the complete criteria visible, regardless of this state.
+  const [gemCriteriaExpanded,setGemCriteriaExpanded]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
@@ -664,10 +667,18 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </div>
       </div>}
       <div className="gem-body">
-        <aside className="gem-criteria">
-          <h3>Qualification criteria</h3>
-          <p className="subtle">Source observations beside target levels for the selected program.</p>
-          <Goals record={chosen} />
+        <aside className="gem-criteria gem-criteria-responsive" data-open={gemCriteriaExpanded[stage]?"true":"false"}>
+          <h3 className="gem-criteria-desktop-heading">Qualification criteria</h3>
+          <button type="button" className="gem-criteria-mobile-trigger"
+            aria-expanded={gemCriteriaExpanded[stage]} aria-controls={"gem-criteria-content-"+stage}
+            onClick={()=>setGemCriteriaExpanded(current=>({...current,[stage]:!current[stage]}))}>
+            <span>Qualification criteria</span>
+            <span className="gem-criteria-trigger-state" aria-hidden="true">{gemCriteriaExpanded[stage]?"− Hide ▲":"+ Show ▼"}</span>
+          </button>
+          <div className="gem-criteria-collapsible-content" id={"gem-criteria-content-"+stage}>
+            <p className="subtle">Source observations beside target levels for the selected program.</p>
+            <Goals record={chosen} />
+          </div>
         </aside>
         <div className="gem-table-panel">
           <div className="sectionhead gem-table-heading">
