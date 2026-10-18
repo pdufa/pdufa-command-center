@@ -1,10 +1,9 @@
-"""Absolute, independent GEM trade-entry financing prerequisite.
+"""GEM financing-evidence monitor, with optional second-close status.
 
-A historical mention, proposed offering, priced transaction, or a ticker-only
-match never proves two SEPARATE closes after the exact program's Phase 3
-readout. This checks persisted, reviewer-audited primary-source assertions,
-NOT the live contents of SEC filings. An independently fresh SEC recheck and
-all remaining entry gates are still required before entry consideration.
+A historical mention, proposed offering, priced transaction, or ticker-only
+match never proves two SEPARATE funded closes. A second close is NOT an entry
+prerequisite. Separate fresh-source, dilution, cash runway, clinical, technical
+and FDA safety checks still govern any human review; no orders are placed.
 """
 from __future__ import annotations
 
@@ -64,22 +63,20 @@ def entry_status(*, closed, qualified, feed_current, days_to_pdufa,
         return "NO ENTRY — FDA EVENT RESOLVED"
     if isinstance(days_to_pdufa, int) and days_to_pdufa <= 3:
         return "NO NEW ENTRY — PDUFA −3 EXIT BOUNDARY"
-    # Pre-financing must ALWAYS remain watch-only, regardless of any score.
-    if not closed:
-        return "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED"
     if not feed_current:
         return "HOLD — STALE SOURCE EVIDENCE"
     if qualified:
-        return "POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER"
-    return "POST-CLOSE REVIEW — OTHER ENTRY GATES NOT MET"
+        return ("POST-CLOSE ENTRY REVIEW ELIGIBLE — NOT A TRADE ORDER" if closed
+                else "ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL — NOT A TRADE ORDER")
+    return "REVIEW — OTHER ENTRY GATES NOT MET; SECOND FINANCING OPTIONAL"
 
 
 def sec_recheck_current(root, *, as_of):
-    """Reject global SEC-source holds before ANY new GEM trade entry review.
+    """Reject global SEC-source holds before new GEM trade entry review.
 
-    A completed SEC review is only a source-family health assertion; it does
-    not itself prove closure of either transaction or any specific issuer.
-    Exact-event two-close checks remain mandatory and separate.
+    A completed SEC review is a source-family health assertion, not proof
+    that dilution is absent. Two-close checks remain available as OPTIONAL
+    evidence attached to exact events.
     """
     today = as_of.date() if isinstance(as_of, datetime) else (
         parsed_date(as_of) if not isinstance(as_of, date) else as_of
