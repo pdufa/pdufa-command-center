@@ -23,11 +23,11 @@ export async function GET(req: NextRequest) {
     if (!response.ok) throw new Error("Upstream source unavailable");
     const data = await response.json();
     if (!Array.isArray(data.pipeline) ||
-        !data.sourceHealth?.streamlitPipelineParity ||
-        data.pipeline.length !== data.sourceHealth.streamlitPipelineParity.exactPrograms) {
-      throw new Error("Streamlit Pipeline parity not verified by backend");
+        !data.sourceHealth?.pipelineSourceParity ||
+        data.pipeline.length !== data.sourceHealth.pipelineSourceParity.exactPrograms) {
+      throw new Error("PIPELINE source count not verified by backend");
     }
-    // The full Streamlit-equivalent 9k+ trial universe is too large for
+    // The full published-source 9k+ trial universe is too large for
     // Vercel's uncompressed Serverless Function response limit. Send
     // authenticated gzip bytes; browser fetch().json() decompresses them.
     const output = gzipSync(Buffer.from(JSON.stringify(data)), { level: 6 });
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     // Do not silently substitute an obsolete tiny bundle. Old source
     // snapshots made the Pipeline total look wrong even after a backend fix.
     return NextResponse.json({
-      error: "Pipeline temporarily unavailable; current Streamlit-parity count could not be verified",
+      error: "Pipeline temporarily unavailable; current published-source count could not be verified",
       sourceHealth: { state: "UNAVAILABLE" }
     }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
   }
