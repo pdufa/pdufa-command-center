@@ -4,11 +4,11 @@ from gem_survey_catalog import SURVEYS, RESEARCH_DIAGNOSTICS, survey_rows
 
 
 class GemSurveyDirectoryTests(unittest.TestCase):
-    def test_seven_primary_surveys_only_two_benchmarks(self):
+    def test_seven_primary_surveys_with_optional_second_financing(self):
         self.assertEqual(len(SURVEYS), 7)
         self.assertEqual([row[0] for row in SURVEYS], list(range(1, 8)))
         self.assertEqual([row[2] for row in SURVEYS[:2]], [
-            "Entry benchmark 1", "Entry benchmark 2"])
+            "Entry benchmark 1", "Optional financing / dilution evidence"])
         names = [row[1] for row in SURVEYS]
         self.assertEqual(names[4], "Ownership & Insider Activity")
         self.assertTrue(all(x not in names for x in (
