@@ -6,6 +6,14 @@ from pipeline_help_grid import render_pipeline_grid
 from stages import program_stage
 from pipeline_universe import STAGES as PIPELINE_STAGES, SOURCE_FILES as PIPELINE_SOURCE_FILES, load_universe as read_pipeline_universe
 from pipeline_display import DATE_BANDS as PIPELINE_DATE_BANDS, DISPLAY_FIELDS as PIPELINE_DISPLAY_FIELDS, prepare_pipeline, filter_pipeline, chart_rows
+from pipeline_trial_filters import (DEFAULTS as PIPELINE_TRIAL_DEFAULTS, EVIDENCE_FILES as PIPELINE_TRIAL_EVIDENCE_FILES,
+                                    NUMERIC_SPECS as PIPELINE_NUMERIC_SPECS, UNSUPPORTED_REASONS as PIPELINE_UNSUPPORTED,
+                                    PHASE_OPTIONS as PIPELINE_TRIAL_PHASE_OPTIONS, STATUS_OPTIONS as PIPELINE_TRIAL_STATUS_OPTIONS,
+                                    MODALITY_OPTIONS as PIPELINE_MODALITY_OPTIONS, RESULT_OPTIONS as PIPELINE_RESULT_OPTIONS,
+                                    FINANCING_OPTIONS as PIPELINE_FINANCING_OPTIONS, MILESTONE_OPTIONS as PIPELINE_MILESTONE_OPTIONS,
+                                    WINDOW_OPTIONS as PIPELINE_WINDOW_OPTIONS, selection_signature as pipeline_trial_signature,
+                                    selections as pipeline_trial_selections, has_active_filter as pipeline_trial_filter_active,
+                                    add_public_filter_columns, filter_public_trials)
 def render_post_phase3_workspace(*args, **kwargs):
     """Load the POST3 workspace on demand; retry one module-eviction race."""
     for attempt in range(2):
@@ -3594,6 +3602,8 @@ if page == "PDUFA":
                 st.session_state["pipeline_dates_v9"] = []
                 st.session_state["pipeline_query_v9"] = ""
                 st.session_state["pipeline_sort_v9"] = DISPLAY_ORDER_OPTIONS[0]
+                for key, default in PIPELINE_TRIAL_DEFAULTS.items():
+                    st.session_state[key] = list(default) if isinstance(default, list) else default
                 _clear_pipeline_results_v9()
 
             def _apply_pipeline_filters_v10():
@@ -3605,6 +3615,7 @@ if page == "PDUFA":
                         tuple(stages), tuple(dates),
                         str(st.session_state.get("pipeline_query_v9", "")).strip(),
                         st.session_state.get("pipeline_sort_v9", DISPLAY_ORDER_OPTIONS[0]),
+                        pipeline_trial_signature(st.session_state),
                     )
                 else:
                     _clear_pipeline_results_v9()
@@ -3623,7 +3634,7 @@ if page == "PDUFA":
             # The filters are one white/black Pipeline control card; retain every key.
             with st.container(border=True, key="pipeline_filters_card"):
                 st.markdown("### PIPELINE FILTERS")
-                st.caption("Select both a stage and date; results appear automatically. Counts below stay available.")
+                st.caption("Select a stage and PDUFA date band; optionally refine by public-data TRIAL FILTERS below.")
                 stage_col, date_col = st.columns(2, gap="medium")
                 with stage_col:
                     selected_stages = st.multiselect(
@@ -3642,6 +3653,85 @@ if page == "PDUFA":
                         key="pipeline_dates_v9",
                         on_change=_apply_pipeline_filters_v10,
                         help="NO PDUFA YET includes only trials with no linked PDUFA deadline.",
+                    )
+
+                with st.expander("TRIAL FILTERS — PUBLIC DATA", expanded=False):
+                    st.caption(
+                        "Optional AND filters. Trial criteria are exact trial-level data; "
+                        "stock-price and market-cap criteria use issuer tickers. "
+                        "Missing evidence never qualifies as verified."
+                    )
+                    clinical_col, source_col = st.columns(2, gap="medium")
+                    with clinical_col:
+                        st.multiselect(
+                            "REGISTERED TRIAL PHASE", options=list(PIPELINE_TRIAL_PHASE_OPTIONS),
+                            default=[], key="pipeline_trial_phases_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                        )
+                        st.multiselect(
+                            "TRIAL STATUS", options=list(PIPELINE_TRIAL_STATUS_OPTIONS),
+                            default=[], key="pipeline_trial_statuses_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                        )
+                        st.text_input(
+                            "INDICATION / DISEASE CONTAINS", placeholder="e.g. melanoma",
+                            key="pipeline_trial_indication_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                        )
+                        st.multiselect(
+                            "DRUG / INTERVENTION TYPE",
+                            options=list(PIPELINE_MODALITY_OPTIONS), default=[],
+                            key="pipeline_trial_modalities_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                        )
+                    with source_col:
+                        st.selectbox(
+                            "PHASE 3 RESULTS RELEASED", options=list(PIPELINE_RESULT_OPTIONS),
+                            key="pipeline_trial_results_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                            help="Sourced means the exact trial or application has dated results and a linked source. Not confirmed does not mean results never occurred.",
+                        )
+                        st.selectbox(
+                            "SECOND FINANCING CLOSED", options=list(PIPELINE_FINANCING_OPTIONS),
+                            key="pipeline_trial_financing_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                            help="Only SEC-evidence-verified, exact application events pass. No ticker-only extrapolation to other trials.",
+                        )
+                        st.selectbox(
+                            "CATALYST / MILESTONE DATE", options=list(PIPELINE_MILESTONE_OPTIONS),
+                            key="pipeline_trial_milestone_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                        )
+                        st.selectbox(
+                            "MILESTONE TIME WINDOW", options=list(PIPELINE_WINDOW_OPTIONS),
+                            key="pipeline_trial_window_v1",
+                            on_change=_apply_pipeline_filters_v10,
+                            help="Choose a milestone type above and then a window.",
+                        )
+                    st.markdown("**STOCK & FINANCIAL FILTERS**")
+                    value_cols = st.columns(2, gap="medium")
+                    for filter_index, (filter_label, filter_key, filter_column, filter_bands) in enumerate(PIPELINE_NUMERIC_SPECS):
+                        with value_cols[filter_index % 2]:
+                            unavailable = filter_column in PIPELINE_UNSUPPORTED
+                            st.selectbox(
+                                filter_label, options=list(filter_bands),
+                                key=filter_key, disabled=unavailable,
+                                on_change=_apply_pipeline_filters_v10,
+                                help=(PIPELINE_UNSUPPORTED.get(filter_column)
+                                      or "Saved public-feed figures, not a guaranteed live quote. "
+                                         "Unknown values do not pass a selected numerical range."),
+                            )
+                    st.selectbox(
+                        "FDA ADVISORY COMMITTEE DATE",
+                        options=["Not connected — FDA date evidence required"],
+                        disabled=True, key="pipeline_trial_adcom_unavailable_v1",
+                        help="Advisory dates are not reliably present in the saved Pipeline feed; this is not a working filter.",
+                    )
+                    st.caption(
+                        "Market cap: saved public market-cap file. Stock price: recent end-of-day "
+                        "close only (no live quote). Float/cash: saved application-event values where "
+                        "available. Shares outstanding, EV, runway, insider ownership and FDA advisory "
+                        "dates remain disabled until validated sources are connected."
                     )
                 # Separate chart columns from selector columns. On iPhone, Streamlit
                 # stacks each column vertically; reusing stage_col/date_col here hid
@@ -3680,7 +3770,8 @@ if page == "PDUFA":
             with date_chart_col:
                 date_count_slot = st.container(border=True, key="pipeline_date_chart_card")
             selection_signature = (
-                tuple(selected_stages), tuple(selected_dates), query, sort_mode
+                tuple(selected_stages), tuple(selected_dates), query, sort_mode,
+                pipeline_trial_signature(st.session_state),
             )
             if show_clicked and selected_stages and selected_dates:
                 st.session_state["pipeline_applied_v9"] = selection_signature
@@ -3695,7 +3786,9 @@ if page == "PDUFA":
             )
             try:
                 universe = load_pipeline_universe_data(pipeline_signature, pipeline_today)
-                prepared = prepare_pipeline(universe, pipeline_today)
+                prepared = add_public_filter_columns(
+                    prepare_pipeline(universe, pipeline_today), Path("data"), pipeline_today
+                )
                 # Count buttons describe the searchable universe, NOT just the
                 # active selection: unchecking a phase must never zero the others.
                 # The displayed-row count audit below still uses exact filters.
@@ -3824,7 +3917,10 @@ if page == "PDUFA":
                     else:
                         st.info("Click SHOW MATCHING TRIALS to populate the chart.")
                 else:
-                    filtered = filter_pipeline(prepared, selected_stages, selected_dates, query)
+                    filtered = filter_public_trials(
+                        filter_pipeline(prepared, selected_stages, selected_dates, query),
+                        pipeline_trial_selections(st.session_state), today=pipeline_today,
+                    )
                     shown = chart_rows(filtered, sort_mode)
                     try:
                         _, post_links, post_health, pre_links, pre_fresh = load_unified_evidence(pipeline_today)
@@ -3886,7 +3982,7 @@ if page == "PDUFA":
                                         f"https://clinicaltrials.gov/study/{nct}",
                                     )
                     if shown.empty:
-                        st.info("No matching programs for that STAGES + DATES selection.")
+                        st.info("No programs match the selected STAGES, DATES and optional TRIAL FILTERS. Unverified or missing evidence is excluded by verified-only filters.")
                     else:
                         unique_ids = (
                             filtered["nct_id"].replace("", pd.NA).dropna().nunique()
