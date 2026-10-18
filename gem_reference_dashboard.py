@@ -749,7 +749,7 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
                                 today, source_current=None):
     """Prioritized exact-program entry research gates; no automatic buy.
 
-    The first three are qualifying evidence (historical saved source claims).
+    Successful Phase 3 is the clinical qualifier; financing evidence is optional.
     Independently verified *current* SEC coverage remains a separate hard hold.
     """
     ncts = re.findall(r"NCT\d{8}", str(record.get("NCT ID") or "").upper())
@@ -773,8 +773,9 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
     review_day = _section9_date(record.get("Source review as of") or
                                 record.get("Source review date"))
     review_age = (today - review_day).days if review_day else None
-    sec_current = (source_current is True and review_age is not None and
-                   0 <= review_age <= 7)
+    # Global current SEC source coverage remains a hard hold; its freshness
+    # must not depend on whether an optional second-close review exists.
+    sec_current = source_current is True
     runway = _number(runway_result.get("Cash runway (months)"))
     cash_url = str(runway_result.get("Cash runway source") or "")
     cash_day = _section9_date(runway_result.get("Cash runway as of"))
@@ -816,13 +817,13 @@ def _gem_section9_entry_checks(record, event, profile, runway_result,
         _section9_item(2, "First independent post-readout SEC close",
                        f"Saved close: {first_day or 'not recorded'}",
                        True if two_closes else None, first_url,
-                       "Verify actual first closing after the Phase 3 readout",
-                       "Hard gate"),
+                       "Optional SEC funding history to inform dilution risk",
+                       "Optional evidence"),
         _section9_item(3, "Second distinct post-readout SEC close",
                        f"Saved close: {second_day or 'not recorded'}",
                        True if two_closes else None, second_url,
-                       "Verify the different second closing; two URLs alone prove nothing",
-                       "Hard gate"),
+                       "Optional second funded close; two URLs alone prove nothing",
+                       "Optional evidence"),
         _section9_item(4, "Current source recheck / entry hold",
                        f"Global SEC current: {source_current is True} · "
                        f"program review age: {review_age if review_age is not None else 'unknown'} days",
@@ -1067,10 +1068,10 @@ def _candidate(stage, ranked, root, today, companies, financings, runway, regist
     pdufa_verified = bool(record.get("PDUFA verified") or (
         str(event.get("pdufa_confirmation") or "").startswith("VERIFIED") and pdufa_url))
     runway_result = assess_runway(ticker, runway.get(ticker), as_of=today.isoformat(),
-                                 second_close=second or None)
+                                 second_close=second if record.get("Second financing verified") is True else None)
     runway_months = runway_result["Cash runway (months)"]
     # Independent research overlay: actual net funded tranches only. Never
-    # promotes the strict Step 4 runway gate or the two-financing entry rule.
+    # promotes the strict Step 4 runway gate or proves financing safety.
     tranche_runway = assess_tranche_runway(
         ticker, runway.get(ticker), (tranche_ledger or {}).get(ticker, []),
         as_of=today, event_key=str(event.get("event_key") or funding.get("event_key") or ""),
