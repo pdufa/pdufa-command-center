@@ -1,4 +1,4 @@
-"""No GEM trade-entry review is possible before verified close #2."""
+"""Second close is optional; exact-event verification and safety gates stay conservative."""
 from datetime import date, timedelta
 import json
 import tempfile
@@ -47,7 +47,7 @@ class GemAbsoluteEntryTests(unittest.TestCase):
                 self.assertEqual(entry_status(
                     closed=valid, qualified=True,
                     feed_current=True, days_to_pdufa=45
-                ), "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED")
+                ), "ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL — NOT A TRADE ORDER")
 
     def test_closure_attestation_not_sufficient_without_ordered_dates_and_sec(self):
         variants = (
@@ -102,7 +102,7 @@ class GemAbsoluteEntryTests(unittest.TestCase):
         self.assertEqual(entry_status(
             closed=True, qualified=False,
             feed_current=True, days_to_pdufa=40
-        ), "POST-CLOSE REVIEW — OTHER ENTRY GATES NOT MET")
+        ), "REVIEW — OTHER ENTRY GATES NOT MET; SECOND FINANCING OPTIONAL")
         self.assertEqual(entry_status(
             closed=True, qualified=True,
             feed_current=False, days_to_pdufa=40
@@ -146,11 +146,11 @@ class GemAbsoluteEntryTests(unittest.TestCase):
             set_status([])
             self.assertFalse(sec_recheck_current(directory, as_of=AS_OF))
 
-    def test_pre_close_rank_never_unlocks_entry(self):
+    def test_pre_close_allows_manual_review_when_other_gates_pass(self):
         self.assertEqual(entry_status(
             closed=False, qualified=True,
             feed_current=True, days_to_pdufa=90
-        ), "WATCH ONLY — SECOND FINANCING NOT VERIFIED CLOSED")
+        ), "ENTRY REVIEW ELIGIBLE — SECOND FINANCING OPTIONAL — NOT A TRADE ORDER")
 
 
 if __name__ == "__main__":
