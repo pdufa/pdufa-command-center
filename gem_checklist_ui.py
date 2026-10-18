@@ -151,7 +151,7 @@ def render_research_candidates(master_rows, checklists, *,
         "financing lead. The TWO verified benchmarks still control eligibility. "
         "A lead is NOT a qualified GEM or a buy recommendation."
     )
-    verified = sum(r.get("Status") == "BOTH BENCHMARKS VERIFIED" for r in leads)
+    verified = sum(r.get("Status") == "PHASE 3 VERIFIED — FINANCING OPTIONAL" for r in leads)
     if compact:
         st.caption(f"{len(leads)} research leads · {verified} fully verified GEM candidates")
     else:
