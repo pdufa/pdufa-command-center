@@ -1,0 +1,1 @@
+import "./style.css";export const metadata={title:"PDUFA Command Center",description:"Pipeline, GEM JR, GEM and scan evidence dashboard"};export default function Layout({children}){return <html lang="en"><body>{children}</body></html>}
