@@ -209,7 +209,14 @@ export default function PublishedScansPanel() {
     </div>
     <section className="source-health" aria-label="Gmail per-section and all-email checks">
       <h3>GMAIL AUDIT — BY SECTION OR ALL EMAILS</h3>
-      <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least: <strong>P1</strong> overnight / PIPELINE / GEM JR / GEM; <strong>P2</strong> FDA / SEC / financial / source evidence; <strong>P3</strong> Gmail authentication and notifications; <strong>P4</strong> dashboard / API / CI; <strong>P5</strong> already-resolved, superseded and miscellaneous historical alerts. Critical items receive the limited repair attempts first.</p>
+      <p className="subtle">CHECK audits in read-only 100-message batches. FIX &amp; TRASH first inventories every section, validates exact GitHub run IDs, then processes the entire queue from most important to least. Critical items receive the limited repair attempts first.</p>
+      <div className="gmail-priority-grid" aria-label="Gmail repair priorities">
+        <div><strong>P1</strong><span>Overnight / PIPELINE / GEM JR / GEM</span></div>
+        <div><strong>P2</strong><span>FDA / SEC / financial / source evidence</span></div>
+        <div><strong>P3</strong><span>Gmail authentication and notifications</span></div>
+        <div><strong>P4</strong><span>Dashboard / API / CI</span></div>
+        <div><strong>P5</strong><span>Already-resolved, superseded and miscellaneous historical alerts</span></div>
+      </div>
       <p className="subtle">Only approved transient workflow failures can be retried. FDA/SEC/financial evidence gaps need source verification, not automatic data changes. Emails move to Gmail Trash only when the <strong>same exact GitHub run</strong> has succeeded on a later attempt. Unresolved issues stay visible. No permanent deletion.</p>
       <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:"0.65rem"}}>
         <label>Gmail section
