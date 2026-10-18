@@ -1,4 +1,4 @@
-"""Regression: real program evidence clears two GEM benchmarks, never trade gates."""
+"""Regression: verified successful Phase 3 qualifies GEM without second-finance gate."""
 from __future__ import annotations
 
 import csv
@@ -20,7 +20,7 @@ def write(root, name, rows):
 
 
 class ExactGEMClearanceTests(unittest.TestCase):
-    def test_repository_five_current_gems_and_historical_srrk(self):
+    def test_repository_phase3_gems_include_unfinanced_gist_program(self):
         root = Path(__file__).resolve().parents[1] / "data"
         active, historical, sec_current = source_cleared_gems(
             root, as_of=date(2026, 10, 14))
@@ -29,9 +29,11 @@ class ExactGEMClearanceTests(unittest.TestCase):
         self.assertIn("PRAX", {r["Ticker"] for r in active})
         self.assertIn("MLYS", {r["Ticker"] for r in active})
         self.assertIn("SVRA", {r["Ticker"] for r in active})
-        self.assertEqual({r["Ticker"] for r in active}, {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA"})
+        self.assertEqual({r["Ticker"] for r in active}, {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA", "COGT"})
         self.assertIn("SRRK", {r["Ticker"] for r in historical})
         self.assertNotIn("SRRK", {r["Ticker"] for r in active})
+        self.assertFalse(next(r for r in active if r["Ticker"] == "COGT")["Second financing verified"])
+        self.assertIn("OPTIONAL", next(r for r in active if r["Ticker"] == "COGT")["Two-benchmark status"])
         self.assertFalse(sec_current)
         by_ticker = {r["Ticker"]: r for r in active}
         self.assertEqual(by_ticker["SVRA"]["PDUFA days left"], 39)
@@ -44,12 +46,12 @@ class ExactGEMClearanceTests(unittest.TestCase):
         self.assertTrue(by_ticker["NTLA"]["PDUFA verified"])
         self.assertFalse(by_ticker["ZBIO"]["PDUFA verified"])
         for row in active:
-            self.assertEqual(row["Two-benchmark status"],
-                             "PASS — BOTH BENCHMARKS SOURCE-CLEARED")
+            self.assertTrue(row["Two-benchmark status"].startswith("PASS — SUCCESSFUL PHASE 3"))
             self.assertIn("ENTRY GATES ON HOLD", row["Trade status"])
             self.assertTrue(row["Phase 3 source"].startswith("https://"))
-            self.assertTrue(row["First SEC source"].startswith("https://www.sec.gov/"))
-            self.assertTrue(row["Second SEC source"].startswith("https://www.sec.gov/"))
+            if row["Second financing verified"]:
+                self.assertTrue(row["First SEC source"].startswith("https://www.sec.gov/"))
+                self.assertTrue(row["Second SEC source"].startswith("https://www.sec.gov/"))
         self.assertEqual(
             next(r for r in active if r["Ticker"] == "NTLA")["NCT ID"],
             "NCT06634420")
@@ -57,16 +59,15 @@ class ExactGEMClearanceTests(unittest.TestCase):
             next(r for r in active if r["Ticker"] == "ZBIO")["NCT ID"],
             "NCT05662241")
 
-    def test_pre_oct15_gem_clearance_without_pipeline_does_not_bypass_two_benchmarks(self):
+    def test_pre_oct15_gem_clearance_without_pipeline_preserves_exact_phase3(self):
         root = Path(__file__).resolve().parents[1] / "data"
         with patch("gem_verified_snapshot.pipeline_origins", return_value=(set(), {})):
             active, historical, _ = source_cleared_gems(
                 root, as_of=date(2026, 10, 14))
         self.assertEqual({r["Ticker"] for r in active},
-                         {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA"})
+                         {"NTLA", "ZBIO", "PRAX", "MLYS", "SVRA", "COGT"})
         self.assertIn("SRRK", {r["Ticker"] for r in historical})
-        self.assertTrue(all(r["Two-benchmark status"] ==
-                            "PASS — BOTH BENCHMARKS SOURCE-CLEARED" for r in active))
+        self.assertTrue(all(r["Two-benchmark status"].startswith("PASS — SUCCESSFUL PHASE 3") for r in active))
         self.assertTrue(all(r["Pipeline linkage"] ==
                             "SOURCE-CLEARED — PIPELINE INTAKE PENDING" for r in active))
         self.assertTrue(all("ON HOLD" in r["Trade status"] for r in active))
@@ -94,9 +95,31 @@ class ExactGEMClearanceTests(unittest.TestCase):
                 "verified_as_of": "2026-10-14",
             }])
             active, historical, sec = source_cleared_gems(root, as_of=date(2026, 10, 14))
-            self.assertEqual(active, [])
+            self.assertEqual(len(active), 1)
+            self.assertEqual(active[0]["Ticker"], "TEST")
+            self.assertEqual(active[0]["NCT ID"], "NCT11111111")
+            self.assertFalse(active[0]["Second financing verified"])
             self.assertEqual(historical, [])
             self.assertFalse(sec)
+
+    def test_missing_financing_file_never_suppresses_successful_phase3(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "pdufa_candidates.csv", [{
+                "event_key": "SOLO|PROGRAM", "ticker": "SOLO", "drug": "Medicine",
+                "nct_id": "NCT12345678", "phase3_status": "PRIMARY_MET_VERIFIED",
+                "phase3_date": "2026-09-04",
+                "trial_evidence_url": "https://issuer.example/verified-phase3",
+                "pdufa_date": "2027-05-20", "new_dilution_flag": "UNKNOWN",
+            }])
+            active, previous, _ = source_cleared_gems(root, as_of=date(2026, 10, 18))
+            self.assertEqual(len(active), 1)
+            self.assertEqual(previous, [])
+            self.assertEqual(active[0]["Pipeline ID"], "APPLICATION|SOLO|PROGRAM")
+            self.assertEqual(active[0]["Second financing requirement"], "OPTIONAL")
+            self.assertFalse(active[0]["Second financing verified"])
+            self.assertIn("Dilution exposure not independently cleared", active[0]["Still needed"])
+            self.assertIn("ENTRY GATES ON HOLD", active[0]["Trade status"])
 
     def test_expired_or_resolved_program_never_current(self):
         with tempfile.TemporaryDirectory() as directory:
