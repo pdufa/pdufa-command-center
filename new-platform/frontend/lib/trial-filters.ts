@@ -30,7 +30,7 @@ export const QUALIFICATION_CRITERIA = [
   { key: "phase3", label: "Phase 3 trial", help: "Registered Phase 3, including trials now at later stages. Phase 2/3 remains separate." },
   { key: "released", label: "Phase 3 results released", help: "A source-linked public readout or posted Phase 3 registry results. Trial completion alone does not qualify." },
   { key: "successful", label: "Successful Phase 3 verified", help: "Exact-program primary endpoint met, supported by dated results evidence. Posted results alone do not prove success." },
-  { key: "financed", label: "Second post-readout financing closed", help: "Saved reviewed evidence for two separate SEC-documented closes after this exact program's readout. A new SEC recheck is separate." },
+  { key: "financed", label: "Second financing closed (optional)", help: "Optional screening only; this is not required for GEM or GEM JR qualification. Source-reviewed separate SEC closes remain visible to assess dilution and cash risks." },
 ] as const;
 export type QualificationKey = typeof QUALIFICATION_CRITERIA[number]["key"];
 
