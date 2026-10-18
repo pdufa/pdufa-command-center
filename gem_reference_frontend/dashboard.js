@@ -51,7 +51,7 @@ function priorityCriteria(){
     safety:["Safety signals and adverse risks","Documented safety conflicts and saved safety score where available"],
     risk:["Overall clinical / financing risk factor","Current source-gated clinical and financing risk assessment"],
     finance1:["Financing #1 — SEC closing","First independent post-readout closing, or GEM JR research lead"],
-    finance2:["Financing #2 — SEC closing","Second distinct post-readout close required for GEM, tracked in GEM JR"],
+    finance2:["Financing #2 — SEC closing","Optional second distinct post-readout closing. Missing closing is NOT GEM disqualification; review cash, dilution and SEC source health"],
     dilution:["Share dilution and financing risk","Explicit saved dilution risk flags"],
     warrants:["Warrant exposure","SEC review notes mentioning warrants; outstanding amount not inferred"],
     convertibles:["Convertible debt / securities","SEC review notes mentioning convertibles, not an attested balance"],
