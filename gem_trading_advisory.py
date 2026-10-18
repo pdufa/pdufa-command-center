@@ -177,8 +177,8 @@ def assess_gem_trade(row, market_rows, status, today):
         call, reason = ("EXIT RISK — REVIEW NOW",
                         "FDA timing/resolution warning; check positions and news immediately.")
     elif not eligible:
-        missing = ("Phase 3 result and/or distinct second financing close "
-                   "not independently verified for this exact program.")
+        missing = ("Successful Phase 3 results not independently verified for this exact program. "
+                   "A second financing is optional; other source/risk checks remain.")
         call, reason = "WAIT — BENCHMARKS UNVERIFIED", missing
     elif not fundamental_current:
         call, reason = ("WAIT — SOURCE RECHECK",
