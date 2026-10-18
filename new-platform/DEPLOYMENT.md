@@ -1,6 +1,6 @@
 # Deployment handoff — isolated NEW PDUFA platform only
 
-**Do not delete, alter, redeploy or migrate the existing Streamlit deployment.**
+**Streamlit has been retired from the repository's active deployment setup.** The legacy source was preserved in `archive/streamlit-legacy-20261018`. An independently hosted Streamlit Cloud app, if still configured, must be decommissioned in its hosting account.
 This setup uses `new-platform-bootstrap` branch and `new-platform/` path exclusively.
 No PDUFA production jobs or orders are enabled by this code.
 
@@ -16,14 +16,14 @@ No PDUFA production jobs or orders are enabled by this code.
    - `DASHBOARD_PASSWORD` = a separate, unique strong password (minimum 12 characters).
    - `SESSION_SIGNING_KEY` = a separate random string of at least 32 characters.
    All these secrets remain SERVER-SIDE, never in any `NEXT_PUBLIC_` variable. Keep them in the hosting secret managers. Do not commit values to GitHub.
-6. Build and deploy **new** Vercel project; test login, ticker- and stage-specific checklist persistence, tab switching, notes, and reloading. Verify Render environment stays healthy. Check that Streamlit's deployed URL and nightly jobs are unchanged.
+6. Build and deploy **new** Vercel project; test login, ticker- and stage-specific checklist persistence, tab switching, notes, and reloading. Verify Render environment stays healthy. Check GitHub Actions nightly scans remain unchanged; no Streamlit UI is required.
 7. Do not activate scanners in the new app. Later migration will copy (never move) ticker data, add real GEM scoring, and verify functionality before any operator-approved cutover.
 
 ## Manual scan controls on the new SCANS page
 
 The staging dashboard now reads **published** PIPELINE, GEM JR, GEM, FDA/SEC/FINANCIAL/MARKET/ISSUER status from original `main` reports and can dispatch the existing GitHub Actions workflow. **It never creates a second automated schedule.** The only 10 PM Pacific scanner remains `.github/workflows/pdufa-nightly-pacific-start.yml` on production `main`.
 
-To activate the **START SELECTED SCAN** button, add the server-only secret `PDUFA_GITHUB_TOKEN` to the **new** Vercel project's environment variables. Use a fine-grained GitHub token restricted to repository `pdufa/pdufa-command-center` with **Actions: Read and write** permissions. Do not use a public `NEXT_PUBLIC_` variable and never put the token in GitHub files, browser code, or a chat. Redeploy the staging frontend after changing its secrets. Leave the existing Streamlit settings untouched.
+To activate the **START SELECTED SCAN** button, add the server-only secret `PDUFA_GITHUB_TOKEN` to the **new** Vercel project's environment variables. Use a fine-grained GitHub token restricted to repository `pdufa/pdufa-command-center` with **Actions: Read and write** permissions. Do not use a public `NEXT_PUBLIC_` variable and never put the token in GitHub files, browser code, or a chat. Redeploy the staging frontend after changing its secrets. Do not configure Streamlit; use Next.js/Vercel settings only.
 
 The authenticated SCANS panel offers `VERIFY_ALL` (archived source validation), `REVERIFY_PARTIAL` (incremental recheck), and `RESCAN_ALL` (full recollection), targeting `ALL`, `PIPELINE`, `GEM_JR`, or `GEM`. Every manual request is sent to the **original** `pdufa-scan-control.yml` on `main`. The API checks current manual and overnight jobs and refuses to dispatch while either has an active/queued run. It does not promise the GitHub Actions job has finished: inspect the linked run and separately published evidence report. If GitHub status cannot be verified, it refuses to initiate another run.
 
