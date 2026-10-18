@@ -1,7 +1,7 @@
-"""Explain GEM's exactly two saved eligibility benchmarks without changing them.
+"""Explain Phase-3-qualified GEM research with optional financing review.
 
-Buckets are derived from the same exact-event PASS markers as gem_master_list.
-Source freshness is displayed separately and can never create an eligible row.
+Clinical qualification is exact-program and independent of the optional second
+financing. Missing SEC evidence is a risk flag, not research disqualification.
 """
 from __future__ import annotations
 
@@ -13,10 +13,10 @@ PHASE3_PASS = "PASS — VERIFIED RESULTS RELEASE"
 FINANCING_PASS = "PASS — TWO POST-READOUT CLOSES"
 
 GROUPS = (
-    "Eligible — saved evidence",
-    "Awaiting financing verification",
+    "Phase 3 qualified — financing verified",
+    "Phase 3 qualified — financing optional / unverified",
+    "Awaiting Phase 3 verification — financing observed",
     "Awaiting Phase 3 verification",
-    "Awaiting both verifications",
 )
 
 
@@ -25,12 +25,10 @@ def classify(row, *, sec_current=False, feed_current=False, finance_recheck=None
     phase3 = row.get("Phase 3 Verified") == PHASE3_PASS
     financed = row.get("Second Financing Closed") == FINANCING_PASS
     eligible = row.get("_eligible") is True
-    # A contradictory saved marker cannot create a positive diagnosis.
-    if eligible and phase3 and financed:
-        group = GROUPS[0]
-    elif phase3 and not financed:
-        group = GROUPS[1]
-    elif financed and not phase3:
+    # A verified financing alone can NEVER create clinical eligibility.
+    if phase3 and eligible:
+        group = GROUPS[0] if financed else GROUPS[1]
+    elif financed:
         group = GROUPS[2]
     else:
         group = GROUPS[3]
@@ -38,9 +36,9 @@ def classify(row, *, sec_current=False, feed_current=False, finance_recheck=None
     if not phase3:
         missing.append("Exact-program dated Phase 3 results + source / NCT identity")
     if not financed:
-        missing.append("Two distinct post-readout financing closes + SEC evidence")
-    if (phase3 and financed) != eligible:
-        missing.append("Saved eligibility conflicts with the two benchmark markers")
+        missing.append("Optional: second financing not verified; inspect cash runway, dilution and SEC evidence")
+    if phase3 != eligible:
+        missing.append("Saved research eligibility conflicts with Phase 3 evidence")
     if not sec_current:
         missing.append("Current SEC recheck unavailable / blocked (source health)")
     if not feed_current:
@@ -51,9 +49,9 @@ def classify(row, *, sec_current=False, feed_current=False, finance_recheck=None
         missing.append("Latest SEC two-transaction recheck: " + attempt)
     return {
         "Verification group": group,
-        "Missing / recheck needed": "; ".join(missing) or "Both saved benchmarks passed; review current risks",
+        "Missing / recheck needed": "; ".join(missing) or "Clinical evidence verified; review current risks",
         "Latest SEC transaction audit": attempt,
-        "GEM eligible — saved": eligible and group == GROUPS[0],
+        "GEM eligible — saved": eligible and phase3,
         "Current SEC source": "CURRENT" if sec_current else "BLOCKED / STALE / NOT VERIFIED",
         "Current clinical feed": "CURRENT" if feed_current else "STALE / NOT VERIFIED",
     }
