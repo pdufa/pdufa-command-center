@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
@@ -24,6 +25,10 @@ TRADE_FIELDS = (
     "base_atr_width", "exit_days", "status", "reason", "entry_signal_date",
     "entry_date", "entry_price", "entry_score", "initial_stop", "exit_date",
     "exit_price", "exit_reason", "net_return_pct", "holding_sessions",
+    "gross_entry_open", "gross_exit_fill", "gross_return_pct",
+    "net_profit_per_share_usd", "hypothetical_investment_usd",
+    "hypothetical_shares", "hypothetical_cost_usd",
+    "hypothetical_profit_loss_usd", "return_on_allocation_pct",
     "max_adverse_excursion_pct", "capture_of_runup_pct",
     "historical_market_cap_usd", "market_cap_observed_on",
 )
@@ -31,6 +36,7 @@ SUMMARY_FIELDS = (
     "score_threshold", "volume_threshold", "base_atr_width", "exit_days",
     "attempted", "completed", "no_signal", "blocked", "censored",
     "win_rate_pct", "mean_return_pct", "median_return_pct",
+    "mean_profit_loss_per_allocation_usd", "median_profit_loss_per_allocation_usd",
     "profit_factor", "mean_max_adverse_excursion_pct", "status",
 )
 
@@ -164,10 +170,16 @@ def first_signal(bars, event_dates, *, threshold, volume_threshold,
     return None
 
 
-def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
+def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps, investment_usd=10000):
     i, score, start_stop = signal
     entry_i = i+1
-    entry = bars[entry_i]["open"]*(1+slip_bps/10000)
+    gross_entry = bars[entry_i]["open"]
+    entry = gross_entry*(1+slip_bps/10000)
+    if investment_usd <= 0 or not math.isfinite(investment_usd):
+        raise ValueError("Investment amount must be finite and positive")
+    shares = math.floor(investment_usd / entry)
+    if shares < 1:
+        return {"status":"BLOCKED", "reason":"ALLOCATION_BELOW_ONE_SHARE"}
     cutoff = pdufa-timedelta(days=exit_days)
     scheduled = [y["session"] for y in bars if y["session"] <= cutoff]
     scheduled_exit = max(scheduled) if scheduled else None
@@ -213,6 +225,10 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
         if reason:
             net_exit = fill*(1-slip_bps/10000)
             ret = 100*(net_exit/entry-1)
+            gross_return = 100*(fill/gross_entry-1)
+            net_per_share = net_exit-entry
+            allocated_cost = shares*entry
+            hypothetical_pnl = shares*net_per_share
             runup = peak_high/entry-1
             capture = (net_exit/entry-1)/runup*100 if runup > 0 else None
             return {
@@ -222,7 +238,18 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
                     if reason == "TWO_CLOSES_BELOW_SMA20"
                     else b["session"].isoformat()),
                 "exit_price":round(net_exit,4), "exit_reason":reason,
-                "net_return_pct":round(ret,3), "holding_sessions":(
+                "net_return_pct":round(ret,3),
+                "gross_entry_open":round(gross_entry,4),
+                "gross_exit_fill":round(fill,4),
+                "gross_return_pct":round(gross_return,3),
+                "net_profit_per_share_usd":round(net_per_share,4),
+                "hypothetical_investment_usd":round(investment_usd,2),
+                "hypothetical_shares":shares,
+                "hypothetical_cost_usd":round(allocated_cost,2),
+                "hypothetical_profit_loss_usd":round(hypothetical_pnl,2),
+                "return_on_allocation_pct":round(
+                    100*hypothetical_pnl/investment_usd,3),
+                "holding_sessions":(
                     j+1-entry_i if reason == "TWO_CLOSES_BELOW_SMA20"
                     else j-entry_i),
                 "max_adverse_excursion_pct":round(
@@ -242,10 +269,12 @@ def replay_trade(bars, signal, pdufa, early_action, exit_days, slip_bps):
 def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
         score_thresholds=(60,70,80), volume_thresholds=(1.25,1.5,2.0),
         base_widths=(2.0,3.0,4.0), exit_days=(14,3),
-        min_dollars=250000, slip_bps=10, market_caps=None,
+        min_dollars=250000, slip_bps=10, investment_usd=10000, market_caps=None,
         min_cap_usd=MIN_MARKET_CAP_USD, max_cap_usd=MAX_MARKET_CAP_USD):
     if min_cap_usd <= 0 or min_cap_usd > max_cap_usd:
         raise ValueError("Invalid market-cap range")
+    if investment_usd <= 0 or not math.isfinite(investment_usd):
+        raise ValueError("Investment amount must be finite and positive")
     prices, invalid = bars_by_ticker(raw_bars)
     cap_rows, invalid_cap = market_caps_by_ticker(market_caps or [])
     require_cap = market_caps is not None
@@ -315,7 +344,8 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
                         row.update(status="NO_SIGNAL",reason="ENTRY_AFTER_EXIT_CUTOFF")
                     else:
                         row.update(replay_trade(history,sig,dates["pdufa_date"],
-                                                early,exit_day,slip_bps))
+                                                early,exit_day,slip_bps,
+                                                investment_usd=investment_usd))
             trials.append(row)
     summaries = []
     for threshold, vol, width, exit_day in variants:
@@ -324,6 +354,7 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
                  == (threshold,vol,width,exit_day)]
         completed = [r for r in group if r["status"]=="COMPLETED"]
         returns = [r["net_return_pct"] for r in completed]
+        profits = [r["hypothetical_profit_loss_usd"] for r in completed]
         gains = sum(max(x,0) for x in returns)
         losses = -sum(min(x,0) for x in returns)
         summaries.append(dict(
@@ -337,6 +368,10 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
                 if returns else "",
             mean_return_pct=round(mean(returns),3) if returns else "",
             median_return_pct=round(median(returns),3) if returns else "",
+            mean_profit_loss_per_allocation_usd=(
+                round(mean(profits),2) if profits else ""),
+            median_profit_loss_per_allocation_usd=(
+                round(median(profits),2) if profits else ""),
             profit_factor=round(gains/losses,3) if losses else "",
             mean_max_adverse_excursion_pct=round(mean(
                 r["max_adverse_excursion_pct"] for r in completed),3)
@@ -350,6 +385,9 @@ def run(events, raw_bars, *, year=2025, as_of=date(2026,10,17),
         "audited_event_rows":len({r["event_key"] for r in trials
                                   if r["status"]!="BLOCKED"}),
         "price_rows":len(raw_bars),
+        "hypothetical_allocation_per_trade_usd":investment_usd,
+        "profit_loss_is_per_individual_trade_not_portfolio":True,
+        "return_includes_per_leg_slippage_but_not_commissions_or_taxes":True,
         "market_cap_snapshot_rows":len(market_caps or []),
         "market_cap_min_usd":min_cap_usd if require_cap else None,
         "market_cap_max_usd":max_cap_usd if require_cap else None,
@@ -393,6 +431,8 @@ def main(argv=None):
                    default="data/post_phase3_historical_market_caps.csv")
     p.add_argument("--min-cap-usd",type=float,default=MIN_MARKET_CAP_USD)
     p.add_argument("--max-cap-usd",type=float,default=MAX_MARKET_CAP_USD)
+    p.add_argument("--investment-usd",type=float,default=10000,
+                   help="Hypothetical dollars available per single trade")
     p.add_argument("--output-dir",default="output/gem_historical_signal_2026")
     args=p.parse_args(argv)
     as_of=day(args.as_of)
@@ -402,7 +442,8 @@ def main(argv=None):
         read_csv(args.events), read_csv(args.bars), year=args.year,
         as_of=as_of, market_caps=(read_csv(args.market_caps)
                                if args.apply_market_cap_filter else None),
-        min_cap_usd=args.min_cap_usd, max_cap_usd=args.max_cap_usd)
+        min_cap_usd=args.min_cap_usd, max_cap_usd=args.max_cap_usd,
+        investment_usd=args.investment_usd)
     dest=Path(args.output_dir)
     dest.mkdir(parents=True,exist_ok=True)
     for name, fields, rows in (
