@@ -1,8 +1,8 @@
-"""Exact-event GEM two-benchmark primary-source clearance, not trade permission.
+"""Exact-event, successful-Phase-3 GEM research clearance (not trade permission).
 
-Clinical Phase 3 and the second independently funded post-readout transaction
-can be verified even while a separate *global* SEC batch health check is stale.
-Do not confuse benchmark clearance with market/regulatory/dilution trade gates.
+The second separately funded financing is optional SEC risk evidence. Missing
+or outdated funding checks never imply that issuer dilution is safe. Clinical
+identity and successful readout must still be verified for the exact program.
 """
 from __future__ import annotations
 
@@ -50,11 +50,11 @@ def _date(value):
 
 
 def source_cleared_gems(root="data", *, as_of=None):
-    """Return (current_two_benchmark, historical_two_benchmark, source_health).
+    """Return active/historical Phase-3-qualified research plus SEC source health.
 
-    Results are tied to a unique clinical exact event, an actual Phase 3
-    endpoint/readout, and two chronologically distinct SEC-linked close dates.
-    This does not modify the SEC collector's global health or place trades.
+    A missing second financing must not suppress a positive exact-program Phase
+    3 readout. Its evidence remains a separate, optional financing-risk signal.
+    This does not modify the collector or place trades.
     """
     root = Path(root)
     today = as_of or datetime.now(ZoneInfo("America/Los_Angeles")).date()
@@ -66,9 +66,8 @@ def source_cleared_gems(root="data", *, as_of=None):
     global_sec_healthy = sec_recheck_current(root, as_of=today)
     active, historical = [], []
     for key, event in events.items():
-        funding = finance.get(key)
-        if not funding:
-            continue
+        # Do not drop this program simply because no financing row exists.
+        funding = finance.get(key, {})
         ticker = str(event.get("ticker") or "").strip().upper()
         nct = str(event.get("nct_id") or "").strip().upper()
         if not ticker or not nct:
@@ -78,12 +77,13 @@ def source_cleared_gems(root="data", *, as_of=None):
         if not pipeline_id:
             continue
         phase3 = phase3_results_released(program, event, as_of=today)
+        if not phase3:
+            continue
+        # Retain the exact-event SEC audit without letting its result veto GEM.
         financed, close_date, note = second_post_phase3_close(
             key, event.get("phase3_date"), funding, as_of=today,
             require_fresh=False,
         )
-        if not (phase3 and financed):
-            continue
         pd_date = _date(event.get("pdufa_date"))
         outcome = str(event.get("outcome") or "").strip().upper()
         is_historical = (
@@ -112,11 +112,15 @@ def source_cleared_gems(root="data", *, as_of=None):
         else:
             timing_window = ">90 DAYS — EARLY MONITOR"
         flags = []
+        if not financed:
+            flags.append("Second financing not independently verified (OPTIONAL); monitor funding, ATM and dilution")
+        if str(event.get("new_dilution_flag") or "").strip().upper() not in {"NO", "NONE", "FALSE", "0"}:
+            flags.append("Dilution exposure not independently cleared; no entry authorization")
         if not global_sec_healthy:
             flags.append("Global SEC collector PARTIAL/STALE; trading entry on HOLD")
         audit_date = _date(funding.get("verified_as_of"))
-        if audit_date is None or (today - audit_date).days > 7:
-            flags.append("Program-specific SEC evidence needs a fresh recheck before trading")
+        if audit_date is None or not 0 <= (today - audit_date).days <= 7:
+            flags.append("Program-specific SEC financing history is stale/missing (OPTIONAL verification); current dilution review still required")
         if not str(event.get("pdufa_confirmation") or "").startswith("VERIFIED"):
             flags.append("PDUFA target date not independently verified")
         if is_historical:
@@ -147,13 +151,18 @@ def source_cleared_gems(root="data", *, as_of=None):
                 (pd_date - timedelta(days=3)).isoformat() if pd_date else ""
             ),
             "FDA outcome": outcome,
-            "Two-benchmark status": "PASS — BOTH BENCHMARKS SOURCE-CLEARED",
+            "Two-benchmark status": (
+                "PASS — SUCCESSFUL PHASE 3; SECOND FINANCING VERIFIED (OPTIONAL)"
+                if financed else "PASS — SUCCESSFUL PHASE 3; SECOND FINANCING OPTIONAL / NOT VERIFIED"
+            ),
             "Trade status": "HISTORICAL / NO NEW ENTRY" if is_historical
                             else ("NO NEW ENTRY — PDUFA −3 / RESEARCH LISTING ACTIVE"
                                   if days_to_pdufa is not None and days_to_pdufa <= 3
                                   else "RESEARCH-QUALIFIED / ENTRY GATES ON HOLD"),
             "Still needed": "; ".join(flags),
             "Source review as of": str(funding.get("verified_as_of") or ""),
+            "Second financing verified": financed,
+            "Second financing requirement": "OPTIONAL",
         }
         (historical if is_historical else active).append(record)
     def order(row):
