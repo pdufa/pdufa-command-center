@@ -5,6 +5,9 @@ on:
       - 'scripts/phase3_all_years_marketcap_census.py'
       - '.github/workflows/phase3-all-years-marketcap-census.yml'
   workflow_dispatch:
+  schedule:
+    # Weekly Monday 06:00 UTC = Sunday 10 PM PST / 11 PM PDT.
+    - cron: '0 6 * * 1'
 permissions:
   contents: write
 jobs:
