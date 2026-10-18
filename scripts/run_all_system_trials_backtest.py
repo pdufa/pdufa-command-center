@@ -20,7 +20,7 @@ sys.path.insert(0,str(ROOT))
 from gem_historical_signal_backtest import (  # noqa E402
     RETURN_FIELDS, SUMMARY_FIELDS, TRADE_FIELDS, read_csv, run
 )
-from post_phase3_trade_backtest import day, validate_event  # noqa E402
+from post_phase3_trade_backtest import bars_by_ticker, day, validate_event  # noqa E402
 
 AUDIT_FIELDS=(
     "source","source_row","event_key","ticker","nct_id","drug",
@@ -110,7 +110,7 @@ def audit(data_dir, *, as_of=date(2026,10,18)):
         if k in keyed:
             duplicates.add(k)
         keyed[k]=event
-    by_ticker=Counter(r.get("ticker","").upper() for r in bars)
+    validated_bars, invalid_price_tickers=bars_by_ticker(bars)
     statuses=Counter()
     for row in cohort:
         key=row["event_key"]
@@ -133,7 +133,9 @@ def audit(data_dir, *, as_of=date(2026,10,18)):
                 blocker=reason
             elif verified["pdufa_date"]>as_of:
                 blocker="FUTURE_PDUFA_NOT_COMPLETED"
-            elif not by_ticker.get(row["ticker"]):
+            elif row["ticker"] in invalid_price_tickers:
+                blocker="INVALID_OR_DUPLICATE_ADJUSTED_OHLCV"
+            elif not validated_bars.get(row["ticker"]):
                 blocker="MISSING_VERIFIED_ADJUSTED_OHLCV"
             else:
                 blocker="READY_FOR_REPLAY_ONLY_NEEDS_FULL_DATA_AUDIT"
@@ -156,13 +158,15 @@ def audit(data_dir, *, as_of=date(2026,10,18)):
                   for key,filename in SOURCES.items()}
     pipeline_claim=int(scan.get("stored_trials") or 0)
     trial_rows_present=source_sizes.get("ALL_PHASE_TRIALS",0)
+    pipeline_file_rows=source_sizes.get("PHASE_PIPELINE",0)
     summary_report={
         "as_of":as_of.isoformat(),
         "coverage_scope":"ALL_SAVED_TRIAL_SOURCES",
         "market_cap_filter_active":False,
         "scan_reported_stored_trials":pipeline_claim,
         "all_phase_trials_file_rows":trial_rows_present,
-        "unavailable_scanned_trial_rows":max(0,pipeline_claim-trial_rows_present),
+        "phase_pipeline_file_rows":pipeline_file_rows,
+        "unavailable_scanned_trial_rows":max(0,pipeline_claim-pipeline_file_rows),
         "scan_reported_studies_scanned":scan.get("studies_scanned"),
         "scan_reported_registry_companies":scan.get("registry_companies"),
         "source_row_counts":source_sizes,
@@ -182,7 +186,9 @@ def audit(data_dir, *, as_of=date(2026,10,18)):
         "completed_hypothetical_trade_scenarios":engine["completed_trades"],
         "unique_event_keys_with_completed_trades":engine.get(
             "unique_event_keys_with_completed_scenarios",0),
-        "estimated_return_or_win_rate_valid":bool(engine["completed_trades"]),
+        "hypothetical_returns_calculated":bool(engine["completed_trades"]),
+        "returns_prospectively_validated":False,
+        "validated_win_rate_available":False,
         "status":"NOT_BACKTESTABLE_FROM_SAVED_DATA" if
             not engine["completed_trades"] else "EXPLORATORY_BACKTEST_NOT_VALIDATED",
         "restrictions":[
