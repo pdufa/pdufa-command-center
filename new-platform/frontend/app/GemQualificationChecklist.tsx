@@ -77,7 +77,7 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["registry","marketcap"],GEM:["phase3","registry","issuer","cash","pdufa","window","volume","rsi","trend","liquidity","marketfresh"]};
 export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
- const [selected,setSelected]=useState<string[]>(()=>[...suggestedByStage[stage]]);
+ const [selected,setSelected]=useState<string[]>([]);
  const [result,setResult]=useState<GemScanResult|null>(null);
  const [optionalGoals,setOptionalGoals]=useState<Record<string,string>>(()=>Object.fromEntries(OPTIONAL_ALL.map(a=>[a.key,a.goal])));
  const [twoTrialIds,setTwoTrialIds]=useState<[string,string]>(["",""]);
@@ -201,7 +201,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>{criteria.map(([key,label])=><label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}</span></label>)}</div>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All requirements start unchecked. Suggested options are marked below; choose only those you want to enforce.</p>
+ <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>{criteria.map(([key,label])=><label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{suggestedByStage[stage].includes(key)&&<small style={{display:"block",fontSize:11,color:"#346f48",fontWeight:700}}>Suggested · optional (unchecked by default)</small>}</span></label>)}</div>
 
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!pipeline.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>selectRequirements([])}>Clear selections</button><button type="button" onClick={()=>selectRequirements([...suggestedByStage[stage]])} style={{padding:"10px 14px",border:"1px solid #1d6d4b",borderRadius:6,background:"#e4f3e8",fontWeight:700}}>SUGGESTED</button></div>
 
