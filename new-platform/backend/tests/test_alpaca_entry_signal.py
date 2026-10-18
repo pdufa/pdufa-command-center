@@ -108,6 +108,19 @@ def program(monkeypatch, fixture):
         "recheck":{"test":{"first_sec_status":"VERIFIED", "second_sec_status":"VERIFIED",
         "first_sec_url":"https://sec.gov/first", "second_sec_url":"https://sec.gov/second",
         "gem_entry_authorized":"YES"}}, "missingSources":[]}
+    context["runway"] = {"TEST": {
+        "ticker": "TEST", "cik": "0000000123", "as_of": "2026-10-19",
+        "cash_usd": 150000000, "operating_cash_flow_usd": -30000000,
+        "operating_cash_flow_months": 3, "runway_months_cash_only": 15.0,
+        "cash_includes_restricted": False, "review_flags": [],
+        "evidence": {
+            "companyfacts_url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000000123.json",
+            "cash": {"form": "10-Q", "accession": "0000000123-26-000001",
+                     "period_end": "2026-09-30", "filed": "2026-10-10"},
+            "operating_cash_flow": {"form": "10-Q", "accession": "0000000123-26-000001",
+                                    "period_end": "2026-09-30", "filed": "2026-10-10"},
+        },
+    }}
     snapshot = {"members":{"GEM":{"rows":[row]}}, "sourceHealth":{
         "state":"CURRENT", "publishedScan":{"complete":True,"finishedAt":(NOW-timedelta(hours=1)).isoformat()}}}
     monkeypatch.setattr(source_workspace, "workspace", lambda: snapshot)
@@ -169,3 +182,25 @@ def test_no_green_for_weekend_exit_window_or_stale_sources(program):
     row["pdufaDate"] = event["pdufa_date"] = "2026-12-15"
     snapshot["sourceHealth"]["publishedScan"]["finishedAt"] = (NOW-timedelta(days=4)).isoformat()
     assert entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)["status"] == "UNAVAILABLE"
+
+
+def test_runway_missing_or_under_twelve_months_blocks_buy(program):
+    _, _, context, _ = program
+    original = context["runway"]["TEST"]
+    del context["runway"]["TEST"]
+    absent = entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)
+    assert absent["status"] == "WAIT" and not absent["green"]
+    context["runway"]["TEST"] = {**original,
+        "cash_usd": 90000000, "runway_months_cash_only": 9.0}
+    low = entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)
+    assert low["status"] == "WAIT" and not low["green"]
+    assert "runway" in low["message"].lower()
+    context["runway"]["TEST"] = original
+
+
+def test_optional_financing_still_rejects_missing_dilution_evidence(program):
+    _, event, context, _ = program
+    context["recheck"]["test"]["gem_entry_authorized"] = "NO"
+    event.pop("new_dilution_flag", None)
+    result = entry.entry_for_program("APPLICATION|test", "TEST", now=NOW)
+    assert not result["green"] and result["status"] == "WAIT"
