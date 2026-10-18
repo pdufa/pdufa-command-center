@@ -917,14 +917,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <section className="panel pipeline-filters pipeline-filters-compact" aria-labelledby="pipeline-filters-title">
         <div className="pipeline-filter-heading">
           <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
-          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters</span>
+          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters) + Number(onlyBand)} trial filters</span>
         </div>
         <div className="pipeline-row pipeline-filter-toolbar">
           <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
-          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
         </div>
         <details className="pipeline-filter-details" open>
-          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
+          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters) + Number(onlyBand)} selected</span></summary>
           <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
           <div className="filter-columns pipeline-three-filter-columns">
             {[
@@ -939,7 +938,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
               </label>)}</div>
             </fieldset>)}
-            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot.asOf} ready={snapshot.trialFilterSchema === 1} />
+            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot.asOf} ready={snapshot.trialFilterSchema === 1} tradingCapOnly={onlyBand} onTradingCapChange={setOnlyBand} />
           </div>
         </details>
         <div className="pipeline-actions pipeline-display-actions">
