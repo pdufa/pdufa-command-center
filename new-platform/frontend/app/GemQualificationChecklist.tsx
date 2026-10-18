@@ -214,12 +214,11 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes, including the optional GEM JR input at #1 in GEM, start unchecked. SUGGESTED shows green guidance without checking boxes; DESELECT ALL clears all selections.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes, including Gem Jr Trials in GEM, start unchecked. SUGGESTED shows green guidance without checking boxes; DESELECT ALL clears all selections.</p>
  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:9,marginBottom:14}}>
- {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:9,alignItems:"flex-start",padding:11,border:"2px solid #31834b",borderRadius:6,background:"#eef9f0",gridColumn:"1"}}>
-   <input type="checkbox" aria-label="1. Use GEM JR trials for GEM scan (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
-   <span><strong>#1 — Use GEM JR trials for GEM scan (optional)</strong>
-     <small style={{display:"block",marginTop:4}}>Checked: scan {gemJrCandidates.length.toLocaleString("en-US")} saved GEM JR programs only. Unchecked: scan the full PIPELINE. No automatic promotion.</small>
+ {stage==="GEM"&&<label key="gem_jr_source" style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:"1px solid #c1d8c8",borderRadius:5,background:"white",gridColumn:"1"}}>
+   <input type="checkbox" aria-label="Gem Jr Trials (optional)" checked={useGemJrSource} onChange={()=>toggle("gem_jr_source")} disabled={running} />
+   <span>Gem Jr Trials <small style={{fontSize:12,color:"#175a35",fontWeight:700}}>Optional</small>
      {useGemJrSource&&gemJrCandidates.length===0&&<small role="alert" style={{display:"block",color:"#9b2828",fontWeight:700}}>No saved GEM JR trials available — cannot run the scan.</small>}
    </span>
  </label>}
