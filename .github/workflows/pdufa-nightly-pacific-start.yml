@@ -3,6 +3,7 @@ name: PDUFA Daily 10:00 PM Pacific Start
 # One clock dispatches the WHOLE awaited chain. Recovery slots can start a
 # missed night; a recorded or active full chain prevents duplicate dispatch.
 # 2026-10-15 22:06 Pacific: operator-requested kickoff through the existing push guard.
+# 2026-10-17 22:06 Pacific: operator-requested kickoff using the same guarded push entrypoint.
 on:
   schedule:
     - cron: '0 5 * * *'   # 10:00 PM PDT
