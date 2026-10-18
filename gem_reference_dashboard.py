@@ -1339,6 +1339,9 @@ def render_reference_stage(stage, root="data"):
     )).hexdigest()[:12]
     raw = _dashboard(payload=payload, default=None,
                      key="reference_dashboard_" + stage.replace(" ", "_") + "_" + revision)
+    # Read-only Alpaca split-adjusted technical data; no automatic trade actions.
+    from alpaca_data_provider import render_alpaca_panel
+    render_alpaca_panel(stage, root)
     event = resolve_dashboard_action(raw, payload)
     last_key = "_gem_reference_event_" + stage
     if event is None or raw["nonce"] == st.session_state.get(last_key):
