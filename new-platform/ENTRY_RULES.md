@@ -6,14 +6,14 @@ These starting thresholds have not been backtested or calibrated as probabilitie
 
 ## Conditions
 
-- Exact source-linked positive Phase 3 and two independently verified funded post-readout closes.
-- Current complete source evidence, a verified unresolved PDUFA date, no flagged new dilution, and more than 14 calendar days until PDUFA.
-- At least 60 preceding completed exchange sessions plus the signal session, with split-adjusted consolidated SIP OHLC, volume and bar VWAP, extending before the second-financing anchor.
+- Exact-program, source-linked successful Phase 3 results. Second financing is OPTIONAL, retained as a documented SEC risk factor rather than an eligibility prerequisite.
+- Current complete clinical/SEC source evidence, independently cleared dilution, SEC-reconciled cash-only runway of at least 12 months, a verified unresolved PDUFA date, and more than 14 calendar days until PDUFA.
+- At least 60 preceding completed exchange sessions plus the signal session, with split-adjusted consolidated SIP OHLC, volume and bar VWAP, extending before the verified second financing close if one exists, otherwise before the verified Phase 3 readout.
 - The preceding 10-session high-low range is at most 3 times ATR14.
 - The latest five-session low is at least the preceding five-session low.
 - The completed signal close exceeds base high + 0.1 ATR, rounded up to the displayed price increment.
 - Signal volume is at least 1.5 times the preceding 20-session mean.
-- The close exceeds the financing-date bar-based anchored VWAP estimate.
+- The close exceeds an event-anchored VWAP estimate (verified financing close when available, otherwise verified Phase 3 readout).
 
 ATR uses Wilder smoothing and excludes the signal session, as do base boundaries
 and average volume. AVWAP is an estimate from bar VWAP weighted by bar volume;
