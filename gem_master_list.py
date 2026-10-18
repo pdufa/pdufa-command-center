@@ -1,7 +1,8 @@
 """Single GEM master list across Phase 3, financing and PDUFA research.
 
-Every saved program remains visible. Exactly two source-verified event gates
-control the eligibility/rank; stage and timing labels are descriptive only.
+Every saved program remains visible. Source-verified successful Phase 3
+results control research eligibility/rank; second financing is optional.
+Stage and timing labels are descriptive only.
 Legacy three-stage rubrics remain in the audit backend, not extra lists.
 """
 from __future__ import annotations
@@ -51,16 +52,16 @@ def gem_stage(item):
 
 
 def gem_status(item):
-    """Respect the independent two-benchmark rule; never promote stage alone."""
+    """Successful source-verified Phase 3 controls research-list eligibility."""
     if item.get("Two-benchmark eligible") is True:
         days = _days(item.get("Days to PDUFA"))
         risks = str(item.get("Two-benchmark risk flags") or "").lower()
         if ("fda event already resolved" in risks
                 or (days is not None and days <= 3)):
             return "EXIT / FDA DECISION WARNING"
-        return "ELIGIBLE — RANKED; MANUAL REVIEW"
+        return "PHASE 3 QUALIFIED — RANKED; MANUAL REVIEW"
     if item.get("Benchmark 1 — Phase 3 released") == PHASE3_OK:
-        return "WATCH — FINANCING #2 UNVERIFIED"
+        return "PHASE 3 VERIFIED — REVIEW FINANCING RISK (OPTIONAL)"
     return "REVIEW — PHASE 3 UNVERIFIED"
 
 
