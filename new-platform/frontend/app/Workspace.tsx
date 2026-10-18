@@ -452,8 +452,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           if (!response.ok) {
             const transient = [502, 503, 504].includes(response.status);
             if (transient && attempt < retryDelays.length - 1) continue;
+            const details = await response.json().catch(() => ({})) as {error?:string};
             throw new Error("Published source unavailable: " + response.status +
-              (transient ? ". Backend may be restarting; use Reload published sources to retry." : ""));
+              (details.error ? " — " + details.error : ". Check backend health and configuration."));
           }
           const data: Snapshot = await response.json();
           if (!ctrl.signal.aborted) {
