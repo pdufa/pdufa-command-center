@@ -32,9 +32,9 @@ def current_stage_members(data_dir, *, as_of):
     cleared, _historical, _sec_current = source_cleared_gems(data_dir, as_of=as_of)
     gem_ids = {str(row.get("Pipeline ID") or "") for row in cleared}
     jr = [row for row in junior if row.get("Pipeline ID") not in gem_ids]
-    for row in jr + cleared:
-        if row.get("Pipeline ID") not in pids:
-            raise ValueError("Candidate outside canonical Pipeline universe")
+    # Pre-Oct-15 discovery policy: a sound issuer/trial research lead need
+    # not be in Pipeline already. The canonical ID check is not an admission
+    # gate; date/exit tracking still uses stable exact APPLICATION/TRIAL IDs.
     return {"GEM_JR": jr, "GEM": cleared}
 
 
