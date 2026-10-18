@@ -2287,3 +2287,45 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
     grid-template-columns:minmax(0,1fr);
   }
 }
+
+
+/* GEM / GEM JR: on phones qualification criteria starts collapsed, and a
+   visible accessible button reveals it. Desktop criteria remain fully shown. */
+.gem-criteria-responsive .gem-criteria-mobile-trigger {display:none;}
+.gem-criteria-responsive .gem-criteria-collapsible-content {display:block;min-width:0;max-width:100%;}
+@media(max-width:720px) {
+  .gem-criteria-responsive {padding:0!important;overflow:hidden;}
+  .gem-criteria-responsive .gem-criteria-desktop-heading {display:none;}
+  .gem-criteria-responsive .gem-criteria-mobile-trigger {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    min-width:0;
+    width:100%;
+    min-height:48px;
+    text-align:left;
+    color:#224333;
+    background:#eaf4ed;
+    border:none;
+    border-radius:6px;
+    padding:11px 12px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .gem-criteria-responsive .gem-criteria-mobile-trigger:hover {background:#dceee1;}
+  .gem-criteria-responsive .gem-criteria-mobile-trigger:focus-visible {
+    outline:3px solid #2076a3;
+    outline-offset:-3px;
+  }
+  .gem-criteria-responsive .gem-criteria-trigger-state {
+    font-size:12px;
+    font-weight:700;
+    color:#285e43;
+    white-space:nowrap;
+  }
+  .gem-criteria-responsive .gem-criteria-collapsible-content {display:none;padding:10px;}
+  .gem-criteria-responsive[data-open="true"] .gem-criteria-collapsible-content {display:block;}
+}
