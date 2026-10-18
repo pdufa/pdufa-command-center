@@ -10,12 +10,18 @@ on:
     paths:
       - scripts/alpaca_gem_daily_monitor.py
       - scripts/alpaca_gem_watchlist.py
+      - alpaca_gem_provider.py
+      - gem_reference_dashboard.py
+      - tests/test_alpaca_gem_provider.py
       - tests/test_alpaca_gem_daily_monitor.py
       - .github/workflows/gem-alpaca-daily-monitor.yml
   pull_request:
     paths:
       - scripts/alpaca_gem_daily_monitor.py
       - scripts/alpaca_gem_watchlist.py
+      - alpaca_gem_provider.py
+      - gem_reference_dashboard.py
+      - tests/test_alpaca_gem_provider.py
       - tests/test_alpaca_gem_daily_monitor.py
       - .github/workflows/gem-alpaca-daily-monitor.yml
 
@@ -38,6 +44,7 @@ jobs:
       - name: Validate daily monitor without brokerage credentials
         run: |
           python -m unittest discover -s tests -p 'test_alpaca_gem_daily_monitor.py' -v
+          python -m unittest discover -s tests -p 'test_alpaca_gem_provider.py' -v
           python scripts/alpaca_gem_daily_monitor.py --help > /dev/null
           python scripts/alpaca_gem_watchlist.py --help > /dev/null
 
@@ -66,12 +73,12 @@ jobs:
             echo "## GEM monitor skipped" >> "$GITHUB_STEP_SUMMARY"
             echo "GitHub Actions paper Alpaca secrets are missing. Streamlit secrets are separate." >> "$GITHUB_STEP_SUMMARY"
           fi
-      - name: Read Alpaca watchlist, paper positions, and daily IEX candles
+      - name: Read active GEM/GEM JR programs, paper positions, and SIP daily bars
         if: steps.keys.outputs.connected == 'true'
         run: |
           python scripts/alpaca_gem_daily_monitor.py \
-            --watchlist "GEM DAILY MONITOR" \
-            --feed iex \
+            --universe stages \
+            --feed sip \
             --output output/gem_alpaca_daily.json
           python - <<'PY'
           import json, os
@@ -80,7 +87,7 @@ jobs:
           lines=[
               "## Alpaca GEM after-close entry/exit monitoring",
               "",
-              "**Research only; no orders. IEX volume is not consolidated.**",
+              "**Research only; no orders. Historical SIP consolidated EOD feed; clinical and financing sources required.**",
               "",
               "| Ticker | Stage | Signal | Explanation |",
               "|---|---|---|---|",
