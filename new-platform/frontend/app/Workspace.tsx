@@ -324,11 +324,52 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
 
   useEffect(() => {
     const ctrl = new AbortController();
-    fetch("/api/workspace", { cache: "no-store", signal: ctrl.signal })
-      .then(async r => { if (!r.ok) throw new Error("Published source unavailable: " + r.status); return r.json(); })
-      .then((data: Snapshot) => { if (!ctrl.signal.aborted) { setSnapshot(data); setFetchError(""); setRefreshing(false); } })
-      .catch(error => { if (!ctrl.signal.aborted) { setFetchError(String(error)); setRefreshing(false); } });
-    return () => ctrl.abort();
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    // Render's free web service can take longer than Vercel's 30s upstream
+    // timeout to restart. Retry only transient failures, without inventing
+    // replacement Pipeline/GEM data or overwriting an already loaded snapshot.
+    const retryDelays = [0, 3000, 8000, 15000, 20000];
+    async function loadPublishedSources() {
+      for (let attempt = 0; attempt < retryDelays.length && !ctrl.signal.aborted; attempt++) {
+        if (attempt > 0) {
+          setFetchError("Reconnecting to published sources… attempt " + (attempt + 1) + "/" + retryDelays.length + ". Saved WT selections are unchanged.");
+          await new Promise<void>(resolve => {
+            retryTimer = setTimeout(resolve, retryDelays[attempt]);
+          });
+          retryTimer = null;
+          if (ctrl.signal.aborted) return;
+        }
+        try {
+          const response = await fetch("/api/workspace", { cache: "no-store", signal: ctrl.signal });
+          if (!response.ok) {
+            const transient = [502, 503, 504].includes(response.status);
+            if (transient && attempt < retryDelays.length - 1) continue;
+            throw new Error("Published source unavailable: " + response.status +
+              (transient ? ". Backend may be restarting; use Reload published sources to retry." : ""));
+          }
+          const data: Snapshot = await response.json();
+          if (!ctrl.signal.aborted) {
+            setSnapshot(data);
+            setFetchError("");
+            setRefreshing(false);
+          }
+          return;
+        } catch (error) {
+          if (ctrl.signal.aborted) return;
+          const permanent = error instanceof Error && error.message.startsWith("Published source unavailable:");
+          if (permanent || attempt === retryDelays.length - 1) {
+            setFetchError(String(error));
+            setRefreshing(false);
+            return;
+          }
+        }
+      }
+    }
+    void loadPublishedSources();
+    return () => {
+      ctrl.abort();
+      if (retryTimer !== null) clearTimeout(retryTimer);
+    };
   }, [fetchVersion]);
   useEffect(() => {
     let local: Tags = {watch:[],trade:[]};
