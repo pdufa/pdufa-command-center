@@ -38,3 +38,23 @@ def test_page_requires_auth(monkeypatch):
     monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-secret")
     with TestClient(app) as client:
         assert client.get("/api/workspace/page").status_code == 401
+
+
+def test_page_rejects_unverified_pipeline(monkeypatch):
+    """A partial source must never be labeled as a verified candidate page."""
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-secret")
+    app.dependency_overrides[require_storage] = lambda: None
+    monkeypatch.setattr(source_workspace, "workspace", lambda: {
+        "pipeline": [{"id": "PDUFA-000001"}],
+        "sourceHealth": {"streamlitPipelineParity": {"exactPrograms": 2}},
+    })
+    monkeypatch.setattr(program_registry, "number_workspace", lambda value: value)
+    try:
+        with TestClient(app) as client:
+            response = client.get("/api/workspace/page", headers={
+                "X-PDUFA-Internal-Key": "test-only-secret",
+            })
+            assert response.status_code == 503
+            assert response.json()["detail"] == "Verified workspace page unavailable"
+    finally:
+        app.dependency_overrides.pop(require_storage, None)
