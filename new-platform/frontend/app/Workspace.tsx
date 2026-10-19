@@ -1015,17 +1015,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
       <WtTopChecklist programs={trackedWtPrograms}/>
-      <div className="wt-panels">
-      {(["watch","trade"] as const).map(kind=><section className="panel" key={kind}>
+      <div className="wt-screenwide-stages">
+      {(["watch","trade"] as const).map(kind=><section className="panel wt-screenwide-stage" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
         {tags[kind].length===0 && <p className="subtle">No exact programs selected yet. Use W/T buttons beside Program IDs in PIPELINE or GEM.</p>}
-        <div className="wt-program-masonry">
+        <div className="wt-screenwide-list">
         {tags[kind].map(programId=>{
           const selectedRecord=byProgram.get(programId);
           const saved=storedIdentities.find(x=>x.programId===programId);
           const ticker=selectedRecord?.ticker||saved?.ticker||"";
-          return <div className="wt-stock" key={programId}>
-            <div className="wt-identity">
+          return <article className="wt-screenwide-stock" key={programId}>
+            <div className="wt-identity wt-screenwide-identity">
               <strong className="permanent-id">{programId}</strong>
               <h3>{ticker||"SOURCE NOT CURRENT"}</h3>
               <p className="subtle">{stated(selectedRecord?.drug||saved?.drug)} · {stated(selectedRecord?.id||saved?.id,"historical exact program")}</p>
@@ -1035,14 +1035,18 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
-            <div className="wt-research-column">
-              {ticker ? <>
+            {ticker ? <>
+              <div className="wt-screenwide-entry">
                 <EntrySignal ticker={ticker} programId={programId}/>
+              </div>
+              <div className="wt-screenwide-chart">
                 <AlpacaStockChart ticker={ticker} programId={programId} />
+              </div>
+              <div className="wt-screenwide-data">
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
-              </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
-            </div>
-          </div>;
+              </div>
+            </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
+          </article>;
         })}
         </div>
       </section>)}
