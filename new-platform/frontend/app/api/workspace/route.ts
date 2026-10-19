@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const response = await fetch(base + "/api/workspace", {
       headers: { "x-pdufa-internal-key": key },
       cache: "no-store",
-      signal: AbortSignal.timeout(30000)
+      signal: AbortSignal.timeout(90000)
     });
     if (!response.ok) {
       const reason = response.status === 503
@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
       error: cause instanceof Error && cause.message === "PIPELINE count or parity metadata failed validation"
         ? "PIPELINE data and source totals disagree"
         : cause instanceof Error && cause.name === "TimeoutError"
-        ? "Backend request timed out after 30 seconds"
+        ? "Backend request timed out after 90 seconds"
         : "Backend unreachable or invalid workspace response",
       sourceHealth: { state: "UNAVAILABLE" }
     }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
