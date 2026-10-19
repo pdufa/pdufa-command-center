@@ -64,7 +64,8 @@ def publish(snapshot, since=None):
         while len(_HISTORY) > _MAX_VERSIONS:
             _HISTORY.popitem(last=False)
     if since == digest:
-        return {"version": digest, "unchanged": True, "reset": False}
+        return {"version": digest, "unchanged": True, "reset": False,
+                "asOf": snapshot.get("asOf")}
     if previous is None:
         return {"version": digest, "unchanged": False, "reset": True,
                 "reason": "Unknown or expired base version; fetch full workspace"}
