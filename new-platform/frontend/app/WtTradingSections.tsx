@@ -35,6 +35,7 @@ export function wtEffectivePresetKeys(manual:readonly string[],group:GroupId,fla
 export function nextWtPresetSelection(
  selected:readonly string[],group:GroupId,mode:"FS"|"FA"
 ):string[]{
+ if(mode==="FA")return [...selected]; // Unassigned toggle must never change indicators.
  const available=WT_GROUPS.find(item=>item.id===group)?.items.map(item=>item.key)||[];
  const keys=mode==="FS"
    ?suggestedWtIndicators[group].filter(key=>available.includes(key))
