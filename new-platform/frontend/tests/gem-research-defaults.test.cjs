@@ -118,7 +118,9 @@ test("Each top count is exactly the number displayed on its stage page",()=>{
 test("Four illustrated top boxes match the reference colors and icons",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
- assert.match(src,/function WorkflowStageIcon\(\{stage\}/);
+ const iconSource=fs.readFileSync(path.join(__dirname,"../app/WorkflowStageIcon.tsx"),"utf8");
+ assert.match(src,/import WorkflowStageIcon from "\.\/WorkflowStageIcon"/);
+ assert.match(iconSource,/function WorkflowStageIcon\(\{stage\}/);
  assert.match(src,/workflow-count-icon/);
  assert.match(src,/workflow-count-copy/);
  assert.match(src,/className=\{"workflow-count workflow-count--"\+item\.id\.toLowerCase\(\)/);
