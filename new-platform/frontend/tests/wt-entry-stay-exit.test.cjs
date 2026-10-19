@@ -192,6 +192,7 @@ test("FS and FA buttons display side by side with separate states and selections
   const faKeys=wtEffectivePresetKeys([],stage,faFlags);
   assert.ok(fsKeys.length>0&&fsKeys.length<count);
   assert.equal(faKeys.length,0,"FA is unassigned");
+  assert.deepEqual(nextWtPresetSelection([],stage,"FA"),[],"Unassigned FA fallback must not check indicators");
   assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(fsFlags,"FS")),[]);
   assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(faFlags,"FA")),[]);
   const both=nextWtPresetFlags(fsFlags,"FA");
