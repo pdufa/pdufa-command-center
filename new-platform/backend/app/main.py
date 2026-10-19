@@ -644,12 +644,31 @@ def read_workspace():
     from .source_workspace import workspace
     from .program_registry import number_workspace
     try:
-        return number_workspace(workspace())
+        snapshot = number_workspace(workspace())
+        from .workspace_delta import publish
+        try:
+            version = publish(snapshot)["version"]
+        except ValueError:
+            # A stale source may still be displayed as stale, but must never
+            # receive a fresh delta version or enter the verified history.
+            return snapshot
+        return {**snapshot, "workspaceVersion": version}
     except Exception as exc:
         import logging
         logging.getLogger(__name__).error("PDUFA_PROGRAM_REGISTRY_FAILED error_type=%s", type(exc).__name__)
         # Do NOT publish an ephemeral/recomputed number if Neon is unavailable.
         raise HTTPException(status_code=503, detail="Persistent program identification unavailable") from None
+
+
+@app.get("/api/workspace/delta", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace_delta(since: str = ""):
+    from .source_workspace import workspace
+    from .program_registry import number_workspace
+    from .workspace_delta import publish
+    try:
+        return publish(number_workspace(workspace()), since=since or None)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Versioned workspace unavailable") from None
 
 
 @app.get("/api/watch-trade", dependencies=[Depends(require_internal_key), Depends(require_storage)])

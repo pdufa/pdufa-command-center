@@ -1,0 +1,26 @@
+name: Workspace Delta Release Verification
+
+on:
+  push:
+    branches: [workspace-delta-render-release]
+    paths:
+      - 'new-platform/backend/**'
+      - '.github/workflows/workspace-delta-release-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r new-platform/backend/requirements.txt
+      - run: PYTHONPATH=new-platform/backend pytest -q new-platform/backend/tests/test_workspace_delta.py
+      - run: PYTHONPATH=new-platform/backend pytest -q new-platform/backend/tests
+      - run: python -m compileall -q new-platform/backend/app
