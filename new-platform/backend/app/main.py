@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
@@ -369,6 +370,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
+# Compress large read-only candidate inventories before sending them to Vercel.
+# This does not change persisted records, identifiers, scans, or trading state.
+app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
 
 
 @app.get("/health")
