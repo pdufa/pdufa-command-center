@@ -23,7 +23,9 @@ test("Top cards are above research body and use real corresponding page totals",
  for(const [field,source] of [["PIPELINE","possible.length"],["GEM_JR","gemPageRows.GEM_JR.length"],["GEM","gemPageRows.GEM.length"],["WT","tags.watch.length + tags.trade.length"]]) {
    assert.ok(ws.includes(field+": "+source),field+" total must match its page");
  }
- assert.match(ws,/localStorage\.setItem\("pdufa_stage_totals_v1"/);\n assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : null/);\n assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM"\) : null/);
+ assert.match(ws,/localStorage\.setItem\("pdufa_stage_totals_v1"/);
+ assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : null/);
+ assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM"\) : null/);
 });
 
 test("Standalone trial sheets receive identical four-box UI with synced page counts",()=>{
