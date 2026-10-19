@@ -67,7 +67,7 @@ function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boo
    const v=b[key],prior=i?bars[i-1][key]:null;
    return good(v)?(i&&good(prior)?"L":"M")+x(i).toFixed(2)+","+scale(v).toFixed(2):"";
  }).join(" ");
- return <div className="alpaca-plot-box"><svg viewBox={"0 0 "+W+" "+H} className="alpaca-plot" role="img" aria-label="Alpaca daily candlesticks and daily volume">
+ return <div className="alpaca-plot-box"><svg viewBox={"0 0 "+W+" "+H} className="alpaca-plot" role="img" aria-label={visibleStudies.size?"Alpaca daily price with selected indicators":"Alpaca daily price only — no technical indicators"}>
   {Array.from({length:5},(_,i)=>{const yy=T+i*(B-T)/4;return <g key={i}>
     <line x1={L} x2={W-R} y1={yy} y2={yy} stroke="#e3edf4"/>
     <text x={L-5} y={yy+3} textAnchor="end" fontSize="9" fill="#596979">{fixed(hi-i*(hi-lo)/4)}</text>
@@ -138,6 +138,15 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
  const all=useMemo(()=>compute(state?.bars||[]),[state?.bars]);
  const latest=all.at(-1),cut=latest?Date.parse(latest.date)-rangeDays[range]*86400000:Infinity;
  const visibleBars=all.filter(x=>Date.parse(x.date)>=cut);
+ // WT selections govern *both* plotted studies and readout chips. Keep
+ // original readouts for other pages that use their independent chart controls.
+ const studyReadouts:readonly [ChartSeries,string,number|null|undefined][]=[
+  ["sma20","SMA20",latest?.sma20],["sma50","SMA50",latest?.sma50],
+  ["ema10","EMA10",latest?.ema10],["ema20","EMA20",latest?.ema20],
+  ["ema50","EMA50",latest?.ema50],["rsi","RSI14",latest?.rsi],
+  ["macd","MACD",latest?.macd],["atr","ATR14",latest?.atr]
+ ];
+ const visibleReadouts=studyReadouts.filter(([key])=>!wtControlled||visibleStudies.has(key));
  return <section ref={surface} className="alpaca-stock-chart" aria-label={ticker+" chart from Alpaca"}>
   <header className="alpaca-header"><div><strong>{ticker} · ALPACA STOCK CHART</strong>
      <small>{programId} · {state?.feed||"FEED PENDING"} · {state?.coverage||"Provider Alpaca only"}</small></div>
@@ -152,10 +161,8 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
     <span>{latest?"Last Alpaca session "+latest.date+" | Close $"+fixed(latest.close):"Alpaca source awaiting verification"}</span></div>
   {state?.status==="OK"&&visibleBars.length?
     <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies}/>
-     {expanded&&<div className="alpaca-values">{[
-      ["SMA20",latest?.sma20],["SMA50",latest?.sma50],["EMA10",latest?.ema10],
-      ["EMA20",latest?.ema20],["EMA50",latest?.ema50],["RSI14",latest?.rsi],["MACD",latest?.macd],["ATR14",latest?.atr]
-     ].map(([k,v])=><span key={String(k)}>{k}: {fixed(v,2)}</span>)}</div>}
+     {expanded&&visibleReadouts.length>0&&<div className="alpaca-values">{visibleReadouts.map(([key,label,value])=>
+       <span key={key}>{label}: {fixed(value,2)}</span>)}</div>}
     </>:
     <div className="alpaca-missing" role="status"><strong>ALPACA · {error?"ERROR":state?.status||"LOADING"}</strong>
      <p>{error||state?.message||"Requesting market bars from Alpaca. No TradingView, Yahoo or synthetic fallback."}</p></div>}
