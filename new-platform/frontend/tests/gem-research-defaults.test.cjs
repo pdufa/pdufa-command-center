@@ -44,7 +44,7 @@ test("Only an explicit VIEW SAVED MEMBERS selects the 11-member stage list",()=>
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(src,/VIEW SAVED MEMBERS/);
  assert.match(src,/function gemCandidateRows\(stage: "GEM_JR" \| "GEM"\)/);
- assert.match(src,/const rows=gemCandidateRows\(stage\)/);
+ assert.match(src,/const rows=gemPageRows\[stage\]/);
  assert.match(src,/pickGemResearchRows\(\{\s*pipeline,\s*savedStage: snapshot\?\.members\[stage\]\.rows \|\| \[\],/);
  assert.match(src,/LIVE RESEARCH SCREEN/);
  assert.match(src,/NOT STAGE MEMBER/);
@@ -92,11 +92,25 @@ test("Current top workflow totals appear below navigation in Pipeline, GEM JR, G
  const ids=['id:"PIPELINE" as Nav','id:"GEM_JR" as Nav','id:"GEM" as Nav','id:"WT" as Nav'];
  let previous=-1;
  for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
- assert.match(totals,/gemCandidateRows\("GEM_JR"\)\.length/);
- assert.match(totals,/gemCandidateRows\("GEM"\)\.length/);
- assert.match(totals,/new Set\(\[\.\.\.tags\.watch,\.\.\.tags\.trade\]\)\.size/);
- assert.match(totals,/snapshot \? pipeline\.length : null/);
+ assert.match(totals,/count:snapshot \? pageTotals\.GEM_JR : null/);
+ assert.match(totals,/count:snapshot \? pageTotals\.GEM : null/);
+ assert.match(totals,/count:tagsReady \? pageTotals\.WT : null/);
+ assert.match(totals,/count:snapshot \? pageTotals\.PIPELINE : null/);
  assert.match(totals,/item\.count===null\?"—":item\.count\.toLocaleString\("en-US"\)/);
  assert.match(css,/\.workflow-counts\s*\{[\s\S]*?grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
  assert.match(css,/@media\(max-width:750px\)\s*\{\s*\.workflow-counts\s*\{\s*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+});
+
+test("Each top count is exactly the number displayed on its stage page",()=>{
+ const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ const totals=src.slice(src.indexOf('const pageTotals:'),src.indexOf('function wtButton'));
+ assert.match(totals,/PIPELINE: possible\.length/);
+ assert.match(totals,/GEM_JR: gemPageRows\.GEM_JR\.length/);
+ assert.match(totals,/GEM: gemPageRows\.GEM\.length/);
+ assert.match(totals,/WT: tags\.watch\.length \+ tags\.trade\.length/);
+ assert.match(src,/const rows=gemPageRows\[stage\]/);
+ assert.match(src,/className="gem-count">\{pageTotals\[stage\]\.toLocaleString\("en-US"\)\}/);
+ assert.match(src,/className="counter">\{pageTotals\.PIPELINE\.toLocaleString\("en-US"\)\}/);
+ assert.match(src,/className="counter">\{tagsReady \? pageTotals\.WT\.toLocaleString\("en-US"\) : "—"\} total W\/T programs/);
+ assert.match(src,/const gemPageRows = \{ GEM_JR: gemCandidateRows\("GEM_JR"\), GEM: gemCandidateRows\("GEM"\) \}/);
 });
