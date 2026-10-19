@@ -826,10 +826,21 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const ctrl = new AbortController();
     async function loadCounts() {
       try {
-        const response = await fetch("/api/workspace/summary", {
+        // Render free instances can be waking when the initial summary request
+        // reaches the frontend. Retry one transient gateway failure only;
+        // never create a repeating browser polling loop.
+        let response = await fetch("/api/workspace/summary", {
           cache: "no-store",
           signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
         });
+        if ([502, 503, 504].includes(response.status) && !ctrl.signal.aborted) {
+          await new Promise<void>(resolve => setTimeout(resolve, 4000));
+          if (ctrl.signal.aborted) return;
+          response = await fetch("/api/workspace/summary", {
+            cache: "no-store",
+            signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
+          });
+        }
         if (!response.ok) {
           if (!ctrl.signal.aborted) setSummaryError("Candidate totals request failed (HTTP " + response.status + ").");
           return;
