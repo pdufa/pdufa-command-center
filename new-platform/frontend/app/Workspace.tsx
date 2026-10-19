@@ -435,6 +435,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [legacyTags, setLegacyTags] = useState<Tags>({watch:[],trade:[]});
   const [storedIdentities,setStoredIdentities] = useState<{programId:string;id:string;ticker:string;drug:string}[]>([]);
   const [wtStatus, setWtStatus] = useState("Loading saved W/T labels…");
+  const [wtChartSelection,setWtChartSelection]=useState<{programId:string;keys:string[]}>({programId:"",keys:[]});
   const wtVersion = useRef(0);
   const wtCurrent = useRef<Tags>({ watch: [], trade: [] });
   const wtQueue = useRef<Promise<void>>(Promise.resolve());
@@ -1014,7 +1015,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <h2>WT — Permanent Program ID Watchlist & Trading Research</h2>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
-      <WtTopChecklist programs={trackedWtPrograms}/>
+      <WtTopChecklist programs={trackedWtPrograms} onChartControlsChange={(programId,keys)=>setWtChartSelection({programId,keys})}/>
       <div className="wt-screenwide-stages">
       {(["watch","trade"] as const).map(kind=><section className="panel wt-screenwide-stage" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
@@ -1039,8 +1040,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               <div className="wt-screenwide-entry">
                 <EntrySignal ticker={ticker} programId={programId}/>
               </div>
-              <div className="wt-screenwide-chart">
-                <AlpacaStockChart ticker={ticker} programId={programId} />
+              <div className="wt-screenwide-chart" id={"wt-chart-"+programId}>
+                <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={wtChartSelection.programId===programId?wtChartSelection.keys:undefined} />
               </div>
               <div className="wt-screenwide-data">
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
