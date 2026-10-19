@@ -615,6 +615,24 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const stageCounts = availability.stageCounts;
   const dateCounts = availability.dateCounts;
 
+  // Keep the top workflow totals in lockstep with each GEM candidate table,
+  // including its live checkbox preview, completed scan and saved-only mode.
+  // A new published snapshot invalidates old previews/scans.
+  function gemCandidateRows(stage: "GEM_JR" | "GEM") {
+    const scan = gemScans[stage];
+    const activeScan = scan && scan.asOf === snapshot?.asOf && scan.sourceTotal === pipeline.length ? scan : null;
+    const preview = stage === "GEM_JR" ? gemJrLivePreview : gemLivePreview;
+    const activePreview = preview && preview.asOf === snapshot?.asOf && preview.sourceTotal === pipeline.length ? preview : null;
+    return pickGemResearchRows({
+      pipeline,
+      savedStage: snapshot?.members[stage].rows || [],
+      livePreview: activePreview,
+      completedScan: activeScan,
+      savedOnly: gemSavedOnly[stage],
+    }).filter(record => record.ticker.toLowerCase().includes(gemQuery.toLowerCase()) ||
+      (record.drug || "").toLowerCase().includes(gemQuery.toLowerCase()));
+  }
+
   function wtButton(record: Candidate,kind:"watch"|"trade"){
     const id=record.programId||"";
     const current=tags[kind].includes(id);
@@ -668,8 +686,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     ]):null;
     // The candidate table and the live checkbox count must use one pool.
     // Only an explicit VIEW SAVED MEMBERS action displays saved membership.
-    const viewRows=pickGemResearchRows({pipeline,savedStage:group?.rows||[],livePreview:stagePreview,completedScan:activeScan,savedOnly});
-    const rows=viewRows.filter(r=>r.ticker.toLowerCase().includes(gemQuery.toLowerCase()) || (r.drug||"").toLowerCase().includes(gemQuery.toLowerCase()));
+    const rows=gemCandidateRows(stage);
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
     // Track the exact current stage-membership cycle (including re-entry).
@@ -937,6 +954,21 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <button type="button" key={key} className={nav===key?"nav-selected":""} aria-current={nav===key?"page":undefined}
             onClick={()=>{setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
+    </div>}
+    {top==="PDUFA" && <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
+      {([
+        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pipeline.length : null, detail:"Published programs"},
+        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? gemCandidateRows("GEM_JR").length : null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidate view"},
+        {id:"GEM" as Nav, label:"GEM", count:snapshot ? gemCandidateRows("GEM").length : null, detail:gemSavedOnly.GEM?"Saved members":"Current candidate view"},
+        {id:"WT" as Nav, label:"WT", count:tagsReady ? new Set([...tags.watch,...tags.trade]).size : null, detail:"Unique W/T programs"},
+      ]).map(item=><button type="button" key={item.id}
+        className={"workflow-count"+(nav===item.id?" workflow-count-selected":"")}
+        aria-current={nav===item.id?"page":undefined}
+        onClick={()=>{setNav(item.id);setMobileNavOpen(false);}}>
+        <span className="workflow-count-label">{item.label}</span>
+        <strong className="workflow-count-number" aria-live="polite">{item.count===null?"—":item.count.toLocaleString("en-US")}</strong>
+        <span className="workflow-count-detail">{item.detail}</span>
+      </button>)}
     </div>}
     <div className="workspace-overview">
       <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
