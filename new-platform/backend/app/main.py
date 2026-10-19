@@ -646,7 +646,12 @@ def read_workspace():
     try:
         snapshot = number_workspace(workspace())
         from .workspace_delta import publish
-        version = publish(snapshot)["version"]
+        try:
+            version = publish(snapshot)["version"]
+        except ValueError:
+            # A stale source may still be displayed as stale, but must never
+            # receive a fresh delta version or enter the verified history.
+            return snapshot
         return {**snapshot, "workspaceVersion": version}
     except Exception as exc:
         import logging
