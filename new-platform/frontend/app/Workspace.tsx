@@ -1211,7 +1211,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? "Loading candidates…" : "Load published candidates"}</button>
-      <span className="workspace-stage">{snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
+      <span className="workspace-stage">{cachedAsOf ? "CACHED SNAPSHOT · " + cachedAsOf + " · NOT VERIFIED CURRENT" : snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
     </div>
     <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
