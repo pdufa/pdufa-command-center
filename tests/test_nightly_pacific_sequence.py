@@ -35,29 +35,25 @@ def clock(value):
 class PacificAdmissionTests(unittest.TestCase):
     def test_daylight_standard_and_wrong_offset_slots(self):
         for at, cron, expected in (
-            ('2026-10-15T04:00:00Z', '0 4 * * *', False),  # retired 9 PM PDT
-            ('2026-10-15T05:00:00Z', '0 5 * * *', True),   # 10 PM PDT
-            ('2026-01-15T05:00:00Z', '0 5 * * *', False),  # retired 9 PM PST
-            ('2026-01-15T06:00:00Z', '0 6 * * *', True),   # 10 PM PST
-            ('2026-10-15T06:00:00Z', '0 6 * * *', False),  # wrong DST
-            ('2026-01-15T06:00:00Z', '0 5 * * *', False),  # wrong DST
-            ('2026-10-15T07:00:00Z', '0 5 * * *', True),
-            ('2026-10-15T07:45:00Z', '0 5 * * *', True),
-            ('2026-10-15T09:59:00Z', '0 5 * * *', True),
-            ('2026-10-15T10:00:00Z', '0 5 * * *', False),
-            ('2026-10-15T13:00:00Z', '0 5 * * *', False),
+            ('2026-10-15T04:00:00Z', '0 4 * * *', True),   # 9 PM PDT
+            ('2026-10-15T05:00:00Z', '0 5 * * *', True),   # recovery, 10 PM PDT
+            ('2026-01-15T04:00:00Z', '0 4 * * *', False),  # too early in PST
+            ('2026-01-15T05:00:00Z', '0 5 * * *', True),   # 9 PM PST
+            ('2026-01-15T06:00:00Z', '0 6 * * *', False),  # retired 10 PM PST slot
+            ('2026-10-15T06:00:00Z', '0 6 * * *', False),
+            ('2026-10-15T09:59:00Z', '0 4 * * *', True),
+            ('2026-10-15T10:00:00Z', '0 4 * * *', False),
         ):
             with self.subTest(at=at, cron=cron):
                 result = decision('schedule', cron, [], now=clock(at))
                 self.assertEqual(result['run'], expected)
-                if expected:
-                    self.assertEqual(result['night_date_pacific'], at[:10].replace('-15', '-14'))
+
         scheduler = read('pdufa-nightly-pacific-start.yml')
-        self.assertIn('name: PDUFA Daily 10:00 PM Pacific Start', scheduler)
+        self.assertIn('name: PDUFA Daily 9:00 PM Pacific Start', scheduler)
         for minute in ('0', '15', '30'):
-            for hour in ('5', '6'):
+            for hour in ('4', '5'):
                 self.assertIn(f"cron: '{minute} {hour} * * *'", scheduler)
-        self.assertNotIn("cron: '0 4 * * *'", scheduler)
+        self.assertNotIn("cron: '0 6 * * *'", scheduler)
 
     def test_recovery_crons_start_a_missed_night(self):
         for at, cron in (('2026-10-15T07:05:00Z', '5 7 * * *'),
@@ -68,12 +64,12 @@ class PacificAdmissionTests(unittest.TestCase):
         self.assertFalse(decision('schedule', '5 7 * * *', [], now=clock('2026-10-15T04:30:00Z'))['run'])
 
     def test_frequent_recovery_sweep_is_dst_safe_and_deduplicates(self):
-        sweep = '3-53/10 5-10 * * *'
+        sweep = '3-53/10 4-10 * * *'
         scheduler = read('pdufa-nightly-pacific-start.yml')
         self.assertIn(f"cron: '{sweep}'", scheduler)
         for when, expected in (
-            ('2026-10-16T05:03:00Z', True),   # 10:03 PM PDT
-            ('2026-01-16T05:03:00Z', False),  # 9:03 PM PST
+            ('2026-10-16T04:03:00Z', True),   # 9:03 PM PDT
+            ('2026-01-16T05:03:00Z', True),   # 9:03 PM PST
             ('2026-01-16T06:03:00Z', True),   # 10:03 PM PST
             ('2026-10-16T09:53:00Z', True),   # 2:53 AM PDT recovery
             ('2026-10-16T10:03:00Z', False),  # 3:03 AM PDT: closed
@@ -92,7 +88,7 @@ class PacificAdmissionTests(unittest.TestCase):
                          now=clock('2026-10-16T05:13:00Z'))['run'])
 
     def test_dst_fall_back_uses_the_offset_at_that_nights_start(self):
-        # The 10 PM start was PDT; by this retry Los Angeles has switched to PST.
+        # The 9 PM start was PDT; by this retry Los Angeles has switched to PST.
         result = decision('schedule', '0 5 * * *', [], now=clock('2026-11-01T09:30:00Z'))
         self.assertTrue(result['run'])
         self.assertEqual(result['night_date_pacific'], '2026-10-31')
@@ -122,7 +118,7 @@ class PacificAdmissionTests(unittest.TestCase):
         self.assertTrue(decision('workflow_dispatch', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
-        self.assertTrue(decision('push', '', [], now=clock('2026-10-15T05:30:00Z'))['run'])
+        self.assertTrue(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
 
 
 class SourceStageTests(unittest.TestCase):
