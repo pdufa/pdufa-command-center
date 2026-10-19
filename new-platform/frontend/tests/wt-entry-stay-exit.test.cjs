@@ -177,3 +177,30 @@ test("WT entry/stay/exit sections always start collapsed and leave all 26 choice
  assert.equal((html.match(/type="checkbox"/g)||[]).length,0);
  assert.equal(base.WT_CHECK_KEYS.length,26);
 });
+
+test("FS and FA buttons are visible as soon as an individual WT stage checklist opens",()=>{
+ const {nextWtPresetSelection}=require("../app/WtTradingSections.tsx");
+ for(const [stage,count] of [["entry",10],["stay",7],["exit",9]]){
+  const html=renderToStaticMarkup(React.createElement(WtSections,{
+   programId:"PDUFA-000005",ticker:"TEST",activeGroup:stage,compact:true,checkedKeys:[]
+  }));
+  assert.match(html,/role="group"/);
+  assert.match(html,/>FS<\/button>/);
+  assert.match(html,/>FA<\/button>/);
+  assert.match(html,/aria-pressed="false"/);
+  assert.match(html, new RegExp('FS — toggle suggested '+stage.toUpperCase()));
+  assert.match(html, new RegExp('FA — toggle all available '+stage.toUpperCase()));
+  assert.equal((html.match(/type="checkbox"/g)||[]).length,count);
+  const suggested=nextWtPresetSelection([],stage,"FS");
+  assert.ok(suggested.length>0&&suggested.length<count,"FS chooses a curated subset");
+  assert.deepEqual(nextWtPresetSelection(suggested,stage,"FS"),[],"FS toggles back off");
+  const all=nextWtPresetSelection([],stage,"FA");
+  assert.equal(all.length,count,"FA checks all options");
+  assert.deepEqual(nextWtPresetSelection(all,stage,"FA"),[],"FA toggles back off");
+  assert.deepEqual(nextWtPresetSelection(["unrelated"],stage,"FA").filter(x=>x==="unrelated"),["unrelated"]);
+ }
+ const old=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000005",ticker:"TEST"
+ }));
+ assert.doesNotMatch(old,/>FS<\/button>|>FA<\/button>/,"Non-WT checklists are unchanged");
+});

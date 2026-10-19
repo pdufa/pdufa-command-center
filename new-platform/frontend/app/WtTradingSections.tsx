@@ -14,6 +14,27 @@ type EntryReply={
  entryTrigger?:number;maximumEntry?:number;initialStop?:number;green?:boolean;
 };
 const emptyOpen:Record<GroupId,boolean>={entry:false,stay:false,exit:false};
+const suggestedWtIndicators:Record<GroupId,readonly string[]>={
+ entry:["entry-base","entry-trend","entry-rvol","entry-rsi","entry-atr"],
+ stay:["stay-trend","stay-support","stay-rsi","stay-volume"],
+ exit:["exit-two-close","exit-support","exit-atr-trail","exit-rsi"],
+};
+/** WT-only FS (suggested) and FA (all) checkboxes; never touches GEM qualification. */
+export function nextWtPresetSelection(
+ selected:readonly string[],group:GroupId,mode:"FS"|"FA"
+):string[]{
+ const available=WT_GROUPS.find(item=>item.id===group)?.items.map(item=>item.key)||[];
+ const keys=mode==="FS"
+   ?suggestedWtIndicators[group].filter(key=>available.includes(key))
+   :available;
+ const selectedSet=new Set(selected);
+ const fullySelected=keys.length>0&&keys.every(key=>selectedSet.has(key));
+ if(fullySelected){
+  const affected=new Set(keys);
+  return selected.filter(key=>!affected.has(key));
+ }
+ return [...new Set([...selected,...keys])];
+}
 const verified=(text:string,source:WtObservation["source"]):WtObservation=>({text,source});
 const UNAVAILABLE=verified("NOT VERIFIED","UNAVAILABLE");
 const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
@@ -148,12 +169,24 @@ export default function WtTradingSections({
   {!compact&&<p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
     Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>}
-  {compact&&<p className="subtle small">Choose any of the indicators below for this trial only. Checked chart-compatible options appear on its Alpaca chart; research-only checks do not create overlays or submit orders.</p>}
+  {compact&&<p className="subtle small">Choose indicators for this trial only. FS toggles suggested options; FA toggles all available options in this stage. Individual checkboxes remain editable. Checked chart-compatible options appear on its Alpaca chart; research-only checks do not create overlays or submit orders.</p>}
   {programId&&!compact&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
   {shownGroups.map(group=><div className="wt-check-group" key={group.id}>
     {compact?<div className="wt-check-group-title wt-checklist-visible-heading">
       <strong>{group.title} — SELECT INDICATORS</strong>
       <small>{group.items.filter(i=>checked.includes(i.key)).length}/{group.items.length} selected</small>
+      <div className="wt-checklist-preset-buttons" role="group" aria-label={ticker+" "+group.id.toUpperCase()+" indicator presets"}>
+       <button type="button" className="wt-checklist-preset-button"
+        aria-label={"FS — toggle suggested "+group.id.toUpperCase()+" indicators for "+ticker}
+        title="FS — suggested indicators; click again to uncheck them"
+        aria-pressed={suggestedWtIndicators[group.id].every(key=>checked.includes(key))}
+        onClick={()=>updateChecked(nextWtPresetSelection(checked,group.id,"FS"))}>FS</button>
+       <button type="button" className="wt-checklist-preset-button"
+        aria-label={"FA — toggle all available "+group.id.toUpperCase()+" indicators for "+ticker}
+        title="FA — all available indicators; click again to uncheck them"
+        aria-pressed={group.items.every(item=>checked.includes(item.key))}
+        onClick={()=>updateChecked(nextWtPresetSelection(checked,group.id,"FA"))}>FA</button>
+      </div>
     </div>:<button type="button" className="wt-check-group-title"
       aria-expanded={expanded[group.id]} aria-controls={"wt-"+group.id+"-"+programId}
       onClick={()=>toggle(group.id)}>
