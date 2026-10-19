@@ -1101,6 +1101,21 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // GEM JR/GEM: the exact filtered list shown in that page's table.
   // WT: the sum of Watchlist and Trading research cards on its page.
   const gemPageRows = { GEM_JR: gemCandidateRows("GEM_JR"), GEM: gemCandidateRows("GEM") };
+  // Unscreened GEM research tables intentionally show the pipeline as a discovery
+  // pool. Never label that pool size as a qualified GEM or GEM JR count.
+  function verifiedStageCount(stage: "GEM_JR" | "GEM"): number | null {
+    if (!snapshot) return null;
+    if (gemSavedOnly[stage]) return snapshot.members[stage].rows.length;
+    const scan = gemScans[stage];
+    if (scan && scan.asOf === snapshot.asOf && scan.sourceTotal === pipeline.length) {
+      return gemPageRows[stage].length;
+    }
+    const preview = stage === "GEM_JR" ? gemJrLivePreview : gemLivePreview;
+    if (preview && preview.asOf === snapshot.asOf && preview.sourceTotal === pipeline.length) {
+      return gemPageRows[stage].length;
+    }
+    return null;
+  }
   const pageTotals: Record<"PIPELINE" | "GEM_JR" | "GEM" | "WT",number> = {
     PIPELINE: possible.length,
     GEM_JR: gemPageRows.GEM_JR.length,
@@ -1441,8 +1456,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
         {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null, detail:"Total candidates"},
-        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : publishedCounts?.gemJr ?? null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
-        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : publishedCounts?.gem ?? null, detail:gemSavedOnly.GEM?"Saved members":"Current candidates"},
+        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? verifiedStageCount("GEM_JR") : null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
+        {id:"GEM" as Nav, label:"GEM", count:snapshot ? verifiedStageCount("GEM") : null, detail:gemSavedOnly.GEM?"Saved members":"Current candidates"},
         {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Tracked watch / trade"},
       ]).map(item=><button type="button" key={item.id}
         className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
