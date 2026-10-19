@@ -106,7 +106,7 @@ function readWtPreferences(raw:string|null):Record<string,WtTrialIndicatorPrefer
   try {
     const parsed:unknown=JSON.parse(raw);
     if(!parsed||typeof parsed!=="object"||Array.isArray(parsed))return {};
-    const entries=Object.entries(parsed).filter(([id])=>/^PDUFA-\\d{6,}$/.test(id)).slice(0,2000);
+    const entries=Object.entries(parsed).filter(([id])=>/^PDUFA-\d{6,}$/.test(id)).slice(0,2000);
     return Object.fromEntries(entries.map(([id,value])=>[id,normalizeWtPreference(value)]));
   }catch{return {};}
 }

@@ -52,7 +52,7 @@ test("WT-only data uses responsive multiple columns without changing GEM",()=>{
 });
 test("All WT program controls, research indicators and charts remain",()=>{
  for(const term of [
-  "<WtTopChecklist programs={trackedWtPrograms} onChartControlsChange=",
+  '<WtTradingSections key={programId+"|"+selectedStage}',
   '<div className="wt-screenwide-stages">',
   '<div className="wt-screenwide-list">',
   '<article className="wt-screenwide-stock"',

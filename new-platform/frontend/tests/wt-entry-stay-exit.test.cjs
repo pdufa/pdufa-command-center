@@ -100,55 +100,58 @@ test("PDUFA T-minus calculations are labeled reported and based on Pacific calen
  assert.equal(base.pdufaDays("UNKNOWN",today),null);
 });
 
-test("WT retains original program management controls and research charts",()=>{
+test("WT keeps program management, scoped indicator checkboxes and full-width charts",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
- for(const term of ['<WtTopChecklist programs={trackedWtPrograms} onChartControlsChange=',
+ for(const term of [
   '<IndicatorParityTables programId={programId} tech={x}',
-  '<AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys=',
+  '<AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={chartIndicatorKeys} />',
   'MOVE PROGRAM TO TRADING RESEARCH',
   'RETURN PROGRAM TO WATCHLIST',
   'REMOVE PROGRAM TAG',
-  'WT INDICATOR ENTRY &amp; EXIT SCORES']){
-  assert.ok(src.includes(term),term);
- }
+  'WT INDICATOR ENTRY &amp; EXIT SCORES',
+  'Chart indicator stage for ',
+  '<WtTradingSections key={programId+"|"+selectedStage}'
+ ])assert.ok(src.includes(term),term);
+ assert.ok(!src.includes('<WtTopChecklist programs='),"Shared top checklist should be removed");
  const checkboxSrc=fs.readFileSync(path.join(__dirname,"../app/WtTradingSections.tsx"),"utf8");
- assert.ok(checkboxSrc.includes('useState<string[]>([])')||checkboxSrc.includes('useState<string[]>([]);'));
  assert.ok(checkboxSrc.includes('type="checkbox" checked={checked.includes(item.key)}'));
- assert.ok(checkboxSrc.includes("Checking a box"));
+ assert.ok(checkboxSrc.includes("shownGroups.map"),"Only selected stage checkboxes render");
+ assert.ok(checkboxSrc.includes('activeGroup?:GroupId'));
  assert.ok(!checkboxSrc.includes("method:\"POST\""));
 });
 
-test("Main WT page always renders ENTRY STAY EXIT and 26 unchecked boxes with zero tagged programs",()=>{
- const html=renderToStaticMarkup(React.createElement(WtTopChecklist,{programs:[]}));
- assert.match(html,/WT — ENTRY \/ STAY \/ EXIT CHECKLISTS/);
- assert.match(html,/0 of 26 selected/);
- assert.match(html,/ENTRY — Buy Setup/);
- assert.match(html,/STAY — Hold Monitoring/);
+test("Each trial can select ENTRY STAY EXIT or NONE beside its ticker",()=>{
+ const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ for(const stage of ['<option value="">NONE — price only</option>',
+  '<option value="entry">ENTRY — Buy setup</option>',
+  '<option value="stay">STAY — Hold monitoring</option>',
+  '<option value="exit">EXIT — Risk protection</option>']){
+  assert.ok(src.includes(stage),stage);
+ }
+ const ticker=src.indexOf('<h3>{ticker||"SOURCE NOT CURRENT"}</h3>');
+ const dropdown=src.indexOf('className="wt-stage-selector"',ticker);
+ const chart=src.indexOf('<div className="wt-screenwide-chart"',dropdown);
+ assert.ok(ticker>=0&&dropdown>ticker&&chart>dropdown,
+  "Stage dropdown must be beside the ticker, before the independent chart");
+ assert.match(src,/keys:\{\.\.\.prior\.keys,\[stage\]:\[\.\.\.new Set\(keys\.filter\(key=>allowed\.has\(key\)\)\)\]\}/);
+ assert.match(src,/configured:stage&&firstUse/);
+ assert.match(src,/stage&&firstUse/);
+ assert.match(src,/window\.localStorage\.setItem\(/);
+ assert.match(src,/\^PDUFA-\\d\{6,\}\$/);
+});
+
+test("Compact trial checklist contains only selected stage without other groups",()=>{
+ const html=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000001",ticker:"ABCD",activeGroup:"exit",compact:true,
+  checkedKeys:["exit-rsi","exit-support"]
+ }));
  assert.match(html,/EXIT — Sell \/ Risk Protection/);
- assert.match(html,/No exact programs are saved in your WT Watchlist/);
- assert.equal((html.match(/type="checkbox"/g)||[]).length,0);
- assert.equal((html.match(/aria-expanded="false"/g)||[]).length,3);
+ assert.doesNotMatch(html,/ENTRY — Buy Setup|STAY — Hold Monitoring/);
+ assert.match(html,/2\/9 selected/);
+ assert.equal((html.match(/aria-expanded="false"/g)||[]).length,1);
  assert.doesNotMatch(html,/checked=""/);
- assert.match(html,/Choose a WT program to display its Alpaca readings/);
 });
-
-test("Top-level WT program chooser maps exact program IDs without selecting boxes",()=>{
- const html=renderToStaticMarkup(React.createElement(WtTopChecklist,{programs:[
-  {programId:"PDUFA-000001",ticker:"ABCD",drug:"Drug A"},
-  {programId:"PDUFA-000002",ticker:"EFGH",drug:"Drug B"}
- ]}));
- assert.match(html,/ABCD · Drug A · PDUFA-000001/);
- assert.match(html,/EFGH · Drug B · PDUFA-000002/);
- assert.match(html,/0 of 26 selected/);
- assert.equal((html.match(/type="checkbox"/g)||[]).length,0);
- assert.equal((html.match(/aria-expanded="false"/g)||[]).length,3);
- const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
- const top=workspace.indexOf('<WtTopChecklist programs={trackedWtPrograms} onChartControlsChange=');
- const list=workspace.indexOf('<div className="wt-screenwide-stages">');
- assert.ok(top>=0&&list>top,"Top WT checklists must render BEFORE per-program stock panels");
- assert.ok(!workspace.includes('<WtTradingSections key={programId+"|"+ticker}'),"Old nested section must be removed");
-});
-
+ 
 test("WT entry/stay/exit sections always start collapsed and leave all 26 choices off",()=>{
  const html=renderToStaticMarkup(React.createElement(WtTopChecklist,{programs:[]}));
  assert.match(html,/ENTRY — Buy Setup/);

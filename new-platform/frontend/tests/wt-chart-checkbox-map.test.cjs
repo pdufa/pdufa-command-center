@@ -69,12 +69,18 @@ test("Exact-program controlled WT chart has no studies with no selected checkbox
  }));
  assert.match(normal,/HIDE STUDIES/);
 });
-test("Main WT checkboxes target only the matching program chart, never a saved stage or a broker order",()=>{
- assert.match(workspace,/setWtChartSelection\(\{programId,keys\}\)/);
- assert.match(workspace,/wtIndicatorKeys=\{wtChartSelection\.programId===programId\?wtChartSelection\.keys:\[\]\}/);
+test("WT indicators are selected by exact Program ID and never leak into another trial's chart",()=>{
+ assert.match(workspace,/const preference=wtTrialPreferences\[programId\]\|\|emptyWtPreference\(\)/);
+ assert.match(workspace,/const selectedStage=preference\.stage/);
+ assert.match(workspace,/const chartIndicatorKeys=selectedStage\?preference\.keys\[selectedStage\]:\[\]/);
+ assert.match(workspace,/wtIndicatorKeys=\{chartIndicatorKeys\}/);
+ assert.match(workspace,/changeWtTrialIndicators\(programId,selectedStage,keys\)/);
  assert.match(workspace,/id=\{"wt-chart-"\+programId\}/);
- assert.match(top,/onChartControlsChange\?\.\(id,\[\]\)/);
- assert.match(top,/onCheckedKeysChange=\{keys=>/);
+ assert.match(workspace,/WT_TRIAL_INDICATORS_KEY/);
+ assert.match(workspace,/window\.localStorage\.setItem\(/);
+ assert.match(workspace,/readWtPreferences\(window\.localStorage\.getItem\(/);
+ assert.match(workspace,/\^PDUFA-\\d\{6,\}\$/);
+ assert.doesNotMatch(workspace,/<WtTopChecklist programs=/);
  assert.match(sections,/onChange=\{e=>updateChecked\(/);
  assert.match(sections,/chartDescriptionForWtCheck\(item\.key\)/);
  assert.match(sections,/onClick=\{\(\)=>updateChecked\(\[\]\)\}/);
