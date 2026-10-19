@@ -72,6 +72,7 @@ def publish(snapshot, since=None):
                        if key not in before or _canonical(before[key]) != _canonical(row)],
             "remove": [key for key in before if key not in after],
             "count": len(after),
+            "order": list(after),
         }
     return {"version": digest, "baseVersion": since, "unchanged": False,
             "reset": False, "changes": changes,
