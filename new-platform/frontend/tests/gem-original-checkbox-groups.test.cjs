@@ -78,7 +78,8 @@ test("Actual GEM keeps its input checkbox and 11 downstream controls, never FS/F
   assert.match(trading,/Second financing verified/);
   assert.match(trading,/Relative volume/);
   assert.match(trading,/No unresolved dilution/);
-  assert.doesNotMatch(html,/aria-label="FA: toggle/);
+  assert.match(html,/aria-pressed="false" aria-label="FA: toggle Gem Jr Trials input"/);
+  assert.equal((html.match(/>FA<\/button>/g)||[]).length,1,"GEM shows exactly one FA button");
   assert.match(html,/aria-label="FS: toggle suggested criteria checkboxes"/);
   assert.match(html,/TOTAL COMBINED RESULTS/);
   assert.match(html,/SCAN GEM/);
@@ -186,4 +187,27 @@ test("GEM source fallback cannot silently reduce a 694-row input to 11 saved ent
  const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(source,/<GemQualificationChecklist key=\{stage\} stage=\{stage\}/);
  assert.match(source,/GEM JR RESEARCH UNIVERSE INPUT/);
+});
+
+test("GEM FA starts off and mirrors only the optional Gem Jr Trials checkbox",()=>{
+ const {toggleGemJrTrialsRequirement}=Checklist;
+ const initiallyUnselected=[];
+ const turnedOn=toggleGemJrTrialsRequirement(initiallyUnselected);
+ assert.deepEqual(turnedOn,["gem_jr_source"]);
+ assert.deepEqual(toggleGemJrTrialsRequirement(turnedOn),[]);
+ const otherCriteria=["volume","pdufa","rsi"];
+ const enabled=toggleGemJrTrialsRequirement(otherCriteria);
+ assert.deepEqual(enabled,[...otherCriteria,"gem_jr_source"]);
+ assert.deepEqual(toggleGemJrTrialsRequirement(enabled),otherCriteria);
+ const gemHtml=page("GEM");
+ assert.match(gemHtml,/aria-label="Gem Jr Trials \(optional\)"/);
+ assert.match(gemHtml,/aria-pressed="false" aria-label="FA: toggle Gem Jr Trials input"/);
+ assert.doesNotMatch(gemHtml,/aria-label="Gem Jr Trials \(optional\)"[^>]+checked/);
+ const jrHtml=page("GEM_JR");
+ assert.match(jrHtml,/aria-label="FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"/);
+ assert.doesNotMatch(jrHtml,/FA: toggle Gem Jr Trials input/);
+ const src=fs.readFileSync(path.join(__dirname,"../app/GemQualificationChecklist.tsx"),"utf8");
+ assert.ok(src.includes('selectRequirements(toggleGemJrTrialsRequirement(selected))'),"GEM FA uses checkbox selection pathway");
+ assert.ok(src.includes('aria-pressed={stage==="GEM"?useGemJrSource:faActive}'),"FA button state derives from checkbox");
+ assert.equal(checkboxGroupsForStage("GEM").clinical.length+checkboxGroupsForStage("GEM").trading.length,11);
 });
