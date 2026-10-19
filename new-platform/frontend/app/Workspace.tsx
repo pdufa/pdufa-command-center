@@ -597,6 +597,14 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // the verified full snapshot; never use a partial page for eligibility.
   const [earlyPipelinePage, setEarlyPipelinePage] = useState<{total:number;version:string;rows:Candidate[];nextOffset:number|null}|null>(null);
   const [earlyPageLoading, setEarlyPageLoading] = useState(false);
+  const [earlyPageQuery, setEarlyPageQuery] = useState("");
+  const earlyVisibleRows = useMemo(() => {
+    const query = earlyPageQuery.trim().toLowerCase();
+    if (!query) return earlyPipelinePage?.rows ?? [];
+    return (earlyPipelinePage?.rows ?? []).filter(candidate =>
+      [candidate.ticker, candidate.drug, candidate.id].some(value =>
+        String(value ?? "").toLowerCase().includes(query)));
+  }, [earlyPipelinePage, earlyPageQuery]);
   const [earlyPageError, setEarlyPageError] = useState("");
   async function loadNextEarlyPage() {
     const page = earlyPipelinePage;
@@ -1427,8 +1435,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {earlyPipelinePage && <div className="panel">
         <strong>Early pipeline preview · {earlyPipelinePage.rows.length} of {earlyPipelinePage.total.toLocaleString()} candidates</strong>
         <p className="subtle">Unfiltered preview only. Full eligibility, GEM and GEM JR results require the verified workspace.</p>
+        <label htmlFor="early-pipeline-search">Search loaded preview rows</label>
+        <input id="early-pipeline-search" type="search" value={earlyPageQuery}
+          onChange={event => setEarlyPageQuery(event.target.value)}
+          placeholder="Ticker or program" />
+        <p className="subtle">Showing {earlyVisibleRows.length} of {earlyPipelinePage.rows.length} loaded rows. Search does not include unloaded candidates.</p>
         <div className="priority-scroll"><table><thead><tr><th>Ticker</th><th>Program</th></tr></thead><tbody>
-          {earlyPipelinePage.rows.map((candidate, index) => <tr key={candidate.id + "-" + index}>
+          {earlyVisibleRows.slice(0, 100).map((candidate, index) => <tr key={candidate.id + "-" + index}>
             <td>{candidate.ticker || "—"}</td><td>{candidate.drug || candidate.id}</td>
           </tr>)}
         </tbody></table></div>
