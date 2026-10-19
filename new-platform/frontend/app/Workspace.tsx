@@ -637,7 +637,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       try {
         const response = await fetch("/api/workspace", {
           cache: "no-store",
-          signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(25000)]),
+          signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
         });
         if (!response.ok) {
           const details = await response.json().catch(() => ({})) as {error?:string};
@@ -653,7 +653,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         const message = error instanceof Error ? error.message : String(error);
         setFetchError(
           message.includes("timeout") || message.includes("Timeout")
-            ? "Candidate loading timed out after 25 seconds. Automatic retries are disabled; tap RETRY LOADING CANDIDATES to try once more."
+            ? "Candidate loading timed out after 95 seconds. Automatic retries are disabled; tap RETRY LOADING CANDIDATES to try once more."
             : "Candidate loading failed: " + message + " Automatic retries are disabled."
         );
       } finally {
