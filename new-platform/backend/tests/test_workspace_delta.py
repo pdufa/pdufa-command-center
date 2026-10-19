@@ -27,6 +27,7 @@ def test_delta_add_update_remove():
         "PDUFA-000001", "PDUFA-000003"}
     assert changed["changes"]["PIPELINE"]["remove"] == ["PDUFA-000002"]
     assert changed["changes"]["PIPELINE"]["count"] == 2
+    assert changed["changes"]["PIPELINE"]["order"] == ["PDUFA-000001", "PDUFA-000003"]
 
 
 def test_same_version_unchanged():
@@ -68,3 +69,14 @@ def test_fetch_timestamp_does_not_create_false_delta():
                          as_of="2026-10-19T10:05:00Z")
     refreshed["fetchedAt"] = "2026-10-19T17:05:00Z"
     assert publish(refreshed, since=version)["unchanged"] is True
+
+
+def test_reordering_is_preserved_without_false_upserts():
+    first = publish(snapshot([
+        {"id": "a", "ticker": "AAA"}, {"id": "b", "ticker": "BBB"}]))
+    second = publish(snapshot([
+        {"id": "b", "ticker": "BBB"}, {"id": "a", "ticker": "AAA"}]),
+        since=first["version"])
+    assert second["changes"]["PIPELINE"]["upsert"] == []
+    assert second["changes"]["PIPELINE"]["remove"] == []
+    assert second["changes"]["PIPELINE"]["order"] == ["b", "a"]
