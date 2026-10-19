@@ -41,6 +41,7 @@ NCT = re.compile(r"^NCT\d{8}$")
 _MIN, _MAX = 300_000_000, 10_000_000_000
 _CACHE: dict = {"as_time": 0.0, "payload": None}
 _LOCK = threading.Lock()
+_REFRESH_LOCK = threading.Lock()
 
 
 def clean(value) -> str:
@@ -389,21 +390,59 @@ def gather(today: date | None = None) -> dict:
     }
 
 
+def _stale_snapshot(snapshot: dict, reason: str) -> dict:
+    """Preserve identities while explicitly denying current-source verification."""
+    return {
+        **snapshot,
+        "mode": "STALE_PREVIOUS_FETCH",
+        "sourceHealth": {
+            **snapshot.get("sourceHealth", {}),
+            "state": "STALE",
+            "issues": [*snapshot.get("sourceHealth", {}).get("issues", []), reason],
+        },
+    }
+
+
 def workspace() -> dict:
+    """Never queue HTTP requests behind a slow external-source refresh.
+
+    Serve a valid cached snapshot immediately within TTL. During refresh,
+    concurrent requests get an explicitly STALE copy, never a falsely fresh
+    snapshot. Cold-start requests still wait for the first successful gather.
+    """
     with _LOCK:
-        clock = time.monotonic()
-        if _CACHE["payload"] is not None and clock - _CACHE["as_time"] < 300:
-            return _CACHE["payload"]
+        cached = _CACHE["payload"]
+        if cached is not None and time.monotonic() - _CACHE["as_time"] < 300:
+            return cached
+    if not _REFRESH_LOCK.acquire(blocking=False):
+        with _LOCK:
+            cached = _CACHE["payload"]
+        if cached is not None:
+            return _stale_snapshot(cached, "Published-source refresh in progress")
+        # Initial cold start: wait for the first refresh to finish.
+        with _REFRESH_LOCK:
+            with _LOCK:
+                cached = _CACHE["payload"]
+            if cached is not None:
+                return cached
+        # The other refresh failed; attempt our own first fetch.
+        return workspace()
+    try:
+        with _LOCK:
+            cached = _CACHE["payload"]
+            if cached is not None and time.monotonic() - _CACHE["as_time"] < 300:
+                return cached
         try:
             snapshot = gather()
         except Exception as exc:
             LOG.error("PDUFA live published-source refresh failed: %s", type(exc).__name__)
-            if _CACHE["payload"] is not None:
-                old = dict(_CACHE["payload"])
-                old["mode"] = "STALE_PREVIOUS_FETCH"
-                old["sourceHealth"] = {**old.get("sourceHealth", {}), "state": "STALE",
-                                       "issues": old.get("sourceHealth", {}).get("issues", []) + ["Published-source refresh failed"]}
-                return old
+            with _LOCK:
+                cached = _CACHE["payload"]
+            if cached is not None:
+                return _stale_snapshot(cached, "Published-source refresh failed")
             raise
-        _CACHE.update(as_time=clock, payload=snapshot)
+        with _LOCK:
+            _CACHE.update(as_time=time.monotonic(), payload=snapshot)
         return snapshot
+    finally:
+        _REFRESH_LOCK.release()
