@@ -67,7 +67,7 @@ function validWorkspaceSnapshot(value: unknown): value is Snapshot {
   if (!value || typeof value !== "object") return false;
   const v = value as Partial<Snapshot>;
   return typeof v.asOf === "string" && Array.isArray(v.pipeline) &&
-    !!v.members && !!v.members.GEM_JR && !!v.members.GEM;
+    !!v.members && Array.isArray(v.members.GEM_JR?.rows) && Array.isArray(v.members.GEM?.rows);
 }
 function openWorkspaceCache(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -544,6 +544,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [fetchVersion, setFetchVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
+  const [cachedAsOf, setCachedAsOf] = useState<string | null>(null);
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   // Deep links from standalone trial sheets reopen the matching workspace tab.
@@ -676,7 +677,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     // Restore local data immediately while a fresh authoritative copy loads.
     if (fetchVersion === 0) {
       void readWorkspaceCache().then(cached => {
-        if (!ctrl.signal.aborted && cached) setSnapshot(current => current ?? cached);
+        if (!ctrl.signal.aborted && cached) {
+          setSnapshot(current => current ?? cached);
+          setCachedAsOf(cached.asOf);
+        }
       }).catch(() => { /* IndexedDB may be unavailable in private mode. */ });
     }
     // One bounded request on initial page load or an explicit Refresh click.
@@ -698,15 +702,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         if (ctrl.signal.aborted) return;
         if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed structure validation");
         setSnapshot(data);
+        setCachedAsOf(null);
         void writeWorkspaceCache(data).catch(() => { /* Keep fresh in-memory data if storage is unavailable. */ });
         setFetchError("");
       } catch (error) {
         if (ctrl.signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
         setFetchError(
-          message.includes("timeout") || message.includes("Timeout")
+          (cachedAsOf ? "Showing locally cached snapshot (as of " + cachedAsOf + "); NOT VERIFIED CURRENT. " : "") +
+          (message.includes("timeout") || message.includes("Timeout")
             ? "Candidate loading timed out after 95 seconds. Automatic retries are disabled; tap RETRY LOADING CANDIDATES to try once more."
-            : "Candidate loading failed: " + message + " Automatic retries are disabled."
+            : "Candidate loading failed: " + message + " Automatic retries are disabled.")
         );
       } finally {
         if (!ctrl.signal.aborted) setRefreshing(false);
