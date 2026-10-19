@@ -498,7 +498,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [gemLivePreview,setGemLivePreview]=useState<GemJrLivePreview|null>(null);
   const [gemDraft,setGemDraft]=useState<GemJrUiDraft|null>(null);
   const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
-  const [fetchVersion, setFetchVersion] = useState(-1);
+  // Automatically fetch the published snapshot once on mount; manual refresh remains available.
+  const [fetchVersion, setFetchVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
@@ -630,8 +631,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   useEffect(() => {
     if (fetchVersion < 0) return;
     const ctrl = new AbortController();
-    // One bounded request per explicit Retry click. Never automatically
-    // retry: repeated 502/503 responses previously caused a prolonged load loop.
+    // One bounded request on initial page load or an explicit Refresh click.
+    // Never loop on a failing backend; preserve the previous verified snapshot.
     async function loadPublishedSources() {
       setRefreshing(true);
       setFetchError("Connecting to published PIPELINE, GEM JR and GEM data…");
