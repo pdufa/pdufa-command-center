@@ -308,3 +308,35 @@ test("Every ENTRY STAY EXIT checklist item explicitly marks its information loca
  assert.match(styles,/\.wt-where-link \{[\s\S]*?color:#aa1620/);
  assert.match(styles,/\.wt-where-reading \{/);
 });
+
+test("Numeric WT indicator values are bold black while source labels and unavailable statuses stay red",()=>{
+ const {wtNumericReadingParts}=require("../app/WtTradingSections.tsx");
+ for(const [sample,expected] of [
+  ["$23.45 close vs prior high $24.61 · ABOVE",["$23.45","$24.61"]],
+  ["1.53× (IEX partial volume)",["1.53×"]],
+  ["Trigger $10.24 · Max $10.87 · API snapshot",["$10.24","$10.87"]],
+  ["82/100 · Entry API WAIT",["82/100"]],
+  ["-$0.45 · trigger-to-stop 2.36%",["-$0.45","2.36%"]],
+  ["Close $12.75 · SMA20 $11.90 · SMA50 $10.08",["$12.75","$11.90","$10.08"]],
+  ["2026-10-18 · 30 calendar days",["2026","-10","-18","30"]]
+ ]){
+  assert.deepEqual(wtNumericReadingParts(sample).filter(p=>p.numeric).map(p=>p.text),expected);
+  assert.equal(wtNumericReadingParts(sample).map(p=>p.text).join(""),sample);
+ }
+ for(const text of ["UNSCORED · Entry API UNAVAILABLE","NOT VERIFIED — No confirmed stop",
+  "SMA20 RSI14 20d average and 10-session base"]){
+  assert.equal(wtNumericReadingParts(text).filter(p=>p.numeric).length,0);
+  assert.equal(wtNumericReadingParts(text).map(p=>p.text).join(""),text);
+ }
+ const rendered=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000111",ticker:"TEST",activeGroup:"entry",compact:true,
+  tech:{indicatorEntry:82}
+ }));
+ assert.match(rendered,/class="wt-indicator-number">82\/100<\/strong>/);
+ assert.match(rendered,/WHERE TO SEE INFO:/);
+ assert.match(rendered,/ACTUAL:/);
+ assert.match(rendered,/NOT VERIFIED/);
+ const styles=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(styles,/\.wt-where-reading \.wt-indicator-number \{\s*color:#111111/);
+ assert.match(styles,/\.wt-where-heading[\s\S]*?color:#aa1620/);
+});

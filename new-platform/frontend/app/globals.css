@@ -2897,3 +2897,13 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .wt-page :is(.wt-screenwide-entry,.wt-screenwide-chart,.wt-screenwide-data) {
   scroll-margin-top:18px;
 }
+
+/* Numeric WT observed values are BLACK; where-to-find information stays RED.
+   Does not convert NOT VERIFIED / UNSCORED into a numeric trading signal. */
+.wt-page .wt-trial-indicator-panel .wt-where-reading .wt-indicator-number {
+  color:#111111;
+  font-size:12px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere;
+}

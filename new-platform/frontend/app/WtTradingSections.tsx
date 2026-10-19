@@ -56,6 +56,27 @@ export function nextWtPresetSelection(
 }
 const verified=(text:string,source:WtObservation["source"]):WtObservation=>({text,source});
 const UNAVAILABLE=verified("NOT VERIFIED","UNAVAILABLE");
+/** Extract only measured numeric tokens: prices, percentage, RVOL, scores, and
+ * dates. Do not paint numbers inside indicator names (SMA20, RSI14), labels
+ * (20-session), or unsupported/not-scanned statuses as verified readings. */
+export function wtNumericReadingParts(value:string):{text:string;numeric:boolean}[]{
+ const parts:{text:string;numeric:boolean}[]=[];
+ const token=/(?:\$)?-?\d[\d,]*(?:\.\d+)?(?:\/\d+)?(?:%|×)?/g;
+ let previous=0;
+ for(const match of value.matchAll(token)){
+  const start=match.index,end=start+match[0].length;
+  const before=start>0?value[start-1]:"";
+  const after=value[end]||"";
+  // Avoid highlighting indicator/descriptor numbers, such as SMA20 or 20d.
+  if(/[a-zA-Z0-9]/.test(before)||/[a-zA-Z]/.test(after)||
+     (after==="-"&&/[a-zA-Z]/.test(value[end+1]||"")))continue;
+  if(start>previous)parts.push({text:value.slice(previous,start),numeric:false});
+  parts.push({text:match[0],numeric:true});
+  previous=end;
+ }
+ if(previous<value.length)parts.push({text:value.slice(previous),numeric:false});
+ return parts.length?parts:[{text:value,numeric:false}];
+}
 type WtInfoLocation={target:"chart"|"entry"|"scores"|"reading";name:string;note:string};
 /** Destination for every WT checklist choice. Links identify real panels; an
  * unsupported trading model always stays a NOT VERIFIED reading, not a signal. */
@@ -272,7 +293,11 @@ export default function WtTradingSections({
            <strong className="wt-where-heading">WHERE TO SEE INFO:</strong>
            <a className="wt-where-link" href={where}>{location.name+" →"}</a>
            <span className="wt-where-note">{location.note}</span>
-           <span className="wt-where-reading"><strong>ACTUAL:</strong> {observation.text}</span>
+           <span className="wt-where-reading"><strong>ACTUAL:</strong>{" "}
+             {wtNumericReadingParts(observation.text).map((part,i)=>part.numeric?
+               <strong className="wt-indicator-number" key={i}>{part.text}</strong>:
+               <span key={i}>{part.text}</span>)}
+           </span>
            {location.target==="reading"&&observation.source==="UNAVAILABLE"?
              <button type="button" className="wt-where-refresh" onClick={()=>void load()}
               disabled={loading||!programId||!ticker}>REFRESH ALPACA / ENTRY DATA</button>:null}
