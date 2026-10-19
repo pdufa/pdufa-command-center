@@ -1041,7 +1041,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <EntrySignal ticker={ticker} programId={programId}/>
               </div>
               <div className="wt-screenwide-chart" id={"wt-chart-"+programId}>
-                <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={wtChartSelection.programId===programId?wtChartSelection.keys:undefined} />
+                <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={wtChartSelection.programId===programId?wtChartSelection.keys:[]} />
               </div>
               <div className="wt-screenwide-data">
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />

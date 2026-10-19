@@ -16,7 +16,8 @@ for(const ext of [".ts",".tsx"]){
 }
 const map=require("../lib/wt-chart-indicator-map.ts");
 const {WT_CHECK_KEYS}=require("../lib/wt-entry-stay-exit.ts");
-const Chart=require("../app/AlpacaStockChart.tsx").default;
+const {default:Chart,StockPlot}=require("../app/AlpacaStockChart.tsx");
+const chartSource=fs.readFileSync(path.join(__dirname,"../app/AlpacaStockChart.tsx"),"utf8");
 const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
 const sections=fs.readFileSync(path.join(__dirname,"../app/WtTradingSections.tsx"),"utf8");
 const top=fs.readFileSync(path.join(__dirname,"../app/WtTopChecklist.tsx"),"utf8");
@@ -70,7 +71,7 @@ test("Exact-program controlled WT chart has no studies with no selected checkbox
 });
 test("Main WT checkboxes target only the matching program chart, never a saved stage or a broker order",()=>{
  assert.match(workspace,/setWtChartSelection\(\{programId,keys\}\)/);
- assert.match(workspace,/wtIndicatorKeys=\{wtChartSelection\.programId===programId\?wtChartSelection\.keys:undefined\}/);
+ assert.match(workspace,/wtIndicatorKeys=\{wtChartSelection\.programId===programId\?wtChartSelection\.keys:\[\]\}/);
  assert.match(workspace,/id=\{"wt-chart-"\+programId\}/);
  assert.match(top,/onChartControlsChange\?\.\(id,\[\]\)/);
  assert.match(top,/onCheckedKeysChange=\{keys=>/);
@@ -78,4 +79,34 @@ test("Main WT checkboxes target only the matching program chart, never a saved s
  assert.match(sections,/chartDescriptionForWtCheck\(item\.key\)/);
  assert.match(sections,/onClick=\{\(\)=>updateChecked\(\[\]\)\}/);
  assert.doesNotMatch(sections,/method:"POST"/);
+});
+
+test("Zero selections hide every technical study, volume pane and range line but retain price candles",()=>{
+ const bars=Array.from({length:12},(_,i)=>({
+  date:"2026-10-"+String(i+1).padStart(2,"0"),
+  open:10+i*.1,high:11+i*.1,low:9+i*.1,close:10.5+i*.1,
+  volume:1000+i*40,sma20:10,sma50:10,ema10:10,ema20:10,ema50:10,
+  rsi:55,macd:1,signal:.5,atr:.4
+ }));
+ const bare=renderToStaticMarkup(React.createElement(StockPlot,{
+  bars,large:true,candle:true,visibleStudies:new Set()
+ }));
+ assert.match(bare,/Alpaca daily price only/);
+ assert.match(bare,/aria-label="Alpaca daily price only/);
+ assert.doesNotMatch(bare,/RSI14:|MACD\(|ATR14:|Daily volume|Prior 10D/);
+ assert.match(bare,/<rect /,"Candlesticks are not removed when indicators are off");
+ const overlay=renderToStaticMarkup(React.createElement(StockPlot,{
+  bars,large:true,candle:true,visibleStudies:new Set(["sma20","rsi","volume","atr","range"])
+ }));
+ assert.match(overlay,/RSI14:/);
+ assert.match(overlay,/ATR14:/);
+ assert.match(overlay,/Daily volume/);
+ assert.match(overlay,/Prior 10D high/);
+ assert.doesNotMatch(overlay,/MACD\(/);
+});
+test("WT readout badges are displayed only for checked chartable indicators",()=>{
+ assert.match(chartSource,/visibleReadouts=studyReadouts\.filter\(\(\[key\]\)=>!wtControlled\|\|visibleStudies\.has\(key\)\)/);
+ assert.match(chartSource,/expanded&&visibleReadouts\.length>0&&/);
+ assert.match(chartSource,/wtControlled\?chartStudiesForWtChecks\(wtIndicatorKeys\):studies\?DEFAULT_SERIES:\[\]/);
+ assert.ok(!workspace.includes("wtChartSelection.keys:undefined"),"Every WT stock chart must have explicit empty array fallback");
 });
