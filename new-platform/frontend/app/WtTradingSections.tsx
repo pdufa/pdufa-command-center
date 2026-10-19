@@ -28,7 +28,7 @@ export function wtEffectivePresetKeys(manual:readonly string[],group:GroupId,fla
  const available=WT_GROUPS.find(item=>item.id===group)?.items.map(item=>item.key)||[];
  const selected=new Set(manual.filter(key=>available.includes(key)));
  if(flags.fs)for(const key of suggestedWtIndicators[group])selected.add(key);
- if(flags.fa)for(const key of available)selected.add(key);
+ // FA intentionally has no assigned indicators.
  return available.filter(key=>selected.has(key));
 }
 /** Backward-compatible fallback for checklists without per-trial preset state. */
@@ -183,7 +183,7 @@ export default function WtTradingSections({
   {!compact&&<p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
     Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>}
-  {compact&&<p className="subtle small">FS toggles suggested indicators and FA toggles all available indicators. Both buttons operate independently; changes to individual checkboxes override presets. Chart studies are for research only; no orders are placed.</p>}
+  {compact&&<p className="subtle small">FS toggles suggested indicators; FA is an independent switch with no indicators assigned. Manual checkboxes remain available. Chart studies are for research only; no orders are placed.</p>}
   {programId&&!compact&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
   {shownGroups.map(group=><div className="wt-check-group" key={group.id}>
     {compact?<div className="wt-check-group-title wt-checklist-visible-heading">
@@ -198,10 +198,10 @@ export default function WtTradingSections({
         aria-pressed={presetFlags?.fs??suggestedWtIndicators[group.id].every(key=>checked.includes(key))}
         onClick={()=>onPresetToggle?onPresetToggle("FS"):updateChecked(nextWtPresetSelection(checked,group.id,"FS"))}>FS</button>
        <button type="button" className="wt-checklist-preset-button"
-        aria-label={"FA — toggle all available "+group.id.toUpperCase()+" indicators for "+ticker}
-        title="FA — all available indicators; click again to uncheck them"
+        aria-label={"FA — unassigned independent toggle for "+ticker+" "+group.id.toUpperCase()}
+        title="FA — no indicators assigned; toggle independently"
         aria-pressed={presetFlags?.fa??group.items.every(item=>checked.includes(item.key))}
-        onClick={()=>onPresetToggle?onPresetToggle("FA"):updateChecked(nextWtPresetSelection(checked,group.id,"FA"))}>FA</button>
+        onClick={()=>onPresetToggle?.("FA")}>FA</button>
       </div>
     </div>:<button type="button" className="wt-check-group-title"
       aria-expanded={expanded[group.id]} aria-controls={"wt-"+group.id+"-"+programId}
