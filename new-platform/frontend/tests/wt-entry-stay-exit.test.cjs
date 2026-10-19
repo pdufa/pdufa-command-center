@@ -104,7 +104,7 @@ test("WT retains original program management controls and research charts",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  for(const term of ['<WtTopChecklist programs={trackedWtPrograms}/>',
   '<IndicatorParityTables programId={programId} tech={x}',
-  '<AlpacaStockChart ticker={ticker} programId={programId} compact />',
+  '<AlpacaStockChart ticker={ticker} programId={programId} />',
   'MOVE PROGRAM TO TRADING RESEARCH',
   'RETURN PROGRAM TO WATCHLIST',
   'REMOVE PROGRAM TAG',
