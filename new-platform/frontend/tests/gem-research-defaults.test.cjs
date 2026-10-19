@@ -93,9 +93,9 @@ test("Current top workflow totals appear below navigation in Pipeline, GEM JR, G
  let previous=-1;
  for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
  assert.match(totals,/publishedCounts/);
- assert.match(totals,/count:snapshot \? pageTotals\.GEM : null/);
+ assert.match(totals,/count:snapshot \? pageTotals\.GEM : publishedCounts\?\.gem \?\? null/);
  assert.match(totals,/count:tagsReady \? pageTotals\.WT : null/);
- assert.match(totals,/count:snapshot \? pageTotals\.PIPELINE : null/);
+ assert.match(totals,/count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
  assert.match(totals,/item\.count===null\?"—":item\.count\.toLocaleString\("en-US"\)/);
  assert.match(css,/\.workflow-counts\s*\{[\s\S]*?grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
  assert.match(css,/@media\(max-width:750px\)\s*\{\s*\.workflow-counts\s*\{\s*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
@@ -130,9 +130,9 @@ test("Four illustrated top boxes match the reference colors and icons",()=>{
  for(const color of ["#eaf3ff","#e6f9ef","#f1e9ff","#fff7e1"]){
    assert.ok(css.includes(color),"missing reference color "+color);
  }
- assert.match(src,/label:"PIPELINE", count:snapshot \? pageTotals\.PIPELINE : null/);
- assert.match(src,/label:"GEM JR", count:snapshot \? pageTotals\.GEM_JR : null/);
- assert.match(src,/label:"GEM", count:snapshot \? pageTotals\.GEM : null/);
+ assert.match(src,/label:"PIPELINE", count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
+ assert.match(src,/label:"GEM JR", count:snapshot \? pageTotals\.GEM_JR : publishedCounts\?\.gemJr \?\? null/);
+ assert.match(src,/label:"GEM", count:snapshot \? pageTotals\.GEM : publishedCounts\?\.gem \?\? null/);
  assert.match(src,/label:"WT", count:tagsReady \? pageTotals\.WT : null/);
  assert.match(css,/\.workflow-count-icon svg/);
  assert.match(css,/\.workflow-counts\s*\{\s*display:grid;\s*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
