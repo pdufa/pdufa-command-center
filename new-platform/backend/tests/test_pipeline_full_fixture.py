@@ -1,16 +1,17 @@
 """Original Streamlit inventory and the complete hosted-response regression."""
 import gzip
 import json
+import sys
 from datetime import date
 from pathlib import Path
 
 import pytest
 
-from pipeline_universe import load_universe
-
 from app import source_workspace
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+from pipeline_universe import load_universe  # independent published-source merge
 TODAY = date(2026, 10, 16)
 
 
