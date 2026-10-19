@@ -134,22 +134,37 @@ test("Each trial can select ENTRY STAY EXIT or NONE beside its ticker",()=>{
  assert.ok(ticker>=0&&dropdown>ticker&&chart>dropdown,
   "Stage dropdown must be beside the ticker, before the independent chart");
  assert.match(src,/keys:\{\.\.\.prior\.keys,\[stage\]:\[\.\.\.new Set\(keys\.filter\(key=>allowed\.has\(key\)\)\)\]\}/);
- assert.match(src,/configured:stage&&firstUse/);
- assert.match(src,/stage&&firstUse/);
+ assert.match(src,/return \{\.\.\.current,\[programId\]:\{\.\.\.prior,stage\}\}/);
+ assert.doesNotMatch(src,/WT_STAGE_PRESETS|firstUse/);
  assert.match(src,/window\.localStorage\.setItem\(/);
  assert.match(src,/\^PDUFA-\\d\{6,\}\$/);
 });
 
-test("Compact trial checklist contains only selected stage without other groups",()=>{
+test("Choosing EXIT beside a ticker immediately reveals nine independent checkboxes",()=>{
  const html=renderToStaticMarkup(React.createElement(WtSections,{
   programId:"PDUFA-000001",ticker:"ABCD",activeGroup:"exit",compact:true,
   checkedKeys:["exit-rsi","exit-support"]
  }));
- assert.match(html,/EXIT — Sell \/ Risk Protection/);
+ assert.match(html,/EXIT — Sell \/ Risk Protection — SELECT INDICATORS/);
  assert.doesNotMatch(html,/ENTRY — Buy Setup|STAY — Hold Monitoring/);
  assert.match(html,/2\/9 selected/);
- assert.equal((html.match(/aria-expanded="false"/g)||[]).length,1);
- assert.doesNotMatch(html,/checked=""/);
+ assert.equal((html.match(/type="checkbox"/g)||[]).length,9);
+ assert.equal((html.match(/checked=""/g)||[]).length,2);
+ assert.doesNotMatch(html,/aria-expanded="false"/);
+ assert.match(html,/chart-compatible options appear on its Alpaca chart/);
+});
+
+test("Selecting ENTRY or STAY immediately shows only that category's available options",()=>{
+ for(const [stage,count] of [["entry",10],["stay",7]]){
+  const html=renderToStaticMarkup(React.createElement(WtSections,{
+   programId:"PDUFA-000002",ticker:"EFGH",activeGroup:stage,compact:true,
+   checkedKeys:[]
+  }));
+  assert.equal((html.match(/type="checkbox"/g)||[]).length,count);
+  assert.equal((html.match(/checked=""/g)||[]).length,0);
+  assert.match(html,new RegExp("0/"+count+" selected"));
+  assert.doesNotMatch(html,/aria-expanded="false"/);
+ }
 });
  
 test("WT entry/stay/exit sections always start collapsed and leave all 26 choices off",()=>{

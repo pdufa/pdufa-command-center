@@ -148,17 +148,20 @@ export default function WtTradingSections({
   {!compact&&<p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
     Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>}
-  {compact&&<p className="subtle small">Only this trial's chart changes. Expand the indicators to customize this stage; selecting a checkbox does not place an order.</p>}
+  {compact&&<p className="subtle small">Choose any of the indicators below for this trial only. Checked chart-compatible options appear on its Alpaca chart; research-only checks do not create overlays or submit orders.</p>}
   {programId&&!compact&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
   {shownGroups.map(group=><div className="wt-check-group" key={group.id}>
-    <button type="button" className="wt-check-group-title"
+    {compact?<div className="wt-check-group-title wt-checklist-visible-heading">
+      <strong>{group.title} — SELECT INDICATORS</strong>
+      <small>{group.items.filter(i=>checked.includes(i.key)).length}/{group.items.length} selected</small>
+    </div>:<button type="button" className="wt-check-group-title"
       aria-expanded={expanded[group.id]} aria-controls={"wt-"+group.id+"-"+programId}
       onClick={()=>toggle(group.id)}>
       <span aria-hidden="true">{expanded[group.id]?"▾":"▸"}</span>
       <strong>{group.title}</strong>
       <small>{group.items.filter(i=>checked.includes(i.key)).length}/{group.items.length} selected</small>
-    </button>
-    {expanded[group.id]&&<div className="wt-check-group-body" id={"wt-"+group.id+"-"+programId}>
+    </button>}
+    {(compact||expanded[group.id])&&<div className="wt-check-group-body" id={"wt-"+group.id+"-"+programId}>
       <div className="wt-check-grid">
        {group.items.map(item=>{
         const observation=values[item.key]||UNAVAILABLE;
@@ -178,7 +181,7 @@ export default function WtTradingSections({
   </div>)}
   <div className="wt-trading-foot">
    <span role="status" aria-live="polite">{loading?"Requesting Alpaca market data…":
-     !loaded?"Expand a section to request data.":
+     !loaded?(compact?"Choose indicator checkboxes below; refresh Alpaca for readings.":"Expand a section to request data."):
      "Alpaca: "+(market?.status||"UNAVAILABLE")+(market?.asOf?" · "+market.asOf:"")+
        " · "+(market?.feed||"feed unavailable")+
        (entry?.status?" · Entry research: "+entry.status:"")}</span>

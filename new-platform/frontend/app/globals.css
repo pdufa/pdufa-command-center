@@ -2760,3 +2760,25 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .wt-page .wt-stage-selector {flex:1 1 180px;}
   .wt-page .wt-stage-selector select {width:100%;min-width:0;}
 }
+
+/* Selecting ENTRY / STAY / EXIT exposes its trial-specific checklist immediately.
+   Compact stage checklists contain no second accordion and keep mobile width safe. */
+.wt-page .wt-trial-indicator-panel .wt-checklist-visible-heading {
+  justify-content:space-between;flex-wrap:wrap;gap:6px;
+  background:#e5f2e8;color:#194d31;cursor:default;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-grid {
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-item {
+  min-width:0;align-items:flex-start;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-item .wt-check-observed,
+.wt-page .wt-trial-indicator-panel .wt-check-item small:not(.wt-check-chart-effect) {
+  display:none;
+}
+@media(max-width:700px) {
+  .wt-page .wt-trial-indicator-panel .wt-check-grid {
+    grid-template-columns:minmax(0,1fr);
+  }
+}

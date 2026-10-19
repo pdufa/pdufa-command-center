@@ -74,11 +74,6 @@ type WtTrialIndicatorPreference = {
   keys: Record<WtTrialStage,string[]>;
   configured: WtTrialStage[];
 };
-const WT_STAGE_PRESETS:Record<WtTrialStage,readonly string[]> = {
-  entry:["entry-base","entry-trend","entry-rvol","entry-rsi","entry-atr"],
-  stay:["stay-trend","stay-support","stay-rsi","stay-volume"],
-  exit:["exit-two-close","exit-support","exit-atr-trail","exit-rsi"],
-};
 function isWtStage(value:unknown):value is WtTrialStage {
   return value==="entry"||value==="stay"||value==="exit";
 }
@@ -508,12 +503,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   function changeWtTrialStage(programId:string,stage:WtTrialStage|""){
     setWtTrialPreferences(current=>{
       const prior=current[programId]||emptyWtPreference();
-      const firstUse=Boolean(stage&&!prior.configured.includes(stage));
-      return {...current,[programId]:{
-        stage,keys:stage&&firstUse?
-          {...prior.keys,[stage]:[...WT_STAGE_PRESETS[stage]]}:prior.keys,
-        configured:stage&&firstUse?[...prior.configured,stage]:prior.configured,
-      }};
+      // Stage selection reveals its checkbox list; it does not pre-check any
+      // indicators or erase earlier choices made for other stages of this trial.
+      return {...current,[programId]:{...prior,stage}};
     });
   }
   function changeWtTrialIndicators(programId:string,stage:WtTrialStage,keys:string[]){
@@ -1157,7 +1149,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="sectionhead wt-page-header"><h2>WT — Permanent Program ID Watchlist &amp; Trading Research</h2><span className="counter">{tagsReady ? pageTotals.WT.toLocaleString("en-US") : "—"} total W/T programs</span></div>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
-      <p className="subtle wt-trial-indicator-explanation">Choose ENTRY, STAY, or EXIT beside each trial ticker. Each choice loads that stage's chart indicators; expand the trial's indicator list to customize them. Your choices are independent by permanent Program ID and are saved in this browser.</p>
+      <p className="subtle wt-trial-indicator-explanation">Choose ENTRY, STAY, or EXIT beside each trial ticker. The corresponding indicator checklist opens immediately below that trial. Tick the options you want to display; every new stage starts with no indicators selected. Settings are independent for each permanent Program ID and saved in this browser.</p>
       <div className="wt-screenwide-stages">
       {(["watch","trade"] as const).map(kind=><section className="panel wt-screenwide-stage" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
