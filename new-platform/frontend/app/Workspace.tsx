@@ -5,7 +5,6 @@ import MasterChart from "./MasterChart";
 import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
-import IndicatorParityTables from "./IndicatorParityTables";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import FullTrialDownload from "./FullTrialDownload";
@@ -305,7 +304,6 @@ type WTResearchReply = {
   programId: string; exactKey?: string;
   source: string; technical: ResearchTechnical | null; asOf?: string;
   scope?: string; missingSources?: string[];
-  watchlistSignals?: Partial<Record<"ENTRY"|"EXIT",{signals?:Record<string,string>;updated?:string}>>;
 };
 function WTIndicatorDetails({programId, record, ticker}: {programId:string;record?:Candidate;ticker:string}) {
   const [reply,setReply] = useState<WTResearchReply|null>(null);
@@ -332,7 +330,6 @@ function WTIndicatorDetails({programId, record, ticker}: {programId:string;recor
   return <section className="wt-score-details" aria-label={programId+" indicator entry and exit research"}>
     <div className="wt-indicator-title"><h3>WT INDICATOR ENTRY &amp; EXIT SCORES</h3>
       <span className="permanent-id">{programId}</span></div>
-    <IndicatorParityTables programId={programId} tech={x} signals={reply?.watchlistSignals}/>
     <p className="subtle">Uses GEM JR / GEM’s original EOD indicator calculations and factor weights. Indicator strength is separate from verified Phase 3 eligibility and does not authorize a trade. Second financing is optional.</p>
     {error ? <p className="risk-line">Indicator lookup failed: {error}. Scores withheld.</p>
     : !reply ? <p className="subtle">Checking verified price, volume, trend, technical risks and source dates…</p>
@@ -1061,7 +1058,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                       </GemInlineSection>
                       <GemInlineSection title="Indicators / targets" description="Market indicators, goal comparison and source gaps"
                         open={isSectionOpen("indicators")} onToggle={()=>toggleSection("indicators")}>
-                        <IndicatorParityTables programId={r.programId||"UNREGISTERED"} tech={r.technical}/>
                         <PriorityIndicators record={r}/>
                       </GemInlineSection>
                     </div>

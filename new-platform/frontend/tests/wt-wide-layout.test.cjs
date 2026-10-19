@@ -38,17 +38,16 @@ test("Outer WT stage, list, stock and chart are all full width",()=>{
  assert.match(rule(".wt-page .wt-screenwide-chart > .alpaca-stock-chart"),/width:100%/);
  assert.match(rule(".wt-page .wt-screenwide-chart .alpaca-plot"),/display:block/);
 });
-test("WT-only data uses responsive multiple columns without changing GEM",()=>{
- const data=rule(".wt-page .wt-screenwide-data .indicator-tables-separate");
- assert.match(data,/display:grid/);
- assert.match(data,/grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,540px\),1fr\)\)/);
- assert.match(rule(".wt-page .wt-screenwide-data .indicator-tables-separate > header"),/grid-column:1\/-1/);
- assert.match(rule(".wt-page .wt-screenwide-data .indicator-tables-separate > .table-scroll"),/overflow-x:auto/);
- assert.match(rule(".wt-page .wt-screenwide-data .indicator-tables-separate > .entryexit-table-grid"),/grid-template-columns:minmax\(0,1fr\)/);
- assert.match(rule(".wt-page .wt-screenwide-data .indicator-tables-separate > .eight-indicators"),/min-width:0/);
- assert.match(layout,/@media\(max-width:700px\)/);
- assert.match(layout,/\.wt-page \.wt-screenwide-data \.indicator-tables-separate\s*\{\s*grid-template-columns:minmax\(0,1fr\)/);
- assert.ok(!layout.includes(".gem-profile-masonry"),"Only WT layout changed");
+test("WT keeps current score panels while removing all Streamlit reference tables",()=>{
+ assert.match(rule(".wt-page .wt-screenwide-data > .wt-score-details"),/width:100%/);
+ assert.match(rule(".wt-page .wt-screenwide-data .wt-score-details .research-score-cards"),
+   /grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,190px\),1fr\)\)/);
+ assert.match(workspace,/WT INDICATOR ENTRY &amp; EXIT SCORES/);
+ assert.match(workspace,/<WTIndicatorDetails programId=\{programId\}/);
+ assert.match(workspace,/<TechnicalPanel record=\{r\}\/>/);
+ assert.match(workspace,/<PriorityIndicators record=\{r\}\/>/);
+ assert.doesNotMatch(workspace,/IndicatorParityTables|STREAMLIT REFERENCE|STREAMLIT WATCHLIST/);
+ assert.ok(!layout.includes(".gem-profile-masonry"),"GEM layout remains unchanged");
 });
 test("All WT program controls, research indicators and charts remain",()=>{
  for(const term of [

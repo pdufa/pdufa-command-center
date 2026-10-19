@@ -103,7 +103,6 @@ test("PDUFA T-minus calculations are labeled reported and based on Pacific calen
 test("WT keeps program management, scoped indicator checkboxes and full-width charts",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  for(const term of [
-  '<IndicatorParityTables programId={programId} tech={x}',
   '<AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={chartIndicatorKeys} />',
   'MOVE PROGRAM TO TRADING RESEARCH',
   'RETURN PROGRAM TO WATCHLIST',
@@ -261,4 +260,13 @@ test("ENTRY FS illuminates when the five checkboxes are selected manually and go
  assert.match(workspace,/const turnFsOff=mode==="FS"&&areWtSuggestedIndicatorsChecked\(prior\.keys\[stage\],stage\)/);
  assert.match(workspace,/manualKeys:\{\.\.\.prior\.manualKeys,\[stage\]:manual\}/);
  assert.match(workspace,/presets:\{\.\.\.prior\.presets,\[stage\]:\{\.\.\.prior\.presets\[stage\],fs:false\}\}/);
+});
+
+test("Legacy Streamlit reference indicator and eight-signal tables are absent from all pages",()=>{
+ const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ assert.doesNotMatch(workspace,/IndicatorParityTables|STREAMLIT REFERENCE|STREAMLIT WATCHLIST/);
+ assert.match(workspace,/WT INDICATOR ENTRY &amp; EXIT SCORES/);
+ assert.match(workspace,/<WTIndicatorDetails programId=\{programId\}/);
+ assert.match(workspace,/<PriorityIndicators record=\{r\}/);
+ assert.match(workspace,/<TechnicalPanel record=\{r\}/);
 });
