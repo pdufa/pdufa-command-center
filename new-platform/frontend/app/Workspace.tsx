@@ -631,7 +631,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   useEffect(() => {
     // Do not auto-fetch the 11,775-record workspace on page load.
     // The lightweight summary can load independently; the full data is opt-in.
-    if (fetchVersion < 0) return;
+    if (fetchVersion < 0) return undefined;
     const ctrl = new AbortController();
     activeWorkspaceRequest.current = ctrl;
     // One bounded request per explicit Retry click. Never automatically
