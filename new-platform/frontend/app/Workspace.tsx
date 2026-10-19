@@ -60,6 +60,48 @@ type Snapshot = {
   trialFilterSchema?: number;
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; pipelineSourceParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
+// IndexedDB stores only validated, successfully fetched published snapshots.
+// A failed fetch never overwrites the last-known-good local copy.
+const SNAPSHOT_CACHE_DB = "pdufa-workspace-cache-v1";
+function validWorkspaceSnapshot(value: unknown): value is Snapshot {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Partial<Snapshot>;
+  return typeof v.asOf === "string" && Array.isArray(v.pipeline) &&
+    !!v.members && !!v.members.GEM_JR && !!v.members.GEM;
+}
+function openWorkspaceCache(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(SNAPSHOT_CACHE_DB, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains("snapshots")) request.result.createObjectStore("snapshots");
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function readWorkspaceCache(): Promise<Snapshot | null> {
+  const db = await openWorkspaceCache();
+  try {
+    return await new Promise((resolve, reject) => {
+      const request = db.transaction("snapshots", "readonly").objectStore("snapshots").get("lastVerified");
+      request.onsuccess = () => resolve(validWorkspaceSnapshot(request.result) ? request.result : null);
+      request.onerror = () => reject(request.error);
+    });
+  } finally { db.close(); }
+}
+async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
+  if (!validWorkspaceSnapshot(snapshot)) throw new Error("Invalid published snapshot");
+  const db = await openWorkspaceCache();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction("snapshots", "readwrite");
+      transaction.objectStore("snapshots").put(snapshot, "lastVerified");
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+  } finally { db.close(); }
+}
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
@@ -631,6 +673,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   useEffect(() => {
     if (fetchVersion < 0) return;
     const ctrl = new AbortController();
+    // Restore local data immediately while a fresh authoritative copy loads.
+    if (fetchVersion === 0) {
+      void readWorkspaceCache().then(cached => {
+        if (!ctrl.signal.aborted && cached) setSnapshot(current => current ?? cached);
+      }).catch(() => { /* IndexedDB may be unavailable in private mode. */ });
+    }
     // One bounded request on initial page load or an explicit Refresh click.
     // Never loop on a failing backend; preserve the previous verified snapshot.
     async function loadPublishedSources() {
@@ -648,7 +696,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         }
         const data = await response.json() as Snapshot;
         if (ctrl.signal.aborted) return;
+        if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed structure validation");
         setSnapshot(data);
+        void writeWorkspaceCache(data).catch(() => { /* Keep fresh in-memory data if storage is unavailable. */ });
         setFetchError("");
       } catch (error) {
         if (ctrl.signal.aborted) return;
