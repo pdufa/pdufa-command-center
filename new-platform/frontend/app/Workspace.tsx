@@ -462,6 +462,7 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
+  const [summaryError, setSummaryError] = useState("");
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
   // GEM JR live screen is not saved stage membership (11), nor a finished SCAN.
   // Keep the exact candidate IDs and checklist draft while switching stage tabs.
@@ -582,11 +583,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           cache: "no-store",
           signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
         });
-        if (!response.ok) return;
+        if (!response.ok) {
+          if (!ctrl.signal.aborted) setSummaryError("Candidate totals request failed (HTTP " + response.status + ").");
+          return;
+        }
         const result: PublishedCounts = await response.json();
-        if (!ctrl.signal.aborted) setPublishedCounts(result);
-      } catch {
-        // Full workspace loading reports errors independently.
+        if (!ctrl.signal.aborted) {
+          setPublishedCounts(result);
+          setSummaryError("");
+        }
+      } catch (error) {
+        if (!ctrl.signal.aborted) setSummaryError("Candidate totals request failed: " + (error instanceof Error ? error.message : "Network error"));
       }
     }
     void loadCounts();
@@ -625,7 +632,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             throw new Error("Published source unavailable: " + response.status +
               (details.error ? " — " + details.error : ". Check backend health and configuration."));
           }
-          const data: Snapshot = await response.json();
+          let data: Snapshot;
+          try {
+            data = await response.json() as Snapshot;
+          } catch (error) {
+            throw new Error("Published workspace response could not be decoded: " + (error instanceof Error ? error.message : "Invalid JSON"));
+          }
           if (!ctrl.signal.aborted) {
             setSnapshot(data);
             setFetchError("");
