@@ -222,7 +222,7 @@ test("FS and FA buttons display side by side with separate states and selections
  const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(source,/presetFlags=\{preference\.presets\[selectedStage\]\}/);
  assert.match(source,/function toggleWtTrialPreset\(programId:string,stage:WtTrialStage,mode:"FS"\|"FA"\)/);
- assert.match(source,/const flags=nextWtPresetFlags\(prior\.presets\[stage\],mode\)/);
+ assert.match(source,/:nextWtPresetFlags\(prior\.presets\[stage\],"FA"\)/);
  const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
  assert.match(css,/\.wt-checklist-preset-button:first-child \{\s*border-right:0/);
  assert.match(css,/display:inline-flex;flex:0 0 auto;flex-wrap:nowrap/);
