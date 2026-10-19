@@ -2724,3 +2724,10 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .migration-workspace .workflow-count {grid-template-columns:38px minmax(0,1fr);gap:6px;padding:7px;}
   .workflow-count-number {font-size:23px;}
 }
+
+/* Keep cross-page total cards legible and clickable on standalone trial sheets. */
+.migration-workspace .workflow-count { text-decoration:none; }
+.migration-workspace .workflow-count:visited { color:var(--stage-foreground); }
+.standalone-workflow-counts { margin:8px 0 18px; }
+.standalone-workflow-counts .workflow-counts { margin-bottom:4px; }
+.workflow-counts-meta { margin:4px 4px 12px; color:#53705e; font-size:12px; }
