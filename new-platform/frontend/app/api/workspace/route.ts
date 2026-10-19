@@ -15,11 +15,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Backend is not configured" }, { status: 503 });
   }
   try {
-    const response = await fetch(base + "/api/workspace", {
+    let response = await fetch(base + "/api/workspace", {
       headers: { "x-pdufa-internal-key": key },
       cache: "no-store",
-      signal: AbortSignal.timeout(90000)
+      signal: AbortSignal.timeout(45000)
     });
+    // Allow a single recovery attempt for a backend waking or restarting.
+    // Never loop on a persistent source outage.
+    if (response.status === 502 || response.status === 503) {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      response = await fetch(base + "/api/workspace", {
+        headers: { "x-pdufa-internal-key": key },
+        cache: "no-store",
+        signal: AbortSignal.timeout(45000)
+      });
+    }
     if (!response.ok) {
       const reason = response.status === 503
         ? "Backend returned 503 (database unavailable, program registry unavailable, or source processing failed)"
