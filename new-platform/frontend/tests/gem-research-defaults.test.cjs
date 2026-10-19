@@ -114,3 +114,24 @@ test("Each top count is exactly the number displayed on its stage page",()=>{
  assert.match(src,/className="counter">\{tagsReady \? pageTotals\.WT\.toLocaleString\("en-US"\) : "—"\} total W\/T programs/);
  assert.match(src,/const gemPageRows = \{ GEM_JR: gemCandidateRows\("GEM_JR"\), GEM: gemCandidateRows\("GEM"\) \}/);
 });
+
+test("Four illustrated top boxes match the reference colors and icons",()=>{
+ const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(src,/function WorkflowStageIcon\(\{stage\}/);
+ assert.match(src,/workflow-count-icon/);
+ assert.match(src,/workflow-count-copy/);
+ assert.match(src,/className=\{"workflow-count workflow-count--"\+item\.id\.toLowerCase\(\)/);
+ for(const color of ["pipeline","gem_jr","gem","wt"]){
+   assert.ok(css.includes(".migration-workspace .workflow-count--"+color+" {"),"missing color variant: "+color);
+ }
+ for(const color of ["#eaf3ff","#e6f9ef","#f1e9ff","#fff7e1"]){
+   assert.ok(css.includes(color),"missing reference color "+color);
+ }
+ assert.match(src,/label:"PIPELINE", count:snapshot \? pageTotals\.PIPELINE : null/);
+ assert.match(src,/label:"GEM JR", count:snapshot \? pageTotals\.GEM_JR : null/);
+ assert.match(src,/label:"GEM", count:snapshot \? pageTotals\.GEM : null/);
+ assert.match(src,/label:"WT", count:tagsReady \? pageTotals\.WT : null/);
+ assert.match(css,/\.workflow-count-icon svg/);
+ assert.match(css,/\.workflow-counts\s*\{\s*display:grid;\s*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+});
