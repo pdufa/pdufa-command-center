@@ -1,0 +1,45 @@
+name: PDUFA Workspace Delta Checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/backend/app/workspace_delta.py'
+      - 'new-platform/backend/app/main.py'
+      - 'new-platform/backend/tests/test_workspace_delta.py'
+      - 'new-platform/frontend/app/Workspace.tsx'
+      - 'new-platform/frontend/app/api/workspace/delta/**'
+      - '.github/workflows/pdufa-workspace-delta-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-delta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r new-platform/backend/requirements.txt
+      - run: PYTHONPATH=new-platform/backend pytest -q new-platform/backend/tests/test_workspace_delta.py
+      - run: python -m compileall -q new-platform/backend/app
+
+  frontend-typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
