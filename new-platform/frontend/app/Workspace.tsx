@@ -598,13 +598,36 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [earlyPipelinePage, setEarlyPipelinePage] = useState<{total:number;version:string;rows:Candidate[];nextOffset:number|null}|null>(null);
   const [earlyPageLoading, setEarlyPageLoading] = useState(false);
   const [earlyPageQuery, setEarlyPageQuery] = useState("");
-  const earlyVisibleRows = useMemo(() => {
-    const query = earlyPageQuery.trim().toLowerCase();
-    if (!query) return earlyPipelinePage?.rows ?? [];
-    return (earlyPipelinePage?.rows ?? []).filter(candidate =>
-      [candidate.ticker, candidate.drug, candidate.id].some(value =>
-        String(value ?? "").toLowerCase().includes(query)));
-  }, [earlyPipelinePage, earlyPageQuery]);
+  const [earlyAppliedQuery, setEarlyAppliedQuery] = useState("");
+  const [earlySearchLoading, setEarlySearchLoading] = useState(false);
+  const earlyVisibleRows = earlyPipelinePage?.rows ?? [];
+  async function searchEarlyPipeline(query: string) {
+    if (earlySearchLoading || query.length > 100) return;
+    setEarlySearchLoading(true);
+    setEarlyPageError("");
+    try {
+      const params = new URLSearchParams({offset:"0",limit:"50"});
+      if (query.trim()) params.set("query",query.trim());
+      const response = await fetch("/api/workspace/page?" + params.toString(), {
+        cache:"no-store",signal:AbortSignal.timeout(45000),
+      });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const data: unknown = await response.json();
+      if (!data || typeof data !== "object") throw new Error("Invalid response");
+      const page = data as {version?:unknown;total?:unknown;rows?:unknown;nextOffset?:unknown};
+      if (typeof page.version !== "string" || !/^[a-f0-9]{64}$/.test(page.version) ||
+          !Number.isSafeInteger(page.total) || (page.total as number) < 0 ||
+          !Array.isArray(page.rows) || page.rows.length > 50 ||
+          !(page.nextOffset === null || page.nextOffset === page.rows.length)) {
+        throw new Error("Invalid search page");
+      }
+      setEarlyPipelinePage({version:page.version,total:page.total as number,
+        rows:page.rows as Candidate[],nextOffset:page.nextOffset as number|null});
+      setEarlyAppliedQuery(query.trim());
+    } catch {
+      setEarlyPageError("Pipeline search unavailable; previous results retained.");
+    } finally {setEarlySearchLoading(false);}
+  }
   const [earlyPageError, setEarlyPageError] = useState("");
   async function loadNextEarlyPage() {
     const page = earlyPipelinePage;
@@ -615,6 +638,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       const params = new URLSearchParams({
         offset: String(page.nextOffset), limit: "50", version: page.version,
       });
+      if (earlyAppliedQuery) params.set("query",earlyAppliedQuery);
       const response = await fetch("/api/workspace/page?" + params.toString(), {
         cache: "no-store", signal: AbortSignal.timeout(45000),
       });
@@ -1435,11 +1459,16 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {earlyPipelinePage && <div className="panel">
         <strong>Early pipeline preview · {earlyPipelinePage.rows.length} of {earlyPipelinePage.total.toLocaleString()} candidates</strong>
         <p className="subtle">Unfiltered preview only. Full eligibility, GEM and GEM JR results require the verified workspace.</p>
-        <label htmlFor="early-pipeline-search">Search loaded preview rows</label>
-        <input id="early-pipeline-search" type="search" value={earlyPageQuery}
-          onChange={event => setEarlyPageQuery(event.target.value)}
-          placeholder="Ticker or program" />
-        <p className="subtle">Showing {earlyVisibleRows.length} of {earlyPipelinePage.rows.length} loaded rows. Search does not include unloaded candidates.</p>
+        <form onSubmit={event => {event.preventDefault();void searchEarlyPipeline(earlyPageQuery);}}>
+          <label htmlFor="early-pipeline-search">Search all verified pipeline candidates</label>
+          <input id="early-pipeline-search" type="search" value={earlyPageQuery}
+            maxLength={100} onChange={event => setEarlyPageQuery(event.target.value)}
+            placeholder="Ticker or program" />
+          <button type="submit" className="secondary" disabled={earlySearchLoading}>
+            {earlySearchLoading ? "SEARCHING…" : "SEARCH PIPELINE"}
+          </button>
+        </form>
+        <p className="subtle">Showing {earlyVisibleRows.length} of {earlyPipelinePage.total.toLocaleString()} {earlyAppliedQuery ? "matching" : "total"} candidates. {earlyAppliedQuery ? "Search: " + earlyAppliedQuery : "Unfiltered"}.</p>
         <div className="priority-scroll"><table><thead><tr><th>Ticker</th><th>Program</th></tr></thead><tbody>
           {earlyVisibleRows.slice(0, 100).map((candidate, index) => <tr key={candidate.id + "-" + index}>
             <td>{candidate.ticker || "—"}</td><td>{candidate.drug || candidate.id}</td>
