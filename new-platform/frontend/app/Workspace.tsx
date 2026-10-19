@@ -60,6 +60,7 @@ type Snapshot = {
   trialFilterSchema?: number;
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; pipelineSourceParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
+type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
@@ -460,6 +461,7 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
 
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
+  const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
   // GEM JR live screen is not saved stage membership (11), nor a finished SCAN.
   // Keep the exact candidate IDs and checklist draft while switching stage tabs.
@@ -571,6 +573,25 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       }};
     });
   }
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    async function loadCounts() {
+      try {
+        const response = await fetch("/api/workspace/summary", {
+          cache: "no-store",
+          signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
+        });
+        if (!response.ok) return;
+        const result: PublishedCounts = await response.json();
+        if (!ctrl.signal.aborted) setPublishedCounts(result);
+      } catch {
+        // Full workspace loading reports errors independently.
+      }
+    }
+    void loadCounts();
+    return () => ctrl.abort();
+  }, [fetchVersion]);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -1123,9 +1144,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     </div>
     <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
-        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : null, detail:"Total candidates"},
-        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
-        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : null, detail:gemSavedOnly.GEM?"Saved members":"Current candidates"},
+        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null, detail:"Total candidates"},
+        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : publishedCounts?.gemJr ?? null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
+        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : publishedCounts?.gem ?? null, detail:gemSavedOnly.GEM?"Saved members":"Current candidates"},
         {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Tracked watch / trade"},
       ]).map(item=><button type="button" key={item.id}
         className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
