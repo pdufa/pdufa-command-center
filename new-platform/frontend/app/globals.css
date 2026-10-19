@@ -2901,9 +2901,16 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 /* Numeric WT observed values are BLACK; where-to-find information stays RED.
    Does not convert NOT VERIFIED / UNSCORED into a numeric trading signal. */
 .wt-page .wt-trial-indicator-panel .wt-where-reading .wt-indicator-number {
+  display:inline-block;
   color:#111111;
   font-size:12px;
   font-weight:900;
   font-variant-numeric:tabular-nums;
+  border:3px double #111111;
+  border-radius:3px;
+  background:#ffffff;
+  padding:1px 4px;
+  margin:1px 2px;
+  line-height:1.4;
   overflow-wrap:anywhere;
 }

@@ -337,6 +337,22 @@ test("Numeric WT indicator values are bold black while source labels and unavail
  assert.match(rendered,/ACTUAL:/);
  assert.match(rendered,/NOT VERIFIED/);
  const styles=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
- assert.match(styles,/\.wt-where-reading \.wt-indicator-number \{\s*color:#111111/);
+ assert.match(styles,/\.wt-where-reading \.wt-indicator-number \{[\s\S]*?color:#111111/);
+ assert.match(styles,/\.wt-where-reading \.wt-indicator-number \{[\s\S]*?border:3px double #111111/);
+ assert.match(styles,/\.wt-where-reading \.wt-indicator-number \{[\s\S]*?display:inline-block/);
+ assert.match(styles,/\.wt-where-reading \.wt-indicator-number \{[\s\S]*?background:#ffffff/);
  assert.match(styles,/\.wt-where-heading[\s\S]*?color:#aa1620/);
+});
+
+test("Only numeric tokens get the black double border; unavailable text never does",()=>{
+ const html=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000111",ticker:"TEST",activeGroup:"entry",compact:true,
+  tech:{indicatorEntry:87},checkedKeys:[]
+ }));
+ assert.match(html,/class="wt-indicator-number">87\/100<\/strong>/);
+ assert.doesNotMatch(html,/class="wt-indicator-number">NOT VERIFIED<\/strong>/);
+ assert.match(html,/WHERE TO SEE INFO:/);
+ const styles=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(styles,/\.wt-trial-indicator-panel \.wt-where-reading \.wt-indicator-number \{[\s\S]*?border:3px double #111111/);
+ assert.match(styles,/\.wt-trial-indicator-panel \.wt-where-reading \.wt-indicator-number \{[\s\S]*?padding:1px 4px/);
 });
