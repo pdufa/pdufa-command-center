@@ -1,0 +1,55 @@
+import { NextRequest, NextResponse } from "next/server";
+import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/** Authenticated proxy for bounded pipeline pages. No browser-visible backend key. */
+export async function GET(req: NextRequest) {
+  if (!authConfigured() || !hasSession(req.cookies.get(COOKIE_NAME)?.value)) {
+    return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+  }
+  const base = process.env.PDUFA_API_BASE_URL?.replace(/\/$/, "");
+  const key = process.env.PDUFA_INTERNAL_API_KEY;
+  if (!base || !/^https:\/\//.test(base) || !key) {
+    return NextResponse.json({ error: "Backend is not configured" }, { status: 503 });
+  }
+
+  const offsetText = req.nextUrl.searchParams.get("offset") ?? "0";
+  const limitText = req.nextUrl.searchParams.get("limit") ?? "50";
+  const version = req.nextUrl.searchParams.get("version") ?? "";
+  if (!/^(0|[1-9]\d{0,8})$/.test(offsetText) ||
+      !/^(?:[1-9]|[1-9]\d|100)$/.test(limitText) ||
+      (version !== "" && !/^[a-f0-9]{64}$/.test(version))) {
+    return NextResponse.json({ error: "Invalid pagination parameters" }, { status: 400 });
+  }
+  const query = new URLSearchParams({ offset: offsetText, limit: limitText });
+  if (version) query.set("version", version);
+  try {
+    const response = await fetch(base + "/api/workspace/page?" + query.toString(), {
+      headers: { "x-pdufa-internal-key": key },
+      cache: "no-store",
+      signal: AbortSignal.timeout(45000),
+    });
+    if (response.status === 409) {
+      return NextResponse.json({ error: "Workspace changed; restart pagination" },
+        { status: 409, headers: { "Cache-Control": "private, no-store" } });
+    }
+    if (!response.ok) {
+      return NextResponse.json({ error: "Pipeline page unavailable" },
+        { status: 503, headers: { "Cache-Control": "private, no-store" } });
+    }
+    const data: unknown = await response.json();
+    if (!data || typeof data !== "object") throw new Error("Invalid page");
+    const page = data as Record<string, unknown>;
+    if (typeof page.version !== "string" ||
+        !/^[a-f0-9]{64}$/.test(page.version) ||
+        !Number.isSafeInteger(page.total) ||
+        !Array.isArray(page.rows) ||
+        page.rows.length > Number(limitText)) throw new Error("Malformed page");
+    return NextResponse.json(page, { headers: { "Cache-Control": "private, no-store" } });
+  } catch {
+    return NextResponse.json({ error: "Pipeline page unavailable" },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } });
+  }
+}
