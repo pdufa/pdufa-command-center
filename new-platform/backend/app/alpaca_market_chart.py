@@ -27,6 +27,14 @@ _CACHE: dict[str, tuple[float, dict]] = {}
 _LOCK = threading.RLock()
 VALID_RANGES = {"1M": 45, "3M": 115, "6M": 215, "1Y": 410, "ALL": 800}
 MAX_BYTES = 1_700_000
+MAX_CACHE_ENTRIES = 80  # The free Render worker has a 512 MiB memory ceiling.
+SUCCESS_CACHE_SECONDS = 900
+RETRY_CACHE_SECONDS = 60
+NO_HISTORY_MESSAGE = (
+    "Alpaca returned no daily market bars for this ticker in the requested period. "
+    "It may have been acquired, delisted, or lack coverage on the selected feed. "
+    "No current price or trading signal is available."
+)
 
 
 def _credentials() -> tuple[str, str] | None:
@@ -109,8 +117,12 @@ def get_alpaca_bars(ticker: str, range_label: str = "1Y") -> dict:
     cache_key = ticker + "|" + range_label + "|" + feed
     with _LOCK:
         cached = _CACHE.get(cache_key)
-        if cached and time.monotonic() - cached[0] < 900:
-            return cached[1]
+        if cached:
+            ttl = (SUCCESS_CACHE_SECONDS if cached[1]["status"] in
+                   {"OK", "NO_MARKET_HISTORY", "INSUFFICIENT_BARS"}
+                   else RETRY_CACHE_SECONDS)
+            if time.monotonic() - cached[0] < ttl:
+                return cached[1]
     query = urlencode({
         "timeframe": "1Day", "start": start.isoformat(),
         "end": (session_day + timedelta(days=1)).isoformat(),
@@ -130,12 +142,26 @@ def get_alpaca_bars(ticker: str, range_label: str = "1Y") -> dict:
             if len(blob) > MAX_BYTES:
                 return _out(ticker, feed, "SOURCE_TOO_LARGE", message="Alpaca response exceeded safe size limit")
         parsed = json.loads(blob)
-        if parsed.get("next_page_token"):
-            return _out(ticker, feed, "INCOMPLETE_HISTORY", message="Alpaca returned paged data; chart withheld to prevent truncation")
-        candles = _parse_bars(parsed, ticker, now)
-        if len(candles) < 21:
-            return _out(ticker, feed, "INSUFFICIENT_BARS", message="Alpaca returned fewer than 21 verified daily sessions")
-        result = _out(ticker, feed, "OK", candles)
+        if not isinstance(parsed, dict) or "bars" not in parsed:
+            result = _out(ticker, feed, "INVALID_SOURCE_RESPONSE",
+                          message="Alpaca returned an unexpected market-data response; chart withheld.")
+        elif parsed.get("next_page_token"):
+            result = _out(ticker, feed, "INCOMPLETE_HISTORY",
+                          message="Alpaca returned paged data; chart withheld to prevent truncation")
+        elif parsed["bars"] is None or parsed["bars"] == []:
+            # Alpaca may legitimately return bars:null for inactive or acquired tickers.
+            # This does not mean the entire Alpaca feed is offline.
+            result = _out(ticker, feed, "NO_MARKET_HISTORY", message=NO_HISTORY_MESSAGE)
+        elif not isinstance(parsed["bars"], list):
+            result = _out(ticker, feed, "INVALID_SOURCE_RESPONSE",
+                          message="Alpaca returned invalid market-data bars; chart withheld.")
+        else:
+            candles = _parse_bars(parsed, ticker, now)
+            if len(candles) < 21:
+                result = _out(ticker, feed, "INSUFFICIENT_BARS",
+                              message="Alpaca returned fewer than 21 verified daily sessions")
+            else:
+                result = _out(ticker, feed, "OK", candles)
     except HTTPError as exc:
         status = "ALPACA_AUTH_FAILED" if exc.code in (401, 403) else "RATE_LIMITED" if exc.code == 429 else "ALPACA_HTTP_ERROR"
         LOG.warning("ALPACA_CHART_UNAVAILABLE ticker=%s status=%s code=%d", ticker, status, exc.code)
@@ -146,4 +172,7 @@ def get_alpaca_bars(ticker: str, range_label: str = "1Y") -> dict:
                       message="Alpaca market-data source unavailable. No alternate-provider data displayed.")
     with _LOCK:
         _CACHE[cache_key] = (time.monotonic(), result)
+        if len(_CACHE) > MAX_CACHE_ENTRIES:
+            oldest = min(_CACHE, key=lambda key: _CACHE[key][0])
+            _CACHE.pop(oldest, None)
     return result
