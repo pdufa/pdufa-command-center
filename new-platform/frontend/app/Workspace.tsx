@@ -934,8 +934,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
   const byProgram = useMemo(() => {
     const m=new Map<string,Candidate>();
-    for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
-      if(r.programId&&!m.has(r.programId))m.set(r.programId,r);
+    // Avoid allocating and copying the entire pipeline into a temporary array.
+    for (const source of [snapshot?.members.GEM.rows, snapshot?.members.GEM_JR.rows, pipeline]) {
+      for (const r of source || []) {
+        if(r.programId&&!m.has(r.programId))m.set(r.programId,r);
+      }
     }
     return m;
   },[snapshot,pipeline]);
@@ -944,15 +947,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     // ticker list for each of 11k+ published records on mobile.
     const m = new Map<string, Candidate[]>();
     const seen = new Map<string, Set<string>>();
-    for (const r of [...pipeline, ...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])]) {
-      if (!r.ticker) continue;
-      let keys = seen.get(r.ticker);
-      if (!keys) { keys = new Set<string>(); seen.set(r.ticker, keys); }
-      if (keys.has(r.id)) continue;
-      keys.add(r.id);
-      const items = m.get(r.ticker);
-      if (items) items.push(r);
-      else m.set(r.ticker, [r]);
+    for (const source of [pipeline, snapshot?.members.GEM_JR.rows, snapshot?.members.GEM.rows]) {
+      for (const r of source || []) {
+        if (!r.ticker) continue;
+        let keys = seen.get(r.ticker);
+        if (!keys) { keys = new Set<string>(); seen.set(r.ticker, keys); }
+        if (keys.has(r.id)) continue;
+        keys.add(r.id);
+        const items = m.get(r.ticker);
+        if (items) items.push(r);
+        else m.set(r.ticker, [r]);
+      }
     }
     return m;
   }, [snapshot, pipeline]);
