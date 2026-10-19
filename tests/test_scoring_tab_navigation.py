@@ -1,27 +1,33 @@
-"""Navigation guard: the scoring-audit UI is gone but backend remains."""
+"""Navigation guard: the scoring-audit UI is gone but backend remains.
+
+The PDUFA operator workspace moved from removed Streamlit app.py to
+new-platform/frontend/app/Workspace.tsx. Keep this test on the live UI.
+"""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_consolidated_pdufa_subtabs_keep_scans_and_trading():
-    source = (ROOT / "app.py").read_text(encoding="utf-8")
-    start = source.index('if page == "PDUFA":')
-    end = source.index('elif page == "2. PDUFA CALENDAR":', start)
-    pdufa = source[start:end]
-    assert '["PIPELINE", "GEM JR", "GEM", "SCANS", "WT"]' in pdufa
-    assert 'pipeline_tab, gem_jr_tab, gem_tab, nightly_report_tab, watch_trade_tab = st.tabs(' in pdufa
-    assert 'with pipeline_tab:' in pdufa
-    assert 'with gem_jr_tab:' in pdufa
-    assert 'with gem_tab:' in pdufa
-    assert '_render_reference_gem_page("GEM JR")' in pdufa
-    assert '_render_reference_gem_page("GEM")' in pdufa
-    assert 'with nightly_report_tab:' in pdufa
-    assert 'render_nightly_scan_report()' in pdufa
-    assert 'with watch_trade_tab:' in pdufa
-    assert 'render_watch_trade_dashboard()' in pdufa
-    assert 'with scoring_tests_tab:' not in pdufa
-    assert 'render_score_input_audit()' not in pdufa
+    source = (ROOT / "new-platform/frontend/app/Workspace.tsx").read_text(encoding="utf-8")
+
+    # Test the active Next.js workspace, not the retired Streamlit module.
+    for nav in ('"PIPELINE"', '"GEM_JR"', '"GEM"', '"SCANS"', '"WT"'):
+        assert nav in source
+    assert '["PIPELINE","PIPELINE"]' in source
+    assert '["GEM_JR","GEM JR"]' in source
+    assert '["GEM","GEM"]' in source
+    assert '["SCANS","SCANS"]' in source
+    assert '["WT","WT"]' in source
+    assert 'nav==="PIPELINE"' in source
+    assert 'nav==="GEM_JR" || nav==="GEM"' in source
+    assert 'gemBlock(nav==="GEM_JR"?"GEM_JR":"GEM")' in source
+    assert 'nav==="SCANS" && <PublishedScansPanel />' in source
+    assert 'nav==="WT"' in source
+
+    # Retired scoring UI must stay removed; nightly input audits still run.
+    assert 'scoring_tests_tab' not in source
+    assert 'render_score_input_audit()' not in source
     assert (ROOT / "score_input_audit.py").is_file()
     assert (ROOT / "scripts/nightly_scoring_audit.py").is_file()
 
