@@ -43,7 +43,9 @@ test("Only an explicit VIEW SAVED MEMBERS selects the 11-member stage list",()=>
  assert.equal(pickGemResearchRows({pipeline:dataset,savedStage:saved,savedOnly:false}).length,694);
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(src,/VIEW SAVED MEMBERS/);
- assert.match(src,/pickGemResearchRows\(\{pipeline,savedStage:group\?\.rows\|\|\[\],livePreview:stagePreview,completedScan:activeScan,savedOnly\}\)/);
+ assert.match(src,/function gemCandidateRows\(stage: "GEM_JR" \| "GEM"\)/);
+ assert.match(src,/const rows=gemCandidateRows\(stage\)/);
+ assert.match(src,/pickGemResearchRows\(\{\s*pipeline,\s*savedStage: snapshot\?\.members\[stage\]\.rows \|\| \[\],/);
  assert.match(src,/LIVE RESEARCH SCREEN/);
  assert.match(src,/NOT STAGE MEMBER/);
 });
@@ -77,4 +79,24 @@ test("GEM and GEM JR keep original clinical and trading checkboxes",()=>{
  const jr=Checklist.checkboxGroupsForStage("GEM_JR");
  assert.equal(jr.trading.length,13);
  assert.equal(jr.clinical.length,4);
+});
+
+test("Current top workflow totals appear below navigation in Pipeline, GEM JR, GEM, WT order",()=>{
+ const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ const nav=src.indexOf('id="pdufa-section-navigation"');
+ const counters=src.indexOf('className="workflow-counts"');
+ const overview=src.indexOf('className="workspace-overview"');
+ assert.ok(nav>=0 && counters>nav && overview>counters,"totals are directly after navigation and before overview");
+ const totals=src.slice(counters,overview);
+ const ids=['id:"PIPELINE" as Nav','id:"GEM_JR" as Nav','id:"GEM" as Nav','id:"WT" as Nav'];
+ let previous=-1;
+ for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
+ assert.match(totals,/gemCandidateRows\("GEM_JR"\)\.length/);
+ assert.match(totals,/gemCandidateRows\("GEM"\)\.length/);
+ assert.match(totals,/new Set\(\[\.\.\.tags\.watch,\.\.\.tags\.trade\]\)\.size/);
+ assert.match(totals,/snapshot \? pipeline\.length : null/);
+ assert.match(totals,/item\.count===null\?"—":item\.count\.toLocaleString\("en-US"\)/);
+ assert.match(css,/\.workflow-counts\s*\{[\s\S]*?grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+ assert.match(css,/@media\(max-width:750px\)\s*\{\s*\.workflow-counts\s*\{\s*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });
