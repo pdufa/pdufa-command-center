@@ -13,6 +13,7 @@ import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
 import GemQualificationChecklist, {type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
@@ -593,6 +594,52 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
+  // A bounded page becomes usable before the complete qualification dataset.
+  // Search covers the entire published pipeline on the server.
+  const [earlyPipelinePage, setEarlyPipelinePage] = useState<PipelinePage | null>(null);
+  const [earlyPageLoading, setEarlyPageLoading] = useState(false);
+  const [earlyPageQuery, setEarlyPageQuery] = useState("");
+  const [earlyAppliedQuery, setEarlyAppliedQuery] = useState("");
+  const [earlyPageError, setEarlyPageError] = useState("");
+  const earlyRequestSequence = useRef(0);
+  const earlyController = useRef<AbortController | null>(null);
+  const initialPageRequest = useRef<Promise<void> | null>(null);
+  async function loadEarlyPage(offset: number, query: string, version?: string) {
+    const requestSequence = ++earlyRequestSequence.current;
+    earlyController.current?.abort();
+    const controller = new AbortController();
+    earlyController.current = controller;
+    setEarlyPageLoading(true);
+    setEarlyPageError("");
+    try {
+      const params = new URLSearchParams({offset: String(offset), limit: "50"});
+      if (query.trim()) params.set("query", query.trim());
+      if (version) params.set("version", version);
+      const response = await fetch("/api/workspace/page?" + params.toString(), {
+        cache: "no-store", signal: AbortSignal.any([controller.signal, AbortSignal.timeout(55000)]),
+      });
+      if (controller.signal.aborted || requestSequence !== earlyRequestSequence.current) return;
+      if (response.status === 409) {
+        setEarlyPipelinePage(null);
+        throw new Error("Published candidates changed. Search again to load the latest page.");
+      }
+      if (!response.ok) throw new Error("Pipeline page unavailable. Search again to retry.");
+      const page = validatePipelinePage(await response.json(), offset, 50, version);
+      if (controller.signal.aborted || requestSequence !== earlyRequestSequence.current) return;
+      setEarlyPipelinePage(page);
+      setEarlyAppliedQuery(query.trim());
+    } catch (error) {
+      if (!controller.signal.aborted && requestSequence === earlyRequestSequence.current)
+        setEarlyPageError(error instanceof Error ? error.message : "Pipeline page unavailable.");
+    } finally {
+      if (!controller.signal.aborted && requestSequence === earlyRequestSequence.current) setEarlyPageLoading(false);
+    }
+  }
+  useEffect(() => {
+    initialPageRequest.current = loadEarlyPage(0, "");
+    return () => { earlyRequestSequence.current++; earlyController.current?.abort(); };
+  }, []);
+
   const [summaryError, setSummaryError] = useState("");
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
   // GEM JR live screen is not saved stage membership (11), nor a finished SCAN.
@@ -717,10 +764,21 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const ctrl = new AbortController();
     async function loadCounts() {
       try {
-        const response = await fetch("/api/workspace/summary", {
+        // Render free instances can be waking when the initial summary request
+        // reaches the frontend. Retry one transient gateway failure only;
+        // never create a repeating browser polling loop.
+        let response = await fetch("/api/workspace/summary", {
           cache: "no-store",
           signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
         });
+        if ([502, 503, 504].includes(response.status) && !ctrl.signal.aborted) {
+          await new Promise<void>(resolve => setTimeout(resolve, 4000));
+          if (ctrl.signal.aborted) return;
+          response = await fetch("/api/workspace/summary", {
+            cache: "no-store",
+            signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
+          });
+        }
         if (!response.ok) {
           if (!ctrl.signal.aborted) setSummaryError("Candidate totals request failed (HTTP " + response.status + ").");
           return;
@@ -790,6 +848,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             // Unknown version, transient delta failure or invalid patch:
             // fall back to the complete verified workspace response below.
           }
+        }
+        if (fetchVersion === 0) {
+          await initialPageRequest.current;
+          if (ctrl.signal.aborted) return;
         }
         const response = await fetch("/api/workspace", {
           cache: "no-store",
@@ -934,8 +996,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
   const byProgram = useMemo(() => {
     const m=new Map<string,Candidate>();
-    for(const r of [...(snapshot?.members.GEM.rows||[]),...(snapshot?.members.GEM_JR.rows||[]),...pipeline]){
-      if(r.programId&&!m.has(r.programId))m.set(r.programId,r);
+    // Avoid allocating and copying the entire pipeline into a temporary array.
+    for (const source of [snapshot?.members.GEM.rows, snapshot?.members.GEM_JR.rows, pipeline]) {
+      for (const r of source || []) {
+        if(r.programId&&!m.has(r.programId))m.set(r.programId,r);
+      }
     }
     return m;
   },[snapshot,pipeline]);
@@ -944,15 +1009,17 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     // ticker list for each of 11k+ published records on mobile.
     const m = new Map<string, Candidate[]>();
     const seen = new Map<string, Set<string>>();
-    for (const r of [...pipeline, ...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])]) {
-      if (!r.ticker) continue;
-      let keys = seen.get(r.ticker);
-      if (!keys) { keys = new Set<string>(); seen.set(r.ticker, keys); }
-      if (keys.has(r.id)) continue;
-      keys.add(r.id);
-      const items = m.get(r.ticker);
-      if (items) items.push(r);
-      else m.set(r.ticker, [r]);
+    for (const source of [pipeline, snapshot?.members.GEM_JR.rows, snapshot?.members.GEM.rows]) {
+      for (const r of source || []) {
+        if (!r.ticker) continue;
+        let keys = seen.get(r.ticker);
+        if (!keys) { keys = new Set<string>(); seen.set(r.ticker, keys); }
+        if (keys.has(r.id)) continue;
+        keys.add(r.id);
+        const items = m.get(r.ticker);
+        if (items) items.push(r);
+        else m.set(r.ticker, [r]);
+      }
     }
     return m;
   }, [snapshot, pipeline]);
@@ -987,12 +1054,38 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // GEM JR/GEM: the exact filtered list shown in that page's table.
   // WT: the sum of Watchlist and Trading research cards on its page.
   const gemPageRows = { GEM_JR: gemCandidateRows("GEM_JR"), GEM: gemCandidateRows("GEM") };
+  // Unscreened GEM research tables intentionally show the pipeline as a discovery
+  // pool. Never label that pool size as a qualified GEM or GEM JR count.
+  function verifiedStageCount(stage: "GEM_JR" | "GEM"): number | null {
+    if (!snapshot) return null;
+    if (gemSavedOnly[stage]) return gemPageRows[stage].length;
+    const scan = gemScans[stage];
+    if (scan && scan.asOf === snapshot.asOf && scan.sourceTotal === pipeline.length) {
+      return gemPageRows[stage].length;
+    }
+    const preview = stage === "GEM_JR" ? gemJrLivePreview : gemLivePreview;
+    if (preview && preview.asOf === snapshot.asOf && preview.sourceTotal === pipeline.length) {
+      return gemPageRows[stage].length;
+    }
+    return snapshot.members[stage].rows.length;
+  }
+  function stageCountDetail(stage: "GEM_JR" | "GEM"): string {
+    const scan = gemScans[stage];
+    const preview = stage === "GEM_JR" ? gemJrLivePreview : gemLivePreview;
+    const current = scan?.asOf === snapshot?.asOf && scan?.sourceTotal === pipeline.length ||
+      preview?.asOf === snapshot?.asOf && preview?.sourceTotal === pipeline.length;
+    return !gemSavedOnly[stage] && current ? "Screen candidates" : "Saved members";
+  }
   const pageTotals: Record<"PIPELINE" | "GEM_JR" | "GEM" | "WT",number> = {
     PIPELINE: possible.length,
     GEM_JR: gemPageRows.GEM_JR.length,
     GEM: gemPageRows.GEM.length,
     WT: tags.watch.length + tags.trade.length,
   };
+  const gemJrWorkflowCount = verifiedStageCount("GEM_JR");
+  const gemWorkflowCount = verifiedStageCount("GEM");
+  const gemJrCountDetail = stageCountDetail("GEM_JR");
+  const gemCountDetail = stageCountDetail("GEM");
 
   // Preserve the exact numbers shown in these pages for linked trial sheets.
   // Snapshot date guards against displaying counts from an unrelated publication.
@@ -1001,10 +1094,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     try {
       localStorage.setItem("pdufa_stage_totals_v1", JSON.stringify({
         asOf:snapshot.asOf,
-        counts:{PIPELINE:pageTotals.PIPELINE,GEM_JR:pageTotals.GEM_JR,GEM:pageTotals.GEM,WT:pageTotals.WT},
+        counts:{PIPELINE:pageTotals.PIPELINE,GEM_JR:verifiedStageCount("GEM_JR"),GEM:verifiedStageCount("GEM"),WT:pageTotals.WT},
+        details:{GEM_JR:stageCountDetail("GEM_JR"),GEM:stageCountDetail("GEM")},
       }));
     } catch { /* local storage may be unavailable */ }
-  },[snapshot?.asOf, tagsReady, pageTotals.PIPELINE, pageTotals.GEM_JR, pageTotals.GEM, pageTotals.WT]);
+  },[snapshot?.asOf, tagsReady, pageTotals.PIPELINE, pageTotals.WT,
+    gemJrWorkflowCount, gemWorkflowCount, gemJrCountDetail, gemCountDetail]);
 
   function wtButton(record: Candidate,kind:"watch"|"trade"){
     const id=record.programId||"";
@@ -1327,8 +1422,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
         {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null, detail:"Total candidates"},
-        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : publishedCounts?.gemJr ?? null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
-        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : publishedCounts?.gem ?? null, detail:gemSavedOnly.GEM?"Saved members":"Current candidates"},
+        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? verifiedStageCount("GEM_JR") : publishedCounts?.gemJr ?? null, detail:stageCountDetail("GEM_JR")},
+        {id:"GEM" as Nav, label:"GEM", count:snapshot ? verifiedStageCount("GEM") : publishedCounts?.gem ?? null, detail:stageCountDetail("GEM")},
         {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Tracked watch / trade"},
       ]).map(item=><button type="button" key={item.id}
         className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
@@ -1350,8 +1445,37 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
     {!snapshot && <div className="panel" role="status" aria-live="polite">
-      <p>{fetchError || "Candidate totals are available above. Full candidate lists load only when requested; no automatic retry loop is running."}</p>
+      <p>{fetchError || "Loading the complete workspace. You can browse the pipeline quick view below."}</p>
       <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>
+      <div className="panel" aria-label="Pipeline quick view">
+        <strong>Pipeline quick view{earlyPipelinePage ? " · " + earlyPipelinePage.total.toLocaleString() + " candidates" : ""}</strong>
+        <p className="subtle">Browse published candidates while the complete workspace loads. Qualification filters become available when loading finishes.</p>
+        <form onSubmit={event => {event.preventDefault();void loadEarlyPage(0, earlyPageQuery);}}>
+          <label htmlFor="early-pipeline-search">Search all published pipeline candidates</label>
+          <input id="early-pipeline-search" type="search" value={earlyPageQuery}
+            maxLength={100} onChange={event => setEarlyPageQuery(event.target.value)}
+            placeholder="Ticker or program" />
+          <button type="submit" className="secondary" disabled={earlyPageLoading}>
+            {earlyPageLoading ? "LOADING…" : "SEARCH PIPELINE"}
+          </button>
+        </form>
+        {earlyPipelinePage && <>
+          <p className="subtle">Showing {earlyPipelinePage.rows.length ? earlyPipelinePage.offset + 1 : 0}–{earlyPipelinePage.offset + earlyPipelinePage.rows.length} of {earlyPipelinePage.total.toLocaleString()} {earlyAppliedQuery ? "matching candidates · Search: " + earlyAppliedQuery : "total candidates"}.</p>
+          <div className="priority-scroll"><table><thead><tr><th>Ticker</th><th>Program</th></tr></thead><tbody>
+            {earlyPipelinePage.rows.map(candidate => <tr key={candidate.id}>
+              <td>{candidate.ticker || "—"}</td><td>{candidate.drug || candidate.id}</td>
+            </tr>)}
+          </tbody></table></div>
+          <div className="pipeline-row">
+            <button type="button" className="secondary" disabled={earlyPageLoading || earlyPipelinePage.offset === 0}
+              onClick={() => void loadEarlyPage(Math.max(0, earlyPipelinePage.offset - 50), earlyAppliedQuery, earlyPipelinePage.version)}>PREVIOUS 50</button>
+            <button type="button" className="secondary" disabled={earlyPageLoading || earlyPipelinePage.nextOffset === null}
+              onClick={() => { if (earlyPipelinePage.nextOffset !== null) void loadEarlyPage(earlyPipelinePage.nextOffset, earlyAppliedQuery, earlyPipelinePage.version); }}>NEXT 50 CANDIDATES</button>
+          </div>
+        </>}
+        {earlyPageError && <p role="alert">{earlyPageError}</p>}
+      </div>
+
       <button type="button" className="secondary" onClick={() => {
         if (!refreshing) { setFetchError("Loading candidates once…"); setFetchVersion(value => value + 1); }
       }} disabled={refreshing}>{refreshing ? "LOADING CANDIDATES…" : "LOAD CANDIDATES ONCE"}</button>

@@ -93,7 +93,8 @@ test("Current top workflow totals appear below navigation in Pipeline, GEM JR, G
  let previous=-1;
  for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
  assert.match(totals,/publishedCounts/);
- assert.match(totals,/count:snapshot \? pageTotals\.GEM : publishedCounts\?\.gem \?\? null/);
+ assert.match(totals,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : publishedCounts\?\.gemJr \?\? null/);
+ assert.match(totals,/count:snapshot \? verifiedStageCount\("GEM"\) : publishedCounts\?\.gem \?\? null/);
  assert.match(totals,/count:tagsReady \? pageTotals\.WT : null/);
  assert.match(totals,/count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
  assert.match(totals,/item\.count===null\?"—":item\.count\.toLocaleString\("en-US"\)/);
@@ -131,8 +132,8 @@ test("Four illustrated top boxes match the reference colors and icons",()=>{
    assert.ok(css.includes(color),"missing reference color "+color);
  }
  assert.match(src,/label:"PIPELINE", count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
- assert.match(src,/label:"GEM JR", count:snapshot \? pageTotals\.GEM_JR : publishedCounts\?\.gemJr \?\? null/);
- assert.match(src,/label:"GEM", count:snapshot \? pageTotals\.GEM : publishedCounts\?\.gem \?\? null/);
+ assert.match(src,/label:"GEM JR", count:snapshot \? verifiedStageCount\("GEM_JR"\) : publishedCounts\?\.gemJr \?\? null/);
+ assert.match(src,/label:"GEM", count:snapshot \? verifiedStageCount\("GEM"\) : publishedCounts\?\.gem \?\? null/);
  assert.match(src,/label:"WT", count:tagsReady \? pageTotals\.WT : null/);
  assert.match(css,/\.workflow-count-icon svg/);
  assert.match(css,/\.workflow-counts\s*\{\s*display:grid;\s*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);

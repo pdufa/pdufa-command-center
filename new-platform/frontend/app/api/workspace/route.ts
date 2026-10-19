@@ -5,6 +5,7 @@ import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 120;
 
 export async function GET(req: NextRequest) {
   if (!authConfigured() || !hasSession(req.cookies.get(COOKIE_NAME)?.value)) {
@@ -72,6 +73,8 @@ export async function GET(req: NextRequest) {
         "Content-Encoding": "gzip",
         "Cache-Control": "private, no-store",
         "Vary": "Accept-Encoding",
+        ...(response.headers.get("server-timing")?.match(/^workspace;dur=\d+(?:\.\d+)?$/)
+          ? { "Server-Timing": response.headers.get("server-timing")! } : {}),
       }
     });
   } catch (cause) {
@@ -81,7 +84,7 @@ export async function GET(req: NextRequest) {
       error: cause instanceof Error && cause.message === "PIPELINE count or parity metadata failed validation"
         ? "PIPELINE data and source totals disagree"
         : cause instanceof Error && cause.name === "TimeoutError"
-        ? "Backend request timed out after 90 seconds"
+        ? "Backend request timed out after 45 seconds"
         : "Backend unreachable or invalid workspace response",
       sourceHealth: { state: "UNAVAILABLE" }
     }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
