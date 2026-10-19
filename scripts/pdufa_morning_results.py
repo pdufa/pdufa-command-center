@@ -33,12 +33,12 @@ def make_snapshot(clinical, source, *, gem=None, now=None):
         raise ValueError("Snapshot time must be timezone aware")
     now = now.astimezone(timezone.utc)
     local = now.astimezone(PACIFIC)
-    # The previous daily PM scan starts at 10:00 PM Pacific on the preceding
+    # The previous daily PM scan starts at 9:00 PM Pacific on the preceding
     # calendar day; do not label older results as the new morning report.
     morning = local.replace(hour=6, minute=0, second=0, microsecond=0)
     day_before = morning.date() - timedelta(days=1)
     window_start = datetime(
-        day_before.year, day_before.month, day_before.day, 22, 0,
+        day_before.year, day_before.month, day_before.day, 21, 0,
         tzinfo=PACIFIC,
     )
     cutoff_utc = window_start.astimezone(timezone.utc)
@@ -146,11 +146,11 @@ def post_six_final_status(clinical, source, *, now=None):
     if now.tzinfo is None or not isinstance(clinical, dict) or not isinstance(source, dict):
         return None
     local = now.astimezone(PACIFIC)
-    if local.hour < 6 or local.hour >= 22:
+    if local.hour < 6 or local.hour >= 21:
         return None
     morning = local.replace(hour=6, minute=0, second=0, microsecond=0)
     prior = morning.date() - timedelta(days=1)
-    night_start = datetime(prior.year, prior.month, prior.day, 22, 0, tzinfo=PACIFIC)
+    night_start = datetime(prior.year, prior.month, prior.day, 21, 0, tzinfo=PACIFIC)
     clinical_time = timestamp(clinical.get("updated_at_utc"))
     source_time = timestamp(source.get("updated_at_utc"))
     run_id = clinical.get("latest_run_id")
