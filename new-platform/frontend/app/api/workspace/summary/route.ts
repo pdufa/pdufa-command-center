@@ -14,13 +14,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Backend is not configured" }, { status: 503 });
   }
   try {
-    const response = await fetch(base + "/api/workspace/summary", {
+    // A freshly waking backend may briefly return 502/503. Retry once,
+    // server-side, without triggering a browser polling loop.
+    let response = await fetch(base + "/api/workspace/summary", {
       headers: { "x-pdufa-internal-key": key },
       cache: "no-store",
-      signal: AbortSignal.timeout(90000),
+      signal: AbortSignal.timeout(20000),
     });
+    if (response.status === 502 || response.status === 503) {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      response = await fetch(base + "/api/workspace/summary", {
+        headers: { "x-pdufa-internal-key": key },
+        cache: "no-store",
+        signal: AbortSignal.timeout(20000),
+      });
+    }
     if (!response.ok) {
-      return NextResponse.json({ error: "Verified summary unavailable" }, { status: 503 });
+      return NextResponse.json({ error: "Verified summary unavailable; backend HTTP " + response.status }, { status: 503 });
     }
     const data: unknown = await response.json();
     if (!data || typeof data !== "object") throw new Error("Invalid summary");
