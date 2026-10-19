@@ -1,4 +1,4 @@
-name: PDUFA Daily 10:00 PM Pacific Start
+name: PDUFA Daily 9:00 PM Pacific Start
 
 # One clock dispatches the WHOLE awaited chain. Recovery slots can start a
 # missed night; a recorded or active full chain prevents duplicate dispatch.
@@ -6,12 +6,12 @@ name: PDUFA Daily 10:00 PM Pacific Start
 # 2026-10-17 22:06 Pacific: operator-requested kickoff using the same guarded push entrypoint.
 on:
   schedule:
-    - cron: '0 5 * * *'   # 10:00 PM PDT
+    - cron: '0 4 * * *'   # 9:00 PM PDT
+    - cron: '15 4 * * *'
+    - cron: '30 4 * * *'
+    - cron: '0 5 * * *'   # 9:00 PM PST
     - cron: '15 5 * * *'
     - cron: '30 5 * * *'
-    - cron: '0 6 * * *'   # 10:00 PM PST
-    - cron: '15 6 * * *'
-    - cron: '30 6 * * *'
     - cron: '5 7 * * *'
     - cron: '35 7 * * *'
     - cron: '5 8 * * *'
@@ -21,7 +21,7 @@ on:
     # Five independent recovery opportunities per hour, offset from busy :00.
     # The admission script is timezone/DST aware and prevents a second nightly
     # chain when one has already started; repeated ticks are otherwise no-ops.
-    - cron: '3-53/10 5-10 * * *'
+    - cron: '3-53/10 4-10 * * *'
   workflow_dispatch:
   push:
     branches: [main]
