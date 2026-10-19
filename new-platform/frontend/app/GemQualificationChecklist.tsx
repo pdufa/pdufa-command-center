@@ -78,6 +78,13 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["pdufa","window","volume","rsi","trend","liquidity"]};
 const FA_CRITERIA=["registry","marketcap"];
+// GEM's FA button controls only the existing optional GEM JR source input.
+// The GEM JR FA preset and qualification filters remain untouched.
+export function toggleGemJrTrialsRequirement(selected:readonly string[]):string[]{
+ return selected.includes("gem_jr_source")
+   ?selected.filter(key=>key!=="gem_jr_source")
+   :[...selected,"gem_jr_source"];
+}
 // GEM JR owns the FS/FA qualification criteria. GEM only displays the
 // downstream checkboxes, while its GEM JR input control remains available.
 const GEM_JR_OWNED_CRITERIA=new Set([...suggestedByStage.GEM_JR,...FA_CRITERIA]);
@@ -232,7 +239,12 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    selectRequirements(next);
  }
  function toggleFa(){
-   if(running||stage!=="GEM_JR")return;
+   if(running)return;
+   if(stage==="GEM"){
+     // Both GEM controls update the same optional source selection.
+     selectRequirements(toggleGemJrTrialsRequirement(selected));
+     return;
+   }
    // FA combines the two formerly selected GEM JR defaults.
    // Keep the shared "registry" checkbox when FS is still on.
    const next=faActive
@@ -361,7 +373,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. GEM JR retains the FS and FA qualification criteria; GEM shows only downstream options not controlled by those presets. FS selects its suggested criteria; FA selects Phase 3 trial status recorded plus Market cap $300M–$10B in GEM JR. Press either again to remove its criteria; overlapping selections stay checked while the other preset is active. DESELECT ALL clears everything.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. GEM JR retains the FS and FA qualification criteria; GEM shows downstream requirements plus the optional Gem Jr Trials source. FS selects suggested criteria. In GEM, FA toggles only Gem Jr Trials; in GEM JR, FA toggles Phase 3 trial status and Market cap $300M–$10B. Press either button again to deselect its options. DESELECT ALL clears everything.</p>
  <div className="gem-original-checklist-sections" data-stage={stage}>
   <section className="gem-original-clinical">
    <h3>CLINICAL / REGULATORY</h3>
@@ -385,7 +397,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
   </details>
  </div>
 
- <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button>{stage==="GEM_JR"&&<button type="button" onClick={toggleFa} disabled={running} aria-pressed={faActive} aria-label="FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes" title="FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:faActive?"#ffffff":"#176b39",color:faActive?"#176b39":"#ffffff",fontWeight:700}}>FA</button>}</div>
+ <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button><button type="button" onClick={toggleFa} disabled={running} aria-pressed={stage==="GEM"?useGemJrSource:faActive} aria-label={stage==="GEM"?"FA: toggle Gem Jr Trials input":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"} title={stage==="GEM"?"FA — include or exclude Gem Jr Trials; click again to uncheck":"FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck"} style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:(stage==="GEM"?useGemJrSource:faActive)?"#ffffff":"#176b39",color:(stage==="GEM"?useGemJrSource:faActive)?"#176b39":"#ffffff",fontWeight:700}}>FA</button></div>
 
 
  <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+"."}</p>
