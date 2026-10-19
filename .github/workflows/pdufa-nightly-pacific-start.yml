@@ -4,6 +4,7 @@ name: PDUFA Daily 9:00 PM Pacific Start
 # missed night; a recorded or active full chain prevents duplicate dispatch.
 # 2026-10-15 22:06 Pacific: operator-requested kickoff through the existing push guard.
 # 2026-10-17 22:06 Pacific: operator-requested kickoff using the same guarded push entrypoint.
+# 2026-10-18: manually requested Sunday FULL / RESCAN_ALL kickoff through 9 PM guarded push.
 on:
   schedule:
     - cron: '0 4 * * *'   # 9:00 PM PDT
