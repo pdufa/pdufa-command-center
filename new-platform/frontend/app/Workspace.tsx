@@ -1255,13 +1255,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 onCheckedKeysChange={keys=>changeWtTrialIndicators(programId,selectedStage,keys)}/>
             </div>}
             {ticker ? <>
-              <div className="wt-screenwide-entry">
+              <div className="wt-screenwide-entry" id={"wt-entry-info-"+programId}>
                 <EntrySignal ticker={ticker} programId={programId}/>
               </div>
               <div className="wt-screenwide-chart" id={"wt-chart-"+programId}>
                 <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={chartIndicatorKeys} />
               </div>
-              <div className="wt-screenwide-data">
+              <div className="wt-screenwide-data" id={"wt-score-info-"+programId}>
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
               </div>
             </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}

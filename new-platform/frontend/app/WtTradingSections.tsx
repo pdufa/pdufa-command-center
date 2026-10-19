@@ -56,6 +56,37 @@ export function nextWtPresetSelection(
 }
 const verified=(text:string,source:WtObservation["source"]):WtObservation=>({text,source});
 const UNAVAILABLE=verified("NOT VERIFIED","UNAVAILABLE");
+type WtInfoLocation={target:"chart"|"entry"|"scores"|"reading";name:string;note:string};
+/** Destination for every WT checklist choice. Links identify real panels; an
+ * unsupported trading model always stays a NOT VERIFIED reading, not a signal. */
+export const WT_INFO_LOCATIONS:Readonly<Record<string,WtInfoLocation>>={
+ "entry-score":{target:"entry",name:"ENTRY SIGNAL panel",note:"Entry score and coverage are also in SCORES below the chart"},
+ "entry-base":{target:"chart",name:"CHART · 10-session high/low",note:"Range proxy, not verified multi-touch support"},
+ "entry-breakout":{target:"chart",name:"CHART · prior 10-session high",note:"Reference high only; breakout status is shown in this row"},
+ "entry-trend":{target:"chart",name:"CHART · SMA20 / SMA50",note:"Select this box to draw both moving averages"},
+ "entry-rvol":{target:"reading",name:"HERE · RVOL20 reading",note:"Refresh Alpaca for RVOL; chart shows only raw daily volume"},
+ "entry-rsi":{target:"chart",name:"CHART · RSI14",note:"Select this box to draw RSI14"},
+ "entry-dollar":{target:"reading",name:"HERE · 20-day dollar volume",note:"Refresh Alpaca for the average dollar-volume value"},
+ "entry-atr":{target:"chart",name:"CHART · ATR14",note:"Select this box to draw ATR14"},
+ "entry-trigger":{target:"entry",name:"ENTRY SIGNAL · Trigger / Max Buy",note:"Values appear only when the entry research API verifies them"},
+ "entry-stop":{target:"entry",name:"ENTRY SIGNAL · Initial Stop",note:"Research reference only; not an actual broker stop"},
+ "stay-trend":{target:"chart",name:"CHART · SMA20 / SMA50",note:"Select this box to draw the moving averages"},
+ "stay-support":{target:"chart",name:"CHART · prior 10-session low",note:"Only a support proxy; observed status is in this row"},
+ "stay-rsi":{target:"chart",name:"CHART · RSI14",note:"Select this box to draw RSI14"},
+ "stay-volume":{target:"reading",name:"HERE · Relative Volume",note:"Refresh Alpaca for the RVOL value; the chart draws raw daily volume"},
+ "stay-trailing":{target:"reading",name:"HERE · Trailing Stop Status",note:"No verified position or trailing-stop ledger is available"},
+ "stay-pdufa":{target:"reading",name:"HERE · PDUFA Days",note:"Reported date and remaining days, not a verified FDA deadline"},
+ "stay-signal":{target:"reading",name:"HERE · HOLD Signal Status",note:"No validated position-based HOLD signal is available"},
+ "exit-score":{target:"scores",name:"SCORES · Exit Risk /100",note:"Entry/exit scoring factors and source coverage below the chart"},
+ "exit-two-close":{target:"chart",name:"CHART · SMA20",note:"The two-close result is also shown in this row"},
+ "exit-support":{target:"chart",name:"CHART · prior 10-session low",note:"Breakdown comparison is shown in this row"},
+ "exit-atr-trail":{target:"chart",name:"CHART · ATR14",note:"ATR14 is visible; no trailing stop is inferred"},
+ "exit-rsi":{target:"chart",name:"CHART · RSI14",note:"RSI14 is visible; an exhaustion exit is not validated"},
+ "exit-plateau":{target:"reading",name:"HERE · Plateau Status",note:"No backtested price plateau detector exists"},
+ "exit-divergence":{target:"reading",name:"HERE · Price/Volume Comparison",note:"Observed price/volume only, not a validated divergence signal"},
+ "exit-pdufa":{target:"reading",name:"HERE · PDUFA Exit Timing",note:"Provisional reported-date calculation, not verified exit deadline"},
+ "exit-action":{target:"scores",name:"SCORES · Clinical / SEC Risk",note:"Review saved FDA and dilution alerts below the chart"}
+};
 const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
 const pct=(v:number)=>numeric(v,2)+"%";
 
@@ -218,19 +249,35 @@ export default function WtTradingSections({
       <small>{group.items.filter(i=>checked.includes(i.key)).length}/{group.items.length} selected</small>
     </button>}
     {(compact||expanded[group.id])&&<div className="wt-check-group-body" id={"wt-"+group.id+"-"+programId}>
-      <div className="wt-check-grid">
+      <div className="wt-check-grid" aria-label={group.id.toUpperCase()+" WT indicator information table"}>
        {group.items.map(item=>{
         const observation=values[item.key]||UNAVAILABLE;
-        return <label key={item.key} className={"wt-check-item"+(checked.includes(item.key)?" wt-check-item-checked":"")}
+        const location=WT_INFO_LOCATIONS[item.key];
+        const where=location.target==="chart"?"#wt-chart-"+programId:
+          location.target==="entry"?"#wt-entry-info-"+programId:
+          location.target==="scores"?"#wt-score-info-"+programId:
+          "#wt-reading-"+programId+"-"+item.key;
+        return <div key={item.key} className={"wt-check-item"+(checked.includes(item.key)?" wt-check-item-checked":"")}
          title={item.note}>
-          <input type="checkbox" checked={checked.includes(item.key)}
-           onChange={e=>updateChecked(e.target.checked?[...checked,item.key]:checked.filter(k=>k!==item.key))}/>
-          <span><strong>{item.label}</strong>
-            <span className="wt-check-observed">{observation.text}</span>
-            <small>{observation.source}{observation.source==="ALPACA DAILY"&&market?" · "+market.feed+" "+market.adjustment:""}</small>
+          <label className="wt-check-choice">
+           <input type="checkbox" checked={checked.includes(item.key)}
+            onChange={e=>updateChecked(e.target.checked?[...checked,item.key]:checked.filter(k=>k!==item.key))}/>
+           <span><strong>{item.label}</strong>
+             <span className="wt-check-observed">{observation.text}</span>
+             <small>{observation.source}{observation.source==="ALPACA DAILY"&&market?" · "+market.feed+" "+market.adjustment:""}</small>
              <small className="wt-check-chart-effect">{chartDescriptionForWtCheck(item.key)}</small>
-          </span>
-        </label>;
+           </span>
+          </label>
+          <div className="wt-where-info" id={"wt-reading-"+programId+"-"+item.key}>
+           <strong className="wt-where-heading">WHERE TO SEE INFO:</strong>
+           <a className="wt-where-link" href={where}>{location.name+" →"}</a>
+           <span className="wt-where-note">{location.note}</span>
+           <span className="wt-where-reading"><strong>ACTUAL:</strong> {observation.text}</span>
+           {location.target==="reading"&&observation.source==="UNAVAILABLE"?
+             <button type="button" className="wt-where-refresh" onClick={()=>void load()}
+              disabled={loading||!programId||!ticker}>REFRESH ALPACA / ENTRY DATA</button>:null}
+          </div>
+        </div>;
        })}
       </div>
     </div>}

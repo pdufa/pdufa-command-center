@@ -2840,3 +2840,60 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
  .alpaca-line-key {gap:5px;}
  .alpaca-line-key-item {font-size:13px;padding:7px;min-height:32px;}
 }
+
+/* WT ENTRY/STAY/EXIT: red, explicit location links and actual source readings.
+   Use an independent label so clicking a destination never toggles a checkbox. */
+.wt-page .wt-trial-indicator-panel .wt-check-item {
+  flex-direction:column;gap:8px;cursor:default;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-choice {
+  display:flex;align-items:flex-start;gap:8px;
+  width:100%;min-width:0;cursor:pointer;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-choice > input[type=checkbox] {
+  appearance:auto;accent-color:#196b40;width:17px;height:17px;
+  flex:0 0 17px;margin:2px 0 0;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-choice > span {
+  display:grid;gap:4px;min-width:0;flex:1;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-choice > span > strong {
+  font-size:12px;line-height:1.35;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-info {
+  display:grid;gap:4px;min-width:0;width:100%;
+  padding:7px 8px;border:1px solid #edb3b3;border-left:4px solid #bb2026;
+  border-radius:5px;background:#fff7f7;color:#a01920;
+  scroll-margin-top:22px;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-heading,
+.wt-page .wt-trial-indicator-panel .wt-where-link {
+  font-size:12px;font-weight:800;line-height:1.35;color:#aa1620;
+  display:block;overflow-wrap:anywhere;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-link {
+  text-decoration:underline;text-decoration-thickness:1.5px;
+  text-underline-offset:2px;cursor:pointer;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-link:hover,
+.wt-page .wt-trial-indicator-panel .wt-where-link:focus-visible {
+  color:#780a14;background:#ffe6e6;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-note {
+  font-size:10px;color:#872831;line-height:1.4;overflow-wrap:anywhere;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-reading {
+  font-size:11px;font-weight:600;color:#6c252b;
+  overflow-wrap:anywhere;line-height:1.35;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-refresh {
+  width:fit-content;max-width:100%;border:1px solid #b22d36;
+  border-radius:5px;padding:6px 9px;background:#fff;color:#ad2027;
+  font-size:11px;font-weight:800;cursor:pointer;
+}
+.wt-page .wt-trial-indicator-panel .wt-where-refresh:disabled {
+  opacity:.55;cursor:not-allowed;
+}
+.wt-page :is(.wt-screenwide-entry,.wt-screenwide-chart,.wt-screenwide-data) {
+  scroll-margin-top:18px;
+}

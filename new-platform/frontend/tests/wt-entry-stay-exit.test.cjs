@@ -270,3 +270,41 @@ test("Legacy Streamlit reference indicator and eight-signal tables are absent fr
  assert.match(workspace,/<PriorityIndicators record=\{r\}/);
  assert.match(workspace,/<TechnicalPanel record=\{r\}/);
 });
+
+test("Every ENTRY STAY EXIT checklist item explicitly marks its information location in red",()=>{
+ const {WT_INFO_LOCATIONS}=require("../app/WtTradingSections.tsx");
+ assert.deepEqual(Object.keys(WT_INFO_LOCATIONS).sort(),base.WT_CHECK_KEYS.slice().sort(),
+  "No WT indicator lacks an info location");
+ const targetCounts={entry:10,stay:7,exit:9};
+ for(const stage of ["entry","stay","exit"]){
+  const html=renderToStaticMarkup(React.createElement(WtSections,{
+   programId:"PDUFA-000111",ticker:"TEST",activeGroup:stage,compact:true,
+   checkedKeys:[]
+  }));
+  assert.equal((html.match(/class="wt-where-info"/g)||[]).length,targetCounts[stage]);
+  assert.equal((html.match(/WHERE TO SEE INFO:/g)||[]).length,targetCounts[stage]);
+  assert.equal((html.match(/class="wt-where-link"/g)||[]).length,targetCounts[stage]);
+  assert.equal((html.match(/class="wt-where-reading"/g)||[]).length,targetCounts[stage]);
+  assert.equal((html.match(/type="checkbox"/g)||[]).length,targetCounts[stage]);
+  assert.match(html,/ACTUAL:/);
+ }
+ const entry=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000111",ticker:"TEST",activeGroup:"entry",compact:true
+ }));
+ assert.match(entry,/href="#wt-entry-info-PDUFA-000111"/);
+ assert.match(entry,/href="#wt-chart-PDUFA-000111"/);
+ assert.match(entry,/id="wt-reading-PDUFA-000111-entry-dollar"/);
+ assert.match(entry,/REFRESH ALPACA \/ ENTRY DATA/);
+ const exit=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000111",ticker:"TEST",activeGroup:"exit",compact:true
+ }));
+ assert.match(exit,/href="#wt-score-info-PDUFA-000111"/);
+ assert.match(exit,/No backtested price plateau detector exists/);
+ const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ assert.match(workspace,/id=\{"wt-entry-info-"\+programId\}/);
+ assert.match(workspace,/id=\{"wt-score-info-"\+programId\}/);
+ const styles=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(styles,/\.wt-where-info \{[\s\S]*?border-left:4px solid #bb2026/);
+ assert.match(styles,/\.wt-where-link \{[\s\S]*?color:#aa1620/);
+ assert.match(styles,/\.wt-where-reading \{/);
+});
