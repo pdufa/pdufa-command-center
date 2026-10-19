@@ -546,7 +546,11 @@ def read_workspace():
     try:
         snapshot = number_workspace(workspace())
         from .workspace_delta import publish
-        version = publish(snapshot)["version"]  # Seed version history.
+        try:
+            version = publish(snapshot)["version"]  # Seed version history.
+        except ValueError:
+            # Do not mark stale fallback data as verified or break its response.
+            return snapshot
         return {**snapshot, "workspaceVersion": version}
     except Exception as exc:
         import logging
