@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import MasterChart from "./MasterChart";
+import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
 import IndicatorParityTables from "./IndicatorParityTables";
@@ -393,22 +394,6 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
   </div>;
 }
 
-function WorkflowStageIcon({stage}: {stage:"PIPELINE"|"GEM_JR"|"GEM"|"WT"}) {
-  if (stage==="PIPELINE") return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
-    <ellipse cx="24" cy="10" rx="16" ry="6" fill="currentColor" opacity=".88"/>
-    <path d="M8 10v11c0 3.3 7.2 6 16 6s16-2.7 16-6V10" stroke="currentColor" strokeWidth="3"/>
-    <path d="M8 21v11c0 3.3 7.2 6 16 6s16-2.7 16-6V21" stroke="currentColor" strokeWidth="3"/>
-    <path d="M8 32v5c0 3.3 7.2 6 16 6s16-2.7 16-6v-5" stroke="currentColor" strokeWidth="3"/>
-  </svg>;
-  if (stage==="WT") return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
-    <path d="M24 4.5 30 17l13.8 1.9-10 9.8 2.5 13.9L24 36l-12.3 6.6 2.5-13.9-10-9.8L18 17 24 4.5Z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8"/>
-  </svg>;
-  return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
-    <path d="M12 9h24l9 14-21 21L3 23 12 9Z" stroke="currentColor" strokeWidth="2.6" strokeLinejoin="round"/>
-    <path d="M3 23h42M12 9l6 14 6 21 6-21 6-14M18 23h12" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round"/>
-  </svg>;
-}
-
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
@@ -424,6 +409,14 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
+  // Deep links from standalone trial sheets reopen the matching workspace tab.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("section");
+    if (requested && (["PIPELINE","GEM_JR","GEM","WT"] as const).some(section => section === requested)) {
+      setTop("PDUFA");
+      setNav(requested as Nav);
+    }
+  }, []);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   // Each GEM table shows up to 10 rows around its independently selected
   // candidate. Previous / Next move exactly one source-ordered row at a time.
@@ -661,6 +654,18 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     GEM: gemPageRows.GEM.length,
     WT: tags.watch.length + tags.trade.length,
   };
+
+  // Preserve the exact numbers shown in these pages for linked trial sheets.
+  // Snapshot date guards against displaying counts from an unrelated publication.
+  useEffect(() => {
+    if (!snapshot || !tagsReady) return;
+    try {
+      localStorage.setItem("pdufa_stage_totals_v1", JSON.stringify({
+        asOf:snapshot.asOf,
+        counts:{PIPELINE:pageTotals.PIPELINE,GEM_JR:pageTotals.GEM_JR,GEM:pageTotals.GEM,WT:pageTotals.WT},
+      }));
+    } catch { /* local storage may be unavailable */ }
+  },[snapshot?.asOf, tagsReady, pageTotals.PIPELINE, pageTotals.GEM_JR, pageTotals.GEM, pageTotals.WT]);
 
   function wtButton(record: Candidate,kind:"watch"|"trade"){
     const id=record.programId||"";
@@ -970,9 +975,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>{setRefreshing(true);setFetchVersion(v=>v+1);}}>{refreshing ? "Reloading…" : "Reload published sources"}</button>
       <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
-    {top==="PDUFA" && <div className="nav-wrapper">
+    <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
-        <strong>Section: {nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
+        <strong>Section: {top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
           onClick={()=>setMobileNavOpen(current=>!current)}>
           {mobileNavOpen ? "Close menu ×" : "☰ Browse sections"}
@@ -980,11 +985,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </div>
       <nav id="pdufa-section-navigation" className="worknav" aria-label="PDUFA sections" data-open={mobileNavOpen?"true":"false"}>
         {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
-          <button type="button" key={key} className={nav===key?"nav-selected":""} aria-current={nav===key?"page":undefined}
-            onClick={()=>{setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
+          <button type="button" key={key} className={top==="PDUFA"&&nav===key?"nav-selected":""} aria-current={top==="PDUFA"&&nav===key?"page":undefined}
+            onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
-    </div>}
-    {top==="PDUFA" && <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
+    </div>
+    <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
         {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : null, detail:"Total candidates"},
         {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
@@ -994,7 +999,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
         aria-current={nav===item.id?"page":undefined}
         aria-label={item.label+": "+(item.count===null?"loading":item.count.toLocaleString("en-US"))+" · Open "+item.label}
-        onClick={()=>{setNav(item.id);setMobileNavOpen(false);}}>
+        onClick={()=>{setTop("PDUFA");setNav(item.id);setMobileNavOpen(false);}}>
         <span className="workflow-count-icon"><WorkflowStageIcon stage={item.id as "PIPELINE"|"GEM_JR"|"GEM"|"WT"}/></span>
         <span className="workflow-count-copy">
           <span className="workflow-count-label">{item.label}</span>
@@ -1002,7 +1007,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <span className="workflow-count-detail">{item.detail}</span>
         </span>
       </button>)}
-    </div>}
+    </div>
     <div className="workspace-overview">
       <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
       <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
