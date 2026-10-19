@@ -191,15 +191,15 @@ test("FS and FA buttons display side by side with separate states and selections
   const fsKeys=wtEffectivePresetKeys([],stage,fsFlags);
   const faKeys=wtEffectivePresetKeys([],stage,faFlags);
   assert.ok(fsKeys.length>0&&fsKeys.length<count);
-  assert.equal(faKeys.length,count,"FA selects all options");
+  assert.equal(faKeys.length,0,"FA is unassigned");
   assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(fsFlags,"FS")),[]);
   assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(faFlags,"FA")),[]);
   const both=nextWtPresetFlags(fsFlags,"FA");
   assert.deepEqual(both,{fs:true,fa:true});
   assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FA")),fsKeys,
    "Turning off FA preserves FS");
-  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FS")),faKeys,
-   "Turning off FS preserves FA");
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FS")),[],
+   "Turning off FS leaves no chart indicators from FA");
   const manual=["other-stage",fsKeys[0]];
   assert.deepEqual(wtEffectivePresetKeys(manual,stage,blank),[fsKeys[0]],"Manual checks remain independent");
   const rendered=renderToStaticMarkup(React.createElement(WtSections,{
@@ -216,7 +216,7 @@ test("FS and FA buttons display side by side with separate states and selections
   assert.match(individual[0],/aria-pressed="true"/);
   assert.match(individual[1],/aria-pressed="false"/);
   assert.match(rendered,/Both buttons operate independently/);
-  assert.deepEqual(nextWtPresetSelection([],stage,"FA").length,count);
+  assert.equal(faKeys.length,0);
  }
  const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(source,/presetFlags=\{preference\.presets\[selectedStage\]\}/);
