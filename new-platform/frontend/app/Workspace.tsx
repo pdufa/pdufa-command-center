@@ -1180,12 +1180,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
     {!snapshot && <div className="panel" role="status" aria-live="polite">
-      <p>{fetchError || "Candidate totals load separately. Select LOAD PUBLISHED CANDIDATES to fetch full trial data."}</p>
+      <p>{fetchError || "Candidate totals are available above. Full candidate lists load only when requested; no automatic retry loop is running."}</p>
       <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>
       <button type="button" className="secondary" onClick={() => {
-        setFetchError("Retry requested. Checking published sources…");
-        setFetchVersion(value => value + 1);
-      }}>RETRY LOADING CANDIDATES</button>
+        if (!refreshing) { setFetchError("Loading candidates once…"); setFetchVersion(value => value + 1); }
+      }} disabled={refreshing}>{refreshing ? "LOADING CANDIDATES…" : "LOAD CANDIDATES ONCE"}</button>
     </div>}
     {snapshot && top==="PDUFA" && nav==="MASTER" && <MasterChart records={pipeline} gemJr={snapshot.members.GEM_JR.rows} gem={snapshot.members.GEM.rows} history={[...(snapshot.members.GEM_JR.history||[]),...(snapshot.members.GEM.history||[])]} watch={tags.watch} trade={tags.trade} sourceHealth={snapshot.sourceHealth} asOf={snapshot.asOf} selectedId={masterProgram} onSelect={setMasterProgram} onInspect={record => {
       const stage: Stage = snapshot.members.GEM.rows.some(r=>r.id===record.id) ? "GEM" : snapshot.members.GEM_JR.rows.some(r=>r.id===record.id) ? "GEM_JR" : "PIPELINE";
