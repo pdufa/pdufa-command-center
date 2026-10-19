@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
+import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
