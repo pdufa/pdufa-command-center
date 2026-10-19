@@ -37,7 +37,8 @@ function compute(raw:Bar[]):Enhanced[]{
 export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>}){
  const [hover,setHover]=useState<number|null>(null);
  // Reserve an inner right gutter for labels attached to the actual plotted lines.
- const W=710,L=53,R=110,T=12,B=large?296:164;
+ // A dedicated internal gutter keeps SVG labels visible even with clipping.
+ const W=710,L=53,R=164,T=12,B=large?296:164;
  const showVol=visibleStudies.has("volume");
  const showRsi=large&&visibleStudies.has("rsi");
  const showMacd=large&&visibleStudies.has("macd");
@@ -77,7 +78,7 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
  // overlapping labels vertically, with short leaders back to the actual line.
  const last=bars.at(-1);
  const priceLabels=[
-   ...(!candle&&last?[{name:"PRICE",color:"#02a65b",value:last.close}]:[]),
+   ...(last?[{name:candle?"CLOSE":"PRICE",color:"#137d50",value:last.close}]:[]),
    ...(last?avgStyles.filter(([key])=>visibleStudies.has(key))
      .filter(([key])=>good(last[key]))
      .map(([key,name,color])=>({name,color,value:last[key] as number})):[]),
@@ -88,22 +89,38 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
  ];
  const orderedLabels=priceLabels.map(label=>({...label,fromY:y(label.value)}))
    .sort((a,b)=>a.fromY-b.fromY);
- const labelGap=12,labelMin=T+7,labelMax=B-7;
- const positionedLabels=orderedLabels.map((label,index)=>{
-   const ideal=Math.min(labelMax-(orderedLabels.length-index-1)*labelGap,
-     Math.max(labelMin+index*labelGap,label.fromY));
-   const prior=index?orderedLabels[index-1]:null;
-   // Ordered accumulation is done below so labels never collide.
-   return {...label,ideal};
- });
- let priorLabelY=labelMin-labelGap;
- const finalLabels=positionedLabels.map(label=>{
-   const at=Math.max(label.ideal,priorLabelY+labelGap);
-   priorLabelY=at;
-   return {...label,at};
- });
- const labelStart=W-R+10;
+ const labelGap=17,labelMin=T+10,labelMax=B-10;
+ // Forward/backward packing means all labels stay inside the chart even when
+ // several moving averages converge at nearly the same price.
+ const finalLabels=orderedLabels.map(label=>({...label,at:label.fromY}));
+ let lastLabelY=labelMin-labelGap;
+ for(const label of finalLabels){
+   label.at=Math.max(labelMin,label.fromY,lastLabelY+labelGap);
+   lastLabelY=label.at;
+ }
+ if(finalLabels.length){
+   let nextY=labelMax+labelGap;
+   for(let i=finalLabels.length-1;i>=0;i--){
+     const label=finalLabels[i];
+     label.at=Math.min(label.at,nextY-labelGap,labelMax);
+     nextY=label.at;
+   }
+ }
+ const labelStart=W-R+12;
  const endpoint=x(bars.length-1);
+ // A fixed-size HTML key below the responsive SVG stays legible on phones,
+ // where SVG text is scaled down together with the plotted lines.
+ const panelLineLabels=[
+   ...(showVol?[{name:"Daily volume",color:"#45846b",display:short(last?.volume||0)}]:[]),
+   ...(showRsi&&good(last?.rsi)?[{name:"RSI14",color:"#8e54a8",display:fixed(last.rsi,1)}]:[]),
+   ...(showMacd&&good(last?.macd)?[{name:"MACD",color:"#1e9d8f",display:fixed(last.macd,3)}]:[]),
+   ...(showMacd&&good(last?.signal)?[{name:"Signal",color:"#d08a2f",display:fixed(last.signal,3)}]:[]),
+   ...(showAtr&&good(last?.atr)?[{name:"ATR14",color:"#ad6632",display:fixed(last.atr,3)}]:[])
+ ];
+ const lineKey=[
+   ...priceLabels.map(item=>({name:item.name,color:item.color,display:fixed(item.value)})),
+   ...panelLineLabels
+ ];
  return <div className="alpaca-plot-box"><svg viewBox={"0 0 "+W+" "+H} className="alpaca-plot" role="img" aria-label={visibleStudies.size?"Alpaca daily price with selected indicators":"Alpaca daily price only — no technical indicators"}>
   {Array.from({length:5},(_,i)=>{const yy=T+i*(B-T)/4;return <g key={i}>
     <line x1={L} x2={W-R} y1={yy} y2={yy} stroke="#e3edf4"/>
@@ -119,12 +136,14 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
      <line x1={L} x2={W-R} y1={y(rangeHigh)} y2={y(rangeHigh)} stroke="#aa4f9c" strokeDasharray="5 3" strokeWidth="1.5"/>
      <line x1={L} x2={W-R} y1={y(rangeLow)} y2={y(rangeLow)} stroke="#257d76" strokeDasharray="5 3" strokeWidth="1.5"/>
     </>}
-   {finalLabels.map(({name,color,value,fromY,at})=><g key={"name-"+name}>
-      <path d={"M"+endpoint+","+fromY+" L"+(labelStart-4)+","+at}
-        stroke={color} strokeWidth="1" fill="none" opacity="0.8"/>
-      <text x={labelStart} y={at+3} fontSize="10" fontWeight="700"
-        fill={color} stroke="#fff" strokeWidth="2.7" paintOrder="stroke"
-        strokeLinejoin="round">{name}</text>
+   {finalLabels.map(({name,color,value,fromY,at})=><g key={"name-"+name}
+      aria-label={name+" "+fixed(value)}>
+      <path d={"M"+endpoint+","+fromY+" L"+(labelStart-5)+","+at}
+        stroke={color} strokeWidth="1.6" fill="none" opacity="0.9"/>
+      <rect x={labelStart-5} y={at-11} width={151} height={18}
+        rx="4" fill="#ffffff" stroke={color} strokeWidth="1.3"/>
+      <text x={labelStart+2} y={at+2} fontSize="12" fontWeight="800"
+        fill="#17344b">{name}</text>
       <title>{name+" "+fixed(value)}</title>
     </g>)}
    {showVol&&bars.map((b,i)=>{const height=b.volume/maxVol*(volBottom-B-9);return <rect key={"v"+b.date} x={x(i)-barWidth/2}
@@ -166,7 +185,14 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
      onPointerMove={ev=>{const svg=ev.currentTarget.ownerSVGElement;if(!svg)return;const box=svg.getBoundingClientRect();
        const at=(ev.clientX-box.left)/box.width*W;setHover(Math.max(0,Math.min(bars.length-1,Math.floor((at-L)/span*bars.length))));}}
      onPointerLeave={()=>setHover(null)}/>
-  </svg>{target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
+  </svg>
+  <div className="alpaca-line-key" aria-label="Labels for the lines actually shown on the Alpaca chart">
+    {lineKey.map(item=><span key={item.name} className="alpaca-line-key-item"
+      style={{borderLeftColor:item.color}}>
+      <strong>{item.name}</strong> <span>{item.display}</span>
+    </span>)}
+  </div>
+  {target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
 }
 export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[]}){
  const [range,setRange]=useState<Range>("6M"),[state,setState]=useState<Market|null>(null);

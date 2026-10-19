@@ -147,3 +147,41 @@ test("Alpaca lines carry readable names at their endpoints without inventing hid
  }));
  assert.match(price,/>PRICE<\/text>/,"Line mode names the price itself");
 });
+
+test("Alpaca prominently labels drawn chart lines and exposes a readable mobile-safe key",()=>{
+ const bars=Array.from({length:80},(_,i)=>({
+  date:new Date(Date.UTC(2026,7,1+i)).toISOString().slice(0,10),
+  open:15+i*.04,high:16+i*.04,low:14+i*.04,close:15.4+i*.04,
+  volume:150000+i*100,sma20:15.1+i*.04,sma50:14.9+i*.04,
+  ema10:15.5+i*.04,ema20:15.2+i*.04,ema50:15+i*.04,
+  rsi:55,macd:.45,signal:.4,atr:.65
+ }));
+ const rangeOnly=renderToStaticMarkup(React.createElement(StockPlot,{
+  bars,large:true,candle:true,visibleStudies:new Set(["range"])
+ }));
+ assert.match(rangeOnly,/class="alpaca-line-key"/);
+ assert.match(rangeOnly,/aria-label="Labels for the lines actually shown on the Alpaca chart"/);
+ for(const label of ["CLOSE","Prior 10D high","Prior 10D low"]){
+  assert.match(rangeOnly,new RegExp('<strong>'+label+'</strong>'));
+  assert.match(rangeOnly,new RegExp('>'+label+'</text>'));
+ }
+ assert.doesNotMatch(rangeOnly,/class="alpaca-line-key-item"[^>]*><strong>SMA20/);
+ const all=renderToStaticMarkup(React.createElement(StockPlot,{
+  bars,large:true,candle:true,
+  visibleStudies:new Set(["sma20","sma50","ema10","ema20","ema50","range","rsi","macd","atr","volume"])
+ }));
+ for(const label of ["SMA20","SMA50","EMA10","EMA20","EMA50","RSI14","MACD","Signal","ATR14","Daily volume"]){
+  assert.match(all,new RegExp('<strong>'+label+'</strong>'),"Missing readable key for "+label);
+ }
+ assert.match(all,/<rect[^>]*width="151" height="18"/,"Chart endpoint names have contrasting pill backgrounds");
+ const plain=renderToStaticMarkup(React.createElement(StockPlot,{
+  bars,large:true,candle:true,visibleStudies:new Set()
+ }));
+ assert.match(plain,/<strong>CLOSE</strong>/);
+ assert.doesNotMatch(plain,/<strong>SMA20</strong>|<strong>Prior 10D high</strong>/,
+   "No unselected indicators may appear in chart key");
+ const styles=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(styles,/\.alpaca-line-key \{/);
+ assert.match(styles,/\.alpaca-line-key-item \{/);
+ assert.match(styles,/font-size:13px/);
+});

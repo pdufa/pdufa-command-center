@@ -2819,3 +2819,24 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   min-height:40px;min-width:52px;
  }
 }
+
+/* Alpaca line names remain readable even when the SVG scales to phone width.
+   The selected-study key mirrors only lines currently drawn, never hidden ones. */
+.alpaca-line-key {
+ display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+ padding:9px 6px 5px;max-width:100%;
+}
+.alpaca-line-key-item {
+ display:inline-flex;align-items:center;gap:6px;
+ border:1px solid #cddfe6;border-left:5px solid #3a7897;
+ border-radius:5px;background:#ffffff;color:#18374b;
+ padding:6px 9px;font-size:13px;line-height:1.4;
+ white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.alpaca-line-key-item strong {font-size:13px;font-weight:800;color:#122e42;}
+.alpaca-line-key-item>span {color:#36536a;font-size:12px;}
+.alpaca-plot-box>.alpaca-plot-tooltip {right:auto;left:15px;top:12px;}
+@media(max-width:600px){
+ .alpaca-line-key {gap:5px;}
+ .alpaca-line-key-item {font-size:13px;padding:7px;min-height:32px;}
+}
