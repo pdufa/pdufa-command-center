@@ -498,7 +498,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [gemLivePreview,setGemLivePreview]=useState<GemJrLivePreview|null>(null);
   const [gemDraft,setGemDraft]=useState<GemJrUiDraft|null>(null);
   const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
-  const [fetchVersion, setFetchVersion] = useState(0);
+  const [fetchVersion, setFetchVersion] = useState(-1);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
@@ -628,6 +628,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }, [fetchVersion]);
 
   useEffect(() => {
+    if (fetchVersion < 0) return;
     const ctrl = new AbortController();
     // One bounded request per explicit Retry click. Never automatically
     // retry: repeated 502/503 responses previously caused a prolonged load loop.
@@ -1136,7 +1137,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="worktop">
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
-      <button type="button" className="secondary" disabled={refreshing} onClick={()=>{setRefreshing(true);setFetchVersion(v=>v+1);}}>{refreshing ? "Reloading…" : "Reload published sources"}</button>
+      <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? "Loading candidates…" : "Load published candidates"}</button>
       <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
     <div className="nav-wrapper">
@@ -1179,7 +1180,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
     {!snapshot && <div className="panel" role="status" aria-live="polite">
-      <p>{fetchError || "Loading published PIPELINE, GEM JR and GEM candidates…"}</p>
+      <p>{fetchError || "Candidate totals load separately. Select LOAD PUBLISHED CANDIDATES to fetch full trial data."}</p>
       <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>
       <button type="button" className="secondary" onClick={() => {
         setFetchError("Retry requested. Checking published sources…");
