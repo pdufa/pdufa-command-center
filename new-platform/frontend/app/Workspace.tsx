@@ -66,7 +66,8 @@ const SNAPSHOT_CACHE_DB = "pdufa-workspace-cache-v1";
 function validWorkspaceSnapshot(value: unknown): value is Snapshot {
   if (!value || typeof value !== "object") return false;
   const v = value as Partial<Snapshot>;
-  return typeof v.asOf === "string" && Array.isArray(v.pipeline) &&
+  return typeof v.asOf === "string" && v.mode !== "STALE_PREVIOUS_FETCH" &&
+    v.sourceHealth?.state !== "STALE" && Array.isArray(v.pipeline) &&
     !!v.members && Array.isArray(v.members.GEM_JR?.rows) && Array.isArray(v.members.GEM?.rows);
 }
 function openWorkspaceCache(): Promise<IDBDatabase> {
@@ -722,7 +723,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         }
         const data = await response.json() as Snapshot;
         if (ctrl.signal.aborted) return;
-        if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed structure validation");
+        if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed validation or backend returned stale source data");
         workspaceEtag.current = response.headers.get("etag");
         hasVerifiedWorkspace.current = true;
         freshSnapshotReceived.current = true;
