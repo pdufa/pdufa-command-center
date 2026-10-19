@@ -198,12 +198,11 @@ export default function Home() {
 
   return (
     <main className="shell">
-      <div className="topline">NEW PLATFORM · ISOLATED TEST INSTALL</div>
+      <div className="topline">PDUFA COMMAND CENTER · PUBLISHED DASHBOARD</div>
       <header className="head">
-        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT · Research workspace and autosaved checklists</p></div>
+        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT · Trial counts directly below navigation</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
-      <div className="banner"><strong>Streamlit is preserved.</strong> This is the new platform setup; survey execution and live trading remain disabled.</div>
       <Workspace onInspect={inspectProgram} />
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
