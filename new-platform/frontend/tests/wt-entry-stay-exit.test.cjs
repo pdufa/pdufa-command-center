@@ -102,9 +102,9 @@ test("PDUFA T-minus calculations are labeled reported and based on Pacific calen
 
 test("WT retains original program management controls and research charts",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
- for(const term of ['<WtTopChecklist programs={trackedWtPrograms}/>',
+ for(const term of ['<WtTopChecklist programs={trackedWtPrograms} onChartControlsChange=',
   '<IndicatorParityTables programId={programId} tech={x}',
-  '<AlpacaStockChart ticker={ticker} programId={programId} />',
+  '<AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys=',
   'MOVE PROGRAM TO TRADING RESEARCH',
   'RETURN PROGRAM TO WATCHLIST',
   'REMOVE PROGRAM TAG',
@@ -112,7 +112,7 @@ test("WT retains original program management controls and research charts",()=>{
   assert.ok(src.includes(term),term);
  }
  const checkboxSrc=fs.readFileSync(path.join(__dirname,"../app/WtTradingSections.tsx"),"utf8");
- assert.ok(checkboxSrc.includes('useState<string[]>([])'));
+ assert.ok(checkboxSrc.includes('useState<string[]>([])')||checkboxSrc.includes('useState<string[]>([]);'));
  assert.ok(checkboxSrc.includes('type="checkbox" checked={checked.includes(item.key)}'));
  assert.ok(checkboxSrc.includes("Checking a box"));
  assert.ok(!checkboxSrc.includes("method:\"POST\""));
@@ -143,7 +143,7 @@ test("Top-level WT program chooser maps exact program IDs without selecting boxe
  assert.equal((html.match(/type="checkbox"/g)||[]).length,0);
  assert.equal((html.match(/aria-expanded="false"/g)||[]).length,3);
  const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
- const top=workspace.indexOf('<WtTopChecklist programs={trackedWtPrograms}/>');
+ const top=workspace.indexOf('<WtTopChecklist programs={trackedWtPrograms} onChartControlsChange=');
  const list=workspace.indexOf('<div className="wt-screenwide-stages">');
  assert.ok(top>=0&&list>top,"Top WT checklists must render BEFORE per-program stock panels");
  assert.ok(!workspace.includes('<WtTradingSections key={programId+"|"+ticker}'),"Old nested section must be removed");
