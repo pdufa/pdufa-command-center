@@ -654,13 +654,17 @@ def read_workspace_page(offset: int = 0, limit: int = 50, version: str = ""):
     from .workspace_delta import publish
     try:
         snapshot = number_workspace(workspace())
+        rows = snapshot.get("pipeline") or []
+        total = len(rows)
+        health = snapshot.get("sourceHealth") or {}
+        parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
+        if not parity or parity.get("exactPrograms") != total:
+            raise ValueError("Pipeline source parity mismatch")
         current_version = publish(snapshot)["version"]
     except Exception:
         raise HTTPException(status_code=503, detail="Verified workspace page unavailable") from None
     if version and version != current_version:
         raise HTTPException(status_code=409, detail="Workspace version changed; restart pagination")
-    rows = snapshot.get("pipeline") or []
-    total = len(rows)
     return {
         "version": current_version,
         "asOf": snapshot.get("asOf"),
