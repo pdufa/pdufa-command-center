@@ -61,7 +61,7 @@ const UNAVAILABLE=verified("NOT VERIFIED","UNAVAILABLE");
  * (20-session), or unsupported/not-scanned statuses as verified readings. */
 export function wtNumericReadingParts(value:string):{text:string;numeric:boolean}[]{
  const parts:{text:string;numeric:boolean}[]=[];
- const token=/(?:\$)?-?\d[\d,]*(?:\.\d+)?(?:\/\d+)?(?:%|×)?/g;
+ const token=/-?\$?\d[\d,]*(?:\.\d+)?(?:\/\d+)?(?:%|×)?/g;
  let previous=0;
  for(const match of value.matchAll(token)){
   const start=match.index,end=start+match[0].length;
