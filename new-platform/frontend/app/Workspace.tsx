@@ -498,8 +498,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [gemLivePreview,setGemLivePreview]=useState<GemJrLivePreview|null>(null);
   const [gemDraft,setGemDraft]=useState<GemJrUiDraft|null>(null);
   const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
-  const [fetchVersion, setFetchVersion] = useState(-1);
-  const activeWorkspaceRequest = useRef<AbortController | null>(null);
+  const [fetchVersion, setFetchVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [top, setTop] = useState<TopNav>("PDUFA");
@@ -629,11 +628,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }, [fetchVersion]);
 
   useEffect(() => {
-    // Do not auto-fetch the 11,775-record workspace on page load.
-    // The lightweight summary can load independently; the full data is opt-in.
-    if (fetchVersion < 0) return undefined;
     const ctrl = new AbortController();
-    activeWorkspaceRequest.current = ctrl;
     // One bounded request per explicit Retry click. Never automatically
     // retry: repeated 502/503 responses previously caused a prolonged load loop.
     async function loadPublishedSources() {
@@ -666,10 +661,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       }
     }
     void loadPublishedSources();
-    return () => {
-      ctrl.abort();
-      if (activeWorkspaceRequest.current === ctrl) activeWorkspaceRequest.current = null;
-    };
+    return () => ctrl.abort();
   }, [fetchVersion]);
   useEffect(() => {
     let local: Tags = {watch:[],trade:[]};
@@ -1144,8 +1136,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     <div className="worktop">
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
-      <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? "Loading once…" : "Load published sources"}</button>
-      {refreshing && <button type="button" className="secondary" onClick={()=>{activeWorkspaceRequest.current?.abort();setRefreshing(false);setFetchError("Loading cancelled. Candidate records and WT selections are unchanged.");}}>CANCEL LOADING</button>
+      <button type="button" className="secondary" disabled={refreshing} onClick={()=>{setRefreshing(true);setFetchVersion(v=>v+1);}}>{refreshing ? "Reloading…" : "Reload published sources"}</button>
       <span className="workspace-stage">Published {snapshot?.asOf||"loading"} · Sources refresh within 5 min · No live orders</span>
     </div>
     <div className="nav-wrapper">
