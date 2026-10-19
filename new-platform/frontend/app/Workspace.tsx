@@ -74,7 +74,7 @@ function validWorkspaceSnapshot(value: unknown): value is Snapshot {
 type WorkspaceDelta = {
   version: string; baseVersion?: string; reset: boolean; unchanged: boolean;
   changes?: Record<"PIPELINE" | "GEM_JR" | "GEM", {
-    upsert: Candidate[]; remove: string[]; count: number;
+    upsert: Candidate[]; remove: string[]; count: number; order: string[];
   }>;
   metadata?: Partial<Snapshot>;
   membersMetadata?: { GEM_JR: Partial<StageData>; GEM: Partial<StageData> };
@@ -88,7 +88,7 @@ function applyWorkspaceDelta(base: Snapshot, delta: WorkspaceDelta): Snapshot {
   const update = (rows: Candidate[], stage: "PIPELINE" | "GEM_JR" | "GEM") => {
     const patch = delta.changes![stage];
     if (!patch || !Array.isArray(patch.upsert) || !Array.isArray(patch.remove) ||
-        !Number.isSafeInteger(patch.count)) throw new Error("Malformed stage delta");
+        !Number.isSafeInteger(patch.count) || !Array.isArray(patch.order)) throw new Error("Malformed stage delta");
     const index = new Map<string, Candidate>();
     for (const row of rows) {
       if (!row.id || index.has(row.id)) throw new Error("Invalid baseline record IDs");
@@ -102,7 +102,9 @@ function applyWorkspaceDelta(base: Snapshot, delta: WorkspaceDelta): Snapshot {
       index.set(row.id, row);
     }
     if (index.size !== patch.count) throw new Error("Delta record count mismatch");
-    return Array.from(index.values());
+    if (patch.order.length !== patch.count || new Set(patch.order).size !== patch.count ||
+        patch.order.some(id => !index.has(id))) throw new Error("Delta ordering mismatch");
+    return patch.order.map(id => index.get(id)!);
   };
   const next: Snapshot = {
     ...base, ...delta.metadata,
