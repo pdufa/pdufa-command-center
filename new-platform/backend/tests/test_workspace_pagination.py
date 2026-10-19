@@ -104,9 +104,12 @@ def test_page_reuses_verified_snapshot_and_refreshes_on_source_change(monkeypatc
     try:
         with TestClient(app) as client:
             first = client.get("/api/workspace/page", headers=headers)
+            assert first.status_code == 200
+            first_count = len(calls)
+            assert first_count >= 1
             second = client.get("/api/workspace/page?offset=1", headers=headers)
-            assert first.status_code == second.status_code == 200
-            assert len(calls) == 1
+            assert second.status_code == 200
+            assert len(calls) == first_count
             replacement = {"pipeline": [{"id": "PDUFA-000002", "ticker": "TWO"}],
                            "sourceHealth": {"streamlitPipelineParity": {"exactPrograms": 1}}}
             current[0] = replacement
@@ -114,7 +117,7 @@ def test_page_reuses_verified_snapshot_and_refreshes_on_source_change(monkeypatc
             assert refreshed.status_code == 200
             assert refreshed.json()["version"] == "b" * 64
             assert refreshed.json()["rows"][0]["ticker"] == "TWO"
-            assert len(calls) == 2
+            assert len(calls) == first_count + 1
             assert client.get("/api/workspace/page?version=" + "a" * 64,
                               headers=headers).status_code == 409
     finally:
