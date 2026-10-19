@@ -143,7 +143,7 @@ export default function WtTradingSections({
    <strong>WT — ENTRY / STAY / EXIT INDICATORS</strong>
    <small>{programId||"NO PROGRAM SELECTED"} · {ticker||"SELECT TICKER FOR DATA"} · {selectedCount} of {WT_CHECK_KEYS.length} selected · all off initially</small>
   </div>
-  <p className="subtle small">Select checkboxes to display supported indicators on this program\u2019s chart. Other checks remain data-only. Checking a box
+  <p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
     Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>
   {programId&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
