@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { gzipSync } from "node:zlib";
+import { createHash } from "node:crypto";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 
 export const runtime = "nodejs";
@@ -53,10 +54,21 @@ export async function GET(req: NextRequest) {
     // The full published-source 9k+ trial universe is too large for
     // Vercel's uncompressed Serverless Function response limit. Send
     // authenticated gzip bytes; browser fetch().json() decompresses them.
-    const output = gzipSync(Buffer.from(JSON.stringify(data)), { level: 6 });
+    const serialized = JSON.stringify(data);
+    const etag = '"' + createHash("sha256").update(serialized).digest("hex") + '"';
+    // An authenticated conditional request avoids transferring the full universe
+    // when the published snapshot is byte-identical. Backend delta support is separate.
+    if (req.headers.get("if-none-match") === etag) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: { "ETag": etag, "Cache-Control": "private, no-store" },
+      });
+    }
+    const output = gzipSync(Buffer.from(serialized), { level: 6 });
     return new NextResponse(new Uint8Array(output), {
       headers: {
         "Content-Type": "application/json; charset=utf-8",
+        "ETag": etag,
         "Content-Encoding": "gzip",
         "Cache-Control": "private, no-store",
         "Vary": "Accept-Encoding",
