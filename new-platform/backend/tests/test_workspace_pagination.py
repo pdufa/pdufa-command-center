@@ -82,3 +82,41 @@ def test_page_rejects_unverified_pipeline(monkeypatch):
             assert response.json()["detail"] == "Verified workspace page unavailable"
     finally:
         app.dependency_overrides.pop(require_storage, None)
+
+
+def test_page_reuses_verified_snapshot_and_refreshes_on_source_change(monkeypatch):
+    """No repeated identity allocation for a source object; new objects reverify."""
+    from app import main
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-secret")
+    app.dependency_overrides[require_storage] = lambda: None
+    source = {"pipeline": [{"id": "PDUFA-000001", "ticker": "ONE"}],
+              "sourceHealth": {"streamlitPipelineParity": {"exactPrograms": 1}}}
+    current = [source]
+    calls = []
+    monkeypatch.setattr(source_workspace, "workspace", lambda: current[0])
+    def number(value):
+        calls.append(value)
+        return value
+    monkeypatch.setattr(program_registry, "number_workspace", number)
+    monkeypatch.setattr(workspace_delta, "publish", lambda value: {"version": "a" * 64 if value is source else "b" * 64})
+    monkeypatch.setattr(main, "_PAGE_CACHE", {"source": None, "snapshot": None, "version": None})
+    headers = {"X-PDUFA-Internal-Key": "test-only-secret"}
+    try:
+        with TestClient(app) as client:
+            first = client.get("/api/workspace/page", headers=headers)
+            second = client.get("/api/workspace/page?offset=1", headers=headers)
+            assert first.status_code == second.status_code == 200
+            assert len(calls) == 1
+            replacement = {"pipeline": [{"id": "PDUFA-000002", "ticker": "TWO"}],
+                           "sourceHealth": {"streamlitPipelineParity": {"exactPrograms": 1}}}
+            current[0] = replacement
+            refreshed = client.get("/api/workspace/page", headers=headers)
+            assert refreshed.status_code == 200
+            assert refreshed.json()["version"] == "b" * 64
+            assert refreshed.json()["rows"][0]["ticker"] == "TWO"
+            assert len(calls) == 2
+            assert client.get("/api/workspace/page?version=" + "a" * 64,
+                              headers=headers).status_code == 409
+    finally:
+        app.dependency_overrides.pop(require_storage, None)
+        main._PAGE_CACHE.update(source=None, snapshot=None, version=None)
