@@ -434,29 +434,56 @@ function SourceDetails({ record }: { record: Candidate }) {
     </div>
   );
 }
-function Drilldown({ rows }: { rows: Candidate[] }) {
+export function Drilldown({ rows }: { rows: Candidate[] }) {
+  const [open,setOpen]=useState(false);
+  const [page,setPage]=useState(0);
+  const [expandedPrograms,setExpandedPrograms]=useState<Record<string,boolean>>({});
+  const records=useMemo(()=>uniqueRows(rows),[rows]);
+  const pageSize=25;
+  const pages=Math.max(1,Math.ceil(records.length/pageSize));
+  const currentPage=Math.min(page,pages-1);
+  const first=currentPage*pageSize;
   const grouped = useMemo(() => {
     const map = new Map<string, Candidate[]>();
-    uniqueRows(rows).forEach(item => map.set(item.ticker, [...(map.get(item.ticker) || []), item]));
+    for(const item of records.slice(first,first+pageSize)){
+      const programs=map.get(item.ticker);
+      if(programs)programs.push(item);
+      else map.set(item.ticker,[item]);
+    }
     return [...map].sort(([a], [b]) => a.localeCompare(b));
-  }, [rows]);
-  return <div className="nested-records">
+  }, [records,first]);
+  function changePage(next:number){setPage(next);setExpandedPrograms({});}
+  return <details className="nested-expander" onToggle={event=>{
+    if(event.target===event.currentTarget)setOpen(event.currentTarget.open);
+  }}>
+    <summary>Three-level clinical trials and evidence table · ticker → drug/program → trial</summary>
+    {open && <div className="nested-records">
+    <div className="sectionhead" aria-label="Clinical evidence table pages">
+      <span role="status">Trials {records.length?first+1:0}–{Math.min(first+pageSize,records.length)} of {records.length.toLocaleString("en-US")} · Page {currentPage+1} of {pages}</span>
+      <button type="button" className="secondary" disabled={currentPage===0} onClick={()=>changePage(currentPage-1)}>PREVIOUS TRIAL PAGE</button>
+      <button type="button" className="secondary" disabled={currentPage===pages-1} onClick={()=>changePage(currentPage+1)}>NEXT TRIAL PAGE</button>
+    </div>
     {grouped.map(([ticker, companies]) => (
       <details key={ticker} className="drill-company">
-        <summary><strong>{ticker}</strong><span>{companies.length} exact program{companies.length === 1 ? "" : "s"}</span></summary>
+        <summary><strong>{ticker}</strong><span>{companies.length} exact program{companies.length === 1 ? "" : "s"} on this page</span></summary>
         <div className="drill-program-grid">{companies.map(item => (
-          <details key={item.id} className="drill-program">
+          <details key={item.id} className="drill-program" onToggle={event=>{
+            if(event.target!==event.currentTarget)return;
+            const expanded=event.currentTarget.open;
+            setExpandedPrograms(current=>current[item.id]===expanded?current:{...current,[item.id]:expanded});
+          }}>
             <summary><strong>{stated(item.drug)}</strong><span><strong className="permanent-id">{stated(item.programId)}</strong> · {stated(item.indication, "program research")} · {stated(item.pdufaDate, "no date")}</span></summary>
-            <div className="drill-evidence"><strong>Trial details and verification</strong>
+            {expandedPrograms[item.id] && <div className="drill-evidence"><strong>Trial details and verification</strong>
               {trialSheetUrl(item) && <a href={trialSheetUrl(item)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">OPEN FULL TRIAL SHEET · {trialId(item)} ↗</a>}
               <SourceDetails record={item} />
-            </div>
+            </div>}
           </details>
         ))}</div>
       </details>
     ))}
     {grouped.length === 0 && <p className="subtle">No exact-program records match these filters.</p>}
-  </div>;
+    </div>}
+  </details>;
 }
 
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
@@ -1126,10 +1153,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <td>{stated(t.leftOn,"Currently listed")}</td><td>{t.cycle}</td><td>{stated(t.reason,t.status)}</td></tr>)}</tbody></table></div>
         <p className="subtle small">Date Added and Date Removed record source-verified GEM-stage list membership (including separate re-entry cycles), not trial registration, Phase 3, FDA, or financing dates. A blank removal date means this listing cycle is still active.</p>
       </details>
-      <details className="nested-expander">
-        <summary>Three-level clinical trials and evidence table · ticker → drug/program → trial</summary>
-        <Drilldown rows={rows} />
-      </details>
+      <Drilldown rows={rows} />
     </section>;
   }
 
