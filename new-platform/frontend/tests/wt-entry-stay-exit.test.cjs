@@ -152,7 +152,7 @@ test("Choosing EXIT beside a ticker immediately reveals nine independent checkbo
  assert.equal((html.match(/type="checkbox"/g)||[]).length,9);
  assert.equal((html.match(/checked=""/g)||[]).length,2);
  assert.doesNotMatch(html,/aria-expanded="false"/);
- assert.match(html,/The two buttons operate independently/);
+ assert.match(html,/FA is an independent switch with no indicators assigned/);
 });
 
 test("Selecting ENTRY or STAY immediately shows only that category's available options",()=>{
@@ -215,7 +215,7 @@ test("FS and FA buttons display side by side with separate states and selections
   assert.equal(individual.length,2);
   assert.match(individual[0],/aria-pressed="true"/);
   assert.match(individual[1],/aria-pressed="false"/);
-  assert.match(rendered,/Both buttons operate independently/);
+  assert.match(rendered,/FA — no indicators assigned/);
   assert.equal(faKeys.length,0);
  }
  const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
