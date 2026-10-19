@@ -14,14 +14,14 @@ function rule(selector){
 }
 test("WT charts are outside old masonry/research-column containers",()=>{
  const chart=workspace.indexOf('<div className="wt-screenwide-chart" id={"wt-chart-"+programId}>');
- const entry=workspace.indexOf('<div className="wt-screenwide-entry">');
- const data=workspace.indexOf('<div className="wt-screenwide-data">');
+ const entry=workspace.indexOf('<div className="wt-screenwide-entry" id={"wt-entry-info-"+programId}>');
+ const data=workspace.indexOf('<div className="wt-screenwide-data" id={"wt-score-info-"+programId}>');
  assert.ok(entry>=0&&chart>entry&&data>chart,"Chart has a separate full-width block before data");
  const segment=workspace.slice(entry,data);
  assert.match(segment,/<EntrySignal ticker=\{ticker\} programId=\{programId\}\/>/);
  assert.match(segment,/<AlpacaStockChart ticker=\{ticker\} programId=\{programId\} wtIndicatorKeys=/);
  assert.match(segment,/<\/div>\s*<div className="wt-screenwide-chart"/,"Chart is not inside entry");
- assert.match(workspace,/<\/div>\s*<div className="wt-screenwide-data">/,"Data does not contain chart");
+ assert.match(workspace,/<\/div>\s*<div className="wt-screenwide-data" id=\{"wt-score-info-"\+programId\}/,"Data does not contain chart");
  assert.doesNotMatch(workspace,/<AlpacaStockChart ticker=\{ticker\} programId=\{programId\} compact \/>/);
  const wt=workspace.slice(workspace.indexOf('<div className="wt-screenwide-stages">'));
  assert.doesNotMatch(wt,/className="wt-program-masonry"/);
