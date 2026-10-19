@@ -9,7 +9,8 @@ def test_page_bounds_and_version(monkeypatch):
     app.dependency_overrides[require_storage] = lambda: None
     headers = {"X-PDUFA-Internal-Key": "test-only-secret"}
     snapshot = {"pipeline": [{"id": "PDUFA-000001"}, {"id": "PDUFA-000002"},
-                             {"id": "PDUFA-000003"}], "asOf": "2026-10-19"}
+                             {"id": "PDUFA-000003"}], "asOf": "2026-10-19",
+                "sourceHealth": {"streamlitPipelineParity": {"exactPrograms": 3}}}
     version = "a" * 64
     monkeypatch.setattr(source_workspace, "workspace", lambda: snapshot)
     monkeypatch.setattr(program_registry, "number_workspace", lambda value: value)
