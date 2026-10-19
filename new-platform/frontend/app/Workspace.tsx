@@ -556,6 +556,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [cachedAsOf, setCachedAsOf] = useState<string | null>(null);
+  const workspaceEtag = useRef<string | null>(null);
   const cachedAsOfRef = useRef<string | null>(null);
   const freshSnapshotReceived = useRef(false);
   const [top, setTop] = useState<TopNav>("PDUFA");
@@ -705,8 +706,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       try {
         const response = await fetch("/api/workspace", {
           cache: "no-store",
+          headers: workspaceEtag.current ? { "If-None-Match": workspaceEtag.current } : {},
           signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
         });
+        if (response.status === 304) {
+          setFetchError("");
+          return;
+        }
         if (!response.ok) {
           const details = await response.json().catch(() => ({})) as {error?:string};
           throw new Error("Published source unavailable: HTTP " + response.status +
@@ -715,6 +721,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         const data = await response.json() as Snapshot;
         if (ctrl.signal.aborted) return;
         if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed structure validation");
+        workspaceEtag.current = response.headers.get("etag");
         freshSnapshotReceived.current = true;
         cachedAsOfRef.current = null;
         setSnapshot(data);
