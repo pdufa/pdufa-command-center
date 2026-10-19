@@ -56,15 +56,50 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/runs?branch=main&per_page=100" > "$RUNNER_TEMP/overnight-runs.json"
           python scripts/nightly_start.py --event "$EVENT_NAME" --cron "$SCHEDULE_CRON" \
             --runs-json "$RUNNER_TEMP/overnight-runs.json" --output "$GITHUB_OUTPUT"
+      - name: Validate one-time manual recovery from failed pre-scan validation
+        id: manual_recovery
+        if: github.event_name == 'push' && github.event.head_commit.message == 'Recover Sunday 2026-10-18 full scan after fixing clock admission tests'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/39200392037" > "$RUNNER_TEMP/manual-failed-run.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/39200392037/jobs?per_page=100" > "$RUNNER_TEMP/manual-failed-jobs.json"
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/runs?branch=main&per_page=100" > "$RUNNER_TEMP/manual-all-runs.json"
+          python - <<'PY'
+          import json,os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          failed=json.loads((root/'manual-failed-run.json').read_text())
+          jobs=json.loads((root/'manual-failed-jobs.json').read_text())['jobs']
+          runs=json.loads((root/'manual-all-runs.json').read_text())['workflow_runs']
+          assert failed['id']==39200392037 and failed['event']=='workflow_dispatch'
+          assert failed['head_branch']=='main' and failed['status']=='completed' and failed['conclusion']=='failure'
+          assert failed['display_title']=='ALL + GEM — PDUFA overnight'
+          job_results={job['name']:job['conclusion'] for job in jobs}
+          assert job_results.get('validate')=='failure'
+          assert all(job_results.get(name)=='skipped' for name in
+                     ('clinical','report','sources','scoring-and-repair'))
+          start=datetime.fromisoformat('2026-10-19T04:00:00+00:00')
+          for run in runs:
+              if run['id']==failed['id'] or run.get('event')!='workflow_dispatch' or run.get('head_branch')!='main':
+                  continue
+              created=datetime.fromisoformat(run['created_at'].replace('Z','+00:00'))
+              assert created<start, 'A second full night run already exists; recovery aborted'
+          with open(os.environ['GITHUB_OUTPUT'],'a',encoding='utf-8') as out:
+              print('run=true',file=out)
+          print('Verified pre-scan-only failure and no duplicate; allow a single Sunday FULL recovery')
+          PY
       - name: Dispatch the entire awaited sequence
-        if: steps.pacific.outputs.run == 'true'
+        if: steps.pacific.outputs.run == 'true' || steps.manual_recovery.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/pdufa-overnight-sequential.yml/dispatches" \
-            -f ref=main -f "inputs[scan_mode]=${{ steps.pacific.outputs.scan_mode }}" \
-            -f "inputs[gem_action]=${{ steps.pacific.outputs.gem_action }}"
+            -f ref=main -f "inputs[scan_mode]=${{ steps.manual_recovery.outputs.run == 'true' && 'FULL' || steps.pacific.outputs.scan_mode }}" \
+            -f "inputs[gem_action]=${{ steps.manual_recovery.outputs.run == 'true' && 'RESCAN_ALL' || steps.pacific.outputs.gem_action }}"
           echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."
 

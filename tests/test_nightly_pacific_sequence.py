@@ -117,7 +117,7 @@ class PacificAdmissionTests(unittest.TestCase):
         now = clock('2026-10-14T23:00:00Z')
         self.assertTrue(decision('workflow_dispatch', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=now)['run'])
-        self.assertFalse(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
+        self.assertFalse(decision('push', '', [], now=clock('2026-10-15T03:30:00Z'))['run'])
         self.assertTrue(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
 
 
