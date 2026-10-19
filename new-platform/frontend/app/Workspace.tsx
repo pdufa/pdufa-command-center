@@ -58,6 +58,7 @@ type Snapshot = {
   marketCapRange: { min: number; max: number };
   pipeline: Candidate[]; members: { GEM_JR: StageData; GEM: StageData };
   trialFilterSchema?: number;
+  workspaceVersion?: string;
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; pipelineSourceParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
 // IndexedDB stores only validated, successfully fetched published snapshots.
@@ -69,6 +70,53 @@ function validWorkspaceSnapshot(value: unknown): value is Snapshot {
   return typeof v.asOf === "string" && v.mode !== "STALE_PREVIOUS_FETCH" &&
     v.sourceHealth?.state !== "STALE" && Array.isArray(v.pipeline) &&
     !!v.members && Array.isArray(v.members.GEM_JR?.rows) && Array.isArray(v.members.GEM?.rows);
+}
+type WorkspaceDelta = {
+  version: string; baseVersion?: string; reset: boolean; unchanged: boolean;
+  changes?: Record<"PIPELINE" | "GEM_JR" | "GEM", {
+    upsert: Candidate[]; remove: string[]; count: number;
+  }>;
+  metadata?: Partial<Snapshot>;
+  membersMetadata?: { GEM_JR: Partial<StageData>; GEM: Partial<StageData> };
+};
+function applyWorkspaceDelta(base: Snapshot, delta: WorkspaceDelta): Snapshot {
+  if (!base.workspaceVersion || delta.reset || delta.unchanged ||
+      delta.baseVersion !== base.workspaceVersion || !delta.changes ||
+      !delta.metadata || !delta.membersMetadata) {
+    throw new Error("Delta base version or metadata invalid");
+  }
+  const update = (rows: Candidate[], stage: "PIPELINE" | "GEM_JR" | "GEM") => {
+    const patch = delta.changes![stage];
+    if (!patch || !Array.isArray(patch.upsert) || !Array.isArray(patch.remove) ||
+        !Number.isSafeInteger(patch.count)) throw new Error("Malformed stage delta");
+    const index = new Map<string, Candidate>();
+    for (const row of rows) {
+      if (!row.id || index.has(row.id)) throw new Error("Invalid baseline record IDs");
+      index.set(row.id, row);
+    }
+    for (const id of patch.remove) {
+      if (!index.delete(id)) throw new Error("Delta removal not found");
+    }
+    for (const row of patch.upsert) {
+      if (!row.id) throw new Error("Delta record missing ID");
+      index.set(row.id, row);
+    }
+    if (index.size !== patch.count) throw new Error("Delta record count mismatch");
+    return Array.from(index.values());
+  };
+  const next: Snapshot = {
+    ...base, ...delta.metadata,
+    workspaceVersion: delta.version,
+    pipeline: update(base.pipeline, "PIPELINE"),
+    members: {
+      GEM_JR: { ...base.members.GEM_JR, ...delta.membersMetadata.GEM_JR,
+        rows: update(base.members.GEM_JR.rows, "GEM_JR") },
+      GEM: { ...base.members.GEM, ...delta.membersMetadata.GEM,
+        rows: update(base.members.GEM.rows, "GEM") },
+    },
+  };
+  if (!validWorkspaceSnapshot(next)) throw new Error("Delta snapshot validation failed");
+  return next;
 }
 function openWorkspaceCache(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
