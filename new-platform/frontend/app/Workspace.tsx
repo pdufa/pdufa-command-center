@@ -678,6 +678,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
   useEffect(() => {
     const ctrl = new AbortController();
+    const requestSequence = earlyRequestSequence.current;
     void (async () => {
       try {
         const response = await fetch("/api/workspace/page?offset=0&limit=50", {
@@ -692,7 +693,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             typeof page.version !== "string" || !/^[a-f0-9]{64}$/.test(page.version) ||
             !Array.isArray(page.rows) || page.rows.length > 50 ||
             !(page.nextOffset === null || page.nextOffset === page.rows.length)) return;
-        if (!ctrl.signal.aborted) setEarlyPipelinePage({
+        if (!ctrl.signal.aborted && requestSequence === earlyRequestSequence.current) setEarlyPipelinePage({
           total:page.total as number,version:page.version,rows:page.rows as Candidate[],
           nextOffset:page.nextOffset as number|null,
         });
