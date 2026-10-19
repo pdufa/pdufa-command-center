@@ -986,10 +986,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     </div>}
     {top==="PDUFA" && <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
-        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : null, detail:"Pipeline page total"},
-        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : null, detail:gemSavedOnly.GEM_JR?"Saved page total":"GEM JR page total"},
-        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : null, detail:gemSavedOnly.GEM?"Saved page total":"GEM page total"},
-        {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Watch + Trading total"},
+        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : null, detail:"Total candidates"},
+        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidates"},
+        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : null, detail:gemSavedOnly.GEM?"Saved members":"Current candidates"},
+        {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Tracked watch / trade"},
       ]).map(item=><button type="button" key={item.id}
         className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
         aria-current={nav===item.id?"page":undefined}
