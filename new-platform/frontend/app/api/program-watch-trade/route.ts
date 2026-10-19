@@ -28,7 +28,7 @@ async function upstream(req: NextRequest, method: "GET" | "PUT") {
     const response = await fetch(base + "/api/program-watch-trade", {
       method, cache: "no-store",
       headers: { "x-pdufa-internal-key": key, "content-type": "application/json" },
-      body, signal: AbortSignal.timeout(15000)
+      body, signal: AbortSignal.timeout(60000)
     });
     const data = await response.json().catch(() => ({}));
     return NextResponse.json(data, { status: response.status, headers: { "Cache-Control": "private, no-store" } });
