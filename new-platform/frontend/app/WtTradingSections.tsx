@@ -6,6 +6,8 @@ import {
  type WtMarket,type WtObservation
 } from "../lib/wt-entry-stay-exit";
 
+import {chartDescriptionForWtCheck} from "../lib/wt-chart-indicator-map";
+
 type GroupId="entry"|"stay"|"exit";
 type EntryReply={
  programId:string;ticker:string;provider?:string;status:string;calculatedAt?:string;
@@ -18,12 +20,18 @@ const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
 const pct=(v:number)=>numeric(v,2)+"%";
 
 export default function WtTradingSections({
- programId,ticker,record,tech,autoFetch=false
+ programId,ticker,record,tech,autoFetch=false,checkedKeys,onCheckedKeysChange
 }:{
  programId:string;ticker:string;record?:Candidate;tech?:Candidate["technical"]|null;autoFetch?:boolean;
+ checkedKeys?:readonly string[];onCheckedKeysChange?:(keys:string[])=>void;
 }){
  const [expanded,setExpanded]=useState<Record<GroupId,boolean>>(emptyOpen);
- const [checked,setChecked]=useState<string[]>([]);
+ const [localChecked,setLocalChecked]=useState<string[]>([]);
+ const checked=checkedKeys??localChecked;
+ function updateChecked(keys:string[]){
+  if(checkedKeys!==undefined)onCheckedKeysChange?.(keys);
+  else setLocalChecked(keys);
+ }
  const [market,setMarket]=useState<WtMarket|null>(null);
  const [entry,setEntry]=useState<EntryReply|null>(null);
  const [loaded,setLoaded]=useState(false);
@@ -135,9 +143,10 @@ export default function WtTradingSections({
    <strong>WT — ENTRY / STAY / EXIT INDICATORS</strong>
    <small>{programId||"NO PROGRAM SELECTED"} · {ticker||"SELECT TICKER FOR DATA"} · {selectedCount} of {WT_CHECK_KEYS.length} selected · all off initially</small>
   </div>
-  <p className="subtle small">Select indicators for manual research review. Checking a box
+  <p className="subtle small">Select checkboxes to display supported indicators on this program\u2019s chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
     Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>
+  {programId&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
   {WT_GROUPS.map(group=><div className="wt-check-group" key={group.id}>
     <button type="button" className="wt-check-group-title"
       aria-expanded={expanded[group.id]} aria-controls={"wt-"+group.id+"-"+programId}
@@ -153,10 +162,11 @@ export default function WtTradingSections({
         return <label key={item.key} className={"wt-check-item"+(checked.includes(item.key)?" wt-check-item-checked":"")}
          title={item.note}>
           <input type="checkbox" checked={checked.includes(item.key)}
-           onChange={e=>setChecked(old=>e.target.checked?[...old,item.key]:old.filter(k=>k!==item.key))}/>
+           onChange={e=>updateChecked(e.target.checked?[...checked,item.key]:checked.filter(k=>k!==item.key))}/>
           <span><strong>{item.label}</strong>
             <span className="wt-check-observed">{observation.text}</span>
             <small>{observation.source}{observation.source==="ALPACA DAILY"&&market?" · "+market.feed+" "+market.adjustment:""}</small>
+             <small className="wt-check-chart-effect">{chartDescriptionForWtCheck(item.key)}</small>
           </span>
         </label>;
        })}
@@ -169,7 +179,7 @@ export default function WtTradingSections({
      "Alpaca: "+(market?.status||"UNAVAILABLE")+(market?.asOf?" · "+market.asOf:"")+
        " · "+(market?.feed||"feed unavailable")+
        (entry?.status?" · Entry research: "+entry.status:"")}</span>
-   <button type="button" className="secondary" onClick={()=>setChecked([])}
+   <button type="button" className="secondary" onClick={()=>updateChecked([])}
     disabled={!selectedCount}>DESELECT ALL</button>
    <button type="button" className="secondary" onClick={()=>void load()}
     disabled={loading||!programId||!ticker}>REFRESH ALPACA</button>
