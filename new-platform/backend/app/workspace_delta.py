@@ -42,7 +42,17 @@ def _view(snapshot):
 def publish(snapshot, since=None):
     """Return either a complete-reset marker or changes against a known version."""
     current = _view(snapshot)
-    digest = hashlib.sha256(_canonical(snapshot).encode("utf-8")).hexdigest()
+    # Fetch timestamps change every source poll even when no candidate changes.
+    # Hash actual rows and stable stage membership metadata, not fetchedAt/asOf.
+    stable = {
+        "stages": current,
+        "membership": {
+            stage: {k: v for k, v in snapshot["members"][stage].items()
+                    if k not in ("rows", "asOf")}
+            for stage in ("GEM_JR", "GEM")
+        },
+    }
+    digest = hashlib.sha256(_canonical(stable).encode("utf-8")).hexdigest()
     with _LOCK:
         previous = _HISTORY.get(since) if since else None
         _HISTORY[digest] = current
