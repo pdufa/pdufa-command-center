@@ -204,3 +204,16 @@ test("FS and FA buttons are visible as soon as an individual WT stage checklist 
  }));
  assert.doesNotMatch(old,/>FS<\/button>|>FA<\/button>/,"Non-WT checklists are unchanged");
 });
+
+test("FS and FA are one adjacent nonwrapping button pair in WT checklist heading",()=>{
+ const html=renderToStaticMarkup(React.createElement(WtSections,{
+  programId:"PDUFA-000009",ticker:"TEST",activeGroup:"entry",compact:true,checkedKeys:[]
+ }));
+ assert.match(html,/<div class="wt-checklist-heading-text">/);
+ assert.match(html,/<div class="wt-checklist-preset-buttons" role="group" aria-label="FS and FA together/);
+ assert.match(html, /<div class="wt-checklist-preset-buttons"[^>]*>\s*<button[^>]*>FS<\/button>\s*<button[^>]*>FA<\/button>\s*<\/div>/);
+ const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(css,/\.wt-page \.wt-trial-indicator-panel \.wt-checklist-preset-buttons \{\s*display:inline-flex;flex:0 0 auto;flex-wrap:nowrap;/);
+ assert.match(css,/\.wt-checklist-preset-button:first-child \{\s*border-right:0;/);
+ assert.match(css,/@media\(max-width:700px\) \{\s*\.wt-page \.wt-trial-indicator-panel \.wt-checklist-preset-buttons \{\s*flex-wrap:nowrap;/);
+});

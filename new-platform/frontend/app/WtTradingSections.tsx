@@ -173,9 +173,11 @@ export default function WtTradingSections({
   {programId&&!compact&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
   {shownGroups.map(group=><div className="wt-check-group" key={group.id}>
     {compact?<div className="wt-check-group-title wt-checklist-visible-heading">
-      <strong>{group.title} — SELECT INDICATORS</strong>
-      <small>{group.items.filter(i=>checked.includes(i.key)).length}/{group.items.length} selected</small>
-      <div className="wt-checklist-preset-buttons" role="group" aria-label={ticker+" "+group.id.toUpperCase()+" indicator presets"}>
+      <div className="wt-checklist-heading-text">
+       <strong>{group.title} — SELECT INDICATORS</strong>
+       <small>{group.items.filter(i=>checked.includes(i.key)).length}/{group.items.length} selected</small>
+      </div>
+      <div className="wt-checklist-preset-buttons" role="group" aria-label={"FS and FA together — "+ticker+" "+group.id.toUpperCase()+" indicator presets"}>
        <button type="button" className="wt-checklist-preset-button"
         aria-label={"FS — toggle suggested "+group.id.toUpperCase()+" indicators for "+ticker}
         title="FS — suggested indicators; click again to uncheck them"

@@ -2785,14 +2785,26 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 
 /* WT only: FS (suggested) / FA (all) remain visible beside every opened
    ticker-specific ENTRY, STAY, or EXIT checkbox list. */
+.wt-page .wt-trial-indicator-panel .wt-checklist-heading-text {
+ display:flex;flex:1 1 260px;align-items:center;flex-wrap:wrap;
+ gap:4px 10px;min-width:0;
+}
+.wt-page .wt-trial-indicator-panel .wt-checklist-heading-text > small {
+ margin:0;font-size:11px;color:#476452;white-space:nowrap;
+}
 .wt-page .wt-trial-indicator-panel .wt-checklist-preset-buttons {
- display:flex;flex:0 0 auto;gap:6px;align-items:center;
+ display:inline-flex;flex:0 0 auto;flex-wrap:nowrap;
+ gap:0;align-items:stretch;white-space:nowrap;
+ border-radius:6px;overflow:hidden;
 }
 .wt-page .wt-trial-indicator-panel .wt-checklist-preset-button {
- appearance:none;border:1px solid #176b39;border-radius:6px;
- min-height:34px;min-width:46px;padding:5px 10px;
+ appearance:none;border:1px solid #176b39;border-radius:0;
+ min-height:36px;min-width:48px;padding:5px 10px;
  font-size:12px;font-weight:800;background:#176b39;color:white;
- cursor:pointer;
+ cursor:pointer;flex:0 0 auto;
+}
+.wt-page .wt-trial-indicator-panel .wt-checklist-preset-button:first-child {
+ border-right:0;
 }
 .wt-page .wt-trial-indicator-panel .wt-checklist-preset-button[aria-pressed="true"] {
  background:#fff;color:#176b39;box-shadow:inset 0 0 0 1px #176b39;
@@ -2802,7 +2814,7 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 }
 @media(max-width:700px) {
  .wt-page .wt-trial-indicator-panel .wt-checklist-preset-buttons {
-  flex-wrap:wrap;
+  flex-wrap:nowrap;
  }
  .wt-page .wt-trial-indicator-panel .wt-checklist-preset-button {
   min-height:40px;min-width:52px;
