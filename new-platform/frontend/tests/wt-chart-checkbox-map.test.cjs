@@ -116,3 +116,34 @@ test("WT readout badges are displayed only for checked chartable indicators",()=
  assert.match(chartSource,/wtControlled\?chartStudiesForWtChecks\(wtIndicatorKeys\):studies\?DEFAULT_SERIES:\[\]/);
  assert.ok(!workspace.includes("wtChartSelection.keys:undefined"),"Every WT stock chart must have explicit empty array fallback");
 });
+
+test("Alpaca lines carry readable names at their endpoints without inventing hidden studies",()=>{
+ const bars=Array.from({length:80},(_,i)=>({
+   date:new Date(Date.UTC(2026,6,1+i)).toISOString().slice(0,10),
+   open:15+i*.04,high:16+i*.04,low:14+i*.04,close:15.4+i*.04,
+   volume:150000+i*100,sma20:15.1+i*.04,sma50:14.9+i*.04,
+   ema10:15.5+i*.04,ema20:15.2+i*.04,ema50:15+i*.04,
+   rsi:55,macd:.45,signal:.4,atr:.65
+ }));
+ const active=renderToStaticMarkup(React.createElement(StockPlot,{
+   bars,large:true,candle:true,
+   visibleStudies:new Set(["sma20","sma50","ema10","ema20","ema50","range","rsi","macd","atr"])
+ }));
+ for(const label of ["SMA20","SMA50","EMA10","EMA20","EMA50","Prior 10D high","Prior 10D low"]){
+   assert.match(active,new RegExp('>'+label+'<\\/text>'),"Line should be named directly: "+label);
+ }
+ for(const label of ["RSI14","MACD","Signal","ATR14"]){
+   assert.match(active,new RegExp('>'+label+'<\\/text>'),"Subpanel line should be named directly: "+label);
+ }
+ assert.match(active,/paint-order="stroke"/,"Visible text halo over busy chart");
+ const none=renderToStaticMarkup(React.createElement(StockPlot,{
+   bars,large:true,candle:true,visibleStudies:new Set()
+ }));
+ for(const name of ["SMA20","SMA50","EMA10","EMA20","Prior 10D high","ATR14"]){
+   assert.doesNotMatch(none,new RegExp('>'+name+'<\\/text>'),"No label for hidden study "+name);
+ }
+ const price=renderToStaticMarkup(React.createElement(StockPlot,{
+   bars,large:true,candle:false,visibleStudies:new Set()
+ }));
+ assert.match(price,/>PRICE<\/text>/,"Line mode names the price itself");
+});

@@ -36,7 +36,8 @@ function compute(raw:Bar[]):Enhanced[]{
 }
 export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>}){
  const [hover,setHover]=useState<number|null>(null);
- const W=710,L=53,R=43,T=12,B=large?296:164;
+ // Reserve an inner right gutter for labels attached to the actual plotted lines.
+ const W=710,L=53,R=110,T=12,B=large?296:164;
  const showVol=visibleStudies.has("volume");
  const showRsi=large&&visibleStudies.has("rsi");
  const showMacd=large&&visibleStudies.has("macd");
@@ -67,6 +68,42 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
    const v=b[key],prior=i?bars[i-1][key]:null;
    return good(v)?(i&&good(prior)?"L":"M")+x(i).toFixed(2)+","+scale(v).toFixed(2):"";
  }).join(" ");
+ const avgStyles=[
+   ["sma20","SMA20","#1673eb"],["sma50","SMA50","#f49429"],
+   ["ema10","EMA10","#9562c1"],["ema20","EMA20","#1a9ead"],
+   ["ema50","EMA50","#ad865c"]
+ ] as const;
+ // Every line gets a matching name near its most recent endpoint. Spread
+ // overlapping labels vertically, with short leaders back to the actual line.
+ const last=bars.at(-1);
+ const priceLabels=[
+   ...(!candle&&last?[{name:"PRICE",color:"#02a65b",value:last.close}]:[]),
+   ...(last?avgStyles.filter(([key])=>visibleStudies.has(key))
+     .filter(([key])=>good(last[key]))
+     .map(([key,name,color])=>({name,color,value:last[key] as number})):[]),
+   ...(visibleStudies.has("range")&&rangeHigh!==null&&rangeLow!==null?[
+     {name:"Prior 10D high",color:"#803770",value:rangeHigh},
+     {name:"Prior 10D low",color:"#226d68",value:rangeLow}
+   ]:[])
+ ];
+ const orderedLabels=priceLabels.map(label=>({...label,fromY:y(label.value)}))
+   .sort((a,b)=>a.fromY-b.fromY);
+ const labelGap=12,labelMin=T+7,labelMax=B-7;
+ const positionedLabels=orderedLabels.map((label,index)=>{
+   const ideal=Math.min(labelMax-(orderedLabels.length-index-1)*labelGap,
+     Math.max(labelMin+index*labelGap,label.fromY));
+   const prior=index?orderedLabels[index-1]:null;
+   // Ordered accumulation is done below so labels never collide.
+   return {...label,ideal};
+ });
+ let priorLabelY=labelMin-labelGap;
+ const finalLabels=positionedLabels.map(label=>{
+   const at=Math.max(label.ideal,priorLabelY+labelGap);
+   priorLabelY=at;
+   return {...label,at};
+ });
+ const labelStart=W-R+10;
+ const endpoint=x(bars.length-1);
  return <div className="alpaca-plot-box"><svg viewBox={"0 0 "+W+" "+H} className="alpaca-plot" role="img" aria-label={visibleStudies.size?"Alpaca daily price with selected indicators":"Alpaca daily price only — no technical indicators"}>
   {Array.from({length:5},(_,i)=>{const yy=T+i*(B-T)/4;return <g key={i}>
     <line x1={L} x2={W-R} y1={yy} y2={yy} stroke="#e3edf4"/>
@@ -76,16 +113,20 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
      return <g key={b.date}><line x1={x(i)} x2={x(i)} y1={y(b.high)} y2={y(b.low)} stroke={color}/>
        <rect x={x(i)-barWidth/2} y={py} width={barWidth} height={Math.max(1,Math.abs(y(b.open)-y(b.close)))} fill={color}/></g>})
     :<path d={drawLine("close")} stroke="#02a65b" fill="none" strokeWidth={2}/>}
-   {([["sma20","#1673eb"],["sma50","#f49429"],["ema10","#9562c1"],
-     ["ema20","#1a9ead"],["ema50","#ad865c"]] as [("sma20"|"sma50"|"ema10"|"ema20"|"ema50"),string][])
-     .filter(([key])=>visibleStudies.has(key))
-     .map(([key,color])=><path key={key} d={drawLine(key)} stroke={color} strokeWidth="1.5" fill="none"/>)}
+   {avgStyles.filter(([key])=>visibleStudies.has(key))
+     .map(([key,,color])=><path key={key} d={drawLine(key)} stroke={color} strokeWidth="1.5" fill="none"/>)}
    {visibleStudies.has("range")&&rangeHigh!==null&&rangeLow!==null&&<>
      <line x1={L} x2={W-R} y1={y(rangeHigh)} y2={y(rangeHigh)} stroke="#aa4f9c" strokeDasharray="5 3" strokeWidth="1.5"/>
      <line x1={L} x2={W-R} y1={y(rangeLow)} y2={y(rangeLow)} stroke="#257d76" strokeDasharray="5 3" strokeWidth="1.5"/>
-     <text x={W-R-3} y={Math.max(T+10,y(rangeHigh)-4)} textAnchor="end" fontSize="10" fill="#803770">Prior 10D high {fixed(rangeHigh)}</text>
-     <text x={W-R-3} y={Math.min(B-3,y(rangeLow)+11)} textAnchor="end" fontSize="10" fill="#226d68">Prior 10D low {fixed(rangeLow)}</text>
     </>}
+   {finalLabels.map(({name,color,value,fromY,at})=><g key={"name-"+name}>
+      <path d={"M"+endpoint+","+fromY+" L"+(labelStart-4)+","+at}
+        stroke={color} strokeWidth="1" fill="none" opacity="0.8"/>
+      <text x={labelStart} y={at+3} fontSize="10" fontWeight="700"
+        fill={color} stroke="#fff" strokeWidth="2.7" paintOrder="stroke"
+        strokeLinejoin="round">{name}</text>
+      <title>{name+" "+fixed(value)}</title>
+    </g>)}
    {showVol&&bars.map((b,i)=>{const height=b.volume/maxVol*(volBottom-B-9);return <rect key={"v"+b.date} x={x(i)-barWidth/2}
       y={volBottom-height} width={barWidth} height={height} fill={b.close>=b.open?"#42c68b":"#ef8d88"}/>})}
    {showVol&&<text x={L+3} y={B+15} fontSize="10" fill="#617586">{"Daily volume "+short(bars.at(-1)?.volume||0)}</text>}
@@ -94,16 +135,29 @@ export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];la
       <line x1={L} x2={W-R} y1={rsiY(30)} y2={rsiY(30)} stroke="#a0bdaf" strokeDasharray="3 2"/>
       <text x={L+4} y={panelTop("rsi")+9} fontSize="10" fill="#586a78">RSI14: {fixed(bars.at(-1)?.rsi,1)} (70/30)</text>
       <path d={indicatorPath("rsi",rsiY)} fill="none" stroke="#8e54a8" strokeWidth={1.5}/>
+      {good(last?.rsi)&&<text x={labelStart} y={rsiY(last.rsi)+3}
+        fontSize="9" fontWeight="700" fill="#8e54a8" stroke="#fff"
+        strokeWidth="2.5" paintOrder="stroke">RSI14</text>}
      </g>}
     {showMacd&&<g>
       <line x1={L} x2={W-R} y1={mY(0)} y2={mY(0)} stroke="#b2becb"/>
       <text x={L+4} y={panelTop("macd")+9} fontSize="10" fill="#586a78">MACD(12,26,9): {fixed(bars.at(-1)?.macd,3)}</text>
       <path d={indicatorPath("macd",mY)} fill="none" stroke="#1e9d8f" strokeWidth={1.5}/>
       <path d={indicatorPath("signal",mY)} fill="none" stroke="#d08a2f" strokeWidth={1.2}/>
+      {good(last?.macd)&&<text x={labelStart} y={mY(last.macd)+3}
+        fontSize="9" fontWeight="700" fill="#1e9d8f" stroke="#fff"
+        strokeWidth="2.5" paintOrder="stroke">MACD</text>}
+      {good(last?.signal)&&<text x={labelStart}
+        y={mY(last.signal)+3+(good(last?.macd)&&Math.abs(mY(last.macd)-mY(last.signal))<12?12:0)}
+        fontSize="9" fontWeight="700" fill="#d08a2f" stroke="#fff"
+        strokeWidth="2.5" paintOrder="stroke">Signal</text>}
      </g>}
     {showAtr&&<g>
       <text x={L+4} y={panelTop("atr")+9} fontSize="10" fill="#586a78">ATR14: {fixed(bars.at(-1)?.atr,3)} · no trailing stop implied</text>
       <path d={indicatorPath("atr",atrY)} fill="none" stroke="#ad6632" strokeWidth={1.6}/>
+      {good(last?.atr)&&<text x={labelStart} y={atrY(last.atr)+3}
+        fontSize="9" fontWeight="700" fill="#ad6632" stroke="#fff"
+        strokeWidth="2.5" paintOrder="stroke">ATR14</text>}
      </g>}
    {target&&<line x1={x(hover!)} x2={x(hover!)} y1={T} y2={volBottom} stroke="#7395b4" strokeDasharray="3 2"/>}
    {Array.from({length:Math.min(6,bars.length)},(_,k)=>{const i=Math.round(k*(bars.length-1)/Math.max(1,Math.min(6,bars.length)-1));return <text
