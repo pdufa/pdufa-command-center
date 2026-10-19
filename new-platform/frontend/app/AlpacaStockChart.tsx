@@ -34,7 +34,7 @@ function compute(raw:Bar[]):Enhanced[]{
    macd:i>=26?macd:null,signal:i>=34?sign:null,atr:i>=13?atr:null};
  });
 }
-function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>}){
+export function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>}){
  const [hover,setHover]=useState<number|null>(null);
  const W=710,L=53,R=43,T=12,B=large?296:164;
  const showVol=visibleStudies.has("volume");
