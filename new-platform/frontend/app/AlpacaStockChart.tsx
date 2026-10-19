@@ -1,8 +1,11 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/wt-chart-indicator-map";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
 type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
+type ChartSeries=WtChartStudy|"ema10"|"ema20"|"ema50"|"macd";
+const DEFAULT_SERIES:readonly ChartSeries[]=["sma20","sma50","ema10","ema20","ema50","volume","rsi","macd","atr"];
 type Enhanced=Bar&{sma20:number|null;sma50:number|null;ema10:number|null;ema20:number|null;ema50:number|null;rsi:number|null;macd:number|null;signal:number|null;atr:number|null};
 const ranges:Range[]=["1M","3M","6M","1Y","ALL"];
 const rangeDays:Record<Range,number>={"1M":31,"3M":93,"6M":186,"1Y":366,"ALL":Infinity};
@@ -31,9 +34,17 @@ function compute(raw:Bar[]):Enhanced[]{
    macd:i>=26?macd:null,signal:i>=34?sign:null,atr:i>=13?atr:null};
  });
 }
-function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;candle:boolean;studies:boolean}){
+function StockPlot({bars,large,candle,visibleStudies}:{bars:Enhanced[];large:boolean;candle:boolean;visibleStudies:ReadonlySet<ChartSeries>}){
  const [hover,setHover]=useState<number|null>(null);
- const W=710,H=large?555:235,L=53,R=43,T=12,B=large?296:164,volBottom=large?348:212;
+ const W=710,L=53,R=43,T=12,B=large?296:164;
+ const showVol=visibleStudies.has("volume");
+ const showRsi=large&&visibleStudies.has("rsi");
+ const showMacd=large&&visibleStudies.has("macd");
+ const showAtr=large&&visibleStudies.has("atr");
+ const panels=[showRsi?"rsi":null,showMacd?"macd":null,showAtr?"atr":null].filter((k):k is string=>Boolean(k));
+ const volBottom=B+(showVol?62:15);
+ const panelTop=(key:string)=>volBottom+12+panels.indexOf(key)*88;
+ const H=volBottom+panels.length*88+25;
  const span=W-L-R,min=Math.min(...bars.map(b=>b.low)),max=Math.max(...bars.map(b=>b.high));
  const padding=Math.max((max-min)*.08,0.001),lo=min-padding,hi=max+padding;
  const x=(i:number)=>L+(i+.5)/bars.length*span;
@@ -43,11 +54,16 @@ function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;ca
  const drawLine=(key:"close"|"sma20"|"sma50"|"ema10"|"ema20"|"ema50")=>
   bars.map((b,i)=>{const value=b[key],previous=i?bars[i-1][key]:null;return good(value)?(i&&good(previous)?"L":"M")+x(i).toFixed(2)+","+y(value).toFixed(2):""}).join(" ");
  const target=hover===null?null:bars[hover];
- const rsiY=(r:number)=>365+(100-r)/100*55;
+ const rsiY=(r:number)=>panelTop("rsi")+12+(100-r)/100*57;
  const mValues=bars.flatMap(b=>[b.macd,b.signal].filter(good));
  const mMax=Math.max(0.001,...mValues.map(Math.abs));
- const mY=(v:number)=>450+(mMax-v)/(2*mMax)*62;
- const indicatorPath=(key:"rsi"|"macd"|"signal",scale:(v:number)=>number)=>bars.map((b,i)=>{
+ const mY=(v:number)=>panelTop("macd")+10+(mMax-v)/(2*mMax)*57;
+ const atrMax=Math.max(0.001,...bars.map(b=>b.atr).filter(good));
+ const atrY=(v:number)=>panelTop("atr")+72-v/atrMax*57;
+ const prior10=bars.length>=11?bars.slice(-11,-1):[];
+ const rangeHigh=prior10.length===10?Math.max(...prior10.map(b=>b.high)):null;
+ const rangeLow=prior10.length===10?Math.min(...prior10.map(b=>b.low)):null;
+ const indicatorPath=(key:"rsi"|"macd"|"signal"|"atr",scale:(v:number)=>number)=>bars.map((b,i)=>{
    const v=b[key],prior=i?bars[i-1][key]:null;
    return good(v)?(i&&good(prior)?"L":"M")+x(i).toFixed(2)+","+scale(v).toFixed(2):"";
  }).join(" ");
@@ -60,23 +76,35 @@ function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;ca
      return <g key={b.date}><line x1={x(i)} x2={x(i)} y1={y(b.high)} y2={y(b.low)} stroke={color}/>
        <rect x={x(i)-barWidth/2} y={py} width={barWidth} height={Math.max(1,Math.abs(y(b.open)-y(b.close)))} fill={color}/></g>})
     :<path d={drawLine("close")} stroke="#02a65b" fill="none" strokeWidth={2}/>}
-   {studies&&([["sma20","#1673eb"],["sma50","#f49429"],
-     ...(large?[["ema10","#9562c1"],["ema20","#1a9ead"],["ema50","#ad865c"]]:[])] as [("sma20"|"sma50"|"ema10"|"ema20"|"ema50"),string][])
-    .map(([key,color])=><path key={key} d={drawLine(key)} stroke={color} strokeWidth="1.2" fill="none"/>)}
-   {bars.map((b,i)=>{const height=b.volume/maxVol*(volBottom-B-9);return <rect key={"v"+b.date} x={x(i)-barWidth/2}
+   {([["sma20","#1673eb"],["sma50","#f49429"],["ema10","#9562c1"],
+     ["ema20","#1a9ead"],["ema50","#ad865c"]] as [("sma20"|"sma50"|"ema10"|"ema20"|"ema50"),string][])
+     .filter(([key])=>visibleStudies.has(key))
+     .map(([key,color])=><path key={key} d={drawLine(key)} stroke={color} strokeWidth="1.5" fill="none"/>)}
+   {visibleStudies.has("range")&&rangeHigh!==null&&rangeLow!==null&&<>
+     <line x1={L} x2={W-R} y1={y(rangeHigh)} y2={y(rangeHigh)} stroke="#aa4f9c" strokeDasharray="5 3" strokeWidth="1.5"/>
+     <line x1={L} x2={W-R} y1={y(rangeLow)} y2={y(rangeLow)} stroke="#257d76" strokeDasharray="5 3" strokeWidth="1.5"/>
+     <text x={W-R-3} y={Math.max(T+10,y(rangeHigh)-4)} textAnchor="end" fontSize="10" fill="#803770">Prior 10D high {fixed(rangeHigh)}</text>
+     <text x={W-R-3} y={Math.min(B-3,y(rangeLow)+11)} textAnchor="end" fontSize="10" fill="#226d68">Prior 10D low {fixed(rangeLow)}</text>
+    </>}
+   {showVol&&bars.map((b,i)=>{const height=b.volume/maxVol*(volBottom-B-9);return <rect key={"v"+b.date} x={x(i)-barWidth/2}
       y={volBottom-height} width={barWidth} height={height} fill={b.close>=b.open?"#42c68b":"#ef8d88"}/>})}
-   <text x={L+3} y={B+15} fontSize="10" fill="#617586">{"Daily volume "+short(bars.at(-1)?.volume||0)}</text>
-   <>{large&&studies&&<>
+   {showVol&&<text x={L+3} y={B+15} fontSize="10" fill="#617586">{"Daily volume "+short(bars.at(-1)?.volume||0)}</text>}
+   {showRsi&&<g>
       <line x1={L} x2={W-R} y1={rsiY(70)} y2={rsiY(70)} stroke="#ccaba0" strokeDasharray="3 2"/>
       <line x1={L} x2={W-R} y1={rsiY(30)} y2={rsiY(30)} stroke="#a0bdaf" strokeDasharray="3 2"/>
-      <text x={L+4} y={rsiY(70)-5} fontSize="10" fill="#586a78">RSI14: {fixed(bars.at(-1)?.rsi,1)} (70/30)</text>
+      <text x={L+4} y={panelTop("rsi")+9} fontSize="10" fill="#586a78">RSI14: {fixed(bars.at(-1)?.rsi,1)} (70/30)</text>
       <path d={indicatorPath("rsi",rsiY)} fill="none" stroke="#8e54a8" strokeWidth={1.5}/>
+     </g>}
+    {showMacd&&<g>
       <line x1={L} x2={W-R} y1={mY(0)} y2={mY(0)} stroke="#b2becb"/>
-      <text x={L+4} y={mY(mMax)+2} fontSize="10" fill="#586a78">MACD(12,26,9): {fixed(bars.at(-1)?.macd,3)}</text>
+      <text x={L+4} y={panelTop("macd")+9} fontSize="10" fill="#586a78">MACD(12,26,9): {fixed(bars.at(-1)?.macd,3)}</text>
       <path d={indicatorPath("macd",mY)} fill="none" stroke="#1e9d8f" strokeWidth={1.5}/>
       <path d={indicatorPath("signal",mY)} fill="none" stroke="#d08a2f" strokeWidth={1.2}/>
-      <text x={W-R-5} y={mY(mMax)+2} textAnchor="end" fontSize="10" fill="#586a78">ATR14 {fixed(bars.at(-1)?.atr,3)}</text>
-    </>}</>
+     </g>}
+    {showAtr&&<g>
+      <text x={L+4} y={panelTop("atr")+9} fontSize="10" fill="#586a78">ATR14: {fixed(bars.at(-1)?.atr,3)} · no trailing stop implied</text>
+      <path d={indicatorPath("atr",atrY)} fill="none" stroke="#ad6632" strokeWidth={1.6}/>
+     </g>}
    {target&&<line x1={x(hover!)} x2={x(hover!)} y1={T} y2={volBottom} stroke="#7395b4" strokeDasharray="3 2"/>}
    {Array.from({length:Math.min(6,bars.length)},(_,k)=>{const i=Math.round(k*(bars.length-1)/Math.max(1,Math.min(6,bars.length)-1));return <text
        key={k} x={x(i)} y={H-9} textAnchor="middle" fontSize="10" fill="#647483">{bars[i].date.slice(5)}</text>})}
@@ -86,11 +114,15 @@ function StockPlot({bars,large,candle,studies}:{bars:Enhanced[];large:boolean;ca
      onPointerLeave={()=>setHover(null)}/>
   </svg>{target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
 }
-export default function AlpacaStockChart({programId,ticker,compact=false}:{programId:string;ticker:string;compact?:boolean}){
+export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys}:{programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[]}){
  const [range,setRange]=useState<Range>("6M"),[state,setState]=useState<Market|null>(null);
  const [error,setError]=useState(""),[expanded,setExpanded]=useState(!compact);
  const [candle,setCandle]=useState(!compact),[studies,setStudies]=useState(true);
  const [visible,setVisible]=useState(false),surface=useRef<HTMLDivElement>(null);
+ const wtControlled=wtIndicatorKeys!==undefined;
+ const visibleStudies=useMemo<ReadonlySet<ChartSeries>>(()=>new Set<ChartSeries>(
+  wtControlled?chartStudiesForWtChecks(wtIndicatorKeys):studies?DEFAULT_SERIES:[]
+ ),[wtControlled,wtIndicatorKeys,studies]);
  useEffect(()=>{const host=surface.current;if(!host)return;
    if(typeof IntersectionObserver==="undefined"){setVisible(true);return}
    const obs=new IntersectionObserver(x=>{if(x.some(y=>y.isIntersecting)){setVisible(true);obs.disconnect()}},{rootMargin:"200px 0px"});
@@ -112,13 +144,14 @@ export default function AlpacaStockChart({programId,ticker,compact=false}:{progr
    <div className="alpaca-buttons">
     {compact&&<button type="button" onClick={()=>setExpanded(v=>!v)}>{expanded?"HIDE FULL CHART":"FULL CHART"}</button>}
     <button type="button" onClick={()=>setCandle(v=>!v)}>{candle?"LINE":"CANDLES"}</button>
-    <button type="button" onClick={()=>setStudies(v=>!v)}>{studies?"HIDE STUDIES":"SHOW STUDIES"}</button>
+    {!wtControlled&&<button type="button" onClick={()=>setStudies(v=>!v)}>{studies?"HIDE STUDIES":"SHOW STUDIES"}</button>}
    </div></header>
+  {wtControlled&&<div className="alpaca-wt-indicator-status" role="status">WT checkbox chart controls · {visibleStudies.size?([...visibleStudies].map(key=>key in WT_CHART_NAMES?WT_CHART_NAMES[key as WtChartStudy]:key).join(" · ")):"No studies selected — price chart only"} · Research only</div>}
   <div className="alpaca-range">{ranges.map(r=><button key={r} type="button" className={range===r?"active":""}
     aria-pressed={range===r} onClick={()=>setRange(r)}>{r}</button>)}
     <span>{latest?"Last Alpaca session "+latest.date+" | Close $"+fixed(latest.close):"Alpaca source awaiting verification"}</span></div>
   {state?.status==="OK"&&visibleBars.length?
-    <><StockPlot bars={visibleBars} large={expanded} candle={candle} studies={studies}/>
+    <><StockPlot bars={visibleBars} large={expanded} candle={candle} visibleStudies={visibleStudies}/>
      {expanded&&<div className="alpaca-values">{[
       ["SMA20",latest?.sma20],["SMA50",latest?.sma50],["EMA10",latest?.ema10],
       ["EMA20",latest?.ema20],["EMA50",latest?.ema50],["RSI14",latest?.rsi],["MACD",latest?.macd],["ATR14",latest?.atr]
