@@ -13,8 +13,8 @@ WORKFLOW = ".github/workflows/pdufa-overnight-sequential.yml"
 RECOVERY_CRONS = {f"{minute} {hour} * * *" for hour in (7, 8, 9) for minute in (5, 35)}
 # One spaced-out cron expression provides frequent recovery opportunities.
 # GitHub schedule execution is best-effort; the clock gate below ensures
-# pre-10 PM Pacific events cannot start a scan and allows safe late recovery.
-SWEEP_CRON = "3-53/10 5-10 * * *"
+# pre-9 PM Pacific events cannot start a scan and allows safe late recovery.
+SWEEP_CRON = "3-53/10 4-10 * * *"
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 
 
@@ -23,23 +23,23 @@ def decision(event, cron, runs, *, now=None):
     local = now.astimezone(PACIFIC)
     # Scheduled after-midnight recovery belongs to the preceding night.
     # A manual dispatch should reflect the actual requested Pacific date.
-    night = local if (event == "workflow_dispatch" or local.hour >= 22) else local - timedelta(days=1)
-    start = night.replace(hour=22, minute=0, second=0, microsecond=0)
+    night = local if (event == "workflow_dispatch" or local.hour >= 21) else local - timedelta(days=1)
+    start = night.replace(hour=21, minute=0, second=0, microsecond=0)
     weekly_full = start.weekday() == 6  # Sunday night in Los Angeles, including after-midnight recovery
     result = {"run": False, "night_date_pacific": start.date().isoformat(),
               "scan_mode": "FULL" if weekly_full else "DELTA",
               "gem_action": "RESCAN_ALL" if weekly_full else "REVERIFY_PARTIAL",
               "reason": ""}
-    in_window = local.hour >= 22 or local.hour < 3
+    in_window = local.hour >= 21 or local.hour < 3
     primary_hour = start.astimezone(timezone.utc).hour
     primary = {f"{minute} {primary_hour} * * *" for minute in (0, 15, 30)}
     allowed = (event == "workflow_dispatch" or
-               event == "push" and local.hour == 22 or
+               event == "push" and local.hour == 21 or
                event == "schedule" and in_window and
                (cron in primary or (local.hour < 3 and cron in RECOVERY_CRONS) or
                 cron == SWEEP_CRON))
     if not allowed:
-        result["reason"] = "Outside the matching 10 PM–2:59 AM Pacific start/recovery window"
+        result["reason"] = "Outside the matching 9 PM–2:59 AM Pacific start/recovery window"
         return result
     for run in runs:
         if (run.get("path", "").split("@", 1)[0] != WORKFLOW or
