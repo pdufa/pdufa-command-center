@@ -42,6 +42,9 @@ def _view(snapshot):
 def publish(snapshot, since=None):
     """Return either a complete-reset marker or changes against a known version."""
     current = _view(snapshot)
+    # Retain compact fingerprints instead of multiple full copies of all records.
+    fingerprints = {stage: {key: hashlib.sha256(_canonical(row).encode("utf-8")).hexdigest()
+                             for key, row in rows.items()} for stage, rows in current.items()}
     # Fetch timestamps change every source poll even when no candidate changes.
     # Hash actual rows and stable stage membership metadata, not fetchedAt/asOf.
     stable = {
@@ -56,7 +59,7 @@ def publish(snapshot, since=None):
     digest = hashlib.sha256(_canonical(stable).encode("utf-8")).hexdigest()
     with _LOCK:
         previous = _HISTORY.get(since) if since else None
-        _HISTORY[digest] = current
+        _HISTORY[digest] = fingerprints
         _HISTORY.move_to_end(digest)
         while len(_HISTORY) > _MAX_VERSIONS:
             _HISTORY.popitem(last=False)
@@ -68,9 +71,10 @@ def publish(snapshot, since=None):
     changes = {}
     for stage in ("PIPELINE", "GEM_JR", "GEM"):
         before, after = previous[stage], current[stage]
+        after_hashes = fingerprints[stage]
         changes[stage] = {
             "upsert": [row for key, row in after.items()
-                       if key not in before or _canonical(before[key]) != _canonical(row)],
+                       if key not in before or before[key] != after_hashes[key]],
             "remove": [key for key in before if key not in after],
             "count": len(after),
             "order": list(after),
