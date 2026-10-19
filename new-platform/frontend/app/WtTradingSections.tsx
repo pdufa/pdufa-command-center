@@ -20,10 +20,11 @@ const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
 const pct=(v:number)=>numeric(v,2)+"%";
 
 export default function WtTradingSections({
- programId,ticker,record,tech,autoFetch=false,checkedKeys,onCheckedKeysChange
+ programId,ticker,record,tech,autoFetch=false,checkedKeys,onCheckedKeysChange,activeGroup,compact=false
 }:{
  programId:string;ticker:string;record?:Candidate;tech?:Candidate["technical"]|null;autoFetch?:boolean;
  checkedKeys?:readonly string[];onCheckedKeysChange?:(keys:string[])=>void;
+ activeGroup?:GroupId;compact?:boolean;
 }){
  const [expanded,setExpanded]=useState<Record<GroupId,boolean>>(emptyOpen);
  const [localChecked,setLocalChecked]=useState<string[]>([]);
@@ -137,17 +138,19 @@ export default function WtTradingSections({
   return value;
  },[market,entry,record,tech]);
  const selectedCount=checked.length;
- return <section className="wt-trading-sections"
+ const shownGroups=activeGroup?WT_GROUPS.filter(group=>group.id===activeGroup):WT_GROUPS;
+ return <section className={"wt-trading-sections"+(compact?" wt-trading-compact":"")}
    aria-label={programId+" WT Entry Stay Exit research checkboxes"}>
-  <div className="wt-trading-intro">
+  {!compact&&<div className="wt-trading-intro">
    <strong>WT — ENTRY / STAY / EXIT INDICATORS</strong>
    <small>{programId||"NO PROGRAM SELECTED"} · {ticker||"SELECT TICKER FOR DATA"} · {selectedCount} of {WT_CHECK_KEYS.length} selected · all off initially</small>
-  </div>
-  <p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
+  </div>}
+  {!compact&&<p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
-    Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>
-  {programId&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
-  {WT_GROUPS.map(group=><div className="wt-check-group" key={group.id}>
+    Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>}
+  {compact&&<p className="subtle small">Only this trial's chart changes. Expand the indicators to customize this stage; selecting a checkbox does not place an order.</p>}
+  {programId&&!compact&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
+  {shownGroups.map(group=><div className="wt-check-group" key={group.id}>
     <button type="button" className="wt-check-group-title"
       aria-expanded={expanded[group.id]} aria-controls={"wt-"+group.id+"-"+programId}
       onClick={()=>toggle(group.id)}>

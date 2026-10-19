@@ -2731,3 +2731,32 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .standalone-workflow-counts { margin:8px 0 18px; }
 .standalone-workflow-counts .workflow-counts { margin-bottom:4px; }
 .workflow-counts-meta { margin:4px 4px 12px; color:#53705e; font-size:12px; }
+
+/* Per-program WT chart indicator stage directly beside each trial ticker.
+   Indicator options stay full-width above the full-width independent stock chart. */
+.wt-page .wt-ticker-stage {
+  display:flex;align-items:center;flex-wrap:wrap;gap:7px 13px;
+  min-width:0;max-width:100%;
+}
+.wt-page .wt-ticker-stage h3 {margin:0;}
+.wt-page .wt-stage-selector {
+  display:flex;align-items:center;flex-wrap:wrap;gap:6px;
+  font-size:11px;font-weight:750;color:#28563c;
+}
+.wt-page .wt-stage-selector select {
+  min-height:38px;min-width:175px;max-width:100%;width:auto;
+  padding:7px 12px;border:1px solid #719d80;border-radius:7px;
+  background:#fff;color:#173a27;font-size:13px;font-weight:650;
+}
+.wt-page .wt-stage-selection-count {font-size:11px;color:#395d47;}
+.wt-page .wt-trial-indicator-panel {grid-column:1/-1;min-width:0;width:100%;}
+.wt-page .wt-trial-indicator-panel .wt-trading-sections {
+  margin:0;padding:9px 11px;border:1px solid #9fc1a9;background:#f7fbf8;
+}
+.wt-page .wt-trial-indicator-panel .wt-check-group {margin:5px 0;}
+.wt-page .wt-trial-indicator-explanation {font-size:12px;}
+@media (max-width:700px) {
+  .wt-page .wt-ticker-stage {width:100%;}
+  .wt-page .wt-stage-selector {flex:1 1 180px;}
+  .wt-page .wt-stage-selector select {width:100%;min-width:0;}
+}

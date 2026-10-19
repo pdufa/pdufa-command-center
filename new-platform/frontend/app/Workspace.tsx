@@ -6,7 +6,8 @@ import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
 import IndicatorParityTables from "./IndicatorParityTables";
-import WtTopChecklist, {type TrackedWtProgram} from "./WtTopChecklist";
+import WtTradingSections from "./WtTradingSections";
+import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
@@ -66,6 +67,49 @@ type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
 const LEGACY_TAG_KEY = "pdufa_new_watch_trade_v1";
+const WT_TRIAL_INDICATORS_KEY = "pdufa_wt_trial_indicators_v1";
+type WtTrialStage = "entry"|"stay"|"exit";
+type WtTrialIndicatorPreference = {
+  stage: WtTrialStage|"";
+  keys: Record<WtTrialStage,string[]>;
+  configured: WtTrialStage[];
+};
+const WT_STAGE_PRESETS:Record<WtTrialStage,readonly string[]> = {
+  entry:["entry-base","entry-trend","entry-rvol","entry-rsi","entry-atr"],
+  stay:["stay-trend","stay-support","stay-rsi","stay-volume"],
+  exit:["exit-two-close","exit-support","exit-atr-trail","exit-rsi"],
+};
+function isWtStage(value:unknown):value is WtTrialStage {
+  return value==="entry"||value==="stay"||value==="exit";
+}
+function emptyWtPreference():WtTrialIndicatorPreference {
+  return {stage:"",keys:{entry:[],stay:[],exit:[]},configured:[]};
+}
+function normalizeWtPreference(value:unknown):WtTrialIndicatorPreference {
+  if(!value||typeof value!=="object"||Array.isArray(value))return emptyWtPreference();
+  const source=value as Record<string,unknown>;
+  const groups=source.keys&&typeof source.keys==="object"&&!Array.isArray(source.keys)
+    ?source.keys as Record<string,unknown>:{};
+  const allowed=(stage:WtTrialStage)=>new Set(WT_GROUPS.find(group=>group.id===stage)?.items.map(item=>item.key)||[]);
+  const keys={entry:[] as string[],stay:[] as string[],exit:[] as string[]};
+  for(const stage of ["entry","stay","exit"] as const){
+    const raw=groups[stage];
+    keys[stage]=Array.isArray(raw)?[...new Set(raw.filter((key):key is string=>
+      typeof key==="string"&&allowed(stage).has(key)))]:[];
+  }
+  return {stage:isWtStage(source.stage)?source.stage:"",
+    keys,configured:Array.isArray(source.configured)?
+      [...new Set(source.configured.filter(isWtStage))]:[]};
+}
+function readWtPreferences(raw:string|null):Record<string,WtTrialIndicatorPreference> {
+  if(!raw)return {};
+  try {
+    const parsed:unknown=JSON.parse(raw);
+    if(!parsed||typeof parsed!=="object"||Array.isArray(parsed))return {};
+    const entries=Object.entries(parsed).filter(([id])=>/^PDUFA-\\d{6,}$/.test(id)).slice(0,2000);
+    return Object.fromEntries(entries.map(([id,value])=>[id,normalizeWtPreference(value)]));
+  }catch{return {};}
+}
 const BANDS = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS", "NO PDUFA YET", "PAST / RECHECK"];
 
 function dateTodayPT() {
@@ -444,10 +488,44 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [legacyTags, setLegacyTags] = useState<Tags>({watch:[],trade:[]});
   const [storedIdentities,setStoredIdentities] = useState<{programId:string;id:string;ticker:string;drug:string}[]>([]);
   const [wtStatus, setWtStatus] = useState("Loading saved W/T labels…");
-  const [wtChartSelection,setWtChartSelection]=useState<{programId:string;keys:string[]}>({programId:"",keys:[]});
+  const [wtTrialPreferences,setWtTrialPreferences]=useState<Record<string,WtTrialIndicatorPreference>>({});
+  const [wtTrialPreferencesReady,setWtTrialPreferencesReady]=useState(false);
   const wtVersion = useRef(0);
   const wtCurrent = useRef<Tags>({ watch: [], trade: [] });
   const wtQueue = useRef<Promise<void>>(Promise.resolve());
+  // Each permanent Program ID independently remembers ENTRY / STAY / EXIT indicator preferences.
+  // Settings are local to this browser; existing WT tags and GEM qualification remain untouched.
+  useEffect(()=>{
+    try{setWtTrialPreferences(readWtPreferences(window.localStorage.getItem(WT_TRIAL_INDICATORS_KEY)));}
+    catch{setWtTrialPreferences({});}
+    setWtTrialPreferencesReady(true);
+  },[]);
+  useEffect(()=>{
+    if(!wtTrialPreferencesReady)return;
+    try{window.localStorage.setItem(WT_TRIAL_INDICATORS_KEY,JSON.stringify(wtTrialPreferences));}
+    catch{/* In private browsing, settings remain usable until the page closes. */}
+  },[wtTrialPreferences,wtTrialPreferencesReady]);
+  function changeWtTrialStage(programId:string,stage:WtTrialStage|""){
+    setWtTrialPreferences(current=>{
+      const prior=current[programId]||emptyWtPreference();
+      const firstUse=Boolean(stage&&!prior.configured.includes(stage));
+      return {...current,[programId]:{
+        stage,keys:stage&&firstUse?
+          {...prior.keys,[stage]:[...WT_STAGE_PRESETS[stage]]}:prior.keys,
+        configured:stage&&firstUse?[...prior.configured,stage]:prior.configured,
+      }};
+    });
+  }
+  function changeWtTrialIndicators(programId:string,stage:WtTrialStage,keys:string[]){
+    const allowed=new Set(WT_GROUPS.find(group=>group.id===stage)?.items.map(item=>item.key)||[]);
+    setWtTrialPreferences(current=>{
+      const prior=current[programId]||emptyWtPreference();
+      return {...current,[programId]:{
+        ...prior,keys:{...prior.keys,[stage]:[...new Set(keys.filter(key=>allowed.has(key)))]},
+        configured:prior.configured.includes(stage)?prior.configured:[...prior.configured,stage],
+      }};
+    });
+  }
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -611,12 +689,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     });
     return m;
   }, [snapshot, pipeline]);
-
-  const trackedWtPrograms:TrackedWtProgram[]=[...new Set([...tags.watch,...tags.trade])].map(programId=>{
-    const record=byProgram.get(programId);
-    const saved=storedIdentities.find(x=>x.programId===programId);
-    return {programId,ticker:record?.ticker||saved?.ticker||"",drug:record?.drug||saved?.drug||"",record};
-  }).filter(x=>/^[A-Z][A-Z0-9.-]{0,12}$/.test(x.ticker));
 
   function toggleFilter(current: string[], item: string, setter: (value: string[])=>void) {
     setter(current.includes(item) ? current.filter(v => v !== item) : [...current, item]);
@@ -1085,7 +1157,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="sectionhead wt-page-header"><h2>WT — Permanent Program ID Watchlist &amp; Trading Research</h2><span className="counter">{tagsReady ? pageTotals.WT.toLocaleString("en-US") : "—"} total W/T programs</span></div>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
-      <WtTopChecklist programs={trackedWtPrograms} onChartControlsChange={(programId,keys)=>setWtChartSelection({programId,keys})}/>
+      <p className="subtle wt-trial-indicator-explanation">Choose ENTRY, STAY, or EXIT beside each trial ticker. Each choice loads that stage's chart indicators; expand the trial's indicator list to customize them. Your choices are independent by permanent Program ID and are saved in this browser.</p>
       <div className="wt-screenwide-stages">
       {(["watch","trade"] as const).map(kind=><section className="panel wt-screenwide-stage" key={kind}>
         <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
@@ -1095,10 +1167,32 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           const selectedRecord=byProgram.get(programId);
           const saved=storedIdentities.find(x=>x.programId===programId);
           const ticker=selectedRecord?.ticker||saved?.ticker||"";
+          const preference=wtTrialPreferences[programId]||emptyWtPreference();
+          const selectedStage=preference.stage;
+          const chartIndicatorKeys=selectedStage?preference.keys[selectedStage]:[];
           return <article className="wt-screenwide-stock" key={programId}>
             <div className="wt-identity wt-screenwide-identity">
               <strong className="permanent-id">{programId}</strong>
-              <h3>{ticker||"SOURCE NOT CURRENT"}</h3>
+              <div className="wt-ticker-stage">
+                <h3>{ticker||"SOURCE NOT CURRENT"}</h3>
+                {ticker&&<label className="wt-stage-selector">
+                  <span>CHART INDICATORS</span>
+                  <select aria-label={"Chart indicator stage for "+ticker+" "+programId}
+                    disabled={!wtTrialPreferencesReady} value={selectedStage}
+                    onChange={event=>{
+                      const value=event.target.value;
+                      changeWtTrialStage(programId,isWtStage(value)?value:"");
+                    }}>
+                    <option value="">NONE — price only</option>
+                    <option value="entry">ENTRY — Buy setup</option>
+                    <option value="stay">STAY — Hold monitoring</option>
+                    <option value="exit">EXIT — Risk protection</option>
+                  </select>
+                </label>}
+                {selectedStage&&<small className="wt-stage-selection-count">
+                  {chartIndicatorKeys.length} selected · {selectedStage.toUpperCase()}
+                </small>}
+              </div>
               <p className="subtle">{stated(selectedRecord?.drug||saved?.drug)} · {stated(selectedRecord?.id||saved?.id,"historical exact program")}</p>
               {!selectedRecord && <p className="subtle">Program remains stored in Neon even when no longer in the latest published source. Historical identity has not been removed.</p>}
               <button type="button" onClick={()=>mark(programId,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE PROGRAM TO TRADING RESEARCH":"RETURN PROGRAM TO WATCHLIST"}</button>
@@ -1106,12 +1200,20 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
             </div>
+            {ticker&&selectedStage&&<div className="wt-trial-indicator-panel">
+              <WtTradingSections key={programId+"|"+selectedStage}
+                programId={programId} ticker={ticker}
+                record={selectedRecord} tech={selectedRecord?.technical}
+                activeGroup={selectedStage} compact
+                checkedKeys={chartIndicatorKeys}
+                onCheckedKeysChange={keys=>changeWtTrialIndicators(programId,selectedStage,keys)}/>
+            </div>}
             {ticker ? <>
               <div className="wt-screenwide-entry">
                 <EntrySignal ticker={ticker} programId={programId}/>
               </div>
               <div className="wt-screenwide-chart" id={"wt-chart-"+programId}>
-                <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={wtChartSelection.programId===programId?wtChartSelection.keys:[]} />
+                <AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys={chartIndicatorKeys} />
               </div>
               <div className="wt-screenwide-data">
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
