@@ -14,12 +14,24 @@ type EntryReply={
  entryTrigger?:number;maximumEntry?:number;initialStop?:number;green?:boolean;
 };
 const emptyOpen:Record<GroupId,boolean>={entry:false,stay:false,exit:false};
-const suggestedWtIndicators:Record<GroupId,readonly string[]>={
+export const suggestedWtIndicators:Record<GroupId,readonly string[]>={
  entry:["entry-base","entry-trend","entry-rvol","entry-rsi","entry-atr"],
  stay:["stay-trend","stay-support","stay-rsi","stay-volume"],
  exit:["exit-two-close","exit-support","exit-atr-trail","exit-rsi"],
 };
-/** WT-only FS (suggested) and FA (all) checkboxes; never touches GEM qualification. */
+export type WtPresetFlags={fs:boolean;fa:boolean};
+export function nextWtPresetFlags(flags:WtPresetFlags,mode:"FS"|"FA"):WtPresetFlags{
+ return mode==="FS"?{...flags,fs:!flags.fs}:{...flags,fa:!flags.fa};
+}
+/** Preserve independent FS and FA states; combine their selections for display only. */
+export function wtEffectivePresetKeys(manual:readonly string[],group:GroupId,flags:WtPresetFlags):string[]{
+ const available=WT_GROUPS.find(item=>item.id===group)?.items.map(item=>item.key)||[];
+ const selected=new Set(manual.filter(key=>available.includes(key)));
+ if(flags.fs)for(const key of suggestedWtIndicators[group])selected.add(key);
+ if(flags.fa)for(const key of available)selected.add(key);
+ return available.filter(key=>selected.has(key));
+}
+/** Backward-compatible fallback for checklists without per-trial preset state. */
 export function nextWtPresetSelection(
  selected:readonly string[],group:GroupId,mode:"FS"|"FA"
 ):string[]{
@@ -41,11 +53,13 @@ const good=(v:unknown):v is number=>typeof v==="number"&&Number.isFinite(v);
 const pct=(v:number)=>numeric(v,2)+"%";
 
 export default function WtTradingSections({
- programId,ticker,record,tech,autoFetch=false,checkedKeys,onCheckedKeysChange,activeGroup,compact=false
+ programId,ticker,record,tech,autoFetch=false,checkedKeys,onCheckedKeysChange,activeGroup,compact=false,
+ presetFlags,onPresetToggle
 }:{
  programId:string;ticker:string;record?:Candidate;tech?:Candidate["technical"]|null;autoFetch?:boolean;
  checkedKeys?:readonly string[];onCheckedKeysChange?:(keys:string[])=>void;
  activeGroup?:GroupId;compact?:boolean;
+ presetFlags?:WtPresetFlags;onPresetToggle?:(mode:"FS"|"FA")=>void;
 }){
  const [expanded,setExpanded]=useState<Record<GroupId,boolean>>(emptyOpen);
  const [localChecked,setLocalChecked]=useState<string[]>([]);
@@ -169,7 +183,7 @@ export default function WtTradingSections({
   {!compact&&<p className="subtle small">Select checkboxes to display supported indicators on this program's chart. Other checks remain data-only. Checking a box
     does not change GEM qualification, scan criteria, WT status or place orders.
     Alpaca daily prices load when a section is opened. Missing data is not estimated.</p>}
-  {compact&&<p className="subtle small">Choose indicators for this trial only. FS toggles suggested options; FA toggles all available options in this stage. Individual checkboxes remain editable. Checked chart-compatible options appear on its Alpaca chart; research-only checks do not create overlays or submit orders.</p>}
+  {compact&&<p className="subtle small">FS toggles suggested indicators; FA toggles all available indicators. The two buttons operate independently even when they select overlapping checks. Individual checkbox edits override the presets. Chart studies are for research only; no orders are placed.</p>}
   {programId&&!compact&&<p className="subtle small"><a href={"#wt-chart-"+programId}>View linked chart for {ticker||programId} ↓</a> · Only this exact program chart follows these checkboxes.</p>}
   {shownGroups.map(group=><div className="wt-check-group" key={group.id}>
     {compact?<div className="wt-check-group-title wt-checklist-visible-heading">
@@ -181,13 +195,13 @@ export default function WtTradingSections({
        <button type="button" className="wt-checklist-preset-button"
         aria-label={"FS — toggle suggested "+group.id.toUpperCase()+" indicators for "+ticker}
         title="FS — suggested indicators; click again to uncheck them"
-        aria-pressed={suggestedWtIndicators[group.id].every(key=>checked.includes(key))}
-        onClick={()=>updateChecked(nextWtPresetSelection(checked,group.id,"FS"))}>FS</button>
+        aria-pressed={presetFlags?.fs??suggestedWtIndicators[group.id].every(key=>checked.includes(key))}
+        onClick={()=>onPresetToggle?onPresetToggle("FS"):updateChecked(nextWtPresetSelection(checked,group.id,"FS"))}>FS</button>
        <button type="button" className="wt-checklist-preset-button"
         aria-label={"FA — toggle all available "+group.id.toUpperCase()+" indicators for "+ticker}
         title="FA — all available indicators; click again to uncheck them"
-        aria-pressed={group.items.every(item=>checked.includes(item.key))}
-        onClick={()=>updateChecked(nextWtPresetSelection(checked,group.id,"FA"))}>FA</button>
+        aria-pressed={presetFlags?.fa??group.items.every(item=>checked.includes(item.key))}
+        onClick={()=>onPresetToggle?onPresetToggle("FA"):updateChecked(nextWtPresetSelection(checked,group.id,"FA"))}>FA</button>
       </div>
     </div>:<button type="button" className="wt-check-group-title"
       aria-expanded={expanded[group.id]} aria-controls={"wt-"+group.id+"-"+programId}

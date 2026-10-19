@@ -6,7 +6,7 @@ import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
 import IndicatorParityTables from "./IndicatorParityTables";
-import WtTradingSections from "./WtTradingSections";
+import WtTradingSections, {nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
@@ -72,29 +72,56 @@ type WtTrialStage = "entry"|"stay"|"exit";
 type WtTrialIndicatorPreference = {
   stage: WtTrialStage|"";
   keys: Record<WtTrialStage,string[]>;
+  /** Manually chosen options, before FS/FA overlays are applied. */
+  manualKeys: Record<WtTrialStage,string[]>;
+  /** Separate button states for each stage, never inferred from checked options. */
+  presets: Record<WtTrialStage,WtPresetFlags>;
   configured: WtTrialStage[];
 };
 function isWtStage(value:unknown):value is WtTrialStage {
   return value==="entry"||value==="stay"||value==="exit";
 }
 function emptyWtPreference():WtTrialIndicatorPreference {
-  return {stage:"",keys:{entry:[],stay:[],exit:[]},configured:[]};
+  return {
+    stage:"",keys:{entry:[],stay:[],exit:[]},
+    manualKeys:{entry:[],stay:[],exit:[]},
+    presets:{entry:{fs:false,fa:false},stay:{fs:false,fa:false},exit:{fs:false,fa:false}},
+    configured:[]
+  };
 }
 function normalizeWtPreference(value:unknown):WtTrialIndicatorPreference {
   if(!value||typeof value!=="object"||Array.isArray(value))return emptyWtPreference();
   const source=value as Record<string,unknown>;
-  const groups=source.keys&&typeof source.keys==="object"&&!Array.isArray(source.keys)
+  const storedKeys=source.keys&&typeof source.keys==="object"&&!Array.isArray(source.keys)
     ?source.keys as Record<string,unknown>:{};
-  const allowed=(stage:WtTrialStage)=>new Set(WT_GROUPS.find(group=>group.id===stage)?.items.map(item=>item.key)||[]);
+  const sourceManual=source.manualKeys&&typeof source.manualKeys==="object"&&!Array.isArray(source.manualKeys)
+    ?source.manualKeys as Record<string,unknown>:null;
+  const sourcePresets=source.presets&&typeof source.presets==="object"&&!Array.isArray(source.presets)
+    ?source.presets as Record<string,unknown>:{};
+  const manualKeys={entry:[] as string[],stay:[] as string[],exit:[] as string[]};
+  const presets={
+    entry:{fs:false,fa:false},stay:{fs:false,fa:false},exit:{fs:false,fa:false}
+  };
   const keys={entry:[] as string[],stay:[] as string[],exit:[] as string[]};
   for(const stage of ["entry","stay","exit"] as const){
-    const raw=groups[stage];
-    keys[stage]=Array.isArray(raw)?[...new Set(raw.filter((key):key is string=>
-      typeof key==="string"&&allowed(stage).has(key)))]:[];
+    const allowed=new Set(WT_GROUPS.find(group=>group.id===stage)?.items.map(item=>item.key)||[]);
+    // Old saved choices had no preset flags: treat those checkmarks as manual.
+    const raw=sourceManual?sourceManual[stage]:storedKeys[stage];
+    manualKeys[stage]=Array.isArray(raw)?[...new Set(raw.filter((key):key is string=>
+      typeof key==="string"&&allowed.has(key)))]:[];
+    const rawFlags=sourceManual?sourcePresets[stage]:null;
+    if(rawFlags&&typeof rawFlags==="object"&&!Array.isArray(rawFlags)){
+      const flags=rawFlags as Record<string,unknown>;
+      presets[stage]={fs:flags.fs===true,fa:flags.fa===true};
+    }
+    keys[stage]=wtEffectivePresetKeys(manualKeys[stage],stage,presets[stage]);
   }
-  return {stage:isWtStage(source.stage)?source.stage:"",
-    keys,configured:Array.isArray(source.configured)?
-      [...new Set(source.configured.filter(isWtStage))]:[]};
+  return {
+    stage:isWtStage(source.stage)?source.stage:"",
+    keys,manualKeys,presets,
+    configured:Array.isArray(source.configured)?
+      [...new Set(source.configured.filter(isWtStage))]:[]
+  };
 }
 function readWtPreferences(raw:string|null):Record<string,WtTrialIndicatorPreference> {
   if(!raw)return {};
@@ -105,6 +132,7 @@ function readWtPreferences(raw:string|null):Record<string,WtTrialIndicatorPrefer
     return Object.fromEntries(entries.map(([id,value])=>[id,normalizeWtPreference(value)]));
   }catch{return {};}
 }
+
 const BANDS = ["0–30 DAYS", "31–60 DAYS", "61–90 DAYS", "+90 DAYS", "NO PDUFA YET", "PAST / RECHECK"];
 
 function dateTodayPT() {
@@ -510,10 +538,28 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   }
   function changeWtTrialIndicators(programId:string,stage:WtTrialStage,keys:string[]){
     const allowed=new Set(WT_GROUPS.find(group=>group.id===stage)?.items.map(item=>item.key)||[]);
+    const manual=[...new Set(keys.filter(key=>allowed.has(key)))];
     setWtTrialPreferences(current=>{
       const prior=current[programId]||emptyWtPreference();
+      // Manual edits take precedence. Clear both preset flags for this stage
+      // while leaving all other stages and programs untouched.
       return {...current,[programId]:{
-        ...prior,keys:{...prior.keys,[stage]:[...new Set(keys.filter(key=>allowed.has(key)))]},
+        ...prior,
+        keys:{...prior.keys,[stage]:manual},
+        manualKeys:{...prior.manualKeys,[stage]:manual},
+        presets:{...prior.presets,[stage]:{fs:false,fa:false}},
+        configured:prior.configured.includes(stage)?prior.configured:[...prior.configured,stage],
+      }};
+    });
+  }
+  function toggleWtTrialPreset(programId:string,stage:WtTrialStage,mode:"FS"|"FA"){
+    setWtTrialPreferences(current=>{
+      const prior=current[programId]||emptyWtPreference();
+      const flags=nextWtPresetFlags(prior.presets[stage],mode);
+      return {...current,[programId]:{
+        ...prior,
+        presets:{...prior.presets,[stage]:flags},
+        keys:{...prior.keys,[stage]:wtEffectivePresetKeys(prior.manualKeys[stage],stage,flags)},
         configured:prior.configured.includes(stage)?prior.configured:[...prior.configured,stage],
       }};
     });
@@ -1198,6 +1244,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 record={selectedRecord} tech={selectedRecord?.technical}
                 activeGroup={selectedStage} compact
                 checkedKeys={chartIndicatorKeys}
+                presetFlags={preference.presets[selectedStage]}
+                onPresetToggle={mode=>toggleWtTrialPreset(programId,selectedStage,mode)}
                 onCheckedKeysChange={keys=>changeWtTrialIndicators(programId,selectedStage,keys)}/>
             </div>}
             {ticker ? <>

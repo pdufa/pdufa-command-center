@@ -217,3 +217,48 @@ test("FS and FA are one adjacent nonwrapping button pair in WT checklist heading
  assert.match(css,/\.wt-checklist-preset-button:first-child \{\s*border-right:0;/);
  assert.match(css,/@media\(max-width:700px\) \{\s*\.wt-page \.wt-trial-indicator-panel \.wt-checklist-preset-buttons \{\s*flex-wrap:nowrap;/);
 });
+
+test("FS and FA preset states operate independently even when checklist options overlap",()=>{
+ const {nextWtPresetFlags,wtEffectivePresetKeys}=require("../app/WtTradingSections.tsx");
+ for(const [stage,count] of [["entry",10],["stay",7],["exit",9]]){
+  const off={fs:false,fa:false};
+  const fs=nextWtPresetFlags(off,"FS");
+  assert.deepEqual(fs,{fs:true,fa:false},"FS must not trigger FA");
+  const fa=nextWtPresetFlags(off,"FA");
+  assert.deepEqual(fa,{fs:false,fa:true},"FA must not trigger FS");
+  assert.equal(wtEffectivePresetKeys([],stage,fa).length,count);
+  const both=nextWtPresetFlags(fs,"FA");
+  assert.deepEqual(both,{fs:true,fa:true});
+  assert.equal(wtEffectivePresetKeys([],stage,both).length,count);
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FA")),
+    wtEffectivePresetKeys([],stage,fs),"Turning off FA leaves FS choices");
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FS")),
+    wtEffectivePresetKeys([],stage,fa),"Turning off FS leaves FA choices");
+  assert.equal(wtEffectivePresetKeys([],stage,nextWtPresetFlags(fa,"FA")).length,0);
+  for(const [flags,expectedFs,expectedFa] of [
+   [fa,"false","true"],[fs,"true","false"],[both,"true","true"]
+  ]){
+   const html=renderToStaticMarkup(React.createElement(WtSections,{
+    programId:"PDUFA-000009",ticker:"TEST",activeGroup:stage,compact:true,
+    checkedKeys:wtEffectivePresetKeys([],stage,flags),presetFlags:flags,
+    onPresetToggle:()=>{}
+   }));
+   const buttons=html.match(/<div class="wt-checklist-preset-buttons"[^>]*>(.*?)<\/div>/s);
+   assert.ok(buttons,"Joined FS / FA control must exist");
+   const rendered=buttons[1].match(/<button[^>]*aria-pressed="(true|false)"[^>]*>(FS|FA)<\/button>/g);
+   assert.equal(rendered.length,2,"Both buttons remain independently clickable");
+   assert.match(rendered[0],new RegExp('aria-pressed="'+expectedFs+'"'));
+   assert.match(rendered[1],new RegExp('aria-pressed="'+expectedFa+'"'));
+  }
+ }
+});
+
+test("WT saves explicit per-stage preset flags rather than deriving both buttons from selected checkboxes",()=>{
+ const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ assert.match(source,/presetFlags=\{preference\.presets\[selectedStage\]\}/);
+ assert.match(source,/onPresetToggle=\{mode=>toggleWtTrialPreset\(programId,selectedStage,mode\)\}/);
+ assert.match(source,/const flags=nextWtPresetFlags\(prior\.presets\[stage\],mode\)/);
+ assert.match(source,/keys:\{\.\.\.prior\.keys,\[stage\]:wtEffectivePresetKeys\(prior\.manualKeys\[stage\],stage,flags\)\}/);
+ assert.match(source,/presets:\{\.\.\.prior\.presets,\[stage\]:\{fs:false,fa:false\}\}/);
+ assert.match(source,/manualKeys/);
+});
