@@ -545,6 +545,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [cachedAsOf, setCachedAsOf] = useState<string | null>(null);
+  const cachedAsOfRef = useRef<string | null>(null);
+  const freshSnapshotReceived = useRef(false);
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   // Deep links from standalone trial sheets reopen the matching workspace tab.
@@ -677,7 +679,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     // Restore local data immediately while a fresh authoritative copy loads.
     if (fetchVersion === 0) {
       void readWorkspaceCache().then(cached => {
-        if (!ctrl.signal.aborted && cached) {
+        if (!ctrl.signal.aborted && cached && !freshSnapshotReceived.current) {
+          cachedAsOfRef.current = cached.asOf;
           setSnapshot(current => current ?? cached);
           setCachedAsOf(cached.asOf);
         }
@@ -701,6 +704,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         const data = await response.json() as Snapshot;
         if (ctrl.signal.aborted) return;
         if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed structure validation");
+        freshSnapshotReceived.current = true;
+        cachedAsOfRef.current = null;
         setSnapshot(data);
         setCachedAsOf(null);
         void writeWorkspaceCache(data).catch(() => { /* Keep fresh in-memory data if storage is unavailable. */ });
@@ -709,7 +714,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         if (ctrl.signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
         setFetchError(
-          (cachedAsOf ? "Showing locally cached snapshot (as of " + cachedAsOf + "); NOT VERIFIED CURRENT. " : "") +
+          (cachedAsOfRef.current ? "Showing locally cached snapshot (as of " + cachedAsOfRef.current + "); NOT VERIFIED CURRENT. " : "") +
           (message.includes("timeout") || message.includes("Timeout")
             ? "Candidate loading timed out after 95 seconds. Automatic retries are disabled; tap RETRY LOADING CANDIDATES to try once more."
             : "Candidate loading failed: " + message + " Automatic retries are disabled.")
