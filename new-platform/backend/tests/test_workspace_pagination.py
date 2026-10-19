@@ -27,6 +27,12 @@ def test_page_bounds_and_version(monkeypatch):
             assert last.status_code == 200
             assert [r["id"] for r in last.json()["rows"]] == ["PDUFA-000003"]
             assert last.json()["nextOffset"] is None
+            match = client.get("/api/workspace/page?query=PDUFA-000002", headers=headers)
+            assert match.status_code == 200
+            assert match.json()["total"] == 1
+            assert [row["id"] for row in match.json()["rows"]] == ["PDUFA-000002"]
+            assert client.get("/api/workspace/page?query=" + "x" * 101,
+                              headers=headers).status_code == 422
             assert client.get("/api/workspace/page?limit=101", headers=headers).status_code == 422
             assert client.get("/api/workspace/page?offset=-1", headers=headers).status_code == 422
             assert client.get("/api/workspace/page?version=" + "b" * 64, headers=headers).status_code == 409
