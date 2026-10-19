@@ -185,8 +185,8 @@ test("WT shows only FS and preserves individual stage checkboxes",()=>{
   const html=renderToStaticMarkup(React.createElement(WtSections,{
    programId:"PDUFA-000005",ticker:"TEST",activeGroup:stage,compact:true,checkedKeys:[]
   }));
-  assert.match(html,/>FS<\\/button>/);
-  assert.doesNotMatch(html,/>FA<\\/button>/);
+  assert.match(html,/>FS<\/button>/);
+  assert.doesNotMatch(html,/>FA<\/button>/);
   assert.equal((html.match(/type="checkbox"/g)||[]).length,count);
   const suggested=nextWtPresetSelection([],stage,"FS");
   assert.ok(suggested.length>0&&suggested.length<count);
