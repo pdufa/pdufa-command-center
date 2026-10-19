@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { gzipSync } from "node:zlib";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
 
 export const runtime = "nodejs";
@@ -27,18 +26,7 @@ export async function GET(req: NextRequest) {
         data.pipeline.length !== data.sourceHealth.streamlitPipelineParity.exactPrograms) {
       throw new Error("Streamlit Pipeline parity not verified by backend");
     }
-    // The full Streamlit-equivalent 9k+ trial universe is too large for
-    // Vercel's uncompressed Serverless Function response limit. Send
-    // authenticated gzip bytes; browser fetch().json() decompresses them.
-    const output = gzipSync(Buffer.from(JSON.stringify(data)), { level: 6 });
-    return new NextResponse(new Uint8Array(output), {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Content-Encoding": "gzip",
-        "Cache-Control": "private, no-store",
-        "Vary": "Accept-Encoding",
-      }
-    });
+    return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     // Do not silently substitute an obsolete tiny bundle. Old source
     // snapshots made the Pipeline total look wrong even after a backend fix.
