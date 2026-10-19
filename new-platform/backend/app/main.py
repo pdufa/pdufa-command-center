@@ -639,6 +639,39 @@ def read_workspace_summary():
         raise HTTPException(status_code=503, detail="Verified workspace summary unavailable") from None
 
 
+@app.get("/api/workspace/page", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace_page(offset: int = 0, limit: int = 50, version: str = ""):
+    """Bounded, version-checked pipeline page; counts always describe the full snapshot.
+
+    A version mismatch returns 409 so clients cannot silently combine pages
+    from different source snapshots. This endpoint does not replace the full
+    workspace API or modify any existing frontend behavior.
+    """
+    if offset < 0 or limit < 1 or limit > 100:
+        raise HTTPException(status_code=422, detail="Invalid page bounds")
+    from .source_workspace import workspace
+    from .program_registry import number_workspace
+    from .workspace_delta import publish
+    try:
+        snapshot = number_workspace(workspace())
+        current_version = publish(snapshot)["version"]
+    except Exception:
+        raise HTTPException(status_code=503, detail="Verified workspace page unavailable") from None
+    if version and version != current_version:
+        raise HTTPException(status_code=409, detail="Workspace version changed; restart pagination")
+    rows = snapshot.get("pipeline") or []
+    total = len(rows)
+    return {
+        "version": current_version,
+        "asOf": snapshot.get("asOf"),
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "rows": rows[offset:offset + limit],
+        "nextOffset": offset + limit if offset + limit < total else None,
+    }
+
+
 @app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace():
     from .source_workspace import workspace
