@@ -22,7 +22,7 @@ def _canonical(value):
 def _index(rows):
     indexed = {}
     for row in rows:
-        key = row.get("programId") or row.get("id")
+        key = row.get("id") or row.get("programId")
         if not isinstance(key, str) or not key or key in indexed:
             raise ValueError("Workspace contains missing or duplicate record identity")
         indexed[key] = row
