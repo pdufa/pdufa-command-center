@@ -613,6 +613,32 @@ def trial_market_data(stage: str, ticker: str, feed: str = "sip"):
     return {"stage":stage, **for_ticker(ticker,feed)}
 
 
+@app.get("/api/workspace/summary", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace_summary():
+    """Return verified counts without transferring the full trial inventory."""
+    from .source_workspace import workspace
+    from .program_registry import number_workspace
+    try:
+        published = number_workspace(workspace())
+        health = published.get("sourceHealth") or {}
+        parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
+        total = len(published.get("pipeline") or [])
+        if not parity or parity.get("exactPrograms") != total:
+            raise ValueError("Pipeline source parity mismatch")
+        members = published.get("members") or {}
+        return {
+            "pipeline": total,
+            "gemJr": len((members.get("GEM_JR") or {}).get("rows") or []),
+            "gem": len((members.get("GEM") or {}).get("rows") or []),
+            "sourceState": health.get("state", "UNKNOWN"),
+            "asOf": published.get("asOf"),
+        }
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("PDUFA_SUMMARY_FAILED")
+        raise HTTPException(status_code=503, detail="Verified workspace summary unavailable") from None
+
+
 @app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace():
     from .source_workspace import workspace
