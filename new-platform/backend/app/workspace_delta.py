@@ -46,6 +46,7 @@ def publish(snapshot, since=None):
     # Hash actual rows and stable stage membership metadata, not fetchedAt/asOf.
     stable = {
         "stages": current,
+        "order": {stage: list(rows) for stage, rows in current.items()},
         "membership": {
             stage: {k: v for k, v in snapshot["members"][stage].items()
                     if k not in ("rows", "asOf")}
