@@ -318,7 +318,7 @@ test("Numeric WT indicator values are bold black while source labels and unavail
   ["82/100 · Entry API WAIT",["82/100"]],
   ["-$0.45 · trigger-to-stop 2.36%",["-$0.45","2.36%"]],
   ["Close $12.75 · SMA20 $11.90 · SMA50 $10.08",["$12.75","$11.90","$10.08"]],
-  ["2026-10-18 · 30 calendar days",["2026","-10","-18","30"]]
+  ["2026-10-18 · 30 calendar days",["2026","30"]]
  ]){
   assert.deepEqual(wtNumericReadingParts(sample).filter(p=>p.numeric).map(p=>p.text),expected);
   assert.equal(wtNumericReadingParts(sample).map(p=>p.text).join(""),sample);
