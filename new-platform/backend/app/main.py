@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import re
 import secrets
+import threading
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -640,6 +641,30 @@ def read_workspace_summary():
         raise HTTPException(status_code=503, detail="Verified workspace summary unavailable") from None
 
 
+# Cache only the verified, numbered representation of the SAME published-source
+# object. source_workspace.workspace() owns freshness and replaces the object on
+# refresh; keeping its reference prevents accidental id reuse.
+_PAGE_CACHE_LOCK = threading.Lock()
+_PAGE_CACHE: dict = {"source": None, "snapshot": None, "version": None}
+
+
+def _verified_page_snapshot(source: dict):
+    from .program_registry import number_workspace
+    from .workspace_delta import publish
+    with _PAGE_CACHE_LOCK:
+        if _PAGE_CACHE["source"] is source and _PAGE_CACHE["snapshot"] is not None:
+            return _PAGE_CACHE["snapshot"], _PAGE_CACHE["version"]
+        snapshot = number_workspace(source)
+        rows = snapshot.get("pipeline") or []
+        health = snapshot.get("sourceHealth") or {}
+        parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
+        if not parity or parity.get("exactPrograms") != len(rows):
+            raise ValueError("Pipeline source parity mismatch")
+        current_version = publish(snapshot)["version"]
+        _PAGE_CACHE.update(source=source, snapshot=snapshot, version=current_version)
+        return snapshot, current_version
+
+
 @app.get("/api/workspace/page", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace_page(response: Response, offset: int = 0, limit: int = 50, version: str = "", query: str = ""):
     """Bounded, version-checked pipeline page; counts always describe the full snapshot.
@@ -653,18 +678,11 @@ def read_workspace_page(response: Response, offset: int = 0, limit: int = 50, ve
     if len(query) > 100:
         raise HTTPException(status_code=422, detail="Search query too long")
     from .source_workspace import workspace
-    from .program_registry import number_workspace
-    from .workspace_delta import publish
     started = time.perf_counter()
     try:
-        snapshot = number_workspace(workspace())
+        snapshot, current_version = _verified_page_snapshot(workspace())
         rows = snapshot.get("pipeline") or []
         total = len(rows)
-        health = snapshot.get("sourceHealth") or {}
-        parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
-        if not parity or parity.get("exactPrograms") != total:
-            raise ValueError("Pipeline source parity mismatch")
-        current_version = publish(snapshot)["version"]
     except Exception:
         raise HTTPException(status_code=503, detail="Verified workspace page unavailable") from None
     if version and version != current_version:
