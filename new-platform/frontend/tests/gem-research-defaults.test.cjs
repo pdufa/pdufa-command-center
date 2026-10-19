@@ -92,8 +92,8 @@ test("Current top workflow totals appear below navigation in Pipeline, GEM JR, G
  const ids=['id:"PIPELINE" as Nav','id:"GEM_JR" as Nav','id:"GEM" as Nav','id:"WT" as Nav'];
  let previous=-1;
  for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
- assert.match(totals,/publishedCounts/);
- assert.match(totals,/count:snapshot \? pageTotals\.GEM : publishedCounts\?\.gem \?\? null/);
+ assert.match(totals,/publishedCounts/);\n assert.match(totals,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : null/);
+ assert.match(totals,/count:snapshot \? verifiedStageCount\("GEM"\) : null/);
  assert.match(totals,/count:tagsReady \? pageTotals\.WT : null/);
  assert.match(totals,/count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
  assert.match(totals,/item\.count===null\?"—":item\.count\.toLocaleString\("en-US"\)/);
