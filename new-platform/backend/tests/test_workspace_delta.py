@@ -59,3 +59,12 @@ def test_stale_source_is_rejected():
         pass
     else:
         raise AssertionError("Stale source must not be published as a new version")
+
+
+def test_fetch_timestamp_does_not_create_false_delta():
+    initial = snapshot([{"programId": "PDUFA-000101", "ticker": "AAA"}])
+    version = publish(initial)["version"]
+    refreshed = snapshot([{"programId": "PDUFA-000101", "ticker": "AAA"}],
+                         as_of="2026-10-19T10:05:00Z")
+    refreshed["fetchedAt"] = "2026-10-19T17:05:00Z"
+    assert publish(refreshed, since=version)["unchanged"] is True
