@@ -192,9 +192,12 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    }
    return checks;
  },[selected,stage,optionalGoals,twoTrialIds]);
+ // GEM JR publishes its preview back to Workspace. Its own output must not
+ // invalidate this calculation through the downstream GEM input's review set.
+ const inheritedReviewIds=useGemJrSource?gemJrNeedsReview:undefined;
  const livePreview=useMemo(()=>buildGemJrLivePreview(
-  sourceRows,chosen,asOf,pipeline.length,useGemJrSource?gemJrNeedsReview:undefined
- ),[sourceRows,chosen,asOf,pipeline.length,useGemJrSource,gemJrNeedsReview]);
+  sourceRows,chosen,asOf,pipeline.length,inheritedReviewIds
+ ),[sourceRows,chosen,asOf,pipeline.length,inheritedReviewIds]);
  useEffect(()=>{
   if(stage==="GEM_JR")onGemJrLivePreviewChange?.(livePreview);
   else onGemLivePreviewChange?.(livePreview);
