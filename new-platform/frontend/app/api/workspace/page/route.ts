@@ -18,13 +18,16 @@ export async function GET(req: NextRequest) {
   const offsetText = req.nextUrl.searchParams.get("offset") ?? "0";
   const limitText = req.nextUrl.searchParams.get("limit") ?? "50";
   const version = req.nextUrl.searchParams.get("version") ?? "";
+  const queryText = req.nextUrl.searchParams.get("query") ?? "";
   if (!/^(0|[1-9]\d{0,8})$/.test(offsetText) ||
       !/^(?:[1-9]|[1-9]\d|100)$/.test(limitText) ||
-      (version !== "" && !/^[a-f0-9]{64}$/.test(version))) {
+      (version !== "" && !/^[a-f0-9]{64}$/.test(version)) ||
+      queryText.length > 100) {
     return NextResponse.json({ error: "Invalid pagination parameters" }, { status: 400 });
   }
   const query = new URLSearchParams({ offset: offsetText, limit: limitText });
   if (version) query.set("version", version);
+  if (queryText.trim()) query.set("query", queryText.trim());
   try {
     const response = await fetch(base + "/api/workspace/page?" + query.toString(), {
       headers: { "x-pdufa-internal-key": key },
