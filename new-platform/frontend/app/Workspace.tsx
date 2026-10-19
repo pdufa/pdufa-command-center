@@ -393,6 +393,22 @@ function Drilldown({ rows }: { rows: Candidate[] }) {
   </div>;
 }
 
+function WorkflowStageIcon({stage}: {stage:"PIPELINE"|"GEM_JR"|"GEM"|"WT"}) {
+  if (stage==="PIPELINE") return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
+    <ellipse cx="24" cy="10" rx="16" ry="6" fill="currentColor" opacity=".88"/>
+    <path d="M8 10v11c0 3.3 7.2 6 16 6s16-2.7 16-6V10" stroke="currentColor" strokeWidth="3"/>
+    <path d="M8 21v11c0 3.3 7.2 6 16 6s16-2.7 16-6V21" stroke="currentColor" strokeWidth="3"/>
+    <path d="M8 32v5c0 3.3 7.2 6 16 6s16-2.7 16-6v-5" stroke="currentColor" strokeWidth="3"/>
+  </svg>;
+  if (stage==="WT") return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
+    <path d="M24 4.5 30 17l13.8 1.9-10 9.8 2.5 13.9L24 36l-12.3 6.6 2.5-13.9-10-9.8L18 17 24 4.5Z" fill="currentColor" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8"/>
+  </svg>;
+  return <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" focusable="false">
+    <path d="M12 9h24l9 14-21 21L3 23 12 9Z" stroke="currentColor" strokeWidth="2.6" strokeLinejoin="round"/>
+    <path d="M3 23h42M12 9l6 14 6 21 6-21 6-14M18 23h12" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round"/>
+  </svg>;
+}
+
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
@@ -975,12 +991,16 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : null, detail:gemSavedOnly.GEM?"Saved page total":"GEM page total"},
         {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Watch + Trading total"},
       ]).map(item=><button type="button" key={item.id}
-        className={"workflow-count"+(nav===item.id?" workflow-count-selected":"")}
+        className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
         aria-current={nav===item.id?"page":undefined}
+        aria-label={item.label+": "+(item.count===null?"loading":item.count.toLocaleString("en-US"))+" · Open "+item.label}
         onClick={()=>{setNav(item.id);setMobileNavOpen(false);}}>
-        <span className="workflow-count-label">{item.label}</span>
-        <strong className="workflow-count-number" aria-live="polite">{item.count===null?"—":item.count.toLocaleString("en-US")}</strong>
-        <span className="workflow-count-detail">{item.detail}</span>
+        <span className="workflow-count-icon"><WorkflowStageIcon stage={item.id as "PIPELINE"|"GEM_JR"|"GEM"|"WT"}/></span>
+        <span className="workflow-count-copy">
+          <span className="workflow-count-label">{item.label}</span>
+          <strong className="workflow-count-number" aria-live="polite">{item.count===null?"—":item.count.toLocaleString("en-US")}</strong>
+          <span className="workflow-count-detail">{item.detail}</span>
+        </span>
       </button>)}
     </div>}
     <div className="workspace-overview">
