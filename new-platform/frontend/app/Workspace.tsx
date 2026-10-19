@@ -608,6 +608,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [fetchError, setFetchError] = useState("");
   const [cachedAsOf, setCachedAsOf] = useState<string | null>(null);
   const workspaceEtag = useRef<string | null>(null);
+  const verifiedSnapshotRef = useRef<Snapshot | null>(null);
   const hasVerifiedWorkspace = useRef(false);
   const cachedAsOfRef = useRef<string | null>(null);
   const freshSnapshotReceived = useRef(false);
@@ -756,6 +757,40 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       setRefreshing(true);
       setFetchError("Connecting to published PIPELINE, GEM JR and GEM data…");
       try {
+        // Incremental refresh is safe only against a snapshot verified in this session.
+        // Cached IndexedDB snapshots remain display-only until a full verification.
+        const baseline = verifiedSnapshotRef.current;
+        if (hasVerifiedWorkspace.current && baseline?.workspaceVersion) {
+          try {
+            const deltaResponse = await fetch("/api/workspace/delta?since=" + encodeURIComponent(baseline.workspaceVersion), {
+              cache: "no-store",
+              signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(30000)]),
+            });
+            if (deltaResponse.ok) {
+              const delta = await deltaResponse.json() as WorkspaceDelta;
+              if (ctrl.signal.aborted) return;
+              if (delta.version && delta.unchanged && !delta.reset &&
+                  delta.version === baseline.workspaceVersion) {
+                setFetchError("");
+                return;
+              }
+              if (!delta.reset && !delta.unchanged) {
+                const patched = applyWorkspaceDelta(baseline, delta);
+                if (ctrl.signal.aborted) return;
+                verifiedSnapshotRef.current = patched;
+                workspaceEtag.current = null;
+                setSnapshot(patched);
+                void writeWorkspaceCache(patched).catch(() => {});
+                setFetchError("");
+                return;
+              }
+            }
+          } catch {
+            if (ctrl.signal.aborted) return;
+            // Unknown version, transient delta failure or invalid patch:
+            // fall back to the complete verified workspace response below.
+          }
+        }
         const response = await fetch("/api/workspace", {
           cache: "no-store",
           headers: hasVerifiedWorkspace.current && workspaceEtag.current ? { "If-None-Match": workspaceEtag.current } : {},
@@ -774,6 +809,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         const data = await response.json() as Snapshot;
         if (ctrl.signal.aborted) return;
         if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed validation or backend returned stale source data");
+        verifiedSnapshotRef.current = data;
         workspaceEtag.current = response.headers.get("etag");
         hasVerifiedWorkspace.current = true;
         freshSnapshotReceived.current = true;
