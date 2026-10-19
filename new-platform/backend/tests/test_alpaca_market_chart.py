@@ -65,3 +65,48 @@ def test_alpaca_current_daily_bar_is_withheld_before_close():
     assert market._parse_bars(response, "OCGN", before) == []
     after = datetime(2026,10,16,21,0,tzinfo=timezone.utc)
     assert len(market._parse_bars(response, "OCGN", after)) == 1
+
+
+def test_alpaca_empty_history_is_not_global_provider_outage(monkeypatch):
+    """Acquired/delisted symbols commonly return bars:null or an empty list."""
+    import io
+    import json
+    monkeypatch.setenv("ALPACA_API_KEY", "mock-key")
+    monkeypatch.setenv("ALPACA_SECRET_KEY", "mock-secret")
+    market._CACHE.clear()
+    for ticker, response_bars in (("VIE", None), ("AIMT", []), ("EPZM", None)):
+        data = json.dumps({"bars": response_bars, "next_page_token": None}).encode("utf-8")
+        monkeypatch.setattr(market, "urlopen",
+                            lambda request, timeout=9, raw=data: io.BytesIO(raw))
+        result = market.get_alpaca_bars(ticker, "6M")
+        assert result["status"] == "NO_MARKET_HISTORY"
+        assert result["provider"] == "ALPACA"
+        assert result["bars"] == []
+        assert "No current price or trading signal" in result["message"]
+        assert result["orderExecutionEnabled"] is False
+    market._CACHE.clear()
+
+
+def test_alpaca_malformed_response_stays_untrusted(monkeypatch):
+    import io
+    monkeypatch.setenv("ALPACA_API_KEY", "mock-key")
+    monkeypatch.setenv("ALPACA_SECRET_KEY", "mock-secret")
+    market._CACHE.clear()
+    monkeypatch.setattr(market, "urlopen", lambda *args, **kwargs: io.BytesIO(b'{"oops":true}'))
+    result = market.get_alpaca_bars("OCGN", "6M")
+    assert result["status"] == "INVALID_SOURCE_RESPONSE"
+    assert result["bars"] == []
+    market._CACHE.clear()
+
+
+def test_alpaca_chart_cache_is_bounded(monkeypatch):
+    import io
+    monkeypatch.setenv("ALPACA_API_KEY", "mock-key")
+    monkeypatch.setenv("ALPACA_SECRET_KEY", "mock-secret")
+    market._CACHE.clear()
+    monkeypatch.setattr(market, "urlopen", lambda *args, **kwargs: io.BytesIO(b'{"bars":null}'))
+    for n in range(market.MAX_CACHE_ENTRIES + 6):
+        result = market.get_alpaca_bars(f"ZZTEST{n}", "6M")
+        assert result["status"] == "NO_MARKET_HISTORY"
+    assert len(market._CACHE) <= market.MAX_CACHE_ENTRIES
+    market._CACHE.clear()
