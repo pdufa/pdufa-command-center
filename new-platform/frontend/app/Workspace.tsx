@@ -72,7 +72,7 @@ type WtTrialStage = "entry"|"stay"|"exit";
 type WtTrialIndicatorPreference = {
   stage: WtTrialStage|"";
   keys: Record<WtTrialStage,string[]>;
-  /** Manually chosen options, before the FS overlay is applied. */
+  /** Manually chosen options, before FS/FA overlays are applied. */
   manualKeys: Record<WtTrialStage,string[]>;
   /** Separate button states for each stage, never inferred from checked options. */
   presets: Record<WtTrialStage,WtPresetFlags>;
@@ -552,7 +552,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       }};
     });
   }
-  function toggleWtTrialPreset(programId:string,stage:WtTrialStage,mode:"FS"){
+  function toggleWtTrialPreset(programId:string,stage:WtTrialStage,mode:"FS"|"FA"){
     setWtTrialPreferences(current=>{
       const prior=current[programId]||emptyWtPreference();
       const flags=nextWtPresetFlags(prior.presets[stage],mode);

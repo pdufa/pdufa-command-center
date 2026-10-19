@@ -179,28 +179,50 @@ test("WT entry/stay/exit sections always start collapsed and leave all 26 choice
  assert.equal(base.WT_CHECK_KEYS.length,26);
 });
 
-test("WT shows only FS and preserves individual stage checkboxes",()=>{
+
+test("FS and FA buttons display side by side with separate states and selections",()=>{
  const {nextWtPresetSelection,nextWtPresetFlags,wtEffectivePresetKeys}=require("../app/WtTradingSections.tsx");
  for(const [stage,count] of [["entry",10],["stay",7],["exit",9]]){
-  const html=renderToStaticMarkup(React.createElement(WtSections,{
-   programId:"PDUFA-000005",ticker:"TEST",activeGroup:stage,compact:true,checkedKeys:[]
+  const blank={fs:false,fa:false};
+  const fsFlags=nextWtPresetFlags(blank,"FS");
+  const faFlags=nextWtPresetFlags(blank,"FA");
+  assert.deepEqual(fsFlags,{fs:true,fa:false},"FS activates only FS");
+  assert.deepEqual(faFlags,{fs:false,fa:true},"FA activates only FA");
+  const fsKeys=wtEffectivePresetKeys([],stage,fsFlags);
+  const faKeys=wtEffectivePresetKeys([],stage,faFlags);
+  assert.ok(fsKeys.length>0&&fsKeys.length<count);
+  assert.equal(faKeys.length,count,"FA selects all options");
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(fsFlags,"FS")),[]);
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(faFlags,"FA")),[]);
+  const both=nextWtPresetFlags(fsFlags,"FA");
+  assert.deepEqual(both,{fs:true,fa:true});
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FA")),fsKeys,
+   "Turning off FA preserves FS");
+  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FS")),faKeys,
+   "Turning off FS preserves FA");
+  const manual=["other-stage",fsKeys[0]];
+  assert.deepEqual(wtEffectivePresetKeys(manual,stage,blank),[fsKeys[0]],"Manual checks remain independent");
+  const rendered=renderToStaticMarkup(React.createElement(WtSections,{
+   programId:"PDUFA-000005",ticker:"TEST",activeGroup:stage,compact:true,
+   checkedKeys:fsKeys,presetFlags:fsFlags,onPresetToggle:()=>{}
   }));
-  assert.match(html,/>FS<\/button>/);
-  assert.doesNotMatch(html,/>FA<\/button>/);
-  assert.equal((html.match(/type="checkbox"/g)||[]).length,count);
-  const suggested=nextWtPresetSelection([],stage,"FS");
-  assert.ok(suggested.length>0&&suggested.length<count);
-  assert.deepEqual(nextWtPresetSelection(suggested,stage,"FS"),[]);
-  const flags=nextWtPresetFlags({fs:false,fa:false},"FS");
-  assert.equal(flags.fs,true);
-  assert.equal(wtEffectivePresetKeys([],stage,flags).length,suggested.length);
-  assert.equal(wtEffectivePresetKeys([],stage,{fs:false,fa:true}).length,0,"Legacy FA must be ignored");
+  assert.match(rendered,/>FS<\/button>/);
+  assert.match(rendered,/>FA<\/button>/);
+  assert.equal((rendered.match(/type="checkbox"/g)||[]).length,count);
+  const controls=rendered.match(/<div class="wt-checklist-preset-buttons"[^>]*>([\s\S]*?)<\/div>/);
+  assert.ok(controls,"Both controls appear in same nonwrapping group");
+  const individual=controls[1].match(/<button[^>]*>FS<\/button>|<button[^>]*>FA<\/button>/g)||[];
+  assert.equal(individual.length,2);
+  assert.match(individual[0],/aria-pressed="true"/);
+  assert.match(individual[1],/aria-pressed="false"/);
+  assert.match(rendered,/Both buttons operate independently/);
+  assert.deepEqual(nextWtPresetSelection([],stage,"FA").length,count);
  }
- const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
- assert.match(css,/\.wt-checklist-preset-button\[aria-pressed="true"\]/);
- assert.match(css,/background:#fff;color:#176b39/);
- assert.match(css,/background:#176b39;color:white/);
  const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(source,/presetFlags=\{preference\.presets\[selectedStage\]\}/);
+ assert.match(source,/function toggleWtTrialPreset\(programId:string,stage:WtTrialStage,mode:"FS"\|"FA"\)/);
  assert.match(source,/const flags=nextWtPresetFlags\(prior\.presets\[stage\],mode\)/);
+ const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+ assert.match(css,/\.wt-checklist-preset-button:first-child \{\s*border-right:0/);
+ assert.match(css,/display:inline-flex;flex:0 0 auto;flex-wrap:nowrap/);
 });
