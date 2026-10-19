@@ -89,7 +89,7 @@ class PacificAdmissionTests(unittest.TestCase):
 
     def test_dst_fall_back_uses_the_offset_at_that_nights_start(self):
         # The 9 PM start was PDT; by this retry Los Angeles has switched to PST.
-        result = decision('schedule', '0 5 * * *', [], now=clock('2026-11-01T09:30:00Z'))
+        result = decision('schedule', '0 4 * * *', [], now=clock('2026-11-01T09:30:00Z'))
         self.assertTrue(result['run'])
         self.assertEqual(result['night_date_pacific'], '2026-10-31')
 
