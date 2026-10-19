@@ -593,6 +593,28 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
 export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
+  // Early, explicitly unfiltered preview. Authoritative filtering still uses
+  // the verified full snapshot; never use a partial page for eligibility.
+  const [earlyPipelinePage, setEarlyPipelinePage] = useState<{total:number;rows:Candidate[]}|null>(null);
+  useEffect(() => {
+    const ctrl = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch("/api/workspace/page?offset=0&limit=50", {
+          cache: "no-store",
+          signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(45000)]),
+        });
+        if (!response.ok) return;
+        const data: unknown = await response.json();
+        if (!data || typeof data !== "object") return;
+        const page = data as {total?:unknown;rows?:unknown};
+        if (!Number.isSafeInteger(page.total) || (page.total as number) < 0 || !Array.isArray(page.rows) || page.rows.length > 50) return;
+        if (!ctrl.signal.aborted) setEarlyPipelinePage({total:page.total as number,rows:page.rows as Candidate[]});
+      } catch { /* Preview is optional; full verified workspace remains authoritative. */ }
+    })();
+    return () => ctrl.abort();
+  }, []);
+
   const [summaryError, setSummaryError] = useState("");
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
   // GEM JR live screen is not saved stage membership (11), nor a finished SCAN.
@@ -1357,6 +1379,16 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     {!snapshot && <div className="panel" role="status" aria-live="polite">
       <p>{fetchError || "Candidate totals are available above. Full candidate lists load only when requested; no automatic retry loop is running."}</p>
       <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>
+      {earlyPipelinePage && <div className="panel">
+        <strong>Early pipeline preview · {earlyPipelinePage.rows.length} of {earlyPipelinePage.total.toLocaleString()} candidates</strong>
+        <p className="subtle">Unfiltered preview only. Full eligibility, GEM and GEM JR results require the verified workspace.</p>
+        <div className="priority-scroll"><table><thead><tr><th>Ticker</th><th>Program</th></tr></thead><tbody>
+          {earlyPipelinePage.rows.map((candidate, index) => <tr key={candidate.id + "-" + index}>
+            <td>{candidate.ticker || "—"}</td><td>{candidate.drug || candidate.id}</td>
+          </tr>)}
+        </tbody></table></div>
+      </div>}
+
       <button type="button" className="secondary" onClick={() => {
         if (!refreshing) { setFetchError("Loading candidates once…"); setFetchVersion(value => value + 1); }
       }} disabled={refreshing}>{refreshing ? "LOADING CANDIDATES…" : "LOAD CANDIDATES ONCE"}</button>
