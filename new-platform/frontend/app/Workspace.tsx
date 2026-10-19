@@ -595,7 +595,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             cache: "no-store",
             // Cancel only this attempt; user-triggered retries and component
             // unmount continue to abort via ctrl.signal.
-            signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(36000)]),
+            signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(100000)]),
           });
           if (!response.ok) {
             const transient = [502, 503, 504].includes(response.status);
