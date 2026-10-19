@@ -2424,3 +2424,102 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
  min-width:0;max-width:100%;border:1px solid #8ba99a;border-radius:6px;
  background:#fff;color:#12382a}
 .wt-checklist-primary .wt-trading-sections{margin:13px 0 0}
+
+/* WT screen-width charts with responsive multiple-column DATA.
+   Only WT receives this layout: GEM and GEM JR chart/table sizing is unchanged. */
+.wt-page .wt-panels {
+  grid-template-columns:minmax(0,1fr);
+}
+.wt-page .wt-program-masonry {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  columns:auto;
+  column-count:1;
+  column-fill:auto;
+  width:100%;
+  min-width:0;
+}
+.wt-page .wt-program-masonry > .wt-stock {
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  margin:0 0 clamp(12px,1.5vw,22px);
+  break-inside:auto;
+}
+.wt-page .wt-stock .wt-research-column {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:clamp(10px,1vw,18px);
+  width:100%;
+  min-width:0;
+}
+.wt-page .wt-stock .wt-research-column > * {min-width:0;max-width:100%;width:100%;}
+.wt-page .wt-stock .alpaca-stock-chart {
+  width:100%;
+  grid-column:1/-1;
+  margin:0;
+}
+.wt-page .wt-stock .alpaca-plot-box,
+.wt-page .wt-stock .alpaca-plot {width:100%;max-width:100%;}
+/* The chart spans the screen; table-based reference data auto-flow
+   into 2+ readable columns on larger displays, 1 on phone/tablet. */
+.wt-page .wt-stock .indicator-tables-separate {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,620px),1fr));
+  align-items:start;
+  gap:clamp(10px,1vw,16px);
+  padding:0 12px 12px;
+  width:100%;
+  box-sizing:border-box;
+  min-width:0;
+}
+.wt-page .wt-stock .indicator-tables-separate > header {
+  grid-column:1/-1;
+  margin:0 -12px;
+}
+.wt-page .wt-stock .indicator-tables-separate > p {
+  grid-column:1/-1;
+  margin:0;
+  padding:0 0 3px;
+}
+.wt-page .wt-stock .indicator-tables-separate > .table-scroll {
+  min-width:0;
+  max-width:100%;
+  margin:0;
+  align-self:start;
+}
+.wt-page .wt-stock .indicator-tables-separate > .entryexit-table-grid {
+  min-width:0;
+  max-width:100%;
+  padding:0;
+  margin:0;
+  grid-template-columns:minmax(0,1fr);
+  align-self:start;
+}
+.wt-page .wt-stock .indicator-tables-separate > .eight-indicators {
+  min-width:0;
+  max-width:100%;
+  margin:0;
+  padding:12px;
+  border:1px solid #c4d4dd;
+  border-radius:7px;
+  background:#f8fbfe;
+}
+.wt-page .wt-stock .eight-indicators .table-scroll {min-width:0;width:100%;max-width:100%;overflow-x:auto;}
+.wt-page .wt-stock .wt-score-details .research-score-cards {
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
+}
+.wt-page .wt-check-grid {
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));
+}
+@media (max-width:700px) {
+  .wt-page .wt-stock .indicator-tables-separate {
+    grid-template-columns:minmax(0,1fr);
+    padding:0 8px 8px;
+  }
+  .wt-page .wt-stock .indicator-tables-separate > header {margin:0 -8px;}
+  .wt-page .wt-stock .wt-score-details {padding:10px;}
+  .wt-page .wt-check-grid {grid-template-columns:minmax(0,1fr);}
+}
