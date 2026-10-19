@@ -3,33 +3,79 @@ name: PDUFA Command Center CI
 on:
   push:
     branches: [main]
+    paths:
+      - 'new-platform/**'
+      - 'scripts/validate_gem_source_ledgers.py'
+      - 'data/pdufa_candidates.csv'
+      - 'data/second_financing_status.csv'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'new-platform/**'
+      - 'scripts/validate_gem_source_ledgers.py'
+      - 'data/pdufa_candidates.csv'
+      - 'data/second_financing_status.csv'
+      - '.github/workflows/ci.yml'
   workflow_dispatch:
 
-# Keep the newest main-branch validation; superseded commits should not keep
-# sending duplicate stale failure alerts while code is being repaired.
+permissions:
+  contents: read
+
+# The Streamlit app.py was intentionally retired. Do not present an app.py
+# FileNotFoundError as validation of the live Next.js / FastAPI deployment.
+# Keep historical scripts and evidence intact; independent evidence validation
+# remains fail-closed and never qualifies an unsupported trading conclusion.
 concurrency:
   group: pdufa-command-center-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  smoke:
+  source-integrity:
+    name: GEM ledger and exact-event source checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Compile Streamlit app and FDA engines
-        run: python -m py_compile app.py scripts/fda_decision_engine.py scripts/fda_regulatory_signal_monitor.py scripts/fda_pdufa_extension_tracker.py scripts/fda_directional_100pct.py scripts/fda_v3_historical_backtest.py scripts/complete_fda_v3_historical_review.py scripts/fda_100_on_100_gate.py scripts/historical_decisions.py scripts/strict_historical_review.py scripts/recheck_events.py
-      - name: Reproduce all 126 Strict evaluations
-        run: python scripts/fda_100_on_100_gate.py
-      - name: Validate all GEM source ledgers and exact-program evidence
+      - name: Compile source validators
+        run: python -m py_compile scripts/validate_gem_source_ledgers.py
+      - name: Validate strict GEM evidence ledger
         run: python scripts/validate_gem_source_ledgers.py
-      - name: Validate data and display schema
-        run: python smoke_test.py
-      - name: Verify historical assessment integrity
-        run: python -m unittest discover -s tests
+
+  backend:
+    name: Current FastAPI application regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install current backend test dependencies
+        run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Run entire current backend test suite
+        run: PYTHONPATH=new-platform/backend pytest -q new-platform/backend/tests
+
+  frontend:
+    name: Current Next.js typecheck, tests, and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install current frontend dependencies
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Frontend regression tests
+        run: npm test
+      - name: Production build
+        run: npm run build
