@@ -629,64 +629,39 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
 
   useEffect(() => {
     const ctrl = new AbortController();
-    let retryTimer: ReturnType<typeof setTimeout> | null = null;
-    // Render can restart under its memory limit. Every attempt is bounded
-    // independently so a stalled browser request cannot leave the candidates
-    // behind an indefinite "Loading" message.
-    const retryDelays = [0, 3000, 8000, 15000, 20000];
+    // One bounded request per mount or explicit Retry click. Never automatically
+    // retry: repeated 502/503 responses previously caused a prolonged load loop.
     async function loadPublishedSources() {
-      setFetchError("Connecting to published PIPELINE, GEM JR and GEM data. Large trial inventories or a backend restart may delay this request.");
-      for (let attempt = 0; attempt < retryDelays.length && !ctrl.signal.aborted; attempt++) {
-        if (attempt > 0) {
-          setFetchError("Reconnecting to published sources… attempt " + (attempt + 1) + "/" + retryDelays.length + ". Saved WT selections are unchanged.");
-          await new Promise<void>(resolve => {
-            retryTimer = setTimeout(resolve, retryDelays[attempt]);
-          });
-          retryTimer = null;
-          if (ctrl.signal.aborted) return;
+      setRefreshing(true);
+      setFetchError("Connecting to published PIPELINE, GEM JR and GEM data…");
+      try {
+        const response = await fetch("/api/workspace", {
+          cache: "no-store",
+          signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(25000)]),
+        });
+        if (!response.ok) {
+          const details = await response.json().catch(() => ({})) as {error?:string};
+          throw new Error("Published source unavailable: HTTP " + response.status +
+            (details.error ? " — " + details.error : "."));
         }
-        try {
-          const response = await fetch("/api/workspace", {
-            cache: "no-store",
-            // Cancel only this attempt; user-triggered retries and component
-            // unmount continue to abort via ctrl.signal.
-            signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(100000)]),
-          });
-          if (!response.ok) {
-            const transient = [502, 503, 504].includes(response.status);
-            if (transient && attempt < retryDelays.length - 1) continue;
-            const details = await response.json().catch(() => ({})) as {error?:string};
-            throw new Error("Published source unavailable: " + response.status +
-              (details.error ? " — " + details.error : ". Check backend health and configuration."));
-          }
-          let data: Snapshot;
-          try {
-            data = await response.json() as Snapshot;
-          } catch (error) {
-            throw new Error("Published workspace response could not be decoded: " + (error instanceof Error ? error.message : "Invalid JSON"));
-          }
-          if (!ctrl.signal.aborted) {
-            setSnapshot(data);
-            setFetchError("");
-            setRefreshing(false);
-          }
-          return;
-        } catch (error) {
-          if (ctrl.signal.aborted) return;
-          const permanent = error instanceof Error && error.message.startsWith("Published source unavailable:");
-          if (permanent || attempt === retryDelays.length - 1) {
-            setFetchError(String(error));
-            setRefreshing(false);
-            return;
-          }
-        }
+        const data = await response.json() as Snapshot;
+        if (ctrl.signal.aborted) return;
+        setSnapshot(data);
+        setFetchError("");
+      } catch (error) {
+        if (ctrl.signal.aborted) return;
+        const message = error instanceof Error ? error.message : String(error);
+        setFetchError(
+          message.includes("timeout") || message.includes("Timeout")
+            ? "Candidate loading timed out after 25 seconds. Automatic retries are disabled; tap RETRY LOADING CANDIDATES to try once more."
+            : "Candidate loading failed: " + message + " Automatic retries are disabled."
+        );
+      } finally {
+        if (!ctrl.signal.aborted) setRefreshing(false);
       }
     }
     void loadPublishedSources();
-    return () => {
-      ctrl.abort();
-      if (retryTimer !== null) clearTimeout(retryTimer);
-    };
+    return () => ctrl.abort();
   }, [fetchVersion]);
   useEffect(() => {
     let local: Tags = {watch:[],trade:[]};
