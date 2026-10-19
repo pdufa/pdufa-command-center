@@ -45,8 +45,10 @@ export default function TrialWorkflowCounts() {
         const wt=await fetch("/api/program-watch-trade",{cache:"no-store",signal:controller.signal});
         if(wt.ok){
           const savedWt=await wt.json() as {watch?:unknown;trade?:unknown};
-          if(Array.isArray(savedWt.watch)&&Array.isArray(savedWt.trade) && !controller.signal.aborted)
-            setTotals(current=>({...current,WT:savedWt.watch!.length+savedWt.trade!.length}));
+          if(Array.isArray(savedWt.watch)&&Array.isArray(savedWt.trade) && !controller.signal.aborted) {
+            const trackedCount=savedWt.watch.length+savedWt.trade.length;
+            setTotals(current=>({...current,WT:trackedCount}));
+          }
         }
       }catch{
         if(!controller.signal.aborted)setStatus("Page totals unavailable — open dashboard to refresh");
