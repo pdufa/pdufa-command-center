@@ -2625,57 +2625,102 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
  overflow-wrap:anywhere;
 }
 
-/* Always-visible stage totals immediately below the PDUFA section navigation.
-   Each number reflects its corresponding current view, not a hardcoded snapshot. */
+/* Illustrated Pipeline → GEM JR → GEM → WT metric row, directly below navigation.
+   Counts are drawn from the same state as their respective pages. */
 .workflow-counts {
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-  margin:2px 0 14px;
+  gap:12px;
+  margin:7px 0 16px;
+  padding:8px;
   width:100%;
+  border:1px solid #d1e6da;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(25,63,38,.08);
 }
 .migration-workspace .workflow-count {
   min-width:0;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:3px;
+  min-height:106px;
+  display:grid;
+  grid-template-columns:clamp(50px,5vw,80px) minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  padding:12px;
   text-align:left;
-  padding:11px 14px;
-  border:1px solid #9dbda3;
+  border:1.5px solid var(--stage-border);
   border-radius:9px;
-  background:#f8fcf8;
-  color:#173a25;
+  background:var(--stage-background);
+  color:var(--stage-foreground);
   cursor:pointer;
-  transition:background .15s,border-color .15s;
+  box-shadow:0 1px 2px rgba(16,35,28,.035);
+  transition:border-color .15s,box-shadow .15s,transform .15s;
 }
-.migration-workspace .workflow-count:hover { background:#e9f5e9; border-color:#2a7042; }
-.migration-workspace .workflow-count:focus-visible { outline:3px solid #17753e; outline-offset:2px; }
-.migration-workspace .workflow-count-selected { background:#e3f1e4; border:2px solid #22633b; padding:10px 13px; }
-.workflow-count-label { font-size:12px; font-weight:800; letter-spacing:.04em; }
-.workflow-count-number { font-size:clamp(22px,2.4vw,32px); line-height:1.1; font-variant-numeric:tabular-nums; }
-.workflow-count-detail { font-size:11px; font-weight:600; color:#4b6653; line-height:1.25; }
+.migration-workspace .workflow-count:hover {
+  border-color:var(--stage-accent);
+  box-shadow:0 3px 10px rgba(25,54,39,.12);
+  transform:translateY(-1px);
+}
+.migration-workspace .workflow-count:focus-visible {outline:3px solid var(--stage-accent);outline-offset:2px;}
+.migration-workspace .workflow-count-selected {
+  box-shadow:inset 0 0 0 1.5px var(--stage-accent),0 2px 9px rgba(25,54,39,.12);
+}
+.migration-workspace .workflow-count--pipeline {
+  --stage-background:#eaf3ff;
+  --stage-border:#a5c7ff;
+  --stage-foreground:#153561;
+  --stage-accent:#2464a6;
+  --stage-icon-background:#d9eaff;
+}
+.migration-workspace .workflow-count--gem_jr {
+  --stage-background:#e6f9ef;
+  --stage-border:#a6e7c2;
+  --stage-foreground:#145d36;
+  --stage-accent:#14954b;
+  --stage-icon-background:#d2f6df;
+}
+.migration-workspace .workflow-count--gem {
+  --stage-background:#f1e9ff;
+  --stage-border:#d7b7ff;
+  --stage-foreground:#542b92;
+  --stage-accent:#7b43c6;
+  --stage-icon-background:#e9d8ff;
+}
+.migration-workspace .workflow-count--wt {
+  --stage-background:#fff7e1;
+  --stage-border:#f4da99;
+  --stage-foreground:#875e06;
+  --stage-accent:#b8840c;
+  --stage-icon-background:#fff1c4;
+}
+.workflow-count-icon {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  aspect-ratio:1/1;
+  max-width:80px;
+  border-radius:10px;
+  background:var(--stage-icon-background);
+  color:var(--stage-accent);
+}
+.workflow-count-icon svg {width:54%;height:54%;max-height:48px;}
+.workflow-count-copy {display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;}
+.workflow-count-label {font-size:clamp(12px,1.05vw,15px);font-weight:800;letter-spacing:.01em;white-space:nowrap;}
+.workflow-count-number {font-size:clamp(27px,2.4vw,38px);font-weight:800;line-height:1.14;font-variant-numeric:tabular-nums;color:#17252a;}
+.workflow-count-detail {font-size:clamp(10px,.85vw,13px);font-weight:500;line-height:1.3;color:#51616a;overflow-wrap:break-word;}
+@media(max-width:1050px) {
+  .migration-workspace .workflow-count {grid-template-columns:54px minmax(0,1fr);gap:9px;padding:9px;min-height:90px;}
+}
 @media(max-width:750px) {
-  .workflow-counts { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
-  .migration-workspace .workflow-count { padding:9px 11px; }
-  .migration-workspace .workflow-count-selected { padding:8px 10px; }
+  .workflow-counts {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:6px;}
+  .migration-workspace .workflow-count {grid-template-columns:46px minmax(0,1fr);gap:8px;padding:9px;min-height:79px;}
+  .workflow-count-icon {border-radius:7px;}
+  .workflow-count-label {font-size:12px;}
+  .workflow-count-number {font-size:27px;}
+  .workflow-count-detail {font-size:10px;}
 }
-
-/* The four page-derived totals read as one Pipeline → GEM JR → GEM → WT bar. */
-@media(min-width:751px) {
-  .migration-workspace .workflow-count { position:relative; }
-  .migration-workspace .workflow-count:not(:last-child)::after {
-    content:"→";
-    position:absolute;
-    right:-13px;
-    top:50%;
-    transform:translateY(-50%);
-    z-index:2;
-    font-size:18px;
-    font-weight:800;
-    color:#266839;
-    background:#f9fcf8;
-    padding:0 2px;
-    pointer-events:none;
-  }
+@media(max-width:350px) {
+  .migration-workspace .workflow-count {grid-template-columns:38px minmax(0,1fr);gap:6px;padding:7px;}
+  .workflow-count-number {font-size:23px;}
 }
