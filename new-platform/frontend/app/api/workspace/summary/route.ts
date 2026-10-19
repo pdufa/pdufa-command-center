@@ -3,6 +3,7 @@ import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
   if (!authConfigured() || !hasSession(req.cookies.get(COOKIE_NAME)?.value)) {

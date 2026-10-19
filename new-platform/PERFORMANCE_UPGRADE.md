@@ -1,26 +1,46 @@
-# PDUFA dashboard performance upgrade
+# PDUFA dashboard loading repair
 
-Status: development plan; not deployed. Production must remain unchanged until verified.
+The hybrid loading implementation serves a small first page before transferring
+the full dataset required by the existing qualification screens.
 
-## Current verified architecture
-- Frontend: Next.js Workspace.tsx, cached verified snapshots and guarded workspace delta updates.
-- Backend: workspace snapshot, summary, delta, and chart APIs.
-- Pipeline has ~11,775 candidates. Pipeline display already pages 25 records; GEM/GEM JR detail table shows at most 10 records.
-- Do not equate smaller rendered tables with smaller API payloads.
+## Behavior
 
-## Delivery sequence and acceptance tests
-1. **Baseline**: measure initial response bytes, API TTFB, JSON parse time, first usable screen, tab switch, chart open, and iPhone memory. Record p50/p95 on warm and cold loads. Instrument without recording user-sensitive information.
-2. **Authoritative server-side queries**: add paginated candidate endpoint with cursor, stable sorting, server-side filtering and authoritative total counts. A page response must carry snapshot version, query fingerprint, next cursor and total. Cursor invalidation must force safe reset, not silently combine versions.
-3. **Progressive UI**: show initial 50 records then load more on scroll/explicit action. Keep search, qualification, and GEM/JR selection semantics server-authoritative; never compute counts or eligibility from a partial page.
-4. **Caching**: retain last verified snapshot as fallback; cache page responses by version + filter fingerprint. Background fetches must cancel on filter changes. Limit cache memory and support schema migrations.
-5. **Delta updates**: apply version-checked changes atomically; on missing/invalid delta fetch a full verified snapshot. Never present partially applied updates as complete.
-6. **WT charts**: lazy-mount only the selected chart; cancel old requests; preserve ENTRY/STAY/EXIT indicator selection and FA independent toggle.
-7. **Heavy computation**: profile first; move proven CPU hotspots to memoized selectors or worker, keeping UI responsive.
-8. **Failure and rollout**: compare server counts and candidate identities with existing dashboard; test mobile/wide screen, offline recovery, filter changes, empty results, back/forward navigation, and rapid tab switching. Roll out behind a feature flag; automatically revert on elevated errors or material regressions.
+- The authenticated pipeline page API returns 50 records, a content version,
+  authoritative matching total, offset and next offset. Search runs across the
+  complete published universe. Version changes return 409 and require a reset.
+- The quick view retains one page at a time. Previous/Next reaches records past
+  the first 100 without growing the DOM or accumulating the entire pipeline.
+  Changing a query cancels the previous request; a late result cannot replace it.
+- Initial page loading has priority over the complete transfer. Full-snapshot
+  qualification, saved identities, history, WT preferences, charts and verified
+  delta refresh continue to use the complete dataset, never a partial page.
+- Backend full loads, pages and startup verification reuse the same numbered
+  snapshot. JSON and gzip bytes are prepared once per source object, bypassing
+  FastAPI's recursive per-request serialization of approximately 10 MB of data.
+  Private cache headers and explicit stale-source behavior are preserved.
+- Cached source readers do not wait behind an external-source refresh. Stale
+  copies are explicitly marked and cannot receive a verified delta/page version.
+- Top GEM/JR cards show published saved memberships until a current screen is
+  available, with a label identifying the count's meaning. Standalone trial
+  sheets request the small summary instead of downloading the full universe.
 
-## Release gates
-- Frontend typecheck/build and backend tests pass.
-- Pipeline, GEM JR, GEM and WT totals match the authoritative existing API for identical filters.
-- Saved memberships, date-added/removed history, WT signals and charts remain unchanged.
-- Compare measured p50/p95 load time and payload size against baseline; do not claim speed improvements without measurement.
-- Review staging before merging to main and deploying production.
+## Validation
+
+- All 101 Render-release backend tests passed, including concurrent-reader,
+  replacement-source, stale-version and compression-negotiation regressions.
+- All 88 main-branch backend tests passed, including parity and pagination.
+- Frontend typecheck, UI tests and a Next.js production build pass.
+- Component regression covers third-page navigation, bounded rendering,
+  whole-universe search and summary-based standalone counts.
+- After the backend release, the production full workspace returned all
+  11,775 programs, 11 saved GEM JR members and 6 saved GEM members in one
+  observed browser request of approximately 5.2 seconds. This is a single
+  measurement, not a cold-start guarantee or a p50/p95 benchmark.
+
+## Release and source status
+
+Verify the preview against the deployed backend before merging the frontend,
+then verify the production pages and inspect runtime errors and memory.
+The backend release is `070bee66dbacec850314a57c81073bb505f96e29`.
+The published scan can legitimately remain `PARTIAL`; successful site loading
+does not assert that every external evidence source has completed a live scan.

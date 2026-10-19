@@ -24,8 +24,8 @@ test("Top cards are above research body and use real corresponding page totals",
    assert.ok(ws.includes(field+": "+source),field+" total must match its page");
  }
  assert.match(ws,/localStorage\.setItem\("pdufa_stage_totals_v1"/);
- assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : null/);
- assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM"\) : null/);
+ assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM_JR"\) : publishedCounts\?\.gemJr \?\? null/);
+ assert.match(ws,/count:snapshot \? verifiedStageCount\("GEM"\) : publishedCounts\?\.gem \?\? null/);
 });
 
 test("Standalone trial sheets receive identical four-box UI with synced page counts",()=>{
@@ -36,7 +36,7 @@ test("Standalone trial sheets receive identical four-box UI with synced page cou
  assert.match(trial,/className="workflow-counts"/);
  assert.match(trial,/import WorkflowStageIcon/);
  assert.match(icons,/export default function WorkflowStageIcon/);
- assert.match(trial,/fetch\("\/api\/workspace"/);
+ assert.match(trial,/fetch\("\/api\/workspace\/summary"/);
  assert.match(trial,/fetch\("\/api\/program-watch-trade"/);
  assert.match(trial,/saved\.asOf===data\.asOf/);
  assert.match(trial,/href=\{"\/\?section="\+id\}/);

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
+import { validatePipelinePage } from "../../../../lib/workspace-pages";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 /** Authenticated proxy for bounded pipeline pages. No browser-visible backend key. */
 export async function GET(req: NextRequest) {
@@ -42,14 +44,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Pipeline page unavailable" },
         { status: 503, headers: { "Cache-Control": "private, no-store" } });
     }
-    const data: unknown = await response.json();
-    if (!data || typeof data !== "object") throw new Error("Invalid page");
-    const page = data as Record<string, unknown>;
-    if (typeof page.version !== "string" ||
-        !/^[a-f0-9]{64}$/.test(page.version) ||
-        !Number.isSafeInteger(page.total) ||
-        !Array.isArray(page.rows) ||
-        page.rows.length > Number(limitText)) throw new Error("Malformed page");
+    const page = validatePipelinePage(await response.json(), Number(offsetText), Number(limitText), version || undefined);
     const headers: Record<string,string> = { "Cache-Control": "private, no-store" };
     const serverTiming = response.headers.get("server-timing");
     // Preserve backend processing metrics for browser network diagnostics.

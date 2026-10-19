@@ -4,11 +4,13 @@ from __future__ import annotations
 import os
 import re
 import secrets
+import threading
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
@@ -265,8 +267,8 @@ async def lifespan(app: FastAPI):
                     probe["status"], probe["feed"], len(probe.get("bars") or []),
                 )
             from .source_workspace import workspace
-            from .program_registry import number_workspace
-            published = number_workspace(workspace())
+            from .workspace_response import prepared
+            published = prepared(workspace())
             # Direct Pipeline-to-WT clinical trial path must work even when a
             # trial never entered GEM JR or GEM. Read-only startup smoke check.
             try:
@@ -539,33 +541,133 @@ def read_wt_research(program_id: str):
     return {"programId": program_id, "exactKey": exact_key, **result}
 
 
-@app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
-def read_workspace():
+@app.get("/api/workspace/summary", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace_summary():
+    """Return verified counts without transferring the full trial inventory."""
     from .source_workspace import workspace
-    from .program_registry import number_workspace
     try:
-        snapshot = number_workspace(workspace())
-        from .workspace_delta import publish
-        try:
-            version = publish(snapshot)["version"]  # Seed version history.
-        except ValueError:
-            # Do not mark stale fallback data as verified or break its response.
-            return snapshot
-        return {**snapshot, "workspaceVersion": version}
+        published = workspace()
+        health = published.get("sourceHealth") or {}
+        parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
+        total = len(published.get("pipeline") or [])
+        if not parity or parity.get("exactPrograms") != total:
+            raise ValueError("Pipeline source parity mismatch")
+        members = published.get("members") or {}
+        return {
+            "pipeline": total,
+            "gemJr": len((members.get("GEM_JR") or {}).get("rows") or []),
+            "gem": len((members.get("GEM") or {}).get("rows") or []),
+            "sourceState": health.get("state", "UNKNOWN"),
+            "asOf": published.get("asOf"),
+        }
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception("PDUFA_SUMMARY_FAILED")
+        raise HTTPException(status_code=503, detail="Verified workspace summary unavailable") from None
+
+
+# Cache only the verified, numbered representation of the SAME published-source
+# object. source_workspace.workspace() owns freshness and replaces the object on
+# refresh; keeping its reference prevents accidental id reuse.
+_PAGE_CACHE_LOCK = threading.Lock()
+_PAGE_CACHE: dict = {"source": None, "snapshot": None, "version": None}
+
+
+def _verified_page_snapshot(source: dict):
+    from .workspace_response import prepared
+    with _PAGE_CACHE_LOCK:
+        if _PAGE_CACHE["source"] is source and _PAGE_CACHE["snapshot"] is not None:
+            return _PAGE_CACHE["snapshot"], _PAGE_CACHE["version"]
+        snapshot = prepared(source)
+        rows = snapshot.get("pipeline") or []
+        health = snapshot.get("sourceHealth") or {}
+        parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
+        if not parity or parity.get("exactPrograms") != len(rows):
+            raise ValueError("Pipeline source parity mismatch")
+        current_version = snapshot.get("workspaceVersion")
+        if not current_version:
+            raise ValueError("Stale source cannot be paginated")
+        _PAGE_CACHE.update(source=source, snapshot=snapshot, version=current_version)
+        return snapshot, current_version
+
+
+@app.get("/api/workspace/page", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace_page(response: Response, offset: int = 0, limit: int = 50, version: str = "", query: str = ""):
+    """Bounded, version-checked pipeline page; counts always describe the full snapshot.
+
+    A version mismatch returns 409 so clients cannot silently combine pages
+    from different source snapshots. This endpoint does not replace the full
+    workspace API or modify any existing frontend behavior.
+    """
+    if offset < 0 or limit < 1 or limit > 100:
+        raise HTTPException(status_code=422, detail="Invalid page bounds")
+    if len(query) > 100:
+        raise HTTPException(status_code=422, detail="Search query too long")
+    from .source_workspace import workspace
+    started = time.perf_counter()
+    try:
+        snapshot, current_version = _verified_page_snapshot(workspace())
+        rows = snapshot.get("pipeline") or []
+        total = len(rows)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Verified workspace page unavailable") from None
+    if version and version != current_version:
+        raise HTTPException(status_code=409, detail="Workspace version changed; restart pagination")
+    # Filter only after validating the COMPLETE source. The version continues
+    # to identify the full snapshot, never an arbitrary subset.
+    search = query.strip().casefold()
+    if search:
+        rows = [row for row in rows if any(
+            search in str(row.get(field) or "").casefold()
+            for field in ("ticker", "drug", "id")
+        )]
+        total = len(rows)
+    response.headers["Server-Timing"] = f"workspace_page;dur={(time.perf_counter() - started) * 1000:.1f}"
+    response.headers["Cache-Control"] = "private, no-store"
+    return {
+        "version": current_version,
+        "asOf": snapshot.get("asOf"),
+        "total": total,
+        "offset": offset,
+        "limit": limit,
+        "rows": rows[offset:offset + limit],
+        "nextOffset": offset + limit if offset + limit < total else None,
+    }
+
+
+@app.get("/api/workspace", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace(accept_encoding: str = Header(default="")):
+    from .source_workspace import workspace
+    from .workspace_response import encoded
+    started = time.perf_counter()
+    try:
+        body, compressed = encoded(workspace(), accept_encoding)
+        headers = {
+            "Cache-Control": "private, no-store",
+            "Vary": "Accept-Encoding",
+            "Server-Timing": f"workspace;dur={(time.perf_counter() - started) * 1000:.1f}",
+        }
+        if compressed:
+            headers["Content-Encoding"] = "gzip"
+        return Response(content=body, media_type="application/json", headers=headers)
     except Exception as exc:
         import logging
         logging.getLogger(__name__).error("PDUFA_PROGRAM_REGISTRY_FAILED error_type=%s", type(exc).__name__)
-        # Do NOT publish an ephemeral/recomputed number if Neon is unavailable.
         raise HTTPException(status_code=503, detail="Persistent program identification unavailable") from None
 
 
 @app.get("/api/workspace/delta", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def read_workspace_delta(since: str = ""):
     from .source_workspace import workspace
-    from .program_registry import number_workspace
+    from .workspace_response import prepared
     from .workspace_delta import publish
     try:
-        return publish(number_workspace(workspace()), since=since or None)
+        snapshot = prepared(workspace())
+        version = snapshot.get("workspaceVersion")
+        if version and since == version:
+            return {"version": version, "unchanged": True, "reset": False,
+                    "asOf": snapshot.get("asOf")}
+        return publish(snapshot, since=since or None)
     except Exception:
         raise HTTPException(status_code=503, detail="Versioned workspace unavailable") from None
 
