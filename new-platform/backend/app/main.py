@@ -546,8 +546,8 @@ def read_workspace():
     try:
         snapshot = number_workspace(workspace())
         from .workspace_delta import publish
-        publish(snapshot)  # Seed version history on every successful full download.
-        return snapshot
+        version = publish(snapshot)["version"]  # Seed version history.
+        return {**snapshot, "workspaceVersion": version}
     except Exception as exc:
         import logging
         logging.getLogger(__name__).error("PDUFA_PROGRAM_REGISTRY_FAILED error_type=%s", type(exc).__name__)
