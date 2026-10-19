@@ -132,8 +132,8 @@ test("Four illustrated top boxes match the reference colors and icons",()=>{
    assert.ok(css.includes(color),"missing reference color "+color);
  }
  assert.match(src,/label:"PIPELINE", count:snapshot \? pageTotals\.PIPELINE : publishedCounts\?\.pipeline \?\? null/);
- assert.match(src,/label:"GEM JR", count:snapshot \? pageTotals\.GEM_JR : publishedCounts\?\.gemJr \?\? null/);
- assert.match(src,/label:"GEM", count:snapshot \? pageTotals\.GEM : publishedCounts\?\.gem \?\? null/);
+ assert.match(src,/label:"GEM JR", count:snapshot \? verifiedStageCount\("GEM_JR"\) : null/);
+ assert.match(src,/label:"GEM", count:snapshot \? verifiedStageCount\("GEM"\) : null/);
  assert.match(src,/label:"WT", count:tagsReady \? pageTotals\.WT : null/);
  assert.match(css,/\.workflow-count-icon svg/);
  assert.match(css,/\.workflow-counts\s*\{\s*display:grid;\s*grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
