@@ -177,8 +177,8 @@ test("Alpaca prominently labels drawn chart lines and exposes a readable mobile-
  const plain=renderToStaticMarkup(React.createElement(StockPlot,{
   bars,large:true,candle:true,visibleStudies:new Set()
  }));
- assert.match(plain,/<strong>CLOSE</strong>/);
- assert.doesNotMatch(plain,/<strong>SMA20</strong>|<strong>Prior 10D high</strong>/,
+ assert.ok(plain.includes("<strong>CLOSE</strong>"));
+ assert.ok(!plain.includes("<strong>SMA20</strong>")&&!plain.includes("<strong>Prior 10D high</strong>"),
    "No unselected indicators may appear in chart key");
  const styles=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
  assert.match(styles,/\.alpaca-line-key \{/);
