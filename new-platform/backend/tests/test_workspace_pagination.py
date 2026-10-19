@@ -21,6 +21,8 @@ def test_page_bounds_and_version(monkeypatch):
         with TestClient(app) as client:
             first = client.get("/api/workspace/page?offset=0&limit=2", headers=headers)
             assert first.status_code == 200
+            assert first.headers["server-timing"].startswith("workspace_page;dur=")
+            assert first.headers["cache-control"] == "private, no-store"
             assert first.json()["total"] == 3
             assert first.json()["version"] == version
             assert len(first.json()["rows"]) == 2
