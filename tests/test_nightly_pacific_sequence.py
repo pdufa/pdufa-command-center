@@ -36,7 +36,7 @@ class PacificAdmissionTests(unittest.TestCase):
     def test_daylight_standard_and_wrong_offset_slots(self):
         for at, cron, expected in (
             ('2026-10-15T04:00:00Z', '0 4 * * *', True),   # 9 PM PDT
-            ('2026-10-15T05:00:00Z', '0 5 * * *', True),   # recovery, 10 PM PDT
+            ('2026-10-15T05:00:00Z', '0 5 * * *', False),  # wrong DST primary slot
             ('2026-01-15T04:00:00Z', '0 4 * * *', False),  # too early in PST
             ('2026-01-15T05:00:00Z', '0 5 * * *', True),   # 9 PM PST
             ('2026-01-15T06:00:00Z', '0 6 * * *', False),  # retired 10 PM PST slot
