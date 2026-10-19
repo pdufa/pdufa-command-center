@@ -2624,3 +2624,39 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
  padding:8px 11px;
  overflow-wrap:anywhere;
 }
+
+/* Always-visible stage totals immediately below the PDUFA section navigation.
+   Each number reflects its corresponding current view, not a hardcoded snapshot. */
+.workflow-counts {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin:2px 0 14px;
+  width:100%;
+}
+.migration-workspace .workflow-count {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
+  text-align:left;
+  padding:11px 14px;
+  border:1px solid #9dbda3;
+  border-radius:9px;
+  background:#f8fcf8;
+  color:#173a25;
+  cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.migration-workspace .workflow-count:hover { background:#e9f5e9; border-color:#2a7042; }
+.migration-workspace .workflow-count:focus-visible { outline:3px solid #17753e; outline-offset:2px; }
+.migration-workspace .workflow-count-selected { background:#e3f1e4; border:2px solid #22633b; padding:10px 13px; }
+.workflow-count-label { font-size:12px; font-weight:800; letter-spacing:.04em; }
+.workflow-count-number { font-size:clamp(22px,2.4vw,32px); line-height:1.1; font-variant-numeric:tabular-nums; }
+.workflow-count-detail { font-size:11px; font-weight:600; color:#4b6653; line-height:1.25; }
+@media(max-width:750px) {
+  .workflow-counts { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+  .migration-workspace .workflow-count { padding:9px 11px; }
+  .migration-workspace .workflow-count-selected { padding:8px 10px; }
+}
