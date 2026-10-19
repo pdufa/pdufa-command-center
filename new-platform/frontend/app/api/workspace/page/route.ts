@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     const headers: Record<string,string> = { "Cache-Control": "private, no-store" };
     const serverTiming = response.headers.get("server-timing");
     // Preserve backend processing metrics for browser network diagnostics.
-    if (serverTiming && /^workspace_page;dur=\\d+(?:\\.\\d+)?$/.test(serverTiming)) {
+    if (serverTiming && /^workspace_page;dur=\d+(?:\.\d+)?$/.test(serverTiming)) {
       headers["Server-Timing"] = serverTiming;
     }
     return NextResponse.json(page, { headers });
