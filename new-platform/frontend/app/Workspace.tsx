@@ -633,6 +633,19 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       (record.drug || "").toLowerCase().includes(gemQuery.toLowerCase()));
   }
 
+  // One source of truth for the top stage bar and the individual page totals.
+  // These are displayed-page records, not independent or hardcoded estimates:
+  // Pipeline: the Pipeline header's current available count.
+  // GEM JR/GEM: the exact filtered list shown in that page's table.
+  // WT: the sum of Watchlist and Trading research cards on its page.
+  const gemPageRows = { GEM_JR: gemCandidateRows("GEM_JR"), GEM: gemCandidateRows("GEM") };
+  const pageTotals: Record<"PIPELINE" | "GEM_JR" | "GEM" | "WT",number> = {
+    PIPELINE: possible.length,
+    GEM_JR: gemPageRows.GEM_JR.length,
+    GEM: gemPageRows.GEM.length,
+    WT: tags.watch.length + tags.trade.length,
+  };
+
   function wtButton(record: Candidate,kind:"watch"|"trade"){
     const id=record.programId||"";
     const current=tags[kind].includes(id);
@@ -686,7 +699,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     ]):null;
     // The candidate table and the live checkbox count must use one pool.
     // Only an explicit VIEW SAVED MEMBERS action displays saved membership.
-    const rows=gemCandidateRows(stage);
+    const rows=gemPageRows[stage];
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
     // Track the exact current stage-membership cycle (including re-entry).
@@ -744,7 +757,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
-        <span className="gem-count">{rows.length.toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
+        <span className="gem-count">{pageTotals[stage].toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
       <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft} onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
         onReset={()=>{
@@ -957,10 +970,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     </div>}
     {top==="PDUFA" && <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
-        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pipeline.length : null, detail:"Published programs"},
-        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? gemCandidateRows("GEM_JR").length : null, detail:gemSavedOnly.GEM_JR?"Saved members":"Current candidate view"},
-        {id:"GEM" as Nav, label:"GEM", count:snapshot ? gemCandidateRows("GEM").length : null, detail:gemSavedOnly.GEM?"Saved members":"Current candidate view"},
-        {id:"WT" as Nav, label:"WT", count:tagsReady ? new Set([...tags.watch,...tags.trade]).size : null, detail:"Unique W/T programs"},
+        {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : null, detail:"Pipeline page total"},
+        {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? pageTotals.GEM_JR : null, detail:gemSavedOnly.GEM_JR?"Saved page total":"GEM JR page total"},
+        {id:"GEM" as Nav, label:"GEM", count:snapshot ? pageTotals.GEM : null, detail:gemSavedOnly.GEM?"Saved page total":"GEM page total"},
+        {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Watch + Trading total"},
       ]).map(item=><button type="button" key={item.id}
         className={"workflow-count"+(nav===item.id?" workflow-count-selected":"")}
         aria-current={nav===item.id?"page":undefined}
@@ -984,7 +997,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
         <p className="subtle">Choose stage, date and trial filters, then press DISPLAY TRIALS to list matching records below.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
-        <span className="counter">{possible.length.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
+        <span className="counter">{pageTotals.PIPELINE.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
         <strong>Streamlit-equivalent Pipeline source total:</strong> {(snapshot.sourceHealth?.pipelineSourceParity?.exactPrograms??pipeline.length).toLocaleString("en-US")}
         {" · Registered trials and results: "+(snapshot.sourceHealth?.pipelineSourceParity?.clinicalAndResults??snapshot.sourceHealth?.clinicalRows??0).toLocaleString("en-US")}
@@ -1044,7 +1057,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <div className="gems-two-blocks">{gemBlock(nav==="GEM_JR"?"GEM_JR":"GEM")}</div>
     </div>}
     {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
-      <h2>WT — Permanent Program ID Watchlist & Trading Research</h2>
+      <div className="sectionhead wt-page-header"><h2>WT — Permanent Program ID Watchlist &amp; Trading Research</h2><span className="counter">{tagsReady ? pageTotals.WT.toLocaleString("en-US") : "—"} total W/T programs</span></div>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
       <WtTopChecklist programs={trackedWtPrograms} onChartControlsChange={(programId,keys)=>setWtChartSelection({programId,keys})}/>
