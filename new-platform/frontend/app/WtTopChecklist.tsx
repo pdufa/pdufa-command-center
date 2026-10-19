@@ -5,8 +5,9 @@ import WtTradingSections from "./WtTradingSections";
 
 export type TrackedWtProgram={programId:string;ticker:string;drug:string;record?:Candidate};
 
-export default function WtTopChecklist({programs}:{programs:TrackedWtProgram[]}){
+export default function WtTopChecklist({programs,onChartControlsChange}:{programs:TrackedWtProgram[];onChartControlsChange?:(programId:string,keys:string[])=>void}){
  const [choice,setChoice]=useState("");
+ const [selectedKeys,setSelectedKeys]=useState<string[]>([]);
  const active=programs.find(x=>x.programId===choice);
  return <section className="panel wt-checklist-primary" aria-label="WT main Entry Stay Exit checklists">
    <div className="sectionhead">
@@ -22,7 +23,7 @@ export default function WtTopChecklist({programs}:{programs:TrackedWtProgram[]})
      <strong>PROGRAM FOR ALPACA NUMBERS</strong>
      <select aria-label="Choose WT program for Alpaca indicators"
        value={active?.programId||""}
-       onChange={e=>setChoice(e.target.value)}>
+       onChange={e=>{const id=e.target.value;setChoice(id);setSelectedKeys([]);onChartControlsChange?.(id,[]);}}>
        <option value="">Choose a WT program to display its Alpaca readings</option>
        {programs.map(p=><option key={p.programId} value={p.programId}>
          {p.ticker} · {p.drug||"Drug not recorded"} · {p.programId}
@@ -40,6 +41,8 @@ export default function WtTopChecklist({programs}:{programs:TrackedWtProgram[]})
      record={active?.record}
      tech={active?.record?.technical}
      autoFetch={Boolean(active)}
+     checkedKeys={selectedKeys}
+     onCheckedKeysChange={keys=>{setSelectedKeys(keys);onChartControlsChange?.(active?.programId||"",keys);}}
    />
  </section>;
 }
