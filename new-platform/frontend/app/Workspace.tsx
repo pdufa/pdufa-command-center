@@ -600,9 +600,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [earlyPageQuery, setEarlyPageQuery] = useState("");
   const [earlyAppliedQuery, setEarlyAppliedQuery] = useState("");
   const [earlySearchLoading, setEarlySearchLoading] = useState(false);
+  const earlyRequestSequence = useRef(0);
   const earlyVisibleRows = earlyPipelinePage?.rows ?? [];
   async function searchEarlyPipeline(query: string) {
     if (earlySearchLoading || query.length > 100) return;
+    const requestSequence = ++earlyRequestSequence.current;
     setEarlySearchLoading(true);
     setEarlyPageError("");
     try {
@@ -621,17 +623,22 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           !(page.nextOffset === null || page.nextOffset === page.rows.length)) {
         throw new Error("Invalid search page");
       }
+      if (requestSequence !== earlyRequestSequence.current) return;
       setEarlyPipelinePage({version:page.version,total:page.total as number,
         rows:page.rows as Candidate[],nextOffset:page.nextOffset as number|null});
       setEarlyAppliedQuery(query.trim());
     } catch {
-      setEarlyPageError("Pipeline search unavailable; previous results retained.");
-    } finally {setEarlySearchLoading(false);}
+      if (requestSequence === earlyRequestSequence.current)
+        setEarlyPageError("Pipeline search unavailable; previous results retained.");
+    } finally {
+      if (requestSequence === earlyRequestSequence.current) setEarlySearchLoading(false);
+    }
   }
   const [earlyPageError, setEarlyPageError] = useState("");
   async function loadNextEarlyPage() {
     const page = earlyPipelinePage;
     if (!page || page.nextOffset === null || earlyPageLoading) return;
+    const requestSequence = earlyRequestSequence.current;
     setEarlyPageLoading(true);
     setEarlyPageError("");
     try {
@@ -658,13 +665,15 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             (next.nextOffset as number) === page.nextOffset + next.rows.length))) {
         throw new Error("Inconsistent page");
       }
+      if (requestSequence !== earlyRequestSequence.current) return;
       setEarlyPipelinePage(current => current && current.version === page.version &&
         current.rows.length === page.nextOffset ? {
           ...current, rows: [...current.rows, ...(next.rows as Candidate[])],
           nextOffset: next.nextOffset as number|null,
         } : current);
     } catch {
-      setEarlyPageError("Next page unavailable. Existing preview is unchanged.");
+      if (requestSequence === earlyRequestSequence.current)
+        setEarlyPageError("Next page unavailable. Existing preview is unchanged.");
     } finally { setEarlyPageLoading(false); }
   }
   useEffect(() => {
