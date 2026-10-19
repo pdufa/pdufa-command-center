@@ -595,7 +595,46 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
   // Early, explicitly unfiltered preview. Authoritative filtering still uses
   // the verified full snapshot; never use a partial page for eligibility.
-  const [earlyPipelinePage, setEarlyPipelinePage] = useState<{total:number;rows:Candidate[]}|null>(null);
+  const [earlyPipelinePage, setEarlyPipelinePage] = useState<{total:number;version:string;rows:Candidate[];nextOffset:number|null}|null>(null);
+  const [earlyPageLoading, setEarlyPageLoading] = useState(false);
+  const [earlyPageError, setEarlyPageError] = useState("");
+  async function loadNextEarlyPage() {
+    const page = earlyPipelinePage;
+    if (!page || page.nextOffset === null || earlyPageLoading) return;
+    setEarlyPageLoading(true);
+    setEarlyPageError("");
+    try {
+      const params = new URLSearchParams({
+        offset: String(page.nextOffset), limit: "50", version: page.version,
+      });
+      const response = await fetch("/api/workspace/page?" + params.toString(), {
+        cache: "no-store", signal: AbortSignal.timeout(45000),
+      });
+      if (response.status === 409) {
+        setEarlyPipelinePage(null);
+        setEarlyPageError("Published candidates changed. Reload the page to restart the preview.");
+        return;
+      }
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const data: unknown = await response.json();
+      if (!data || typeof data !== "object") throw new Error("Invalid response");
+      const next = data as {version?:unknown;total?:unknown;offset?:unknown;nextOffset?:unknown;rows?:unknown};
+      if (next.version !== page.version || next.total !== page.total ||
+          next.offset !== page.nextOffset || !Array.isArray(next.rows) ||
+          next.rows.length === 0 || next.rows.length > 50 ||
+          !(next.nextOffset === null || (Number.isSafeInteger(next.nextOffset) &&
+            (next.nextOffset as number) === page.nextOffset + next.rows.length))) {
+        throw new Error("Inconsistent page");
+      }
+      setEarlyPipelinePage(current => current && current.version === page.version &&
+        current.rows.length === page.nextOffset ? {
+          ...current, rows: [...current.rows, ...(next.rows as Candidate[])],
+          nextOffset: next.nextOffset as number|null,
+        } : current);
+    } catch {
+      setEarlyPageError("Next page unavailable. Existing preview is unchanged.");
+    } finally { setEarlyPageLoading(false); }
+  }
   useEffect(() => {
     const ctrl = new AbortController();
     void (async () => {
@@ -607,9 +646,15 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         if (!response.ok) return;
         const data: unknown = await response.json();
         if (!data || typeof data !== "object") return;
-        const page = data as {total?:unknown;rows?:unknown};
-        if (!Number.isSafeInteger(page.total) || (page.total as number) < 0 || !Array.isArray(page.rows) || page.rows.length > 50) return;
-        if (!ctrl.signal.aborted) setEarlyPipelinePage({total:page.total as number,rows:page.rows as Candidate[]});
+        const page = data as {total?:unknown;version?:unknown;rows?:unknown;nextOffset?:unknown};
+        if (!Number.isSafeInteger(page.total) || (page.total as number) < 0 ||
+            typeof page.version !== "string" || !/^[a-f0-9]{64}$/.test(page.version) ||
+            !Array.isArray(page.rows) || page.rows.length > 50 ||
+            !(page.nextOffset === null || page.nextOffset === page.rows.length)) return;
+        if (!ctrl.signal.aborted) setEarlyPipelinePage({
+          total:page.total as number,version:page.version,rows:page.rows as Candidate[],
+          nextOffset:page.nextOffset as number|null,
+        });
       } catch { /* Preview is optional; full verified workspace remains authoritative. */ }
     })();
     return () => ctrl.abort();
@@ -1387,7 +1432,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <td>{candidate.ticker || "—"}</td><td>{candidate.drug || candidate.id}</td>
           </tr>)}
         </tbody></table></div>
+        {earlyPipelinePage.nextOffset !== null && <button type="button" className="secondary"
+          onClick={() => { void loadNextEarlyPage(); }} disabled={earlyPageLoading}>
+          {earlyPageLoading ? "LOADING NEXT 50…" : "SHOW NEXT 50 CANDIDATES"}
+        </button>}
+        {earlyPageError && <p role="alert">{earlyPageError}</p>}
       </div>}
+      {!earlyPipelinePage && earlyPageError && <p role="alert">{earlyPageError}</p>}
 
       <button type="button" className="secondary" onClick={() => {
         if (!refreshing) { setFetchError("Loading candidates once…"); setFetchVersion(value => value + 1); }
