@@ -227,3 +227,38 @@ test("FS and FA buttons display side by side with separate states and selections
  assert.match(css,/\.wt-checklist-preset-button:first-child \{\s*border-right:0/);
  assert.match(css,/display:inline-flex;flex:0 0 auto;flex-wrap:nowrap/);
 });
+
+test("ENTRY FS preset is exactly the five requested signal and trade-risk indicators",()=>{
+ const {suggestedWtIndicators,areWtSuggestedIndicatorsChecked,wtEffectivePresetKeys}=require("../app/WtTradingSections.tsx");
+ const chosen=["entry-score","entry-breakout","entry-dollar","entry-trigger","entry-stop"];
+ assert.deepEqual(suggestedWtIndicators.entry,chosen);
+ assert.deepEqual(wtEffectivePresetKeys([],"entry",{fs:true,fa:false}),chosen);
+ assert.equal(areWtSuggestedIndicatorsChecked(chosen,"entry"),true);
+ assert.equal(areWtSuggestedIndicatorsChecked(chosen.slice(0,4),"entry"),false);
+ assert.equal(areWtSuggestedIndicatorsChecked(["entry-base","entry-trend","entry-rvol","entry-rsi","entry-atr"],"entry"),false);
+ // Different trading stages retain their existing, independent FS presets.
+ assert.deepEqual(suggestedWtIndicators.stay,["stay-trend","stay-support","stay-rsi","stay-volume"]);
+ assert.deepEqual(suggestedWtIndicators.exit,["exit-two-close","exit-support","exit-atr-trail","exit-rsi"]);
+});
+
+test("ENTRY FS illuminates when the five checkboxes are selected manually and goes dark if one unchecks",()=>{
+ const {suggestedWtIndicators}=require("../app/WtTradingSections.tsx");
+ for(const [keys,expected] of [
+  [suggestedWtIndicators.entry,"true"],
+  [suggestedWtIndicators.entry.slice(1),"false"]
+ ]){
+  // Even when the persisted FS flag is false, selection drives active state.
+  const html=renderToStaticMarkup(React.createElement(WtSections,{
+   programId:"PDUFA-000333",ticker:"TEST",activeGroup:"entry",compact:true,
+   checkedKeys:keys,presetFlags:{fs:false,fa:false},onPresetToggle:()=>{}
+  }));
+  const button=html.match(/<button[^>]*aria-label="FS — toggle suggested ENTRY[^>]*>FS<\/button>/);
+  assert.ok(button,"FS button must always remain visible");
+  assert.match(button[0],new RegExp('aria-pressed="'+expected+'"'));
+  assert.match(html,/>FA<\/button>/,"FA button stays independently available");
+ }
+ const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
+ assert.match(workspace,/const turnFsOff=mode==="FS"&&areWtSuggestedIndicatorsChecked\(prior\.keys\[stage\],stage\)/);
+ assert.match(workspace,/manualKeys:\{\.\.\.prior\.manualKeys,\[stage\]:manual\}/);
+ assert.match(workspace,/presets:\{\.\.\.prior\.presets,\[stage\]:\{\.\.\.prior\.presets\[stage\],fs:false\}\}/);
+});

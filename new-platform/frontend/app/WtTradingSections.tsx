@@ -15,10 +15,16 @@ type EntryReply={
 };
 const emptyOpen:Record<GroupId,boolean>={entry:false,stay:false,exit:false};
 export const suggestedWtIndicators:Record<GroupId,readonly string[]>={
- entry:["entry-base","entry-trend","entry-rvol","entry-rsi","entry-atr"],
+ entry:["entry-score","entry-breakout","entry-dollar","entry-trigger","entry-stop"],
  stay:["stay-trend","stay-support","stay-rsi","stay-volume"],
  exit:["exit-two-close","exit-support","exit-atr-trail","exit-rsi"],
 };
+/** The FS button reflects the real five selected checkboxes, regardless of how they were selected. */
+export function areWtSuggestedIndicatorsChecked(selected:readonly string[],group:GroupId):boolean{
+ const checked=new Set(selected);
+ const required=suggestedWtIndicators[group];
+ return required.length>0&&required.every(key=>checked.has(key));
+}
 export type WtPresetFlags={fs:boolean;fa:boolean};
 export function nextWtPresetFlags(flags:WtPresetFlags,mode:"FS"|"FA"):WtPresetFlags{
  return mode==="FS"?{...flags,fs:!flags.fs}:{...flags,fa:!flags.fa};
@@ -196,7 +202,7 @@ export default function WtTradingSections({
        <button type="button" className="wt-checklist-preset-button"
         aria-label={"FS — toggle suggested "+group.id.toUpperCase()+" indicators for "+ticker}
         title="FS — suggested indicators; click again to uncheck them"
-        aria-pressed={presetFlags?.fs??suggestedWtIndicators[group.id].every(key=>checked.includes(key))}
+        aria-pressed={areWtSuggestedIndicatorsChecked(checked,group.id)}
         onClick={()=>onPresetToggle?onPresetToggle("FS"):updateChecked(nextWtPresetSelection(checked,group.id,"FS"))}>FS</button>
        <button type="button" className="wt-checklist-preset-button"
         aria-label={"FA — unassigned independent toggle for "+ticker+" "+group.id.toUpperCase()}

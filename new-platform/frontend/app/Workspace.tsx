@@ -6,7 +6,7 @@ import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
 import EntrySignal from "./EntrySignal";
 import IndicatorParityTables from "./IndicatorParityTables";
-import WtTradingSections, {nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
+import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
@@ -112,7 +112,7 @@ function normalizeWtPreference(value:unknown):WtTrialIndicatorPreference {
     const rawFlags=sourceManual?sourcePresets[stage]:null;
     if(rawFlags&&typeof rawFlags==="object"&&!Array.isArray(rawFlags)){
       const flags=rawFlags as Record<string,unknown>;
-      presets[stage]={fs:flags.fs===true,fa:false};
+      presets[stage]={fs:flags.fs===true,fa:flags.fa===true};
     }
     keys[stage]=wtEffectivePresetKeys(manualKeys[stage],stage,presets[stage]);
   }
@@ -541,13 +541,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     const manual=[...new Set(keys.filter(key=>allowed.has(key)))];
     setWtTrialPreferences(current=>{
       const prior=current[programId]||emptyWtPreference();
-      // Manual edits take precedence. Clear both preset flags for this stage
-      // while leaving all other stages and programs untouched.
+      // A manual checkbox edit replaces the FS preset for this stage.
+      // Preserve FA's independent state and settings for other programs/stages.
       return {...current,[programId]:{
         ...prior,
         keys:{...prior.keys,[stage]:manual},
         manualKeys:{...prior.manualKeys,[stage]:manual},
-        presets:{...prior.presets,[stage]:{fs:false,fa:false}},
+        presets:{...prior.presets,[stage]:{...prior.presets[stage],fs:false}},
         configured:prior.configured.includes(stage)?prior.configured:[...prior.configured,stage],
       }};
     });
@@ -555,11 +555,21 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   function toggleWtTrialPreset(programId:string,stage:WtTrialStage,mode:"FS"|"FA"){
     setWtTrialPreferences(current=>{
       const prior=current[programId]||emptyWtPreference();
-      const flags=nextWtPresetFlags(prior.presets[stage],mode);
+      // FS follows all five visible checkmarks, not a stale stored boolean.
+      // Thus clicking an already-lit FS turns off exactly its five indicators,
+      // including when they were checked manually. FA remains independent.
+      const turnFsOff=mode==="FS"&&areWtSuggestedIndicatorsChecked(prior.keys[stage],stage);
+      const manual=turnFsOff?prior.manualKeys[stage].filter(
+        key=>!suggestedWtIndicators[stage].includes(key)
+      ):prior.manualKeys[stage];
+      const flags=mode==="FS"
+        ?{...prior.presets[stage],fs:!turnFsOff}
+        :nextWtPresetFlags(prior.presets[stage],"FA");
       return {...current,[programId]:{
         ...prior,
         presets:{...prior.presets,[stage]:flags},
-        keys:{...prior.keys,[stage]:wtEffectivePresetKeys(prior.manualKeys[stage],stage,flags)},
+        manualKeys:{...prior.manualKeys,[stage]:manual},
+        keys:{...prior.keys,[stage]:wtEffectivePresetKeys(manual,stage,flags)},
         configured:prior.configured.includes(stage)?prior.configured:[...prior.configured,stage],
       }};
     });
