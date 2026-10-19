@@ -84,7 +84,13 @@ async function readWorkspaceCache(): Promise<Snapshot | null> {
   try {
     return await new Promise((resolve, reject) => {
       const request = db.transaction("snapshots", "readonly").objectStore("snapshots").get("lastVerified");
-      request.onsuccess = () => resolve(validWorkspaceSnapshot(request.result) ? request.result : null);
+      request.onsuccess = () => {
+        if (validWorkspaceSnapshot(request.result)) { resolve(request.result); return; }
+        // Recover from the previous verified copy if the newest slot is missing or invalid.
+        const fallback = db.transaction("snapshots", "readonly").objectStore("snapshots").get("previousVerified");
+        fallback.onsuccess = () => resolve(validWorkspaceSnapshot(fallback.result) ? fallback.result : null);
+        fallback.onerror = () => reject(fallback.error);
+      };
       request.onerror = () => reject(request.error);
     });
   } finally { db.close(); }
@@ -95,7 +101,12 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
   try {
     await new Promise<void>((resolve, reject) => {
       const transaction = db.transaction("snapshots", "readwrite");
-      transaction.objectStore("snapshots").put(snapshot, "lastVerified");
+      const store = transaction.objectStore("snapshots");
+      const previous = store.get("lastVerified");
+      previous.onsuccess = () => {
+        if (validWorkspaceSnapshot(previous.result)) store.put(previous.result, "previousVerified");
+        store.put(snapshot, "lastVerified");
+      };
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);
       transaction.onabort = () => reject(transaction.error);
