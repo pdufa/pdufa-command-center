@@ -133,7 +133,8 @@ test("Each trial can select ENTRY STAY EXIT or NONE beside its ticker",()=>{
  const chart=src.indexOf('<div className="wt-screenwide-chart"',dropdown);
  assert.ok(ticker>=0&&dropdown>ticker&&chart>dropdown,
   "Stage dropdown must be beside the ticker, before the independent chart");
- assert.match(src,/keys:\{\.\.\.prior\.keys,\[stage\]:\[\.\.\.new Set\(keys\.filter\(key=>allowed\.has\(key\)\)\)\]\}/);
+ assert.match(src,/keys:\{\.\.\.prior\.keys,\[stage\]:manual\}/);
+ assert.match(src,/manualKeys:\{\.\.\.prior\.manualKeys,\[stage\]:manual\}/);
  assert.match(src,/return \{\.\.\.current,\[programId\]:\{\.\.\.prior,stage\}\}/);
  assert.doesNotMatch(src,/WT_STAGE_PRESETS|firstUse/);
  assert.match(src,/window\.localStorage\.setItem\(/);
@@ -151,7 +152,7 @@ test("Choosing EXIT beside a ticker immediately reveals nine independent checkbo
  assert.equal((html.match(/type="checkbox"/g)||[]).length,9);
  assert.equal((html.match(/checked=""/g)||[]).length,2);
  assert.doesNotMatch(html,/aria-expanded="false"/);
- assert.match(html,/chart-compatible options appear on its Alpaca chart/);
+ assert.match(html,/The two buttons operate independently/);
 });
 
 test("Selecting ENTRY or STAY immediately shows only that category's available options",()=>{
