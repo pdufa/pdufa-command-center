@@ -27,8 +27,7 @@ export default function FullTrialDownload() {
   useEffect(() => {
     const controller = new AbortController();
     void reload(controller.signal);
-    const timer = setInterval(() => { void reload(controller.signal); }, 15000);
-    return () => { controller.abort(); clearInterval(timer); };
+    return () => { controller.abort(); };
   }, [reload]);
 
   async function collect(refresh = false) {
