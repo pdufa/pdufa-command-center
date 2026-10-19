@@ -50,7 +50,13 @@ export async function GET(req: NextRequest) {
         !Number.isSafeInteger(page.total) ||
         !Array.isArray(page.rows) ||
         page.rows.length > Number(limitText)) throw new Error("Malformed page");
-    return NextResponse.json(page, { headers: { "Cache-Control": "private, no-store" } });
+    const headers: Record<string,string> = { "Cache-Control": "private, no-store" };
+    const serverTiming = response.headers.get("server-timing");
+    // Preserve backend processing metrics for browser network diagnostics.
+    if (serverTiming && /^workspace_page;dur=\\d+(?:\\.\\d+)?$/.test(serverTiming)) {
+      headers["Server-Timing"] = serverTiming;
+    }
+    return NextResponse.json(page, { headers });
   } catch {
     return NextResponse.json({ error: "Pipeline page unavailable" },
       { status: 503, headers: { "Cache-Control": "private, no-store" } });
