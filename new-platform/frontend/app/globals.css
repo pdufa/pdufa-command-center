@@ -2425,101 +2425,172 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
  background:#fff;color:#12382a}
 .wt-checklist-primary .wt-trading-sections{margin:13px 0 0}
 
-/* WT screen-width charts with responsive multiple-column DATA.
-   Only WT receives this layout: GEM and GEM JR chart/table sizing is unchanged. */
-.wt-page .wt-panels {
-  grid-template-columns:minmax(0,1fr);
-}
-.wt-page .wt-program-masonry {
-  display:grid;
-  grid-template-columns:minmax(0,1fr);
-  columns:auto;
-  column-count:1;
-  column-fill:auto;
-  width:100%;
-  min-width:0;
-}
-.wt-page .wt-program-masonry > .wt-stock {
+/* WT V2 structural layout: NO masonry, NO two-column stock cards, NO narrow
+   chart wrapper. Each chart is a full-width sibling of multi-column data. */
+.wt-page {
   display:block;
   width:100%;
-  max-width:100%;
+  max-width:none;
   min-width:0;
-  box-sizing:border-box;
-  margin:0 0 clamp(12px,1.5vw,22px);
-  break-inside:auto;
 }
-.wt-page .wt-stock .wt-research-column {
+.wt-page .wt-screenwide-stages {
+  display:block;
+  width:100%;
+  min-width:0;
+  max-width:none;
+  margin:16px 0;
+}
+.wt-page .wt-screenwide-stages > .wt-screenwide-stage {
+  display:block;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  margin:0 0 clamp(14px,1.5vw,24px);
+  padding:clamp(9px,1vw,20px);
+}
+.wt-page .wt-screenwide-list {
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  gap:clamp(12px,1vw,20px);
+}
+.wt-page .wt-screenwide-stock {
   display:grid;
   grid-template-columns:minmax(0,1fr);
-  gap:clamp(10px,1vw,18px);
+  gap:clamp(10px,1vw,16px);
+  align-items:start;
+  width:100%;
+  max-width:none;
+  min-width:0;
+  padding:clamp(10px,1vw,18px);
+  border:2px solid #c3d7c8;
+  border-radius:10px;
+  background:#fff;
+  box-sizing:border-box;
+}
+.wt-page .wt-screenwide-stock > * {
+  grid-column:1/-1;
   width:100%;
   min-width:0;
+  max-width:none;
 }
-.wt-page .wt-stock .wt-research-column > * {min-width:0;max-width:100%;width:100%;}
-.wt-page .wt-stock .alpaca-stock-chart {
+.wt-page .wt-screenwide-identity {
+  display:flex;
+  flex-flow:row wrap;
+  gap:8px 12px;
+  align-items:center;
+  padding:0 0 8px;
+  border-bottom:1px solid #d7e5d9;
+}
+.wt-page .wt-screenwide-identity h3 {margin:0;}
+.wt-page .wt-screenwide-identity > p {flex:1 1 240px;min-width:0;margin:0;}
+.wt-page .wt-screenwide-identity > button {
+  flex:0 1 auto;
+  width:auto;
+  min-width:0;
+}
+.wt-page .wt-screenwide-entry,
+.wt-page .wt-screenwide-chart,
+.wt-page .wt-screenwide-data {
+  display:block;
+  min-width:0;
   width:100%;
-  grid-column:1/-1;
+  max-width:none;
   margin:0;
 }
-.wt-page .wt-stock .alpaca-plot-box,
-.wt-page .wt-stock .alpaca-plot {width:100%;max-width:100%;}
-/* The chart spans the screen; table-based reference data auto-flow
-   into 2+ readable columns on larger displays, 1 on phone/tablet. */
-.wt-page .wt-stock .indicator-tables-separate {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,620px),1fr));
-  align-items:start;
-  gap:clamp(10px,1vw,16px);
-  padding:0 12px 12px;
+.wt-page .wt-screenwide-chart {
+  /* Chart gets the whole stock row: it is NOT nested in a data column. */
+  grid-column:1/-1;
+  overflow:visible;
+}
+.wt-page .wt-screenwide-chart > .alpaca-stock-chart {
+  display:block;
   width:100%;
-  box-sizing:border-box;
+  max-width:none;
+  min-width:0;
+  margin:0;
+}
+.wt-page .wt-screenwide-chart :is(.alpaca-header,.alpaca-range,.alpaca-plot-box,.alpaca-plot) {
+  width:100%;
+  max-width:none;
   min-width:0;
 }
-.wt-page .wt-stock .indicator-tables-separate > header {
+.wt-page .wt-screenwide-chart .alpaca-plot {display:block;height:auto;}
+.wt-page .wt-screenwide-data > .wt-score-details {
+  width:100%;
+  max-width:none;
+  min-width:0;
+  margin:0;
+}
+.wt-page .wt-screenwide-data .indicator-tables-separate {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,540px),1fr));
+  align-items:start;
+  gap:clamp(10px,1vw,17px);
+  padding:0 12px 12px;
+  width:100%;
+  min-width:0;
+  max-width:none;
+}
+.wt-page .wt-screenwide-data .indicator-tables-separate > header {
   grid-column:1/-1;
   margin:0 -12px;
 }
-.wt-page .wt-stock .indicator-tables-separate > p {
+.wt-page .wt-screenwide-data .indicator-tables-separate > p {
   grid-column:1/-1;
   margin:0;
   padding:0 0 3px;
 }
-.wt-page .wt-stock .indicator-tables-separate > .table-scroll {
+.wt-page .wt-screenwide-data .indicator-tables-separate > .table-scroll {
   min-width:0;
   max-width:100%;
+  width:100%;
   margin:0;
   align-self:start;
+  overflow-x:auto;
 }
-.wt-page .wt-stock .indicator-tables-separate > .entryexit-table-grid {
+.wt-page .wt-screenwide-data .indicator-tables-separate > .entryexit-table-grid {
   min-width:0;
   max-width:100%;
+  width:100%;
   padding:0;
   margin:0;
   grid-template-columns:minmax(0,1fr);
   align-self:start;
 }
-.wt-page .wt-stock .indicator-tables-separate > .eight-indicators {
+.wt-page .wt-screenwide-data .indicator-tables-separate > .eight-indicators {
   min-width:0;
   max-width:100%;
+  width:100%;
   margin:0;
   padding:12px;
   border:1px solid #c4d4dd;
   border-radius:7px;
   background:#f8fbfe;
 }
-.wt-page .wt-stock .eight-indicators .table-scroll {min-width:0;width:100%;max-width:100%;overflow-x:auto;}
-.wt-page .wt-stock .wt-score-details .research-score-cards {
+.wt-page .wt-screenwide-data .eight-indicators .table-scroll {
+  min-width:0;
+  max-width:100%;
+  width:100%;
+  overflow-x:auto;
+}
+.wt-page .wt-screenwide-data .wt-score-details .research-score-cards {
   grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
 }
 .wt-page .wt-check-grid {
   grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));
 }
-@media (max-width:700px) {
-  .wt-page .wt-stock .indicator-tables-separate {
+@media(max-width:700px) {
+  .wt-page .wt-screenwide-stages > .wt-screenwide-stage {padding:9px;}
+  .wt-page .wt-screenwide-stock {padding:8px;gap:9px;}
+  .wt-page .wt-screenwide-identity > button {flex:1 1 100%;width:100%;}
+  .wt-page .wt-screenwide-data .indicator-tables-separate {
     grid-template-columns:minmax(0,1fr);
     padding:0 8px 8px;
   }
-  .wt-page .wt-stock .indicator-tables-separate > header {margin:0 -8px;}
-  .wt-page .wt-stock .wt-score-details {padding:10px;}
+  .wt-page .wt-screenwide-data .indicator-tables-separate > header {margin:0 -8px;}
+  .wt-page .wt-screenwide-data .wt-score-details {padding:10px;}
   .wt-page .wt-check-grid {grid-template-columns:minmax(0,1fr);}
 }

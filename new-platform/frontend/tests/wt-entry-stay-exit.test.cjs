@@ -144,7 +144,7 @@ test("Top-level WT program chooser maps exact program IDs without selecting boxe
  assert.equal((html.match(/aria-expanded="false"/g)||[]).length,3);
  const workspace=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  const top=workspace.indexOf('<WtTopChecklist programs={trackedWtPrograms}/>');
- const list=workspace.indexOf('<div className="wt-panels">');
+ const list=workspace.indexOf('<div className="wt-screenwide-stages">');
  assert.ok(top>=0&&list>top,"Top WT checklists must render BEFORE per-program stock panels");
  assert.ok(!workspace.includes('<WtTradingSections key={programId+"|"+ticker}'),"Old nested section must be removed");
 });
