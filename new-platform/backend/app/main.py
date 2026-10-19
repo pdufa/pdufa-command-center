@@ -619,9 +619,8 @@ def trial_market_data(stage: str, ticker: str, feed: str = "sip"):
 def read_workspace_summary():
     """Return verified counts without transferring the full trial inventory."""
     from .source_workspace import workspace
-    from .program_registry import number_workspace
     try:
-        published = number_workspace(workspace())
+        published = workspace()
         health = published.get("sourceHealth") or {}
         parity = health.get("streamlitPipelineParity") or health.get("pipelineSourceParity") or {}
         total = len(published.get("pipeline") or [])
