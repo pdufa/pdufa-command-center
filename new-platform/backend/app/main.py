@@ -552,6 +552,17 @@ def read_workspace():
         raise HTTPException(status_code=503, detail="Persistent program identification unavailable") from None
 
 
+@app.get("/api/workspace/delta", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def read_workspace_delta(since: str = ""):
+    from .source_workspace import workspace
+    from .program_registry import number_workspace
+    from .workspace_delta import publish
+    try:
+        return publish(number_workspace(workspace()), since=since or None)
+    except Exception:
+        raise HTTPException(status_code=503, detail="Versioned workspace unavailable") from None
+
+
 @app.get("/api/watch-trade", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def get_watch_trade():
     with Session(ENGINE) as session:
