@@ -1038,7 +1038,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             <div className="wt-research-column">
               {ticker ? <>
                 <EntrySignal ticker={ticker} programId={programId}/>
-                <AlpacaStockChart ticker={ticker} programId={programId} compact />
+                <AlpacaStockChart ticker={ticker} programId={programId} />
                 <WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />
               </> : <p className="subtle">Ticker unavailable in stored identity; price chart withheld.</p>}
             </div>
