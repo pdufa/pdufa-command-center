@@ -13,14 +13,14 @@ function rule(selector){
  return layout.slice(bodyStart,layout.indexOf("}",bodyStart));
 }
 test("WT charts are outside old masonry/research-column containers",()=>{
- const chart=workspace.indexOf('<div className="wt-screenwide-chart">');
+ const chart=workspace.indexOf('<div className="wt-screenwide-chart" id={"wt-chart-"+programId}>');
  const entry=workspace.indexOf('<div className="wt-screenwide-entry">');
  const data=workspace.indexOf('<div className="wt-screenwide-data">');
  assert.ok(entry>=0&&chart>entry&&data>chart,"Chart has a separate full-width block before data");
  const segment=workspace.slice(entry,data);
  assert.match(segment,/<EntrySignal ticker=\{ticker\} programId=\{programId\}\/>/);
- assert.match(segment,/<AlpacaStockChart ticker=\{ticker\} programId=\{programId\} \/>/);
- assert.match(segment,/<\/div>\s*<div className="wt-screenwide-chart">/,"Chart is not inside entry");
+ assert.match(segment,/<AlpacaStockChart ticker=\{ticker\} programId=\{programId\} wtIndicatorKeys=/);
+ assert.match(segment,/<\/div>\s*<div className="wt-screenwide-chart"/,"Chart is not inside entry");
  assert.match(workspace,/<\/div>\s*<div className="wt-screenwide-data">/,"Data does not contain chart");
  assert.doesNotMatch(workspace,/<AlpacaStockChart ticker=\{ticker\} programId=\{programId\} compact \/>/);
  const wt=workspace.slice(workspace.indexOf('<div className="wt-screenwide-stages">'));
@@ -52,12 +52,12 @@ test("WT-only data uses responsive multiple columns without changing GEM",()=>{
 });
 test("All WT program controls, research indicators and charts remain",()=>{
  for(const term of [
-  "<WtTopChecklist programs={trackedWtPrograms}/>",
+  "<WtTopChecklist programs={trackedWtPrograms} onChartControlsChange=",
   '<div className="wt-screenwide-stages">',
   '<div className="wt-screenwide-list">',
   '<article className="wt-screenwide-stock"',
   "<EntrySignal ticker={ticker} programId={programId}/>",
-  "<AlpacaStockChart ticker={ticker} programId={programId} />",
+  "<AlpacaStockChart ticker={ticker} programId={programId} wtIndicatorKeys=",
   "<WTIndicatorDetails programId={programId} record={selectedRecord} ticker={ticker} />",
   "MOVE PROGRAM TO TRADING RESEARCH",
   "RETURN PROGRAM TO WATCHLIST",
