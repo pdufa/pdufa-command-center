@@ -8,8 +8,10 @@ def test_page_bounds_and_version(monkeypatch):
     monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-secret")
     app.dependency_overrides[require_storage] = lambda: None
     headers = {"X-PDUFA-Internal-Key": "test-only-secret"}
-    snapshot = {"pipeline": [{"id": "PDUFA-000001"}, {"id": "PDUFA-000002"},
-                             {"id": "PDUFA-000003"}], "asOf": "2026-10-19",
+    snapshot = {"pipeline": [{"id": "PDUFA-000001", "ticker": "ACME", "drug": "Alpha"},
+                             {"id": "PDUFA-000002", "ticker": "BETA", "drug": "BetaRx"},
+                             {"id": "PDUFA-000003", "ticker": "ACME", "drug": "Gamma"}],
+                "asOf": "2026-10-19",
                 "sourceHealth": {"streamlitPipelineParity": {"exactPrograms": 3}}}
     version = "a" * 64
     monkeypatch.setattr(source_workspace, "workspace", lambda: snapshot)
@@ -29,6 +31,20 @@ def test_page_bounds_and_version(monkeypatch):
             assert last.json()["nextOffset"] is None
             match = client.get("/api/workspace/page?query=PDUFA-000002", headers=headers)
             assert match.status_code == 200
+            ticker_match = client.get("/api/workspace/page?query=acme&limit=1", headers=headers)
+            assert ticker_match.status_code == 200
+            assert ticker_match.json()["total"] == 2
+            assert ticker_match.json()["nextOffset"] == 1
+            ticker_next = client.get(
+                f"/api/workspace/page?query=acme&offset=1&limit=1&version={version}",
+                headers=headers,
+            )
+            assert ticker_next.status_code == 200
+            assert ticker_next.json()["rows"][0]["id"] == "PDUFA-000003"
+            assert ticker_next.json()["nextOffset"] is None
+            drug_match = client.get("/api/workspace/page?query=betarx", headers=headers)
+            assert drug_match.json()["total"] == 1
+            assert drug_match.json()["rows"][0]["ticker"] == "BETA"
             assert match.json()["total"] == 1
             assert [row["id"] for row in match.json()["rows"]] == ["PDUFA-000002"]
             assert client.get("/api/workspace/page?query=" + "x" * 101,
