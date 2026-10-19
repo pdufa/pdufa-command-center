@@ -2594,3 +2594,33 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .wt-page .wt-screenwide-data .wt-score-details {padding:10px;}
   .wt-page .wt-check-grid {grid-template-columns:minmax(0,1fr);}
 }
+
+/* WT checkboxes are also chart visibility controls for the exact selected
+   Program ID; clearly separate plotted daily studies from research-only rows. */
+.wt-page .wt-check-chart-effect{
+ display:block;
+ font-size:10px;
+ font-weight:750;
+ color:#205d75;
+ background:#eaf5fa;
+ border-left:3px solid #3285a6;
+ padding:5px 7px;
+ overflow-wrap:anywhere;
+}
+.wt-page .wt-check-group a[href^="#wt-chart-"],
+.wt-page .wt-trading-sections a[href^="#wt-chart-"] {
+ color:#126389;
+ text-decoration:underline;
+ font-weight:800;
+}
+.wt-page .wt-screenwide-chart {scroll-margin-top:22px;}
+.wt-page .alpaca-wt-indicator-status{
+ border-bottom:1px solid #b6d6d4;
+ background:#e9f5f2;
+ color:#23554c;
+ font-size:11px;
+ font-weight:750;
+ line-height:1.45;
+ padding:8px 11px;
+ overflow-wrap:anywhere;
+}
