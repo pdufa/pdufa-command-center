@@ -4,11 +4,12 @@ from __future__ import annotations
 import os
 import re
 import secrets
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, create_engine, select, update
@@ -640,7 +641,7 @@ def read_workspace_summary():
 
 
 @app.get("/api/workspace/page", dependencies=[Depends(require_internal_key), Depends(require_storage)])
-def read_workspace_page(offset: int = 0, limit: int = 50, version: str = "", query: str = ""):
+def read_workspace_page(response: Response, offset: int = 0, limit: int = 50, version: str = "", query: str = ""):
     """Bounded, version-checked pipeline page; counts always describe the full snapshot.
 
     A version mismatch returns 409 so clients cannot silently combine pages
@@ -654,6 +655,7 @@ def read_workspace_page(offset: int = 0, limit: int = 50, version: str = "", que
     from .source_workspace import workspace
     from .program_registry import number_workspace
     from .workspace_delta import publish
+    started = time.perf_counter()
     try:
         snapshot = number_workspace(workspace())
         rows = snapshot.get("pipeline") or []
@@ -676,6 +678,8 @@ def read_workspace_page(offset: int = 0, limit: int = 50, version: str = "", que
             for field in ("ticker", "drug", "id")
         )]
         total = len(rows)
+    response.headers["Server-Timing"] = f"workspace_page;dur={(time.perf_counter() - started) * 1000:.1f}"
+    response.headers["Cache-Control"] = "private, no-store"
     return {
         "version": current_version,
         "asOf": snapshot.get("asOf"),
