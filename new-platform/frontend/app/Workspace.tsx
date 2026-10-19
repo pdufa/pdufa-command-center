@@ -557,6 +557,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [fetchError, setFetchError] = useState("");
   const [cachedAsOf, setCachedAsOf] = useState<string | null>(null);
   const workspaceEtag = useRef<string | null>(null);
+  const hasVerifiedWorkspace = useRef(false);
   const cachedAsOfRef = useRef<string | null>(null);
   const freshSnapshotReceived = useRef(false);
   const [top, setTop] = useState<TopNav>("PDUFA");
@@ -706,10 +707,11 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       try {
         const response = await fetch("/api/workspace", {
           cache: "no-store",
-          headers: workspaceEtag.current ? { "If-None-Match": workspaceEtag.current } : {},
+          headers: hasVerifiedWorkspace.current && workspaceEtag.current ? { "If-None-Match": workspaceEtag.current } : {},
           signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(95000)]),
         });
         if (response.status === 304) {
+          if (!hasVerifiedWorkspace.current) throw new Error("Server returned unchanged without a verified in-memory snapshot");
           setFetchError("");
           return;
         }
@@ -722,6 +724,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         if (ctrl.signal.aborted) return;
         if (!validWorkspaceSnapshot(data)) throw new Error("Published snapshot failed structure validation");
         workspaceEtag.current = response.headers.get("etag");
+        hasVerifiedWorkspace.current = true;
         freshSnapshotReceived.current = true;
         cachedAsOfRef.current = null;
         setSnapshot(data);
