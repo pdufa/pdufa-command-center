@@ -179,87 +179,28 @@ test("WT entry/stay/exit sections always start collapsed and leave all 26 choice
  assert.equal(base.WT_CHECK_KEYS.length,26);
 });
 
-test("FS and FA buttons are visible as soon as an individual WT stage checklist opens",()=>{
- const {nextWtPresetSelection}=require("../app/WtTradingSections.tsx");
+test("WT shows only FS and preserves individual stage checkboxes",()=>{
+ const {nextWtPresetSelection,nextWtPresetFlags,wtEffectivePresetKeys}=require("../app/WtTradingSections.tsx");
  for(const [stage,count] of [["entry",10],["stay",7],["exit",9]]){
   const html=renderToStaticMarkup(React.createElement(WtSections,{
    programId:"PDUFA-000005",ticker:"TEST",activeGroup:stage,compact:true,checkedKeys:[]
   }));
-  assert.match(html,/role="group"/);
-  assert.match(html,/>FS<\/button>/);
-  assert.match(html,/>FA<\/button>/);
-  assert.match(html,/aria-pressed="false"/);
-  assert.match(html, new RegExp('FS — toggle suggested '+stage.toUpperCase()));
-  assert.match(html, new RegExp('FA — toggle all available '+stage.toUpperCase()));
+  assert.match(html,/>FS<\\/button>/);
+  assert.doesNotMatch(html,/>FA<\\/button>/);
   assert.equal((html.match(/type="checkbox"/g)||[]).length,count);
   const suggested=nextWtPresetSelection([],stage,"FS");
-  assert.ok(suggested.length>0&&suggested.length<count,"FS chooses a curated subset");
-  assert.deepEqual(nextWtPresetSelection(suggested,stage,"FS"),[],"FS toggles back off");
-  const all=nextWtPresetSelection([],stage,"FA");
-  assert.equal(all.length,count,"FA checks all options");
-  assert.deepEqual(nextWtPresetSelection(all,stage,"FA"),[],"FA toggles back off");
-  assert.deepEqual(nextWtPresetSelection(["unrelated"],stage,"FA").filter(x=>x==="unrelated"),["unrelated"]);
+  assert.ok(suggested.length>0&&suggested.length<count);
+  assert.deepEqual(nextWtPresetSelection(suggested,stage,"FS"),[]);
+  const flags=nextWtPresetFlags({fs:false,fa:false},"FS");
+  assert.equal(flags.fs,true);
+  assert.equal(wtEffectivePresetKeys([],stage,flags).length,suggested.length);
+  assert.equal(wtEffectivePresetKeys([],stage,{fs:false,fa:true}).length,0,"Legacy FA must be ignored");
  }
- const old=renderToStaticMarkup(React.createElement(WtSections,{
-  programId:"PDUFA-000005",ticker:"TEST"
- }));
- assert.doesNotMatch(old,/>FS<\/button>|>FA<\/button>/,"Non-WT checklists are unchanged");
-});
-
-test("FS and FA are one adjacent nonwrapping button pair in WT checklist heading",()=>{
- const html=renderToStaticMarkup(React.createElement(WtSections,{
-  programId:"PDUFA-000009",ticker:"TEST",activeGroup:"entry",compact:true,checkedKeys:[]
- }));
- assert.match(html,/<div class="wt-checklist-heading-text">/);
- assert.match(html,/<div class="wt-checklist-preset-buttons" role="group" aria-label="FS and FA together/);
- assert.match(html, /<div class="wt-checklist-preset-buttons"[^>]*>\s*<button[^>]*>FS<\/button>\s*<button[^>]*>FA<\/button>\s*<\/div>/);
  const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
- assert.match(css,/\.wt-page \.wt-trial-indicator-panel \.wt-checklist-preset-buttons \{\s*display:inline-flex;flex:0 0 auto;flex-wrap:nowrap;/);
- assert.match(css,/\.wt-checklist-preset-button:first-child \{\s*border-right:0;/);
- assert.match(css,/@media\(max-width:700px\) \{\s*\.wt-page \.wt-trial-indicator-panel \.wt-checklist-preset-buttons \{\s*flex-wrap:nowrap;/);
-});
-
-test("FS and FA preset states operate independently even when checklist options overlap",()=>{
- const {nextWtPresetFlags,wtEffectivePresetKeys}=require("../app/WtTradingSections.tsx");
- for(const [stage,count] of [["entry",10],["stay",7],["exit",9]]){
-  const off={fs:false,fa:false};
-  const fs=nextWtPresetFlags(off,"FS");
-  assert.deepEqual(fs,{fs:true,fa:false},"FS must not trigger FA");
-  const fa=nextWtPresetFlags(off,"FA");
-  assert.deepEqual(fa,{fs:false,fa:true},"FA must not trigger FS");
-  assert.equal(wtEffectivePresetKeys([],stage,fa).length,count);
-  const both=nextWtPresetFlags(fs,"FA");
-  assert.deepEqual(both,{fs:true,fa:true});
-  assert.equal(wtEffectivePresetKeys([],stage,both).length,count);
-  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FA")),
-    wtEffectivePresetKeys([],stage,fs),"Turning off FA leaves FS choices");
-  assert.deepEqual(wtEffectivePresetKeys([],stage,nextWtPresetFlags(both,"FS")),
-    wtEffectivePresetKeys([],stage,fa),"Turning off FS leaves FA choices");
-  assert.equal(wtEffectivePresetKeys([],stage,nextWtPresetFlags(fa,"FA")).length,0);
-  for(const [flags,expectedFs,expectedFa] of [
-   [fa,"false","true"],[fs,"true","false"],[both,"true","true"]
-  ]){
-   const html=renderToStaticMarkup(React.createElement(WtSections,{
-    programId:"PDUFA-000009",ticker:"TEST",activeGroup:stage,compact:true,
-    checkedKeys:wtEffectivePresetKeys([],stage,flags),presetFlags:flags,
-    onPresetToggle:()=>{}
-   }));
-   const buttons=html.match(/<div class="wt-checklist-preset-buttons"[^>]*>(.*?)<\/div>/s);
-   assert.ok(buttons,"Joined FS / FA control must exist");
-   const rendered=buttons[1].match(/<button[^>]*aria-pressed="(true|false)"[^>]*>(FS|FA)<\/button>/g);
-   assert.equal(rendered.length,2,"Both buttons remain independently clickable");
-   assert.match(rendered[0],new RegExp('aria-pressed="'+expectedFs+'"'));
-   assert.match(rendered[1],new RegExp('aria-pressed="'+expectedFa+'"'));
-  }
- }
-});
-
-test("WT saves explicit per-stage preset flags rather than deriving both buttons from selected checkboxes",()=>{
+ assert.match(css,/\.wt-checklist-preset-button\[aria-pressed="true"\]/);
+ assert.match(css,/background:#fff;color:#176b39/);
+ assert.match(css,/background:#176b39;color:white/);
  const source=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(source,/presetFlags=\{preference\.presets\[selectedStage\]\}/);
- assert.match(source,/onPresetToggle=\{mode=>toggleWtTrialPreset\(programId,selectedStage,mode\)\}/);
  assert.match(source,/const flags=nextWtPresetFlags\(prior\.presets\[stage\],mode\)/);
- assert.match(source,/keys:\{\.\.\.prior\.keys,\[stage\]:wtEffectivePresetKeys\(prior\.manualKeys\[stage\],stage,flags\)\}/);
- assert.match(source,/presets:\{\.\.\.prior\.presets,\[stage\]:\{fs:false,fa:false\}\}/);
- assert.match(source,/manualKeys/);
 });
