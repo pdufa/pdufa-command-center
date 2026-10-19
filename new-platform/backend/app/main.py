@@ -640,7 +640,7 @@ def read_workspace_summary():
 
 
 @app.get("/api/workspace/page", dependencies=[Depends(require_internal_key), Depends(require_storage)])
-def read_workspace_page(offset: int = 0, limit: int = 50, version: str = ""):
+def read_workspace_page(offset: int = 0, limit: int = 50, version: str = "", query: str = ""):
     """Bounded, version-checked pipeline page; counts always describe the full snapshot.
 
     A version mismatch returns 409 so clients cannot silently combine pages
@@ -649,6 +649,8 @@ def read_workspace_page(offset: int = 0, limit: int = 50, version: str = ""):
     """
     if offset < 0 or limit < 1 or limit > 100:
         raise HTTPException(status_code=422, detail="Invalid page bounds")
+    if len(query) > 100:
+        raise HTTPException(status_code=422, detail="Search query too long")
     from .source_workspace import workspace
     from .program_registry import number_workspace
     from .workspace_delta import publish
@@ -665,6 +667,15 @@ def read_workspace_page(offset: int = 0, limit: int = 50, version: str = ""):
         raise HTTPException(status_code=503, detail="Verified workspace page unavailable") from None
     if version and version != current_version:
         raise HTTPException(status_code=409, detail="Workspace version changed; restart pagination")
+    # Filter only after validating the COMPLETE source. The version continues
+    # to identify the full snapshot, never an arbitrary subset.
+    search = query.strip().casefold()
+    if search:
+        rows = [row for row in rows if any(
+            search in str(row.get(field) or "").casefold()
+            for field in ("ticker", "drug", "id")
+        )]
+        total = len(rows)
     return {
         "version": current_version,
         "asOf": snapshot.get("asOf"),
