@@ -2660,3 +2660,22 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .migration-workspace .workflow-count { padding:9px 11px; }
   .migration-workspace .workflow-count-selected { padding:8px 10px; }
 }
+
+/* The four page-derived totals read as one Pipeline → GEM JR → GEM → WT bar. */
+@media(min-width:751px) {
+  .migration-workspace .workflow-count { position:relative; }
+  .migration-workspace .workflow-count:not(:last-child)::after {
+    content:"→";
+    position:absolute;
+    right:-13px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:2;
+    font-size:18px;
+    font-weight:800;
+    color:#266839;
+    background:#f9fcf8;
+    padding:0 2px;
+    pointer-events:none;
+  }
+}
