@@ -575,11 +575,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   useEffect(() => {
     const ctrl = new AbortController();
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
-    // Render's free web service can take longer than Vercel's 30s upstream
-    // timeout to restart. Retry only transient failures, without inventing
-    // replacement Pipeline/GEM data or overwriting an already loaded snapshot.
+    // Render can restart under its memory limit. Every attempt is bounded
+    // independently so a stalled browser request cannot leave the candidates
+    // behind an indefinite "Loading" message.
     const retryDelays = [0, 3000, 8000, 15000, 20000];
     async function loadPublishedSources() {
+      setFetchError("Connecting to published PIPELINE, GEM JR and GEM data. Large trial inventories or a backend restart may delay this request.");
       for (let attempt = 0; attempt < retryDelays.length && !ctrl.signal.aborted; attempt++) {
         if (attempt > 0) {
           setFetchError("Reconnecting to published sources… attempt " + (attempt + 1) + "/" + retryDelays.length + ". Saved WT selections are unchanged.");
@@ -590,7 +591,12 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           if (ctrl.signal.aborted) return;
         }
         try {
-          const response = await fetch("/api/workspace", { cache: "no-store", signal: ctrl.signal });
+          const response = await fetch("/api/workspace", {
+            cache: "no-store",
+            // Cancel only this attempt; user-triggered retries and component
+            // unmount continue to abort via ctrl.signal.
+            signal: AbortSignal.any([ctrl.signal, AbortSignal.timeout(36000)]),
+          });
           if (!response.ok) {
             const transient = [502, 503, 504].includes(response.status);
             if (transient && attempt < retryDelays.length - 1) continue;
@@ -728,10 +734,20 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     return m;
   },[snapshot,pipeline]);
   const byTicker = useMemo(() => {
+    // Use a per-ticker identity set instead of scanning/copying the whole
+    // ticker list for each of 11k+ published records on mobile.
     const m = new Map<string, Candidate[]>();
-    [...pipeline, ...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])].forEach(r => {
-      if (r.ticker && !m.get(r.ticker)?.some(other => other.id === r.id)) m.set(r.ticker, [...(m.get(r.ticker)||[]), r]);
-    });
+    const seen = new Map<string, Set<string>>();
+    for (const r of [...pipeline, ...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])]) {
+      if (!r.ticker) continue;
+      let keys = seen.get(r.ticker);
+      if (!keys) { keys = new Set<string>(); seen.set(r.ticker, keys); }
+      if (keys.has(r.id)) continue;
+      keys.add(r.id);
+      const items = m.get(r.ticker);
+      if (items) items.push(r);
+      else m.set(r.ticker, [r]);
+    }
     return m;
   }, [snapshot, pipeline]);
 
@@ -1129,7 +1145,14 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
-    {!snapshot && <div className="panel">{fetchError || "Loading published PIPELINE, GEM JR and GEM candidates…"}</div>}
+    {!snapshot && <div className="panel" role="status" aria-live="polite">
+      <p>{fetchError || "Loading published PIPELINE, GEM JR and GEM candidates…"}</p>
+      <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>
+      <button type="button" className="secondary" onClick={() => {
+        setFetchError("Retry requested. Checking published sources…");
+        setFetchVersion(value => value + 1);
+      }}>RETRY LOADING CANDIDATES</button>
+    </div>}
     {snapshot && top==="PDUFA" && nav==="MASTER" && <MasterChart records={pipeline} gemJr={snapshot.members.GEM_JR.rows} gem={snapshot.members.GEM.rows} history={[...(snapshot.members.GEM_JR.history||[]),...(snapshot.members.GEM.history||[])]} watch={tags.watch} trade={tags.trade} sourceHealth={snapshot.sourceHealth} asOf={snapshot.asOf} selectedId={masterProgram} onSelect={setMasterProgram} onInspect={record => {
       const stage: Stage = snapshot.members.GEM.rows.some(r=>r.id===record.id) ? "GEM" : snapshot.members.GEM_JR.rows.some(r=>r.id===record.id) ? "GEM_JR" : "PIPELINE";
       onInspect(record.ticker,stage,record.programId);
