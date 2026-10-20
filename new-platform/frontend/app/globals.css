@@ -3066,3 +3066,71 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .assessment-category-cell,.assessment-score-cell{min-width:150px}.assessment-score-link{border:0;background:transparent;color:#164c37;padding:6px 0;text-align:left;text-decoration:underline;text-underline-offset:3px;font-size:inherit;cursor:pointer}.assessment-score-link small{color:#44554a;font-size:11px;text-decoration:none}.assessment-category-cell small{white-space:normal}
 .candidate-assessments{border:1px solid #55664d;background:#fff;padding:20px;margin:18px 0;min-width:0;scroll-margin-top:20px}.candidate-assessments h3{margin:0}.assessment-models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}.assessment-models button{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px;border:1px solid #40533b;border-radius:6px;white-space:normal}.assessment-models button.active{background:#254c36;color:#fff}.assessment-models strong{font-size:20px}.assessment-models small{color:inherit}.assessment-categories{display:grid;gap:12px}.assessment-category{border:1px solid #9baa91;border-radius:5px;min-width:0}.assessment-category summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;padding:14px;background:#f2f6ec;list-style:revert}.assessment-category summary span{font-size:12px;font-weight:500;color:#3c513a}.assessment-category th{white-space:normal;min-width:140px}.assessment-category td{min-width:170px;max-width:340px;vertical-align:top;white-space:normal;overflow-wrap:anywhere}.assessment-measurement{font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;overflow:auto;background:#f7f8f5;color:#1d3326;margin:0;padding:8px;text-align:left}.assessment-risk{border-left:5px solid #aa532d;background:#fff1e7;padding:12px 18px;margin:12px 0}.assessment-risk ul{margin:8px 0}.assessment-ledger{margin-top:16px;border-top:1px solid #aab5a4;padding-top:14px}.assessment-ledger summary{cursor:pointer;font-weight:650;padding:8px 0}.assessment-ledger code{font-size:11px;overflow-wrap:anywhere}.assessment-ledger td{white-space:normal;vertical-align:top;min-width:150px}.assessment-ledger .assessment-measurement{max-height:500px}
 @media(max-width:760px){.assessment-models{grid-template-columns:1fr}.assessment-status{align-items:flex-start;flex-direction:column}.assessment-category summary{align-items:flex-start;flex-direction:column}.candidate-assessments{padding:12px}.assessment-models strong{font-size:17px}}
+
+
+/* Central RESTRICTIONS contains the original Pipeline filters AFTER existing rules.
+   Keep original compact layout and buttons, with only one mounted filter checklist. */
+.moved-pipeline-restrictions {
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:12px 0 22px;
+  padding:12px;
+  border:2px solid #2e684a;
+  border-radius:10px;
+  background:#f4faf5;
+}
+.moved-pipeline-restrictions > summary {
+  font-size:15px;
+  font-weight:800;
+  color:#174c32;
+  cursor:pointer;
+  padding:5px;
+  overflow-wrap:anywhere;
+}
+.moved-pipeline-restrictions > .subtle {
+  margin:12px 5px;
+  max-width:100%;
+  line-height:1.5;
+}
+.moved-pipeline-restrictions .migrated-pipeline-filter-panel {
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
+.pipeline-restrictions-shortcut {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  gap:10px;
+  padding:clamp(11px,1.25vw,18px);
+  border:1px solid #a1c4aa;
+  background:#f4faf5;
+}
+.pipeline-restrictions-shortcut h3 {
+  margin:0;
+  color:#1b5138;
+  font-size:16px;
+}
+.pipeline-restrictions-shortcut p {
+  margin:0;
+  color:#365842;
+  line-height:1.5;
+}
+.pipeline-restrictions-shortcut .pipeline-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  width:100%;
+}
+.pipeline-restrictions-shortcut .pipeline-row button {
+  flex:1 1 240px;
+  min-height:42px;
+}
+@media(max-width:520px) {
+  .moved-pipeline-restrictions {padding:9px;margin:10px 0;}
+  .moved-pipeline-restrictions > summary {font-size:13px;}
+  .pipeline-restrictions-shortcut .pipeline-row button {width:100%;flex:1 1 100%;}
+}
