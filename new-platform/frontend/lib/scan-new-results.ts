@@ -168,7 +168,7 @@ export function newFromScanSummary(
     const ticker = string(detail?.ticker), nct = string(detail?.nct_id);
     const sourceUrl = string(detail?.source_url);
     if (!ticker || !/^[A-Z][A-Z0-9.-]{0,12}$/.test(ticker) ||
-        !nct || !/^NCT\\d{8}$/.test(nct) ||
+        !nct || !/^NCT\d{8}$/.test(nct) ||
         sourceUrl !== "https://clinicaltrials.gov/study/" + nct ||
         seenResults.has(ticker + "|" + nct)) continue;
     seenResults.add(ticker + "|" + nct);
