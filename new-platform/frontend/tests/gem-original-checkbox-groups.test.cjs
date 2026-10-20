@@ -246,3 +246,22 @@ test("FI controls are absent on both stages; original FS/FA checkboxes and candi
  assert.match(src,/disabled=\{!manualStageList\[row.id\]\}/,"candidate cannot be removed until added");
  assert.match(src,/Added \{manualStageList\[row.id\]\.slice\(0,10\)\}/);
 });
+
+test("A rescanned GEM JR or GEM program is NEW only once per stage, never duplicated",()=>{
+ const {newlyObservedProgramIds}=Checklist;
+ const trialA={id:"APPLICATION|A-TRIAL",ticker:"BBIO",drug:"Drug A"};
+ const trialB={id:"APPLICATION|B-TRIAL",ticker:"BBIO",drug:"Drug B"};
+ const alreadySaved={id:"APPLICATION|SAVED",ticker:"SAVED"};
+ const scan={selected:["registry"],passes:[trialA,trialA,trialB,alreadySaved],needsReview:[trialB],
+   fails:[{id:"APPLICATION|FAIL",ticker:"FAIL"}]};
+ const first=newlyObservedProgramIds(scan,new Set(),new Set([alreadySaved.id]));
+ assert.deepEqual(first,[trialA.id,trialB.id],"same ticker with different programs is not a duplicate");
+ assert.deepEqual(newlyObservedProgramIds(scan,new Set(first),new Set([alreadySaved.id])),[],
+   "second identical scan must have zero new trials");
+ // One stage's seen history cannot suppress an independent other stage.
+ assert.deepEqual(newlyObservedProgramIds(scan,new Set([trialA.id]),new Set([alreadySaved.id])),[trialB.id]);
+ assert.deepEqual(newlyObservedProgramIds(scan,new Set(),new Set([alreadySaved.id,trialA.id])),[trialB.id],
+   "a program already manually curated is not new");
+ assert.deepEqual(newlyObservedProgramIds({...scan,selected:[]},new Set(),new Set()),[],
+   "an unrestricted scan cannot mark the entire Pipeline as new");
+});
