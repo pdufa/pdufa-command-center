@@ -78,15 +78,6 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["pdufa","window","volume","rsi","trend","liquidity"]};
 const FA_CRITERIA=["registry","marketcap"];
-// GEM JR FI independently owns its five restrictions. The original checkbox
-// locations are retained and show the UNION of FS/manual and FI selections.
-// Turning off either preset never erases the other's selected criteria.
-export function toggleGemJrFiCheckboxes(selected:readonly string[]):string[]{
- const keys=suggestedByStage.GEM_JR;
- return keys.every(key=>selected.includes(key))
-   ?selected.filter(key=>!keys.includes(key))
-   :[...new Set([...selected,...keys])];
-}
 // GEM's FA button controls only the existing optional GEM JR source input.
 // The GEM JR FA preset and qualification filters remain untouched.
 export function toggleGemJrTrialsRequirement(selected:readonly string[]):string[]{
@@ -117,7 +108,7 @@ export function checkboxGroupsForStage(stage:"GEM_JR"|"GEM") {
 }
 
 export type GemJrLivePreview={asOf:string;sourceTotal:number;selected:string[];passes:Trial[];needsReview:Trial[]};
-export type GemJrUiDraft={asOf:string;sourceTotal:number;selected:string[];showSuggestions:boolean;faActive:boolean;fiActive?:boolean;fiSelected?:string[];fiIndependent?:boolean;optionalGoals:Record<string,string>;twoTrialIds:[string,string]};
+export type GemJrUiDraft={asOf:string;sourceTotal:number;selected:string[];showSuggestions:boolean;faActive:boolean;optionalGoals:Record<string,string>;twoTrialIds:[string,string]};
 // Current GEM JR checkbox intersection; UNKNOWN is not a verified PASS.
 export function buildGemJrLivePreview(rows:Trial[],checks:[string,string,(x:Trial)=>boolean|null][],asOf:string,sourceTotal:number,inheritedReviewIds:ReadonlySet<string>=new Set()):GemJrLivePreview {
  const passes:Trial[]=[],needsReview:Trial[]=[];
@@ -162,18 +153,11 @@ export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJ
 export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,stageSavedRows,manualStageList,onAddToStageList,onRemoveFromStageList,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;stageSavedRows:Trial[];manualStageList:Record<string,string>;onAddToStageList:(row:Trial)=>void;onRemoveFromStageList:(id:string)=>void;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const storedDraft=stage==="GEM_JR"?gemJrDraft:gemDraft;
  const draft=storedDraft?.asOf===asOf&&storedDraft.sourceTotal===pipeline.length?storedDraft:null;
- // FS/FA/manual selections and FI selections use separate state. Both can
- // select the same criterion; the scan deduplicates the union.
+ // The remaining original checkboxes are the sole source of scan selections.
+ // Old FI-only choices are intentionally NOT imported into the checklist.
  const [selected,setSelected]=useState<string[]>(()=>draft?.selected||[]);
  const [showSuggestions,setShowSuggestions]=useState(()=>draft?.showSuggestions||false);
  const [faActive,setFaActive]=useState(()=>draft?.faActive||false);
- const fiKeys=suggestedByStage[stage];
- // Previous GEM JR builds mirrored FS selections into fiSelected. Do not
- // restore those as FI-owned settings unless a new independent draft saved them.
- const [fiSelected,setFiSelected]=useState<string[]>(()=>stage==="GEM_JR"&&!draft?.fiIndependent?[]:
-   (draft?.fiActive===false?[]:(draft?.fiSelected||[]).filter(key=>fiKeys.includes(key))));
- const fiCheckedCount=fiKeys.filter(key=>fiSelected.includes(key)).length;
- const fiAllChecked=fiCheckedCount===fiKeys.length;
  const fsChecked=showSuggestions;
  const faChecked=stage==="GEM_JR"?FA_CRITERIA.every(key=>selected.includes(key)):faActive;
  const [result,setResult]=useState<GemScanResult|null>(null);
@@ -205,9 +189,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  // Use the same criterion evaluators for the live intersection count and
  // the full SCAN audit, so the two result totals cannot disagree.
  const chosen=useMemo(() => {
-   // Apply FS/FA/main checked criteria AND FI's independently checked rules.
-   // Overlapping criterion keys are evaluated only once.
-   const checked=new Set([...selected,...fiSelected]);
+   // Evaluate exactly the requirements selected in the original checklist.
+   const checked=new Set(selected);
    const checks:[string,string,(x:Trial)=>boolean|null][]=visibleCriteriaByStage(stage).filter(([key])=>checked.has(key));
    if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){
      if(!checked.has(item.key))continue;
@@ -219,7 +202,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      checks.push([item.key,item.title+" (goal: "+goal+")",()=>null]);
    }
    return checks;
- },[selected,fiSelected,stage,optionalGoals,twoTrialIds]);
+ },[selected,stage,optionalGoals,twoTrialIds]);
  // GEM JR publishes its preview back to Workspace. Its own output must not
  // invalidate this calculation through the downstream GEM input's review set.
  const inheritedReviewIds=useGemJrSource?gemJrNeedsReview:undefined;
@@ -231,10 +214,10 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
   else onGemLivePreviewChange?.(livePreview);
  },[stage,livePreview,onGemJrLivePreviewChange,onGemLivePreviewChange]);
  useEffect(()=>{
-  const draft={asOf,sourceTotal:pipeline.length,selected,showSuggestions,faActive,fiActive:fiSelected.length>0,fiSelected,fiIndependent:true,optionalGoals,twoTrialIds};
+  const draft={asOf,sourceTotal:pipeline.length,selected,showSuggestions,faActive,optionalGoals,twoTrialIds};
   if(stage==="GEM_JR")onGemJrDraftChange?.(draft);
   else onGemDraftChange?.(draft);
- },[stage,asOf,pipeline.length,selected,showSuggestions,faActive,fiSelected,optionalGoals,twoTrialIds,onGemJrDraftChange,onGemDraftChange]);
+ },[stage,asOf,pipeline.length,selected,showSuggestions,faActive,optionalGoals,twoTrialIds,onGemJrDraftChange,onGemDraftChange]);
  const liveCounts=useMemo(() => {
    if(livePreview){const passes=livePreview.passes.length,needsReview=livePreview.needsReview.length;return {passes,needsReview,fails:sourceRows.length-passes-needsReview,total:passes+needsReview};}
    let passes=0,needsReview=0,fails=0;
@@ -258,19 +241,11 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    setMessage("Selections updated. Press SCAN to evaluate these requirements.");
    onReset();
  }
- function toggle(key:string){
-   // The original GEM JR checkbox displays the union of two independent
-   // owners. A direct manual uncheck explicitly clears this ONE key from both,
-   // never the other four FI keys or the FS preset state.
-   const fiOwned=stage==="GEM_JR"&&fiSelected.includes(key);
-   const visiblyChecked=selected.includes(key)||fiOwned;
-   if(fiOwned&&visiblyChecked)setFiSelected(current=>current.filter(item=>item!==key));
-   selectRequirements(visiblyChecked?selected.filter(item=>item!==key):[...selected,key]);
- }
+ function toggle(key:string){selectRequirements(selected.includes(key)?selected.filter(item=>item!==key):[...selected,key])}
  function toggleFs(){
    if(running)return;
    const suggestions=suggestedByStage[stage];
-   // FS owns selected and its own button state, never fiSelected.
+   // FS changes only its suggested existing checkboxes.
    const next=showSuggestions
      ? selected.filter(key=>!suggestions.includes(key)||(stage==="GEM_JR"&&faChecked&&FA_CRITERIA.includes(key)))
      : [...new Set([...selected,...suggestions])];
@@ -292,21 +267,6 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    setFaActive(!faChecked);
    selectRequirements(next);
  }
- function toggleFi(){
-   if(running)return;
-   // Independent of FS, FA and manual checkbox selections for BOTH stages.
-   setFiSelected(stage==="GEM_JR"?toggleGemJrFiCheckboxes(fiSelected):(fiAllChecked?[]:[...fiKeys]));
-   setResult(null);
-   onReset();
-   setMessage("FI "+(fiAllChecked?"unchecked all":"checked all")+" "+fiKeys.length+" FI restrictions. FS and FA remain unchanged; press SCAN to evaluate active requirements.");
- }
- function toggleFiCriterion(key:string){
-   if(running)return;
-   setFiSelected(current=>current.includes(key)?current.filter(item=>item!==key):[...current,key]);
-   setResult(null);
-   onReset();
-   setMessage("FI selections changed independently of FS and FA. Press SCAN to evaluate active requirements.");
- }
  function setTwoTrialId(index:0|1,value:string){
    const normalized=value.toUpperCase();
    setTwoTrialIds(current=>index===0?[normalized,current[1]]:[current[0],normalized]);
@@ -320,8 +280,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      setMessage(useGemJrSource?(gemJrScan?"The current GEM JR combined scan contains no eligible or review candidates. GEM was not scanned.":"No saved GEM JR programs are available in the current published source snapshot."):"No PIPELINE candidates are loaded.");
      return;
    }
-   // A selected optional Two-Trial alert with missing IDs is still screened as
-   // NEEDS VERIFICATION, not blocked, so FI selecting all always permits SCAN.
+   // Optional Two-Trial evidence remains NEEDS VERIFICATION when the IDs
+   // are incomplete rather than blocking the scan.
    // Every click, including ENDED, starts a NEW full scan at record #1.
    // Snapshot input and criteria for this run; never resume an old result.
    const scanRows=[...sourceRows];
@@ -371,7 +331,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      const next:GemScanResult={
        asOf,evaluatedAt:new Date().toISOString(),sourceTotal:pipeline.length,
        sourceKind:useGemJrSource?juniorSource.sourceKind:"PIPELINE",
-       runNumber,audits,baseline:scanRows.length,selected:[...new Set([...selected,...fiSelected])],passes,needsReview,fails
+       runNumber,audits,baseline:scanRows.length,selected:[...selected],passes,needsReview,fails
      };
      setResult(next);
      onScan(next);
@@ -413,17 +373,17 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  },[manualStageList,pipeline]);
 
   function renderOriginalCheckboxes(items:Criterion[]){
-  return items.map(([key,label])=>{
-   const recommended=suggestedByStage[stage].includes(key);
-   const faCriterion=stage==="GEM_JR"&&FA_CRITERIA.includes(key);
-   const checked=selected.includes(key)||(stage==="GEM_JR"&&fiSelected.includes(key));
-   return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:checked?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:checked?"#e4f5e9":"white"}}>
-     <input type="checkbox" checked={checked} onChange={()=>toggle(key)}/><span>{label}
-       {recommended&&(stage==="GEM_JR"||showSuggestions)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>Suggested</small>}
-       {faCriterion&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>FA</small>}
-       {stage==="GEM_JR"&&fiSelected.includes(key)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>FI</small>}
-     </span></label>;
-  });
+   return items.map(([key,label])=>{
+     const recommended=suggestedByStage[stage].includes(key);
+     const faCriterion=stage==="GEM_JR"&&FA_CRITERIA.includes(key);
+     const checked=selected.includes(key);
+     return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:checked?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:checked?"#e4f5e9":"white"}}>
+       <input type="checkbox" checked={checked} onChange={()=>toggle(key)} disabled={running}/><span>{label}
+         {recommended&&(stage==="GEM_JR"||showSuggestions)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>Suggested</small>}
+         {faCriterion&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>FA</small>}
+       </span>
+     </label>;
+   });
  }
 
  return <section className="panel" aria-label={(stage==="GEM"?"GEM":"GEM JR")+" qualification checklist"} style={{margin:"18px 0",padding:16,border:"2px solid #236847",borderRadius:10,background:"#f8fff8",color:"#163522"}}>
@@ -440,7 +400,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      <span><strong>{liveCounts.needsReview.toLocaleString("en-US")}</strong> require evidence review</span>
      <span><strong>{liveCounts.fails.toLocaleString("en-US")}</strong> excluded</span>
    </div>
-   <small style={{display:"block",marginTop:8}}>{sourceRows.length.toLocaleString("en-US")} {sourceLabel} considered. {chosen.length===0?"No qualification criteria checked; all input records are included.":"Each candidate is counted once, only if it has no failed checked criterion. This is the intersection (AND), not a sum of individual checkbox matches."} Missing evidence, including verification gaps inherited from a GEM JR scan, never counts as a verified match. Counts update when any checkbox, FS, FA, or FI changes.</small>
+   <small style={{display:"block",marginTop:8}}>{sourceRows.length.toLocaleString("en-US")} {sourceLabel} considered. {chosen.length===0?"No qualification criteria checked; all input records are included.":"Each candidate is counted once, only if it has no failed checked criterion. This is the intersection (AND), not a sum of individual checkbox matches."} Missing evidence, including verification gaps inherited from a GEM JR scan, never counts as a verified match. Counts update when any checkbox, FS, or FA changes.</small>
  </div>
  <div role="status" style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:12,marginBottom:12}}><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{pipeline.length.toLocaleString("en-US")}</strong><div>Pipeline research candidates (all stages)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{stageTotal.toLocaleString("en-US")}</strong><div>{stage==="GEM"?"GEM":"GEM JR"} saved stage members (not screened total)</div></div><div style={{padding:"10px 14px",background:"#e4f3e8",borderRadius:6}}><strong style={{fontSize:22}}>{sourceRows.length.toLocaleString("en-US")}</strong><div>{useGemJrSource?juniorSource.label:"Full PIPELINE records available to scan"}</div></div></div>
  {open&&<><p>Every SCAN evaluates {sourceRows.length.toLocaleString("en-US")} {sourceLabel} against <strong>only your selected qualification checkboxes</strong>. No qualification checks selected means all records from the chosen input source are included. Phase 3 is not silently required; select its checkbox to enforce verified Phase 3 success. The source has {phase3ResearchCount.toLocaleString("en-US")} Phase 3/readout indicators, which are not the same as independently verified successful Phase 3 programs. Unknown source evidence is not treated as passing. Published data as of {asOf||"unverified"}; no live-market fetches, membership changes or trades.</p>
@@ -488,7 +448,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. FS and FI are independent: switching off FS never clears FI, and switching off FI never clears FS. GEM JR FI's five restrictions are shown in their original CLINICAL / REGULATORY and TRADING positions; those checkmarks reflect either preset while the FI box shows only FI choices. GEM keeps six separate FI controls. SCAN combines selected FS, FA, FI and manual requirements. GEM JR retains the FS and FA qualification criteria; GEM shows downstream requirements plus the optional Gem Jr Trials source. FS selects suggested criteria. In GEM, FA toggles only Gem Jr Trials; in GEM JR, FA toggles Phase 3 trial status and Market cap $300M–$10B. Press either button again to deselect its options. DESELECT ALL clears everything.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. FS selects suggested existing criteria; FA selects the GEM JR Phase 3 trial status and optional market-cap criteria, or GEM's optional Gem Jr Trials input. Other qualifications remain individually selectable. DESELECT ALL clears all selections. SCAN evaluates exactly the checked qualifications and does not alter published stage membership.</p>
  <div className="gem-original-checklist-sections" data-stage={stage}>
   <section className="gem-original-clinical">
    <h3>CLINICAL / REGULATORY</h3>
@@ -515,13 +475,10 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length}
   aria-label={(stage==="GEM"?"GEM":"GEM JR")+" "+(starting?"SCAN":running?"SCANNING":completedScan?"ENDED":"SCAN")}
   aria-live="polite"
-  title={starting?"Restarting from trial #1":running?"Screening all selected candidates":completedScan?"Previous scan finished; click ENDED to restart from the first trial using current FS, FA and FI selections":"Scan candidates using all checked FS, FA and active FI restrictions"}
+  title={starting?"Restarting from trial #1":running?"Screening all selected candidates":completedScan?"Previous scan finished; click ENDED to restart from the first trial using current FS, FA and manual selections":"Scan candidates using all checked FS, FA and manual restrictions"}
   style={{background:starting?"#135a32":running?"#a36b20":completedScan?"#176b39":"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>
   {starting?"SCAN":running?"SCANNING":completedScan?"ENDED":"SCAN"}
- </button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);setFiSelected([]);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={fsChecked} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:fsChecked?"#ffffff":"#176b39",color:fsChecked?"#176b39":"#ffffff",fontWeight:700}}>FS</button><button type="button" onClick={toggleFa} disabled={running} aria-pressed={stage==="GEM"?useGemJrSource:faChecked} aria-label={stage==="GEM"?"FA: toggle Gem Jr Trials input":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"} title={stage==="GEM"?"FA — include or exclude Gem Jr Trials; click again to uncheck":"FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck"} style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:(stage==="GEM"?useGemJrSource:faChecked)?"#ffffff":"#176b39",color:(stage==="GEM"?useGemJrSource:faChecked)?"#176b39":"#ffffff",fontWeight:700}}>FA</button><button type="button" onClick={toggleFi} disabled={running} aria-pressed={fiAllChecked}
-   aria-label={"FI: "+(fiAllChecked?"uncheck":"check")+" all "+fiKeys.length+" FI restrictions for "+(stage==="GEM_JR"?"GEM JR":"GEM")}
-   title={stage==="GEM_JR"?"FI — independently apply five GEM JR restrictions and check the existing checkboxes; FS stays unchanged. Click again to remove FI only.":"FI — check all six independent GEM FI boxes below; click again to uncheck them."}
-   style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:fiAllChecked?"#ffffff":"#176b39",color:fiAllChecked?"#176b39":"#ffffff",fontWeight:700}}>FI</button></div>
+ </button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={fsChecked} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:fsChecked?"#ffffff":"#176b39",color:fsChecked?"#176b39":"#ffffff",fontWeight:700}}>FS</button><button type="button" onClick={toggleFa} disabled={running} aria-pressed={stage==="GEM"?useGemJrSource:faChecked} aria-label={stage==="GEM"?"FA: toggle Gem Jr Trials input":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"} title={stage==="GEM"?"FA — include or exclude Gem Jr Trials; click again to uncheck":"FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck"} style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:(stage==="GEM"?useGemJrSource:faChecked)?"#ffffff":"#176b39",color:(stage==="GEM"?useGemJrSource:faChecked)?"#176b39":"#ffffff",fontWeight:700}}>FA</button></button></div>
 
  <section className="panel" aria-label={"New "+(stage==="GEM_JR"?"GEM JR":"GEM")+" candidates from SCAN"} style={{margin:"12px 0",padding:12,border:"1px solid #7fa08a",borderRadius:8,background:"#ffffff"}}>
    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
@@ -529,7 +486,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      <button type="button" className="secondary" onClick={()=>setShowManualList(current=>!current)} aria-expanded={showManualList}>MY {stage==="GEM_JR"?"GEM JR":"GEM"} LIST · {Object.keys(manualStageList).length}</button>
    </div>
    <p style={{fontSize:12,margin:"7px 0 10px"}}>New to the published {stage==="GEM_JR"?"GEM JR":"GEM"} stage list, not necessarily newly discovered. Click ADD TO LIST to manually save an exact trial to your browser's {stage==="GEM_JR"?"GEM JR":"GEM"} list. This does not change the official stage count or certify eligibility.</p>
-   {!completedScan?<p style={{fontSize:13,marginBottom:6}}>Run SCAN to populate this table from the current FS, FA and FI restrictions.</p>:completedScan.selected.length===0?<p style={{fontSize:13,marginBottom:6}}>No restrictions applied. Choose FS, FA, FI or individual checks, then rerun SCAN to identify new candidates.</p>:newScanRows.length===0?<p style={{fontSize:13,marginBottom:6}}>No additional stage candidates matched the latest scan.</p>:<>
+   {!completedScan?<p style={{fontSize:13,marginBottom:6}}>Run SCAN to populate this table from the current FS, FA and manually selected restrictions.</p>:completedScan.selected.length===0?<p style={{fontSize:13,marginBottom:6}}>No restrictions applied. Choose FS, FA or individual checks, then rerun SCAN to identify new candidates.</p>:newScanRows.length===0?<p style={{fontSize:13,marginBottom:6}}>No additional stage candidates matched the latest scan.</p>:<>
      <div style={{overflowX:"auto",maxHeight:400,overflowY:"auto",border:"1px solid #d5e2d8",borderRadius:5}}>
        <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,whiteSpace:"nowrap"}}>
          <thead><tr style={{background:"#e8f1e9",textAlign:"left"}}><th style={{padding:8}}>TICKER</th><th style={{padding:8}}>COMPANY / DRUG</th><th style={{padding:8}}>TRIAL</th><th style={{padding:8}}>SCAN STATUS</th><th style={{padding:8}}>ACTION</th></tr></thead>
@@ -567,29 +524,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>}
  </section>
 
- <section className="gem-fi-filter-section" aria-label={(stage==="GEM_JR"?"GEM JR":"GEM")+" FI scan restrictions"}
-   style={{margin:"12px 0 0",padding:12,border:"1px solid #91b5a0",borderRadius:8,background:fiAllChecked?"#e9f6ec":"#f5f8f5"}}>
-   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
-     <strong>FI — {fiKeys.length} SCAN RESTRICTIONS</strong>
-     <span role="status" style={{fontSize:12,fontWeight:800,color:fiAllChecked?"#176b39":"#5a625c"}}>
-       {fiCheckedCount} of {fiKeys.length} checked
-     </span>
-   </div>
-   <p style={{fontSize:12,margin:"7px 0 9px"}}>
-     {stage==="GEM_JR"?"FI separately owns these five restrictions. Their original GEM JR Clinical / Trading checkboxes stay in place and show checked whenever FS, FI or a manual selection includes them. Switching either button off preserves the other's selections.":"FI controls its six separate GEM restrictions without moving the original GEM checkboxes."}
-     You can toggle each FI checkbox separately. SCAN combines FS, FA, FI and manual criteria, evaluating overlapping rules once.
-   </p>
-   <div className="gem-original-criteria-grid">
-     {visibleCriteriaByStage(stage).filter(([key])=>fiKeys.includes(key)).map(([key,label])=>
-       <label key={"fi-"+key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:fiSelected.includes(key)?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:fiSelected.includes(key)?"#e4f5e9":"white"}}>
-         <input type="checkbox" disabled={running} checked={fiSelected.includes(key)} onChange={()=>toggleFiCriterion(key)} aria-label={"FI: "+label} />
-         <span>{label}</span>
-       </label>
-     )}
-   </div>
- </section>
-
- <p className="subtle" style={{fontSize:12,marginTop:9}}>SCAN combines all checked FS, FA, FI and manually selected requirements. Checking FI affects only its own 5 or 6 restrictions. Overlapping checks count once; missing evidence requires review.{stage==="GEM"&&useGemJrSource?" FA also limits the input to GEM JR candidates.":""} Click ENDED to restart a fresh scan from the first trial.</p>
+ <p className="subtle" style={{fontSize:12,marginTop:9}}>SCAN combines checked FS, FA and manually selected requirements. Each qualification is evaluated once; missing evidence requires review.{stage==="GEM"&&useGemJrSource?" FA also limits the input to GEM JR candidates.":""} Click ENDED to restart a fresh scan from the first trial.</p>
  {running&&!starting&&<p role="status" aria-live="polite" style={{fontWeight:700,marginTop:10}}>SCANNING: {scannedCount.toLocaleString("en-US")} / {sourceRows.length.toLocaleString("en-US")} trials checked</p>}
  <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||(completedScan?"ENDED — "+completedScan.passes.length.toLocaleString("en-US")+" passed, "+completedScan.needsReview.length.toLocaleString("en-US")+" need verification; "+completedScan.fails.length.toLocaleString("en-US")+" excluded. Click ENDED to restart from the first trial.":"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+".")}</p>
  {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}>
