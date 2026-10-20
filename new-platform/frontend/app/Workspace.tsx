@@ -1524,6 +1524,54 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </section>;
   }
 
+  // The original PIPELINE filter state and handlers stay unchanged.
+  // The user has not yet asked to connect them to the separate live-impact
+  // restrictions catalog; relocation is display-only.
+  const pipelineMovedFilters = (
+    <details className="panel moved-pipeline-restrictions" aria-label="Original PIPELINE stage, date, trial and market-cap restrictions">
+      <summary>PIPELINE — ORIGINAL STAGE / DATE / TRIAL / MARKET-CAP FILTERS</summary>
+      <p className="subtle">Moved intact from PIPELINE. These remain separate from the approved rules and live-impact catalog above; no new qualifications have been silently enabled. Select options here and choose DISPLAY TRIALS to return to PIPELINE.</p>
+      <section className="panel pipeline-filters pipeline-filters-compact migrated-pipeline-filter-panel" aria-labelledby="pipeline-filters-title">
+        <div className="pipeline-filter-heading">
+          <h3 id="pipeline-filters-title">PIPELINE — ORIGINAL STAGE, DATE, MARKET-CAP &amp; TRIAL FILTERS</h3>
+          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters</span>
+        </div>
+        <div className="pipeline-row pipeline-filter-toolbar">
+          <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
+          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
+        </div>
+        <details className="pipeline-filter-details" open>
+          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
+          <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
+          <div className="filter-columns pipeline-three-filter-columns">
+            {[
+              { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
+              { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
+            ].map(group => <fieldset className="filter-count-group" key={group.title}>
+              <legend>{group.title}</legend>
+              <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
+              <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
+                <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
+                <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
+                <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
+              </label>)}</div>
+              <button type="button" className="secondary pipeline-group-select-toggle" aria-pressed={group.items.every(item => group.selected.includes(item.label))} aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
+                onClick={() => group.setter(group.items.every(item => group.selected.includes(item.label)) ? [] : group.items.map(item => item.label))}>
+                {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
+              </button>
+            </fieldset>)}
+            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf || ""} ready={snapshot?.trialFilterSchema === 1} />
+          </div>
+        </details>
+        <div className="pipeline-actions pipeline-display-actions">
+          <button type="button" onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
+          <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
+        </div>
+        {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
+      </section>
+    </details>
+  );
+
   return <div className="migration-workspace">
     <div className="worktop">
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
@@ -1613,7 +1661,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Choose stage, date and trial filters, then press DISPLAY TRIALS to list matching records below.</p>
+        <p className="subtle">Stage, PDUFA-date, market-cap and trial restrictions are now all managed under RESTRICTIONS. Press DISPLAY TRIALS here to show your selected records below.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{pageTotals.PIPELINE.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
@@ -1626,43 +1674,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </p>
       <div className="pipeline-setup-grid">
       <FullTrialDownload />
-      <section className="panel pipeline-filters pipeline-filters-compact" aria-labelledby="pipeline-filters-title">
-        <div className="pipeline-filter-heading">
-          <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
-          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters</span>
+      <section className="panel pipeline-restrictions-shortcut" aria-labelledby="pipeline-moved-title">
+        <h3 id="pipeline-moved-title">PIPELINE RESTRICTIONS MOVED</h3>
+        <p>All stage, PDUFA date, trial, financing, evidence and market-cap filter controls now appear beneath the existing rules on the <strong>RESTRICTIONS</strong> page. Your current selections have not been reset or combined with the separate restriction catalog.</p>
+        <p className="subtle" role="status">{stageFilters.length} stage selections · {dateFilters.length} date selections · {activeTrialFilters(trialFilters)} trial filters{onlyBand?" · $300M–$10B optional cap enabled":""}{query?" · Search active":""}.</p>
+        <div className="pipeline-row">
+          <button type="button" onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>OPEN RESTRICTIONS — EDIT FILTERS</button>
+          <button type="button" className="secondary" onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
         </div>
-        <div className="pipeline-row pipeline-filter-toolbar">
-          <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
-          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
-        </div>
-        <details className="pipeline-filter-details" open>
-          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
-          <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
-          <div className="filter-columns pipeline-three-filter-columns">
-            {[
-              { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
-              { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
-            ].map(group => <fieldset className="filter-count-group" key={group.title}>
-              <legend>{group.title}</legend>
-              <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
-              <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
-                <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
-                <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
-                <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
-              </label>)}</div>
-              <button type="button" className="secondary pipeline-group-select-toggle" aria-pressed={group.items.every(item => group.selected.includes(item.label))} aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
-                onClick={() => group.setter(group.items.every(item => group.selected.includes(item.label)) ? [] : group.items.map(item => item.label))}>
-                {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
-              </button>
-            </fieldset>)}
-            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot.asOf} ready={snapshot.trialFilterSchema === 1} />
-          </div>
-        </details>
-        <div className="pipeline-actions pipeline-display-actions">
-          <button type="button" onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
-          <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
-        </div>
-        {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
+        {selectionsChanged && <p className="filter-pending" role="status">Your saved display has not been refreshed for the current selections. Press DISPLAY TRIALS to update it.</p>}
       </section>
       </div>
       <div ref={pipelineDataRef} className="pipeline-results-anchor">
@@ -1670,10 +1690,10 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
             + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")
             + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")} /> :
-          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stage, date and trial filters above, then press DISPLAY TRIALS to show the matching trials and programs.</p></section>}
+          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}</>}
+    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}{pipelineMovedFilters}</>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>

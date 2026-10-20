@@ -20,7 +20,7 @@ const Checklist=require("../app/GemQualificationChecklist.tsx");
 const {checkboxGroupsForStage,resolveGemJrSource,buildGemJrLivePreview}=Checklist;
 function page(stage){
   return renderToStaticMarkup(React.createElement(Checklist.default,{
-    stage,pipeline:[],asOf:"2026-10-18",stageTotal:0,gemJrScan:null,gemJrSavedRows:[],
+    stage,initiallyExpanded:true,pipeline:[],asOf:"2026-10-18",stageTotal:0,gemJrScan:null,gemJrSavedRows:[],
     completedScan:null,stageSavedRows:[],manualStageList:{},
     onAddToStageList:()=>{},onRemoveFromStageList:()=>{},
     onScan:()=>{},onReset:()=>{}

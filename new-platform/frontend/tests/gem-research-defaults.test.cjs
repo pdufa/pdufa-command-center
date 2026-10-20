@@ -22,7 +22,7 @@ const saved=dataset.slice(0,11);
 const asOf="2026-10-18";
 function html(stage,props={}){
  return renderToStaticMarkup(React.createElement(Checklist.default,{
-  stage,pipeline:dataset,asOf,stageTotal:saved.length,
+  stage,initiallyExpanded:true,pipeline:dataset,asOf,stageTotal:saved.length,
   gemJrSavedRows:saved,gemJrScan:null,completedScan:null,stageSavedRows:saved,manualStageList:{},
   onAddToStageList:()=>{},onRemoveFromStageList:()=>{},...props,
   onScan:()=>{},onReset:()=>{}
