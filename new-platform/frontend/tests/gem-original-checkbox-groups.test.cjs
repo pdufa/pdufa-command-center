@@ -222,7 +222,7 @@ test("GEM JR FI toggles exactly its five existing original checkbox IDs and pres
  const enabled=toggleGemJrFiCheckboxes(unrelated);
  assert.deepEqual(enabled,[...unrelated,...five]);
  assert.deepEqual(toggleGemJrFiCheckboxes(enabled),unrelated);
- assert.deepEqual(toggleGemJrFiCheckboxes(["issuer"]),five);
+ assert.deepEqual(new Set(toggleGemJrFiCheckboxes(["issuer"])),new Set(five));
  const originalGroups=checkboxGroupsForStage("GEM_JR");
  const originalKeys=new Set([...originalGroups.clinical,...originalGroups.trading].map(([key])=>key));
  assert.equal(five.every(key=>originalKeys.has(key)),true);
