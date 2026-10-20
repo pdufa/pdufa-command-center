@@ -1,0 +1,68 @@
+.panel { margin: 16px 0; border: 2px solid #1e4b35; background: #fff; color: #182820; padding: 18px; min-width: 0; }
+.heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.heading h3, .heading h4 { margin: 0 0 8px; }
+.heading p { margin: 0 0 12px; }
+.buttons { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.buttons button, .inspectButtons button { min-height: 40px; white-space: normal; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 0; }
+.controls label { display: grid; gap: 5px; font-weight: 600; }
+.controls select { width: 100%; max-width: 380px; min-height: 42px; }
+.notice { background: #fff7df; border-left: 4px solid #a36a12; padding: 12px; margin: 12px 0; }
+.note { font-size: 13px; line-height: 1.5; margin: 10px 0; }
+.totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+.totals div { border: 1px solid #305941; background: #f0f8f1; padding: 12px; display: grid; gap: 6px; }
+.totals span { font-size: 13px; }
+.totals strong { font-size: 26px; }
+.scroll { max-width: 100%; overflow-x: auto; border: 1px solid #bbcabb; border-radius: 5px; }
+.scroll:focus-visible { outline: 3px solid #2675bc; outline-offset: 2px; }
+.table { width: 100%; min-width: 940px; border-collapse: collapse; }
+.table caption { text-align: left; padding: 10px; font-size: 13px; background: #f4f7f4; }
+.table th, .table td { padding: 12px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid #ccd6cd; }
+.table thead th { background: #e6f0e7; font-size: 13px; }
+.table tbody th { min-width: 260px; max-width: 340px; font-weight: 500; }
+.table td { font-variant-numeric: tabular-nums; font-weight: 700; }
+.table small { display: block; font-size: 11px; margin-top: 6px; font-weight: 400; color: #405047; }
+.start { background: #e6f0e7; font-weight: 700; }
+.inactive { background: #f8faf8; }
+.rule { display: flex; gap: 10px; align-items: flex-start; font-weight: 700; cursor: pointer; }
+.rule input { min-width: 22px; min-height: 22px; accent-color: #1c6844; margin: 1px 0 0; }
+.number { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; }
+.number input, .number select { width: 110px; min-height: 38px; }
+.table details { margin-top: 9px; font-size: 12px; font-weight: 400; line-height: 1.5; }
+.table summary { cursor: pointer; text-decoration: underline; }
+.inspectButtons { display: grid; gap: 6px; }
+.inspectButtons button { font-size: 10px; padding: 7px; }
+.inspection { margin-top: 14px; padding: 14px; border: 2px solid #1c6844; background: #f5faf5; }
+.inspection th, .inspection td { padding: 9px; text-align: left; border-bottom: 1px solid #ccd6cd; }
+.inspection .buttons { margin-top: 12px; }
+.sources { font-size: 12px; }
+.stageTotals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0; }
+.stageTotals > div { display: grid; gap: 6px; padding: 12px; background: #f0f8f1; border: 1px solid #305941; }
+.stageTotals span, .stageTotals small { font-size: 12px; }
+.customForm { margin: 20px 0; padding: 16px; background: #f7faf7; border: 1px solid #9fb69f; }
+.customForm > label { display: grid; gap: 6px; }
+.customForm textarea { width: 100%; min-height: 75px; resize: vertical; box-sizing: border-box; }
+.catalog { min-width: 1100px; }
+.catalog td select { min-width: 130px; min-height: 40px; max-width: 200px; }
+.valueFields { display: grid; gap: 6px; }
+.valueFields input { width: 145px; max-width: 100%; box-sizing: border-box; min-height: 40px; }
+@media (max-width: 640px) {
+  .panel { padding: 12px; }
+  .totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .totals strong { font-size: 23px; }
+  .controls, .controls label { width: 100%; }
+  .controls select { max-width: 100%; }
+  .buttons button { flex: 1; }
+  .stageTotals { grid-template-columns: 1fr; }
+  .catalog, .catalog tbody, .catalog tr, .catalog th, .catalog td { display: block; min-width: 0; max-width: none; width: auto; }
+  .catalog thead { display: none; }
+  .catalog tr { border-bottom: 2px solid #305941; }
+  .catalog th { background: #eef5ee; }
+  .catalog td { display: grid; grid-template-columns: 115px minmax(0, 1fr); gap: 6px; }
+  .catalog td::before { content: attr(data-label); font-size: 12px; font-weight: 500; }
+  .catalog td small { grid-column: 2; }
+  .catalog .start td { display: block; }
+  .catalog .start td::before { content: none; }
+  .catalog td select { max-width: 100%; width: 100%; min-width: 0; }
+  .catalog .valueFields input { width: 100%; }
+}

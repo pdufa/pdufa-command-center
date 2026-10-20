@@ -94,6 +94,8 @@ const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
   {key:"tam",title:"Large Addressable Market (TAM)",goal:"1000000000",unit:"minimum annual TAM in USD",number:true}]}
 ];
 const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
+// The Restrictions page lists the same optional goals as the stage checklist.
+export function availableGemRestrictionOptions() { return OPTIONAL_ALL.map(item=>({...item})); }
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["pdufa","window","volume","rsi","trend","liquidity"]};
 const FA_CRITERIA=["registry","marketcap"];
 // GEM's FA button controls only the existing optional GEM JR source input.
