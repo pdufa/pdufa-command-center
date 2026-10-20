@@ -47,7 +47,7 @@ export function AssessmentStatus({ stage }: { stage: AssessmentStage }) {
         : "Scoring has not loaded."}</p>
       <small>Partial = observed points, with missing evidence unscored. Complete scores alone can be ranked. {data && `Updated ${data.computedAt} · ${data.modelVersion} · ${data.registryLinked.toLocaleString("en-US")} linked registry records.`}</small>
     </div>
-    <button type="button" className="secondary" disabled={loading} onClick={refresh}>Refresh scores</button>
+    <button type="button" className="secondary" disabled={loading} onClick={refresh} aria-label={"Score entire " + stageLabel(stage) + " list"}>{loading ? "Scoring list…" : "Score Entire " + stageLabel(stage) + " List"}</button>
   </div>;
 }
 
