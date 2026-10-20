@@ -40,6 +40,7 @@ export type NewFromScanRow = {
   trialId: string | null;
   label: string;
   exactRun: boolean;
+  sourceUrl?: string;
 };
 export type NewFromScanSummary = {
   runId: number | null;
@@ -104,9 +105,17 @@ export function newFromScanSummary(
     const id = string(scan?.scan);
     if (id && !stages.has(id)) stages.set(id, scan!);
   }
-  const pipelineReport = stages.get("2");
-  const enrichmentReport = stages.get("3");
-  const jrReport = stages.get("4");
+  const matchedStage = (id: string): JsonObject | null => {
+    const stage = stages.get(id);
+    return stage && runId !== null && count(stage.run_id) === runId &&
+      stage.artifact_integrity === "PASS" && stage.status === "PARTIAL" &&
+      stage.collector_status === "COMPLETE" ? stage : null;
+  };
+  // Old archived stages may be reused in a newly published aggregate.
+  // Never mark those results NEW FROM the current scan.
+  const pipelineReport = matchedStage("2");
+  const enrichmentReport = matchedStage("3");
+  const jrReport = matchedStage("4");
   const pipelineNewPrograms: NewFromScanRow[] = [];
   const warnings: string[] = [];
   const sourceFinished = dateMs(pipeline?.finished_at);
@@ -150,16 +159,40 @@ export function newFromScanSummary(
   if (juniorMembers === null || gemMembers === null) {
     warnings.push("Saved GEM JR/GEM membership additions are not independently verified for this scan date.");
   }
-  if (rawJrNew !== null && rawJrNew > 0) {
-    warnings.push("GEM JR source reports a new Phase 3 result count, but does not publish the new record's ticker/NCT identity.");
+  const jrDetails: NewFromScanRow[] = [];
+  const rawDetails = Array.isArray(jrReport?.new_record_details)
+    ? jrReport.new_record_details : [];
+  const seenResults = new Set<string>();
+  if (rawJrNew !== null) for (const raw of rawDetails.slice(0, Math.min(100, rawJrNew))) {
+    const detail = obj(raw);
+    const ticker = string(detail?.ticker), nct = string(detail?.nct_id);
+    const sourceUrl = string(detail?.source_url);
+    if (!ticker || !/^[A-Z][A-Z0-9.-]{0,12}$/.test(ticker) ||
+        !nct || !/^NCT\\d{8}$/.test(nct) ||
+        sourceUrl !== "https://clinicaltrials.gov/study/" + nct ||
+        seenResults.has(ticker + "|" + nct)) continue;
+    seenResults.add(ticker + "|" + nct);
+    jrDetails.push({
+      kind:"NEW_PHASE3_RESULT", stage:"GEM JR", ticker, drug:string(detail?.drug),
+      trialId:nct, sourceUrl,
+      label:"NEW FROM SCAN — registry results posted " + (string(detail?.results_posted_at) || "date unreported"),
+      exactRun:true,
+    });
+  }
+  const unidentified = rawJrNew === null ? 0 : Math.max(0, rawJrNew - jrDetails.length);
+  if (unidentified > 0) {
+    warnings.push("GEM JR reported " + unidentified.toLocaleString("en-US") +
+      " new Phase 3 result record(s) without published per-record ticker/NCT identities.");
   }
   if (gem && !sameGemRun) warnings.push("GEM report does not match the latest clinical scan run; candidate additions are withheld.");
+  if (stages.get("4") && !jrReport) warnings.push("GEM JR saved result belongs to a different or unverified run; current-run count withheld.");
   const rows: NewFromScanRow[] = [
     ...pipelineNewPrograms,
-    ...(rawJrNew !== null && rawJrNew > 0 ? [{
+    ...jrDetails,
+    ...(unidentified > 0 ? [{
       kind:"NEW_PHASE3_RESULT" as const, stage:"GEM JR" as const, ticker:null,
       drug:null, trialId:null,
-      label:rawJrNew.toLocaleString("en-US")+" NEW FROM SCAN — posted Phase 3 result record(s), identity not published",
+      label:unidentified.toLocaleString("en-US")+" NEW FROM SCAN — posted Phase 3 result record(s), identity not published",
       exactRun:true,
     }] : []),
     ...(juniorMembers || []),
