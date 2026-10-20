@@ -28,7 +28,8 @@ test("GEM JR settles after publishing its preview and still responds to qualific
    setPreview(value);
   },[]);
   return React.createElement(Checklist,{stage:"GEM_JR",pipeline,asOf,stageTotal:11,
-   gemJrScan:null,gemJrSavedRows:[],gemJrLivePreview:preview,gemJrDraft:draft,
+   gemJrScan:null,gemJrSavedRows:[],completedScan:null,stageSavedRows:[],manualStageList:{},
+   onAddToStageList(){},onRemoveFromStageList(){},gemJrLivePreview:preview,gemJrDraft:draft,
    onGemJrLivePreviewChange:publish,onGemJrDraftChange:setDraft,onScan(){},onReset(){}});
  }
  try{
@@ -59,7 +60,8 @@ test("GEM retains unknown evidence inherited from its GEM JR input",async()=>{
    latest=value;setPreview(value);
   },[]);
   return React.createElement(Checklist,{stage:"GEM",pipeline,asOf,stageTotal:6,
-   gemJrScan:null,gemJrSavedRows:[],gemJrLivePreview:upstream,gemDraft:draft,
+   gemJrScan:null,gemJrSavedRows:[],completedScan:null,stageSavedRows:[],manualStageList:{},
+   onAddToStageList(){},onRemoveFromStageList(){},gemJrLivePreview:upstream,gemDraft:draft,
    onGemLivePreviewChange:publish,onGemDraftChange:setDraft,onScan(){},onReset(){}});
  }
  try{
