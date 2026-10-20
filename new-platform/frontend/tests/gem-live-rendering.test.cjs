@@ -27,7 +27,7 @@ test("GEM JR settles after publishing its preview and still responds to qualific
    latest=value;
    setPreview(value);
   },[]);
-  return React.createElement(Checklist,{stage:"GEM_JR",pipeline,asOf,stageTotal:11,
+  return React.createElement(Checklist,{stage:"GEM_JR",initiallyExpanded:true,pipeline,asOf,stageTotal:11,
    gemJrScan:null,gemJrSavedRows:[],completedScan:null,stageSavedRows:[],manualStageList:{},
    onAddToStageList(){},onRemoveFromStageList(){},gemJrLivePreview:preview,gemJrDraft:draft,
    onGemJrLivePreviewChange:publish,onGemJrDraftChange:setDraft,onScan(){},onReset(){}});
@@ -59,7 +59,7 @@ test("GEM retains unknown evidence inherited from its GEM JR input",async()=>{
    if(++publications>5)throw Error("GEM preview did not settle");
    latest=value;setPreview(value);
   },[]);
-  return React.createElement(Checklist,{stage:"GEM",pipeline,asOf,stageTotal:6,
+  return React.createElement(Checklist,{stage:"GEM",initiallyExpanded:true,pipeline,asOf,stageTotal:6,
    gemJrScan:null,gemJrSavedRows:[],completedScan:null,stageSavedRows:[],manualStageList:{},
    onAddToStageList(){},onRemoveFromStageList(){},gemJrLivePreview:upstream,gemDraft:draft,
    onGemLivePreviewChange:publish,onGemDraftChange:setDraft,onScan(){},onReset(){}});
@@ -79,7 +79,7 @@ test("GEM JR FS toggles the original five restrictions with no FI controls",asyn
   const [stored,setDraft]=React.useState(null);
   draft=stored;
   return React.createElement(Checklist,{
-   stage:"GEM_JR",pipeline:pipeline.slice(0,6),asOf,stageTotal:11,
+   stage:"GEM_JR",initiallyExpanded:true,pipeline:pipeline.slice(0,6),asOf,stageTotal:11,
    completedScan:null,stageSavedRows:[],manualStageList:{},
    onAddToStageList(){},onRemoveFromStageList(){},
    gemJrScan:null,gemJrSavedRows:[],gemJrDraft:stored,
@@ -123,7 +123,7 @@ test("Both stage new-trial tables add and remove exact candidates directly in th
    const [list,setList]=React.useState({});
    savedNow=list;
    return React.createElement(Checklist,{
-    stage,pipeline:[candidate],asOf,stageTotal:0,
+    stage,initiallyExpanded:true,pipeline:[candidate],asOf,stageTotal:0,
     completedScan,stageSavedRows:[],manualStageList:list,
     onAddToStageList:row=>setList(old=>({...old,[row.id]:"2026-10-19T12:00:00Z"})),
     onRemoveFromStageList:id=>setList(old=>{const next={...old};delete next[id];return next;}),
@@ -161,7 +161,7 @@ test("Repeat scans show zero NEW programs and retain the old match under PREVIOU
    const [list,setList]=React.useState({});
    setFresh=setFreshIds;saved=list;
    return React.createElement(Checklist,{
-    stage,pipeline:[candidate],asOf,stageTotal:0,completedScan:scan,
+    stage,initiallyExpanded:true,pipeline:[candidate],asOf,stageTotal:0,completedScan:scan,
     stageSavedRows:[],newThisScanIds:fresh,manualStageList:list,
     gemJrScan:null,gemJrSavedRows:[],
     onAddToStageList:row=>setList(current=>current[row.id]?current:
