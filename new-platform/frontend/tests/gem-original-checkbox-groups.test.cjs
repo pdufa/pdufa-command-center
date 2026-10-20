@@ -233,9 +233,10 @@ test("GEM JR FI toggles exactly its five existing original checkbox IDs and pres
  const gem=page("GEM");
  assert.match(gem,/FI — 6 SCAN RESTRICTIONS/);
  const src=fs.readFileSync(path.join(__dirname,"../app/GemQualificationChecklist.tsx"),"utf8");
- assert.match(src,/const fiCheckboxSelection=stage==="GEM_JR"\?selected:fiSelected/);
- assert.match(src,/const next=toggleGemJrFiCheckboxes\(selected\)/);
- assert.match(src,/checked=\{fiCheckboxSelection.includes\(key\)\}/);
+ assert.match(src,/const fsChecked=showSuggestions/);
+ assert.match(src,/setFiSelected\(stage==="GEM_JR"\?toggleGemJrFiCheckboxes\(fiSelected\)/);
+ assert.match(src,/checked=\{fiSelected.includes\(key\)\}/);
+ assert.match(src,/const checked=selected.includes\(key\)\|\|\(stage==="GEM_JR"&&fiSelected.includes\(key\)\)/);
  assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).clinical\)/);
  assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).trading\)/);
 });
