@@ -295,7 +295,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  function toggleFi(){
    if(running)return;
    // Independent of FS, FA and manual checkbox selections for BOTH stages.
-   setFiSelected(fiAllChecked?[]:[...fiKeys]);
+   setFiSelected(stage==="GEM_JR"?toggleGemJrFiCheckboxes(fiSelected):(fiAllChecked?[]:[...fiKeys]));
    setResult(null);
    onReset();
    setMessage("FI "+(fiAllChecked?"unchecked all":"checked all")+" "+fiKeys.length+" FI restrictions. FS and FA remain unchanged; press SCAN to evaluate active requirements.");
