@@ -44,7 +44,7 @@ export function ScoreProgressButton({ label, stage, onScore, rowId }: { label: s
   const record = rowId ? records.get(rowId) : undefined;
   const totals = data?.totals[stage];
   const score = record ? scoreFor(record, stage) : null;
-  const start = () => { setOpen(true); setRequested(true); refresh(); if (!rowId) onScore?.(); };
+  const start = () => { setOpen(true); setRequested(true); refresh(); };
   return <span style={{ display: "inline-flex", position: "relative", alignItems: "center", gap: 6 }}>
     <button type="button" className="secondary" onClick={start}>{label}</button>
     <button type="button" className="secondary" onClick={() => setOpen(value => !value)} aria-label={"Show scoring status for " + label} aria-expanded={open} title="Scoring status">ⓘ</button>
@@ -56,6 +56,14 @@ export function ScoreProgressButton({ label, stage, onScore, rowId }: { label: s
       <span style={{ display: "block", marginTop: 10 }} role="status">{loading ? "Refreshing scoring index…" : error ? "Refresh failed: " + error : requested ? "Scoring index refresh completed." : "Latest available scoring snapshot."}</span>
       {!rowId && totals && <span style={{ display: "block", marginTop: 8 }}>{data?.total.toLocaleString()} processed · {totals.complete.toLocaleString()} complete · {totals.partial.toLocaleString()} partial · {totals.missing.toLocaleString()} missing evidence</span>}
       {rowId && <span style={{ display: "block", marginTop: 8 }}>{score ? score[2] === 0 ? "Awaiting evidence" : score[0] == null ? "Partial assessment · evidence incomplete" : "Complete score: " + score[0] + " / 100" : "No assessment available yet"}</span>}
+      {rowId && record && <span style={{ display: "block", marginTop: 10, maxHeight: "45vh", overflowY: "auto" }}>
+        {ASSESSMENT_STAGES.map(key => { const result = scoreFor(record, key); return <span key={key} style={{ display: "block", padding: "8px 0", borderTop: "1px solid #8885" }}>
+          <strong>{stageLabel(key)}: {result?.[0] == null ? "Incomplete" : n(result[0]) + " / 100"}</strong>
+          <small style={{ display: "block" }}>Evidence: {result ? n(result[2]) : "0"} assessed</small>
+          {ASSESSMENT_LABELS[key].map((label, i) => <span key={label} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "2px 0" }}><span>{categoryId(key, i)} · {label}</span><strong>{result?.[i + 3] == null ? "—" : n(result[i + 3])}</strong></span>)}
+        </span>; })}
+      </span>}
+      {rowId && onScore && <button type="button" className="secondary" style={{ marginTop: 10, width: "100%" }} onClick={() => { setOpen(false); onScore(); }}>View all 21 scores &amp; underlying data ↓</button>}
       <small style={{ display: "block", marginTop: 8 }}>These are refresh states and recorded results, not live per-trial job percentages. Closing does not stop the refresh.</small>
     </span>}
   </span>;
