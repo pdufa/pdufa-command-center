@@ -68,7 +68,7 @@ export default function ScanNewResultsPanel({
               <td>{row.ticker ? <strong>{row.ticker}</strong> : <em>Not published</em>}</td>
               <td>{row.drug || "Identity not published in the scan report"}</td>
               <td>{row.trialId ? <code>{row.trialId}</code> : "—"}</td>
-              <td>{row.label}</td>
+              <td>{row.label}{row.sourceUrl && <div><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov source ↗</a></div>}</td>
             </tr>)}</tbody>
           </table>
         </div> :
