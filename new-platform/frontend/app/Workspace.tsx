@@ -13,7 +13,7 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
-import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, useAssessments } from "./CandidateAssessments";
+import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
@@ -595,7 +595,7 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
 }
 
 function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
-  const { records: assessmentRecords, refresh: refreshAssessmentIndex } = useAssessments();
+  const { records: assessmentRecords } = useAssessments();
   const [assessmentOrder, setAssessmentOrder] = useState({ GEM_JR: "source", GEM: "source" });
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
@@ -1416,7 +1416,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                 }}
                 aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]}
                 aria-label={"Trial "+r.ticker+" · click to expand or collapse stock details"}>
-                <td><button type="button" className="secondary" onClick={() => { refreshAssessmentIndex(); selectTrial(r,"assessments"); }} aria-label={"Score trial " + (r.programId || r.id)}>Score Trial</button></td>
+                <td><ScoreProgressButton label="Score Trial" stage={stage} rowId={r.id} onScore={() => selectTrial(r,"assessments")} /></td>
                 <td className="numeric">{firstVisible+i+1}</td>
                 <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td>{wtButton(r,"watch")}</td>

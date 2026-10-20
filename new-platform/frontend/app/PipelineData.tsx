@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candidate } from "./Workspace";
 import TrialFields from "./TrialFields";
-import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, useAssessments } from "./CandidateAssessments";
+import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
 
@@ -30,7 +30,7 @@ type Summaries = { ids: string; records: Record<string, TrialSummary> };
 export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
   const [page, setPage] = useState(0);
   const [scoreOrder, setScoreOrder] = useState("source");
-  const { records: assessmentRecords, refresh: refreshScores } = useAssessments();
+  const { records: assessmentRecords } = useAssessments();
   const [size, setSize] = useState(25);
   const [selected, setSelected] = useState("");
   const [summaries, setSummaries] = useState<Summaries>({ ids: "", records: {} });
@@ -133,7 +133,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
         const nct = trialId(row), saved = enriched[nct];
         const active = selected === row.id;
         return <tr key={row.id} className={active ? "selected-record" : ""}>
-          <td><button type="button" className="secondary" onClick={() => { refreshScores(); setSelected(row.id); }} aria-label={"Score trial " + (row.programId || row.id)}>Score Trial</button></td>
+          <td><ScoreProgressButton label="Score Trial" stage="PIPELINE" rowId={row.id} onScore={() => setSelected(row.id)} /></td>
           <td>{current.start + index}</td><td className="permanent-id">{row.programId || "Not assigned"}</td>
           <td><strong>{row.ticker}</strong><small>{row.company}</small></td>
           <td className="pipeline-study-cell"><strong>{nct ?
