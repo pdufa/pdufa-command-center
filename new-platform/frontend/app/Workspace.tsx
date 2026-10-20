@@ -1300,7 +1300,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
                 <td title="Saved stage membership date (not screening date)">{savedMemberIds.has(r.id)?stated(listDates(r).added,"NOT RECORDED"):"NOT STAGE MEMBER"}</td>
                 <td title="No removal date while the exact program remains active in this list">—</td>
-                <td>{screenStatuses?<span className="gem-table-eligibility" style={{background:screenStatuses.get(r.id)==="PASS"?"#d7f7e4":"#fff0d8",color:"#232323",padding:"5px 7px",borderRadius:5}}>{!stageDraft?.selected.length?"UNRESTRICTED / NOT QUALIFIED":screenStatuses.get(r.id)==="PASS"?"PASSED CHECKED RULES":"NEEDS VERIFICATION"}</span>:<span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
+                <td>{screenStatuses?<span className="gem-table-eligibility" style={{background:screenStatuses.get(r.id)==="PASS"?"#d7f7e4":"#fff0d8",color:"#232323",padding:"5px 7px",borderRadius:5}}>{!(stageDraft?.selected.length || (stageDraft?.fiActive && (stageDraft.fiSelected?.length||0)>0))?"UNRESTRICTED / NOT QUALIFIED":screenStatuses.get(r.id)==="PASS"?"PASSED CHECKED RULES":"NEEDS VERIFICATION"}</span>:<span className={"gem-table-eligibility gem-eligibility-"+candidateDecision(r,stage).tone}
                   title={candidateDecision(r,stage).reason}>{candidateDecision(r,stage).title}</span>}</td>
                 <td>{stated(r.company,"—")}</td>
                 <td title={stated(r.drug)}>{trialSheetUrl(r)
