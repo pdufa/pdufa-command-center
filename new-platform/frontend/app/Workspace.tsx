@@ -1560,7 +1560,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                 {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
               </button>
             </fieldset>)}
-            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot.asOf} ready={snapshot.trialFilterSchema === 1} />
+            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf || ""} ready={snapshot?.trialFilterSchema === 1} />
           </div>
         </details>
         <div className="pipeline-actions pipeline-display-actions">
@@ -1661,7 +1661,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     }} />}
     {snapshot && top==="PDUFA" && nav==="PIPELINE" && <section className="pipeline-page">
       <div className="sectionhead"><div><h2>PIPELINE — Clinical and regulatory stages</h2>
-        <p className="subtle">Choose stage, date and trial filters, then press DISPLAY TRIALS to list matching records below.</p>
+        <p className="subtle">Stage, PDUFA-date, market-cap and trial restrictions are now all managed under RESTRICTIONS. Press DISPLAY TRIALS here to show your selected records below.</p>
         <a href="https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/" target="_blank" rel="noopener noreferrer" className="streamlit-fallback">OPEN FULL STREAMLIT PIPELINE ↗</a></div>
         <span className="counter">{pageTotals.PIPELINE.toLocaleString("en-US")} {onlyBand?"screened candidates":"source-recorded trials / programs"}</span></div>
       <p className="subtle pipeline-reconciliation">
@@ -1690,7 +1690,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
             + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")
             + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")} /> :
-          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stage, date and trial filters above, then press DISPLAY TRIALS to show the matching trials and programs.</p></section>}
+          <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
     {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}{pipelineMovedFilters}</>}
