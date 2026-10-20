@@ -211,7 +211,7 @@ test("GEM FA starts off and mirrors only the optional Gem Jr Trials checkbox",()
  assert.doesNotMatch(jrHtml,/FA: toggle Gem Jr Trials input/);
  const src=fs.readFileSync(path.join(__dirname,"../app/GemQualificationChecklist.tsx"),"utf8");
  assert.ok(src.includes('selectRequirements(toggleGemJrTrialsRequirement(selected))'),"GEM FA uses checkbox selection pathway");
- assert.ok(src.includes('aria-pressed={stage==="GEM"?useGemJrSource:faActive}'),"FA button state derives from checkbox");
+ assert.ok(src.includes('aria-pressed={stage==="GEM"?useGemJrSource:faChecked}'),"FA button state derives from checkbox");
  assert.equal(checkboxGroupsForStage("GEM").clinical.length+checkboxGroupsForStage("GEM").trading.length,11);
 });
 
