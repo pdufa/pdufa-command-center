@@ -85,7 +85,7 @@ def scan(mode, max_pages, data_dir=DATA):
               "pageSize": 1000, "format": "json", "sort": "LastUpdatePostDate:desc"}
     state = {"mode": mode, "started_at": now, "registry_companies": len(registry),
              "pages": 0, "studies_checked": 0, "matched_posted_results": 0,
-             "new_records": 0, "complete": False, "errors": []}
+             "new_records": 0, "new_record_details": [], "complete": False, "errors": []}
     if mode == "daily":
         # Incremental scan: recently updated studies, plus retained historical ledger.
         params["query.term"] += " AND AREA[LastUpdatePostDate]RANGE[" + (
@@ -139,6 +139,17 @@ def scan(mode, max_pages, data_dir=DATA):
                     "first_seen_at": old.get("first_seen_at") or now, "last_checked_at": now})
                 if identity not in by_nct:
                     state["new_records"] += 1
+                    # Save new study identities in the *original* scan run.
+                    # The GEM recheck may overwrite the current status JSON.
+                    if len(state["new_record_details"]) < 100:
+                        state["new_record_details"].append({
+                            "ticker": row["ticker"],
+                            "drug": row["drug"],
+                            "nct_id": nct,
+                            "results_posted_at": posted,
+                            "source_url": row["phase3_results_source"],
+                            "verification_status": row["verification_status"],
+                        })
                 by_nct[identity] = row
                 state["matched_posted_results"] += 1
             state["pages"] += 1
