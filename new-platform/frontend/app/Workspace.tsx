@@ -1397,7 +1397,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <div className="table-scroll gem-row-scroller" ref={gemTableScrollViewport} aria-label={(stage==="GEM"?"GEM":"GEM JR")+" candidates scrollable table"}>
             <table className="gem-source-parity-table">
               <thead><tr>
-                {["#","Program ID","W","T","Ticker","Date Added","Date Removed","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}<AssessmentHeaders stage={stage} />
+                {["Score trial","#","Program ID","W","T","Ticker","Date Added","Date Removed","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}<AssessmentHeaders stage={stage} />
               </tr></thead>
               <tbody>{visibleRows.map((r,i)=><Fragment key={r.id}><tr
                 ref={chosen?.id===r.id && selected[stage] ? highlightedGemRow : undefined}
@@ -1417,7 +1417,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                 aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]}
                 aria-label={"Trial "+r.ticker+" · click to expand or collapse stock details"}>
                 <td className="numeric">{firstVisible+i+1}</td>
-                <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
+                <td><button type="button" className="secondary" onClick={() => { refreshAssessmentIndex(); selectTrial(r,"assessments"); }} aria-label={"Score trial " + (r.programId || r.id)}>Score Trial</button></td><td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
