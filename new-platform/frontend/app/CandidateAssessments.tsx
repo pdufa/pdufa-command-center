@@ -81,7 +81,8 @@ function Value({ value }: { value: unknown }) {
 export default function CandidateAssessments({ row, initialStage = "PIPELINE" }: { row: Candidate; initialStage?: AssessmentStage }) {
   const [data, setData] = useState<AssessmentDetail | null>(null), [error, setError] = useState("");
   const [stage, setStage] = useState<AssessmentStage>(initialStage), [retry, setRetry] = useState(0);
-  const index = useAssessments().data;
+  const { data: index, refresh: refreshIndex } = useAssessments();
+  const [rescoring, setRescoring] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -94,8 +95,8 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
         if (response.status === 503 && attempt < 3) { timer = setTimeout(() => void load(attempt + 1), 2000); return; }
         if (!response.ok) throw new Error(result.error || "Detailed scoring evidence is unavailable");
         if (result.id !== row.id || row.programId && result.programId !== row.programId || !result.models || ASSESSMENT_STAGES.some(key => result.models[key]?.categories?.length !== 7)) throw new Error("Exact candidate scoring identity could not be verified");
-        if (!controller.signal.aborted) setData(result);
-      } catch (cause) { if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : "Scoring evidence is unavailable"); }
+        if (!controller.signal.aborted) { setData(result); setRescoring(false); }
+      } catch (cause) { if (!controller.signal.aborted) { setError(cause instanceof Error ? cause.message : "Scoring evidence is unavailable"); setRescoring(false); } }
     }
     void load();
     return () => { controller.abort(); if (timer) clearTimeout(timer); };
@@ -103,6 +104,7 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
   const model = data?.models[stage], change = data?.changes[stage];
   return <section className="candidate-assessments" aria-label={"All candidate assessment scores for " + row.id}>
     <div className="sectionhead"><div><h3>Candidate scores &amp; underlying data</h3><p>{row.ticker} · {row.drug || row.nctId || row.id} · {row.programId || "Exact program: " + row.id}</p></div>
+      <button type="button" className="secondary" disabled={rescoring} onClick={() => { setRescoring(true); refreshIndex(); setRetry(v => v + 1); }}>{rescoring ? "Rescoring…" : "Score This Trial · All 3 Rankings"}</button>
       {data && <button type="button" className="secondary" onClick={() => downloadJson(data, (row.programId || data.nctId || "candidate") + "-all-scores.json")}>Download all scores &amp; data</button>}
     </div>
     {!data && !error && <p role="status">Loading all 21 assessments and exact-program evidence…</p>}
@@ -111,6 +113,7 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
       <div className="assessment-models" role="group" aria-label="Scoring models">{ASSESSMENT_STAGES.map(key => { const score = data.models[key]; return <button type="button" key={key} className={stage === key ? "active" : "secondary"} aria-pressed={stage === key} onClick={() => setStage(key)}>
         <span>{stageLabel(key)}</span><strong>{score.coverage === 0 ? "Unscored" : score.score == null ? n(score.observedPoints) + " observed points" : n(score.score) + " / 100"}</strong><small>{n(score.coverage)}% evidence · {score.status}</small>
       </button>; })}</div>
+      <details className="assessment-ledger"><summary>Remaining assessments · {ASSESSMENT_STAGES.reduce((sum, key) => sum + data.models[key].categories.filter(c => c.status !== "COMPLETE").length, 0)} incomplete</summary><ul>{ASSESSMENT_STAGES.flatMap(key => data.models[key].categories.filter(c => c.status !== "COMPLETE").map(c => <li key={key + c.id}>{stageLabel(key)} · {c.id} {c.label}: {c.status}</li>))}</ul></details>
       <p className="subtle">{data.qualification.note} Missing = unscored; zero = evaluated and earned no points. The displayed weights and research rules are not statistically calibrated.</p>
       {data.riskFlags.length > 0 && <div className="assessment-risk" role="alert"><strong>Evidence flags</strong><ul>{data.riskFlags.map(flag => <li key={flag}>{flag}</li>)}</ul></div>}
       <p className="small">Assessed {data.asOf} · Model {data.modelVersion} · Registry saved {data.registryFetchedAt || "not available"} · Registry source updated {data.registrySourceDate || "not reported"}.
