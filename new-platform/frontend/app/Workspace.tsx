@@ -654,7 +654,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         if(!entries||typeof entries!=="object"||Array.isArray(entries))return {} as Record<string,string>;
         return Object.fromEntries(
           Object.entries(entries)
-          .filter(([id,date])=>id.length>0&&id.length<1024&&typeof date==="string"&&/^\\d{4}-\\d{2}-\\d{2}T/.test(date))
+          .filter(([id,date])=>id.length>0&&id.length<1024&&typeof date==="string"&&/^\d{4}-\d{2}-\d{2}T/.test(date))
           .slice(0,1000)
         ) as Record<string,string>;
       };
