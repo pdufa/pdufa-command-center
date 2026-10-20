@@ -48,7 +48,8 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
   const selectedRow = current.rows.find(row => row.id === selected);
 
   useEffect(() => {
-    if (selected) detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Keep the clicked trial in view. The score status popup is fixed to the viewport;
+    // automatically scrolling to the expanded record below the entire table hid the result.
   }, [selected]);
 
   useEffect(() => () => sortController.current?.abort(), []);
