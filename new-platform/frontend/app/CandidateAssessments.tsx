@@ -37,6 +37,30 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
   return <Context.Provider value={{ data, records, error, loading, refresh: () => setRetry(v => v + 1) }}>{children}</Context.Provider>;
 }
 
+export function ScoreProgressButton({ label, stage, onScore, rowId }: { label: string; stage: AssessmentStage; onScore?: () => void; rowId?: string }) {
+  const { data, records, loading, error, refresh } = useAssessments();
+  const [open, setOpen] = useState(false);
+  const [requested, setRequested] = useState(false);
+  const record = rowId ? records.get(rowId) : undefined;
+  const totals = data?.totals[stage];
+  const score = record ? scoreFor(record, stage) : null;
+  const start = () => { setOpen(true); setRequested(true); refresh(); onScore?.(); };
+  return <span style={{ display: "inline-flex", position: "relative", alignItems: "center", gap: 6 }}>
+    <button type="button" className="secondary" onClick={start}>{label}</button>
+    <button type="button" className="secondary" onClick={() => setOpen(value => !value)} aria-label={"Show scoring status for " + label} aria-expanded={open} title="Scoring status">ⓘ</button>
+    {open && <span role="dialog" aria-label={label + " progress"} style={{ position: "absolute", top: "100%", left: 0, zIndex: 100, width: "min(320px, 85vw)", maxWidth: "85vw", padding: 14, border: "1px solid #777", borderRadius: 10, background: "var(--background, white)", color: "var(--foreground, #111)", boxShadow: "0 6px 22px #0003", whiteSpace: "normal" }}>
+      <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+        <strong>{rowId ? "Trial scoring status" : stageLabel(stage) + " list scoring status"}</strong>
+        <button type="button" className="secondary" onClick={() => setOpen(false)} aria-label="Close scoring status">× Close</button>
+      </span>
+      <span style={{ display: "block", marginTop: 10 }} role="status">{loading ? "Refreshing scoring index…" : error ? "Refresh failed: " + error : requested ? "Scoring index refresh completed." : "Latest available scoring snapshot."}</span>
+      {!rowId && totals && <span style={{ display: "block", marginTop: 8 }}>{data?.total.toLocaleString()} processed · {totals.complete.toLocaleString()} complete · {totals.partial.toLocaleString()} partial · {totals.missing.toLocaleString()} missing evidence</span>}
+      {rowId && <span style={{ display: "block", marginTop: 8 }}>{score ? score[2] === 0 ? "Awaiting evidence" : score[0] == null ? "Partial assessment · evidence incomplete" : "Complete score: " + score[0] + " / 100" : "No assessment available yet"}</span>}
+      <small style={{ display: "block", marginTop: 8 }}>These are refresh states and recorded results, not live per-trial job percentages. Closing does not stop the refresh.</small>
+    </span>}
+  </span>;
+}
+
 export function AssessmentStatus({ stage }: { stage: AssessmentStage }) {
   const { data, error, loading, refresh } = useAssessments();
   const totals = data?.totals[stage];
@@ -47,7 +71,7 @@ export function AssessmentStatus({ stage }: { stage: AssessmentStage }) {
         : "Scoring has not loaded."}</p>
       <small>Partial = observed points, with missing evidence unscored. Complete scores alone can be ranked. {data && `Updated ${data.computedAt} · ${data.modelVersion} · ${data.registryLinked.toLocaleString("en-US")} linked registry records.`}</small>
     </div>
-    <button type="button" className="secondary" disabled={loading} onClick={refresh} aria-label={"Score entire " + stageLabel(stage) + " list"}>{loading ? "Scoring list…" : "Score Entire " + stageLabel(stage) + " List"}</button>
+    <ScoreProgressButton label={"Score Entire " + stageLabel(stage) + " List"} stage={stage} />
   </div>;
 }
 
