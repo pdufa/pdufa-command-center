@@ -40,6 +40,13 @@ export default function TrialQualificationFilters({ rows, countRows, value, onCh
   function set<K extends keyof TrialFilterValues>(key: K, next: TrialFilterValues[K]) { onChange({ ...value, [key]: next }); }
   return <fieldset className="filter-count-group trial-qualification-filters" disabled={!ready}>
     <legend>TRIAL FILTERS</legend>
+    <button type="button" className="secondary" aria-label={QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key)) ? "Select no trial criteria" : "Select all trial criteria"}
+      onClick={() => {
+        const allSelected = QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key));
+        onChange(QUALIFICATION_CRITERIA.reduce((next, criterion) => withCriterion(next, criterion.key, !allSelected), value));
+      }}>
+      {QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key)) ? "NONE" : "ALL"}
+    </button>
     <div className="filter-group-total"><span>All selected conditions must match</span><strong>{activeTrialFilters(value)} selected</strong></div>
     {!ready && <p role="status" className="subtle">Trial evidence is refreshing. These filters will become available when the updated source data loads.</p>}
     <div className="filter-checks trial-qualification-checks">{QUALIFICATION_CRITERIA.map((criterion, index) => <label
