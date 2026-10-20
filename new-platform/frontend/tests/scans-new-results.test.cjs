@@ -14,9 +14,9 @@ const clinical = {
   latest_run_id:39369399911, latest_run_started_at_utc:"2026-10-20T04:24:25Z",
   updated_at_utc:"2026-10-20T04:37:21Z",
   scans:[
-    {scan:"2",changed_trials_this_execution:62},
-    {scan:"3",collected_at_utc:"2026-10-20T04:32:53.368525Z"},
-    {scan:"4",new_records:1}
+    {scan:"2",run_id:39369399911,artifact_integrity:"PASS",status:"PARTIAL",collector_status:"COMPLETE",changed_trials_this_execution:62},
+    {scan:"3",run_id:39369399911,artifact_integrity:"PASS",status:"PARTIAL",collector_status:"COMPLETE",collected_at_utc:"2026-10-20T04:32:53.368525Z"},
+    {scan:"4",run_id:39369399911,artifact_integrity:"PASS",status:"PARTIAL",collector_status:"COMPLETE",new_records:1}
   ]
 };
 const pipeline = {
@@ -51,6 +51,32 @@ test("shows 1 new pipeline program, 1 new GEM JR result, 0 new GEM JR/GEM member
   });
   assert.equal(result.rows[1].kind,"NEW_PHASE3_RESULT");
   assert.equal(result.rows[1].ticker,null,"Do not invent a ticker for an aggregated result");
+});
+
+test("a newly posted GEM JR result displays its verified ticker, trial ID and primary source",() => {
+  const report=structuredClone(clinical);
+  report.scans[2].new_record_details=[{
+    ticker:"EXBT",drug:"Example investigational biologic",nct_id:"NCT01234567",
+    results_posted_at:"2026-10-19",
+    source_url:"https://clinicaltrials.gov/study/NCT01234567",
+    verification_status:"REGISTERED_RESULTS_POSTED"
+  }];
+  const result=newFromScanSummary(report,gem,pipeline,ledger);
+  const jr=result.rows.find(x=>x.kind==="NEW_PHASE3_RESULT");
+  assert.equal(jr.ticker,"EXBT");
+  assert.equal(jr.trialId,"NCT01234567");
+  assert.equal(jr.sourceUrl,"https://clinicaltrials.gov/study/NCT01234567");
+  assert.equal(result.rows.length,2);
+});
+
+test("old archived stage must never make a new-record claim for the current run",() => {
+  const report=structuredClone(clinical);
+  report.scans[2].run_id=39200754095;
+  const result=newFromScanSummary(report,gem,pipeline,ledger);
+  assert.equal(result.gemJrNewResultRecords,null);
+  assert.equal(result.rows.filter(x=>x.kind==="NEW_PHASE3_RESULT").length,0);
+  report.scans[0].artifact_integrity="ISSUES";
+  assert.equal(newFromScanSummary(report,gem,pipeline,ledger).pipelineChangedTrials,null);
 });
 
 test("stale pipeline report cannot be presented as a new result from the current scan",() => {
