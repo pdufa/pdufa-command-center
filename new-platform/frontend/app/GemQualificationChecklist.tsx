@@ -485,7 +485,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      <strong style={{fontSize:16}}>NEW {stage==="GEM_JR"?"GEM JR":"GEM"} CANDIDATES · {newScanRows.length.toLocaleString("en-US")}</strong>
      <button type="button" className="secondary" onClick={()=>setShowManualList(current=>!current)} aria-expanded={showManualList}>MY {stage==="GEM_JR"?"GEM JR":"GEM"} LIST · {Object.keys(manualStageList).length}</button>
    </div>
-   <p style={{fontSize:12,margin:"7px 0 10px"}}>New to the published {stage==="GEM_JR"?"GEM JR":"GEM"} stage list, not necessarily newly discovered. Click ADD TO LIST to manually save an exact trial to your browser's {stage==="GEM_JR"?"GEM JR":"GEM"} list. This does not change the official stage count or certify eligibility.</p>
+   <p style={{fontSize:12,margin:"7px 0 10px"}}>New to the published {stage==="GEM_JR"?"GEM JR":"GEM"} stage list, not necessarily newly discovered. Use ADD TO LIST or REMOVE in each trial row to manage your manually saved {stage==="GEM_JR"?"GEM JR":"GEM"} candidates directly in this table. Your choices stay saved in this browser, without changing official stage counts or certifying eligibility.</p>
    {!completedScan?<p style={{fontSize:13,marginBottom:6}}>Run SCAN to populate this table from the current FS, FA and manually selected restrictions.</p>:completedScan.selected.length===0?<p style={{fontSize:13,marginBottom:6}}>No restrictions applied. Choose FS, FA or individual checks, then rerun SCAN to identify new candidates.</p>:newScanRows.length===0?<p style={{fontSize:13,marginBottom:6}}>No additional stage candidates matched the latest scan.</p>:<>
      <div style={{overflowX:"auto",maxHeight:400,overflowY:"auto",border:"1px solid #d5e2d8",borderRadius:5}}>
        <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,whiteSpace:"nowrap"}}>
@@ -495,7 +495,21 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
            <td style={{padding:8,whiteSpace:"normal",minWidth:150}}>{row.company||"—"}{row.drug&&<span style={{display:"block",fontSize:11}}>{row.drug}</span>}</td>
            <td style={{padding:8}}>{row.nctId||row.programId||row.id}</td>
            <td style={{padding:8,color:review?"#9a5b0a":"#176b39",fontWeight:700}}>{review?"NEEDS VERIFICATION":"PASS"}</td>
-           <td style={{padding:8}}><button type="button" disabled={Boolean(manualStageList[row.id])} onClick={()=>onAddToStageList(row)} style={{padding:"6px 10px",borderRadius:5,border:"1px solid #236847",background:manualStageList[row.id]?"#e1ece4":"#176b39",color:manualStageList[row.id]?"#215b35":"#ffffff",fontWeight:750}}>{manualStageList[row.id]?"ADDED ✓":"ADD TO LIST"}</button></td>
+           <td style={{padding:8}}>
+             <div style={{display:"flex",alignItems:"center",gap:7}}>
+               <button type="button" disabled={Boolean(manualStageList[row.id])} aria-label={"Add "+row.ticker+" to my "+(stage==="GEM_JR"?"GEM JR":"GEM")+" list"}
+                 onClick={()=>onAddToStageList(row)}
+                 style={{padding:"6px 10px",borderRadius:5,border:"1px solid #236847",background:manualStageList[row.id]?"#e1ece4":"#176b39",color:manualStageList[row.id]?"#215b35":"#ffffff",fontWeight:750,whiteSpace:"nowrap"}}>
+                 {manualStageList[row.id]?"ADDED ✓":"ADD TO LIST"}
+               </button>
+               <button type="button" disabled={!manualStageList[row.id]} aria-label={"Remove "+row.ticker+" from my "+(stage==="GEM_JR"?"GEM JR":"GEM")+" list"}
+                 onClick={()=>onRemoveFromStageList(row.id)}
+                 style={{padding:"6px 10px",borderRadius:5,border:"1px solid #a33a3a",background:manualStageList[row.id]?"#ffffff":"#f1f1f1",color:manualStageList[row.id]?"#8c2020":"#777777",fontWeight:750,whiteSpace:"nowrap"}}>
+                 REMOVE
+               </button>
+             </div>
+             {manualStageList[row.id]&&<small style={{display:"block",marginTop:4,color:"#215b35"}}>Added {manualStageList[row.id].slice(0,10)}</small>}
+           </td>
          </tr>)}</tbody>
        </table>
      </div>
