@@ -165,6 +165,10 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const twoTrialError=stage==="GEM_JR"&&selected.includes("two_trial")?twoTrialInputError(twoTrialIds):null;
  const [open,setOpen]=useState(true);
  const [running,setRunning]=useState(false);
+ // STARTING briefly displays SCAN again on a rerun; SCANNING then remains
+ // visible throughout the batched, complete evaluation of the input dataset.
+ const [starting,setStarting]=useState(false);
+ const [scannedCount,setScannedCount]=useState(0);
  const [message,setMessage]=useState("");
  const runSequence=useRef(0);
  const phase3ResearchCount=pipeline.filter(completedPhase3).length;
@@ -299,15 +303,24 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    const scanRows=[...sourceRows];
    const scanChecks=[...chosen];
    setRunning(true);
-   setMessage("Running selected requirements across "+scanRows.length.toLocaleString("en-US")+" "+sourceLabel+"…");
+   setStarting(true);
+   setScannedCount(0);
    setResult(null);
+   // Clear the previous completed result. On ENDED clicks this deliberately
+   // returns the button to SCAN before progressing to SCANNING.
    onReset();
-   // Paint SCANNING before the CPU-bound saved-data evaluation begins.
-   await new Promise<void>(resolve=>setTimeout(resolve,25));
+   setMessage("Preparing to scan all "+scanRows.length.toLocaleString("en-US")+" "+sourceLabel+" from trial #1…");
+   await new Promise<void>(resolve=>setTimeout(resolve,180));
+   setStarting(false);
+   const scanningStartedAt=Date.now();
+   setMessage("SCANNING "+scanRows.length.toLocaleString("en-US")+" "+sourceLabel+" from trial #1…");
+   // Give the browser a chance to paint the SCANNING state before work starts.
+   await new Promise<void>(resolve=>setTimeout(resolve,80));
    try{
      const audits:GemCriterionAudit[]=scanChecks.map(([key,label])=>({key,label,passed:0,failed:0,unknown:0}));
      const passes:Trial[]=[],fails:Trial[]=[],needsReview:Trial[]=[];
-     for(const record of scanRows){
+     for(let rowIndex=0;rowIndex<scanRows.length;rowIndex++){
+       const record=scanRows[rowIndex];
        let hasFail=false,hasUnknown=useGemJrSource&&gemJrNeedsReview.has(record.id);
        for(let i=0;i<scanChecks.length;i++){
          const status=scanChecks[i][2](record);
@@ -318,7 +331,18 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
        if(hasFail)fails.push(record);
        else if(hasUnknown)needsReview.push(record);
        else passes.push(record);
+       // Yield between batches so the browser stays responsive and displays
+       // genuine progress; every candidate is still evaluated, including the last.
+       if((rowIndex+1)%300===0){
+         if((rowIndex+1)%1800===0)setScannedCount(rowIndex+1);
+         await new Promise<void>(resolve=>setTimeout(resolve,0));
+       }
      }
+     setScannedCount(scanRows.length);
+     // The fast cached-record screen can finish in milliseconds; keep the
+     // running state readable without pretending to fetch live source data.
+     const remaining=650-(Date.now()-scanningStartedAt);
+     if(remaining>0)await new Promise<void>(resolve=>setTimeout(resolve,remaining));
      const runNumber=++runSequence.current;
      const next:GemScanResult={
        asOf,evaluatedAt:new Date().toISOString(),sourceTotal:pipeline.length,
@@ -332,7 +356,10 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
        (audits.length?"selected requirements applied":"no qualification restrictions")+".");
    }catch(error){
      setMessage("Scan failed: "+(error instanceof Error?error.message:"Unknown error"));
-   }finally{setRunning(false)}
+   }finally{
+     setStarting(false);
+     setRunning(false);
+   }
  }
 
  function renderOriginalCheckboxes(items:Criterion[]){
@@ -426,11 +453,11 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  </div>
 
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length}
-  aria-label={(stage==="GEM"?"GEM":"GEM JR")+" "+(running?"SCANNING":completedScan?"ENDED":"SCAN")}
+  aria-label={(stage==="GEM"?"GEM":"GEM JR")+" "+(starting?"SCAN":running?"SCANNING":completedScan?"ENDED":"SCAN")}
   aria-live="polite"
-  title={running?"Scan in progress":completedScan?"Previous scan finished; click ENDED to restart from the first record using current FS, FA and FI selections":"Scan candidates using all checked FS, FA and active FI restrictions"}
-  style={{background:running?"#a36b20":completedScan?"#176b39":"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>
-  {running?"SCANNING":completedScan?"ENDED":"SCAN"}
+  title={starting?"Restarting from trial #1":running?"Screening all selected candidates":completedScan?"Previous scan finished; click ENDED to restart from the first trial using current FS, FA and FI selections":"Scan candidates using all checked FS, FA and active FI restrictions"}
+  style={{background:starting?"#135a32":running?"#a36b20":completedScan?"#176b39":"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>
+  {starting?"SCAN":running?"SCANNING":completedScan?"ENDED":"SCAN"}
  </button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);setFiActive(false);setFiSelected([]);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button><button type="button" onClick={toggleFa} disabled={running} aria-pressed={stage==="GEM"?useGemJrSource:faActive} aria-label={stage==="GEM"?"FA: toggle Gem Jr Trials input":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"} title={stage==="GEM"?"FA — include or exclude Gem Jr Trials; click again to uncheck":"FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck"} style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:(stage==="GEM"?useGemJrSource:faActive)?"#ffffff":"#176b39",color:(stage==="GEM"?useGemJrSource:faActive)?"#176b39":"#ffffff",fontWeight:700}}>FA</button><button type="button" onClick={toggleFi} disabled={running} aria-pressed={fiActive}
    aria-label={"FI: "+(fiActive?"disable":"enable")+" separate "+(stage==="GEM_JR"?"GEM JR":"GEM")+" scan restrictions"}
    title="FI — separately include your individually checked restrictions in the scan; click again to exclude them"
@@ -457,6 +484,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  </section>
 
  <p className="subtle" style={{fontSize:12,marginTop:9}}>SCAN combines every checked FS / FA / manual qualification criterion with the individually checked FI restrictions when FI is enabled. All active conditions must match; unknown evidence requires review.{stage==="GEM"&&useGemJrSource?" FA also limits the input to GEM JR candidates.":""} Click ENDED to restart a fresh scan from the first trial.</p>
+ {running&&!starting&&<p role="status" aria-live="polite" style={{fontWeight:700,marginTop:10}}>SCANNING: {scannedCount.toLocaleString("en-US")} / {sourceRows.length.toLocaleString("en-US")} trials checked</p>}
  <p role="status" aria-live="polite" style={{fontWeight:700,marginTop:12}}>{message||(completedScan?"ENDED — "+completedScan.passes.length.toLocaleString("en-US")+" passed, "+completedScan.needsReview.length.toLocaleString("en-US")+" need verification; "+completedScan.fails.length.toLocaleString("en-US")+" excluded. Click ENDED to restart from the first trial.":"Ready to scan "+sourceRows.length.toLocaleString("en-US")+" "+sourceLabel+".")}</p>
  {result&&<div role="status" style={{marginTop:15,padding:12,background:"#e8f2ec",borderRadius:6}}>
   <strong>{result.sourceKind==="GEM_JR"?"GEM JR scan":result.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox preview":result.sourceKind==="GEM_JR_UNSCREENED"?"Unscreened pipeline research universe":"Full PIPELINE"} evidence screen complete · Run #{result.runNumber}</strong>
