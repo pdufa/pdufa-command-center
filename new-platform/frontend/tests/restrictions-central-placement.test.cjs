@@ -100,6 +100,7 @@ test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/F
     });
     if(p.pathname==="/api/workspace/summary")return Response.json({pipeline:1,gemJr:0,gem:0});
     if(p.pathname==="/api/program-watch-trade")return Response.json({watch:[],trade:[],version:0});
+    if(p.pathname==="/api/full-trials")return Response.json({status:"PENDING",target:1,downloaded:0,complete:false});
     if(p.pathname==="/api/restriction-evidence")return Response.json({
       fetchedAt:new Date().toISOString(),issuers:{},trialTypes:{},sources:[],issues:[]
     });
@@ -117,6 +118,14 @@ test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/F
     assert.equal(tree.root.findAllByType(OriginalFilter).length,1,"Exactly one original Pipeline filter group");
     assert.equal(tree.root.findAllByType(OriginalGem).length,2,"Both separate GEM checklists mounted");
     assert.equal(tree.root.findAllByProps({className:"panel moved-pipeline-restrictions"}).length,1);
+    // The existing GEM controls correctly begin collapsed. Open both as a
+    // real user would, then ensure each stage has its own FS and FA button.
+    for(const stage of ["GEM_JR","GEM"]){
+      const checklist=tree.root.findAllByType(OriginalGem).find(x=>x.props.stage===stage);
+      const trigger=checklist.findAllByType("button").find(x=>x.props["aria-expanded"]===false);
+      assert.ok(trigger,"Initially collapsed "+stage+" must have an expandable checklist");
+      await act(async()=>{trigger.props.onClick();await tick();});
+    }
     assert.equal(tree.root.findAllByProps({"aria-label":"FS: toggle suggested criteria checkboxes"}).length,2);
     assert.equal(tree.root.findAllByProps({"aria-label":"FA: toggle Gem Jr Trials input"}).length,1);
     assert.equal(tree.root.findAllByProps({"aria-label":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"}).length,1);
