@@ -45,7 +45,7 @@ test("Only an explicit VIEW SAVED MEMBERS selects the 11-member stage list",()=>
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  assert.match(src,/VIEW SAVED MEMBERS/);
  assert.match(src,/function gemCandidateRows\(stage: "GEM_JR" \| "GEM"\)/);
- assert.match(src,/const rows=gemPageRows\[stage\]/);
+ assert.match(src,/const rows=sortByAssessment\(gemPageRows\[stage\],assessmentRecords,stage,assessmentOrder\[stage\]\)/);
  assert.match(src,/pickGemResearchRows\(\{\s*pipeline,\s*savedStage: snapshot\?\.members\[stage\]\.rows \|\| \[\],/);
  assert.match(src,/LIVE RESEARCH SCREEN/);
  assert.match(src,/NOT STAGE MEMBER/);
@@ -110,7 +110,7 @@ test("Each top count is exactly the number displayed on its stage page",()=>{
  assert.match(totals,/GEM_JR: gemPageRows\.GEM_JR\.length/);
  assert.match(totals,/GEM: gemPageRows\.GEM\.length/);
  assert.match(totals,/WT: tags\.watch\.length \+ tags\.trade\.length/);
- assert.match(src,/const rows=gemPageRows\[stage\]/);
+ assert.match(src,/const rows=sortByAssessment\(gemPageRows\[stage\],assessmentRecords,stage,assessmentOrder\[stage\]\)/);
  assert.match(src,/className="gem-count">\{pageTotals\[stage\]\.toLocaleString\("en-US"\)\}/);
  assert.match(src,/className="counter">\{pageTotals\.PIPELINE\.toLocaleString\("en-US"\)\}/);
  assert.match(src,/className="counter">\{tagsReady \? pageTotals\.WT\.toLocaleString\("en-US"\) : "—"\} total W\/T programs/);

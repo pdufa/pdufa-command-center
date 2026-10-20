@@ -13,6 +13,8 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
+import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, useAssessments } from "./CandidateAssessments";
+import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
@@ -592,7 +594,9 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
   </details>;
 }
 
-export default function Workspace({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
+function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
+  const { records: assessmentRecords } = useAssessments();
+  const [assessmentOrder, setAssessmentOrder] = useState({ GEM_JR: "source", GEM: "source" });
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
   // A bounded page becomes usable before the complete qualification dataset.
@@ -1221,7 +1225,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     ]):null;
     // The candidate table and the live checkbox count must use one pool.
     // Only an explicit VIEW SAVED MEMBERS action displays saved membership.
-    const rows=gemPageRows[stage];
+    const rows=sortByAssessment(gemPageRows[stage],assessmentRecords,stage,assessmentOrder[stage]);
     const focusedIndex = Math.max(0,rows.findIndex(r=>r.id===selected[stage]));
     const chosen = rows[focusedIndex] || null;
     // Track the exact current stage-membership cycle (including re-entry).
@@ -1281,6 +1285,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{pageTotals[stage].toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
+      <AssessmentStatus stage={stage} />
+      <AssessmentSort value={assessmentOrder[stage]} onChange={value=>setAssessmentOrder(current=>({...current,[stage]:value}))} />
       <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} completedScan={activeScan}
         stageSavedRows={group?.rows||[]} manualStageList={manualStageLists[stage]}
         newThisScanIds={latestNewStageIds[stage]} scanHistoryReady={seenStageHistoryLoaded && manualStageListsLoaded}
@@ -1391,7 +1397,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <div className="table-scroll gem-row-scroller" ref={gemTableScrollViewport} aria-label={(stage==="GEM"?"GEM":"GEM JR")+" candidates scrollable table"}>
             <table className="gem-source-parity-table">
               <thead><tr>
-                {["#","Program ID","W","T","Ticker","Date Added","Date Removed","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}
+                {["#","Program ID","W","T","Ticker","Date Added","Date Removed","Eligibility","Company","Indication","Phase","P3 Readout","PDUFA","Financing Status","Cash Runway","Market Cap","PoA","Short Int.","Entry Score","Entry Evidence","Exit Risk","Exit Evidence","Status","Trend (source)","Details"].map(h=><th key={h}>{h}</th>)}<AssessmentHeaders stage={stage} />
               </tr></thead>
               <tbody>{visibleRows.map((r,i)=><Fragment key={r.id}><tr
                 ref={chosen?.id===r.id && selected[stage] ? highlightedGemRow : undefined}
@@ -1441,9 +1447,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                   {trialSheetUrl(r) && <a href={trialSheetUrl(r)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">Full trial sheet ↗</a>}
                   <button type="button" className="record-select" onClick={()=>selectTrial(r,"overview")}>Research details ↓<small>{stated(r.drug)} · {r.id}</small></button>
                 </td>
+                <AssessmentCells row={r} stage={stage} onOpen={()=>selectTrial(r,"assessments")} />
               </tr>
               {chosen?.id===r.id && gemTrialExpanded[stage] && <tr className="gem-inline-detail-row">
-                <td colSpan={25}>
+                <td colSpan={34}>
                   <div className="gem-inline-detail-panel" aria-label={r.ticker+" expandable clinical trial and stock details"}>
                     <div className="gem-inline-detail-header">
                       <div><strong>TRIAL · {stated(r.drug,r.ticker)} · {r.ticker}</strong>
@@ -1472,6 +1479,10 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                         open={isSectionOpen("trial")} onToggle={()=>toggleSection("trial")}>
                         {trialSheetUrl(r) ? <TrialFields key={r.id} row={r} onClose={()=>toggleSection("trial")}/>
                           : <p className="subtle">No exact NCT clinical-trial record linked to this program. Missing registry evidence is not inferred.</p>}
+                      </GemInlineSection>
+                      <GemInlineSection title="Candidate assessment scores and all data" description="Seven clinical and seven opportunity assessments, individual points, rules, sources and history"
+                        open={isSectionOpen("assessments")} onToggle={()=>toggleSection("assessments")}>
+                        <CandidateAssessments key={r.id+"-assessments"} row={r} initialStage={stage}/>
                       </GemInlineSection>
                       <GemInlineSection title="Entry and exit scores" description="Weighted evidence, completeness and risk overrides"
                         open={isSectionOpen("scores")} onToggle={()=>toggleSection("scores")}>
@@ -1750,4 +1761,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         <tbody>{pipeline.filter(r=>daysAway(r.pdufaDate)!==null && (daysAway(r.pdufaDate)||0)>=0).sort((a,b)=>(daysAway(a.pdufaDate)||0)-(daysAway(b.pdufaDate)||0)).map(r=><tr key={r.id}><td>{r.pdufaDate}</td><td className="permanent-id">{stated(r.programId)}</td><td>{r.ticker}</td><td>{r.drug}</td><td>{r.id}</td><td>{daysAway(r.pdufaDate)}</td><td>{stated(r.checkStatus)}</td></tr>)}</tbody>
       </table></div></section>}
   </div>;
+}
+
+export default function Workspace(props: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
+  return <AssessmentProvider><WorkspaceContent {...props} /></AssessmentProvider>;
 }

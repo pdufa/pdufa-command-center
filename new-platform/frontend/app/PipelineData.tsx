@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candidate } from "./Workspace";
 import TrialFields from "./TrialFields";
+import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, useAssessments } from "./CandidateAssessments";
+import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
 
 const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
@@ -27,6 +29,8 @@ type Summaries = { ids: string; records: Record<string, TrialSummary> };
 
 export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
   const [page, setPage] = useState(0);
+  const [scoreOrder, setScoreOrder] = useState("source");
+  const { records: assessmentRecords } = useAssessments();
   const [size, setSize] = useState(25);
   const [selected, setSelected] = useState("");
   const [summaries, setSummaries] = useState<Summaries>({ ids: "", records: {} });
@@ -38,7 +42,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
   const [sortError, setSortError] = useState("");
   const sortController = useRef<AbortController | null>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const ordered = useMemo(() => sortPipelineRows(rows, sort, sortIndex || {}), [rows, sort, sortIndex]);
+  const ordered = useMemo(() => sortByAssessment(sortPipelineRows(rows, sort, sortIndex || {}), assessmentRecords, "PIPELINE", scoreOrder), [rows, sort, sortIndex, assessmentRecords, scoreOrder]);
   const current = pageRows(ordered, page, size);
   const ids = [...new Set(current.rows.map(trialId).filter(Boolean))].sort().join(",");
   const selectedRow = current.rows.find(row => row.id === selected);
@@ -69,7 +73,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
         return;
       } finally { if (!controller.signal.aborted) setSortLoading(null); }
     }
-    setSort(next); setPage(0); setSelected("");
+    setSort(next); setScoreOrder("source"); setPage(0); setSelected("");
   }
 
   useEffect(() => {
@@ -99,6 +103,8 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
       {filterSummary && <p className="subtle pipeline-applied-filters">{filterSummary}</p>}</div>
       <span className="counter" aria-live="polite">{rows.length.toLocaleString("en-US")} matching trials / programs</span>
     </div>
+    <AssessmentStatus stage="PIPELINE" />
+    <AssessmentSort value={scoreOrder} onChange={value => { setScoreOrder(value); setPage(0); setSelected(""); }} />
     <p className="subtle small">Click a column heading to sort all matching trials; click again to reverse the order.</p>
     {sortLoading && <p role="status" className="pipeline-sort-status">Preparing {HEADERS.find(column => column.key === sortLoading)?.label.toLowerCase()} sorting for the complete list…</p>}
     {sortError && <p role="alert" className="error">{sortError}</p>}
@@ -122,7 +128,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
             aria-label={"Sort by " + (column.sortLabel || column.label.toLowerCase()) + ", " + (active && sort.direction === "asc" ? "descending" : "ascending")}
             onClick={() => void changeSort(key)}>{column.label}<span aria-hidden="true">{active ? sort.direction === "asc" ? "▲" : "▼" : "↕"}</span></button> : column.label}
         </th>;
-      })}</tr></thead>
+      })}<AssessmentHeaders stage="PIPELINE" /></tr></thead>
       <tbody>{current.rows.map((row, index) => {
         const nct = trialId(row), saved = enriched[nct];
         const active = selected === row.id;
@@ -147,6 +153,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
           <td>{nct
             ? <a className="secondary trial-sheet-link trial-sheet-action" href={"/trial/" + nct} target="_blank" rel="noopener noreferrer">Full sheet ↗</a>
             : <button type="button" className="secondary" aria-expanded={active} aria-controls={active ? "pipeline-expanded-record" : undefined} onClick={() => setSelected(active ? "" : row.id)}>{active ? "Close fields" : "Program fields"}</button>}</td>
+          <AssessmentCells row={row} stage="PIPELINE" onOpen={() => setSelected(active ? "" : row.id)} />
         </tr>;
       })}</tbody>
     </table></div> : <p className="pipeline-data-empty">No trials or programs match these filters. Uncheck a stage, date or trial filter, or clear the search to broaden the list. Unknown evidence does not pass a selected qualification criterion.</p>}
@@ -154,6 +161,6 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
       <button type="button" className="secondary" disabled={current.page === 0} onClick={() => navigate(current.page - 1)}>Previous</button>
       <button type="button" className="secondary" disabled={current.page + 1 >= current.pages} onClick={() => navigate(current.page + 1)}>Next</button>
     </div></div>
-    {selectedRow && <div id="pipeline-expanded-record" ref={detailsRef}><TrialFields key={selectedRow.id} row={selectedRow} onClose={() => setSelected("")} /></div>}
+    {selectedRow && <div id="pipeline-expanded-record" ref={detailsRef}><CandidateAssessments key={selectedRow.id + "-scores"} row={selectedRow} /><TrialFields key={selectedRow.id} row={selectedRow} onClose={() => setSelected("")} /></div>}
   </section>;
 }

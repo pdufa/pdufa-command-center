@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Candidate } from "./Workspace";
+import CandidateAssessments from "./CandidateAssessments";
 import { type Json, label, object, registrySections, reportedAnalyses, trialId } from "../lib/pipeline-data";
 
 function text(value: Json | undefined) {
@@ -89,6 +90,7 @@ export default function TrialFields({ row, onClose, standalone = false }: { row:
         {!standalone && onClose && <button type="button" className="secondary" onClick={onClose}>Close details</button>}
       </div>
     </div>
+    {standalone && <CandidateAssessments row={row} />}
     {loading && <p role="status">Loading all saved registry fields…</p>}
     {error && <div role="alert"><p className="error">{error}</p><button type="button" className="secondary" onClick={() => setRetry(value => value + 1)}>Retry full record</button></div>}
     {!nct && <p className="subtle">No exact NCT trial is linked to this program. Its available Pipeline fields are listed below.</p>}
