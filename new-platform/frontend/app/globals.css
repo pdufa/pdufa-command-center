@@ -2914,3 +2914,27 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   line-height:1.4;
   overflow-wrap:anywhere;
 }
+
+/* PIPELINE: independent ALL / NONE buttons appear directly UNDER each of
+   the three checkbox/count charts, using the green preset-toggle palette. */
+.pipeline-three-filter-columns .pipeline-group-select-toggle {
+  display:inline-flex;align-items:center;justify-content:center;
+  align-self:flex-start;margin:10px 0 0;min-width:76px;min-height:38px;
+  padding:7px 16px;border:1px solid #176b39;border-radius:6px;
+  background:#176b39;color:#fff;font-size:12px;font-weight:800;
+  cursor:pointer;
+}
+.pipeline-three-filter-columns .pipeline-group-select-toggle[aria-pressed="true"] {
+  background:#fff;color:#176b39;box-shadow:inset 0 0 0 1px #176b39;
+}
+.pipeline-three-filter-columns .pipeline-group-select-toggle:focus-visible {
+  outline:2px solid #1673eb;outline-offset:2px;
+}
+.pipeline-three-filter-columns .pipeline-group-select-toggle:disabled {
+  opacity:.55;cursor:not-allowed;
+}
+@media (max-width:700px) {
+  .pipeline-three-filter-columns .pipeline-group-select-toggle {
+    min-height:44px;min-width:86px;
+  }
+}
