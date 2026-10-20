@@ -240,5 +240,9 @@ test("FI controls are absent on both stages; original FS/FA checkboxes and candi
  assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).clinical\)/);
  assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).trading\)/);
  assert.match(src,/onAddToStageList\(row\)/);
- assert.match(src,/onRemoveFromStageList\(item.id\)/);
+ assert.match(src,/onRemoveFromStageList\(row.id\)/,"new candidates table must support inline REMOVE");
+ assert.match(src,/onRemoveFromStageList\(item.id\)/,"MY LIST must still support removal");
+ assert.match(src,/disabled=\{Boolean\(manualStageList\[row.id\]\)\}/,"already added candidate cannot be added twice");
+ assert.match(src,/disabled=\{!manualStageList\[row.id\]\}/,"candidate cannot be removed until added");
+ assert.match(src,/Added \{manualStageList\[row.id\]\.slice\(0,10\)\}/);
 });
