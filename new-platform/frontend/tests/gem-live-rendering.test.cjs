@@ -175,11 +175,11 @@ test("Repeat scans show zero NEW programs and retain the old match under PREVIOU
   const panelText=()=>root.root.findAllByType("strong").flatMap(b=>b.children.filter(x=>typeof x==="string")).join(" ");
   try{
    await act(async()=>{root=create(React.createElement(Wrapper));});
-   assert.match(panelText(),/NEW (GEM JR|GEM) CANDIDATES/);
+   assert.match(panelText(),/NEW\s+(GEM JR|GEM)\s+CANDIDATES/);
    assert.ok(button("ADD TO LIST"),"first scan can manually add program");
    // Simulate completed second scan with an unchanged source and filter.
    await act(async()=>{setFresh([]);});
-   assert.match(panelText(),/NEW (GEM JR|GEM) CANDIDATES/);
+   assert.match(panelText(),/NEW\s+(GEM JR|GEM)\s+CANDIDATES/);
    assert.equal(button("ADD TO LIST"),undefined,"repeat scan should not show existing program as NEW");
    assert.ok(button("PREVIOUSLY SEEN"),"old matches remain accessible");
    await act(async()=>{button("PREVIOUSLY SEEN").props.onClick();});
