@@ -1057,24 +1057,13 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // Unscreened GEM research tables intentionally show the pipeline as a discovery
   // pool. Never label that pool size as a qualified GEM or GEM JR count.
   function verifiedStageCount(stage: "GEM_JR" | "GEM"): number | null {
+    // Header cards count persistent stage membership, never the broad research
+    // screening pool. An unqualified preview may contain every pipeline program.
     if (!snapshot) return null;
-    if (gemSavedOnly[stage]) return gemPageRows[stage].length;
-    const scan = gemScans[stage];
-    if (scan && scan.asOf === snapshot.asOf && scan.sourceTotal === pipeline.length) {
-      return gemPageRows[stage].length;
-    }
-    const preview = stage === "GEM_JR" ? gemJrLivePreview : gemLivePreview;
-    if (preview && preview.asOf === snapshot.asOf && preview.sourceTotal === pipeline.length) {
-      return gemPageRows[stage].length;
-    }
     return snapshot.members[stage].rows.length;
   }
-  function stageCountDetail(stage: "GEM_JR" | "GEM"): string {
-    const scan = gemScans[stage];
-    const preview = stage === "GEM_JR" ? gemJrLivePreview : gemLivePreview;
-    const current = scan?.asOf === snapshot?.asOf && scan?.sourceTotal === pipeline.length ||
-      preview?.asOf === snapshot?.asOf && preview?.sourceTotal === pipeline.length;
-    return !gemSavedOnly[stage] && current ? "Screen candidates" : "Saved members";
+  function stageCountDetail(_stage: "GEM_JR" | "GEM"): string {
+    return "Saved members";
   }
   const pageTotals: Record<"PIPELINE" | "GEM_JR" | "GEM" | "WT",number> = {
     PIPELINE: possible.length,
