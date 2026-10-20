@@ -595,7 +595,7 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
 }
 
 function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
-  const { records: assessmentRecords } = useAssessments();
+  const { records: assessmentRecords, refresh: refreshAssessmentIndex } = useAssessments();
   const [assessmentOrder, setAssessmentOrder] = useState({ GEM_JR: "source", GEM: "source" });
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
@@ -1416,8 +1416,9 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                 }}
                 aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]}
                 aria-label={"Trial "+r.ticker+" · click to expand or collapse stock details"}>
+                <td><button type="button" className="secondary" onClick={() => { refreshAssessmentIndex(); selectTrial(r,"assessments"); }} aria-label={"Score trial " + (r.programId || r.id)}>Score Trial</button></td>
                 <td className="numeric">{firstVisible+i+1}</td>
-                <td><button type="button" className="secondary" onClick={() => { refreshAssessmentIndex(); selectTrial(r,"assessments"); }} aria-label={"Score trial " + (r.programId || r.id)}>Score Trial</button></td><td><strong className="permanent-id">{stated(r.programId)}</strong></td>
+                <td><strong className="permanent-id">{stated(r.programId)}</strong></td>
                 <td>{wtButton(r,"watch")}</td>
                 <td>{wtButton(r,"trade")}</td>
                 <td><button type="button" className="ticker-select" aria-expanded={chosen?.id===r.id && gemTrialExpanded[stage]} onClick={()=>selectTrial(r)}>{r.ticker} {chosen?.id===r.id && gemTrialExpanded[stage]?"▾":"▸"}</button></td>
