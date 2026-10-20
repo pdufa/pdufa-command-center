@@ -21,6 +21,8 @@ const {checkboxGroupsForStage,resolveGemJrSource,buildGemJrLivePreview}=Checklis
 function page(stage){
   return renderToStaticMarkup(React.createElement(Checklist.default,{
     stage,pipeline:[],asOf:"2026-10-18",stageTotal:0,gemJrScan:null,gemJrSavedRows:[],
+    completedScan:null,stageSavedRows:[],manualStageList:{},
+    onAddToStageList:()=>{},onRemoveFromStageList:()=>{},
     onScan:()=>{},onReset:()=>{}
   }));
 }
@@ -64,7 +66,7 @@ test("Actual GEM JR renders ORIGINAL clinical and Trading checkbox areas with FS
   assert.match(html,/Optional GEM JR evidence alerts/);
   assert.match(html,/TOTAL COMBINED RESULTS/);
   assert.match(html,/DESELECT ALL/);
-  assert.match(html,/SCAN GEM JR/);
+  assert.match(html,/aria-label="GEM JR SCAN"/);
   assert.equal((clinical+trading).match(/type="checkbox"/g)?.length,17);
 });
 
@@ -82,7 +84,7 @@ test("Actual GEM keeps its input checkbox and 11 downstream controls, never FS/F
   assert.equal((html.match(/>FA<\/button>/g)||[]).length,1,"GEM shows exactly one FA button");
   assert.match(html,/aria-label="FS: toggle suggested criteria checkboxes"/);
   assert.match(html,/TOTAL COMBINED RESULTS/);
-  assert.match(html,/SCAN GEM/);
+  assert.match(html,/aria-label="GEM SCAN"/);
   assert.equal((clinical+trading).match(/type="checkbox"/g)?.length,12);
 });
 
@@ -92,7 +94,7 @@ test("Original FS, FA, and combined AND scan evaluator remain in place",()=>{
     "const GEM_JR_OWNED_CRITERIA=","const sourceRows=useGemJrSource?gemJrRows:pipeline;",
     "const liveCounts=useMemo(", "function toggleFs(){", "function toggleFa(){",
     "function toggle(key:string){", "for(const [, , evaluate] of chosen)",
-    "for(let i=0;i<chosen.length;i++)", "result.audits.length"]){
+    "for(let rowIndex=0;rowIndex<scanRows.length;rowIndex++)", "result.audits.length"]){
     assert.ok(content.includes(unchanged),unchanged+" changed unexpectedly");
   }
 });
@@ -150,7 +152,8 @@ test("The current GEM JR combined 694 program checkbox screen feeds GEM, not the
  assert.match(GEM.label,/checkbox screen/);
  const JR=renderToStaticMarkup(React.createElement(Checklist.default,{
   stage:"GEM_JR",pipeline,asOf:"2026-10-18T16:10:00Z",stageTotal:11,
-  gemJrScan:null,gemJrSavedRows:saved,gemJrDraft:{
+  gemJrScan:null,gemJrSavedRows:saved,completedScan:null,stageSavedRows:saved,manualStageList:{},
+  onAddToStageList:()=>{},onRemoveFromStageList:()=>{},gemJrDraft:{
    asOf:"2026-10-18T16:10:00Z",sourceTotal:700,
    selected:["registry"],showSuggestions:false,faActive:false,
    optionalGoals:{},twoTrialIds:["",""]
@@ -210,4 +213,29 @@ test("GEM FA starts off and mirrors only the optional Gem Jr Trials checkbox",()
  assert.ok(src.includes('selectRequirements(toggleGemJrTrialsRequirement(selected))'),"GEM FA uses checkbox selection pathway");
  assert.ok(src.includes('aria-pressed={stage==="GEM"?useGemJrSource:faActive}'),"FA button state derives from checkbox");
  assert.equal(checkboxGroupsForStage("GEM").clinical.length+checkboxGroupsForStage("GEM").trading.length,11);
+});
+
+test("GEM JR FI toggles exactly its five existing original checkbox IDs and preserves all others",()=>{
+ const {toggleGemJrFiCheckboxes}=Checklist;
+ const five=["phase3","registry","issuer","cash","marketfresh"];
+ const unrelated=["financing","marketcap","dilution"];
+ const enabled=toggleGemJrFiCheckboxes(unrelated);
+ assert.deepEqual(enabled,[...unrelated,...five]);
+ assert.deepEqual(toggleGemJrFiCheckboxes(enabled),unrelated);
+ assert.deepEqual(toggleGemJrFiCheckboxes(["issuer"]),five);
+ const originalGroups=checkboxGroupsForStage("GEM_JR");
+ const originalKeys=new Set([...originalGroups.clinical,...originalGroups.trading].map(([key])=>key));
+ assert.equal(five.every(key=>originalKeys.has(key)),true);
+ assert.equal(originalKeys.size,17,"no original GEM JR checkboxes moved or removed");
+ const jr=page("GEM_JR");
+ assert.match(jr,/FI — 5 SCAN RESTRICTIONS/);
+ assert.match(jr,/FI: check all 5 FI restrictions for GEM JR/);
+ const gem=page("GEM");
+ assert.match(gem,/FI — 6 SCAN RESTRICTIONS/);
+ const src=fs.readFileSync(path.join(__dirname,"../app/GemQualificationChecklist.tsx"),"utf8");
+ assert.match(src,/const fiCheckboxSelection=stage==="GEM_JR"\?selected:fiSelected/);
+ assert.match(src,/const next=toggleGemJrFiCheckboxes\(selected\)/);
+ assert.match(src,/checked=\{fiCheckboxSelection.includes\(key\)\}/);
+ assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).clinical\)/);
+ assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).trading\)/);
 });
