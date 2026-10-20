@@ -35,7 +35,7 @@ test("Zero requirements show all 694 GEM source candidates, not the 11 saved sta
   assert.match(page,/694/);
   assert.match(page,/11/);
   assert.match(page,/saved stage members \(not screened total\)/);
-  assert.match(page,/\(0 selected\)/);
+  assert.match(page,/\(0 active scan checks\)/);
   assert.equal(pickGemResearchRows({pipeline:dataset,savedStage:saved}).length,694);
  }
 });
