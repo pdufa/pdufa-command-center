@@ -849,10 +849,9 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
             // fall back to the complete verified workspace response below.
           }
         }
-        if (fetchVersion === 0) {
-          await initialPageRequest.current;
-          if (ctrl.signal.aborted) return;
-        }
+        // The bounded first-page request and full workspace verification are
+        // independent. Never block the full load on a slow/failed page request,
+        // particularly on mobile networks.
         const response = await fetch("/api/workspace", {
           cache: "no-store",
           headers: hasVerifiedWorkspace.current && workspaceEtag.current ? { "If-None-Match": workspaceEtag.current } : {},
