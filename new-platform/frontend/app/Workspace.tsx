@@ -12,7 +12,7 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
-import GemQualificationChecklist, {type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import GemQualificationChecklist, {newlyObservedProgramIds,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
@@ -667,6 +667,34 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     try{window.localStorage.setItem("pdufa_manual_stage_list_v1",JSON.stringify(manualStageLists));}
     catch{/* Browser storage disabled: list remains in memory this session. */}
   },[manualStageLists,manualStageListsLoaded]);
+
+  // Remember which exact program IDs have ALREADY appeared in a completed
+  // filtered scan, separately for GEM JR and GEM. Scans never auto-add to
+  // curated lists; repeated scans cannot falsely label a prior match as NEW.
+  const [seenStagePrograms,setSeenStagePrograms]=useState<Record<"GEM_JR"|"GEM",Record<string,string>>>({GEM_JR:{},GEM:{}});
+  const [seenStageHistoryLoaded,setSeenStageHistoryLoaded]=useState(false);
+  const [latestNewStageIds,setLatestNewStageIds]=useState<Record<"GEM_JR"|"GEM",string[]>>({GEM_JR:[],GEM:[]});
+  useEffect(()=>{
+    try{
+      const raw=window.localStorage.getItem("pdufa_seen_stage_programs_v1");
+      const parsed=raw?JSON.parse(raw):null;
+      const clean=(stage:"GEM_JR"|"GEM")=>{
+        const entries=parsed?.[stage];
+        if(!entries||typeof entries!=="object"||Array.isArray(entries))return {} as Record<string,string>;
+        return Object.fromEntries(Object.entries(entries)
+          .filter(([id,date])=>typeof id==="string"&&id.length>0&&id.length<1024
+            &&typeof date==="string"&&/^\d{4}-\d{2}-\d{2}T/.test(date))
+          .slice(0,30000)) as Record<string,string>;
+      };
+      setSeenStagePrograms({GEM_JR:clean("GEM_JR"),GEM:clean("GEM")});
+    }catch{setSeenStagePrograms({GEM_JR:{},GEM:{}});}
+    setSeenStageHistoryLoaded(true);
+  },[]);
+  useEffect(()=>{
+    if(!seenStageHistoryLoaded)return;
+    try{window.localStorage.setItem("pdufa_seen_stage_programs_v1",JSON.stringify(seenStagePrograms));}
+    catch{/* Browser storage disabled: stage history remains in memory this session. */}
+  },[seenStagePrograms,seenStageHistoryLoaded]);
   // GEM JR live screen is not saved stage membership (11), nor a finished SCAN.
   // Keep the exact candidate IDs and checklist draft while switching stage tabs.
   const [gemJrLivePreview,setGemJrLivePreview]=useState<GemJrLivePreview|null>(null);
@@ -1229,6 +1257,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
       </div>
       <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} completedScan={activeScan}
         stageSavedRows={group?.rows||[]} manualStageList={manualStageLists[stage]}
+        newThisScanIds={latestNewStageIds[stage]} scanHistoryReady={seenStageHistoryLoaded && manualStageListsLoaded}
         onAddToStageList={row=>{
           // Match exact program ID to currently loaded Pipeline, not ticker.
           if(!pipeline.some(candidate=>candidate.id===row.id))return;
@@ -1254,6 +1283,28 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           });
         }}
         onScan={result=>{
+          // Publish only first-time matching exact trial/program IDs as NEW.
+          // Repeated runs remain visible through PREVIOUSLY SEEN, and users
+          // manually choose whether to ADD any candidate to MY LIST.
+          const publishedOrCurated=new Set([
+            ...(group?.rows||[]).map(row=>row.id),
+            ...Object.keys(manualStageLists[stage])
+          ]);
+          const firstSeen=newlyObservedProgramIds(
+            result,new Set(Object.keys(seenStagePrograms[stage])),publishedOrCurated
+          );
+          setLatestNewStageIds(current=>({...current,[stage]:firstSeen}));
+          if(result.selected.length){
+            const today=result.evaluatedAt;
+            const qualifying=new Set([...result.passes,...result.needsReview].map(row=>row.id).filter(Boolean));
+            setSeenStagePrograms(current=>{
+              const stageHistory=current[stage];
+              const unseen=[...qualifying].filter(id=>!stageHistory[id]);
+              if(unseen.length===0)return current;
+              const additions=Object.fromEntries(unseen.map(id=>[id,today]));
+              return {...current,[stage]:{...stageHistory,...additions}};
+            });
+          }
           setGemSavedOnly(current=>({...current,[stage]:false}));
           setGemScans(current=>stage==="GEM_JR"?{GEM_JR:result}:{...current,GEM:result});
           setGemQuery("");
