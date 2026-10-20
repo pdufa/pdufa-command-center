@@ -48,7 +48,7 @@ export function ScoreProgressButton({ label, stage, onScore, rowId }: { label: s
   return <span style={{ display: "inline-flex", position: "relative", alignItems: "center", gap: 6 }}>
     <button type="button" className="secondary" onClick={start}>{label}</button>
     <button type="button" className="secondary" onClick={() => setOpen(value => !value)} aria-label={"Show scoring status for " + label} aria-expanded={open} title="Scoring status">ⓘ</button>
-    {open && <span role="dialog" aria-label={label + " progress"} style={{ position: "absolute", top: "100%", left: 0, zIndex: 100, width: "min(320px, 85vw)", maxWidth: "85vw", padding: 14, border: "1px solid #777", borderRadius: 10, background: "var(--background, white)", color: "var(--foreground, #111)", boxShadow: "0 6px 22px #0003", whiteSpace: "normal" }}>
+    {open && <span role="dialog" aria-label={label + " progress"} style={{ position: "fixed", top: "max(72px, 12vh)", left: "50%", transform: "translateX(-50%)", zIndex: 99999, width: "min(360px, 92vw)", maxWidth: "92vw", padding: 14, border: "1px solid #777", borderRadius: 10, background: "var(--background, white)", color: "var(--foreground, #111)", boxShadow: "0 6px 22px #0003", whiteSpace: "normal" }}>
       <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
         <strong>{rowId ? "Trial scoring status" : stageLabel(stage) + " list scoring status"}</strong>
         <button type="button" className="secondary" onClick={() => setOpen(false)} aria-label="Close scoring status">× Close</button>
@@ -128,9 +128,10 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
   const model = data?.models[stage], change = data?.changes[stage];
   return <section className="candidate-assessments" aria-label={"All candidate assessment scores for " + row.id}>
     <div className="sectionhead"><div><h3>Candidate scores &amp; underlying data</h3><p>{row.ticker} · {row.drug || row.nctId || row.id} · {row.programId || "Exact program: " + row.id}</p></div>
-      <button type="button" className="secondary" disabled={rescoring} onClick={() => { setRescoring(true); refreshIndex(); setRetry(v => v + 1); }}>{rescoring ? "Rescoring…" : "Score This Trial · All 3 Rankings"}</button>
+      <button type="button" className="secondary" disabled={rescoring} onClick={() => { setRescoring(true); refreshIndex(); setRetry(v => v + 1); }}>{rescoring ? "Refreshing trial evidence…" : "Score This Trial · All 3 Rankings"}</button>
       {data && <button type="button" className="secondary" onClick={() => downloadJson(data, (row.programId || data.nctId || "candidate") + "-all-scores.json")}>Download all scores &amp; data</button>}
     </div>
+    {rescoring && <p role="status" aria-live="polite">Refreshing scoring index and trial evidence. Updated results will appear below; this does not force a fresh external-source rescan.</p>}
     {!data && !error && <p role="status">Loading all 21 assessments and exact-program evidence…</p>}
     {error && <div role="alert"><p className="error">{error}</p><button type="button" className="secondary" onClick={() => setRetry(v => v + 1)}>Retry scoring data</button></div>}
     {data && model && <>
