@@ -92,6 +92,7 @@ jobs:
           print('Verified pre-scan-only failure and no duplicate; allow a single Sunday FULL recovery')
           PY
       - name: Dispatch the entire awaited sequence
+        id: full_scan_dispatch
         if: steps.pacific.outputs.run == 'true' || steps.manual_recovery.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -103,3 +104,25 @@ jobs:
           echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."
 # Operator-requested guarded start: 2026-10-19 21:23 America/Los_Angeles (Monday DELTA including GEM).
+
+      - name: Show whether nightly scanning actually started
+        if: always()
+        env:
+          START_GUARD: ${{ steps.pacific.outputs.run }}
+          GUARD_REASON: ${{ steps.pacific.outputs.reason }}
+          NIGHT_DATE: ${{ steps.pacific.outputs.night_date_pacific }}
+          DISPATCH_OUTCOME: ${{ steps.full_scan_dispatch.outcome }}
+        run: |
+          {
+            echo "### Overnight scan start — separate from scheduler success"
+            echo "- Pacific night: ${NIGHT_DATE:-UNKNOWN}"
+            if [[ "$DISPATCH_OUTCOME" == "success" ]]; then
+              echo "- Result: **DISPATCH REQUESTED** — see the separate PDUFA Overnight Sequential Scans workflow to confirm collection."
+            elif [[ "$DISPATCH_OUTCOME" == "failure" ]]; then
+              echo "- Result: **DISPATCH FAILED** — overnight scans were not started."
+            else
+              echo "- Result: **NO DISPATCH** — a green scheduler job alone is not a completed scan."
+            fi
+            echo "- Admission decision: ${GUARD_REASON:-UNAVAILABLE}"
+            echo "- Duplicate safety: once per Pacific night; previous recorded full scan blocks a second."
+          } >> "$GITHUB_STEP_SUMMARY"

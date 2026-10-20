@@ -33,13 +33,23 @@ def decision(event, cron, runs, *, now=None):
     in_window = local.hour >= 21 or local.hour < 3
     primary_hour = start.astimezone(timezone.utc).hour
     primary = {f"{minute} {primary_hour} * * *" for minute in (0, 15, 30)}
+    scheduled_in_window = (event == "schedule" and in_window and
+                           (cron in primary or (local.hour < 3 and cron in RECOVERY_CRONS) or
+                            cron == SWEEP_CRON))
+    # GitHub Actions cron can be substantially delayed or omitted at its
+    # intended minute. The previous implementation discarded scheduled ticks
+    # arriving after 02:59 PT, even if last night's chain never started.
+    # Allow a *recognized* late cron to recover yesterday's missing scan from
+    # 03:00 through 20:59 PT, up to the next night's 21:00 admission.
+    # The existing full-run check below still prevents duplicates and overlaps.
+    scheduled_late_recovery = (event == "schedule" and not in_window and
+                                (cron in primary or cron in RECOVERY_CRONS or
+                                 cron == SWEEP_CRON))
     allowed = (event == "workflow_dispatch" or
-               event == "push" and local.hour == 21 or
-               event == "schedule" and in_window and
-               (cron in primary or (local.hour < 3 and cron in RECOVERY_CRONS) or
-                cron == SWEEP_CRON))
+               (event == "push" and local.hour == 21) or
+               scheduled_in_window or scheduled_late_recovery)
     if not allowed:
-        result["reason"] = "Outside the matching 9 PM–2:59 AM Pacific start/recovery window"
+        result["reason"] = "Outside the guarded start/recovery period or unknown scheduler cron"
         return result
     for run in runs:
         if (run.get("path", "").split("@", 1)[0] != WORKFLOW or
@@ -58,8 +68,12 @@ def decision(event, cron, runs, *, now=None):
         if run.get("status") in ACTIVE or start.astimezone(timezone.utc) <= created <= now:
             result["reason"] = f"Full nightly chain already recorded or active (run {run.get('id')})"
             return result
-    result.update(run=True, reason=("Sunday FULL reconciliation" if weekly_full else
-                                     "Weekday DELTA changes/new-trial check") + "; start awaited chain including GEM")
+    scan_description = ("Sunday FULL reconciliation" if weekly_full else
+                        "Weekday DELTA changes/new-trial check")
+    if scheduled_late_recovery:
+        scan_description = ("RECOVERY of missed " + start.date().isoformat() +
+                            " Pacific 9 PM start; " + scan_description)
+    result.update(run=True, reason=scan_description + "; start awaited chain including GEM")
     return result
 
 
