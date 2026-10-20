@@ -42,7 +42,7 @@ class PacificAdmissionTests(unittest.TestCase):
             ('2026-01-15T06:00:00Z', '0 6 * * *', False),  # retired 10 PM PST slot
             ('2026-10-15T06:00:00Z', '0 6 * * *', False),
             ('2026-10-15T09:59:00Z', '0 4 * * *', True),
-            ('2026-10-15T10:00:00Z', '0 4 * * *', False),
+            ('2026-10-15T10:00:00Z', '0 4 * * *', True),  # delayed schedule safely catches up
         ):
             with self.subTest(at=at, cron=cron):
                 result = decision('schedule', cron, [], now=clock(at))
@@ -72,8 +72,9 @@ class PacificAdmissionTests(unittest.TestCase):
             ('2026-01-16T05:03:00Z', True),   # 9:03 PM PST
             ('2026-01-16T06:03:00Z', True),   # 10:03 PM PST
             ('2026-10-16T09:53:00Z', True),   # 2:53 AM PDT recovery
-            ('2026-10-16T10:03:00Z', False),  # 3:03 AM PDT: closed
+            ('2026-10-16T10:03:00Z', True),   # 3:03 AM PDT: delayed recovery
             ('2026-01-16T10:53:00Z', True),   # 2:53 AM PST recovery
+            ('2026-10-16T16:43:00Z', True),  # late GitHub tick at 9:43 AM PDT
         ):
             with self.subTest(when=when):
                 self.assertEqual(
@@ -86,6 +87,35 @@ class PacificAdmissionTests(unittest.TestCase):
                      status='completed', conclusion='success')
         self.assertFalse(decision('schedule', sweep, [prior],
                          now=clock('2026-10-16T05:13:00Z'))['run'])
+
+    def test_daytime_catchup_does_not_duplicate_any_recorded_nightly_chain(self):
+        sweep = '3-53/10 4-10 * * *'
+        # A delayed scheduled job the following morning must recover the
+        # missing *previous* night, not start an unrelated daytime scan.
+        late = clock('2026-10-16T16:43:00Z')  # 9:43 AM PDT
+        missing = decision('schedule', sweep, [], now=late)
+        self.assertTrue(missing['run'])
+        self.assertEqual(missing['night_date_pacific'], '2026-10-15')
+        self.assertIn('RECOVERY of missed 2026-10-15', missing['reason'])
+
+        prior = dict(id=181, path=WORKFLOW, head_branch='main',
+                     event='workflow_dispatch', display_title=RUN_TITLE,
+                     created_at='2026-10-16T04:25:00Z',
+                     status='completed', conclusion='success')
+        self.assertFalse(decision('schedule', sweep, [prior], now=late)['run'])
+        self.assertFalse(decision('schedule', sweep,
+                         [{**prior,'status':'in_progress'}],now=late)['run'])
+        # A prior night must not suppress the next night's new scan.
+        next_night = clock('2026-10-17T04:13:00Z')
+        self.assertTrue(decision('schedule', sweep, [prior], now=next_night)['run'])
+
+    def test_late_recovery_only_accepts_known_scheduler_crons(self):
+        late = clock('2026-10-16T16:43:00Z')
+        for cron in ('', '1 15 * * *', '0 6 * * *'):
+            with self.subTest(cron=cron):
+                self.assertFalse(decision('schedule',cron,[],now=late)['run'])
+        # Human and source edits during daytime should not launch the chain.
+        self.assertFalse(decision('push','',[],now=late)['run'])
 
     def test_dst_fall_back_uses_the_offset_at_that_nights_start(self):
         # The 9 PM start was PDT; by this retry Los Angeles has switched to PST.
