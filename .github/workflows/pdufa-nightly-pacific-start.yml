@@ -102,4 +102,4 @@ jobs:
             -f "inputs[gem_action]=${{ steps.manual_recovery.outputs.run == 'true' && 'RESCAN_ALL' || steps.pacific.outputs.gem_action }}"
           echo "Requested ALL clinical, GEM, source, scoring, error-check and repair stages in ONE awaited workflow."
           echo "Dispatch acceptance is not completion; inspect PDUFA Overnight Sequential Scans."
-
+# Operator-requested guarded start: 2026-10-19 21:23 America/Los_Angeles (Monday DELTA including GEM).
