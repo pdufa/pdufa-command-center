@@ -81,7 +81,7 @@ test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/F
   const prior={fetch:global.fetch,window:global.window,localStorage:global.localStorage,self:global.self};
   const storage={getItem:()=>null,setItem(){},removeItem(){}};
   global.localStorage=storage;
-  global.window={location:{search:""},localStorage:storage};
+  global.window={location:{search:""},localStorage:storage,setInterval:()=>0,clearInterval:()=>{}};
   global.self=global;
   const trial={id:"TRIAL|NCT12345678",programId:"PDUFA-000001",ticker:"TEST",
     drug:"Investigational therapy",stage:"Phase 3",pdufaDate:"2027-03-01",
