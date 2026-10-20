@@ -150,7 +150,7 @@ export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJ
  };
 }
 
-export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
+export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,stageSavedRows,manualStageList,onAddToStageList,onRemoveFromStageList,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;stageSavedRows:Trial[];manualStageList:Record<string,string>;onAddToStageList:(row:Trial)=>void;onRemoveFromStageList:(id:string)=>void;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const storedDraft=stage==="GEM_JR"?gemJrDraft:gemDraft;
  const draft=storedDraft?.asOf===asOf&&storedDraft.sourceTotal===pipeline.length?storedDraft:null;
  // FS and FA continue using the main qualification checkboxes.
@@ -163,6 +163,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const fiCheckedCount=fiKeys.filter(key=>fiSelected.includes(key)).length;
  const fiAllChecked=fiCheckedCount===fiKeys.length;
  const [result,setResult]=useState<GemScanResult|null>(null);
+ const [newListPage,setNewListPage]=useState(0);
+ const [showManualList,setShowManualList]=useState(false);
  const [optionalGoals,setOptionalGoals]=useState<Record<string,string>>(()=>draft?.optionalGoals||Object.fromEntries(OPTIONAL_ALL.map(a=>[a.key,a.goal])));
  const [twoTrialIds,setTwoTrialIds]=useState<[string,string]>(()=>draft?.twoTrialIds||["",""]);
  const twoTrialError=stage==="GEM_JR"&&selected.includes("two_trial")?twoTrialInputError(twoTrialIds):null;
@@ -363,7 +365,33 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    }
  }
 
- function renderOriginalCheckboxes(items:Criterion[]){
+ // A new candidate is a matching exact program absent from the stage's
+ // published membership. It is not a claim the drug was newly discovered.
+ const stageSavedIds=useMemo(()=>new Set(stageSavedRows.map(row=>row.id)),[stageSavedRows]);
+ const newScanRows=useMemo(()=>{
+   if(!completedScan || completedScan.selected.length===0)return [] as {row:Trial;review:boolean}[];
+   const seen=new Set<string>();
+   return [
+     ...completedScan.passes.map(row=>({row,review:false})),
+     ...completedScan.needsReview.map(row=>({row,review:true}))
+   ].filter(item=>{
+     if(stageSavedIds.has(item.row.id)||seen.has(item.row.id))return false;
+     seen.add(item.row.id);
+     return true;
+   });
+ },[completedScan,stageSavedIds]);
+ const newPageSize=20;
+ const newListPages=Math.max(1,Math.ceil(newScanRows.length/newPageSize));
+ const currentNewPage=Math.min(newListPage,newListPages-1);
+ const newPageRows=newScanRows.slice(currentNewPage*newPageSize,(currentNewPage+1)*newPageSize);
+ const myListRows=useMemo(()=>{
+   const index=new Map(pipeline.map(row=>[row.id,row]));
+   return Object.entries(manualStageList)
+     .sort((a,b)=>b[1].localeCompare(a[1]))
+     .map(([id,date])=>({id,date,row:index.get(id)}));
+ },[manualStageList,pipeline]);
+
+  function renderOriginalCheckboxes(items:Criterion[]){
   return items.map(([key,label])=>{const recommended=suggestedByStage[stage].includes(key);const faCriterion=stage==="GEM_JR"&&FA_CRITERIA.includes(key);const highlighted=(showSuggestions&&recommended)||(faActive&&faCriterion);return <label key={key} style={{display:"flex",gap:8,alignItems:"flex-start",padding:8,border:highlighted?"2px solid #2d8a56":"1px solid #c1d8c8",borderRadius:5,background:highlighted?"#e4f5e9":"white"}}><input type="checkbox" checked={selected.includes(key)} onChange={()=>toggle(key)}/><span>{label}{recommended&&(stage==="GEM_JR"||showSuggestions)&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>Suggested</small>}{faCriterion&&<small style={{display:"inline",marginLeft:8,fontSize:11,color:"#175a35",fontWeight:700}}>FA</small>}</span></label>});
  }
 
@@ -463,6 +491,50 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    aria-label={"FI: "+(fiAllChecked?"uncheck":"check")+" all "+fiKeys.length+" FI restrictions for "+(stage==="GEM_JR"?"GEM JR":"GEM")}
    title={"FI — check all "+fiKeys.length+" FI checkboxes below; click again to uncheck them. FS and FA stay unchanged."}
    style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:fiAllChecked?"#ffffff":"#176b39",color:fiAllChecked?"#176b39":"#ffffff",fontWeight:700}}>FI</button></div>
+
+ <section className="panel" aria-label={"New "+(stage==="GEM_JR"?"GEM JR":"GEM")+" candidates from SCAN"} style={{margin:"12px 0",padding:12,border:"1px solid #7fa08a",borderRadius:8,background:"#ffffff"}}>
+   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
+     <strong style={{fontSize:16}}>NEW {stage==="GEM_JR"?"GEM JR":"GEM"} CANDIDATES · {newScanRows.length.toLocaleString("en-US")}</strong>
+     <button type="button" className="secondary" onClick={()=>setShowManualList(current=>!current)} aria-expanded={showManualList}>MY {stage==="GEM_JR"?"GEM JR":"GEM"} LIST · {Object.keys(manualStageList).length}</button>
+   </div>
+   <p style={{fontSize:12,margin:"7px 0 10px"}}>New to the published {stage==="GEM_JR"?"GEM JR":"GEM"} stage list, not necessarily newly discovered. Click ADD TO LIST to manually save an exact trial to your browser's {stage==="GEM_JR"?"GEM JR":"GEM"} list. This does not change the official stage count or certify eligibility.</p>
+   {!completedScan?<p style={{fontSize:13,marginBottom:6}}>Run SCAN to populate this table from the current FS, FA and FI restrictions.</p>:completedScan.selected.length===0?<p style={{fontSize:13,marginBottom:6}}>No restrictions applied. Choose FS, FA, FI or individual checks, then rerun SCAN to identify new candidates.</p>:newScanRows.length===0?<p style={{fontSize:13,marginBottom:6}}>No additional stage candidates matched the latest scan.</p>:<>
+     <div style={{overflowX:"auto",maxHeight:400,overflowY:"auto",border:"1px solid #d5e2d8",borderRadius:5}}>
+       <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,whiteSpace:"nowrap"}}>
+         <thead><tr style={{background:"#e8f1e9",textAlign:"left"}}><th style={{padding:8}}>TICKER</th><th style={{padding:8}}>COMPANY / DRUG</th><th style={{padding:8}}>TRIAL</th><th style={{padding:8}}>SCAN STATUS</th><th style={{padding:8}}>ACTION</th></tr></thead>
+         <tbody>{newPageRows.map(({row,review})=><tr key={row.id} style={{borderTop:"1px solid #e0e9e2"}}>
+           <td style={{padding:8,fontWeight:750}}>{row.ticker||"—"}</td>
+           <td style={{padding:8,whiteSpace:"normal",minWidth:150}}>{row.company||"—"}{row.drug&&<span style={{display:"block",fontSize:11}}>{row.drug}</span>}</td>
+           <td style={{padding:8}}>{row.nctId||row.programId||row.id}</td>
+           <td style={{padding:8,color:review?"#9a5b0a":"#176b39",fontWeight:700}}>{review?"NEEDS VERIFICATION":"PASS"}</td>
+           <td style={{padding:8}}><button type="button" disabled={Boolean(manualStageList[row.id])} onClick={()=>onAddToStageList(row)} style={{padding:"6px 10px",borderRadius:5,border:"1px solid #236847",background:manualStageList[row.id]?"#e1ece4":"#176b39",color:manualStageList[row.id]?"#215b35":"#ffffff",fontWeight:750}}>{manualStageList[row.id]?"ADDED ✓":"ADD TO LIST"}</button></td>
+         </tr>)}</tbody>
+       </table>
+     </div>
+     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flexWrap:"wrap",fontSize:12,marginTop:9}}>
+       <span>Showing {currentNewPage*newPageSize+1}–{Math.min((currentNewPage+1)*newPageSize,newScanRows.length)} of {newScanRows.length.toLocaleString("en-US")} · Scan #{completedScan.runNumber}</span>
+       <span style={{display:"flex",gap:8}}>
+         <button type="button" className="secondary" disabled={currentNewPage===0} onClick={()=>setNewListPage(current=>Math.max(0,current-1))}>PREVIOUS</button>
+         <button type="button" className="secondary" disabled={currentNewPage>=newListPages-1} onClick={()=>setNewListPage(current=>Math.min(newListPages-1,current+1))}>NEXT</button>
+       </span>
+     </div>
+   </>}
+   {showManualList&&<div style={{marginTop:12,borderTop:"1px solid #bed2c1",paddingTop:10}}>
+     <strong>MY {stage==="GEM_JR"?"GEM JR":"GEM"} LIST · {myListRows.length} manually added</strong>
+     <p style={{fontSize:12,margin:"5px 0 8px"}}>Saved in this browser, including after refresh; not synchronized across devices or added to the published stage membership.</p>
+     {myListRows.length===0?<p style={{fontSize:13}}>No manually added candidates yet.</p>:<div style={{overflowX:"auto",maxHeight:300,overflowY:"auto"}}>
+       <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+         <thead><tr style={{textAlign:"left",background:"#e8f1e9"}}><th style={{padding:8}}>TICKER</th><th style={{padding:8}}>DRUG / PROGRAM</th><th style={{padding:8}}>ADDED</th><th style={{padding:8}}>ACTION</th></tr></thead>
+         <tbody>{myListRows.map(item=><tr key={item.id} style={{borderTop:"1px solid #e0e9e2"}}>
+           <td style={{padding:8}}>{item.row?.ticker||"Unavailable"}</td>
+           <td style={{padding:8}}>{item.row?.drug||item.row?.programId||item.id}</td>
+           <td style={{padding:8,whiteSpace:"nowrap"}}>{item.date.slice(0,10)}</td>
+           <td style={{padding:8}}><button type="button" className="secondary" onClick={()=>onRemoveFromStageList(item.id)}>REMOVE</button></td>
+         </tr>)}</tbody>
+       </table>
+     </div>}
+   </div>}
+ </section>
 
  <section className="gem-fi-filter-section" aria-label={(stage==="GEM_JR"?"GEM JR":"GEM")+" FI scan restrictions"}
    style={{margin:"12px 0 0",padding:12,border:"1px solid #91b5a0",borderRadius:8,background:fiAllChecked?"#e9f6ec":"#f5f8f5"}}>
