@@ -1504,16 +1504,16 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
               { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
             ].map(group => <fieldset className="filter-count-group" key={group.title}>
               <legend>{group.title}</legend>
-              <button type="button" className="secondary" aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
-                onClick={() => group.setter(group.items.every(item => group.selected.includes(item.label)) ? [] : group.items.map(item => item.label))}>
-                {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
-              </button>
               <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
               <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
                 <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
                 <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
                 <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
               </label>)}</div>
+              <button type="button" className="secondary pipeline-group-select-toggle" aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
+                onClick={() => group.setter(group.items.every(item => group.selected.includes(item.label)) ? [] : group.items.map(item => item.label))}>
+                {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
+              </button>
             </fieldset>)}
             <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot.asOf} ready={snapshot.trialFilterSchema === 1} />
           </div>
