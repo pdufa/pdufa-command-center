@@ -111,7 +111,9 @@ test("the rendered data area lists only selected-phase rows and preserves an emp
   const many = Array.from({ length: 107 }, (_, index) => ({ id: String(index), ticker: String(index).padStart(3, "0") }));
   const paginated = renderToStaticMarkup(React.createElement(PipelineData, { rows: many }));
   assert.match(paginated, /107 matching trials \/ programs/);
-  assert.equal((paginated.match(/aria-expanded="false"/g) || []).length, 25);
+  // Score popovers also expose aria-expanded; count actual table records.
+  const body = paginated.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1] || "";
+  assert.equal((body.match(/<tr(?:\s[^>]*)?>/g) || []).length, 25);
 });
 
 test("every registry module and future field remains browsable; p-values keep endpoint and group context", () => {

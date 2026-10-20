@@ -11,6 +11,7 @@ import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
+import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
@@ -170,7 +171,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT" | "TRADING";
-type TopNav = "PDUFA" | "CALENDAR";
+type TopNav = "PDUFA" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -722,6 +723,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
+    if (requested === "RESTRICTIONS") { setTop("RESTRICTIONS"); return; }
     if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
       setTop("PDUFA");
       setNav(requested as Nav);
@@ -1022,6 +1024,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   }
 
   const pipeline = snapshot?.pipeline || [];
+  const restrictionRows = useMemo(() => {
+    const technical = new Map<string, Candidate>();
+    for (const member of [...(snapshot?.members.GEM_JR.rows || []), ...(snapshot?.members.GEM.rows || [])]) technical.set(member.id, member);
+    return pipeline.map(row => { const member = technical.get(row.id);
+      return member?.ticker === row.ticker && member.technical ? { ...row, technical: member.technical } : row; });
+  }, [snapshot?.pipeline, snapshot?.members]);
   const availability = useMemo(() => pipelineAvailability(pipeline, { query, onlyBand, trial: trialFilters, asOf: snapshot?.asOf }, dateBand, STAGES, BANDS), [pipeline, onlyBand, query, trialFilters, snapshot?.asOf]);
   const possible = availability.rows;
   const qualificationBase = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand, stages: stageFilters, dates: dateFilters }, dateBand), [pipeline, query, onlyBand, stageFilters, dateFilters]);
@@ -1518,12 +1526,13 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     <div className="worktop">
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
+      <button type="button" className={top==="RESTRICTIONS"?"nav-selected":""} aria-current={top==="RESTRICTIONS"?"page":undefined} onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? (cachedAsOf ? "Verifying latest data…" : "Loading published candidates…") : "Load published candidates"}</button>
       <span className="workspace-stage">{cachedAsOf ? "CACHED SNAPSHOT · " + cachedAsOf + " · NOT VERIFIED CURRENT" : snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
     </div>
     <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
-        <strong>Section: {top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
+        <strong>Section: {top==="RESTRICTIONS"?"RESTRICTIONS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
           onClick={()=>setMobileNavOpen(current=>!current)}>
           {mobileNavOpen ? "Close menu ×" : "☰ Browse sections"}
@@ -1662,6 +1671,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stage, date and trial filters above, then press DISPLAY TRIALS to show the matching trials and programs.</p></section>}
       </div>
     </section>}
+    {snapshot && top==="RESTRICTIONS" && <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"}
+      onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
