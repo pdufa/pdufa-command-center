@@ -8,7 +8,7 @@ import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
 
 const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
-  { label: "#" }, { label: "Program ID", key: "programId" },
+  { label: "Score trial" }, { label: "#" }, { label: "Program ID", key: "programId" },
   { label: "Ticker / company", key: "ticker", sortLabel: "ticker" },
   { label: "Drug / study" }, { label: "Indication" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
@@ -30,7 +30,7 @@ type Summaries = { ids: string; records: Record<string, TrialSummary> };
 export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
   const [page, setPage] = useState(0);
   const [scoreOrder, setScoreOrder] = useState("source");
-  const { records: assessmentRecords } = useAssessments();
+  const { records: assessmentRecords, refresh: refreshScores } = useAssessments();
   const [size, setSize] = useState(25);
   const [selected, setSelected] = useState("");
   const [summaries, setSummaries] = useState<Summaries>({ ids: "", records: {} });
@@ -133,6 +133,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
         const nct = trialId(row), saved = enriched[nct];
         const active = selected === row.id;
         return <tr key={row.id} className={active ? "selected-record" : ""}>
+          <td><button type="button" className="secondary" onClick={() => { refreshScores(); setSelected(row.id); }} aria-label={"Score trial " + (row.programId || row.id)}>Score Trial</button></td>
           <td>{current.start + index}</td><td className="permanent-id">{row.programId || "Not assigned"}</td>
           <td><strong>{row.ticker}</strong><small>{row.company}</small></td>
           <td className="pipeline-study-cell"><strong>{nct ?
