@@ -47,7 +47,7 @@ export default function TrialQualificationFilters({ rows, countRows, value, onCh
       <input type="checkbox" checked={criterionChecked(value, criterion.key)} onChange={event => onChange(withCriterion(value, criterion.key, event.target.checked))} />
       <span className="filter-label-text">{criterion.label}</span><b className="filter-count" title="Matches with your other selections">{counts[index].toLocaleString("en-US")}</b>
     </label>)}</div>
-    <button type="button" className="secondary pipeline-group-select-toggle" aria-label={QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key)) ? "Select no trial criteria" : "Select all trial criteria"}
+    <button type="button" className="secondary pipeline-group-select-toggle" aria-pressed={QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key))} aria-label={QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key)) ? "Select no trial criteria" : "Select all trial criteria"}
       onClick={() => {
         const allSelected = QUALIFICATION_CRITERIA.every(criterion => criterionChecked(value, criterion.key));
         onChange(QUALIFICATION_CRITERIA.reduce((next, criterion) => withCriterion(next, criterion.key, !allSelected), value));
