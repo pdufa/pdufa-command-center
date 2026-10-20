@@ -187,7 +187,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const [optionalGoals,setOptionalGoals]=useState<Record<string,string>>(()=>draft?.optionalGoals||Object.fromEntries(OPTIONAL_ALL.map(a=>[a.key,a.goal])));
  const [twoTrialIds,setTwoTrialIds]=useState<[string,string]>(()=>draft?.twoTrialIds||["",""]);
  const twoTrialError=stage==="GEM_JR"&&selected.includes("two_trial")?twoTrialInputError(twoTrialIds):null;
- const [open,setOpen]=useState(true);
+ const [open,setOpen]=useState(false);
  const [running,setRunning]=useState(false);
  // STARTING briefly displays SCAN again on a rerun; SCANNING then remains
  // visible throughout the batched, complete evaluation of the input dataset.
@@ -445,7 +445,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    <h3 style={{margin:"0 0 7px"}}>Optional GEM JR evidence alerts</h3>
    <p style={{fontSize:13,margin:"0 0 10px"}}>Optional checks are off by default. Enter your desired threshold in the boxed goal column, or choose a goal. This is your screening target, not a verified result. Checked alerts without sourced application-specific evidence report NEEDS VERIFICATION, never PASS.</p>
    <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:12,alignItems:"start"}}>
-   {OPTIONAL_GROUPS.map(group=><details key={group.heading} open style={{marginBottom:8,border:"1px solid #d6e7dc",borderRadius:5}}>
+   {OPTIONAL_GROUPS.map(group=><details key={group.heading} style={{marginBottom:8,border:"1px solid #d6e7dc",borderRadius:5}}>
      <summary style={{padding:9,fontWeight:700,cursor:"pointer"}}>{group.heading}</summary>
      <div style={{overflowX:"auto",padding:8}}>
        <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:0}}>
@@ -501,7 +501,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
     {renderOriginalCheckboxes(checkboxGroupsForStage(stage).clinical)}
    </div>
   </section>
-  <details className="gem-original-trading" open>
+  <details className="gem-original-trading">
    <summary>TRADING — FINANCIAL & MARKET CHECKBOXES ({checkboxGroupsForStage(stage).trading.length})</summary>
    <div className="gem-original-criteria-grid">
     {renderOriginalCheckboxes(checkboxGroupsForStage(stage).trading)}
