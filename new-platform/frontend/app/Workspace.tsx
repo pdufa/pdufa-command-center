@@ -641,6 +641,32 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
 
   const [summaryError, setSummaryError] = useState("");
   const [gemScans,setGemScans]=useState<Partial<Record<"GEM_JR"|"GEM",GemScanResult>>>({});
+  // Explicitly curated manual shortlist only. Published stage membership and
+  // its top-card totals remain source-owned, not rewritten by browser clicks.
+  const [manualStageLists,setManualStageLists]=useState<Record<"GEM_JR"|"GEM",Record<string,string>>>({GEM_JR:{},GEM:{}});
+  const [manualStageListsLoaded,setManualStageListsLoaded]=useState(false);
+  useEffect(()=>{
+    try{
+      const raw=window.localStorage.getItem("pdufa_manual_stage_list_v1");
+      const parsed=raw?JSON.parse(raw):null;
+      const clean=(stage:"GEM_JR"|"GEM")=>{
+        const entries=parsed?.[stage];
+        if(!entries||typeof entries!=="object"||Array.isArray(entries))return {} as Record<string,string>;
+        return Object.fromEntries(
+          Object.entries(entries)
+          .filter(([id,date])=>id.length>0&&id.length<1024&&typeof date==="string"&&/^\\d{4}-\\d{2}-\\d{2}T/.test(date))
+          .slice(0,1000)
+        ) as Record<string,string>;
+      };
+      setManualStageLists({GEM_JR:clean("GEM_JR"),GEM:clean("GEM")});
+    }catch{setManualStageLists({GEM_JR:{},GEM:{}});}
+    setManualStageListsLoaded(true);
+  },[]);
+  useEffect(()=>{
+    if(!manualStageListsLoaded)return;
+    try{window.localStorage.setItem("pdufa_manual_stage_list_v1",JSON.stringify(manualStageLists));}
+    catch{/* Browser storage disabled: list remains in memory this session. */}
+  },[manualStageLists,manualStageListsLoaded]);
   // GEM JR live screen is not saved stage membership (11), nor a finished SCAN.
   // Keep the exact candidate IDs and checklist draft while switching stage tabs.
   const [gemJrLivePreview,setGemJrLivePreview]=useState<GemJrLivePreview|null>(null);
@@ -1201,7 +1227,21 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
         <span className="gem-count">{pageTotals[stage].toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
       </div>
-      <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} completedScan={activeScan} gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft} onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
+      <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} completedScan={activeScan}
+        stageSavedRows={group?.rows||[]} manualStageList={manualStageLists[stage]}
+        onAddToStageList={row=>{
+          // Match exact program ID to currently loaded Pipeline, not ticker.
+          if(!pipeline.some(candidate=>candidate.id===row.id))return;
+          setManualStageLists(current=>current[stage][row.id]?current:{
+            ...current,[stage]:{...current[stage],[row.id]:new Date().toISOString()}
+          });
+        }}
+        onRemoveFromStageList={id=>setManualStageLists(current=>{
+          if(!current[stage][id])return current;
+          const next={...current[stage]};delete next[id];
+          return {...current,[stage]:next};
+        })}
+        gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft} onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
         onReset={()=>{
           setGemSavedOnly(current=>current[stage]?{...current,[stage]:false}:current);
           if(stage==="GEM_JR")setGemLivePreview(null);
