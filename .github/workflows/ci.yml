@@ -6,6 +6,10 @@ on:
     paths:
       - 'new-platform/**'
       - 'scripts/validate_gem_source_ledgers.py'
+      - 'scripts/phase3_results_intake.py'
+      - 'scripts/nightly_clinical_collection.py'
+      - 'scripts/pdufa_scan_audit.py'
+      - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
       - '.github/workflows/ci.yml'
@@ -14,6 +18,10 @@ on:
     paths:
       - 'new-platform/**'
       - 'scripts/validate_gem_source_ledgers.py'
+      - 'scripts/phase3_results_intake.py'
+      - 'scripts/nightly_clinical_collection.py'
+      - 'scripts/pdufa_scan_audit.py'
+      - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
       - '.github/workflows/ci.yml'
@@ -44,6 +52,22 @@ jobs:
         run: python -m py_compile scripts/validate_gem_source_ledgers.py
       - name: Validate strict GEM evidence ledger
         run: python scripts/validate_gem_source_ledgers.py
+
+  scan-new-results:
+    name: Audited new-scan identities and duplicate prevention
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile scan collector and archive verification
+        run: python -m py_compile scripts/phase3_results_intake.py scripts/nightly_clinical_collection.py scripts/pdufa_scan_audit.py
+      - name: Verify exact new study identifiers, immutable scan archive and audit safeguards
+        run: python -m unittest discover -s tests -p 'test_new_scan_result_identities.py' -v
+      - name: Verify original nightly report compatibility
+        run: python -m unittest discover -s tests -p 'test_pdufa_nightly_report.py' -v
 
   backend:
     name: Current FastAPI application regression tests
