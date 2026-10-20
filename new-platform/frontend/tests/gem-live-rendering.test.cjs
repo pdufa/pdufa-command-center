@@ -72,49 +72,39 @@ test("GEM retains unknown evidence inherited from its GEM JR input",async()=>{
  }finally{if(root)await act(async()=>root.unmount());}
 });
 
-test("GEM JR FS and FI are independent toggles that retain visible original checkboxes",async()=>{
- let root;
+
+test("GEM JR FS toggles the original five restrictions with no FI controls",async()=>{
+ let root,draft;
  function Workspace(){
-  const [draft,setDraft]=React.useState(null);
+  const [stored,setDraft]=React.useState(null);
+  draft=stored;
   return React.createElement(Checklist,{
    stage:"GEM_JR",pipeline:pipeline.slice(0,6),asOf,stageTotal:11,
    completedScan:null,stageSavedRows:[],manualStageList:{},
    onAddToStageList(){},onRemoveFromStageList(){},
-   gemJrScan:null,gemJrSavedRows:[],gemJrDraft:draft,
+   gemJrScan:null,gemJrSavedRows:[],gemJrDraft:stored,
    onGemJrDraftChange:setDraft,onScan(){},onReset(){}
   });
  }
- const getButton=(label)=>root.root.findAllByType("button").find(button=>
-  button.children.some(child=>child===label));
+ const button=(label)=>root.root.findAllByType("button").find(b=>b.children.includes(label));
  const original=(name)=>root.root.findAllByType("label").find(label=>
-  label.findAllByType("span").some(span=>span.children.includes(name)));
- const fiCheckbox=()=>root.root.findAllByType("input").find(input=>
-  input.props["aria-label"]==="FI: Successful Phase 3 independently verified");
- const check=()=>({
-  fs:getButton("FS").props["aria-pressed"],
-  fi:getButton("FI").props["aria-pressed"],
-  fa:getButton("FA").props["aria-pressed"],
-  original:original("Successful Phase 3 independently verified").findByType("input").props.checked,
-  fiBox:fiCheckbox().props.checked
- });
- const click=async(label)=>{await act(async()=>{getButton(label).props.onClick();});};
+  label.findAllByType("span").some(span=>span.children.includes(name))).findByType("input");
+ const phase3="Successful Phase 3 independently verified";
  try{
   await act(async()=>{root=create(React.createElement(Workspace));});
-  assert.deepEqual(check(),{fs:false,fi:false,fa:false,original:false,fiBox:false});
-  await click("FI");
-  assert.deepEqual(check(),{fs:false,fi:true,fa:false,original:true,fiBox:true},
-   "FI must not enable FS or FA");
-  await click("FS");
-  assert.deepEqual(check(),{fs:true,fi:true,fa:false,original:true,fiBox:true});
-  await click("FI");
-  assert.deepEqual(check(),{fs:true,fi:false,fa:false,original:true,fiBox:false},
-   "switching off FI must preserve FS and visible original checkbox");
-  await click("FI");
-  await click("FS");
-  assert.deepEqual(check(),{fs:false,fi:true,fa:false,original:true,fiBox:true},
-   "switching off FS must preserve FI and visible original checkbox");
-  await click("FI");
-  assert.deepEqual(check(),{fs:false,fi:false,fa:false,original:false,fiBox:false},
-   "both presets off leaves original unchecked");
+  assert.equal(button("FI"),undefined);
+  assert.equal(button("FS").props["aria-pressed"],false);
+  assert.equal(original(phase3).props.checked,false);
+  assert.equal(Boolean(draft?.fiSelected),false);
+  await act(async()=>{button("FS").props.onClick();});
+  assert.equal(button("FS").props["aria-pressed"],true);
+  assert.equal(original(phase3).props.checked,true);
+  assert.equal(draft.selected.length,5);
+  assert.equal(Boolean(draft.fiSelected),false);
+  assert.equal(button("FI"),undefined);
+  await act(async()=>{button("FS").props.onClick();});
+  assert.equal(button("FS").props["aria-pressed"],false);
+  assert.equal(original(phase3).props.checked,false);
+  assert.deepEqual(draft.selected,[]);
  }finally{if(root)await act(async()=>root.unmount());}
 });
