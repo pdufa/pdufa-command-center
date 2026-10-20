@@ -66,3 +66,20 @@ test('the shared table score cells open the exact candidate and distinguish revi
   assert.equal(opened,1);
  }finally{if(root)await act(async()=>root.unmount());global.fetch=savedFetch;}
 });
+
+test('a temporary published-source refresh recovers automatically without a user rescan',async()=>{
+ const savedFetch=global.fetch;
+ const row={id:'exact-refresh',ticker:'SAME'};
+ let calls=0,root;
+ global.fetch=async()=>++calls===1
+   ? {ok:false,status:503,json:async()=>({error:'Fresh versioned candidate source unavailable'})}
+   : {ok:true,status:200,json:async()=>index([[row.id,tuple(0,10),tuple(),tuple(),[]]])};
+ try{
+  await act(async()=>{root=create(React.createElement(AssessmentProvider,null,React.createElement('table',null,React.createElement('tbody',null,React.createElement('tr',null,React.createElement(AssessmentCells,{row,stage:'PIPELINE',onOpen(){}}))))));});
+  assert.equal(calls,1);
+  assert.match(JSON.stringify(root.toJSON()),/Scoring/);
+  await act(async()=>{await new Promise(resolve=>setTimeout(resolve,2100));});
+  assert.equal(calls,2);
+  assert.match(JSON.stringify(root.toJSON()),/0 observed/);
+ }finally{if(root)await act(async()=>root.unmount());global.fetch=savedFetch;}
+});

@@ -21,6 +21,9 @@ export function AssessmentProvider({ children }: { children: ReactNode }) {
       try {
         const response = await fetch("/api/assessments", { cache: "no-store", signal: controller.signal });
         const value = await response.json();
+        // The source adapter deliberately rejects concurrent refresh readers.
+        // Recover a brief 503 without asking the user to trigger scoring again.
+        if (response.status === 503 && attempt < 3) { timer = setTimeout(() => void load(attempt + 1), 2000); return; }
         if (!response.ok) throw new Error(value.error || "Candidate scores are unavailable");
         if (controller.signal.aborted) return;
         if (value.status === "BUILDING" && attempt < 60) { timer = setTimeout(() => void load(attempt + 1), 3000); return; }
@@ -88,6 +91,7 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
         const response = await fetch("/api/assessments?identity=" + encodeURIComponent(row.id), { cache: "no-store", signal: controller.signal });
         const result = await response.json();
         if (response.status === 409 && attempt < 60) { timer = setTimeout(() => void load(attempt + 1), 3000); return; }
+        if (response.status === 503 && attempt < 3) { timer = setTimeout(() => void load(attempt + 1), 2000); return; }
         if (!response.ok) throw new Error(result.error || "Detailed scoring evidence is unavailable");
         if (result.id !== row.id || row.programId && result.programId !== row.programId || !result.models || ASSESSMENT_STAGES.some(key => result.models[key]?.categories?.length !== 7)) throw new Error("Exact candidate scoring identity could not be verified");
         if (!controller.signal.aborted) setData(result);
@@ -112,7 +116,7 @@ export default function CandidateAssessments({ row, initialStage = "PIPELINE" }:
       <p className="small">Assessed {data.asOf} · Model {data.modelVersion} · Registry saved {data.registryFetchedAt || "not available"} · Registry source updated {data.registrySourceDate || "not reported"}.
         {change && <strong> Change: {change.observedPoints >= 0 ? "+" : ""}{n(change.observedPoints)} points; {change.coverage >= 0 ? "+" : ""}{n(change.coverage)}% evidence.</strong>}</p>
       <div className="assessment-categories">{model.categories.map(category => <details key={category.id} className="assessment-category" open>
-        <summary><strong>{category.id} · {category.label}</strong><span>{n(category.observedPoints)} / {category.maximum} points · {n(category.coverage)} / {category.maximum} assessed · {category.status}</span></summary>
+        <summary><strong>{category.id} · {category.label}</strong><span>{category.coverage ? n(category.observedPoints) : "—"} / {category.maximum} points · {n(category.coverage)} / {category.maximum} assessed · {category.status}</span></summary>
         <div className="table-scroll"><table><thead><tr><th>Underlying measurement</th><th>Actual data</th><th>Individual points</th><th>Rule / calculation</th><th>Source / verification dates</th></tr></thead>
           <tbody>{category.metrics.map(metric => <tr key={metric.id}>
             <td><strong>{metric.label}</strong><small>{metric.status}</small></td><td><Value value={metric.value} />{metric.observations != null && <details><summary>Saved safety / exposure observations</summary><Value value={metric.observations} /></details>}</td>
