@@ -120,7 +120,7 @@ export function newFromScanSummary(
       const item = obj(raw);
       if (!item) continue;
       const ticker = string(item.ticker), trialId = string(item.nct_id);
-      if (!ticker || !trialId || !/^NCT\\d{8}$/.test(trialId)) continue;
+      if (!ticker || !trialId || !/^NCT\d{8}$/.test(trialId)) continue;
       const key = ticker + "|" + trialId;
       if (seen.has(key)) continue;
       seen.add(key);
