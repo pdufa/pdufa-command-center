@@ -58,9 +58,9 @@ export function ScoreProgressButton({ label, stage, onScore, rowId }: { label: s
       {rowId && <span style={{ display: "block", marginTop: 8 }}>{score ? score[2] === 0 ? "Awaiting evidence" : score[0] == null ? "Partial assessment · evidence incomplete" : "Complete score: " + score[0] + " / 100" : "No assessment available yet"}</span>}
       {rowId && record && <span style={{ display: "block", marginTop: 10, maxHeight: "45vh", overflowY: "auto" }}>
         {ASSESSMENT_STAGES.map(key => { const result = scoreFor(record, key); return <span key={key} style={{ display: "block", padding: "8px 0", borderTop: "1px solid #8885" }}>
-          <strong>{stageLabel(key)}: {result?.[0] == null ? "Incomplete" : n(result[0]) + " / 100"}</strong>
+          <strong>{stageLabel(key)}: {result && result[0] !== null ? n(result[0]) + " / 100" : "Incomplete"}</strong>
           <small style={{ display: "block" }}>Evidence: {result ? n(result[2]) : "0"} assessed</small>
-          {ASSESSMENT_LABELS[key].map((label, i) => <span key={label} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "2px 0" }}><span>{categoryId(key, i)} · {label}</span><strong>{result?.[i + 3] == null ? "—" : n(result[i + 3])}</strong></span>)}
+          {ASSESSMENT_LABELS[key].map((label, i) => <span key={label} style={{ display: "flex", justifyContent: "space-between", gap: 10, padding: "2px 0" }}><span>{categoryId(key, i)} · {label}</span><strong>{result ? n(result[i + 3]) : "—"}</strong></span>)}
         </span>; })}
       </span>}
       {rowId && onScore && <button type="button" className="secondary" style={{ marginTop: 10, width: "100%" }} onClick={() => { setOpen(false); onScore(); }}>View all 21 scores &amp; underlying data ↓</button>}
