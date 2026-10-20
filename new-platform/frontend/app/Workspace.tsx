@@ -4,6 +4,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "
 import MasterChart from "./MasterChart";
 import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
+import TradingDashboard, { type TradingTicker } from "./TradingDashboard";
 import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
@@ -166,7 +167,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
   } finally { db.close(); }
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
-type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT";
+type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT" | "TRADING";
 type TopNav = "PDUFA" | "CALENDAR";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
@@ -717,7 +718,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
-    if (requested && (["PIPELINE","GEM_JR","GEM","WT"] as const).some(section => section === requested)) {
+    if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
       setTop("PDUFA");
       setNav(requested as Nav);
     }
@@ -1075,6 +1076,31 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     }
     return m;
   }, [snapshot, pipeline]);
+
+  // TRADING dropdown uses the same Neon-backed exact W/T programs as WT.
+  // Multiple programs for one ticker remain separate choices.
+  const tradingTickers = useMemo<TradingTicker[]>(() => {
+    const saved = new Map(storedIdentities.map(x => [x.programId, x]));
+    const toTicker = (programId:string,kind:"watch"|"trade"):TradingTicker => {
+      const record = byProgram.get(programId);
+      const identity = saved.get(programId);
+      return {
+        programId,kind,ticker:record?.ticker||identity?.ticker||"",
+        drug:record?.drug||identity?.drug,
+        pdufaDate:record?.pdufaDate,
+        financingStatus:record?.financingStatus,
+        phase3Status:record?.phase3Status,
+        outcome:record?.outcome,
+        runwayMonths:record?.technical?.runwayMonths,
+        avgDollarVolume20:record?.technical?.avgDollarVolume20,
+        riskAlerts:record?.technical?.riskAlerts
+      };
+    };
+    return [
+      ...tags.watch.map(id=>toTicker(id,"watch")),
+      ...tags.trade.map(id=>toTicker(id,"trade"))
+    ];
+  },[tags.watch,tags.trade,byProgram,storedIdentities]);
 
   function toggleFilter(current: string[], item: string, setter: (value: string[])=>void) {
     setter(current.includes(item) ? current.filter(v => v !== item) : [...current, item]);
@@ -1492,7 +1518,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </button>
       </div>
       <nav id="pdufa-section-navigation" className="worknav" aria-label="PDUFA sections" data-open={mobileNavOpen?"true":"false"}>
-        {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"]] as [Nav,string][]).map(([key,label])=>
+        {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
           <button type="button" key={key} className={top==="PDUFA"&&nav===key?"nav-selected":""} aria-current={top==="PDUFA"&&nav===key?"page":undefined}
             onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
@@ -1716,7 +1742,8 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
           </div>)}
       </section>}
     </div>}
-    {top==="PDUFA" && nav==="SCANS" && <PublishedScansPanel />}
+    {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
+     {top==="PDUFA" && nav==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
       <p className="subtle">Reported dates only, not FDA-confirmed future events unless the source explicitly verifies them.</p>
       <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
