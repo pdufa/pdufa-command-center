@@ -200,7 +200,7 @@ export default function Home() {
     <main className="shell">
       <div className="topline">PDUFA COMMAND CENTER · PUBLISHED DASHBOARD</div>
       <header className="head">
-        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT · Trial counts directly below navigation</p></div>
+        <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT → TRADING · Trial counts directly below navigation</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
       <Workspace onInspect={inspectProgram} />
