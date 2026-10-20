@@ -108,3 +108,44 @@ test("GEM JR FS toggles the original five restrictions with no FI controls",asyn
   assert.deepEqual(draft.selected,[]);
  }finally{if(root)await act(async()=>root.unmount());}
 });
+
+test("Both stage new-trial tables add and remove exact candidates directly in the same row",async()=>{
+ for(const stage of ["GEM_JR","GEM"]){
+  const candidate={id:"TRIAL|ADD-1",ticker:"TEST",drug:"Trial drug",
+   nctId:"NCT12345678",trialFilters:{registeredPhase:"Phase 3"}};
+  const completedScan={
+   runNumber:1,asOf,evaluatedAt:asOf+"T12:00:00Z",
+   sourceTotal:1,baseline:1,sourceKind:"PIPELINE",
+   selected:["registry"],audits:[],passes:[candidate],needsReview:[],fails:[]
+  };
+  let root,savedNow={};
+  function Workspace(){
+   const [list,setList]=React.useState({});
+   savedNow=list;
+   return React.createElement(Checklist,{
+    stage,pipeline:[candidate],asOf,stageTotal:0,
+    completedScan,stageSavedRows:[],manualStageList:list,
+    onAddToStageList:row=>setList(old=>({...old,[row.id]:"2026-10-19T12:00:00Z"})),
+    onRemoveFromStageList:id=>setList(old=>{const next={...old};delete next[id];return next;}),
+    gemJrScan:null,gemJrSavedRows:[],onScan(){},onReset(){}
+   });
+  }
+  const button=(value)=>root.root.findAllByType("button").find(btn=>
+   btn.children.some(child=>child===value));
+  try{
+   await act(async()=>{root=create(React.createElement(Workspace));});
+   assert.ok(root.root.findAllByType("strong").some(el=>el.children.some(
+    txt=>typeof txt==="string"&&txt.includes("CANDIDATES"))));
+   assert.equal(button("ADD TO LIST").props.disabled,false);
+   assert.equal(button("REMOVE").props.disabled,true);
+   await act(async()=>{button("ADD TO LIST").props.onClick();});
+   assert.equal(savedNow[candidate.id],"2026-10-19T12:00:00Z",stage+" added exact program");
+   assert.equal(button("ADDED ✓").props.disabled,true);
+   assert.equal(button("REMOVE").props.disabled,false);
+   await act(async()=>{button("REMOVE").props.onClick();});
+   assert.equal(savedNow[candidate.id],undefined,stage+" removed same exact program");
+   assert.equal(button("ADD TO LIST").props.disabled,false);
+   assert.equal(button("REMOVE").props.disabled,true);
+  }finally{if(root)await act(async()=>root.unmount());}
+ }
+});
