@@ -215,28 +215,30 @@ test("GEM FA starts off and mirrors only the optional Gem Jr Trials checkbox",()
  assert.equal(checkboxGroupsForStage("GEM").clinical.length+checkboxGroupsForStage("GEM").trading.length,11);
 });
 
-test("GEM JR FI toggles exactly its five existing original checkbox IDs and preserves all others",()=>{
- const {toggleGemJrFiCheckboxes}=Checklist;
- const five=["phase3","registry","issuer","cash","marketfresh"];
- const unrelated=["financing","marketcap","dilution"];
- const enabled=toggleGemJrFiCheckboxes(unrelated);
- assert.deepEqual(enabled,[...unrelated,...five]);
- assert.deepEqual(toggleGemJrFiCheckboxes(enabled),unrelated);
- assert.deepEqual(new Set(toggleGemJrFiCheckboxes(["issuer"])),new Set(five));
- const originalGroups=checkboxGroupsForStage("GEM_JR");
- const originalKeys=new Set([...originalGroups.clinical,...originalGroups.trading].map(([key])=>key));
- assert.equal(five.every(key=>originalKeys.has(key)),true);
- assert.equal(originalKeys.size,17,"no original GEM JR checkboxes moved or removed");
- const jr=page("GEM_JR");
- assert.match(jr,/FI — 5 SCAN RESTRICTIONS/);
- assert.match(jr,/FI: check all 5 FI restrictions for GEM JR/);
- const gem=page("GEM");
- assert.match(gem,/FI — 6 SCAN RESTRICTIONS/);
+test("FI controls are absent on both stages; original FS/FA checkboxes and candidate tables remain",()=>{
+ for(const stage of ["GEM_JR","GEM"]){
+  const html=page(stage);
+  const clinical=html.match(/<section class="gem-original-clinical"[\s\S]*?<\/section>/)?.[0];
+  const trading=html.match(/<details class="gem-original-trading"[\s\S]*?<\/details>/)?.[0];
+  assert.ok(clinical && trading);
+  assert.doesNotMatch(html,/aria-label="FI:|gem-fi-filter-section|>FI<\/button>|FI — [56] SCAN RESTRICTIONS/);
+  assert.match(html,/aria-label="FS: toggle suggested criteria checkboxes"/);
+  assert.match(html,/aria-label="FA: toggle/);
+  assert.match(html,new RegExp("NEW "+(stage==="GEM_JR"?"GEM JR":"GEM")+" CANDIDATES"));
+  assert.match(html,new RegExp("MY "+(stage==="GEM_JR"?"GEM JR":"GEM")+" LIST"));
+  assert.match(html,/Run SCAN to populate this table/);
+ }
+ const jr=checkboxGroupsForStage("GEM_JR");
+ const original=new Set([...jr.clinical,...jr.trading].map(([key])=>key));
+ for(const id of ["phase3","registry","issuer","cash","marketfresh","marketcap"])assert.ok(original.has(id));
+ assert.equal(original.size,17);
+ assert.equal([...checkboxGroupsForStage("GEM").clinical,...checkboxGroupsForStage("GEM").trading].length,11);
  const src=fs.readFileSync(path.join(__dirname,"../app/GemQualificationChecklist.tsx"),"utf8");
- assert.match(src,/const fsChecked=showSuggestions/);
- assert.match(src,/setFiSelected\(stage==="GEM_JR"\?toggleGemJrFiCheckboxes\(fiSelected\)/);
- assert.match(src,/checked=\{fiSelected.includes\(key\)\}/);
- assert.match(src,/const checked=selected.includes\(key\)\|\|\(stage==="GEM_JR"&&fiSelected.includes\(key\)\)/);
+ for(const forbidden of ["fiSelected","fiActive","fiIndependent","toggleFi","gem-fi-filter-section"]){
+  assert.ok(!src.includes(forbidden),"redundant FI state or UI still exists: "+forbidden);
+ }
  assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).clinical\)/);
  assert.match(src,/renderOriginalCheckboxes\(checkboxGroupsForStage\(stage\).trading\)/);
+ assert.match(src,/onAddToStageList\(row\)/);
+ assert.match(src,/onRemoveFromStageList\(item.id\)/);
 });
