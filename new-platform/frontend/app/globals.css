@@ -2938,3 +2938,65 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
     min-height:44px;min-width:86px;
   }
 }
+
+
+/* TRADING multi-chart workspace. Scoped to avoid changing WT, GEM or PIPELINE. */
+.trading-page{margin:18px 0 40px;min-width:0}
+.trading-page>.sectionhead{align-items:center;flex-wrap:wrap}
+.trading-critical-banner{background:#fff2cc;border:2px solid #b89136;color:#4b3518;border-radius:9px;padding:13px 16px;line-height:1.5;font-size:13px;margin:14px 0 17px}
+.trading-chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,535px),1fr));gap:18px;align-items:start}
+.trading-chart-card{background:#fff;border:2px solid #193f2a;border-radius:12px;min-width:0;overflow:hidden;box-shadow:0 3px 0 rgba(20,53,28,.12)}
+.trading-chart-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#173f2c;color:white;padding:12px 14px}
+.trading-chart-header>div:first-child{display:flex;flex-direction:column;gap:4px}
+.trading-chart-header small{font-size:11px;color:#e1f2e4;overflow-wrap:anywhere}
+.trading-chart-actions,.trading-chart-footer{display:flex;flex-wrap:wrap;gap:9px}
+.trading-chart-actions button{font-size:12px;padding:8px 10px;border-color:#e0eae0}
+.trading-chart-actions button.secondary{background:#fff;color:#133a25}
+.trading-chart-options{padding:13px 14px;display:flex;gap:14px;align-items:end;flex-wrap:wrap}
+.trading-chart-options>label{display:flex;flex:1 1 265px;min-width:0;flex-direction:column;gap:5px;font-size:12px}
+.trading-chart-options select{width:100%;min-width:0;font-size:12px}
+.trading-active-title{display:flex;flex-direction:column;gap:3px;font-size:12px;color:#355941;min-width:120px;overflow-wrap:anywhere}
+.trading-active-title strong{font-size:19px}
+.trading-stage-tabs{display:flex;gap:8px;padding:0 14px 12px;flex-wrap:wrap}
+.trading-stage-tabs button{flex:1;padding:9px 12px;min-width:86px;background:white;color:#1b3b26;border:1px solid #9db5a2}
+.trading-stage-tabs .trading-stage-active{color:white;background:#225f42;border-color:#225f42}
+.trading-stage-tabs .trading-stage-active.exit{background:#9a332e;border-color:#9a332e}
+.trading-stage-tabs .trading-stage-active.stay{background:#315d9a;border-color:#315d9a}
+.trading-indicator-controls{margin:0 14px 12px;border:1px solid #bbcfbe;border-radius:7px;background:#f6faf5;padding:11px}
+.trading-indicator-controls>summary{cursor:pointer;font-weight:800;color:#235338;font-size:13px}
+.trading-indicator-list{display:grid;grid-template-columns:1fr;gap:6px;margin:10px 0}
+.trading-indicator-list label{display:flex;align-items:flex-start;gap:8px;padding:8px;background:white;border:1px solid #dbe5da;border-radius:6px;font-size:12px;min-width:0;cursor:pointer}
+.trading-indicator-list input{flex:none;min-width:16px;width:16px;height:16px;accent-color:#1c6941;margin:3px 0}
+.trading-indicator-list label span{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+.trading-indicator-list small{font-size:11px;font-weight:400;color:#53665b;line-height:1.4}
+.trading-indicator-list em{font-style:normal;font-weight:800;font-size:9px;color:#436949;border:1px solid #afc5ae;border-radius:4px;padding:3px 4px;white-space:nowrap}
+.trading-indicator-controls>button{font-size:11px;padding:8px}
+.trading-price-area{padding:0 12px;min-width:0}
+.trading-price-area .alpaca-stock-chart{max-width:100%;margin:0}
+.trading-empty-chart{margin:0 14px 12px;min-height:230px;border:2px dashed #b5caba;border-radius:9px;background:#f5faf5;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;padding:20px;color:#41654c}
+.trading-empty-chart span{font-size:12px;max-width:350px}
+.trading-risk-panel{margin:13px 14px 0;padding:13px;border:2px solid #d4a253;border-radius:8px;background:#fff9ed;color:#40331f;overflow-wrap:anywhere}
+.trading-risk-panel h3{margin:0 0 10px;color:#6a4113;font-size:13px}
+.trading-risk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.trading-risk-grid>div{background:white;border:1px solid #e5c899;border-radius:6px;padding:9px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.trading-risk-grid small{font-size:10px;color:#81582b;font-weight:800}
+.trading-risk-grid strong{font-size:12px;overflow-wrap:anywhere}
+.trading-risk-panel>small{display:block;font-size:10px;line-height:1.5;margin-top:10px;color:#665745}
+.trading-alerts{padding-left:19px;font-size:12px;line-height:1.5}
+.trading-chart-footer{padding:13px 14px 16px}
+.trading-chart-footer button{flex:1 1 160px;font-size:12px;padding:10px}
+.trading-bottom-add{margin:16px 0;text-align:center}
+.trading-bottom-add button{width:min(100%,440px)}
+.trading-page button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:750px){
+  .trading-chart-grid{grid-template-columns:minmax(0,1fr)}
+  .trading-chart-header{align-items:flex-start}
+  .trading-chart-actions{width:100%}
+  .trading-chart-actions button{flex:1 1 auto}
+}
+@media(max-width:430px){
+  .trading-risk-grid{grid-template-columns:1fr}
+  .trading-chart-options{padding:11px}
+  .trading-indicator-controls{margin:0 10px 10px}
+  .trading-chart-footer{padding:11px}
+}
