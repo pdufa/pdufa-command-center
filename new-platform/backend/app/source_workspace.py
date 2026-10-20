@@ -96,7 +96,7 @@ def phase_label(raw) -> str:
     }.get(val, "Unknown")
 
 
-OPTIONAL_SOURCES = frozenset({"watchlist_indicator_signals.csv"})
+OPTIONAL_SOURCES = frozenset({"watchlist_indicator_signals.csv", "candidate_assessment_reviews.json"})
 
 def fetch(name: str) -> str:
     if name not in SOURCES and name not in OPTIONAL_SOURCES:

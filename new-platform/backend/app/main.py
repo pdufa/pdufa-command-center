@@ -100,6 +100,18 @@ class FullTrialRecord(Base):
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class CandidateAssessmentHistory(Base):
+    """Append-only score/evidence changes for one immutable exact program."""
+    __tablename__ = "candidate_assessment_history"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    exact_id: Mapped[str] = mapped_column(String(512), nullable=False, index=True)
+    program_id: Mapped[str] = mapped_column(String(32), nullable=False, default="")
+    model_version: Mapped[str] = mapped_column(String(60), nullable=False)
+    evidence_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    summary: Mapped[dict] = mapped_column(JSON, nullable=False)
+    assessed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class FullTrialDownload(Base):
     __tablename__ = "full_trial_download"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -296,6 +308,11 @@ async def lifespan(app: FastAPI):
                 published["identityRegistry"]["registeredExactPrograms"],
                 sum(bool(r.get("programId")) for r in published["pipeline"]),
             )
+            try:
+                from .assessment_service import get_index
+                get_index()
+            except Exception as exc:
+                logging.getLogger(__name__).error("CANDIDATE_ASSESSMENTS_BOOTSTRAP error_type=%s", type(exc).__name__)
             health = published.get("sourceHealth") or {}
             member_rows = (published.get("members", {}).get("GEM_JR", {}).get("rows", [])
                            + published.get("members", {}).get("GEM", {}).get("rows", []))
@@ -377,7 +394,9 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 def health():
     # An HTTP 200 permits configuration inspection without claiming DB readiness.
     from .full_trial_archive import archive_status
+    from .assessment_service import public_status
     return {
+        "candidate_assessments": public_status(),
         "status": ("ok" if _DB_STATE["available"] else
                    "waiting_for_database" if _DB_STATE["reason"] == "POSTGRES_NOT_CONFIGURED"
                    else "database_unavailable"),
@@ -388,6 +407,20 @@ def health():
         "production_scans_enabled": False,
         "full_trial_download": archive_status(),
     }
+
+
+@app.get("/api/candidate-assessments", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def candidate_assessment_index():
+    from .assessment_service import get_index
+    return get_index()
+
+
+@app.get("/api/candidate-assessments/detail", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def candidate_assessment_detail(identity: str):
+    if len(identity) > 512 or not identity:
+        raise HTTPException(status_code=422, detail="An exact program identity is required")
+    from .assessment_service import exact_detail
+    return exact_detail(identity)
 
 
 @app.get("/api/pipeline-full-records", dependencies=[Depends(require_internal_key), Depends(require_storage)])
