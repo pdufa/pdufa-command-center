@@ -18,6 +18,24 @@ export type GemScanResult = {
   needsReview: Candidate[];
   fails: Candidate[];
 };
+
+// A program is "new" only on the FIRST qualified scan observed for this
+// stage/browser. Deduplicate by exact program ID, not ticker: one issuer can
+// have two legitimate distinct Phase 3 programs.
+export function newlyObservedProgramIds(
+  scan:GemScanResult,
+  previouslySeen:ReadonlySet<string>,
+  savedStage:ReadonlySet<string>
+):string[]{
+  if(scan.selected.length===0)return [];
+  const encountered=new Set<string>();
+  return [...scan.passes,...scan.needsReview].flatMap(row=>{
+    const id=String(row.id||"").trim();
+    if(!id||encountered.has(id))return [];
+    encountered.add(id);
+    return previouslySeen.has(id)||savedStage.has(id)?[]:[id];
+  });
+}
 function completedPhase3(row:Trial) {
   const facts=row.trialFilters;
   const evidencePhase3=facts?.registeredPhase==="Phase 3" ||
@@ -150,7 +168,7 @@ export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJ
  };
 }
 
-export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,stageSavedRows,manualStageList,onAddToStageList,onRemoveFromStageList,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;stageSavedRows:Trial[];manualStageList:Record<string,string>;onAddToStageList:(row:Trial)=>void;onRemoveFromStageList:(id:string)=>void;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
+export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,stageSavedRows,manualStageList,newThisScanIds,scanHistoryReady=true,onAddToStageList,onRemoveFromStageList,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;stageSavedRows:Trial[];manualStageList:Record<string,string>;newThisScanIds?:readonly string[];scanHistoryReady?:boolean;onAddToStageList:(row:Trial)=>void;onRemoveFromStageList:(id:string)=>void;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const storedDraft=stage==="GEM_JR"?gemJrDraft:gemDraft;
  const draft=storedDraft?.asOf===asOf&&storedDraft.sourceTotal===pipeline.length?storedDraft:null;
  // The remaining original checkboxes are the sole source of scan selections.
@@ -163,6 +181,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const [result,setResult]=useState<GemScanResult|null>(null);
  const [newListPage,setNewListPage]=useState(0);
  const [showManualList,setShowManualList]=useState(false);
+ const [showPreviouslySeen,setShowPreviouslySeen]=useState(false);
  const [optionalGoals,setOptionalGoals]=useState<Record<string,string>>(()=>draft?.optionalGoals||Object.fromEntries(OPTIONAL_ALL.map(a=>[a.key,a.goal])));
  const [twoTrialIds,setTwoTrialIds]=useState<[string,string]>(()=>draft?.twoTrialIds||["",""]);
  const twoTrialError=stage==="GEM_JR"&&selected.includes("two_trial")?twoTrialInputError(twoTrialIds):null;
@@ -275,7 +294,8 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    onReset();
  }
  async function scan(){
-   if(running)return;
+   if(running||!scanHistoryReady)return;
+   setShowPreviouslySeen(false);
    if(!sourceRows.length){
      setMessage(useGemJrSource?(gemJrScan?"The current GEM JR combined scan contains no eligible or review candidates. GEM was not scanned.":"No saved GEM JR programs are available in the current published source snapshot."):"No PIPELINE candidates are loaded.");
      return;
@@ -346,25 +366,40 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    }
  }
 
- // A new candidate is a matching exact program absent from the stage's
- // published membership. It is not a claim the drug was newly discovered.
+ // Only exact programs absent from the published stage are eligible to be
+ // manually added. The New tab uses the stage's first-seen scan baseline;
+ // previously scanned matches stay accessible without being counted as NEW.
  const stageSavedIds=useMemo(()=>new Set(stageSavedRows.map(row=>row.id)),[stageSavedRows]);
- const newScanRows=useMemo(()=>{
+ const matchingScanRows=useMemo(()=>{
    if(!completedScan || completedScan.selected.length===0)return [] as {row:Trial;review:boolean}[];
-   const seen=new Set<string>();
+   const encountered=new Set<string>();
    return [
      ...completedScan.passes.map(row=>({row,review:false})),
      ...completedScan.needsReview.map(row=>({row,review:true}))
    ].filter(item=>{
-     if(stageSavedIds.has(item.row.id)||seen.has(item.row.id))return false;
-     seen.add(item.row.id);
+     const id=item.row.id;
+     if(!id||stageSavedIds.has(id)||encountered.has(id))return false;
+     encountered.add(id);
      return true;
    });
  },[completedScan,stageSavedIds]);
+ // In isolated embeds/tests without a history manager, retain legacy first-run
+ // behavior. The live Workspace always supplies the current scan's new IDs.
+ const newScanRows=useMemo(()=>{
+   if(!newThisScanIds)return matchingScanRows;
+   const fresh=new Set(newThisScanIds);
+   return matchingScanRows.filter(item=>fresh.has(item.row.id));
+ },[matchingScanRows,newThisScanIds]);
+ const previouslySeenRows=useMemo(()=>{
+   if(!newThisScanIds)return [] as {row:Trial;review:boolean}[];
+   const fresh=new Set(newThisScanIds);
+   return matchingScanRows.filter(item=>!fresh.has(item.row.id));
+ },[matchingScanRows,newThisScanIds]);
+ const displayedScanRows=showPreviouslySeen?previouslySeenRows:newScanRows;
  const newPageSize=20;
- const newListPages=Math.max(1,Math.ceil(newScanRows.length/newPageSize));
+ const newListPages=Math.max(1,Math.ceil(displayedScanRows.length/newPageSize));
  const currentNewPage=Math.min(newListPage,newListPages-1);
- const newPageRows=newScanRows.slice(currentNewPage*newPageSize,(currentNewPage+1)*newPageSize);
+ const newPageRows=displayedScanRows.slice(currentNewPage*newPageSize,(currentNewPage+1)*newPageSize);
  const myListRows=useMemo(()=>{
    const index=new Map(pipeline.map(row=>[row.id,row]));
    return Object.entries(manualStageList)
@@ -472,7 +507,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
   </details>
  </div>
 
- <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length}
+ <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length||!scanHistoryReady}
   aria-label={(stage==="GEM"?"GEM":"GEM JR")+" "+(starting?"SCAN":running?"SCANNING":completedScan?"ENDED":"SCAN")}
   aria-live="polite"
   title={starting?"Restarting from trial #1":running?"Screening all selected candidates":completedScan?"Previous scan finished; click ENDED to restart from the first trial using current FS, FA and manual selections":"Scan candidates using all checked FS, FA and manual restrictions"}
@@ -483,10 +518,13 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  <section className="panel" aria-label={"New "+(stage==="GEM_JR"?"GEM JR":"GEM")+" candidates from SCAN"} style={{margin:"12px 0",padding:12,border:"1px solid #7fa08a",borderRadius:8,background:"#ffffff"}}>
    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
      <strong style={{fontSize:16}}>NEW {stage==="GEM_JR"?"GEM JR":"GEM"} CANDIDATES · {newScanRows.length.toLocaleString("en-US")}</strong>
-     <button type="button" className="secondary" onClick={()=>setShowManualList(current=>!current)} aria-expanded={showManualList}>MY {stage==="GEM_JR"?"GEM JR":"GEM"} LIST · {Object.keys(manualStageList).length}</button>
+     <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+       <button type="button" className="secondary" onClick={()=>{setShowPreviouslySeen(current=>!current);setNewListPage(0);}} aria-pressed={showPreviouslySeen} disabled={!completedScan||completedScan.selected.length===0}> {showPreviouslySeen?"SHOW NEW":"PREVIOUSLY SEEN"} · {previouslySeenRows.length}</button>
+       <button type="button" className="secondary" onClick={()=>setShowManualList(current=>!current)} aria-expanded={showManualList}>MY {stage==="GEM_JR"?"GEM JR":"GEM"} LIST · {Object.keys(manualStageList).length}</button>
+     </div>
    </div>
-   <p style={{fontSize:12,margin:"7px 0 10px"}}>New to the published {stage==="GEM_JR"?"GEM JR":"GEM"} stage list, not necessarily newly discovered. Use ADD TO LIST or REMOVE in each trial row to manage your manually saved {stage==="GEM_JR"?"GEM JR":"GEM"} candidates directly in this table. Your choices stay saved in this browser, without changing official stage counts or certifying eligibility.</p>
-   {!completedScan?<p style={{fontSize:13,marginBottom:6}}>Run SCAN to populate this table from the current FS, FA and manually selected restrictions.</p>:completedScan.selected.length===0?<p style={{fontSize:13,marginBottom:6}}>No restrictions applied. Choose FS, FA or individual checks, then rerun SCAN to identify new candidates.</p>:newScanRows.length===0?<p style={{fontSize:13,marginBottom:6}}>No additional stage candidates matched the latest scan.</p>:<>
+   <p style={{fontSize:12,margin:"7px 0 10px"}}>NEW means the exact trial/program was not present in this stage's saved list or prior scans in this browser. Repeat scans do not count it as new again. Select PREVIOUSLY SEEN to revisit earlier matches and add or remove them. Different drug/trial programs from one stock ticker are tracked separately. Manual additions stay saved in this browser, without changing official counts or certifying eligibility.</p>
+   {!scanHistoryReady?<p style={{fontSize:13,marginBottom:6}}>Loading saved scan history so existing trials are not counted as new again…</p>:!completedScan?<p style={{fontSize:13,marginBottom:6}}>Run SCAN to populate this table from the current FS, FA and manually selected restrictions.</p>:completedScan.selected.length===0?<p style={{fontSize:13,marginBottom:6}}>No restrictions applied. Choose FS, FA or individual checks, then rerun SCAN to identify new candidates.</p>:displayedScanRows.length===0?<p style={{fontSize:13,marginBottom:6}}>{showPreviouslySeen?"No previously scanned matching trials in the current run.":"No new trials this scan. Previously seen candidates remain available through PREVIOUSLY SEEN, and manually saved trials remain in MY LIST."}</p>:<>
      <div style={{overflowX:"auto",maxHeight:400,overflowY:"auto",border:"1px solid #d5e2d8",borderRadius:5}}>
        <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,whiteSpace:"nowrap"}}>
          <thead><tr style={{background:"#e8f1e9",textAlign:"left"}}><th style={{padding:8}}>TICKER</th><th style={{padding:8}}>COMPANY / DRUG</th><th style={{padding:8}}>TRIAL</th><th style={{padding:8}}>SCAN STATUS</th><th style={{padding:8}}>ACTION</th></tr></thead>
@@ -514,7 +552,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
        </table>
      </div>
      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flexWrap:"wrap",fontSize:12,marginTop:9}}>
-       <span>Showing {currentNewPage*newPageSize+1}–{Math.min((currentNewPage+1)*newPageSize,newScanRows.length)} of {newScanRows.length.toLocaleString("en-US")} · Scan #{completedScan.runNumber}</span>
+       <span>Showing {currentNewPage*newPageSize+1}–{Math.min((currentNewPage+1)*newPageSize,displayedScanRows.length)} of {displayedScanRows.length.toLocaleString("en-US")} {showPreviouslySeen?"previously seen":"new"} · Scan #{completedScan.runNumber}</span>
        <span style={{display:"flex",gap:8}}>
          <button type="button" className="secondary" disabled={currentNewPage===0} onClick={()=>setNewListPage(current=>Math.max(0,current-1))}>PREVIOUS</button>
          <button type="button" className="secondary" disabled={currentNewPage>=newListPages-1} onClick={()=>setNewListPage(current=>Math.min(newListPages-1,current+1))}>NEXT</button>
