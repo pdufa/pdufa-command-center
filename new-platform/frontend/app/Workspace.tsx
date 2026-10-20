@@ -603,7 +603,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
   const [earlyPageError, setEarlyPageError] = useState("");
   const earlyRequestSequence = useRef(0);
   const earlyController = useRef<AbortController | null>(null);
-  const initialPageRequest = useRef<Promise<void> | null>(null);
   async function loadEarlyPage(offset: number, query: string, version?: string) {
     const requestSequence = ++earlyRequestSequence.current;
     earlyController.current?.abort();
@@ -636,7 +635,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
     }
   }
   useEffect(() => {
-    initialPageRequest.current = loadEarlyPage(0, "");
+    void loadEarlyPage(0, "");
     return () => { earlyRequestSequence.current++; earlyController.current?.abort(); };
   }, []);
 
