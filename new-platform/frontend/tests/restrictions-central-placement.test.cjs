@@ -101,6 +101,7 @@ test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/F
     if(p.pathname==="/api/workspace/summary")return Response.json({pipeline:1,gemJr:0,gem:0});
     if(p.pathname==="/api/program-watch-trade")return Response.json({watch:[],trade:[],version:0});
     if(p.pathname==="/api/full-trials")return Response.json({status:"PENDING",target:1,downloaded:0,complete:false});
+    if(p.pathname==="/api/full-trials/rows")return Response.json({records:{}});
     if(p.pathname==="/api/restriction-evidence")return Response.json({
       fetchedAt:new Date().toISOString(),issuers:{},trialTypes:{},sources:[],issues:[]
     });
