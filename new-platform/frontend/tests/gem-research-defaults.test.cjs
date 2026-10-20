@@ -23,7 +23,8 @@ const asOf="2026-10-18";
 function html(stage,props={}){
  return renderToStaticMarkup(React.createElement(Checklist.default,{
   stage,pipeline:dataset,asOf,stageTotal:saved.length,
-  gemJrSavedRows:saved,gemJrScan:null,...props,
+  gemJrSavedRows:saved,gemJrScan:null,completedScan:null,stageSavedRows:saved,manualStageList:{},
+  onAddToStageList:()=>{},onRemoveFromStageList:()=>{},...props,
   onScan:()=>{},onReset:()=>{}
  }));
 }
