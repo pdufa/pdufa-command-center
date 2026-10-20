@@ -161,13 +161,13 @@ def inspect_artifact(scan, artifact, token, *, extracted_dir=None):
                         break
                     ticker, nct = detail.get("ticker"), detail.get("nct_id")
                     url = detail.get("source_url")
-                    if (not isinstance(ticker, str) or not re.fullmatch(r"[A-Z][A-Z0-9.\\-]{0,12}", ticker)
-                            or not isinstance(nct, str) or not re.fullmatch(r"NCT\\d{8}", nct)
+                    if (not isinstance(ticker, str) or not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,12}", ticker)
+                            or not isinstance(nct, str) or not re.fullmatch(r"NCT\d{8}", nct)
                             or url != "https://clinicaltrials.gov/study/" + nct
                             or not isinstance(detail.get("drug"), str)
                             or len(detail.get("drug")) > 600
                             or not isinstance(detail.get("results_posted_at"), str)
-                            or not re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", detail["results_posted_at"])
+                            or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", detail["results_posted_at"])
                             or (ticker, nct) in seen_ids):
                         issues.append("Unverified or duplicate new Phase 3 identity")
                         break
