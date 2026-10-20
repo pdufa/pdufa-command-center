@@ -1510,7 +1510,7 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
                 <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
                 <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
               </label>)}</div>
-              <button type="button" className="secondary pipeline-group-select-toggle" aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
+              <button type="button" className="secondary pipeline-group-select-toggle" aria-pressed={group.items.every(item => group.selected.includes(item.label))} aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
                 onClick={() => group.setter(group.items.every(item => group.selected.includes(item.label)) ? [] : group.items.map(item => item.label))}>
                 {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
               </button>
