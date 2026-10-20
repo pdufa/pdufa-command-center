@@ -59,6 +59,11 @@ def summarize(scan, source, returncode, fresh, mode="DELTA"):
         state["companies_due"] = state["registry_companies"]
     if "studies_checked" not in state and "studies_scanned" in state:
         state["studies_checked"] = state["studies_scanned"]
+    # Scan 4 alone can publish exact newly seen registered-results identities.
+    # Keep this inside the archived per-run artifact; a subsequent GEM
+    # research recheck must not overwrite the evidence of what was new.
+    if scan == "4" and ok and isinstance(source.get("new_record_details"), list):
+        state["new_record_details"] = source["new_record_details"][:100]
     errors = source.get("errors", []) if fresh else []
     state["errors_count"] = len(errors) if isinstance(errors, list) else 1
     return state

@@ -7,6 +7,7 @@ import argparse
 import io
 import json
 import os
+import re
 import subprocess
 import tempfile
 import urllib.request
@@ -142,6 +143,37 @@ def inspect_artifact(scan, artifact, token, *, extracted_dir=None):
                 issues.append("Invalid count: " + field)
         if report.get("status") not in ("PARTIAL", "FAILED"):
             issues.append("Unexpected coverage status in clinical-only report")
+        new_result_details = []
+        if scan == "4" and "new_record_details" in report:
+            details = report.get("new_record_details")
+            source_details = state.get("new_record_details")
+            new_count = report.get("new_records")
+            if (not isinstance(details, list) or not isinstance(source_details, list)
+                    or details != source_details
+                    or not nonnegative_count(new_count)
+                    or len(details) > min(new_count, 100)):
+                issues.append("New Phase 3 result identities do not match the scan source artifact")
+            else:
+                seen_ids = set()
+                for detail in details:
+                    if not isinstance(detail, dict):
+                        issues.append("Malformed newly posted Phase 3 study detail")
+                        break
+                    ticker, nct = detail.get("ticker"), detail.get("nct_id")
+                    url = detail.get("source_url")
+                    if (not isinstance(ticker, str) or not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,12}", ticker)
+                            or not isinstance(nct, str) or not re.fullmatch(r"NCT\d{8}", nct)
+                            or url != "https://clinicaltrials.gov/study/" + nct
+                            or not isinstance(detail.get("drug"), str)
+                            or len(detail.get("drug")) > 600
+                            or not isinstance(detail.get("results_posted_at"), str)
+                            or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", detail["results_posted_at"])
+                            or (ticker, nct) in seen_ids):
+                        issues.append("Unverified or duplicate new Phase 3 identity")
+                        break
+                    seen_ids.add((ticker, nct))
+                if not issues:
+                    new_result_details = details
         row.update({
             "status": ("PARTIAL" if report.get("status") == "PARTIAL" and not issues
                        else "FAILED"),
@@ -151,6 +183,7 @@ def inspect_artifact(scan, artifact, token, *, extracted_dir=None):
             "errors_count": report.get("errors_count"),
             "collector_status": report.get("collector_status"),
             "collected_at_utc": report.get("created_at_utc"),
+            "new_record_details": new_result_details if not issues else [],
             "issues": issues,
             "metrics": {k: report[k] for k in (
                 "companies_checked", "companies_due", "studies_checked",

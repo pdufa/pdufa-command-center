@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import VerificationLedgerPanel from "./VerificationLedgerPanel";
 import LiveScansProgress from "./LiveScansProgress";
+import ScanNewResultsPanel from "./ScanNewResultsPanel";
+import type { NewFromScanSummary } from "../lib/scan-new-results";
 
 type SourceRow = {
   source?: string; status?: string; findings_due?: number; findings_verified?: number;
@@ -11,6 +13,7 @@ type SourceRow = {
 };
 type Report = {
   status?: string;
+  newFromScan?: NewFromScanSummary;
   clinical?: { latest_run_id?: number; updated_at_utc?: string; scans?: Array<{
     scan?: string; label?: string; collector_status?: string; metrics?: Record<string, number>;
   }> } | null;
@@ -170,12 +173,13 @@ export default function PublishedScansPanel() {
     <h2>SCANS — Published source scores and outstanding evidence</h2>
     <p className="subtle">This dashboard reads the original published GitHub scan reports independently of the database. With server-side GitHub authorization, it can directly dispatch the existing scanners; otherwise it opens GitHub's own manual run form. It does not operate a duplicate schedule, generate substitute program IDs, or send orders.</p>
     <p><a href={SCAN_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN EXISTING GITHUB SCAN RUN CONTROLS ↗</a></p>
-    <LiveScansProgress />
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
+    <ScanNewResultsPanel summary={record?.newFromScan} loading={!record && !error} />
+    <LiveScansProgress />
     <div className="scans-actions-grid">
     <div className="source-health">
       <strong>Run existing scanners from this dashboard</strong>
-      <p className="subtle">Manual commands use the original GitHub Actions workflows; the only automated schedule remains the original 10 PM Pacific chain. An accepted request is not a completed scan.</p>
+      <p className="subtle">Manual commands use the original GitHub Actions workflows; the automatic nightly scan is scheduled for 9 PM Pacific. An accepted request is not a completed scan.</p>
       <div style={{display:"flex", flexWrap:"wrap", alignItems:"end", gap:"0.6rem"}}>
         <label>Action
           <select value={action} onChange={e => setAction(e.target.value as ScanAction)}>
@@ -201,7 +205,7 @@ export default function PublishedScansPanel() {
         <button type="button" className="secondary" disabled={refreshingRuns} onClick={() => setScanRefresh(x => x + 1)}>{refreshingRuns ? "CHECKING GITHUB…" : "REFRESH RUN STATUS"}</button>
       </div>
       <p className="subtle" role="status" aria-live="polite">{runFeedback}</p>
-      {!runs?.dispatchEnabled && <p className="subtle">Direct dispatch from Vercel is not yet authorized. The primary button opens GitHub's authenticated Run workflow form; select branch <strong>main</strong>, action <strong>{action}</strong>, and scan <strong>{target}</strong>, then confirm Run workflow. To enable true one-click launch here, privately add server-only <code>PDUFA_GITHUB_TOKEN</code> in the Vercel Production environment and redeploy. Streamlit and the 10 PM Pacific nightly schedule remain unchanged.</p>}
+      {!runs?.dispatchEnabled && <p className="subtle">Direct dispatch from Vercel is not yet authorized. The primary button opens GitHub's authenticated Run workflow form; select branch <strong>main</strong>, action <strong>{action}</strong>, and scan <strong>{target}</strong>, then confirm Run workflow. To enable true one-click launch here, privately add server-only <code>PDUFA_GITHUB_TOKEN</code> in the Vercel Production environment and redeploy. The existing GitHub 9 PM Pacific scheduler remains independent of manual controls.</p>}
       {runError && <p className="risk-line">{runError}</p>}
       {scanMessage && <p role="status">{scanMessage}</p>}
       {runs?.manual?.[0] && <p className="subtle">Last manual control: <a href={runs.manual[0].html_url} target="_blank" rel="noopener noreferrer">run #{runs.manual[0].id}</a> — {runs.manual[0].status} / {runs.manual[0].conclusion || "not concluded"}.</p>}
