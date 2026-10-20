@@ -6,7 +6,7 @@ import { RESTRICTIONS, restrictionVerdict, type ImpactRecord,
 export type RestrictionStage = "" | "PIPELINE" | "GEM_JR" | "GEM";
 export const RESTRICTION_STAGES: Exclude<RestrictionStage, "">[] = ["PIPELINE", "GEM_JR", "GEM"];
 export type CustomField = "note" | "marketCapMillions" | "runwayMonths" | "pdufaDays" | "rvol" | "rsi14" | "avgDollarVolume20" | "close";
-export type CatalogEntry = { id: string; enabled: boolean; stage: RestrictionStage; value: string; maximum: string;
+export type CatalogEntry = { id: string; enabled: boolean; priority?: string; stage: RestrictionStage; value: string; maximum: string;
   title?: string; field?: CustomField; operator?: ">=" | "<=" };
 export type CatalogDefinition = { id: string; title: string; help: string; category: string; value?: string;
   maximum?: string; unit?: string; warning?: boolean; numeric?: boolean };
@@ -38,7 +38,7 @@ export const RESTRICTION_CATALOG: CatalogDefinition[] = [
 ];
 export function defaultCatalogEntries(): CatalogEntry[] {
   return RESTRICTION_CATALOG.map(rule => ({ id: rule.id, enabled: rule.category === "Approved Pipeline rule",
-    stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", value: rule.value || "", maximum: rule.maximum || "" }));
+    stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", priority: "", value: rule.value || "", maximum: rule.maximum || "" }));
 }
 export function catalogDefinition(entry: CatalogEntry): CatalogDefinition {
   return RESTRICTION_CATALOG.find(rule => rule.id === entry.id) || { id: entry.id,
@@ -106,9 +106,9 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
   };
   for (const stage of RESTRICTION_STAGES) {
     const beforeStage = summary().remaining;
-    for (const entry of entries.filter(item => item.stage === stage)) {
+    for (const entry of entries.filter(item => item.stage === stage).sort((a,b) => Number(a.priority || 0) - Number(b.priority || 0))) {
       const a = alone(entry), before = summary().remaining, newlyExcludedIds = new Set<string>();
-      const used = entry.enabled && !catalogDefinition(entry).warning;
+      const used = entry.enabled && !!entry.priority && Number(entry.priority) > 0 && !catalogDefinition(entry).warning;
       if (used) for (let i = 0; i < rows.length; i++) {
         const id = rows[i].id, prior = states.get(id)!;
         if (prior === "FAIL") continue;
@@ -119,7 +119,7 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
         step: used ? ++stepNumber : null, before, newlyExcluded: newlyExcludedIds.size, ...summary(), newlyExcludedIds });
     }
     const s = summary(); stages.push({ stage, before: beforeStage, ...s, excluded: beforeStage - s.remaining });
-    if (stage === "GEM_JR" && entries.some(e => e.stage === stage && e.enabled && !catalogDefinition(e).warning)) junior = new Map(states);
+    if (stage === "GEM_JR" && entries.some(e => e.stage === stage && e.enabled && !!e.priority && !catalogDefinition(e).warning)) junior = new Map(states);
   }
   for (const entry of entries.filter(item => item.stage === "")) {
     const a = alone(entry); steps.set(entry.id, { id: entry.id, stage: "", alonePass: a.alonePass, aloneFail: a.aloneFail, aloneUnknown: a.aloneUnknown,
@@ -137,7 +137,7 @@ export function restoreCatalogEntries(raw: unknown): CatalogEntry[] {
     const e = entry as CatalogEntry;
     if (typeof e.id !== "string" || !stages.has(e.stage) || typeof e.enabled !== "boolean" || typeof e.value !== "string" || typeof e.maximum !== "string") return null;
     if (e.id.startsWith("custom_") && (typeof e.title !== "string" || !e.title.trim() || !fields.has(e.field || ""))) return null;
-    return { id: e.id.slice(0, 100), enabled: e.enabled, stage: e.stage, value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
+    return { id: e.id.slice(0, 100), enabled: e.enabled && !!e.priority, priority: typeof e.priority === "string" && /^[1-9]\d{0,3}$/.test(e.priority) ? e.priority : "", stage: e.stage, value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
       ...(e.id.startsWith("custom_") ? { title: e.title!.slice(0, 400), field: e.field, operator: e.operator === "<=" ? "<=" : ">=" } : {}) };
   };
   const saved = new Map(raw.slice(0, 140).map(clean).filter((entry): entry is CatalogEntry => !!entry).map(entry => [entry.id, entry]));
