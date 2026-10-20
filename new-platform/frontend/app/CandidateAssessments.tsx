@@ -44,11 +44,11 @@ export function ScoreProgressButton({ label, stage, onScore, rowId }: { label: s
   const record = rowId ? records.get(rowId) : undefined;
   const totals = data?.totals[stage];
   const score = record ? scoreFor(record, stage) : null;
-  const start = () => { setOpen(true); setRequested(true); refresh(); onScore?.(); };
+  const start = () => { setOpen(true); setRequested(true); refresh(); if (!rowId) onScore?.(); };
   return <span style={{ display: "inline-flex", position: "relative", alignItems: "center", gap: 6 }}>
     <button type="button" className="secondary" onClick={start}>{label}</button>
     <button type="button" className="secondary" onClick={() => setOpen(value => !value)} aria-label={"Show scoring status for " + label} aria-expanded={open} title="Scoring status">ⓘ</button>
-    {open && <span role="dialog" aria-label={label + " progress"} style={{ position: "fixed", top: "max(72px, 12vh)", left: "50%", transform: "translateX(-50%)", zIndex: 99999, width: "min(360px, 92vw)", maxWidth: "92vw", padding: 14, border: "1px solid #777", borderRadius: 10, background: "var(--background, white)", color: "var(--foreground, #111)", boxShadow: "0 6px 22px #0003", whiteSpace: "normal" }}>
+    {open && <span role="dialog" aria-label={label + " progress"} style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 99999, width: "min(360px, 92vw)", maxWidth: "92vw", padding: 14, border: "1px solid #777", borderRadius: 10, background: "var(--background, white)", color: "var(--foreground, #111)", boxShadow: "0 6px 22px #0003", whiteSpace: "normal" }}>
       <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
         <strong>{rowId ? "Trial scoring status" : stageLabel(stage) + " list scoring status"}</strong>
         <button type="button" className="secondary" onClick={() => setOpen(false)} aria-label="Close scoring status">× Close</button>
