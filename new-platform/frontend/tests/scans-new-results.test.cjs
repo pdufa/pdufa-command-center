@@ -15,6 +15,7 @@ const clinical = {
   updated_at_utc:"2026-10-20T04:37:21Z",
   scans:[
     {scan:"2",changed_trials_this_execution:62},
+    {scan:"3",collected_at_utc:"2026-10-20T04:32:53.368525Z"},
     {scan:"4",new_records:1}
   ]
 };
@@ -59,6 +60,14 @@ test("stale pipeline report cannot be presented as a new result from the current
   assert.equal(result.pipelineNewPrograms,null);
   assert.ok(!result.rows.some(x=>x.ticker==="PTGX"));
   assert.equal(result.pipelineChangedTrials,62);
+});
+
+test("new pipeline programs require matching stage 3 artifact completion timestamp",() => {
+  const wrong = structuredClone(clinical);
+  wrong.scans[1].collected_at_utc="2026-10-20T03:02:53Z";
+  const result=newFromScanSummary(wrong,gem,pipeline,ledger);
+  assert.equal(result.pipelineNewPrograms,null);
+  assert.ok(!result.rows.some(x=>x.ticker==="PTGX"));
 });
 
 test("unmatched GEM report and membership dates never imply zero new admissions",() => {
