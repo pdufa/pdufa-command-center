@@ -149,3 +149,45 @@ test("Both stage new-trial tables add and remove exact candidates directly in th
   }finally{if(root)await act(async()=>root.unmount());}
  }
 });
+
+test("Repeat scans show zero NEW programs and retain the old match under PREVIOUSLY SEEN",async()=>{
+ for(const stage of ["GEM_JR","GEM"]){
+  const candidate={id:"APPLICATION|EXACT-1",ticker:"SAME",drug:"Single verified program"};
+  const scan={runNumber:1,asOf,evaluatedAt:asOf+"T12:00:00Z",sourceTotal:1,baseline:1,
+   sourceKind:"PIPELINE",selected:["registry"],audits:[],passes:[candidate,candidate],needsReview:[],fails:[]};
+  let root,setFresh,saved={};
+  function Wrapper(){
+   const [fresh,setFreshIds]=React.useState([candidate.id]);
+   const [list,setList]=React.useState({});
+   setFresh=setFreshIds;saved=list;
+   return React.createElement(Checklist,{
+    stage,pipeline:[candidate],asOf,stageTotal:0,completedScan:scan,
+    stageSavedRows:[],newThisScanIds:fresh,manualStageList:list,
+    gemJrScan:null,gemJrSavedRows:[],
+    onAddToStageList:row=>setList(current=>current[row.id]?current:
+      {...current,[row.id]:"2026-10-20T10:00:00Z"}),
+    onRemoveFromStageList:id=>setList(current=>{const next={...current};delete next[id];return next;}),
+    onScan(){},onReset(){}
+   });
+  }
+  const buttons=()=>root.root.findAllByType("button");
+  const button=(label)=>buttons().find(b=>b.children.includes(label));
+  const panelText=()=>root.root.findAllByType("strong").flatMap(b=>b.children.filter(x=>typeof x==="string")).join(" ");
+  try{
+   await act(async()=>{root=create(React.createElement(Wrapper));});
+   assert.match(panelText(),/NEW (GEM JR|GEM) CANDIDATES/);
+   assert.ok(button("ADD TO LIST"),"first scan can manually add program");
+   // Simulate completed second scan with an unchanged source and filter.
+   await act(async()=>{setFresh([]);});
+   assert.match(panelText(),/NEW (GEM JR|GEM) CANDIDATES/);
+   assert.equal(button("ADD TO LIST"),undefined,"repeat scan should not show existing program as NEW");
+   assert.ok(button("PREVIOUSLY SEEN"),"old matches remain accessible");
+   await act(async()=>{button("PREVIOUSLY SEEN").props.onClick();});
+   assert.ok(button("ADD TO LIST"),"prior program remains manually actionable");
+   await act(async()=>{button("ADD TO LIST").props.onClick();});
+   assert.equal(Object.keys(saved).length,1);
+   await act(async()=>{button("REMOVE").props.onClick();});
+   assert.equal(Object.keys(saved).length,0);
+  }finally{if(root)await act(async()=>root.unmount());}
+ }
+});
