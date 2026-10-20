@@ -1287,15 +1287,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       const key=stage+"|"+chosen.id+"|"+section;
       setGemTrialSections(current=>({...current,[key]: !(section==="chart" ? current[key] !== false : current[key] === true)}));
     };
-    return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
-      <div className="gem-heading">
-        <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
-          <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
-        <span className="gem-count">{pageTotals[stage].toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
-      </div>
-      <AssessmentStatus stage={stage} />
-      <AssessmentSort value={assessmentOrder[stage]} onChange={value=>setAssessmentOrder(current=>({...current,[stage]:value}))} />
-      <GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} completedScan={activeScan}
+    const qualificationChecklist = (<GemQualificationChecklist key={stage} stage={stage} pipeline={pipeline} asOf={snapshot?.asOf||""} stageTotal={group?.rows?.length || 0} completedScan={activeScan}
         stageSavedRows={group?.rows||[]} manualStageList={manualStageLists[stage]}
         newThisScanIds={latestNewStageIds[stage]} scanHistoryReady={seenStageHistoryLoaded && manualStageListsLoaded}
         onAddToStageList={row=>{
@@ -1350,7 +1342,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           setGemQuery("");
           setGemTrialExpanded(current=>({...current,[stage]:false}));
           setGemTrialSections(current=>Object.fromEntries(Object.entries(current).filter(([key])=>!key.startsWith(stage+"|"))));
-        }} />
+        }} />);
+    if (top==="RESTRICTIONS") return <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>{stage==="GEM"?"GEM":"GEM JR"} RESTRICTIONS — FS / FA</summary>{qualificationChecklist}</details>;
+    return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
+      <div className="gem-heading">
+        <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
+          <p>{stage==="GEM"?"Successful Phase 3 qualifies for review; second financing optional, dilution safeguards retained":"Early evidence watchlist; not GEM-qualified by ticker alone"}</p></div>
+        <span className="gem-count">{pageTotals[stage].toLocaleString("en-US")} {savedOnly?"SAVED stage members":activeScan?"SCAN results":stagePreview?"LIVE checkbox screen candidates":"unrestricted research candidates"} · {(group?.rows.length||0).toLocaleString("en-US")} saved stage members · {stated(activeScan?.asOf||group?.asOf, "snapshot undated")}</span>
+      </div>
+      <AssessmentStatus stage={stage} />
+      <AssessmentSort value={assessmentOrder[stage]} onChange={value=>setAssessmentOrder(current=>({...current,[stage]:value}))} />
+
       {activeScan && <div className="panel" role="status" aria-live="polite" style={{marginBottom:12,padding:14,border:"1px solid #76947d",borderRadius:7,background:"#f3fcf5"}}>
         <strong>{activeScan.sourceKind==="GEM_JR"?"GEM JR SCAN INPUT":activeScan.sourceKind==="GEM_JR_LIVE"?"GEM JR LIVE CHECKBOX INPUT":activeScan.sourceKind==="GEM_JR_UNSCREENED"?"GEM JR RESEARCH UNIVERSE INPUT":"PIPELINE"} SCREEN RESULTS — {stage==="GEM"?"GEM":"GEM JR"} · RUN #{activeScan.runNumber}</strong>
         <p><strong>{(activeScan.passes.length+activeScan.needsReview.length).toLocaleString("en-US")} TOTAL COMBINED CANDIDATES</strong> · intersection of all checked requirements (AND), no duplicate counting. Of {activeScan.baseline.toLocaleString("en-US")} {activeScan.sourceKind==="GEM_JR"?"GEM JR scan candidates":activeScan.sourceKind==="GEM_JR_LIVE"?"GEM JR checkbox screen candidates":activeScan.sourceKind==="GEM_JR_UNSCREENED"?"unscreened GEM JR research universe":"PIPELINE records"} assessed: {activeScan.passes.length.toLocaleString("en-US")} verified matches · {activeScan.needsReview.length.toLocaleString("en-US")} need evidence verification · {activeScan.fails.length.toLocaleString("en-US")} excluded.</p>
@@ -1671,8 +1673,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Choose stage, date and trial filters above, then press DISPLAY TRIALS to show the matching trials and programs.</p></section>}
       </div>
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"}
-      onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />}
+    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}</>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
