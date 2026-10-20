@@ -132,11 +132,16 @@ test("unknown counts are not silently presented as zero; program IDs must be rea
   const result=newFromScanSummary({...clinical,scans:[]},null,{
     ...pipeline,new_master_programs:[{ticker:"PTGX",nct_id:"not-an-nct"}]
   },null);
-  assert.equal(result.pipelineNewPrograms,0);
+  assert.equal(result.pipelineNewPrograms,null,"a missing scan stage is not a verified zero");
   assert.equal(result.gemJrNewResultRecords,null);
   assert.equal(result.gemNewMembersOnDate,null);
   assert.equal(result.pipelineChangedTrials,null);
   assert.equal(result.rows.length,0);
+  const invalid=newFromScanSummary(clinical,gem,{
+    ...pipeline,new_master_programs:[{ticker:"PTGX",nct_id:"not-an-nct"}]
+  },ledger);
+  assert.equal(invalid.pipelineNewPrograms,0,"a verified empty list is zero");
+  assert.equal(invalid.rows.some(x=>x.ticker==="PTGX"),false);
 });
 
 test("Pacific date distinguishes late UTC evening and observes DST",() => {
