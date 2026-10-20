@@ -397,7 +397,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
    </div>
  </div>}
 
- <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. FI is a separate, optional set of scan restrictions with its own ON/OFF toggle and individual checkboxes. FI is not automatically applied by FS or FA. GEM JR retains the FS and FA qualification criteria; GEM shows downstream requirements plus the optional Gem Jr Trials source. FS selects suggested criteria. In GEM, FA toggles only Gem Jr Trials; in GEM JR, FA toggles Phase 3 trial status and Market cap $300M–$10B. Press either button again to deselect its options. DESELECT ALL clears everything.</p>
+ <p style={{fontSize:13,margin:"0 0 9px",fontWeight:650}}>All checkboxes start unchecked. FI is a separate, optional set of scan restrictions with its own toggle and individual checkboxes. FI is not automatically applied by FS or FA. GEM JR retains the FS and FA qualification criteria; GEM shows downstream requirements plus the optional Gem Jr Trials source. FS selects suggested criteria. In GEM, FA toggles only Gem Jr Trials; in GEM JR, FA toggles Phase 3 trial status and Market cap $300M–$10B. Press either button again to deselect its options. DESELECT ALL clears everything.</p>
  <div className="gem-original-checklist-sections" data-stage={stage}>
   <section className="gem-original-clinical">
    <h3>CLINICAL / REGULATORY</h3>
@@ -424,17 +424,17 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  <div style={{display:"flex",gap:12,flexWrap:"wrap"}}><button type="button" onClick={()=>void scan()} disabled={running||!sourceRows.length} style={{background:"#135a32",color:"white",padding:"10px 20px",borderRadius:6,fontWeight:700}}>{running?"SCANNING…":"SCAN "+(stage==="GEM"?"GEM":"GEM JR")}</button><div aria-label="Unrestricted Phase 3 baseline" title="Historical approximate count; not verified live" style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",border:"2px solid #1d6d4b",borderRadius:6,background:"#effaf3"}}><strong style={{fontSize:24}}>~730</strong><span style={{fontSize:12}}>Phase 3 completed<br/>Before restrictions</span></div><button type="button" onClick={()=>{setShowSuggestions(false);setFaActive(false);setFiActive(false);setFiSelected([]);selectRequirements([]);}} disabled={running}>DESELECT ALL</button><button type="button" onClick={toggleFs} disabled={running} aria-pressed={showSuggestions} aria-label="FS: toggle suggested criteria checkboxes" title="FS — check recommended criteria; click again to uncheck them" style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:showSuggestions?"#ffffff":"#176b39",color:showSuggestions?"#176b39":"#ffffff",fontWeight:700}}>FS</button><button type="button" onClick={toggleFa} disabled={running} aria-pressed={stage==="GEM"?useGemJrSource:faActive} aria-label={stage==="GEM"?"FA: toggle Gem Jr Trials input":"FA: toggle Phase 3 trial status recorded and market cap qualification checkboxes"} title={stage==="GEM"?"FA — include or exclude Gem Jr Trials; click again to uncheck":"FA — check Phase 3 trial status recorded and Market cap $300M–$10B; click again to uncheck"} style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:(stage==="GEM"?useGemJrSource:faActive)?"#ffffff":"#176b39",color:(stage==="GEM"?useGemJrSource:faActive)?"#176b39":"#ffffff",fontWeight:700}}>FA</button><button type="button" onClick={toggleFi} disabled={running} aria-pressed={fiActive}
    aria-label={"FI: "+(fiActive?"disable":"enable")+" separate "+(stage==="GEM_JR"?"GEM JR":"GEM")+" scan restrictions"}
    title="FI — separately include your individually checked restrictions in the scan; click again to exclude them"
-   style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:fiActive?"#ffffff":"#176b39",color:fiActive?"#176b39":"#ffffff",fontWeight:700}}>FI {fiActive?"ON":"OFF"}</button></div>
+   style={{padding:"10px 14px",border:"1px solid #176b39",borderRadius:6,background:fiActive?"#ffffff":"#176b39",color:fiActive?"#176b39":"#ffffff",fontWeight:700}}>FI</button></div>
 
  <section className="gem-fi-filter-section" aria-label={(stage==="GEM_JR"?"GEM JR":"GEM")+" FI independent scan restrictions"}
    style={{margin:"12px 0 0",padding:12,border:"1px solid #91b5a0",borderRadius:8,background:fiActive?"#e9f6ec":"#f5f8f5"}}>
    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
      <strong>FI — INDEPENDENT SCAN RESTRICTIONS</strong>
      <span role="status" style={{fontSize:12,fontWeight:800,color:fiActive?"#176b39":"#5a625c"}}>
-       {fiActive?"ON — "+fiSelected.length+" of "+suggestedByStage[stage].length+" checked":"OFF — checked FI rules excluded"}
+       {fiActive?"Applied to SCAN · "+fiSelected.length+" of "+suggestedByStage[stage].length+" selected":"Not applied to SCAN · "+fiSelected.length+" selected"}
      </span>
    </div>
-   <p style={{fontSize:12,margin:"7px 0 9px"}}>Click any checkbox to include or remove that FI rule. FI must be ON for its checked rules to affect SCAN.
+   <p style={{fontSize:12,margin:"7px 0 9px"}}>Click any checkbox to include or remove that FI rule. Use the FI button to include or exclude those rules from SCAN.
      Your FS/FA checkboxes are separate. Overlapping rules are evaluated once.</p>
    <div className="gem-original-criteria-grid">
      {visibleCriteriaByStage(stage).filter(([key])=>suggestedByStage[stage].includes(key)).map(([key,label])=>
