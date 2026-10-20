@@ -105,12 +105,19 @@ export function newFromScanSummary(
     if (id && !stages.has(id)) stages.set(id, scan!);
   }
   const pipelineReport = stages.get("2");
+  const enrichmentReport = stages.get("3");
   const jrReport = stages.get("4");
   const pipelineNewPrograms: NewFromScanRow[] = [];
   const warnings: string[] = [];
+  const sourceFinished = dateMs(pipeline?.finished_at);
+  const reportFinished = dateMs(enrichmentReport?.collected_at_utc);
+  const finishedTogether = sourceFinished !== null && reportFinished !== null &&
+    Math.abs(sourceFinished - reportFinished) <= 2 * 60 * 1000;
+  // Match the stage 3 artifact timestamp to its exact published source
+  // snapshot. A later scan's pipeline_state must never leak into old results.
   const samePipelineRun = Boolean(
     pipeline && sameCollection(startedAt, pipeline.started_at) &&
-    sameCollection(startedAt, pipeline.finished_at) &&
+    sameCollection(startedAt, pipeline.finished_at) && finishedTogether &&
     pipeline.status === "COMPLETE");
   const newMasterPrograms = samePipelineRun && Array.isArray(pipeline?.new_master_programs)
     ? pipeline.new_master_programs : null;
