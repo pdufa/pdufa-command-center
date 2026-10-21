@@ -73,6 +73,31 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const capStats=useMemo(()=>{let within=0,outside=0,unknown=0;for(const row of rows.filter(isRegisteredTrial)){const issuer=evidence?.issuers[row.ticker.toUpperCase()];const cap=issuer?.marketCap;if(typeof cap!=="number"||!Number.isFinite(cap)||cap<=0)unknown++;else if(cap>=300000000&&cap<=10000000000)within++;else outside++;}return {within,outside,unknown,total:within+outside+unknown};},[rows,evidence]);
   const scoped = useMemo(() => scope === "trials" ? rows.filter(isRegisteredTrial) : rows, [rows, scope]);
   const report = useMemo(() => calculateCatalogImpact(scoped, entries, settings, evidence, asOf), [scoped, entries, settings, evidence, asOf]);
+  const sequentialImpact = useMemo(() => {
+    const universe = [...new Map(scoped.map(row => [row.id, row])).values()];
+    const selected = RESTRICTION_STAGES.flatMap(stage => selectedRestrictionList(entries, stage)
+      .filter(entry => entry.enabled && !catalogDefinition(entry).warning).map(entry => ({ entry, stage })));
+    const caps = selected.filter(item => restrictionPurposeGroup(item.entry) === "MARKET_CAP");
+    const rest = selected.filter(item => restrictionPurposeGroup(item.entry) !== "MARKET_CAP");
+    const ordered = [...caps, ...rest];
+    const seen = new Set<string>();
+    const unique = ordered.filter(item => { if (seen.has(item.entry.id)) return false; seen.add(item.entry.id); return true; });
+    let survivors = universe;
+    const steps = unique.map(({entry, stage}) => {
+      const before = survivors.length;
+      let removed = 0, unknown = 0;
+      survivors = survivors.filter(row => {
+        const verdict = catalogVerdict(entry, row, settings, evidence, asOf, report.junior);
+        if (verdict === "FAIL") { removed++; return false; }
+        if (verdict === "UNKNOWN") unknown++;
+        return true;
+      });
+      return { id: entry.id, title: catalogDefinition(entry).title, stage, before, removed, remaining: survivors.length, unknown };
+    });
+    const capSteps = steps.filter(step => caps.some(item => item.entry.id === step.id));
+    return { initial: universe.length, afterCap: capSteps.length ? capSteps[capSteps.length - 1].remaining : universe.length,
+      capUnknown: capSteps.reduce((total, step) => total + step.unknown, 0), steps, final: survivors.length, hasCap: capSteps.length > 0 };
+  }, [scoped, entries, settings, evidence, asOf, report.junior]);
   const individualImpact = useMemo(() => entries.map(entry => {
     const rule = catalogDefinition(entry);
     const step = report.steps.get(entry.id) || report.steps.get(catalogStages(entry)[0] + "|" + entry.id);
@@ -241,23 +266,34 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       <label>Show rules<select aria-label="Show restriction stage" value={showStage} onChange={event => setShowStage(event.target.value)}><option value="all">Full list — all stages</option><StageOptions /></select></label>
       <label>Find restriction<input type="search" aria-label="Find restriction" maxLength={100} value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or category" /></label></div>
     <p className={styles.note}>{visible.length} of {entries.length} restrictions shown. Use ADD TO LIST to see existing list members and insert a rule at #1 or any position.</p>
-    <section aria-label="Individual restriction impact for all rules">
-      <h3>HOW MANY TRIALS DOES EACH RESTRICTION REMOVE?</h3>
-      <div className={styles.totals}><div><span>Same starting universe for every row</span><strong>{count(report.total)}</strong></div><div><span>Restrictions compared</span><strong>{count(individualImpact.length)}</strong></div></div>
-      <p className={styles.note}><strong>Read each row separately:</strong> Removes = trials failing that one rule; Still eligible = starting universe minus Removes; Unknown = insufficient evidence (not automatically removed). Rows are ranked by Removes. <strong>Do not add the rows together:</strong> the same trial can fail multiple restrictions. These are not sequential or cumulative Pipeline results.</p>
-      <div className={styles.buttons}><button type="button" onClick={exportIndividualImpact}>DOWNLOAD ALL RESTRICTION COUNTS (CSV)</button></div>
-      <div className={styles.scroll} role="region" aria-label="Ranked individual restriction exclusions" tabIndex={0}>
+    <section aria-label="Sequential restriction impact after market cap">
+      <h3>SEQUENTIAL RESTRICTION REDUCTION — MARKET CAP FIRST</h3>
+      <div className={styles.totals}>
+        <div><span>Starting trials</span><strong>{count(sequentialImpact.initial)}</strong></div>
+        <div><span>After market-cap restrictions</span><strong>{count(sequentialImpact.afterCap)}</strong></div>
+        <div><span>After all active restrictions</span><strong>{count(sequentialImpact.final)}</strong></div>
+      </div>
+      <p className={styles.note}><strong>Each row starts with the remaining trials from the previous row.</strong> Market-cap restrictions run first, followed by the other active Pipeline, GEM JR, and GEM rules in their list order. Trials with missing evidence are kept and shown as Unknown, not silently excluded. A rule assigned to multiple lists is counted once in this combined reduction view; the separate list assignments are unchanged.</p>
+      {!sequentialImpact.hasCap && <p role="alert" className={styles.notice}>No active market-cap restriction is assigned. Add the $300M–$10B market-cap rule to Pipeline to establish the requested starting population.</p>}
+      <div className={styles.scroll} role="region" aria-label="Sequential restriction impact table" tabIndex={0}>
         <table className={styles.table}>
-          <thead><tr><th>Rank</th><th>Restriction being tested</th><th>Removes (fails rule)</th><th>Still eligible (not failed)</th><th>Removal %</th><th>Unknown (not removed)</th></tr></thead>
-          <tbody>{individualImpact.map((item, index) => <tr key={item.entry.id}>
-            <td>{index + 1}</td><th scope="row">{item.rule.title}{item.rule.warning ? " — warning only" : ""}<small>{catalogStages(item.entry).map(stage => stageLabel(stage)).join(" / ") || "Not assigned"}{!item.entry.enabled ? " · Not active" : ""}</small></th>
-            <td><strong>{count(item.excluded)}</strong></td><td>{count(item.remaining)}</td>
-            <td>{report.total ? (100 * item.excluded / report.total).toFixed(1) : "0.0"}%</td>
-            <td>{count(item.unknown)}</td>
+          <thead><tr><th>Step</th><th>Restriction</th><th>Trials entering</th><th>Removed now</th><th>Trials left</th><th>Unknown this step</th></tr></thead>
+          <tbody>{sequentialImpact.steps.map((step, i) => <tr key={step.id}>
+            <td>{i + 1}</td><th scope="row">{step.title}<small>{stageLabel(step.stage)}</small></th>
+            <td>{count(step.before)}</td><td><strong>{count(step.removed)}</strong></td>
+            <td><strong>{count(step.remaining)}</strong></td><td>{count(step.unknown)}</td>
           </tr>)}</tbody>
         </table>
       </div>
-      <p className={styles.note}>Still eligible includes unknown/unverified trials; it is not the same as verified passes. The CSV retains the separate verified-pass count and original FS/FA associations. Market cap at first Pipeline entry remains unverified where historical entry-date evidence is missing.</p>
+      <p className={styles.note}>Market cap at original Pipeline entry cannot be fully verified where historical entry-date values are missing. This table is a sequential evidence-based preview, not proof that all remaining trials passed every rule.</p>
+      <details className={styles.extra}><summary>Compare all restrictions independently (not sequentially)</summary>
+        <p className={styles.note}>This optional comparison tests each rule against the original {count(report.total)} entries. Do not add those exclusions together.</p>
+        <div className={styles.buttons}><button type="button" onClick={exportIndividualImpact}>DOWNLOAD INDEPENDENT RULE COUNTS (CSV)</button></div>
+        <div className={styles.scroll} role="region" aria-label="Independent restriction comparison" tabIndex={0}>
+          <table className={styles.table}><thead><tr><th>Rule</th><th>Removed alone</th><th>Remaining alone</th><th>Unknown</th></tr></thead>
+          <tbody>{individualImpact.map(item => <tr key={item.entry.id}><th scope="row">{item.rule.title}</th><td>{count(item.excluded)}</td><td>{count(item.remaining)}</td><td>{count(item.unknown)}</td></tr>)}</tbody></table>
+        </div>
+      </details>
     </section>
     <h3>RESTRICTIONS — MARKET CAP FIRST</h3><div className={styles.scroll} role="region" aria-label="Sequential restriction effects" tabIndex={0}><table className={styles.table + " " + styles.catalog}><caption>Each restriction appears once. Open details for extra diagnostics.</caption>
       <thead><tr><th>Scan order / restriction</th><th>Apply to</th><th>Original FS / FA</th><th>Target</th><th>Results</th><th>More</th></tr></thead><tbody>
