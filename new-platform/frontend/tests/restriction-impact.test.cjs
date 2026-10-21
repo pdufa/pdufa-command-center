@@ -196,9 +196,9 @@ test("authenticated evidence endpoint reads real saved source data; unauthentica
 });
 test("full catalog includes all original stage options and only approved Pipeline rules start assigned", () => {
   const entries = catalog.defaultCatalogEntries();
-  assert.equal(entries.length, 40); assert.equal(new Set(entries.map(entry => entry.id)).size, 40);
+  assert.equal(entries.length, 39); assert.equal(new Set(entries.map(entry => entry.id)).size, 40);
   assert.deepEqual(entries.filter(entry => entry.stage).map(entry => [entry.id, entry.stage]), [["public", "PIPELINE"], ["minCap", "PIPELINE"], ["maxCap", "PIPELINE"], ["progress", "PIPELINE"]]);
-  assert.equal(entries.filter(entry => entry.id.startsWith("gem_") && entry.id !== "gem_jr_source").length, 17);
+  assert.equal(entries.filter(entry => entry.id.startsWith("gem_") && entry.id !== "gem_jr_source").length, 16);
   assert.equal(entries.filter(entry => entry.id.startsWith("alert_")).length, 10);
 });
 test("stage assignments chain from the original universe and Blank has no screening effect", () => {
@@ -222,7 +222,7 @@ test("custom numeric comparisons use actual evidence and free-form descriptions 
 test("restored drafts preserve assignments and custom rules, reject invalid selectors, and restore missing catalog rows", () => {
   const custom = { id: "custom_saved", stage: "GEM_JR", enabled: true, title: "My rule", field: "note", operator: ">=", value: "", maximum: "" };
   const restored = catalog.restoreCatalogEntries([{ ...catalog.defaultCatalogEntries()[0], stage: "GEM" }, custom, { ...custom, id: "custom_bad", stage: "INVALID" }]);
-  assert.equal(restored.length, 41); assert.equal(restored[0].stage, "GEM");
+  assert.equal(restored.length, 40); assert.equal(restored[0].stage, "GEM");
   assert.ok(restored.some(e => e.id === "custom_saved")); assert.ok(!restored.some(e => e.id === "custom_bad"));
 });
 test("Restrictions is a top-level page with a direct link and per-row four-option stage selectors", () => {
@@ -233,7 +233,34 @@ test("Restrictions is a top-level page with a direct link and per-row four-optio
   const React = require("react"), { renderToStaticMarkup } = require("react-dom/server");
   const Component = require("../app/RestrictionImpact.tsx").default;
   const html = renderToStaticMarkup(React.createElement(Component, { rows, asOf }));
-  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 40);
+  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 39);
   assert.match(html, /value="">Blank<\/option>/); assert.match(html, /value="GEM_JR">GEM JR<\/option>/);
   assert.match(html, /WRITE A RESTRICTION/);
+});
+
+test("master cash runway replaces the duplicate GEM cash restriction and keeps FS association",()=>{
+  const defs=catalog.RESTRICTION_CATALOG;
+  assert.equal(defs.filter(rule=>rule.id==="runway"||rule.id==="gem_cash").length,1);
+  assert.deepEqual(defs.find(rule=>rule.id==="runway").associations,["GEM JR FS"]);
+  const old=[...catalog.defaultCatalogEntries(),{
+    id:"gem_cash",stage:"GEM_JR",enabled:true,priority:"4",value:"12",maximum:""
+  }];
+  const restored=catalog.restoreCatalogEntries(old);
+  assert.equal(restored.some(entry=>entry.id==="gem_cash"),false);
+  const cash=restored.find(entry=>entry.id==="runway");
+  assert.equal(cash.stage,"GEM_JR");
+  assert.equal(cash.priority,"4");
+  assert.equal(catalog.catalogVerdict(cash,{id:"TRIAL|NCT88888888",ticker:"CASH",technical:{runwayMonths:14}},settings(),evidence,asOf),"PASS");
+});
+test("one restriction may apply to multiple stages without duplicate catalog rows",()=>{
+  const entries=catalog.defaultCatalogEntries().map(entry=>({...entry,stage:"",additionalStages:[],enabled:false,priority:""}));
+  const one=entries.find(entry=>entry.id==="public");
+  Object.assign(one,{stage:"PIPELINE",additionalStages:["GEM_JR","GEM"],enabled:true,priority:"1"});
+  assert.deepEqual(catalog.catalogStages(one),["PIPELINE","GEM_JR","GEM"]);
+  const report=catalog.calculateCatalogImpact(rows,entries,settings(),evidence,asOf);
+  assert.equal(report.steps.get("public").stage,"PIPELINE");
+  assert.equal(report.steps.get("GEM_JR|public").stage,"GEM_JR");
+  assert.equal(report.steps.get("GEM|public").stage,"GEM");
+  assert.equal(report.stages.length,3);
+  assert.equal(report.excluded,1);
 });
