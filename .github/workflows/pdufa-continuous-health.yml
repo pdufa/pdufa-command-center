@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pdufa-continuous-health.yml']
 permissions:
   contents: read
 concurrency:
@@ -16,16 +19,23 @@ jobs:
       - name: Verify frontend and published API independently
         env:
           FRONTEND: https://pdufa-new-dashboard.vercel.app
-          BACKEND: https://pdufa-new-api-staging.onrender.com
+          BACKEND: https://pdufa-new-api-staging.onrender.com/health
         run: |
           set -euo pipefail
           failures=0
           for name in frontend backend; do
             if [ "$name" = frontend ]; then url="$FRONTEND"; else url="$BACKEND"; fi
             echo "Checking $name"
-            status=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 90 --retry 1 --retry-delay 5 "$url") || status=000
-            echo "$name HTTP $status" >> "$GITHUB_STEP_SUMMARY"
-            if [[ "$status" != 2* && "$status" != 3* ]]; then failures=$((failures+1)); fi
+            status=$(curl -L -sS -o "$RUNNER_TEMP/$name-health" -w '%{http_code}' --max-time 90 --retry 1 --retry-delay 5 "$url") || status=000
+            echo "$name HTTP $status" | tee -a "$GITHUB_STEP_SUMMARY"
+            if [[ "$status" != 2* && "$status" != 3* ]]; then
+              failures=$((failures+1))
+            elif [ "$name" = backend ]; then
+              if ! python -c 'import json,sys; h=json.load(open(sys.argv[1])); sys.exit(0 if h.get("service")=="pdufa-new-backend" and h.get("status")=="ok" and h.get("storage_ready") is True else 1)' "$RUNNER_TEMP/backend-health"; then
+                echo "Backend health response is invalid or storage is not ready." | tee -a "$GITHUB_STEP_SUMMARY"
+                failures=$((failures+1))
+              fi
+            fi
           done
           if [ "$failures" -gt 0 ]; then
             echo "Health verification failed; existing verified data and deployments are untouched." >> "$GITHUB_STEP_SUMMARY"

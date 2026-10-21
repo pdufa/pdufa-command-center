@@ -124,10 +124,10 @@ test("the visible controls include every restriction, editable values, full base
   assert.match(html, /Latest saved cap — comparison/);
   assert.match(html, /Entry-date market caps have not been retained/);
   assert.match(html, /Minimum cap \(\$ millions\)/);
-  assert.equal((html.match(/type="checkbox"/g) || []).length, 40);
-  assert.equal((html.match(/type="checkbox"[^>]*checked=""/g) || []).length, 4);
+  assert.equal((html.match(/aria-label="Priority for /g) || []).length, catalog.RESTRICTION_CATALOG.length);
+  assert.equal((html.match(/aria-label="Priority for [^"]*" value=""/g) || []).length, catalog.RESTRICTION_CATALOG.length);
 });
-test("checkboxes, numeric edits and inline affected-record controls update without navigation", async () => {
+test("priority selection, numeric edits and inline affected-record controls update without navigation", async () => {
   const React = require("react"), { create, act } = require("react-test-renderer");
   const Component = require("../app/RestrictionImpact.tsx").default;
   const before = { fetch: global.fetch, window: global.window, act: global.IS_REACT_ACT_ENVIRONMENT };
@@ -137,9 +137,13 @@ test("checkboxes, numeric edits and inline affected-record controls update witho
   let renderer;
   try {
     await act(async () => { renderer = create(React.createElement(Component, { rows, asOf })); });
-    await act(async () => { renderer.root.findByProps({ "aria-label": "Use Progressing toward / upcoming PDUFA" }).props.onChange({ target: { checked: false } }); });
-    await act(async () => { renderer.root.findByProps({ "aria-label": "Market-cap evidence" }).props.onChange({ target: { value: "current" } }); });
     const totals = () => renderer.root.findByProps({ "aria-atomic": "true" }).findAllByType("strong").map(node => node.children.join(""));
+    assert.deepEqual(totals(), ["6", "0", "6", "0"]);
+    for (const [i, id] of ["public", "minCap", "maxCap"].entries()) {
+      const title = catalog.RESTRICTION_CATALOG.find(rule => rule.id === id).title;
+      await act(async () => { renderer.root.findByProps({ "aria-label": "Priority for " + title }).props.onChange({ target: { value: String(i + 1) } }); });
+    }
+    await act(async () => { renderer.root.findByProps({ "aria-label": "Market-cap evidence" }).props.onChange({ target: { value: "current" } }); });
     assert.deepEqual(totals(), ["6", "3", "2", "1"]);
     await act(async () => { renderer.root.findByProps({ "aria-label": "Minimum cap ($ millions)" }).props.onChange({ target: { value: "301" } }); });
     assert.deepEqual(totals(), ["6", "4", "1", "1"]);
@@ -148,8 +152,12 @@ test("checkboxes, numeric edits and inline affected-record controls update witho
     assert.ok(renderer.root.findByProps({ "aria-label": "Affected records" }));
     await act(async () => { renderer.root.findByProps({ "aria-label": "Close affected records" }).props.onClick(); });
     assert.equal(renderer.root.findAllByProps({ "aria-label": "Affected records" }).length, 0);
+    const capTitle = catalog.RESTRICTION_CATALOG.find(rule => rule.id === "minCap").title;
+    await act(async () => { renderer.root.findByProps({ "aria-label": "Priority for " + capTitle }).props.onChange({ target: { value: "" } }); });
+    assert.deepEqual(totals(), ["6", "2", "3", "1"]);
     await act(async () => { renderer.root.findAllByType("button").find(node => node.children.join("") === "RESET TO APPROVED RULES").props.onClick(); });
     assert.equal(renderer.root.findByProps({ "aria-label": "Market-cap evidence" }).props.value, "entry");
+    assert.deepEqual(totals(), ["6", "0", "6", "0"]);
   } finally {
     if (renderer) await act(async () => renderer.unmount());
     global.fetch = before.fetch; global.window = before.window; global.IS_REACT_ACT_ENVIRONMENT = before.act;
@@ -195,7 +203,7 @@ test("full catalog includes all original stage options and only approved Pipelin
 });
 test("stage assignments chain from the original universe and Blank has no screening effect", () => {
   const entries = catalog.defaultCatalogEntries().map(entry => ({ ...entry, enabled: false, stage: "" }));
-  for (const [id, stage] of [["public", "PIPELINE"], ["minCap", "GEM_JR"], ["maxCap", "GEM"]]) Object.assign(entries.find(e => e.id === id), { enabled: true, stage });
+  for (const [id, stage] of [["public", "PIPELINE"], ["minCap", "GEM_JR"], ["maxCap", "GEM"]]) Object.assign(entries.find(e => e.id === id), { enabled: true, stage, priority: "1" });
   const draft = settings(); draft.capBasis = "current";
   const report = catalog.calculateCatalogImpact(rows, entries, draft, evidence, asOf);
   assert.deepEqual(report.stages.map(stage => [stage.before, stage.excluded, stage.remaining]), [[6, 1, 5], [5, 1, 4], [4, 1, 3]]);
@@ -205,7 +213,7 @@ test("stage assignments chain from the original universe and Blank has no screen
   assert.equal(blank.excluded, 0); assert.equal(blank.passed, 6);
 });
 test("custom numeric comparisons use actual evidence and free-form descriptions never invent exclusions", () => {
-  const custom = { id: "custom_test", stage: "GEM", enabled: true, title: "Cap at most $500M", field: "marketCapMillions", operator: "<=", value: "500", maximum: "" };
+  const custom = { id: "custom_test", stage: "GEM", enabled: true, priority: "1", title: "Cap at most $500M", field: "marketCapMillions", operator: "<=", value: "500", maximum: "" };
   const result = catalog.calculateCatalogImpact(rows, [custom], settings(), evidence, asOf);
   assert.deepEqual([result.passed, result.pending, result.excluded], [2, 2, 2]);
   const note = catalog.calculateCatalogImpact(rows, [{ ...custom, field: "note", title: "Primary p-value below 0.05" }], settings(), evidence, asOf);
