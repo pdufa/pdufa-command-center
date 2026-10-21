@@ -14,7 +14,7 @@ RECOVERY_CRONS = {f"{minute} {hour} * * *" for hour in (7, 8, 9) for minute in (
 # One spaced-out cron expression provides frequent recovery opportunities.
 # GitHub schedule execution is best-effort; the clock gate below ensures
 # pre-8 PM Pacific events cannot start a scan and allows safe late recovery.
-SWEEP_CRON = "3-53/10 4-10 * * *"
+SWEEP_CRON = "3-53/10 3-10 * * *"
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 
 
