@@ -1,13 +1,13 @@
 {
-  "generated_at_utc": "2026-10-20T04:47:53+00:00",
+  "generated_at_utc": "2026-10-21T03:47:27+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-20T04:32:53.171859+00:00",
-      "Details": "7368 exact ticker+NCT records; scope is not exhaustive",
+      "Last checked UTC": "2026-10-21T03:30:34.114096+00:00",
+      "Details": "7369 exact ticker+NCT records; scope is not exhaustive",
       "Blocked records": 0
     },
     {
@@ -15,7 +15,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-20T04:33:57.146306+00:00",
+      "Last checked UTC": "2026-10-21T03:31:42.053161+00:00",
       "Details": "2492 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
     },
@@ -51,7 +51,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-20T04:32:52.350075+00:00",
+      "Last checked UTC": "2026-10-21T03:30:33.669263+00:00",
       "Details": "417 provider-labeled quotes; price/volume not included",
       "Blocked records": 0
     },
@@ -69,16 +69,16 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-20T04:47:31.811888+00:00",
+      "Last checked UTC": "2026-10-21T03:47:06.025877+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
     }
   ],
-  "trial_rows": 7368,
+  "trial_rows": 7369,
   "financing_events": 38,
-  "review_priority_rows": 7368,
-  "review_priority_ranked": 1827,
-  "review_priority_excluded": 5541,
+  "review_priority_rows": 7369,
+  "review_priority_ranked": 1826,
+  "review_priority_excluded": 5543,
   "review_priority_rubric": "REVIEW-PRIORITY-V1",
   "market_eod_rows": 34,
   "listing_exclusions": [
