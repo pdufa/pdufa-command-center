@@ -1,7 +1,7 @@
 {
   "run_date": "2026-10-21",
   "scan_mode": "DELTA",
-  "finished_at": "2026-10-21T03:29:52.369252+00:00",
+  "finished_at": "2026-10-21T04:51:55.363091+00:00",
   "registry_companies": 717,
   "companies_checked": 717,
   "companies_with_warnings": 0,
@@ -11,10 +11,10 @@
   "tracked_trials_total": 11583,
   "tracked_trials_checked": 11583,
   "tracked_trials_with_warnings": 0,
-  "changed_trials_this_execution": 59,
+  "changed_trials_this_execution": 0,
   "changed_trials_today": 59,
-  "tracked_nct_direct_fetches": 5471,
-  "tracked_nct_sponsor_reuse": 6112,
+  "tracked_nct_direct_fetches": 0,
+  "tracked_nct_sponsor_reuse": 11583,
   "scope": "DELTA: all company sponsor inventories for new/amended trials; exact-NCT fetch only for unmatched trial IDs",
   "limitations": "Discovery uses exact lead-sponsor matching; existing NCT IDs bypass sponsor matching. FDA/SEC/market sources are separate.",
   "checks": {
