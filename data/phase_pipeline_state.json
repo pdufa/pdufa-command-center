@@ -1,24 +1,18 @@
 {
-  "started_at": "2026-10-20T04:31:58.402963+00:00",
+  "started_at": "2026-10-21T03:29:59.956793+00:00",
   "status": "COMPLETE",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-20",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-21",
   "source_max_age_days": 180,
-  "studies_scanned": 15593,
-  "matched_trials": 3685,
+  "studies_scanned": 15605,
+  "matched_trials": 3686,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "PTGX",
-      "drug": "Rusfertide",
-      "nct_id": "NCT05210790"
-    }
-  ],
-  "finished_at": "2026-10-20T04:32:53.171859+00:00",
-  "stored_trials": 7368,
-  "phase2_programs": 1012,
+  "new_master_programs": [],
+  "finished_at": "2026-10-21T03:30:34.114096+00:00",
+  "stored_trials": 7369,
+  "phase2_programs": 1019,
   "master_programs": 122,
   "review_trials": 3079,
   "market_cap_verified_tickers": 417,
