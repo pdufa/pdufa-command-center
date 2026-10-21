@@ -265,3 +265,36 @@ test("A rescanned GEM JR or GEM program is NEW only once per stage, never duplic
  assert.deepEqual(newlyObservedProgramIds({...scan,selected:[]},new Set(),new Set()),[],
    "an unrestricted scan cannot mark the entire Pipeline as new");
 });
+
+test("managed GEM checklist uses one catalog selection and hides redundant checkboxes",()=>{
+  const jr=renderToStaticMarkup(React.createElement(Checklist.default,{
+    stage:"GEM_JR",initiallyExpanded:true,pipeline:[],asOf:"2026-10-20",
+    stageTotal:0,completedScan:null,stageSavedRows:[],manualStageList:{},
+    gemJrScan:null,gemJrSavedRows:[],onAddToStageList:()=>{},onRemoveFromStageList:()=>{},
+    onScan:()=>{},onReset:()=>{},managedSelected:["registry","marketcap"],
+    managedGoals:{priority_review:"6"},hideChecklistItems:true
+  }));
+  assert.match(jr,/ONE MASTER RESTRICTIONS LIST/);
+  assert.doesNotMatch(jr,/gem-original-clinical|gem-original-trading|Optional GEM JR evidence alerts/);
+  assert.match(jr,/aria-pressed="true" aria-label="FA: toggle Phase 3/);
+  assert.match(jr,/aria-label="FS: toggle suggested criteria checkboxes"/);
+  assert.deepEqual(Checklist.gemPresetAssociations("registry"),["GEM JR FS","GEM JR FA"]);
+  assert.deepEqual(Checklist.gemPresetAssociations("gem_jr_source"),["GEM FA"]);
+});
+
+test("edited master values drive the same GEM scan numerical predicates",()=>{
+  const trial={id:"TRIAL|NCT12345678",ticker:"TEST",marketCap:400e6,
+    technical:{runwayMonths:14,rvol:1.5,rsi14:58,avgDollarVolume20:6e6}};
+  const {effectiveNumericCheck}=Checklist;
+  assert.equal(effectiveNumericCheck("cash",trial,12,null),true);
+  assert.equal(effectiveNumericCheck("cash",trial,18,null),false);
+  assert.equal(effectiveNumericCheck("marketcap",trial,300,10000),true);
+  assert.equal(effectiveNumericCheck("marketcap",trial,500,10000),false);
+  assert.equal(effectiveNumericCheck("volume",trial,1.4,null),true);
+  assert.equal(effectiveNumericCheck("volume",trial,1.6,null),false);
+  assert.equal(effectiveNumericCheck("rsi",trial,45,65),true);
+  assert.equal(effectiveNumericCheck("rsi",trial,60,65),false);
+  assert.equal(effectiveNumericCheck("liquidity",trial,5000000,null),true);
+  assert.equal(effectiveNumericCheck("liquidity",trial,7000000,null),false);
+  assert.equal(effectiveNumericCheck("cash",{id:"TRIAL|NCT99999999",ticker:"NONE"},12,null),null);
+});

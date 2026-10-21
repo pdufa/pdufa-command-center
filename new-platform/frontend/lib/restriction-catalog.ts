@@ -1,4 +1,4 @@
-import { availableGemRestrictionOptions, checkboxGroupsForStage } from "../app/GemQualificationChecklist";
+import { availableGemRestrictionOptions, checkboxGroupsForStage, gemPresetAssociations } from "../app/GemQualificationChecklist";
 import type { Candidate } from "../app/Workspace";
 import { RESTRICTIONS, restrictionVerdict, type ImpactRecord,
   type RestrictionEvidence, type RestrictionSettings, type Verdict } from "./restriction-impact";
@@ -6,10 +6,10 @@ import { RESTRICTIONS, restrictionVerdict, type ImpactRecord,
 export type RestrictionStage = "" | "PIPELINE" | "GEM_JR" | "GEM";
 export const RESTRICTION_STAGES: Exclude<RestrictionStage, "">[] = ["PIPELINE", "GEM_JR", "GEM"];
 export type CustomField = "note" | "marketCapMillions" | "runwayMonths" | "pdufaDays" | "rvol" | "rsi14" | "avgDollarVolume20" | "close";
-export type CatalogEntry = { id: string; enabled: boolean; priority?: string; stage: RestrictionStage; value: string; maximum: string;
+export type CatalogEntry = { id: string; enabled: boolean; priority?: string; stage: RestrictionStage; additionalStages?: Exclude<RestrictionStage, "">[]; value: string; maximum: string;
   title?: string; field?: CustomField; operator?: ">=" | "<=" };
 export type CatalogDefinition = { id: string; title: string; help: string; category: string; value?: string;
-  maximum?: string; unit?: string; warning?: boolean; numeric?: boolean };
+  maximum?: string; unit?: string; warning?: boolean; numeric?: boolean; associations?: string[] };
 const groups = checkboxGroupsForStage("GEM_JR");
 const gemChecks = [...groups.clinical, ...groups.trading];
 const gemById = new Map(gemChecks.map(check => ["gem_" + check[0], check]));
@@ -27,18 +27,21 @@ const gemValues: Record<string, Partial<CatalogDefinition>> = {
   liquidity: { title: "20-day average dollar volume", value: "5000000", unit: "minimum USD / day", numeric: true },
 };
 export const RESTRICTION_CATALOG: CatalogDefinition[] = [
-  ...RESTRICTIONS.map(rule => ({ ...rule, category: rule.proposed ? "Proposed Pipeline addition" : "Approved Pipeline rule", ...coreValues[rule.id] })),
-  ...gemChecks.map(([key, title]) => ({ id: "gem_" + key, title, category: "Existing GEM JR / GEM option",
-    help: "Uses the existing stage-checklist evidence for the exact program. Choose a stage and enter a priority number to include it in this page’s live screen.", ...gemValues[key] })),
+  ...RESTRICTIONS.map(rule => ({ ...rule, category: rule.proposed ? "Proposed Pipeline addition" : "Approved Pipeline rule", associations: rule.id==="runway"?gemPresetAssociations("cash"):[], ...coreValues[rule.id] })),
+  ...gemChecks.filter(([key])=>key!=="cash").map(([key, title]) => ({ id: "gem_" + key, title, category: "Existing GEM JR / GEM option",
+    help: "Uses the existing stage-checklist evidence for the exact program. Select a stage and enter a priority number to include it in this page’s live screen.", associations: gemPresetAssociations(key), ...gemValues[key] })),
   ...availableGemRestrictionOptions().map(rule => ({ id: "alert_" + rule.key, title: rule.title,
     category: "Optional clinical / regulatory goal", value: rule.goal, unit: rule.unit,
     numeric: !!rule.number, help: "This is the same optional goal available in the GEM JR checklist. A goal is not evidence; this check stays unknown until source-verified facts are linked." })),
-  { id: "gem_jr_source", title: "GEM JR screening passed", category: "GEM input option",
+  { id: "gem_jr_source", title: "GEM JR screening passed", category: "GEM input option", associations: gemPresetAssociations("gem_jr_source"),
     help: "Uses the results of the assigned GEM JR rules on this page. With no enabled GEM JR rules, qualification is unknown. Saved GEM JR membership alone is not proof of passing a screen." },
 ];
+export function catalogStages(entry:CatalogEntry):Exclude<RestrictionStage,"">[] {
+  return [...new Set([entry.stage, ...(entry.additionalStages||[])].filter((value):value is Exclude<RestrictionStage,"">=>RESTRICTION_STAGES.includes(value as Exclude<RestrictionStage,"">)))];
+}
 export function defaultCatalogEntries(): CatalogEntry[] {
   return RESTRICTION_CATALOG.map(rule => ({ id: rule.id, enabled: rule.category === "Approved Pipeline rule",
-    stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", priority: "", value: rule.value || "", maximum: rule.maximum || "" }));
+    stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", additionalStages: [], priority: "", value: rule.value || "", maximum: rule.maximum || "" }));
 }
 export function catalogDefinition(entry: CatalogEntry): CatalogDefinition {
   return RESTRICTION_CATALOG.find(rule => rule.id === entry.id) || { id: entry.id,
@@ -60,6 +63,12 @@ export function catalogVerdict(entry: CatalogEntry, row: ImpactRecord, settings:
     const keys: Partial<Record<string, "minCapMillions" | "maxCapMillions" | "minimumPhase" | "minRunwayMonths" | "maxPdufaDays">> = {
       minCap: "minCapMillions", maxCap: "maxCapMillions", phase: "minimumPhase", runway: "minRunwayMonths", pdufaWindow: "maxPdufaDays" };
     const key = keys[core.id];
+    // A single runway rule serves both the Pipeline trial source and GEM's
+    // SEC-backed technical runway: retain whichever verified field exists.
+    if(core.id==="runway"){
+      const months=(row as Candidate).technical?.runwayMonths ?? row.trialFilters?.runwayMonths;
+      return value===null || months==null || !Number.isFinite(months) ? "UNKNOWN" : verdict(months>=value);
+    }
     if (key) {
       if (value === null) return "UNKNOWN";
       const next = { ...settings }; next[key] = value;
@@ -106,7 +115,7 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
   };
   for (const stage of RESTRICTION_STAGES) {
     const beforeStage = summary().remaining;
-    for (const entry of entries.filter(item => item.stage === stage).sort((a,b) => Number(a.priority || 0) - Number(b.priority || 0))) {
+    for (const entry of entries.filter(item => catalogStages(item).includes(stage)).sort((a,b) => Number(a.priority || 0) - Number(b.priority || 0))) {
       const a = alone(entry), before = summary().remaining, newlyExcludedIds = new Set<string>();
       const used = entry.enabled && !!entry.priority && Number(entry.priority) > 0 && !catalogDefinition(entry).warning;
       if (used) for (let i = 0; i < rows.length; i++) {
@@ -115,13 +124,13 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
         if (a.values[i] === "FAIL") { states.set(id, "FAIL"); newlyExcludedIds.add(id); }
         else if (a.values[i] === "UNKNOWN") states.set(id, "UNKNOWN");
       }
-      steps.set(entry.id, { id: entry.id, stage, alonePass: a.alonePass, aloneFail: a.aloneFail, aloneUnknown: a.aloneUnknown,
+      steps.set(stage === entry.stage ? entry.id : stage + "|" + entry.id, { id: entry.id, stage, alonePass: a.alonePass, aloneFail: a.aloneFail, aloneUnknown: a.aloneUnknown,
         step: used ? ++stepNumber : null, before, newlyExcluded: newlyExcludedIds.size, ...summary(), newlyExcludedIds });
     }
     const s = summary(); stages.push({ stage, before: beforeStage, ...s, excluded: beforeStage - s.remaining });
-    if (stage === "GEM_JR" && entries.some(e => e.stage === stage && e.enabled && !!e.priority && !catalogDefinition(e).warning)) junior = new Map(states);
+    if (stage === "GEM_JR" && entries.some(e => catalogStages(e).includes(stage) && e.enabled && !!e.priority && !catalogDefinition(e).warning)) junior = new Map(states);
   }
-  for (const entry of entries.filter(item => item.stage === "")) {
+  for (const entry of entries.filter(item => catalogStages(item).length === 0)) {
     const a = alone(entry); steps.set(entry.id, { id: entry.id, stage: "", alonePass: a.alonePass, aloneFail: a.aloneFail, aloneUnknown: a.aloneUnknown,
       step: null, before: rows.length, newlyExcluded: 0, remaining: rows.length, passed: rows.length, pending: 0, newlyExcludedIds: new Set() });
   }
@@ -137,9 +146,17 @@ export function restoreCatalogEntries(raw: unknown): CatalogEntry[] {
     const e = entry as CatalogEntry;
     if (typeof e.id !== "string" || !stages.has(e.stage) || typeof e.enabled !== "boolean" || typeof e.value !== "string" || typeof e.maximum !== "string") return null;
     if (e.id.startsWith("custom_") && (typeof e.title !== "string" || !e.title.trim() || !fields.has(e.field || ""))) return null;
-    return { id: e.id.slice(0, 100), enabled: e.enabled && !!e.priority, priority: typeof e.priority === "string" && /^[1-9]\d{0,3}$/.test(e.priority) ? e.priority : "", stage: e.stage, value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
+    return { id: e.id.slice(0, 100), enabled: e.enabled && !!e.priority, priority: typeof e.priority === "string" && /^[1-9]\d{0,3}$/.test(e.priority) ? e.priority : "", stage: e.stage, additionalStages: Array.isArray(e.additionalStages) ? [...new Set(e.additionalStages.filter(stage => stage !== e.stage && RESTRICTION_STAGES.includes(stage)))].slice(0, 2) : [], value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
       ...(e.id.startsWith("custom_") ? { title: e.title!.slice(0, 400), field: e.field, operator: e.operator === "<=" ? "<=" : ">=" } : {}) };
   };
   const saved = new Map(raw.slice(0, 140).map(clean).filter((entry): entry is CatalogEntry => !!entry).map(entry => [entry.id, entry]));
+  const legacyCash=saved.get("gem_cash"),canonicalCash=saved.get("runway");
+  if(legacyCash && (!canonicalCash || !canonicalCash.priority && !!legacyCash.priority)){
+    const stages=[...new Set([...catalogStages(canonicalCash||defaults.find(entry=>entry.id==="runway")!),...catalogStages(legacyCash)])];
+    const primary=(canonicalCash?.stage||legacyCash.stage||stages[0]||"") as RestrictionStage;
+    saved.set("runway",{...(canonicalCash||defaults.find(entry=>entry.id==="runway")!),stage:primary,
+      additionalStages:stages.filter(stage=>stage!==primary),enabled:legacyCash.enabled,
+      priority:legacyCash.priority||canonicalCash?.priority||"",value:legacyCash.value||canonicalCash?.value||"12"});
+  }
   return [...defaults.map(entry => saved.get(entry.id) || entry), ...[...saved.values()].filter(entry => entry.id.startsWith("custom_")).slice(0, 100)];
 }

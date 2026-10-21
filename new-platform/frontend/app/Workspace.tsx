@@ -16,13 +16,27 @@ import TrialQualificationFilters from "./TrialQualificationFilters";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
-import GemQualificationChecklist, {newlyObservedProgramIds,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
+import { catalogStages, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
+function catalogGemKey(id:string){return id==="runway"?"cash":id==="gem_jr_source"?"gem_jr_source":id.startsWith("gem_")?id.slice(4):id.startsWith("alert_")?id.slice(6):"";}
+function gemAllowedKeys(stage:"GEM_JR"|"GEM"){
+  const groups=checkboxGroupsForStage(stage);
+  const allowed=new Set([...groups.clinical,...groups.trading].map(([key])=>key));
+  if(stage==="GEM")allowed.add("gem_jr_source");
+  else for(const item of availableGemRestrictionOptions())allowed.add(item.key);
+  return allowed;
+}
+function selectedGemKeys(entries:CatalogEntry[],stage:"GEM_JR"|"GEM"){
+  const allowed=gemAllowedKeys(stage);
+  return [...new Set(entries.filter(entry=>entry.enabled&&!!entry.priority&&catalogStages(entry).includes(stage))
+    .map(entry=>catalogGemKey(entry.id)).filter(key=>allowed.has(key)))];
+}
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
 type ResearchTechnical = {
   benchmarks?: { phase3: boolean; secondFinancing: boolean; bothConfirmed: boolean; warning: string; readoutDate: string; firstClose: string; secondClose: string };
@@ -708,6 +722,55 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [gemLivePreview,setGemLivePreview]=useState<GemJrLivePreview|null>(null);
   const [gemDraft,setGemDraft]=useState<GemJrUiDraft|null>(null);
   const [gemSavedOnly,setGemSavedOnly]=useState<Record<"GEM_JR"|"GEM",boolean>>({GEM_JR:false,GEM:false});
+  // One persisted set of restriction definitions and stage assignments drives
+  // the central catalog and both GEM qualification scan checklists.
+  const [masterRestrictions,setMasterRestrictions]=useState<CatalogEntry[]>(defaultCatalogEntries);
+  const [masterRestrictionsReady,setMasterRestrictionsReady]=useState(false);
+  useEffect(()=>{
+    try{const raw=window.localStorage.getItem("pdufa-restriction-catalog-v1");
+      if(raw)setMasterRestrictions(restoreCatalogEntries(JSON.parse(raw)));}
+    catch{/* Keep approved defaults if browser storage is unavailable. */}
+    setMasterRestrictionsReady(true);
+  },[]);
+  useEffect(()=>{
+    if(!masterRestrictionsReady)return;
+    try{window.localStorage.setItem("pdufa-restriction-catalog-v1",JSON.stringify(masterRestrictions));}
+    catch{/* Editing remains available in memory. */}
+  },[masterRestrictions,masterRestrictionsReady]);
+  const jrRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM_JR"),[masterRestrictions]);
+  const gemRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM"),[masterRestrictions]);
+  const masterAlertGoals=useMemo(()=>Object.fromEntries(masterRestrictions.filter(entry=>entry.id.startsWith("alert_")).map(entry=>[entry.id.slice(6),entry.value])),[masterRestrictions]);
+  const masterThresholds=useMemo(()=>Object.fromEntries(masterRestrictions
+    .filter(entry=>["runway","gem_marketcap","gem_window","gem_volume","gem_rsi","gem_liquidity"].includes(entry.id))
+    .map(entry=>[catalogGemKey(entry.id),{value:entry.value,maximum:entry.maximum}])),[masterRestrictions]);
+  // A changed master selection/target invalidates old completed scan results.
+  // Live previews are recomputed by the existing GEM checklist against the new rules.
+  const masterScanFingerprint=useMemo(()=>JSON.stringify(masterRestrictions
+    .filter(entry=>entry.enabled&&!!entry.priority&&catalogStages(entry).some(stage=>stage==="GEM_JR"||stage==="GEM"))
+    .map(entry=>[entry.id,entry.stage,entry.additionalStages,entry.priority,entry.value,entry.maximum])),[masterRestrictions]);
+  const lastMasterScanFingerprint=useRef<string|null>(null);
+  useEffect(()=>{
+    if(!masterRestrictionsReady)return;
+    if(lastMasterScanFingerprint.current!==null&&lastMasterScanFingerprint.current!==masterScanFingerprint){
+      setGemScans({});
+      setGemSavedOnly({GEM_JR:false,GEM:false});
+    }
+    lastMasterScanFingerprint.current=masterScanFingerprint;
+  },[masterScanFingerprint,masterRestrictionsReady]);
+  function changeManagedGemRules(stage:"GEM_JR"|"GEM",next:string[]){
+    const desired=new Set(next);
+    const allowed=gemAllowedKeys(stage);
+    setMasterRestrictions(current=>current.map(entry=>{
+      const key=catalogGemKey(entry.id);
+      if(!key || !allowed.has(key))return entry;
+      const assigned=catalogStages(entry),has=assigned.includes(stage),wants=desired.has(key);
+      if(has===wants && (!wants || entry.enabled&&!!entry.priority))return entry;
+      const stages=wants?[...assigned.filter(s=>s!==stage),stage]:assigned.filter(s=>s!==stage);
+      const primary=stages.includes(entry.stage as "PIPELINE"|"GEM_JR"|"GEM")?entry.stage:(stages[0]||"");
+      return {...entry,stage:primary,additionalStages:stages.filter(s=>s!==primary),
+        enabled:wants?true:stages.length>0&&entry.enabled,priority:wants?(entry.priority||"1"):stages.length?entry.priority:""};
+    }));
+  }
   // Automatically fetch the published snapshot once on mount; manual refresh remains available.
   const [fetchVersion, setFetchVersion] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -1302,7 +1365,10 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           const next={...current[stage]};delete next[id];
           return {...current,[stage]:next};
         })}
-        gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft} onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
+        gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft}
+        managedSelected={stage==="GEM_JR"?jrRuleKeys:gemRuleKeys} managedGoals={masterAlertGoals} managedThresholds={masterThresholds} hideChecklistItems
+        onManagedSelectedChange={keys=>changeManagedGemRules(stage,keys)} onOpenMasterRestrictions={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}
+        onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
         onReset={()=>{
           setGemSavedOnly(current=>current[stage]?{...current,[stage]:false}:current);
           if(stage==="GEM_JR")setGemLivePreview(null);
@@ -1343,7 +1409,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           setGemTrialExpanded(current=>({...current,[stage]:false}));
           setGemTrialSections(current=>Object.fromEntries(Object.entries(current).filter(([key])=>!key.startsWith(stage+"|"))));
         }} />);
-    if (top==="RESTRICTIONS") return <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>{stage==="GEM"?"GEM":"GEM JR"} RESTRICTIONS — FS / FA</summary>{qualificationChecklist}</details>;
+    if (top==="RESTRICTIONS") return <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>{stage==="GEM"?"GEM":"GEM JR"} SCAN — FS / FA</summary><p className="subtle">The restrictions are defined once in the master list above. FS and FA below select those same rows; no second editable checklist is shown.</p>{qualificationChecklist}</details>;
     return <section className={"gem-section " + (stage==="GEM" ? "gem-purple" : "gem-blue")} key={stage}>
       <div className="gem-heading">
         <div><h2>{stage==="GEM"?"GEM":"GEM JR"} · Candidate research</h2>
@@ -1693,7 +1759,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}{pipelineMovedFilters}</>}
+    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}{pipelineMovedFilters}</>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
