@@ -1692,9 +1692,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </span>
       </button>)}
     </div>
-    <div className="workspace-overview">
-      <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
-      <div className="workspace-update-row" role="status" aria-label="Data freshness and scan status">
+    <div className="workspace-update-row" role="status" aria-label="Data freshness and scan status">
         <section className="workspace-update-card">
           <span className="workspace-update-label">LAST UPDATED · SOURCE DATA</span>
           <strong className="workspace-update-value">{pacificSourceTime(snapshot?.asOf)}</strong>
@@ -1711,6 +1709,9 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <span className="workspace-update-detail">Data was checked, not a new scan. See SCANS for live progress.</span>
         </section>
       </div>
+    <div className="workspace-overview">
+      <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
+      
       {summaryError && !publishedCounts && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
