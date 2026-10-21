@@ -196,10 +196,10 @@ test("authenticated evidence endpoint reads real saved source data; unauthentica
 });
 test("full catalog includes all original stage options and only approved Pipeline rules start assigned", () => {
   const entries = catalog.defaultCatalogEntries();
-  assert.equal(entries.length, 39); assert.equal(new Set(entries.map(entry => entry.id)).size, 39);
+  assert.equal(entries.length, 41); assert.equal(new Set(entries.map(entry => entry.id)).size, 41);
   assert.deepEqual(entries.filter(entry => entry.stage).map(entry => [entry.id, entry.stage]), [["public", "PIPELINE"], ["minCap", "PIPELINE"], ["maxCap", "PIPELINE"], ["progress", "PIPELINE"]]);
   assert.equal(entries.filter(entry => entry.id.startsWith("gem_") && entry.id !== "gem_jr_source").length, 16);
-  assert.equal(entries.filter(entry => entry.id.startsWith("alert_")).length, 10);
+  assert.equal(entries.filter(entry => entry.id.startsWith("alert_")).length, 12);
 });
 test("stage assignments chain from the original universe and Blank has no screening effect", () => {
   const entries = catalog.defaultCatalogEntries().map(entry => ({ ...entry, enabled: false, stage: "" }));
@@ -222,7 +222,7 @@ test("custom numeric comparisons use actual evidence and free-form descriptions 
 test("restored drafts preserve assignments and custom rules, reject invalid selectors, and restore missing catalog rows", () => {
   const custom = { id: "custom_saved", stage: "GEM_JR", enabled: true, title: "My rule", field: "note", operator: ">=", value: "", maximum: "" };
   const restored = catalog.restoreCatalogEntries([{ ...catalog.defaultCatalogEntries()[0], stage: "GEM" }, custom, { ...custom, id: "custom_bad", stage: "INVALID" }]);
-  assert.equal(restored.length, 40); assert.equal(restored[0].stage, "GEM");
+  assert.equal(restored.length, 42); assert.equal(restored[0].stage, "GEM");
   assert.ok(restored.some(e => e.id === "custom_saved")); assert.ok(!restored.some(e => e.id === "custom_bad"));
 });
 test("Restrictions is a top-level page with a direct link and per-row four-option stage selectors", () => {
@@ -233,7 +233,7 @@ test("Restrictions is a top-level page with a direct link and per-row four-optio
   const React = require("react"), { renderToStaticMarkup } = require("react-dom/server");
   const Component = require("../app/RestrictionImpact.tsx").default;
   const html = renderToStaticMarkup(React.createElement(Component, { rows, asOf }));
-  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 39);
+  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 41);
   assert.match(html, /value="">Blank<\/option>/); assert.match(html, /value="GEM_JR">GEM JR<\/option>/);
   assert.match(html, /WRITE A RESTRICTION/);
 });
@@ -274,7 +274,7 @@ test("importance groups put Market Cap first and preserve one master restriction
   );
   const groups = new Set(catalog.RESTRICTION_PURPOSE_GROUPS.map(group => group.id));
   const mapped = catalog.defaultCatalogEntries().map(entry => catalog.restrictionPurposeGroup(entry));
-  assert.equal(mapped.length, 39);
+  assert.equal(mapped.length, 41);
   assert.ok(mapped.every(group => groups.has(group)));
   const React = require("react"), {renderToStaticMarkup} = require("react-dom/server");
   const Component = require("../app/RestrictionImpact.tsx").default;
@@ -283,7 +283,7 @@ test("importance groups put Market Cap first and preserve one master restriction
   const clinical = html.indexOf('data-purpose-group="CLINICAL_RESULTS"');
   const fda = html.indexOf('data-purpose-group="FDA"');
   assert.ok(cap >= 0 && clinical > cap && fda > clinical, "Market Cap first, then Clinical Results, then FDA");
-  assert.equal((html.match(/aria-label="Priority for /g) || []).length, 39, "no duplicate editable master rows");
+  assert.equal((html.match(/aria-label="Priority for /g) || []).length, 41, "no duplicate editable master rows");
   assert.match(html, /GEM JR FS/);
   assert.match(html, /GEM JR FA/);
   assert.match(html, /GEM FS/);
@@ -319,8 +319,8 @@ test("compact default Restrictions view preserves editable rules and hidden diag
   assert.match(html, /Breakdown by Pipeline, GEM JR and GEM/);
   assert.match(html, /data-purpose-group="MARKET_CAP"/);
   assert.doesNotMatch(html, /0\. FULL STARTING UNIVERSE/);
-  assert.equal((html.match(/aria-label="Priority for /g) || []).length, 39);
-  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 39);
+  assert.equal((html.match(/aria-label="Priority for /g) || []).length, 41);
+  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 41);
   assert.match(html, /GEM JR FS/); assert.match(html, /GEM JR FA/);
   assert.match(html, /GEM FS/); assert.match(html, /GEM FA/);
 });
@@ -389,7 +389,7 @@ test("Market Cap always has a visible shortcut even when the catalog row is filt
   assert.match(html, /CURRENT MARKET-CAP RANGE/);
   assert.match(html, /ADD MARKET CAP TO PIPELINE/);
   assert.match(html, /SHOW MARKET CAP RESTRICTIONS/);
-  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39,"a shortcut must not duplicate editable rows");
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,41,"a shortcut must not duplicate editable rows");
   const {create,act}=require("react-test-renderer");
   const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
   global.IS_REACT_ACT_ENVIRONMENT=true;global.window={setInterval:()=>1,clearInterval(){}};
@@ -432,7 +432,7 @@ test("Pipeline, GEM JR and GEM selected restriction lists appear together at the
   assert.match(overview, /Successful Phase 3 independently verified/);
   assert.match(overview, /Verified PDUFA date source/);
   assert.equal((overview.match(/>ADD \/ REORDER<\/button>/g)||[]).length,3);
-  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39,"do not duplicate master editor rows");
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,41,"do not duplicate master editor rows");
   assert.equal(catalog.RESTRICTION_CATALOG.find(rule=>rule.id==="gem_registry").associations.join("|"),"GEM JR FS|GEM JR FA");
 });
 test("each top restriction list opens the editor for the corresponding stage", async()=>{
@@ -476,7 +476,7 @@ test("market cap thresholds appear in all restriction lists with current saved v
   assert.match(cards, /\$450M – \$8\.5B/);
   assert.match(cards, /Min \$310M/);
   assert.match(cards, /Max \$12B/);
-  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39);
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,41);
   assert.deepEqual(catalog.RESTRICTION_CATALOG.find(e=>e.id==="gem_registry").associations,["GEM JR FS","GEM JR FA"]);
   const {create,act}=require("react-test-renderer");
   const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
@@ -517,7 +517,7 @@ test("Pipeline, GEM JR and GEM lists are equally sized side by side in that orde
   assert.match(css,/min-width:750px/,"phone keeps three columns in a horizontally scrollable region");
   assert.match(css,/\.listOverviewScroll\s*\{[^}]*overflow-x:auto/);
   assert.equal((html.match(/data-restriction-list="/g)||[]).length,3);
-  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39);
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,41);
 });
 
 test("Remove from one restriction list preserves other memberships, values and compact scan numbering", () => {
@@ -599,3 +599,4 @@ test("Top and popup REMOVE buttons require confirmation and cancel does not chan
     global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;
   }
 });
+

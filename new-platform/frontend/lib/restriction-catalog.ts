@@ -60,6 +60,7 @@ const RESTRICTION_PURPOSE_BY_ID: Record<string, RestrictionPurposeGroupId> = {
   gem_phase3: "CLINICAL_RESULTS", alert_statistical_significance: "CLINICAL_RESULTS",
   alert_two_trial: "CLINICAL_RESULTS", alert_safety_cleanliness: "CLINICAL_RESULTS",
   fdaPath: "FDA", hold: "FDA", alert_priority_review: "FDA",
+  alert_fast_track: "FDA", alert_accelerated_approval: "FDA",
   alert_breakthrough_rmat: "FDA", alert_star_pilot: "FDA",
   alert_no_adcom: "FDA", alert_favorable_adcom: "FDA", alert_orphan_unmet: "FDA",
   public: "COMPANY", identity: "COMPANY",
@@ -282,3 +283,4 @@ export function restoreCatalogEntries(raw: unknown): CatalogEntry[] {
   }
   return [...defaults.map(entry => saved.get(entry.id) || entry), ...[...saved.values()].filter(entry => entry.id.startsWith("custom_")).slice(0, 100)];
 }
+

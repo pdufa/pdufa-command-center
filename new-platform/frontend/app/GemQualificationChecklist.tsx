@@ -80,6 +80,8 @@ type OptionalAlert = {key:string;title:string;goal:string;unit:string;options?:s
 const OPTIONAL_GROUPS:{heading:string;items:OptionalAlert[]}[]=[
  {heading:"1. Identify Regulatory Fast-Track Indicators",items:[
   {key:"priority_review",title:"Priority Review",goal:"6",unit:"month FDA review goal",number:true},
+  {key:"fast_track",title:"Fast Track",goal:"FDA Fast Track designation confirmed",unit:"designation"},
+  {key:"accelerated_approval",title:"Accelerated Approval",goal:"FDA accelerated approval granted",unit:"approval pathway"},
   {key:"breakthrough_rmat",title:"Breakthrough Therapy / RMAT",goal:"Either designation verified",unit:"designation",options:["Either designation verified","Breakthrough Therapy","RMAT"]},
   {key:"star_pilot",title:"STAR Pilot Program",goal:"FDA participation verified",unit:"participation",options:["FDA participation verified","FDA announcement","Official correspondence"]}]},
  {heading:"2. Evaluate Clinical Trial Data Strength",items:[
@@ -631,3 +633,4 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
 
  </>}</section>
 }
+
