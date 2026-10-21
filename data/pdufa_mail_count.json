@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "scope": "PDUFA_ONLY_EXCLUDING_INBOX_TRASH_SPAM",
+  "status": "CHECKED",
+  "checked_at_utc": "2026-10-21T13:20:49.558666+00:00",
+  "total_count": 87,
+  "unread_count": 85,
+  "excluded_labels": [
+    "INBOX",
+    "TRASH",
+    "SPAM"
+  ],
+  "folders_checked": 12
+}
