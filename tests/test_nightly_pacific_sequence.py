@@ -35,23 +35,23 @@ def clock(value):
 class PacificAdmissionTests(unittest.TestCase):
     def test_daylight_standard_and_wrong_offset_slots(self):
         for at, cron, expected in (
-            ('2026-10-15T04:00:00Z', '0 4 * * *', True),   # 9 PM PDT
-            ('2026-10-15T05:00:00Z', '0 5 * * *', False),  # wrong DST primary slot
-            ('2026-01-15T04:00:00Z', '0 4 * * *', False),  # too early in PST
-            ('2026-01-15T05:00:00Z', '0 5 * * *', True),   # 9 PM PST
+            ('2026-10-15T03:00:00Z', '0 3 * * *', True),   # 9 PM PDT
+            ('2026-10-15T04:00:00Z', '0 4 * * *', True),  # wrong DST primary slot
+            ('2026-01-15T03:00:00Z', '0 3 * * *', False),  # too early in PST
+            ('2026-01-15T04:00:00Z', '0 4 * * *', True),   # 9 PM PST
             ('2026-01-15T06:00:00Z', '0 6 * * *', False),  # retired 10 PM PST slot
             ('2026-10-15T06:00:00Z', '0 6 * * *', False),
-            ('2026-10-15T09:59:00Z', '0 4 * * *', True),
-            ('2026-10-15T10:00:00Z', '0 4 * * *', True),  # delayed schedule safely catches up
+            ('2026-10-15T09:59:00Z', '0 3 * * *', True),
+            ('2026-10-15T10:00:00Z', '0 3 * * *', True),  # delayed schedule safely catches up
         ):
             with self.subTest(at=at, cron=cron):
                 result = decision('schedule', cron, [], now=clock(at))
                 self.assertEqual(result['run'], expected)
 
         scheduler = read('pdufa-nightly-pacific-start.yml')
-        self.assertIn('name: PDUFA Daily 9:00 PM Pacific Start', scheduler)
+        self.assertIn('name: PDUFA Daily 8:00 PM Pacific Start', scheduler)
         for minute in ('0', '15', '30'):
-            for hour in ('4', '5'):
+            for hour in ('3', '4'):
                 self.assertIn(f"cron: '{minute} {hour} * * *'", scheduler)
         self.assertNotIn("cron: '0 6 * * *'", scheduler)
 
@@ -61,10 +61,10 @@ class PacificAdmissionTests(unittest.TestCase):
                          ('2026-01-15T09:05:00Z', '5 9 * * *')):
             with self.subTest(at=at):
                 self.assertTrue(decision('schedule', cron, [], now=clock(at))['run'])
-        self.assertFalse(decision('schedule', '5 7 * * *', [], now=clock('2026-10-15T04:30:00Z'))['run'])
+        self.assertFalse(decision('schedule', '5 7 * * *', [], now=clock('2026-10-15T03:30:00Z'))['run'])
 
     def test_frequent_recovery_sweep_is_dst_safe_and_deduplicates(self):
-        sweep = '3-53/10 4-10 * * *'
+        sweep = '3-53/10 3-10 * * *'
         scheduler = read('pdufa-nightly-pacific-start.yml')
         self.assertIn(f"cron: '{sweep}'", scheduler)
         for when, expected in (
@@ -89,7 +89,7 @@ class PacificAdmissionTests(unittest.TestCase):
                          now=clock('2026-10-16T05:13:00Z'))['run'])
 
     def test_daytime_catchup_does_not_duplicate_any_recorded_nightly_chain(self):
-        sweep = '3-53/10 4-10 * * *'
+        sweep = '3-53/10 3-10 * * *'
         # A delayed scheduled job the following morning must recover the
         # missing *previous* night, not start an unrelated daytime scan.
         late = clock('2026-10-16T16:43:00Z')  # 9:43 AM PDT
@@ -148,7 +148,7 @@ class PacificAdmissionTests(unittest.TestCase):
         self.assertTrue(decision('workflow_dispatch', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=clock('2026-10-15T03:30:00Z'))['run'])
-        self.assertTrue(decision('push', '', [], now=clock('2026-10-15T04:30:00Z'))['run'])
+        self.assertTrue(decision('push', '', [], now=clock('2026-10-15T03:30:00Z'))['run'])
 
 
 class SourceStageTests(unittest.TestCase):
