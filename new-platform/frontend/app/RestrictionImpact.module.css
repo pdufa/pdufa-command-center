@@ -105,8 +105,14 @@
 .listOverviewHeading small {font-size:12px;color:#405047;}
 .listOverviewScroll {max-width:100%;overflow-x:auto;border-radius:6px;}
 .listOverviewScroll:focus-visible {outline:3px solid #2675bc;outline-offset:2px;}
-.listOverviewGrid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch;}
+.listOverviewGrid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;}
 .listOverviewCard {min-width:0;border:2px solid #315d44;background:#fff;border-radius:7px;padding:12px;display:flex;flex-direction:column;gap:10px;}
+/* Pipeline is the large full-width first row; GEM JR and GEM form the second row. */
+.listOverviewCardPipeline {grid-column:1/-1;border-width:3px;background:#f4faf5;padding:18px;gap:14px;}
+.listOverviewCardPipeline .listOverviewCardHeading h4 {font-size:22px;}
+.listOverviewCardPipeline .listOverviewCardCount strong {font-size:30px;}
+.listOverviewCardPipeline .listOverviewMembers {min-height:145px;max-height:350px;}
+.listOverviewCardPipeline .listOverviewMembers li button {font-size:15px;min-height:42px;}
 .listOverviewCardHeading {display:flex;justify-content:space-between;align-items:center;gap:8px;}
 .listOverviewCardHeading h4 {margin:0;font-size:16px;}
 .listOverviewCardHeading span {font-size:12px;color:#3a5745;}
@@ -122,7 +128,22 @@
 .listOverviewMembers li button span {font-size:13px;overflow-wrap:anywhere;}
 .listOverviewMembers p {font-size:13px;margin:10px 0;color:#425749;}
 .listOverviewAction {width:100%;min-height:43px;}
-@media (max-width:780px){.listOverviewGrid{min-width:760px;grid-template-columns:repeat(3,minmax(0,1fr));}.listOverviewCard{padding:10px;}}
+@media (max-width:780px){
+  .listOverviewGrid {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .listOverviewCard {padding:10px;}
+  .listOverviewCardPipeline {grid-column:1/-1;padding:14px;}
+}
+@media (max-width:440px){
+  .listOverviewCard {padding:8px;}
+  .listOverviewCardHeading {align-items:flex-start;flex-wrap:wrap;}
+  .listOverviewCardHeading h4 {font-size:14px;}
+  .listOverviewCardCount strong {font-size:20px;}
+  .listOverviewCardPipeline .listOverviewCardHeading h4 {font-size:21px;}
+  .listOverviewCardPipeline .listOverviewCardCount strong {font-size:28px;}
+  .listOverviewMembers li button {gap:5px;min-width:0;}
+  .listOverviewMembers li button span {font-size:12px;}
+  .listOverviewAction {font-size:12px;padding:8px 4px;white-space:normal;}
+}
 
 /* Keep the saved Market Cap range visible directly under its restriction name. */
 .listOverviewRuleText {display:grid;gap:3px;min-width:0;}

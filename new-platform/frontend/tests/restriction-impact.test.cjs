@@ -497,3 +497,24 @@ test("market cap thresholds appear in all restriction lists with current saved v
     global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;
   }
 });
+
+test("Pipeline displays as the large full-width box above side-by-side GEM JR and GEM", () => {
+  const fs=require("node:fs"),path=require("node:path");
+  const React=require("react"),{renderToStaticMarkup}=require("react-dom/server");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  const html=renderToStaticMarkup(React.createElement(Component,{rows,asOf}));
+  const css=fs.readFileSync(path.resolve(__dirname,"../app/RestrictionImpact.module.css"),"utf8");
+  const pipeline=html.match(/<section[^>]+data-restriction-list="PIPELINE"[^>]*>/)?.[0]||"";
+  const junior=html.match(/<section[^>]+data-restriction-list="GEM_JR"[^>]*>/)?.[0]||"";
+  const gem=html.match(/<section[^>]+data-restriction-list="GEM"[^>]*>/)?.[0]||"";
+  assert.match(pipeline,/listOverviewCardPipeline/,"Pipeline gets distinct full-width styling");
+  assert.doesNotMatch(junior,/listOverviewCardPipeline/);
+  assert.doesNotMatch(gem,/listOverviewCardPipeline/);
+  assert.ok(html.indexOf(pipeline)<html.indexOf(junior)&&html.indexOf(junior)<html.indexOf(gem));
+  assert.match(css,/\.listOverviewGrid\s*\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css,/\.listOverviewCardPipeline\s*\{[^}]*grid-column:1\/-1/);
+  assert.doesNotMatch(css,/min-width:760px/,"no horizontal scrolling requirement on phone");
+  assert.match(css,/@media \(max-width:440px\)/,"narrow phones remain supported");
+  assert.equal((html.match(/data-restriction-list="/g)||[]).length,3);
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39);
+});

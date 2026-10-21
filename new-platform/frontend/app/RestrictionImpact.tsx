@@ -133,13 +133,13 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       <p>Market Cap first. Select a stage, set the restriction and see how many trials remain. FS/FA associations stay unchanged.</p></div>
       <div className={styles.buttons}><button type="button" className="secondary" disabled={loading} onClick={() => { setVersion(v => v + 1); onRefresh?.(); }}>{loading ? "REFRESHING…" : "REFRESH DATA"}</button></div></div>
     <section className={styles.listOverview} aria-label="Three restriction lists">
-      <div className={styles.listOverviewHeading}><h3>RESTRICTION LISTS</h3><small>Select a rule to change its position, or use ADD / REORDER to edit a list. Original FS/FA associations stay unchanged.</small></div>
+      <div className={styles.listOverviewHeading}><h3>RESTRICTION LISTS</h3><small>Pipeline is first, with GEM JR and GEM beneath it. Select a rule or use ADD / REORDER. Original FS/FA associations stay unchanged.</small></div>
       <div className={styles.listOverviewScroll} role="region" aria-label="Pipeline GEM JR and GEM restriction lists" tabIndex={0}>
         <div className={styles.listOverviewGrid}>
           {RESTRICTION_STAGES.map(stage=>{
             const selected=selectedRestrictionList(entries,stage);
             const stageResult=report.stages.find(item=>item.stage===stage);
-            return <section key={stage} className={styles.listOverviewCard} aria-label={stageLabel(stage)+" restriction list"} data-restriction-list={stage}>
+            return <section key={stage} className={styles.listOverviewCard + (stage==="PIPELINE" ? " "+styles.listOverviewCardPipeline : "")} aria-label={stageLabel(stage)+" restriction list"} data-restriction-list={stage}>
               <div className={styles.listOverviewCardHeading}>
                 <h4>{stageLabel(stage).toUpperCase()}</h4>
                 <span>{selected.length} active</span>
