@@ -97,6 +97,14 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     const dest=restrictionPurposeGroup(entry||{id})==="MARKET_CAP"?"PIPELINE" : (entry?.stage||"PIPELINE");
     setListRuleId(id);setListStage(dest);setListPosition(0);setListPopup(true);
   }
+  function openStageListPopup(stage: Exclude<RestrictionStage, "">, ruleId?:string, position=0) {
+    const list=selectedRestrictionList(entries,stage);
+    const suggested=stage==="PIPELINE"?"gem_marketcap":stage==="GEM_JR"?"gem_phase3":"gem_pdufa";
+    setListStage(stage);
+    setListRuleId(ruleId||list[0]?.id||suggested);
+    setListPosition(position);
+    setListPopup(true);
+  }
   function applyListSelection() {
     const chosen=entries.find(entry=>entry.id===listRuleId);
     if(!chosen||catalogDefinition(chosen).warning)return;
@@ -124,6 +132,34 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     <div className={styles.heading}><div><h2 id="restriction-impact-title">RESTRICTIONS</h2>
       <p>Market Cap first. Select a stage, set the restriction and see how many trials remain. FS/FA associations stay unchanged.</p></div>
       <div className={styles.buttons}><button type="button" className="secondary" disabled={loading} onClick={() => { setVersion(v => v + 1); onRefresh?.(); }}>{loading ? "REFRESHING…" : "REFRESH DATA"}</button></div></div>
+    <section className={styles.listOverview} aria-label="Three restriction lists">
+      <div className={styles.listOverviewHeading}><h3>RESTRICTION LISTS</h3><small>Select a rule to change its position, or use ADD / REORDER to edit a list. Original FS/FA associations stay unchanged.</small></div>
+      <div className={styles.listOverviewScroll} role="region" aria-label="Pipeline GEM JR and GEM restriction lists" tabIndex={0}>
+        <div className={styles.listOverviewGrid}>
+          {RESTRICTION_STAGES.map(stage=>{
+            const selected=selectedRestrictionList(entries,stage);
+            const stageResult=report.stages.find(item=>item.stage===stage);
+            return <section key={stage} className={styles.listOverviewCard} aria-label={stageLabel(stage)+" restriction list"} data-restriction-list={stage}>
+              <div className={styles.listOverviewCardHeading}>
+                <h4>{stageLabel(stage).toUpperCase()}</h4>
+                <span>{selected.length} active</span>
+              </div>
+              <div className={styles.listOverviewCardCount}><strong>{stageResult?count(stageResult.remaining):"—"}</strong><span>trials remain after this stage</span></div>
+              <div className={styles.listOverviewMembers}>
+                {selected.length?<ol>{selected.map((entry,i)=><li key={entry.id}>
+                  <button type="button" aria-label={"Edit "+catalogDefinition(entry).title+" in "+stageLabel(stage)+" list"}
+                    onClick={()=>openStageListPopup(stage,entry.id,i)}>
+                    <strong>#{catalogStagePriority(entry,stage)}</strong><span>{catalogDefinition(entry).title}</span>
+                  </button>
+                </li>)}</ol>:<p>No active restrictions yet.</p>}
+              </div>
+              <button type="button" className={styles.listOverviewAction} aria-label={"Edit "+stageLabel(stage)+" restriction list"}
+                onClick={()=>openStageListPopup(stage)}>ADD / REORDER</button>
+            </section>;
+          })}
+        </div>
+      </div>
+    </section>
     <div className={styles.marketCapShortcut} aria-label="Market cap restriction quick access">
       <div><strong>CURRENT MARKET-CAP RANGE</strong>
         <p>Minimum ${marketCapEntry?.value || "300"}M · Maximum ${marketCapEntry?.maximum || "10000"}M</p>

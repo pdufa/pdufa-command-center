@@ -97,3 +97,29 @@
 .marketCapShortcut p {margin:3px 0 1px;}
 .marketCapShortcut small {display:block;font-size:12px;color:#405047;}
 @media (max-width:640px){.marketCapShortcut .buttons{width:100%;}.marketCapShortcut .buttons button{width:100%;}}
+
+/* All three selected restriction lists are immediately visible below the title. */
+.listOverview {margin:12px 0 16px;min-width:0;}
+.listOverviewHeading {display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:9px;}
+.listOverviewHeading h3 {margin:0;font-size:17px;}
+.listOverviewHeading small {font-size:12px;color:#405047;}
+.listOverviewScroll {max-width:100%;overflow-x:auto;border-radius:6px;}
+.listOverviewScroll:focus-visible {outline:3px solid #2675bc;outline-offset:2px;}
+.listOverviewGrid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch;}
+.listOverviewCard {min-width:0;border:2px solid #315d44;background:#fff;border-radius:7px;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.listOverviewCardHeading {display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.listOverviewCardHeading h4 {margin:0;font-size:16px;}
+.listOverviewCardHeading span {font-size:12px;color:#3a5745;}
+.listOverviewCardCount {display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;background:#f0f8f1;padding:8px;border-radius:5px;}
+.listOverviewCardCount strong {font-size:23px;font-variant-numeric:tabular-nums;}
+.listOverviewCardCount span {font-size:12px;}
+.listOverviewMembers {flex:1;overflow-y:auto;min-height:100px;max-height:260px;}
+.listOverviewMembers ol {list-style:none;padding:0;margin:0;}
+.listOverviewMembers li {border-bottom:1px solid #e0e9e0;}
+.listOverviewMembers li button {width:100%;display:flex;gap:8px;align-items:flex-start;text-align:left;border:0;background:transparent;color:#17291e;padding:8px 4px;min-height:36px;cursor:pointer;font:inherit;}
+.listOverviewMembers li button:hover,.listOverviewMembers li button:focus-visible {background:#eaf4eb;}
+.listOverviewMembers li button strong {min-width:26px;font-variant-numeric:tabular-nums;}
+.listOverviewMembers li button span {font-size:13px;overflow-wrap:anywhere;}
+.listOverviewMembers p {font-size:13px;margin:10px 0;color:#425749;}
+.listOverviewAction {width:100%;min-height:43px;}
+@media (max-width:780px){.listOverviewGrid{min-width:760px;grid-template-columns:repeat(3,minmax(0,1fr));}.listOverviewCard{padding:10px;}}

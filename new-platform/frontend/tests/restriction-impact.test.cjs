@@ -408,3 +408,50 @@ test("Market Cap always has a visible shortcut even when the catalog row is filt
     assert.equal(renderer.root.findByProps({"aria-label":"Restriction to add"}).props.value,"gem_marketcap");
   } finally {if(renderer)await act(async()=>renderer.unmount());global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;}
 });
+
+test("Pipeline, GEM JR and GEM selected restriction lists appear together at the top of the page", () => {
+  const React=require("react"), {renderToStaticMarkup}=require("react-dom/server");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  const modified=catalog.defaultCatalogEntries().map(entry=>({...entry}));
+  const cap=modified.find(entry=>entry.id==="gem_marketcap");
+  cap.stage="PIPELINE";cap.enabled=true;cap.priority="1";
+  const publicIssuer=modified.find(entry=>entry.id==="public");
+  publicIssuer.enabled=true;publicIssuer.priority="2";
+  const jr=modified.find(entry=>entry.id==="gem_phase3");
+  jr.stage="GEM_JR";jr.enabled=true;jr.priority="1";
+  const gem=modified.find(entry=>entry.id==="gem_pdufa");
+  gem.stage="GEM";gem.enabled=true;gem.priority="1";
+  const html=renderToStaticMarkup(React.createElement(Component,{rows,asOf,managedEntries:modified}));
+  assert.equal((html.match(/data-restriction-list="/g)||[]).length,3);
+  assert.ok(html.indexOf('data-restriction-list="PIPELINE"')<html.indexOf('data-restriction-list="GEM_JR"'));
+  assert.ok(html.indexOf('data-restriction-list="GEM_JR"')<html.indexOf('data-restriction-list="GEM"'));
+  assert.ok(html.indexOf("Three restriction lists")<html.indexOf("Market cap restriction quick access"),"all three must be above market-cap shortcut");
+  const overview=html.slice(html.indexOf('aria-label="Three restriction lists"'),html.indexOf('aria-label="Market cap restriction quick access"'));
+  assert.match(overview, /Current market-cap range/);
+  assert.match(overview, /Publicly traded company/);
+  assert.match(overview, /Successful Phase 3 independently verified/);
+  assert.match(overview, /Verified PDUFA date source/);
+  assert.equal((overview.match(/ADD \/ REORDER/g)||[]).length,3);
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39,"do not duplicate master editor rows");
+  assert.equal(catalog.RESTRICTION_CATALOG.find(rule=>rule.id==="gem_registry").associations.join("|"),"GEM JR FS|GEM JR FA");
+});
+test("each top restriction list opens the editor for the corresponding stage", async()=>{
+  const React=require("react"),{create,act}=require("react-test-renderer");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
+  global.IS_REACT_ACT_ENVIRONMENT=true;
+  global.window={setInterval:()=>1,clearInterval(){}};
+  global.fetch=async()=>({ok:true,json:async()=>evidence});
+  let renderer;
+  try {
+    await act(async()=>{renderer=create(React.createElement(Component,{rows,asOf}));});
+    for(const stage of ["PIPELINE","GEM_JR","GEM"]){
+      const label=stage==="GEM_JR"?"GEM JR":stage==="PIPELINE"?"PIPELINE":"GEM";
+      const button=renderer.root.findByProps({"aria-label":"Edit "+label+" restriction list"});
+      await act(async()=>{button.props.onClick();});
+      assert.equal(renderer.root.findByProps({"aria-label":"Destination restriction list"}).props.value,stage);
+      assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Restriction list popup"}).length,1);
+      await act(async()=>{renderer.root.findAllByType("button").find(b=>b.children.join("")==="CANCEL").props.onClick();});
+    }
+  } finally {if(renderer)await act(async()=>renderer.unmount());global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;}
+});
