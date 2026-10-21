@@ -179,7 +179,7 @@ export default function PublishedScansPanel() {
     <div className="scans-actions-grid">
     <div className="source-health">
       <strong>Run existing scanners from this dashboard</strong>
-      <p className="subtle">Manual commands use the original GitHub Actions workflows; the automatic nightly scan is scheduled for 9 PM Pacific. An accepted request is not a completed scan.</p>
+      <p className="subtle">Manual commands use the original GitHub Actions workflows; the automatic nightly scan is scheduled for 8 PM Pacific. An accepted request is not a completed scan.</p>
       <div style={{display:"flex", flexWrap:"wrap", alignItems:"end", gap:"0.6rem"}}>
         <label>Action
           <select value={action} onChange={e => setAction(e.target.value as ScanAction)}>
