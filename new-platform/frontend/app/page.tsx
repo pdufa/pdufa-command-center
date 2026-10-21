@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Workspace from "./Workspace";
+import SiteHealthStatus from "./SiteHealthStatus";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 type Selections = Record<string, boolean>;
@@ -198,7 +199,10 @@ export default function Home() {
 
   return (
     <main className="shell">
-      <div className="topline">PDUFA COMMAND CENTER · PUBLISHED DASHBOARD</div>
+      <div className="topline" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+        <span>PDUFA COMMAND CENTER · PUBLISHED DASHBOARD</span>
+        <SiteHealthStatus />
+      </div>
       <header className="head">
         <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT → TRADING · Trial counts directly below navigation</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>

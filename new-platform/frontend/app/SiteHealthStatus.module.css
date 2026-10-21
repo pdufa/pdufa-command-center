@@ -1,0 +1,32 @@
+.trigger { --health-color:#64706b; --health-bg:#eef1ef; display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;background:var(--health-bg);color:#16291d;border:2px solid var(--health-color);text-align:left;padding:8px 12px;letter-spacing:normal; }
+.trigger:hover { background:var(--health-bg);filter:brightness(.97); }
+.trigger strong { display:block;font-size:12px;letter-spacing:.05em; }
+.triggerLabel { display:block;font-size:12px;font-weight:500; }
+.good { --health-color:#218047; --health-bg:#e6f4e9; }
+.warning { --health-color:#ad7b0c; --health-bg:#fff2d3; }
+.failed { --health-color:#bb3030; --health-bg:#fde8e7; }
+.unknown { --health-color:#64706b; --health-bg:#eef1ef; }
+.dot { display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--health-color,#64706b);flex-shrink:0; }
+.dialog { padding:0;width:min(680px,calc(100vw - 24px));max-width:680px;max-height:85vh;max-height:85svh;overflow:auto;overscroll-behavior:contain;color:#172b1b;background:#fff;border:2px solid #172b1b;border-radius:12px;box-shadow:0 16px 70px #0005; }
+.dialog::backdrop { background:#10261880; }
+.dialogHeader { position:sticky;top:0;z-index:1;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #d6dfd7; }
+.dialogHeader h2 { margin:0;font-size:20px; }
+.dialogHeader p { margin:4px 0 0;color:#4c6151;font-size:13px; }
+.dialogHeader button { min-height:44px;white-space:nowrap; }
+.overall { display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 16px 10px;padding:14px;background:var(--health-bg);border-radius:8px; }
+.overall>span:last-child { margin-left:auto;font-size:13px; }
+.explanation { font-size:12px;color:#4c6151;margin:0 16px 12px; }
+.checks { margin:0 16px; }
+.check { border-top:1px solid #dce4dd; }
+.check summary { min-height:58px;display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:9px 0; }
+.check summary::-webkit-details-marker { display:none; }
+.checkLabel { flex:1;min-width:0;font-weight:700;font-size:14px;overflow-wrap:anywhere; }
+.checkValue { text-align:right;max-width:50%;font-size:13px;overflow-wrap:anywhere; }
+.checkValue small { display:block;color:#536358;font-size:11px;margin-top:3px; }
+.check p { margin:0 0 12px 22px;font-size:13px;color:#405345; }
+.check .checkedAt { font-size:12px;color:#536358; }
+.dialogFooter { display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#f1f6ef;border-top:1px solid #d6dfd7;padding:14px 16px;font-size:12px;color:#405345; }
+.dialogFooter button { min-height:44px; }
+.mailNote { font-size:12px;margin:12px 16px;color:#536358; }
+.error { color:#9b2727;margin:12px 16px;font-size:13px; }
+@media(max-width:480px) { .dialogHeader{padding:12px}.checkLabel{font-size:13px}.checkValue{font-size:12px}.checks{margin:0 12px}.overall{margin:12px}.overall>span:last-child{margin-left:22px}.dialogFooter{padding:12px} }

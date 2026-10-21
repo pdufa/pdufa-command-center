@@ -1,0 +1,50 @@
+name: PDUFA Read-Only Email Count
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/pdufa_mail_count.py'
+      - '.github/workflows/pdufa-mail-count.yml'
+  workflow_run:
+    workflows: [PDUFA Overnight Sequential Scans]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-readonly-mail-count
+  cancel-in-progress: false
+
+jobs:
+  count:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify read-only counting and Inbox exclusions
+        run: python -m unittest discover -s tests -p 'test_pdufa_mail_count.py' -v
+      - name: Count PDUFA labels without reading bodies or changing mail
+        env:
+          PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
+          PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
+        run: python -m scripts.pdufa_mail_count
+      - name: Publish aggregate count and timestamp only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/pdufa_mail_count.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish read-only PDUFA email count'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
