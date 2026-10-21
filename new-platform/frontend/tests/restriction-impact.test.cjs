@@ -324,3 +324,59 @@ test("compact default Restrictions view preserves editable rules and hidden diag
   assert.match(html, /GEM JR FS/); assert.match(html, /GEM JR FA/);
   assert.match(html, /GEM FS/); assert.match(html, /GEM FA/);
 });
+
+test("Add to List inserts Market Cap in Pipeline at #1 without changing other list ranks or FS/FA presets", () => {
+  const entries=catalog.defaultCatalogEntries().map(entry=>({...entry}));
+  const existing=entries.find(e=>e.id==="public");existing.priority="1";existing.enabled=true;
+  const cap=entries.find(e=>e.id==="gem_marketcap");
+  cap.stage="GEM_JR";cap.priority="8900";cap.enabled=true;
+  const beforeJunior=catalog.selectedRestrictionList(entries,"GEM_JR").map(entry=>entry.id);
+  const original=JSON.stringify(entries);
+  const mapped=catalog.insertRestrictionIntoList(entries,"gem_marketcap","PIPELINE",0);
+  assert.equal(JSON.stringify(entries),original);
+  assert.equal(new Set(mapped.map(entry=>entry.id)).size,entries.length);
+  assert.deepEqual(catalog.selectedRestrictionList(mapped,"PIPELINE").slice(0,2).map(entry=>entry.id),["gem_marketcap","public"]);
+  assert.deepEqual(catalog.selectedRestrictionList(mapped,"GEM_JR").map(entry=>entry.id),beforeJunior);
+  assert.equal(catalog.catalogStagePriority(mapped.find(e=>e.id==="gem_marketcap"),"PIPELINE"),"1");
+  assert.equal(catalog.catalogStagePriority(mapped.find(e=>e.id==="gem_marketcap"),"GEM_JR"),"8900");
+  assert.equal(mapped.find(e=>e.id==="gem_marketcap").priority,"8900");
+  assert.deepEqual(catalog.RESTRICTION_CATALOG.find(rule=>rule.id==="gem_registry").associations,["GEM JR FS","GEM JR FA"]);
+  assert.deepEqual(catalog.RESTRICTION_CATALOG.find(rule=>rule.id==="runway").associations,["GEM JR FS"]);
+  const saved=catalog.restoreCatalogEntries(mapped);
+  assert.deepEqual(catalog.selectedRestrictionList(saved,"PIPELINE").slice(0,2).map(entry=>entry.id),["gem_marketcap","public"]);
+  const current=settings();current.capBasis="current";
+  const result=catalog.calculateCatalogImpact(rows,saved,current,evidence,asOf);
+  assert.equal(result.steps.get("gem_marketcap").step,1);
+  assert.equal(result.stages[0].excluded,2);
+});
+test("Add to List preview does not mutate existing stored catalog and inactive lists stay inactive",()=>{
+  const entries=catalog.defaultCatalogEntries();
+  const before=JSON.stringify(entries);
+  const next=catalog.insertRestrictionIntoList(entries,"gem_marketcap","PIPELINE",0);
+  assert.equal(JSON.stringify(entries),before);
+  assert.equal(catalog.selectedRestrictionList(entries,"PIPELINE").length,0);
+  assert.equal(catalog.selectedRestrictionList(next,"PIPELINE")[0].id,"gem_marketcap");
+  assert.equal(catalog.catalogStagePriority(next.find(e=>e.id==="gem_marketcap"),"GEM_JR"),"");
+});
+test("restriction popup displays list, defaults Market Cap to Pipeline #1, and applies chosen position",async()=>{
+  const React=require("react"),{create,act}=require("react-test-renderer");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
+  global.IS_REACT_ACT_ENVIRONMENT=true;global.window={setInterval:()=>1,clearInterval(){}};
+  global.fetch=async()=>({ok:true,json:async()=>evidence});
+  let renderer;
+  try {
+    await act(async()=>{renderer=create(React.createElement(Component,{rows,asOf}));});
+    const add=renderer.root.findByProps({"aria-label":"Add Current market-cap range to a list"});
+    await act(async()=>{add.props.onClick();});
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Restriction list popup"}).length,1);
+    assert.equal(renderer.root.findByProps({"aria-label":"Destination restriction list"}).props.value,"PIPELINE");
+    assert.equal(renderer.root.findByProps({"aria-label":"Restriction list position"}).props.value,0);
+    const preview=renderer.root.findAllByType("strong").map(n=>n.children.join("")).join(" ");
+    assert.match(preview,/PREVIEW/);
+    const apply=renderer.root.findAllByType("button").find(n=>String(n.children.join("")).includes("APPLY TO PIPELINE LIST"));
+    await act(async()=>{apply.props.onClick();});
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Restriction list popup"}).length,0);
+    assert.equal(renderer.root.findByProps({"aria-label":"Priority for Current market-cap range"}).props.value,"1");
+  } finally {if(renderer)await act(async()=>renderer.unmount());global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;}
+});

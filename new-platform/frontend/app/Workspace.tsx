@@ -16,7 +16,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
-import { catalogStages, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
+import { catalogStages, catalogStagePriority, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
@@ -33,7 +33,7 @@ function gemAllowedKeys(stage:"GEM_JR"|"GEM"){
 }
 function selectedGemKeys(entries:CatalogEntry[],stage:"GEM_JR"|"GEM"){
   const allowed=gemAllowedKeys(stage);
-  return [...new Set(entries.filter(entry=>entry.enabled&&!!entry.priority&&catalogStages(entry).includes(stage))
+  return [...new Set(entries.filter(entry=>entry.enabled&&!!catalogStagePriority(entry,stage)&&catalogStages(entry).includes(stage))
     .map(entry=>catalogGemKey(entry.id)).filter(key=>allowed.has(key)))];
 }
 type Factor = { label: string; weight: number; earned: number | null; evidence: string };
@@ -754,8 +754,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // A changed master selection/target invalidates old completed scan results.
   // Live previews are recomputed by the existing GEM checklist against the new rules.
   const masterScanFingerprint=useMemo(()=>JSON.stringify(masterRestrictions
-    .filter(entry=>entry.enabled&&!!entry.priority&&catalogStages(entry).some(stage=>stage==="GEM_JR"||stage==="GEM"))
-    .map(entry=>[entry.id,entry.stage,entry.additionalStages,entry.priority,entry.value,entry.maximum])),[masterRestrictions]);
+    .filter(entry=>entry.enabled&&catalogStages(entry).some(stage=>(stage==="GEM_JR"||stage==="GEM")&&!!catalogStagePriority(entry,stage)))
+    .map(entry=>[entry.id,entry.stage,entry.additionalStages,entry.priority,entry.stagePriorities,entry.value,entry.maximum])),[masterRestrictions]);
   const lastMasterScanFingerprint=useRef<string|null>(null);
   useEffect(()=>{
     if(!masterRestrictionsReady)return;
@@ -772,11 +772,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       const key=catalogGemKey(entry.id);
       if(!key || !allowed.has(key))return entry;
       const assigned=catalogStages(entry),has=assigned.includes(stage),wants=desired.has(key);
-      if(has===wants && (!wants || entry.enabled&&!!entry.priority))return entry;
+      if(has===wants && (!wants || entry.enabled&&!!catalogStagePriority(entry,stage)))return entry;
       const stages=wants?[...assigned.filter(s=>s!==stage),stage]:assigned.filter(s=>s!==stage);
       const primary=stages.includes(entry.stage as "PIPELINE"|"GEM_JR"|"GEM")?entry.stage:(stages[0]||"");
       return {...entry,stage:primary,additionalStages:stages.filter(s=>s!==primary),
-        enabled:wants?true:stages.length>0&&entry.enabled,priority:wants?(entry.priority||"1"):stages.length?entry.priority:""};
+        enabled:wants?true:stages.length>0&&entry.enabled,priority:wants?(entry.priority||"1"):stages.length?entry.priority:"",
+        stagePriorities:{...entry.stagePriorities,[stage]:wants?(catalogStagePriority(entry,stage)||"1"):""}};
     }));
   }
   // Automatically fetch the published snapshot once on mount; manual refresh remains available.

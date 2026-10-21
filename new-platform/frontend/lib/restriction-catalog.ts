@@ -6,7 +6,7 @@ import { RESTRICTIONS, restrictionVerdict, type ImpactRecord,
 export type RestrictionStage = "" | "PIPELINE" | "GEM_JR" | "GEM";
 export const RESTRICTION_STAGES: Exclude<RestrictionStage, "">[] = ["PIPELINE", "GEM_JR", "GEM"];
 export type CustomField = "note" | "marketCapMillions" | "runwayMonths" | "pdufaDays" | "rvol" | "rsi14" | "avgDollarVolume20" | "close";
-export type CatalogEntry = { id: string; enabled: boolean; priority?: string; stage: RestrictionStage; additionalStages?: Exclude<RestrictionStage, "">[]; value: string; maximum: string;
+export type CatalogEntry = { id: string; enabled: boolean; priority?: string; stage: RestrictionStage; additionalStages?: Exclude<RestrictionStage, "">[]; stagePriorities?: Partial<Record<Exclude<RestrictionStage, "">, string>>; value: string; maximum: string;
   title?: string; field?: CustomField; operator?: ">=" | "<=" };
 export type CatalogDefinition = { id: string; title: string; help: string; category: string; value?: string;
   maximum?: string; unit?: string; warning?: boolean; numeric?: boolean; associations?: string[] };
@@ -85,6 +85,34 @@ export function restrictionPurposeGroup(entry: Pick<CatalogEntry, "id" | "field"
 export function catalogStages(entry:CatalogEntry):Exclude<RestrictionStage,"">[] {
   return [...new Set([entry.stage, ...(entry.additionalStages||[])].filter((value):value is Exclude<RestrictionStage,"">=>RESTRICTION_STAGES.includes(value as Exclude<RestrictionStage,"">)))];
 }
+/** Per-list priority keeps other stages intact when adding/reordering one list. */
+export function catalogStagePriority(entry: CatalogEntry, stage: Exclude<RestrictionStage, "">): string {
+  return Object.prototype.hasOwnProperty.call(entry.stagePriorities || {}, stage)
+    ? (entry.stagePriorities?.[stage] || "") : (entry.priority || "");
+}
+export function selectedRestrictionList(entries: CatalogEntry[], stage: Exclude<RestrictionStage, "">): CatalogEntry[] {
+  return entries.filter(entry => catalogStages(entry).includes(stage) && entry.enabled &&
+    !!catalogStagePriority(entry,stage) && !catalogDefinition(entry).warning)
+    .sort((a,b)=>Number(catalogStagePriority(a,stage))-Number(catalogStagePriority(b,stage)));
+}
+/** Insert or move a single master rule; never changes static FS/FA associations. */
+export function insertRestrictionIntoList(entries: CatalogEntry[], id: string, stage: Exclude<RestrictionStage, "">, index: number): CatalogEntry[] {
+  const picked = entries.find(entry=>entry.id===id);
+  if(!picked || catalogDefinition(picked).warning || !RESTRICTION_STAGES.includes(stage))return entries;
+  const priorList=selectedRestrictionList(entries,stage).filter(entry=>entry.id!==id);
+  const at=Number.isFinite(index)?Math.max(0,Math.min(priorList.length,Math.trunc(index))):0;
+  const ordered=[...priorList.slice(0,at),picked,...priorList.slice(at)];
+  const ranks=new Map(ordered.map((entry,i)=>[entry.id,String(i+1)]));
+  return entries.map(entry=>{
+    const rank=ranks.get(entry.id);
+    if(!rank)return entry;
+    if(entry.id!==id)return {...entry,stagePriorities:{...entry.stagePriorities,[stage]:rank}};
+    const otherStages=catalogStages(entry).filter(value=>value!==stage);
+    const savedOther=Object.fromEntries(otherStages.map(value=>[value,catalogStagePriority(entry,value)]));
+    return {...entry,stage,additionalStages:otherStages,enabled:true,priority:entry.priority||"1",
+      stagePriorities:{...savedOther,...entry.stagePriorities,[stage]:rank}};
+  });
+}
 export function defaultCatalogEntries(): CatalogEntry[] {
   return RESTRICTION_CATALOG.map(rule => ({ id: rule.id, enabled: rule.category === "Approved Pipeline rule",
     stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", additionalStages: [], priority: "", value: rule.value || "", maximum: rule.maximum || "" }));
@@ -161,9 +189,10 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
   };
   for (const stage of RESTRICTION_STAGES) {
     const beforeStage = summary().remaining;
-    for (const entry of entries.filter(item => catalogStages(item).includes(stage)).sort((a,b) => Number(a.priority || 0) - Number(b.priority || 0))) {
+    for (const entry of entries.filter(item => catalogStages(item).includes(stage)).sort((a,b) => Number(catalogStagePriority(a,stage) || 0) - Number(catalogStagePriority(b,stage) || 0))) {
       const a = alone(entry), before = summary().remaining, newlyExcludedIds = new Set<string>();
-      const used = entry.enabled && !!entry.priority && Number(entry.priority) > 0 && !catalogDefinition(entry).warning;
+      const rank=catalogStagePriority(entry,stage);
+      const used = entry.enabled && !!rank && Number(rank) > 0 && !catalogDefinition(entry).warning;
       if (used) for (let i = 0; i < rows.length; i++) {
         const id = rows[i].id, prior = states.get(id)!;
         if (prior === "FAIL") continue;
@@ -174,7 +203,7 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
         step: used ? ++stepNumber : null, before, newlyExcluded: newlyExcludedIds.size, ...summary(), newlyExcludedIds });
     }
     const s = summary(); stages.push({ stage, before: beforeStage, ...s, excluded: beforeStage - s.remaining });
-    if (stage === "GEM_JR" && entries.some(e => catalogStages(e).includes(stage) && e.enabled && !!e.priority && !catalogDefinition(e).warning)) junior = new Map(states);
+    if (stage === "GEM_JR" && entries.some(e => catalogStages(e).includes(stage) && e.enabled && !!catalogStagePriority(e,stage) && !catalogDefinition(e).warning)) junior = new Map(states);
   }
   for (const entry of entries.filter(item => catalogStages(item).length === 0)) {
     const a = alone(entry); steps.set(entry.id, { id: entry.id, stage: "", alonePass: a.alonePass, aloneFail: a.aloneFail, aloneUnknown: a.aloneUnknown,
@@ -192,7 +221,11 @@ export function restoreCatalogEntries(raw: unknown): CatalogEntry[] {
     const e = entry as CatalogEntry;
     if (typeof e.id !== "string" || !stages.has(e.stage) || typeof e.enabled !== "boolean" || typeof e.value !== "string" || typeof e.maximum !== "string") return null;
     if (e.id.startsWith("custom_") && (typeof e.title !== "string" || !e.title.trim() || !fields.has(e.field || ""))) return null;
-    return { id: e.id.slice(0, 100), enabled: e.enabled && !!e.priority, priority: typeof e.priority === "string" && /^[1-9]\d{0,3}$/.test(e.priority) ? e.priority : "", stage: e.stage, additionalStages: Array.isArray(e.additionalStages) ? [...new Set(e.additionalStages.filter(stage => stage !== e.stage && RESTRICTION_STAGES.includes(stage)))].slice(0, 2) : [], value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
+    return { id: e.id.slice(0, 100), enabled: e.enabled && (!!e.priority || Object.values(e.stagePriorities || {}).some(Boolean)), priority: typeof e.priority === "string" && /^[1-9]\d{0,3}$/.test(e.priority) ? e.priority : "", stage: e.stage, additionalStages: Array.isArray(e.additionalStages) ? [...new Set(e.additionalStages.filter(stage => stage !== e.stage && RESTRICTION_STAGES.includes(stage)))].slice(0, 2) : [], stagePriorities:Object.fromEntries(RESTRICTION_STAGES.flatMap(stage=>{
+      const value=e.stagePriorities?.[stage];
+      return typeof value==="string" && (value==="" || /^[1-9]\\d{0,3}$/.test(value)) ? [[stage,value]] : [];
+    })) as Partial<Record<Exclude<RestrictionStage, "">, string>>,
+    value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
       ...(e.id.startsWith("custom_") ? { title: e.title!.slice(0, 400), field: e.field, operator: e.operator === "<=" ? "<=" : ">=" } : {}) };
   };
   const saved = new Map(raw.slice(0, 140).map(clean).filter((entry): entry is CatalogEntry => !!entry).map(entry => [entry.id, entry]));

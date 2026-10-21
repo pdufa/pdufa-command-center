@@ -2,7 +2,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { defaultRestrictionSettings, isRegisteredTrial, type ImpactRecord, type RestrictionEvidence } from "../lib/restriction-impact";
 import { calculateCatalogImpact, catalogDefinition, catalogVerdict, defaultCatalogEntries, restoreCatalogEntries,
-  catalogStages, RESTRICTION_STAGES, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
+  catalogStages, catalogStagePriority, selectedRestrictionList, insertRestrictionIntoList, RESTRICTION_STAGES, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
 import styles from "./RestrictionImpact.module.css";
 
 const count = (n: number) => n.toLocaleString("en-US");
@@ -32,6 +32,10 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const [error, setError] = useState(""), [loading, setLoading] = useState(false), [version, setVersion] = useState(0);
   const [inspection, setInspection] = useState<Inspection | null>(null), [page, setPage] = useState(0);
   const [scanOpen,setScanOpen]=useState(false);
+  const [listPopup,setListPopup]=useState(false);
+  const [listStage,setListStage]=useState<"PIPELINE"|"GEM_JR"|"GEM">("PIPELINE");
+  const [listRuleId,setListRuleId]=useState("gem_marketcap");
+  const [listPosition,setListPosition]=useState(0);
   const refreshRef = useRef(onRefresh);
   useEffect(() => { refreshRef.current = onRefresh; }, [onRefresh]);
   useEffect(() => {
@@ -76,6 +80,27 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       .map(group => ({ ...group, members: section.members.filter(entry => restrictionPurposeGroup(entry) === group.id) }))
       .filter(group => group.members.length > 0),
   })).filter(section => section.groups.length > 0);
+  const listEntries = selectedRestrictionList(entries,listStage);
+  const positionOptions = listEntries.filter(entry=>entry.id!==listRuleId);
+  const proposedEntries = useMemo(()=>listPopup
+    ? insertRestrictionIntoList(entries,listRuleId,listStage,listPosition) : entries,
+    [entries,listRuleId,listStage,listPosition,listPopup]);
+  const proposedReport = useMemo(()=>listPopup ? calculateCatalogImpact(scoped,proposedEntries,settings,evidence,asOf) : null,
+    [listPopup,scoped,proposedEntries,settings,evidence,asOf]);
+  const currentStage = report.stages.find(item=>item.stage===listStage);
+  const proposedStage = proposedReport?.stages.find(item=>item.stage===listStage);
+  function openListPopup(id:string) {
+    const entry=entries.find(item=>item.id===id);
+    const dest=restrictionPurposeGroup(entry||{id})==="MARKET_CAP"?"PIPELINE" : (entry?.stage||"PIPELINE");
+    setListRuleId(id);setListStage(dest);setListPosition(0);setListPopup(true);
+  }
+  function applyListSelection() {
+    const chosen=entries.find(entry=>entry.id===listRuleId);
+    if(!chosen||catalogDefinition(chosen).warning)return;
+    setEntries(current=>insertRestrictionIntoList(current,listRuleId,listStage,listPosition));
+    setSaved("Restriction added to "+stageLabel(listStage)+" list");
+    setListPopup(false);
+  }
   const selectedEntry = entries.find(entry => entry.id === inspection?.id), selectedStep = report.steps.get(inspection?.id || "") || (selectedEntry ? report.steps.get(catalogStages(selectedEntry)[0] + "|" + selectedEntry.id) : undefined);
   const inspected = useMemo(() => {
     if (!inspection || !selectedEntry || !selectedStep) return [];
@@ -96,7 +121,7 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     <div className={styles.heading}><div><h2 id="restriction-impact-title">RESTRICTIONS</h2>
       <p>Market Cap first. Select a stage, set the restriction and see how many trials remain. FS/FA associations stay unchanged.</p></div>
       <div className={styles.buttons}><button type="button" className="secondary" disabled={loading} onClick={() => { setVersion(v => v + 1); onRefresh?.(); }}>{loading ? "REFRESHING…" : "REFRESH DATA"}</button></div></div>
-    <p className={styles.note}>The number is scan order, not a trial count. Blank means the rule is inactive. Group order does not change scan order.</p>
+    <p className={styles.note}>Tap <strong>ADD TO LIST</strong> beside a restriction to choose the list and position in a popup. Scan order is separate from group ranking.</p>
     <p className={styles.note} role="status">{saved || "Loading saved assignments…"}</p>
     <div className={styles.controls}>
       <label>Starting universe<select aria-label="Starting universe" value={scope} onChange={event => { setScope(event.target.value); setPage(0); }}><option value="all">All dashboard entries ({count(rows.length)})</option><option value="trials">Registered trials only ({count(rows.filter(isRegisteredTrial).length)})</option></select></label>
@@ -106,7 +131,7 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       : "CURRENT-CAP COMPARISON: the approved Pipeline cap checks use latest saved caps for this preview. Your approved rule applies at first entry. Existing GEM current-cap options use latest saved caps in either mode."}</p>
     {(cached || error) && <p role="alert" className={styles.notice}>{cached ? "Trial universe is locally cached; latest-source verification is pending. " : ""}{error}</p>}
     {!!evidence?.issues.length && <p role="status" className={styles.notice}>{evidence.issues.join(" ")}</p>}
-    <div className={styles.buttons}><button type="button" onClick={()=>setCapPopup(true)}>SCAN PIPELINE MARKET CAP $300M–$10B</button><button type="button" onClick={()=>setScanOpen(true)}>VIEW FULL SCAN RESULTS</button></div>
+    <div className={styles.buttons}><button type="button" onClick={()=>setCapPopup(true)}>SCAN PIPELINE MARKET CAP $300M–$10B</button><button type="button" onClick={()=>openListPopup("gem_marketcap")}>VIEW / EDIT RESTRICTION LISTS</button><button type="button" onClick={()=>setScanOpen(true)}>VIEW FULL SCAN RESULTS</button></div>
     {capPopup && <section role="dialog" aria-modal="true" aria-label="Market cap scan" style={{position:"fixed",inset:0,zIndex:10001,background:"white",color:"black",overflowY:"auto",padding:20}}><button type="button" onClick={()=>setCapPopup(false)}>CLOSE ×</button><h2>PIPELINE MARKET CAP SCAN</h2><p>Latest saved market caps, not historical entry-date caps. Registered trials only. Inclusive range: $300 million to $10 billion.</p><div className={styles.totals}><div><span>Trials checked</span><strong>{count(capStats.total)}</strong></div><div><span>Within range</span><strong>{count(capStats.within)}</strong></div><div><span>Outside range</span><strong>{count(capStats.outside)}</strong></div><div><span>Unknown cap</span><strong>{count(capStats.unknown)}</strong></div></div><p>Data fetched: {evidence?.fetchedAt||"Not available"}. Counts reflect available source evidence and do not imply historical Pipeline qualification.</p></section>}
     <h3>LIVE SCAN SUMMARY</h3>
     <div className={styles.totals} aria-live="polite" aria-atomic="true"><div><span>Trials checked</span><strong>{count(report.total)}</strong></div><div><span>Trials remaining</span><strong>{count(report.total-report.excluded)}</strong></div><div><span>Excluded</span><strong>{count(report.excluded)}</strong></div><div><span>Need verification</span><strong>{count(report.pending)}</strong></div></div>
@@ -124,7 +149,7 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     <div className={styles.controls}><label>Restriction purpose<select aria-label="Restriction purpose group" value={purposeFilter} onChange={event => setPurposeFilter(event.target.value)}><option value="all">All groups — importance order</option>{RESTRICTION_PURPOSE_GROUPS.map(group => <option key={group.id} value={group.id}>{group.title}</option>)}</select></label>
       <label>Show rules<select aria-label="Show restriction stage" value={showStage} onChange={event => setShowStage(event.target.value)}><option value="all">Full list — all stages</option><StageOptions /></select></label>
       <label>Find restriction<input type="search" aria-label="Find restriction" maxLength={100} value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or category" /></label></div>
-    <p className={styles.note}>{visible.length} of {entries.length} restrictions shown. Enter a scan-order number to move a rule into SELECTED below.</p>
+    <p className={styles.note}>{visible.length} of {entries.length} restrictions shown. Use ADD TO LIST to see existing list members and insert a rule at #1 or any position.</p>
     <h3>RESTRICTIONS — MARKET CAP FIRST</h3><div className={styles.scroll} role="region" aria-label="Sequential restriction effects" tabIndex={0}><table className={styles.table + " " + styles.catalog}><caption>Each restriction appears once. Open details for extra diagnostics.</caption>
       <thead><tr><th>Scan order / restriction</th><th>Apply to</th><th>Original FS / FA</th><th>Target</th><th>Results</th><th>More</th></tr></thead><tbody>
         {sections.map(section => <Fragment key={section.id}>
@@ -132,10 +157,11 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
           {section.groups.map(group => <Fragment key={group.id}>
             <tr data-purpose-group={group.id} style={{background:"#eaf2eb"}}><th scope="colgroup" colSpan={6}><strong style={{fontSize:15}}>{group.title} · {group.members.length}</strong><small style={{fontWeight:400,marginLeft:10}}>{group.note}</small></th></tr>
             {group.members.map(entry => { const rule = catalogDefinition(entry);
-              const step = report.steps.get(entry.id) || report.steps.get(catalogStages(entry)[0] + "|" + entry.id)!, used = entry.enabled && !!entry.priority && catalogStages(entry).length > 0 && !rule.warning;
+              const step = report.steps.get(entry.id) || report.steps.get(catalogStages(entry)[0] + "|" + entry.id)!, used = entry.enabled && catalogStages(entry).some(stage=>!!catalogStagePriority(entry,stage)) && !rule.warning;
           return <tr key={entry.id} className={!used ? styles.inactive : undefined}>
-            <th scope="row"><label className={styles.rule}><span style={{display:"inline-flex",alignItems:"center",gap:4,flexShrink:0}}><strong>{entry.stage === "PIPELINE" ? "P" : entry.stage === "GEM_JR" ? "J" : entry.stage === "GEM" ? "G" : "—"}</strong><input style={{width:64,minWidth:54}} type="number" min="1" max="9999" step="1" placeholder="#" aria-label={"Priority for " + rule.title} value={entry.priority || ""} onChange={event => { const value=event.target.value; if(value && (!/^\d{1,4}$/.test(value) || Number(value)<1))return; update(entry.id,{priority:value,enabled:!!value}); }} /></span><span>{rule.title}<small>{rule.warning ? "WARNING ONLY" : (entry.priority ? "Scan order "+entry.priority : "Not in scan")}</small></span></label>
+            <th scope="row"><label className={styles.rule}><span style={{display:"inline-flex",alignItems:"center",gap:4,flexShrink:0}}><strong>{entry.stage === "PIPELINE" ? "P" : entry.stage === "GEM_JR" ? "J" : entry.stage === "GEM" ? "G" : "—"}</strong><input style={{width:64,minWidth:54}} type="number" min="1" max="9999" step="1" placeholder="#" aria-label={"Priority for " + rule.title} value={entry.stage ? catalogStagePriority(entry,entry.stage) : entry.priority || ""} onChange={event => { const value=event.target.value; if(value && (!/^\d{1,4}$/.test(value) || Number(value)<1))return; update(entry.id,{priority:value,enabled:!!value,stagePriorities:entry.stage?{...entry.stagePriorities,[entry.stage]:value}:entry.stagePriorities}); }} /></span><span>{rule.title}<small>{rule.warning ? "WARNING ONLY" : (entry.stage && catalogStagePriority(entry,entry.stage) ? "Scan order "+catalogStagePriority(entry,entry.stage) : "Not in scan")}</small></span></label>
               {entry.id.startsWith("custom_") && <input aria-label={"Edit " + rule.title} maxLength={400} value={entry.title} onChange={event => update(entry.id, { title: event.target.value })} />}
+              <button type="button" className="secondary" style={{marginTop:8}} aria-label={"Add "+rule.title+" to a list"} disabled={!!rule.warning} onClick={()=>openListPopup(entry.id)}>ADD TO LIST</button>
               <details><summary>How this is checked</summary><p>{rule.help}</p></details></th>
             <td data-label="Apply to"><select aria-label={"Stage for " + rule.title} value={entry.stage} onChange={event => { const next=event.target.value as RestrictionStage; update(entry.id,{stage:next,additionalStages:(entry.additionalStages||[]).filter(stage=>stage!==next)}); }}><StageOptions /></select>
               <details><summary>Additional stages</summary><div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:6}}>{RESTRICTION_STAGES.filter(stage=>stage!==entry.stage).map(stage=><label key={stage} style={{display:"inline-flex",alignItems:"center",gap:3,fontSize:11}}><input type="checkbox" aria-label={"Also apply "+rule.title+" to "+stage} checked={(entry.additionalStages||[]).includes(stage)} onChange={event=>update(entry.id,{additionalStages:event.target.checked?[...new Set([...(entry.additionalStages||[]),stage])]: (entry.additionalStages||[]).filter(value=>value!==stage)})}/>{stage==="GEM_JR"?"JR":stage==="PIPELINE"?"P":"G"}</label>)}</div></details>
@@ -154,6 +180,41 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
             })}
           </Fragment>)}
         </Fragment>)}</tbody></table></div>
+
+    {listPopup && <section role="dialog" aria-modal="true" aria-label="Restriction list popup" className={styles.listBackdrop}>
+      <div className={styles.listModal}>
+        <div className={styles.heading}><div><h2>ADD TO RESTRICTION LIST</h2><p>See the existing restrictions and select where this rule goes. The original FS/FA presets are not changed.</p></div>
+          <button type="button" className="secondary" onClick={()=>setListPopup(false)}>CLOSE ×</button></div>
+        <div className={styles.controls}>
+          <label>Destination list<select aria-label="Destination restriction list" value={listStage}
+            onChange={event=>{setListStage(event.target.value as "PIPELINE"|"GEM_JR"|"GEM");setListPosition(0);}}>
+            {RESTRICTION_STAGES.map(stage=><option key={stage} value={stage}>{stageLabel(stage)}</option>)}</select></label>
+          <label>Restriction to add<select aria-label="Restriction to add" value={listRuleId}
+            onChange={event=>{setListRuleId(event.target.value);setListPosition(0);}}>
+            {entries.filter(entry=>!catalogDefinition(entry).warning).map(entry=><option key={entry.id} value={entry.id}>{catalogDefinition(entry).title}</option>)}</select></label>
+          <label>Position in list<select aria-label="Restriction list position" value={Math.min(listPosition,positionOptions.length)} onChange={event=>setListPosition(Number(event.target.value))}>
+            <option value={0}>#1 — first</option>
+            {positionOptions.map((entry,i)=><option key={entry.id} value={i+1}>#{i+2} — after {catalogDefinition(entry).title}</option>)}
+          </select></label>
+        </div>
+        <h3>{stageLabel(listStage)} — CURRENT RESTRICTIONS ({listEntries.length})</h3>
+        <div className={styles.listRows} role="region" aria-label="Current restriction list">
+          {listEntries.length?<ol>{listEntries.map((entry,i)=><li key={entry.id}>
+            <span><strong>#{i+1}</strong> {catalogDefinition(entry).title}</span>
+            <small>{catalogDefinition(entry).associations?.join(" · ")||"Independent"}</small>
+          </li>)}</ol>:<p>No active restrictions in this list yet.</p>}
+        </div>
+        <div className={styles.listPreview} aria-live="polite">
+          <strong>PREVIEW — {stageLabel(listStage)}</strong>
+          <span>Before: {currentStage?count(currentStage.remaining):"—"} remaining</span>
+          <span>After: {proposedStage?count(proposedStage.remaining):"—"} remaining</span>
+          <span>Needs verification: {proposedStage?count(proposedStage.pending):"—"}</span>
+        </div>
+        {listRuleId==="gem_marketcap"&&<p className={styles.note}>Current market-cap range uses latest saved caps, not historical market caps at Pipeline entry. This is a comparison preview.</p>}
+        <div className={styles.buttons}><button type="button" onClick={applyListSelection}>APPLY TO {stageLabel(listStage).toUpperCase()} LIST</button>
+          <button type="button" className="secondary" onClick={()=>setListPopup(false)}>CANCEL</button></div>
+      </div>
+    </section>}
     {scanOpen && <section role="dialog" aria-modal="true" aria-label="Scan results" style={{position:"fixed",inset:0,zIndex:9999,background:"white",color:"black",overflowY:"auto",padding:16}}><button type="button" onClick={()=>setScanOpen(false)}>CLOSE ×</button><h2>FULL SCAN RESULTS</h2><p>Scanned {count(report.total)} · Passed {count(report.passed)} · Excluded {count(report.excluded)} · Needs verification {count(report.pending)}</p><div className={styles.scroll}><table><thead><tr><th>Priority</th><th>Restriction</th><th>New exclusions</th><th>Remaining</th><th>Pending</th></tr></thead><tbody>{entries.filter(e=>report.steps.get(e.id)?.step).sort((a,b)=>(report.steps.get(a.id)?.step||0)-(report.steps.get(b.id)?.step||0)).map(e=>{const step=report.steps.get(e.id)!;return <tr key={e.id}><td>{e.stage==="PIPELINE"?"P":e.stage==="GEM_JR"?"J":"G"}{e.priority}</td><td>{catalogDefinition(e).title}</td><td>{count(step.newlyExcluded)}</td><td>{count(step.remaining)}</td><td>{count(step.pending)}</td></tr>})}</tbody></table></div><h3>REMAINING TRIALS</h3><p>Use the NEW EXCLUSIONS buttons in the restriction table to inspect removed records.</p><div className={styles.scroll}><table><thead><tr><th>Trial</th><th>Ticker</th><th>Drug</th></tr></thead><tbody>{report.rows.filter(row=>![...report.steps.values()].some(step=>step.step && step.newlyExcludedIds.has(row.id))).slice(0,250).map(row=><tr key={row.id}><td>{row.programId||row.id}</td><td>{row.ticker}</td><td>{row.drug||"Unknown"}</td></tr>)}</tbody></table></div><p>Showing first 250 remaining records.</p></section>}
     {!visible.length && <p>No restrictions match this list view.</p>}
     {inspection && selectedEntry && <section className={styles.inspection} aria-label="Affected records"><div className={styles.heading}><h4>{catalogDefinition(selectedEntry).title} — {inspection.kind === "new" ? "new exclusions at this step" : inspection.kind === "alone" ? "excluded by this rule alone" : "needs verification for this rule"} ({count(inspected.length)})</h4><button type="button" className="secondary" onClick={() => setInspection(null)} aria-label="Close affected records">CLOSE ×</button></div>
