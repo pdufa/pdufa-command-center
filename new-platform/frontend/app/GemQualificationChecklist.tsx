@@ -98,6 +98,18 @@ const OPTIONAL_ALL=OPTIONAL_GROUPS.flatMap(group=>group.items);
 export function availableGemRestrictionOptions() { return OPTIONAL_ALL.map(item=>({...item})); }
 const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","registry","issuer","cash","marketfresh"],GEM:["pdufa","window","volume","rsi","trend","liquidity"]};
 const FA_CRITERIA=["registry","marketcap"];
+// This is the authoritative association shared with the one-row Restrictions catalog.
+// FI was retired; FS and FA are the existing, independently operable presets.
+export function gemPresetAssociations(key:string):string[] {
+  const matches:string[]=[];
+  for(const stage of ["GEM_JR","GEM"] as const){
+    if(suggestedByStage[stage].includes(key))matches.push((stage==="GEM_JR"?"GEM JR":"GEM")+" FS");
+    if((stage==="GEM_JR"&&FA_CRITERIA.includes(key))||(stage==="GEM"&&key==="gem_jr_source"))
+      matches.push((stage==="GEM_JR"?"GEM JR":"GEM")+" FA");
+  }
+  return matches;
+}
+
 // GEM's FA button controls only the existing optional GEM JR source input.
 // The GEM JR FA preset and qualification filters remain untouched.
 export function toggleGemJrTrialsRequirement(selected:readonly string[]):string[]{
