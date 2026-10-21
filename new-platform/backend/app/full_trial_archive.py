@@ -5,11 +5,9 @@ scan schedules, checklist state and permanent program identities are not edited.
 """
 from __future__ import annotations
 
-import csv
 import gzip
 import hashlib
 import hmac
-import io
 import json
 import logging
 import os
@@ -23,10 +21,9 @@ from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import HTTPException
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import Response
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.orm import Session
 
@@ -36,9 +33,6 @@ LOG = logging.getLogger(__name__)
 API = "https://clinicaltrials.gov/api/v2/studies"
 NCT = re.compile(r"^NCT\d{8}$")
 _START_LOCK = threading.Lock()
-_EXPORT_LOCK = threading.Lock()
-_EXPORT_PATH = Path(tempfile.gettempdir()) / "pdufa-full-trial-export.zip"
-_EXPORT_STAMP = ""
 
 
 def now():
@@ -132,8 +126,6 @@ def archive_status():
                     "statisticalAnalyses": job.statistics_count, "reportedPValues": job.p_value_count,
                     "missing": len(job.missing_ids), "updatedAt": job.updated_at.isoformat(),
                     "completedAt": job.completed_at.isoformat() if job.completed_at else None,
-                    "exportReady": bool(_EXPORT_PATH.exists() and job.completed_at
-                                        and _EXPORT_STAMP == job.completed_at.isoformat()),
                     "error": job.error}
     except Exception:
         return {"status": "STORAGE_NOT_READY", "target": 0, "downloaded": 0, "complete": False}
@@ -182,11 +174,6 @@ def start_download(refresh=False, launch=True):
 
 def bootstrap():
     try:
-        # The download ledger lives in Postgres. Do not construct the 100+ MB
-        # ZIP on every 512 MiB worker start: source and assessment verification
-        # run at startup too, and overlapping work has caused OOM restarts.
-        # The authenticated export endpoint still builds the exact same ZIP
-        # on demand via ensure_cached_export().
         start_download()
     except Exception as exc:
         LOG.error("PDUFA_FULL_TRIAL_BOOTSTRAP error_type=%s", type(exc).__name__)
@@ -302,21 +289,6 @@ def run_download(fetcher=fetch_batch):
         job.lease_until = None
         session.commit()
     LOG.warning("PDUFA_FULL_TRIAL_FINISHED %s", packed(archive_status()))
-    # Export construction is intentionally lazy. It must not run concurrently
-    # with large all-phase downloads or the 11k-candidate scoring index on a
-    # memory-constrained worker. The private export endpoint retains all checks.
-
-
-def make_export_ticket():
-    if not archive_status().get("complete"):
-        raise HTTPException(status_code=409, detail="Full all-phase download is not complete yet")
-    key = os.getenv("PDUFA_INTERNAL_API_KEY", "")
-    if not key:
-        raise HTTPException(status_code=503, detail="Export is not configured")
-    payload = "v1." + str(int(time.time()) + 900)
-    signature = hmac.new(key.encode(), ("full-trial-export:" + payload).encode(), hashlib.sha256).hexdigest()
-    return "/downloads/pipeline-all-fields/" + payload + "." + signature
-
 
 def record_summaries(raw_ids):
     ids = sorted(set(raw_ids.split(","))) if raw_ids else []
@@ -395,126 +367,21 @@ def record_response(nct, ticket):
         })
 
 
-def _records(ids):
-    for offset in range(0, len(ids), 50):
-        with Session(db.ENGINE) as session:
-            rows = list(session.scalars(select(db.FullTrialRecord).where(
-                db.FullTrialRecord.nct_id.in_(ids[offset:offset + 50])
-            ).order_by(db.FullTrialRecord.nct_id)))
-        yield from rows
-
-
-def _csv_cell(value):
-    if isinstance(value, (dict, list)):
-        return packed(value)
-    # CSV is opened in Excel as well as code. Block formula interpretation.
-    if isinstance(value, str) and value.startswith(("=", "+", "-", "@", "\t", "\r")):
-        return "'" + value
-    return "" if value is None else value
-
-
-def _csv_member(archive, name, fields, rows):
-    with archive.open(name, "w") as member:
-        wrapper = io.TextIOWrapper(member, encoding="utf-8-sig", newline="", write_through=True)
-        writer = csv.DictWriter(wrapper, fieldnames=fields, extrasaction="raise")
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({key: _csv_cell(row.get(key)) for key in fields})
-        wrapper.flush()
-        wrapper.detach()
-
-
-def build_archive(path):
-    state = archive_status()
-    if not state.get("complete"):
-        raise HTTPException(status_code=409, detail="Download is still collecting full trial records")
-    with Session(db.ENGINE) as session:
-        job = session.get(db.FullTrialDownload, 1)
-        ids = sorted(job.scope_ids)
-    first = next(_records(ids), None)
-    if first is None:
-        raise HTTPException(status_code=409, detail="No full trial records available")
-    with Session(db.ENGINE) as session:
-        identities = [
-            {"program_id": f"PDUFA-{row.id:06d}", "source_id": row.source_key,
-             "ticker": row.ticker, "drug": row.drug,
-             "nct_id": next(iter(re.findall(r"NCT\d{8}", row.source_key)), "")}
-            for row in session.scalars(select(db.ProgramIdentity).order_by(db.ProgramIdentity.id))
-        ]
-    mapping = {}
-    for identity in identities:
-        if identity["nct_id"]:
-            mapping.setdefault(identity["nct_id"], []).append(identity)
-    with ZipFile(path, "w", compression=ZIP_DEFLATED, compresslevel=6, allowZip64=True) as archive:
-        _csv_member(archive, "program_identity.csv", ["program_id", "source_id", "ticker", "drug", "nct_id"], identities)
-        _csv_member(archive, "trials.csv", ["program_ids", "tickers", *first.summary],
-                    ({"program_ids": [v["program_id"] for v in mapping.get(r.nct_id, [])],
-                      "tickers": sorted({v["ticker"] for v in mapping.get(r.nct_id, [])}),
-                      **r.summary} for r in _records(ids)))
-        stat_fields = ["nct_id", "outcome_index", "analysis_index", "endpoint_type", "endpoint", "time_frame",
-                       "comparison_groups", "p_value", "p_value_reported", "method", "parameter", "estimate",
-                       "confidence_level", "confidence_lower", "confidence_upper", "analysis_json"]
-        _csv_member(archive, "statistical_analyses.csv", stat_fields,
-                    ({"nct_id": r.nct_id, **analysis} for r in _records(ids) for analysis in r.statistics))
-        checksums = []
-        with archive.open("full_studies.jsonl", "w") as full:
-            for record in _records(ids):
-                raw = gzip.decompress(record.payload_gzip)
-                if hashlib.sha256(raw).hexdigest() != record.sha256:
-                    raise ValueError("Stored full trial record checksum mismatch")
-                full.write(raw + b"\n")
-                checksums.append({"nct_id": record.nct_id, "sha256": record.sha256,
-                                  "fetched_at": record.fetched_at.isoformat()})
-        if [row["nct_id"] for row in checksums] != ids:
-            raise ValueError("Full export does not cover every requested trial ID")
-        _csv_member(archive, "record_checksums.csv", ["nct_id", "sha256", "fetched_at"], checksums)
-        archive.writestr("manifest.json", packed({
-            **state, "source": API, "scope": "All exact NCT trials currently tracked by PIPELINE, across every phase; no market-cap restriction",
-            "field_filter": None, "phase_filter": None, "trial_ids": ids,
-            "all_fields_file": "full_studies.jsonl", "reported_statistics_file": "statistical_analyses.csv",
-            "missing_p_values": "NOT_REPORTED or NO_POSTED_RESULTS; never inferred from protocol thresholds",
-            "documents": "All document metadata and URLs are retained; linked PDF contents are not registry fields.",
-        }))
-
-
-def ensure_cached_export():
-    global _EXPORT_STAMP
-    state = archive_status()
-    if not state.get("complete"):
-        raise HTTPException(status_code=409, detail="Complete trial data is still downloading")
-    with _EXPORT_LOCK:
-        if _EXPORT_PATH.exists() and _EXPORT_STAMP == state["completedAt"]:
-            return _EXPORT_PATH
-        partial = _EXPORT_PATH.with_suffix(".building")
+def cleanup_retired_zip_exports():
+    """Delete only legacy bulk ZIP cache files; preserve stored clinical trial records."""
+    directory = Path(tempfile.gettempdir())
+    removed = 0
+    bytes_removed = 0
+    for name in ("pdufa-full-trial-export.zip", "pdufa-full-trial-export.building"):
+        path = directory / name
         try:
-            build_archive(partial)
-            with ZipFile(partial) as zipped:
-                manifest = json.loads(zipped.read("manifest.json"))
-                if manifest["downloaded"] != manifest["target"]:
-                    raise ValueError("Export archive coverage does not reconcile")
-            partial.replace(_EXPORT_PATH)
-            _EXPORT_STAMP = state["completedAt"]
-            LOG.warning("PDUFA_FULL_TRIAL_EXPORT_READY records=%d bytes=%d",
-                        state["downloaded"], _EXPORT_PATH.stat().st_size)
-        except Exception:
-            partial.unlink(missing_ok=True)
-            raise
-    return _EXPORT_PATH
-
-
-def export_response(ticket):
-    parts = ticket.split(".")
-    key = os.getenv("PDUFA_INTERNAL_API_KEY", "")
-    if len(parts) != 3 or parts[0] != "v1" or not key:
-        raise HTTPException(status_code=401, detail="Invalid export link")
-    try:
-        expiry = int(parts[1])
-    except ValueError:
-        raise HTTPException(status_code=401, detail="Invalid export link") from None
-    payload = ".".join(parts[:2])
-    expected = hmac.new(key.encode(), ("full-trial-export:" + payload).encode(), hashlib.sha256).hexdigest()
-    if not int(time.time()) < expiry <= int(time.time()) + 900 or not hmac.compare_digest(parts[2], expected):
-        raise HTTPException(status_code=401, detail="Export link expired or invalid")
-    filename = ensure_cached_export()
-    return FileResponse(filename, media_type="application/zip", filename="pipeline-all-phases-all-fields.zip",
-                        headers={"Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer"})
+            size = path.lstat().st_size
+            path.unlink()
+            removed += 1
+            bytes_removed += size
+        except FileNotFoundError:
+            continue
+        except OSError as exc:
+            LOG.warning("PDUFA_ZIP_CLEANUP_FAILED file=%s error_type=%s", name, type(exc).__name__)
+    LOG.info("PDUFA_ZIP_CLEANUP removed=%d bytes=%d", removed, bytes_removed)
+    return {"removed": removed, "bytes": bytes_removed}

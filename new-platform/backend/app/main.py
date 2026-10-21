@@ -385,6 +385,8 @@ async def lifespan(app: FastAPI):
             and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in ("1", "true", "yes")):
         from .full_trial_archive import bootstrap
         threading.Thread(target=bootstrap, daemon=True).start()
+    from .full_trial_archive import cleanup_retired_zip_exports
+    cleanup_retired_zip_exports()
     yield
 
 
@@ -439,12 +441,6 @@ def start_full_trial_download(refresh: bool = False):
     return start_download(refresh=refresh)
 
 
-@app.get("/api/pipeline-full-records/export-link", dependencies=[Depends(require_internal_key), Depends(require_storage)])
-def full_trial_export_link():
-    from .full_trial_archive import make_export_ticket
-    return {"path": make_export_ticket()}
-
-
 @app.get("/api/pipeline-full-records/rows", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def full_trial_rows(ids: str = ""):
     from .full_trial_archive import record_summaries
@@ -467,12 +463,6 @@ def full_trial_record_link(nct_id: str):
 def view_full_trial_record(nct_id: str, ticket: str):
     from .full_trial_archive import record_response
     return record_response(nct_id, ticket)
-
-
-@app.get("/downloads/pipeline-all-fields/{ticket}")
-def download_full_trials(ticket: str):
-    from .full_trial_archive import export_response
-    return export_response(ticket)
 
 
 @app.get("/api/checklists/{ticker}/{stage}", dependencies=[Depends(require_internal_key), Depends(require_storage)])

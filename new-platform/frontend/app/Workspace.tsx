@@ -9,7 +9,6 @@ import {gemMatchesCheckedFilters} from "../lib/gem-qualification-checks";
 import EntrySignal from "./EntrySignal";
 import StayExitSignal from "./StayExitSignal";
 import IndicatorParityTables from "./IndicatorParityTables";
-import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import TrialQualificationFilters from "./TrialQualificationFilters";
@@ -935,8 +934,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         {query?" · Text search active":""}
         {" · As of "+snapshot.asOf}
       </p>
-      <div className="pipeline-setup-grid">
-      <FullTrialDownload />
       <section className="panel pipeline-filters pipeline-filters-compact" aria-labelledby="pipeline-filters-title">
         <div className="pipeline-filter-heading">
           <h3 id="pipeline-filters-title">PIPELINE FILTERS &amp; COUNTS</h3>
@@ -971,7 +968,6 @@ export default function Workspace({ onInspect }: { onInspect: (ticker: string, s
         </div>
         {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
       </section>
-      </div>
       <div ref={pipelineDataRef} className="pipeline-results-anchor">
         {displayFilters ? <PipelineData key={appliedKey + "|" + displayVersion + "|" + snapshot.asOf} rows={displayed}
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
