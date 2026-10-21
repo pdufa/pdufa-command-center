@@ -119,7 +119,7 @@ test("the visible controls include every restriction, editable values, full base
   const React = require("react"), { renderToStaticMarkup } = require("react-dom/server");
   const Component = require("../app/RestrictionImpact.tsx").default;
   const html = renderToStaticMarkup(React.createElement(Component, { rows, asOf }));
-  assert.match(html, /FROM THE BEGINNING/);
+  assert.match(html, /LIVE SCAN SUMMARY/);
   assert.match(html, /At first entry — approved rule/);
   assert.match(html, /Latest saved cap — comparison/);
   assert.match(html, /Entry-date market caps have not been retained/);
@@ -138,15 +138,15 @@ test("priority selection, numeric edits and inline affected-record controls upda
   try {
     await act(async () => { renderer = create(React.createElement(Component, { rows, asOf })); });
     const totals = () => renderer.root.findByProps({ "aria-atomic": "true" }).findAllByType("strong").map(node => node.children.join(""));
-    assert.deepEqual(totals(), ["6", "0", "6", "0"]);
+    assert.deepEqual(totals(), ["6", "6", "0", "0"]);
     for (const [i, id] of ["public", "minCap", "maxCap"].entries()) {
       const title = catalog.RESTRICTION_CATALOG.find(rule => rule.id === id).title;
       await act(async () => { renderer.root.findByProps({ "aria-label": "Priority for " + title }).props.onChange({ target: { value: String(i + 1) } }); });
     }
     await act(async () => { renderer.root.findByProps({ "aria-label": "Market-cap evidence" }).props.onChange({ target: { value: "current" } }); });
-    assert.deepEqual(totals(), ["6", "3", "2", "1"]);
+    assert.deepEqual(totals(), ["6", "3", "3", "1"]);
     await act(async () => { renderer.root.findByProps({ "aria-label": "Minimum cap ($ millions)" }).props.onChange({ target: { value: "301" } }); });
-    assert.deepEqual(totals(), ["6", "4", "1", "1"]);
+    assert.deepEqual(totals(), ["6", "2", "4", "1"]);
     const newExclusions = renderer.root.findAllByType("button").find(node => node.children.join("") === "NEW EXCLUSIONS" && !node.props.disabled);
     await act(async () => { newExclusions.props.onClick(); });
     assert.ok(renderer.root.findByProps({ "aria-label": "Affected records" }));
@@ -154,10 +154,10 @@ test("priority selection, numeric edits and inline affected-record controls upda
     assert.equal(renderer.root.findAllByProps({ "aria-label": "Affected records" }).length, 0);
     const capTitle = catalog.RESTRICTION_CATALOG.find(rule => rule.id === "minCap").title;
     await act(async () => { renderer.root.findByProps({ "aria-label": "Priority for " + capTitle }).props.onChange({ target: { value: "" } }); });
-    assert.deepEqual(totals(), ["6", "2", "3", "1"]);
+    assert.deepEqual(totals(), ["6", "4", "2", "1"]);
     await act(async () => { renderer.root.findAllByType("button").find(node => node.children.join("") === "RESET TO APPROVED RULES").props.onClick(); });
     assert.equal(renderer.root.findByProps({ "aria-label": "Market-cap evidence" }).props.value, "entry");
-    assert.deepEqual(totals(), ["6", "0", "6", "0"]);
+    assert.deepEqual(totals(), ["6", "6", "0", "0"]);
   } finally {
     if (renderer) await act(async () => renderer.unmount());
     global.fetch = before.fetch; global.window = before.window; global.IS_REACT_ACT_ENVIRONMENT = before.act;
@@ -307,4 +307,20 @@ test("purpose changes group display without changing restriction scan calculatio
     [after.passed, after.pending, after.excluded]);
   assert.equal(new Set(sortedForDisplay.map(entry => entry.id)).size, entries.length);
   assert.equal(catalog.restrictionPurposeGroup({id:"custom_market",field:"marketCapMillions"}),"MARKET_CAP");
+});
+
+test("compact default Restrictions view preserves editable rules and hidden diagnostics", () => {
+  const React = require("react"), {renderToStaticMarkup} = require("react-dom/server");
+  const Component = require("../app/RestrictionImpact.tsx").default;
+  const html = renderToStaticMarkup(React.createElement(Component, {rows, asOf}));
+  assert.match(html, /Trials remaining/);
+  assert.match(html, /Impact details/);
+  assert.match(html, /Write a custom restriction/);
+  assert.match(html, /Breakdown by Pipeline, GEM JR and GEM/);
+  assert.match(html, /data-purpose-group="MARKET_CAP"/);
+  assert.doesNotMatch(html, /0\. FULL STARTING UNIVERSE/);
+  assert.equal((html.match(/aria-label="Priority for /g) || []).length, 39);
+  assert.equal((html.match(/aria-label="Stage for /g) || []).length, 39);
+  assert.match(html, /GEM JR FS/); assert.match(html, /GEM JR FA/);
+  assert.match(html, /GEM FS/); assert.match(html, /GEM FA/);
 });
