@@ -24,7 +24,7 @@ import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, tr
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
-function catalogGemKey(id:string){return id==="gem_jr_source"?"gem_jr_source":id.startsWith("gem_")?id.slice(4):id.startsWith("alert_")?id.slice(6):"";}
+function catalogGemKey(id:string){return id==="runway"?"cash":id==="gem_jr_source"?"gem_jr_source":id.startsWith("gem_")?id.slice(4):id.startsWith("alert_")?id.slice(6):"";}
 function gemAllowedKeys(stage:"GEM_JR"|"GEM"){
   const groups=checkboxGroupsForStage(stage);
   const allowed=new Set([...groups.clinical,...groups.trading].map(([key])=>key));
