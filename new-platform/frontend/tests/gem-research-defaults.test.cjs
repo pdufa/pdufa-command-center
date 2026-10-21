@@ -87,9 +87,9 @@ test("Current top workflow totals appear below navigation in Pipeline, GEM JR, G
  const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
  const nav=src.indexOf('id="pdufa-section-navigation"');
  const counters=src.indexOf('className="workflow-counts"');
- const overview=src.indexOf('className="workspace-overview"');
- assert.ok(nav>=0 && counters>nav && overview>counters,"totals are directly after navigation and before overview");
- const totals=src.slice(counters,overview);
+ const afterCounts=src.indexOf('className="workspace-update-row"');
+ assert.ok(nav>=0 && counters>nav && afterCounts>counters,"totals are directly after navigation and before overview");
+ const totals=src.slice(counters,afterCounts);
  const ids=['id:"PIPELINE" as Nav','id:"GEM_JR" as Nav','id:"GEM" as Nav','id:"WT" as Nav'];
  let previous=-1;
  for(const id of ids){ const at=totals.indexOf(id);assert.ok(at>previous,"out-of-order count: "+id);previous=at; }
