@@ -87,6 +87,7 @@ export function catalogStages(entry:CatalogEntry):Exclude<RestrictionStage,"">[]
 }
 /** Per-list priority keeps other stages intact when adding/reordering one list. */
 export function catalogStagePriority(entry: CatalogEntry, stage: Exclude<RestrictionStage, "">): string {
+  if(!catalogStages(entry).includes(stage))return "";
   return Object.prototype.hasOwnProperty.call(entry.stagePriorities || {}, stage)
     ? (entry.stagePriorities?.[stage] || "") : (entry.priority || "");
 }
@@ -223,7 +224,7 @@ export function restoreCatalogEntries(raw: unknown): CatalogEntry[] {
     if (e.id.startsWith("custom_") && (typeof e.title !== "string" || !e.title.trim() || !fields.has(e.field || ""))) return null;
     return { id: e.id.slice(0, 100), enabled: e.enabled && (!!e.priority || Object.values(e.stagePriorities || {}).some(Boolean)), priority: typeof e.priority === "string" && /^[1-9]\d{0,3}$/.test(e.priority) ? e.priority : "", stage: e.stage, additionalStages: Array.isArray(e.additionalStages) ? [...new Set(e.additionalStages.filter(stage => stage !== e.stage && RESTRICTION_STAGES.includes(stage)))].slice(0, 2) : [], stagePriorities:Object.fromEntries(RESTRICTION_STAGES.flatMap(stage=>{
       const value=e.stagePriorities?.[stage];
-      return typeof value==="string" && (value==="" || /^[1-9]\\d{0,3}$/.test(value)) ? [[stage,value]] : [];
+      return typeof value==="string" && (value==="" || /^[1-9]\d{0,3}$/.test(value)) ? [[stage,value]] : [];
     })) as Partial<Record<Exclude<RestrictionStage, "">, string>>,
     value: e.value.slice(0, 400), maximum: e.maximum.slice(0, 400),
       ...(e.id.startsWith("custom_") ? { title: e.title!.slice(0, 400), field: e.field, operator: e.operator === "<=" ? "<=" : ">=" } : {}) };
