@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { HEALTH_LABELS, current, overallHealth, type HealthCheck, type SiteHealthReport } from "../lib/site-health";
+import { HEALTH_LABELS, overallHealth, type HealthCheck, type SiteHealthReport } from "../lib/site-health";
 import styles from "./SiteHealthStatus.module.css";
 
 function when(value: string | null) {
@@ -24,50 +24,72 @@ export default function SiteHealthStatus() {
   const [error, setError] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [clock, setClock] = useState(0);
+  const [receivedAt, setReceivedAt] = useState(0);
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     let alive = true;
     let timer: ReturnType<typeof setTimeout>;
+    let watchdog: ReturnType<typeof setTimeout>;
     let controller: AbortController | null = null;
+    let inFlight = false;
     async function load() {
-      if (!alive) return;
+      if (!alive || inFlight) return;
       if (document.hidden) { timer = setTimeout(load, 60000); return; }
-      controller = new AbortController();
+      clearTimeout(timer);
+      const requestController = new AbortController();
+      controller = requestController;
+      inFlight = true;
+      watchdog = setTimeout(() => requestController.abort(), 25000);
       setLoading(true);
       try {
         const response = await fetch("/api/site-health", { cache: "no-store",
-          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(25000)]) });
+          signal: requestController.signal });
+        if (response.status === 401) throw new Error("Sign-in expired. Reload the dashboard and sign in again.");
+        if (!response.ok) throw new Error("Health service returned HTTP " + response.status + ". Tap Refresh status to try again.");
         const data = await response.json();
         if (!response.ok || !data || !Array.isArray(data.checks) || !data.checkedAt ||
             data.checks.length < 10 || !data.checks.every((check: HealthCheck) =>
-              check && typeof check.id === "string" && Object.hasOwn(STATES, check.state) &&
+              check && typeof check.id === "string" && Object.prototype.hasOwnProperty.call(STATES, check.state) &&
               typeof check.label === "string" && typeof check.detail === "string" && typeof check.summary === "string")) {
           throw new Error("Site health could not be verified");
         }
-        if (alive) { setReport(data); setError(""); setClock(Date.now()); }
-      } catch {
-        if (alive) { setReport(null); setError("Health check unavailable. Open the details or try again."); }
+        if (alive) { const time = Date.now(); setReport(data); setError(""); setClock(time); setReceivedAt(time); }
+      } catch (cause) {
+        if (alive) { setReport(null); setError(requestController.signal.aborted
+          ? "Health check timed out. Tap Refresh status to try again."
+          : cause instanceof Error ? cause.message : "Health check unavailable. Tap Refresh status to try again."); }
       } finally {
+        clearTimeout(watchdog);
+        inFlight = false;
         if (alive) { setLoading(false); timer = setTimeout(load, 60000); }
       }
     }
+    const resume = () => { if (!document.hidden) { clearTimeout(timer); void load(); } };
+    document.addEventListener("visibilitychange", resume);
+    window.addEventListener("focus", resume);
     void load();
     const tick = setInterval(() => setClock(Date.now()), 30000);
-    return () => { alive = false; clearTimeout(timer); clearInterval(tick); controller?.abort(); };
+    return () => { alive = false; clearTimeout(timer); clearTimeout(watchdog); clearInterval(tick); controller?.abort();
+      document.removeEventListener("visibilitychange", resume); window.removeEventListener("focus", resume); };
   }, [refresh]);
 
-  const stale = report && !current(report.checkedAt, clock || Date.now(), 2 / 60);
+  // Use elapsed client time, so a device clock differing from the server cannot
+  // turn a freshly received report into ten unverified checks.
+  const stale = report && receivedAt > 0 && (clock || Date.now()) - receivedAt > 120000;
+  const pending = loading && !report;
   const checks = stale ? report.checks.map(check => ({ ...check,
     state: check.state === "failed" ? "failed" as const : "unknown" as const,
-    summary: "Refresh required · " + check.summary })) : report?.checks || UNVERIFIED_CHECKS;
+    summary: "Refresh required · " + check.summary })) : report?.checks || (pending ? UNVERIFIED_CHECKS.map(check => ({
+      ...check, summary: "Checking…", detail: "Waiting for the live health checks to return.",
+    })) : UNVERIFIED_CHECKS);
   const state = overallHealth(checks);
   const label = !report && loading ? "Checking…" : HEALTH_LABELS[state];
   return <>
     <button type="button" className={`${styles.trigger} ${styles[state]}`}
       aria-haspopup="dialog" aria-expanded={open} aria-controls="site-health-dialog"
-      onClick={() => { dialog.current?.showModal(); setOpen(true); }}>
+      onClick={() => { dialog.current?.showModal(); setOpen(true); if (!loading) setRefresh(value => value + 1); }}>
       <span className={styles.dot} aria-hidden="true" />
       <span><strong>SITE HEALTH</strong><span className={styles.triggerLabel} aria-live="polite">{label}</span></span>
       <span aria-hidden="true">▾</span>
@@ -81,7 +103,7 @@ export default function SiteHealthStatus() {
       </div>
       <div className={`${styles.overall} ${styles[state]}`} role="status">
         <span className={styles.dot} aria-hidden="true" /><strong>{label}</strong>
-        <span>{checks.filter(check => check.state === "good").length}/{checks.length || 10} checks passed</span>
+        <span>{pending ? "Checking 10 items…" : `${checks.filter(check => check.state === "good").length}/${checks.length || 10} checks passed`}</span>
       </div>
       <p className={styles.explanation}>Green: all checks pass. Yellow: review or incomplete verification. Red: a failed check. Gray: unverified.</p>
       {error && <p role="alert" className={styles.error}>{error}</p>}
@@ -89,7 +111,7 @@ export default function SiteHealthStatus() {
       <div className={styles.checks}>{checks.map(check => <details key={check.id} className={styles.check}>
         <summary><span className={`${styles.dot} ${styles[check.state]}`} aria-hidden="true" />
           <span className={styles.checkLabel}>{check.label}</span>
-          <span className={styles.checkValue}>{check.summary}<small>{STATES[check.state]}</small></span>
+          <span className={styles.checkValue}>{check.summary}<small>{pending ? "Checking" : STATES[check.state]}</small></span>
           <span aria-hidden="true">⌄</span>
         </summary>
         <p>{check.detail}</p><p className={styles.checkedAt}>Checked: {when(check.checkedAt)}</p>
