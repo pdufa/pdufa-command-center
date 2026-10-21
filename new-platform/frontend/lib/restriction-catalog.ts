@@ -135,8 +135,16 @@ export function removeRestrictionFromList(entries: CatalogEntry[], id: string, s
   });
 }
 export function defaultCatalogEntries(): CatalogEntry[] {
-  return RESTRICTION_CATALOG.map(rule => ({ id: rule.id, enabled: rule.category === "Approved Pipeline rule",
-    stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", additionalStages: [], priority: "", value: rule.value || "", maximum: rule.maximum || "" }));
+  // Four mandatory Pipeline eligibility criteria (market cap uses two existing bounds).
+  // Unverified evidence stays UNKNOWN, never automatically excluded.
+  const ranks: Record<string,string> = { minCap:"1", maxCap:"1", public:"2", phase:"3", fdaPath:"4" };
+  return RESTRICTION_CATALOG.map(rule => ({
+    id: rule.id, enabled: Object.hasOwn(ranks,rule.id),
+    stage: Object.hasOwn(ranks,rule.id) ? "PIPELINE" : "",
+    additionalStages: [], priority: ranks[rule.id] || "",
+    stagePriorities: Object.hasOwn(ranks,rule.id) ? { PIPELINE:ranks[rule.id] } : {},
+    value: rule.value || "", maximum: rule.maximum || ""
+  }));
 }
 /** Display saved Market Cap thresholds as dollar values; never infer missing data. */
 export function marketCapLimitLabel(entry: Pick<CatalogEntry, "id" | "value" | "maximum">): string | null {
