@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { defaultRestrictionSettings, isRegisteredTrial, type ImpactRecord, type RestrictionEvidence } from "../lib/restriction-impact";
 import { calculateCatalogImpact, catalogDefinition, catalogVerdict, defaultCatalogEntries, restoreCatalogEntries,
   catalogStages, RESTRICTION_STAGES, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
@@ -14,6 +14,30 @@ type Inspection = { id: string; kind: "new" | "alone" | "unknown" };
 function stageLabel(stage: RestrictionStage) { return stage === "GEM_JR" ? "GEM JR" : stage || "Blank"; }
 function StageOptions() { return <><option value="">Blank</option><option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option></>; }
 
+// Display groups come from the original FS/FA associations, never from editable stage assignments.
+// A rule shared by two presets has one editable master row and a read-only cross-reference.
+const ASSOCIATION_GROUPS = [
+  { id: "PIPELINE", title: "PIPELINE", note: "Original Pipeline restrictions and proposals" },
+  { id: "GEM JR FS", title: "GEM JR — FS", note: "Original GEM JR FS suggested requirements" },
+  { id: "GEM JR FA", title: "GEM JR — FA", note: "Original GEM JR FA requirements" },
+  { id: "GEM FS", title: "GEM — FS", note: "Original GEM FS suggested requirements" },
+  { id: "GEM FA", title: "GEM — FA", note: "Original GEM FA input requirement" },
+  { id: "INDEPENDENT", title: "OTHER / INDEPENDENT", note: "Optional, manual and custom restrictions without an FS/FA preset" },
+] as const;
+type AssociationGroupId = typeof ASSOCIATION_GROUPS[number]["id"];
+function primaryGroup(entry: CatalogEntry): AssociationGroupId {
+  const definition = catalogDefinition(entry);
+  if (definition.category.includes("Pipeline")) return "PIPELINE";
+  return (definition.associations?.[0] as AssociationGroupId | undefined) || "INDEPENDENT";
+}
+function isMemberOfGroup(entry: CatalogEntry, group: AssociationGroupId): boolean {
+  if (group === "PIPELINE" || group === "INDEPENDENT") return primaryGroup(entry) === group;
+  return !!catalogDefinition(entry).associations?.includes(group);
+}
+function groupTitle(id: AssociationGroupId): string {
+  return ASSOCIATION_GROUPS.find(group => group.id === id)?.title || id;
+}
+
 export default function RestrictionImpact({ rows, asOf, cached = false, onRefresh, managedEntries, onManagedEntriesChange }: {
   rows: ImpactRecord[]; asOf: string; cached?: boolean; onRefresh?: () => void; managedEntries?:CatalogEntry[]; onManagedEntriesChange?:Dispatch<SetStateAction<CatalogEntry[]>>;
 }) {
@@ -21,7 +45,7 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const entries = managedEntries ?? localEntries;
   const setEntries = onManagedEntriesChange ?? setLocalEntries;
   const [settings, setSettings] = useState(defaultRestrictionSettings);
-  const [scope, setScope] = useState("all"), [showStage, setShowStage] = useState("all"), [search, setSearch] = useState("");
+  const [scope, setScope] = useState("all"), [showStage, setShowStage] = useState("all"), [groupFilter, setGroupFilter] = useState("all"), [search, setSearch] = useState("");
   const [ready, setReady] = useState(false), [saved, setSaved] = useState("");
   const [description, setDescription] = useState(""), [customStage, setCustomStage] = useState<RestrictionStage>("");
   const [customField, setCustomField] = useState<CustomField>("note"), [customOperator, setCustomOperator] = useState<">=" | "<=">(">="), [customValue, setCustomValue] = useState("");
@@ -63,7 +87,16 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const scoped = useMemo(() => scope === "trials" ? rows.filter(isRegisteredTrial) : rows, [rows, scope]);
   const report = useMemo(() => calculateCatalogImpact(scoped, entries, settings, evidence, asOf), [scoped, entries, settings, evidence, asOf]);
   const visible = entries.filter(entry => (showStage === "all" || catalogStages(entry).includes(showStage as Exclude<RestrictionStage, "">)) &&
-    (!search || (catalogDefinition(entry).title + " " + catalogDefinition(entry).category).toLowerCase().includes(search.toLowerCase()))).sort((a,b) => Number(!!a.priority)-Number(!!b.priority) || (a.stage||"").localeCompare(b.stage||"") || Number(a.priority||0)-Number(b.priority||0));
+    (!search || (catalogDefinition(entry).title + " " + catalogDefinition(entry).category + " " + (catalogDefinition(entry).associations || []).join(" ")).toLowerCase().includes(search.toLowerCase()))).sort((a,b) => Number(!!a.priority)-Number(!!b.priority) || (a.stage||"").localeCompare(b.stage||"") || Number(a.priority||0)-Number(b.priority||0));
+  const sections = [
+    { id: "available", title: "AVAILABLE — NOT NUMBERED", members: visible.filter(entry => !entry.priority) },
+    { id: "selected", title: "SELECTED — NUMBERED RESTRICTIONS", members: visible.filter(entry => !!entry.priority) },
+  ].map(section => ({
+    ...section,
+    groups: ASSOCIATION_GROUPS.filter(group => groupFilter === "all" || groupFilter === group.id)
+      .map(group => ({ ...group, members: section.members.filter(entry => isMemberOfGroup(entry, group.id)) }))
+      .filter(group => group.members.length > 0),
+  })).filter(section => section.groups.length > 0);
   const selectedEntry = entries.find(entry => entry.id === inspection?.id), selectedStep = report.steps.get(inspection?.id || "") || (selectedEntry ? report.steps.get(catalogStages(selectedEntry)[0] + "|" + selectedEntry.id) : undefined);
   const inspected = useMemo(() => {
     if (!inspection || !selectedEntry || !selectedStep) return [];
@@ -77,12 +110,12 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     event.preventDefault(); if (!description.trim() || entries.filter(e => e.id.startsWith("custom_")).length >= 100) return;
     setEntries(current => [...current, { id: "custom_" + crypto.randomUUID(), title: description.trim(), stage: customStage,
       enabled: false, priority: "", field: customField, operator: customOperator, value: customValue, maximum: "" }]);
-    setDescription(""); setCustomValue(""); setShowStage("all"); setSearch("");
+    setDescription(""); setCustomValue(""); setShowStage("all"); setGroupFilter("all"); setSearch("");
   }
   const capDates = [...new Set(Object.values(evidence?.issuers || {}).map(issuer => issuer.capAsOf.slice(0, 10)).filter(Boolean))].sort();
   return <section className={"panel " + styles.panel} aria-labelledby="restriction-impact-title" id="restrictions">
     <div className={styles.heading}><div><h2 id="restriction-impact-title">RESTRICTIONS</h2>
-      <p>Each distinct restriction appears once. Assign it to one or more stages and see the existing FS / FA associations in the same row. Set a priority number to include it in the preview.</p></div>
+      <p>Restrictions are organized by their original Pipeline, GEM JR FS, GEM JR FA, GEM FS and GEM FA groups. Shared associations are linked to one master rule; no preset assignments are changed. Number a rule to move it into the selected groups below.</p></div>
       <div className={styles.buttons}><button type="button" className="secondary" disabled={loading} onClick={() => { setVersion(v => v + 1); onRefresh?.(); }}>{loading ? "REFRESHING…" : "REFRESH PUBLISHED DATA"}</button>
         <button type="button" className="secondary" onClick={() => { setEntries(defaultCatalogEntries()); setSettings(defaultRestrictionSettings()); setInspection(null); setPage(0); }}>RESET TO APPROVED RULES</button></div></div>
     <p className={styles.note}>Blank leaves a rule unassigned. Numbered, assigned rules screen in <strong>Pipeline → GEM JR → GEM</strong> order; each stage starts with the preceding stage’s remaining records. This page previews the effects; saved stage memberships and the existing scan selections stay as recorded.</p>
@@ -109,13 +142,23 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       <p className={styles.note}>Description-only restrictions are saved as checks needing verification. Select a numeric evidence field to calculate an exclusion count.</p>
       <button type="submit" disabled={!description.trim()}>ADD RESTRICTION</button>
     </form>
-    <div className={styles.controls}><label>Show rules<select aria-label="Show restriction stage" value={showStage} onChange={event => setShowStage(event.target.value)}><option value="all">Full list — all stages</option><StageOptions /></select></label>
+    <div className={styles.controls}><label>Association group<select aria-label="Restriction association group" value={groupFilter} onChange={event => setGroupFilter(event.target.value)}><option value="all">All original groups</option>{ASSOCIATION_GROUPS.map(group => <option key={group.id} value={group.id}>{group.title}</option>)}</select></label>
+      <label>Show rules<select aria-label="Show restriction stage" value={showStage} onChange={event => setShowStage(event.target.value)}><option value="all">Full list — all stages</option><StageOptions /></select></label>
       <label>Find restriction<input type="search" aria-label="Find restriction" maxLength={100} value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or category" /></label></div>
-    <p className={styles.note}>{visible.length} of {entries.length} unique restrictions shown. A numbered rule moves to the selected list below. Select a main stage and optional additional stages without adding duplicate rules. “Excluded alone” starts from the full universe; “New exclusions” follows stage priority order. Unknown evidence remains pending.</p>
-    <h3>AVAILABLE RESTRICTIONS ABOVE · SELECTED RESTRICTIONS AT BOTTOM</h3><p className={styles.note}>P = Pipeline · J = GEM JR · G = GEM. A single restriction may serve several lists. FS / FA labels identify the existing presets; retired FI controls are not silently reinstated.</p><div className={styles.scroll} role="region" aria-label="Sequential restriction effects" tabIndex={0}><table className={styles.table + " " + styles.catalog}><caption>Full restriction catalog and live effect. Rules within each stage run in numerical priority order. Rules without priority numbers have no cumulative effect.</caption>
+    <p className={styles.note}>{visible.length} of {entries.length} unique restrictions match your search and stage. Original FS / FA groups remain separate; a shared restriction has one editable row with read-only cross-references in its other groups. A numbered rule moves into SELECTED at the bottom. “Excluded alone” starts from the full universe; “New exclusions” follows stage priority order. Unknown evidence remains pending.</p>
+    <h3>RESTRICTIONS BY ORIGINAL ASSOCIATION GROUP</h3><p className={styles.note}>P = Pipeline · J = GEM JR · G = GEM. FS and FA memberships stay exactly as originally defined. Registry is shared by GEM JR FS and FA; Cash Runway is shared by Pipeline and GEM JR FS. A shared reference is not an extra restriction. Numbered rules remain at the bottom.</p><div className={styles.scroll} role="region" aria-label="Sequential restriction effects" tabIndex={0}><table className={styles.table + " " + styles.catalog}><caption>Full restriction catalog and live effect. Rules within each stage run in numerical priority order. Rules without priority numbers have no cumulative effect.</caption>
       <thead><tr><th>Priority / restriction</th><th>Apply to</th><th>FS / FA association</th><th>Value / target</th><th>Excluded alone</th><th>New exclusions</th><th>Remaining / pending</th><th>Inspect</th></tr></thead><tbody>
         <tr className={styles.start}><th scope="row">0. FULL STARTING UNIVERSE</th><td colSpan={5}>Every source record before restrictions</td><td>{count(report.total)}</td><td>Unfiltered</td></tr>
-        {visible.map(entry => { const rule = catalogDefinition(entry), step = report.steps.get(entry.id) || report.steps.get(catalogStages(entry)[0] + "|" + entry.id)!, used = entry.enabled && !!entry.priority && catalogStages(entry).length > 0 && !rule.warning;
+        {sections.map(section => <Fragment key={section.id}>
+          <tr style={{background:"#dcece0"}}><th scope="colgroup" colSpan={8} style={{fontWeight:800,fontSize:15}}>{section.title} · {section.members.length} unique restrictions</th></tr>
+          {section.groups.map(group => <Fragment key={group.id}>
+            <tr style={{background:"#eaf2eb"}}><th scope="colgroup" colSpan={8}><strong style={{fontSize:15}}>{group.title} · {group.members.length}</strong><small style={{fontWeight:400,marginLeft:10}}>{group.note}</small></th></tr>
+            {group.members.map(entry => { const rule = catalogDefinition(entry);
+              if (groupFilter === "all" && primaryGroup(entry) !== group.id) return <tr key={group.id+"-shared-"+entry.id} style={{background:"#f6f9f6"}}>
+                <th scope="row">{rule.title}<small>Shared original association: {group.title}</small></th>
+                <td colSpan={7} style={{fontWeight:500}}>Same master restriction, editable once under <strong>{groupTitle(primaryGroup(entry))}</strong>. Its settings and scan effects are shared, not duplicated.</td>
+              </tr>;
+              const step = report.steps.get(entry.id) || report.steps.get(catalogStages(entry)[0] + "|" + entry.id)!, used = entry.enabled && !!entry.priority && catalogStages(entry).length > 0 && !rule.warning;
           return <tr key={entry.id} className={!used ? styles.inactive : undefined}>
             <th scope="row"><label className={styles.rule}><span style={{display:"inline-flex",alignItems:"center",gap:4,flexShrink:0}}><strong>{entry.stage === "PIPELINE" ? "P" : entry.stage === "GEM_JR" ? "J" : entry.stage === "GEM" ? "G" : "—"}</strong><input style={{width:64,minWidth:54}} type="number" min="1" max="9999" step="1" placeholder="#" aria-label={"Priority for " + rule.title} value={entry.priority || ""} onChange={event => { const value=event.target.value; if(value && (!/^\d{1,4}$/.test(value) || Number(value)<1))return; update(entry.id,{priority:value,enabled:!!value}); }} /></span><span>{rule.title}<small>{rule.category}{rule.warning ? " · WARNING ONLY" : ""}</small></span></label>
               {entry.id.startsWith("custom_") && <input aria-label={"Edit " + rule.title} maxLength={400} value={entry.title} onChange={event => update(entry.id, { title: event.target.value })} />}
@@ -132,7 +175,9 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
             <td data-label="Inspect"><div className={styles.inspectButtons}><button type="button" className="secondary" disabled={!step.newlyExcluded} onClick={() => inspect(entry.id, "new")}>NEW EXCLUSIONS</button><button type="button" className="secondary" disabled={!step.aloneFail} onClick={() => inspect(entry.id, "alone")}>EXCLUDED ALONE</button><button type="button" className="secondary" disabled={!step.aloneUnknown} onClick={() => inspect(entry.id, "unknown")}>UNKNOWN ALONE</button>
               {entry.id.startsWith("custom_") && <button type="button" className="secondary" onClick={() => { setEntries(current => current.filter(e => e.id !== entry.id)); if (inspection?.id === entry.id) setInspection(null); }}>REMOVE CUSTOM RULE</button>}</div></td>
           </tr>;
-        })}</tbody></table></div>
+            })}
+          </Fragment>)}
+        </Fragment>)}</tbody></table></div>
     {scanOpen && <section role="dialog" aria-modal="true" aria-label="Scan results" style={{position:"fixed",inset:0,zIndex:9999,background:"white",color:"black",overflowY:"auto",padding:16}}><button type="button" onClick={()=>setScanOpen(false)}>CLOSE ×</button><h2>FULL SCAN RESULTS</h2><p>Scanned {count(report.total)} · Passed {count(report.passed)} · Excluded {count(report.excluded)} · Needs verification {count(report.pending)}</p><div className={styles.scroll}><table><thead><tr><th>Priority</th><th>Restriction</th><th>New exclusions</th><th>Remaining</th><th>Pending</th></tr></thead><tbody>{entries.filter(e=>report.steps.get(e.id)?.step).sort((a,b)=>(report.steps.get(a.id)?.step||0)-(report.steps.get(b.id)?.step||0)).map(e=>{const step=report.steps.get(e.id)!;return <tr key={e.id}><td>{e.stage==="PIPELINE"?"P":e.stage==="GEM_JR"?"J":"G"}{e.priority}</td><td>{catalogDefinition(e).title}</td><td>{count(step.newlyExcluded)}</td><td>{count(step.remaining)}</td><td>{count(step.pending)}</td></tr>})}</tbody></table></div><h3>REMAINING TRIALS</h3><p>Use the NEW EXCLUSIONS buttons in the restriction table to inspect removed records.</p><div className={styles.scroll}><table><thead><tr><th>Trial</th><th>Ticker</th><th>Drug</th></tr></thead><tbody>{report.rows.filter(row=>![...report.steps.values()].some(step=>step.step && step.newlyExcludedIds.has(row.id))).slice(0,250).map(row=><tr key={row.id}><td>{row.programId||row.id}</td><td>{row.ticker}</td><td>{row.drug||"Unknown"}</td></tr>)}</tbody></table></div><p>Showing first 250 remaining records.</p></section>}
     {!visible.length && <p>No restrictions match this list view.</p>}
     {inspection && selectedEntry && <section className={styles.inspection} aria-label="Affected records"><div className={styles.heading}><h4>{catalogDefinition(selectedEntry).title} — {inspection.kind === "new" ? "new exclusions at this step" : inspection.kind === "alone" ? "excluded by this rule alone" : "needs verification for this rule"} ({count(inspected.length)})</h4><button type="button" className="secondary" onClick={() => setInspection(null)} aria-label="Close affected records">CLOSE ×</button></div>
