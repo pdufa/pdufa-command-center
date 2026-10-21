@@ -182,9 +182,12 @@ def start_download(refresh=False, launch=True):
 
 def bootstrap():
     try:
-        state = start_download()
-        if state.get("complete"):
-            ensure_cached_export()
+        # The download ledger lives in Postgres. Do not construct the 100+ MB
+        # ZIP on every 512 MiB worker start: source and assessment verification
+        # run at startup too, and overlapping work has caused OOM restarts.
+        # The authenticated export endpoint still builds the exact same ZIP
+        # on demand via ensure_cached_export().
+        start_download()
     except Exception as exc:
         LOG.error("PDUFA_FULL_TRIAL_BOOTSTRAP error_type=%s", type(exc).__name__)
 
@@ -299,11 +302,9 @@ def run_download(fetcher=fetch_batch):
         job.lease_until = None
         session.commit()
     LOG.warning("PDUFA_FULL_TRIAL_FINISHED %s", packed(archive_status()))
-    if not missing:
-        try:
-            ensure_cached_export()
-        except Exception as exc:
-            LOG.error("PDUFA_FULL_TRIAL_EXPORT error_type=%s", type(exc).__name__)
+    # Export construction is intentionally lazy. It must not run concurrently
+    # with large all-phase downloads or the 11k-candidate scoring index on a
+    # memory-constrained worker. The private export endpoint retains all checks.
 
 
 def make_export_ticket():
