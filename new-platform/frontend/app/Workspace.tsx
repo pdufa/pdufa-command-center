@@ -1694,15 +1694,23 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </div>
     <div className="workspace-overview">
       <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
-      <section className="workspace-update-box" role="status" aria-label="Last updated data status">
-        <div className="workspace-update-title"><span>LAST UPDATED · SOURCE DATA</span><strong>{pacificSourceTime(snapshot?.asOf)}</strong></div>
-        <div className="workspace-update-details">
-          <span><b>DATA STATUS:</b> {!snapshot ? "LOADING" : cachedAsOf ? "PREVIOUSLY PUBLISHED · LOCAL CACHE" : fetchError && !refreshing ? "PREVIOUSLY PUBLISHED · REFRESH NOT VERIFIED" : snapshot.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE" ? "PREVIOUSLY PUBLISHED · SOURCE FALLBACK" : snapshot.sourceHealth?.publishedScan?.complete === true && snapshot.sourceHealth.publishedScan.finishedAt ? "COMPLETED SCAN · PUBLISHED RESULTS" : "PREVIOUSLY PUBLISHED DATA · SCAN NOT CONFIRMED COMPLETE"}</span>
-          <span><b>LAST SCAN FINISHED:</b> {pacificSourceTime(snapshot?.sourceHealth?.publishedScan?.finishedAt)} · {snapshot?.sourceHealth?.publishedScan?.complete === true ? "Confirmed complete in published report" : "Not confirmed complete"}</span>
-          <span><b>DASHBOARD CHECKED:</b> {pacificSourceTime(lastCheckedAt)}</span>
-        </div>
-        <p>Published results are not a live-running scan. Check SCANS for live progress.</p>
-      </section>
+      <div className="workspace-update-row" role="status" aria-label="Data freshness and scan status">
+        <section className="workspace-update-card">
+          <span className="workspace-update-label">LAST UPDATED · SOURCE DATA</span>
+          <strong className="workspace-update-value">{pacificSourceTime(snapshot?.asOf)}</strong>
+          <span className="workspace-update-detail">{!snapshot ? "Loading published data" : cachedAsOf ? "Previously published · local cache" : fetchError && !refreshing ? "Previously published · refresh unverified" : snapshot.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Previously published · source fallback" : snapshot.sourceHealth?.publishedScan?.complete === true && snapshot.sourceHealth.publishedScan.finishedAt ? "Completed scan · published results" : "Previously published · scan not confirmed complete"}</span>
+        </section>
+        <section className="workspace-update-card">
+          <span className="workspace-update-label">LAST SCAN FINISHED</span>
+          <strong className="workspace-update-value">{pacificSourceTime(snapshot?.sourceHealth?.publishedScan?.finishedAt)}</strong>
+          <span className="workspace-update-detail">{snapshot?.sourceHealth?.publishedScan?.complete === true ? "Confirmed complete in published report" : "Not confirmed complete"}</span>
+        </section>
+        <section className="workspace-update-card">
+          <span className="workspace-update-label">DASHBOARD CHECKED</span>
+          <strong className="workspace-update-value">{pacificSourceTime(lastCheckedAt)}</strong>
+          <span className="workspace-update-detail">Data was checked, not a new scan. See SCANS for live progress.</span>
+        </section>
+      </div>
       {summaryError && !publishedCounts && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
