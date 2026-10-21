@@ -942,7 +942,7 @@ button.secondary { background: white; color: #172b1b; }
 .migration-workspace,
 .migration-workspace > *,
 .pipeline-page, .gems-page, .wt-page, .scans-page,
-.pipeline-setup-grid, .pipeline-results-anchor, .pipeline-filters,
+.pipeline-results-anchor, .pipeline-filters,
 .gem-section, .gem-body, .gem-table-panel, .gem-profile,
 .gem-profile-tile, .wt-panels, .wt-program-masonry, .wt-stock,
 .wt-research-column, .wt-score-details, .scans-actions-grid,
@@ -995,16 +995,6 @@ button.secondary { background: white; color: #172b1b; }
 .migration-workspace .source-links,
 .migration-workspace .trial-details {min-width:0;max-width:100%;}
 
-/* PIPELINE: lift the download/control block alongside filtering when it fits.
-   Keep the clinical records table below both at full row width. */
-.pipeline-setup-grid {
-  display:grid;
-  grid-template-columns:minmax(0,1fr);
-  gap:var(--fluid-gap);
-  align-items:start;
-  margin:14px 0 18px;
-}
-.pipeline-setup-grid > .panel {margin:0;width:100%;min-width:0;}
 .pipeline-filters {container: pipeline-filters / inline-size;}
 .pipeline-filters .filter-columns {grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);}
 .pipeline-filters .filter-checks {grid-template-columns:repeat(auto-fit,minmax(min(100%,175px),1fr));}
@@ -1018,9 +1008,6 @@ button.secondary { background: white; color: #172b1b; }
 @container pipeline-filters (max-width:650px) {
   .filter-columns {grid-template-columns:1fr;}
   .filter-checks {grid-template-columns:repeat(auto-fit,minmax(min(100%,195px),1fr));}
-}
-@media(min-width:1550px) {
-  .pipeline-setup-grid {grid-template-columns:minmax(290px,.6fr) minmax(0,2fr);}
 }
 /* Candidate tables remain research-grade and can scroll, rather than
    collapsing 20 columns to unreadable microtext. */
@@ -1158,7 +1145,6 @@ button.secondary { background: white; color: #172b1b; }
   .migration-workspace .sectionhead > * {width:100%;min-width:0;}
   .migration-workspace .sectionhead button {flex:1 1 100%;width:100%;}
   .migration-workspace .sectionhead .counter {align-self:start;width:auto;max-width:100%;}
-  .pipeline-setup-grid {grid-template-columns:minmax(0,1fr);gap:10px;}
   .pipeline-filters .filter-columns,
   .pipeline-filters .filter-checks {grid-template-columns:minmax(0,1fr);}
   .pipeline-row > label {flex:1 1 100%;max-width:100%;}

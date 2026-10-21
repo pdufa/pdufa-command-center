@@ -8,7 +8,6 @@ import TradingDashboard, { type TradingTicker } from "./TradingDashboard";
 import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
-import FullTrialDownload from "./FullTrialDownload";
 import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import RestrictionImpact from "./RestrictionImpact";
@@ -1760,8 +1759,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         {query?" · Text search active":""}
         {" · As of "+snapshot.asOf}
       </p>
-      <div className="pipeline-setup-grid">
-      <FullTrialDownload />
       <section className="panel pipeline-restrictions-shortcut" aria-labelledby="pipeline-moved-title">
         <h3 id="pipeline-moved-title">PIPELINE RESTRICTIONS MOVED</h3>
         <p>All stage, PDUFA date, trial, financing, evidence and market-cap filter controls now appear beneath the existing rules on the <strong>RESTRICTIONS</strong> page. Your current selections have not been reset or combined with the separate restriction catalog.</p>
@@ -1772,7 +1769,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </div>
         {selectionsChanged && <p className="filter-pending" role="status">Your saved display has not been refreshed for the current selections. Press DISPLAY TRIALS to update it.</p>}
       </section>
-      </div>
       <div ref={pipelineDataRef} className="pipeline-results-anchor">
         {displayFilters ? <PipelineData key={appliedKey + "|" + displayVersion + "|" + snapshot.asOf} rows={displayed}
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")

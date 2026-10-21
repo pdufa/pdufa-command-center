@@ -1,8 +1,5 @@
-import csv
 import gzip
-import io
 import json
-from zipfile import ZipFile
 
 import pytest
 from fastapi import HTTPException
@@ -19,8 +16,6 @@ def isolated(monkeypatch, tmp_path):
     main.Base.metadata.create_all(engine)
     monkeypatch.setattr(main, "ENGINE", engine)
     monkeypatch.setattr(archive, "_scope", lambda: ["NCT00000001", "NCT00000002"])
-    monkeypatch.setattr(archive, "_EXPORT_PATH", tmp_path / "cached-export.zip")
-    monkeypatch.setattr(archive, "_EXPORT_STAMP", "")
     monkeypatch.setattr(archive.time, "sleep", lambda _: None)
     yield engine
     engine.dispose()
@@ -44,7 +39,7 @@ def study(nct="NCT00000001"):
     }
 
 
-def test_all_fields_and_p_values_remain_lossless(isolated, tmp_path):
+def test_all_fields_and_p_values_remain_lossless(isolated):
     archive.start_download(launch=False)
     originals = {nct: study(nct) for nct in archive._scope()}
     archive.run_download(lambda ids: {nct: originals[nct] for nct in ids})
@@ -57,16 +52,6 @@ def test_all_fields_and_p_values_remain_lossless(isolated, tmp_path):
         assert record.statistics[0]["comparison_groups"][0]["title"] == "Drug"
         assert record.statistics[0]["p_value"] == "<0.0001"
         assert record.statistics[1]["p_value"] == 0
-    output = tmp_path / "full.zip"
-    archive.build_archive(output)
-    with ZipFile(output) as zipped:
-        exported = [json.loads(line) for line in zipped.read("full_studies.jsonl").splitlines()]
-        assert exported == list(originals.values())
-        rows = list(csv.DictReader(io.StringIO(zipped.read("statistical_analyses.csv").decode("utf-8-sig"))))
-        assert rows[0]["p_value"] == "<0.0001"
-        assert json.loads(rows[0]["analysis_json"])["unknownFutureStatistic"]["keep"] == [0, False, None]
-        assert json.loads(zipped.read("manifest.json"))["field_filter"] is None
-
 
 def test_protocol_threshold_is_not_a_reported_result():
     value = study()
@@ -91,12 +76,25 @@ def test_missing_studies_stay_partial_and_retry_resumes(isolated):
     assert archive.archive_status()["reportedPValues"] == 4
 
 
-def test_incomplete_export_and_forged_links_are_rejected(isolated, monkeypatch):
-    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-only-export-key")
-    with pytest.raises(HTTPException):
-        archive.make_export_ticket()
-    with pytest.raises(HTTPException):
-        archive.export_response("v1.9999999999.forged")
+def test_retired_zip_cache_cleanup_only_deletes_generated_export_files(monkeypatch, tmp_path):
+    monkeypatch.setattr(archive.tempfile, "gettempdir", lambda: str(tmp_path))
+    completed = tmp_path / "pdufa-full-trial-export.zip"
+    partial = tmp_path / "pdufa-full-trial-export.building"
+    original = tmp_path / "trial-data.json"
+    completed.write_bytes(b"archived-zip")
+    partial.write_bytes(b"partial")
+    original.write_bytes(b"preserve")
+    assert archive.cleanup_retired_zip_exports() == {"removed": 2, "bytes": 19}
+    assert not completed.exists() and not partial.exists()
+    assert original.read_bytes() == b"preserve"
+    assert archive.cleanup_retired_zip_exports() == {"removed": 0, "bytes": 0}
+
+
+def test_bulk_zip_download_endpoints_are_removed():
+    routes = {route.path for route in main.app.routes}
+    assert "/api/pipeline-full-records/export-link" not in routes
+    assert "/downloads/pipeline-all-fields/{ticket}" not in routes
+
 
 
 def test_paged_summaries_and_record_capabilities_preserve_every_field(isolated, monkeypatch):
@@ -115,11 +113,9 @@ def test_paged_summaries_and_record_capabilities_preserve_every_field(isolated, 
     response = archive.record_response("NCT00000001", ticket)
     assert json.loads(response.body) == originals["NCT00000001"]
     assert response.headers["access-control-allow-origin"] == "*"
-    # A trial ticket cannot read another NCT ID or download the all-trial ZIP.
+    # A trial ticket cannot read another NCT ID.
     with pytest.raises(HTTPException):
         archive.record_response("NCT00000002", ticket)
-    with pytest.raises(HTTPException):
-        archive.export_response(ticket)
     with pytest.raises(HTTPException):
         archive.record_summaries("not-a-trial")
     with pytest.raises(HTTPException):
