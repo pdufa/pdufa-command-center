@@ -123,3 +123,9 @@
 .listOverviewMembers p {font-size:13px;margin:10px 0;color:#425749;}
 .listOverviewAction {width:100%;min-height:43px;}
 @media (max-width:780px){.listOverviewGrid{min-width:760px;grid-template-columns:repeat(3,minmax(0,1fr));}.listOverviewCard{padding:10px;}}
+
+/* Keep the saved Market Cap range visible directly under its restriction name. */
+.listOverviewRuleText {display:grid;gap:3px;min-width:0;}
+.listOverviewRuleText > span {overflow-wrap:anywhere;}
+.listOverviewMembers .marketCapNumbers,.listRows .marketCapNumbers {display:block;font-size:13px;font-weight:750;color:#174e31;font-variant-numeric:tabular-nums;margin:0;white-space:normal;}
+.listRows .marketCapNumbers {margin-left:20px;}

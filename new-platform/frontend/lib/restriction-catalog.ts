@@ -118,6 +118,20 @@ export function defaultCatalogEntries(): CatalogEntry[] {
   return RESTRICTION_CATALOG.map(rule => ({ id: rule.id, enabled: rule.category === "Approved Pipeline rule",
     stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", additionalStages: [], priority: "", value: rule.value || "", maximum: rule.maximum || "" }));
 }
+/** Display saved Market Cap thresholds as dollar values; never infer missing data. */
+export function marketCapLimitLabel(entry: Pick<CatalogEntry, "id" | "value" | "maximum">): string | null {
+  if (!["gem_marketcap","minCap","maxCap"].includes(entry.id)) return null;
+  const amount = (raw:string) => {
+    if (!raw?.trim()) return "not set";
+    const value = Number(raw);
+    if (!Number.isFinite(value) || value < 0) return "not set";
+    const denomination = value >= 1000 ? "B" : "M";
+    const number = value >= 1000 ? value / 1000 : value;
+    return "$" + number.toLocaleString("en-US",{maximumFractionDigits:6}) + denomination;
+  };
+  if (entry.id === "gem_marketcap") return amount(entry.value) + " – " + amount(entry.maximum);
+  return (entry.id === "minCap" ? "Min " : "Max ") + amount(entry.value);
+}
 export function catalogDefinition(entry: CatalogEntry): CatalogDefinition {
   return RESTRICTION_CATALOG.find(rule => rule.id === entry.id) || { id: entry.id,
     title: entry.title || "Custom restriction", category: "Custom restriction", value: entry.value,

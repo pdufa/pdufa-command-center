@@ -455,3 +455,45 @@ test("each top restriction list opens the editor for the corresponding stage", a
     }
   } finally {if(renderer)await act(async()=>renderer.unmount());global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;}
 });
+
+test("market cap thresholds appear in all restriction lists with current saved values", async () => {
+  const React=require("react"), {renderToStaticMarkup}=require("react-dom/server");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  const active=catalog.defaultCatalogEntries().map(e=>({...e}));
+  const range=active.find(e=>e.id==="gem_marketcap");
+  range.stage="PIPELINE";range.enabled=true;range.priority="1";range.value="450";range.maximum="8500";
+  const min=active.find(e=>e.id==="minCap");
+  min.stage="PIPELINE";min.enabled=true;min.priority="2";min.value="310";
+  const max=active.find(e=>e.id==="maxCap");
+  max.stage="GEM_JR";max.enabled=true;max.priority="1";max.value="12000";
+  assert.equal(catalog.marketCapLimitLabel(range),"$450M – $8.5B");
+  assert.equal(catalog.marketCapLimitLabel(min),"Min $310M");
+  assert.equal(catalog.marketCapLimitLabel(max),"Max $12B");
+  assert.equal(catalog.marketCapLimitLabel({...range,maximum:""}),"$450M – not set");
+  assert.equal(catalog.marketCapLimitLabel({...range,id:"gem_phase3"}),null);
+  const html=renderToStaticMarkup(React.createElement(Component,{rows,asOf,managedEntries:active}));
+  const cards=html.slice(html.indexOf('aria-label="Three restriction lists"'),html.indexOf('aria-label="Market cap restriction quick access"'));
+  assert.match(cards, /\$450M – \$8\.5B/);
+  assert.match(cards, /Min \$310M/);
+  assert.match(cards, /Max \$12B/);
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39);
+  assert.deepEqual(catalog.RESTRICTION_CATALOG.find(e=>e.id==="gem_registry").associations,["GEM JR FS","GEM JR FA"]);
+  const {create,act}=require("react-test-renderer");
+  const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
+  global.IS_REACT_ACT_ENVIRONMENT=true;global.window={setInterval:()=>1,clearInterval(){}};
+  global.fetch=async()=>({ok:true,json:async()=>evidence});
+  let renderer;
+  try {
+    await act(async()=>{renderer=create(React.createElement(Component,{rows,asOf,managedEntries:active}));});
+    const btn=renderer.root.findByProps({"aria-label":"Edit PIPELINE restriction list"});
+    await act(async()=>{btn.props.onClick();});
+    const popup=renderer.root.findByProps({"aria-label":"Current restriction list"});
+    const popupText=popup.findAllByType("small").map(node=>node.children.join("")).join(" ");
+    assert.match(popupText,/\$450M – \$8\.5B/);
+    assert.match(popupText,/Min \$310M/);
+    assert.equal(renderer.root.findByProps({"aria-label":"Restriction to add"}).props.value,active.find(e=>e.id==="gem_marketcap").id);
+  } finally {
+    if(renderer)await act(async()=>renderer.unmount());
+    global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;
+  }
+});

@@ -2,7 +2,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { defaultRestrictionSettings, isRegisteredTrial, type ImpactRecord, type RestrictionEvidence } from "../lib/restriction-impact";
 import { calculateCatalogImpact, catalogDefinition, catalogVerdict, defaultCatalogEntries, restoreCatalogEntries,
-  catalogStages, catalogStagePriority, selectedRestrictionList, insertRestrictionIntoList, RESTRICTION_STAGES, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
+  catalogStages, catalogStagePriority, selectedRestrictionList, insertRestrictionIntoList, marketCapLimitLabel, RESTRICTION_STAGES, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
 import styles from "./RestrictionImpact.module.css";
 
 const count = (n: number) => n.toLocaleString("en-US");
@@ -149,7 +149,11 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
                 {selected.length?<ol>{selected.map((entry,i)=><li key={entry.id}>
                   <button type="button" aria-label={"Edit "+catalogDefinition(entry).title+" in "+stageLabel(stage)+" list"}
                     onClick={()=>openStageListPopup(stage,entry.id,i)}>
-                    <strong>#{catalogStagePriority(entry,stage)}</strong><span>{catalogDefinition(entry).title}</span>
+                    <strong>#{catalogStagePriority(entry,stage)}</strong>
+                    <span className={styles.listOverviewRuleText}>
+                      <span>{catalogDefinition(entry).title}</span>
+                      {marketCapLimitLabel(entry) && <small className={styles.marketCapNumbers}>{marketCapLimitLabel(entry)}</small>}
+                    </span>
                   </button>
                 </li>)}</ol>:<p>No active restrictions yet.</p>}
               </div>
@@ -240,16 +244,17 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
             {RESTRICTION_STAGES.map(stage=><option key={stage} value={stage}>{stageLabel(stage)}</option>)}</select></label>
           <label>Restriction to add<select aria-label="Restriction to add" value={listRuleId}
             onChange={event=>{setListRuleId(event.target.value);setListPosition(0);}}>
-            {entries.filter(entry=>!catalogDefinition(entry).warning).map(entry=><option key={entry.id} value={entry.id}>{catalogDefinition(entry).title}</option>)}</select></label>
+            {entries.filter(entry=>!catalogDefinition(entry).warning).map(entry=><option key={entry.id} value={entry.id}>{catalogDefinition(entry).title}{marketCapLimitLabel(entry) ? " ("+marketCapLimitLabel(entry)+")" : ""}</option>)}</select></label>
           <label>Position in list<select aria-label="Restriction list position" value={Math.min(listPosition,positionOptions.length)} onChange={event=>setListPosition(Number(event.target.value))}>
             <option value={0}>#1 — first</option>
-            {positionOptions.map((entry,i)=><option key={entry.id} value={i+1}>#{i+2} — after {catalogDefinition(entry).title}</option>)}
+            {positionOptions.map((entry,i)=><option key={entry.id} value={i+1}>#{i+2} — after {catalogDefinition(entry).title}{marketCapLimitLabel(entry) ? " ("+marketCapLimitLabel(entry)+")" : ""}</option>)}
           </select></label>
         </div>
         <h3>{stageLabel(listStage)} — CURRENT RESTRICTIONS ({listEntries.length})</h3>
         <div className={styles.listRows} role="region" aria-label="Current restriction list">
           {listEntries.length?<ol>{listEntries.map((entry,i)=><li key={entry.id}>
             <span><strong>#{i+1}</strong> {catalogDefinition(entry).title}</span>
+            {marketCapLimitLabel(entry) && <small className={styles.marketCapNumbers}>{marketCapLimitLabel(entry)}</small>}
             <small>{catalogDefinition(entry).associations?.join(" · ")||"Independent"}</small>
           </li>)}</ol>:<p>No active restrictions in this list yet.</p>}
         </div>
