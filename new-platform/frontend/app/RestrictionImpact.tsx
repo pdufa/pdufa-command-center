@@ -2,7 +2,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { defaultRestrictionSettings, isRegisteredTrial, type ImpactRecord, type RestrictionEvidence } from "../lib/restriction-impact";
 import { calculateCatalogImpact, catalogDefinition, catalogVerdict, defaultCatalogEntries, restoreCatalogEntries,
-  catalogStages, catalogStagePriority, selectedRestrictionList, insertRestrictionIntoList, marketCapLimitLabel, RESTRICTION_STAGES, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
+  catalogStages, catalogStagePriority, selectedRestrictionList, insertRestrictionIntoList, removeRestrictionFromList, marketCapLimitLabel, RESTRICTION_STAGES, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
 import styles from "./RestrictionImpact.module.css";
 
 const count = (n: number) => n.toLocaleString("en-US");
@@ -36,6 +36,7 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const [listStage,setListStage]=useState<"PIPELINE"|"GEM_JR"|"GEM">("PIPELINE");
   const [listRuleId,setListRuleId]=useState("gem_marketcap");
   const [listPosition,setListPosition]=useState(0);
+  const [removePending,setRemovePending]=useState<{id:string;stage:Exclude<RestrictionStage,"">}|null>(null);
   const refreshRef = useRef(onRefresh);
   useEffect(() => { refreshRef.current = onRefresh; }, [onRefresh]);
   useEffect(() => {
@@ -112,6 +113,18 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     setSaved("Restriction added to "+stageLabel(listStage)+" list");
     setListPopup(false);
   }
+  function requestRemoveFromList(id:string,stage:Exclude<RestrictionStage,"">) {
+    if (!selectedRestrictionList(entries,stage).some(entry=>entry.id===id)) return;
+    setListPopup(false);
+    setRemovePending({id,stage});
+  }
+  function confirmRemoveFromList() {
+    if (!removePending) return;
+    const {id,stage}=removePending;
+    setEntries(current=>removeRestrictionFromList(current,id,stage));
+    setSaved(catalogDefinition(entries.find(entry=>entry.id===id)!).title+" removed from "+stageLabel(stage)+" list");
+    setRemovePending(null);
+  }
   const selectedEntry = entries.find(entry => entry.id === inspection?.id), selectedStep = report.steps.get(inspection?.id || "") || (selectedEntry ? report.steps.get(catalogStages(selectedEntry)[0] + "|" + selectedEntry.id) : undefined);
   const inspected = useMemo(() => {
     if (!inspection || !selectedEntry || !selectedStep) return [];
@@ -146,8 +159,8 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
               </div>
               <div className={styles.listOverviewCardCount}><strong>{stageResult?count(stageResult.remaining):"—"}</strong><span>trials remain after this stage</span></div>
               <div className={styles.listOverviewMembers}>
-                {selected.length?<ol>{selected.map((entry,i)=><li key={entry.id}>
-                  <button type="button" aria-label={"Edit "+catalogDefinition(entry).title+" in "+stageLabel(stage)+" list"}
+                {selected.length?<ol>{selected.map((entry,i)=><li key={entry.id} className={styles.listOverviewMemberRow}>
+                  <button type="button" className={styles.listOverviewEdit} aria-label={"Edit "+catalogDefinition(entry).title+" in "+stageLabel(stage)+" list"}
                     onClick={()=>openStageListPopup(stage,entry.id,i)}>
                     <strong>#{catalogStagePriority(entry,stage)}</strong>
                     <span className={styles.listOverviewRuleText}>
@@ -155,6 +168,9 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
                       {marketCapLimitLabel(entry) && <small className={styles.marketCapNumbers}>{marketCapLimitLabel(entry)}</small>}
                     </span>
                   </button>
+                  <button type="button" className={styles.listOverviewRemove}
+                    aria-label={"Remove "+catalogDefinition(entry).title+" from "+stageLabel(stage)+" list"}
+                    onClick={()=>requestRemoveFromList(entry.id,stage)}>REMOVE ×</button>
                 </li>)}</ol>:<p>No active restrictions yet.</p>}
               </div>
               <button type="button" className={styles.listOverviewAction} aria-label={"Edit "+stageLabel(stage)+" restriction list"}
@@ -234,6 +250,18 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
           </Fragment>)}
         </Fragment>)}</tbody></table></div>
 
+    {removePending && <section role="dialog" aria-modal="true" aria-label="Confirm restriction removal" className={styles.listBackdrop}>
+      <div className={styles.removeModal}>
+        <h2>REMOVE FROM {stageLabel(removePending.stage).toUpperCase()}?</h2>
+        <p>Remove <strong>{catalogDefinition(entries.find(entry=>entry.id===removePending.id)!).title}</strong>{marketCapLimitLabel(entries.find(entry=>entry.id===removePending.id)!)?" ("+marketCapLimitLabel(entries.find(entry=>entry.id===removePending.id)!)+")":""} from the <strong>{stageLabel(removePending.stage)}</strong> restriction list?</p>
+        <p>This only removes the rule from this list. Other list assignments, saved values and original FS/FA associations remain unchanged. No scan is started.</p>
+        {removePending.id==="gem_marketcap" && <p>The separate minimum and maximum Pipeline market-cap restrictions remain if assigned.</p>}
+        <div className={styles.removeActions}>
+          <button type="button" className={styles.confirmRemoveButton} onClick={confirmRemoveFromList}>CONFIRM REMOVE</button>
+          <button type="button" className="secondary" onClick={()=>setRemovePending(null)}>CANCEL</button>
+        </div>
+      </div>
+    </section>}
     {listPopup && <section role="dialog" aria-modal="true" aria-label="Restriction list popup" className={styles.listBackdrop}>
       <div className={styles.listModal}>
         <div className={styles.heading}><div><h2>ADD TO RESTRICTION LIST</h2><p>See the existing restrictions and select where this rule goes. The original FS/FA presets are not changed.</p></div>
@@ -256,6 +284,9 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
             <span><strong>#{i+1}</strong> {catalogDefinition(entry).title}</span>
             {marketCapLimitLabel(entry) && <small className={styles.marketCapNumbers}>{marketCapLimitLabel(entry)}</small>}
             <small>{catalogDefinition(entry).associations?.join(" · ")||"Independent"}</small>
+            <button type="button" className={styles.listRemoveInline}
+              aria-label={"Remove "+catalogDefinition(entry).title+" from "+stageLabel(listStage)+" list"}
+              onClick={()=>requestRemoveFromList(entry.id,listStage)}>REMOVE ×</button>
           </li>)}</ol>:<p>No active restrictions in this list yet.</p>}
         </div>
         <div className={styles.listPreview} aria-live="polite">

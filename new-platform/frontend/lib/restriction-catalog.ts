@@ -114,6 +114,26 @@ export function insertRestrictionIntoList(entries: CatalogEntry[], id: string, s
       stagePriorities:{...savedOther,...entry.stagePriorities,[stage]:rank}};
   });
 }
+/** Remove a rule from one list only; keep its values, other memberships and FS/FA presets. */
+export function removeRestrictionFromList(entries: CatalogEntry[], id: string, stage: Exclude<RestrictionStage, "">): CatalogEntry[] {
+  if (!RESTRICTION_STAGES.includes(stage)) return entries;
+  const current=selectedRestrictionList(entries,stage);
+  if (!current.some(entry=>entry.id===id)) return entries;
+  const ranks=new Map(current.filter(entry=>entry.id!==id).map((entry,i)=>[entry.id,String(i+1)]));
+  return entries.map(entry=>{
+    if (entry.id!==id) {
+      const rank=ranks.get(entry.id);
+      return rank ? {...entry,stagePriorities:{...entry.stagePriorities,[stage]:rank}} : entry;
+    }
+    const retained=catalogStages(entry).filter(other=>other!==stage);
+    const primary=entry.stage===stage ? (retained[0]||"") : entry.stage;
+    const otherRanks=Object.fromEntries(retained.map(other=>[other,catalogStagePriority(entry,other)]));
+    return {...entry,stage:primary,additionalStages:retained.filter(other=>other!==primary),
+      enabled:entry.enabled && retained.length>0,
+      priority:primary ? catalogStagePriority(entry,primary) : "",
+      stagePriorities:{...entry.stagePriorities,...otherRanks,[stage]:""}};
+  });
+}
 export function defaultCatalogEntries(): CatalogEntry[] {
   return RESTRICTION_CATALOG.map(rule => ({ id: rule.id, enabled: rule.category === "Approved Pipeline rule",
     stage: rule.category === "Approved Pipeline rule" ? "PIPELINE" : "", additionalStages: [], priority: "", value: rule.value || "", maximum: rule.maximum || "" }));

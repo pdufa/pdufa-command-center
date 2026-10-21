@@ -138,3 +138,16 @@
 .listOverviewRuleText > span {overflow-wrap:anywhere;}
 .listOverviewMembers .marketCapNumbers,.listRows .marketCapNumbers {display:block;font-size:13px;font-weight:750;color:#174e31;font-variant-numeric:tabular-nums;margin:0;white-space:normal;}
 .listRows .marketCapNumbers {margin-left:20px;}
+
+/* Per-list removal: separate from reorder/open so a tap never deletes implicitly. */
+.listOverviewMemberRow {display:flex;align-items:stretch;gap:4px;}
+.listOverviewMembers li .listOverviewEdit {flex:1 1 auto;width:auto;min-width:0;}
+.listOverviewMembers li .listOverviewRemove {flex:0 0 auto;align-self:center;width:auto;min-height:34px;padding:5px 8px;border:1px solid #b65d56;background:#fff8f7;color:#82291c;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap;}
+.listOverviewMembers li .listOverviewRemove:hover,.listOverviewMembers li .listOverviewRemove:focus-visible {background:#fae6e3;outline-offset:2px;}
+.listRows li .listRemoveInline {margin-top:5px;margin-left:20px;padding:5px 9px;min-height:30px;border:1px solid #b65d56;border-radius:4px;background:#fff8f7;color:#82291c;font-size:12px;}
+.removeModal {box-sizing:border-box;background:#fff;color:#182a1e;max-width:520px;width:100%;padding:20px;border:2px solid #684139;border-radius:8px;}
+.removeModal h2 {font-size:20px;margin:0 0 12px;}
+.removeModal p {font-size:14px;line-height:1.5;}
+.removeActions {display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.confirmRemoveButton {background:#932f23!important;border-color:#932f23!important;color:#fff!important;}
+@media (max-width:780px){.listOverviewMembers li .listOverviewRemove{font-size:10px;padding:5px 6px;}}

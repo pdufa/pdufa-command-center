@@ -519,3 +519,83 @@ test("Pipeline, GEM JR and GEM lists are equally sized side by side in that orde
   assert.equal((html.match(/data-restriction-list="/g)||[]).length,3);
   assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39);
 });
+
+test("Remove from one restriction list preserves other memberships, values and compact scan numbering", () => {
+  let entries=catalog.defaultCatalogEntries();
+  entries=catalog.insertRestrictionIntoList(entries,"gem_marketcap","GEM_JR",0);
+  entries=catalog.insertRestrictionIntoList(entries,"gem_marketcap","GEM",0);
+  entries=catalog.insertRestrictionIntoList(entries,"gem_marketcap","PIPELINE",0);
+  entries=catalog.insertRestrictionIntoList(entries,"public","PIPELINE",1);
+  entries=catalog.insertRestrictionIntoList(entries,"minCap","PIPELINE",2);
+  entries=catalog.insertRestrictionIntoList(entries,"gem_phase3","GEM_JR",1);
+  const before=entries.find(e=>e.id==="gem_marketcap");
+  const snapshot=JSON.stringify(entries);
+  const originalFSFA=catalog.catalogDefinition(before).associations;
+  const removed=catalog.removeRestrictionFromList(entries,"gem_marketcap","PIPELINE");
+  assert.equal(JSON.stringify(entries),snapshot,"function must not mutate caller's data");
+  assert.deepEqual(catalog.selectedRestrictionList(removed,"PIPELINE").map(e=>[e.id,catalog.catalogStagePriority(e,"PIPELINE")]),
+    [["public","1"],["minCap","2"]]);
+  const cap=removed.find(e=>e.id==="gem_marketcap");
+  assert.equal(cap.stage,"GEM");
+  assert.deepEqual(catalog.catalogStages(cap).sort(),["GEM","GEM_JR"]);
+  assert.equal(cap.enabled,true);
+  assert.equal(catalog.catalogStagePriority(cap,"PIPELINE"),"");
+  assert.equal(catalog.catalogStagePriority(cap,"GEM_JR"),"1");
+  assert.equal(catalog.catalogStagePriority(cap,"GEM"),"1");
+  assert.equal(cap.value,before.value);assert.equal(cap.maximum,before.maximum);
+  assert.deepEqual(catalog.catalogDefinition(cap).associations,originalFSFA);
+  assert.equal(catalog.selectedRestrictionList(removed,"GEM_JR").length,catalog.selectedRestrictionList(entries,"GEM_JR").length);
+  assert.equal(catalog.selectedRestrictionList(removed,"GEM").length,catalog.selectedRestrictionList(entries,"GEM").length);
+  const restored=catalog.restoreCatalogEntries(JSON.parse(JSON.stringify(removed)));
+  assert.deepEqual(catalog.selectedRestrictionList(restored,"PIPELINE").map(e=>e.id),["public","minCap"]);
+  assert.deepEqual(catalog.selectedRestrictionList(restored,"GEM_JR").map(e=>e.id),catalog.selectedRestrictionList(entries,"GEM_JR").map(e=>e.id));
+  assert.equal(catalog.removeRestrictionFromList(removed,"gem_marketcap","PIPELINE"),removed,"repeat should do nothing");
+  const goneFromJunior=catalog.removeRestrictionFromList(removed,"gem_marketcap","GEM_JR");
+  assert.equal(goneFromJunior.find(e=>e.id==="gem_marketcap").stage,"GEM");
+  assert.deepEqual(catalog.selectedRestrictionList(goneFromJunior,"GEM").map(e=>e.id),["gem_marketcap"]);
+  const goneFromGem=catalog.removeRestrictionFromList(goneFromJunior,"gem_marketcap","GEM");
+  const noMembership=goneFromGem.find(e=>e.id==="gem_marketcap");
+  assert.equal(noMembership.stage,"");
+  assert.equal(noMembership.enabled,false);
+  assert.equal(noMembership.priority,"");
+  assert.equal(noMembership.value,before.value);
+  assert.deepEqual(catalog.catalogStages(noMembership),[]);
+});
+test("Top and popup REMOVE buttons require confirmation and cancel does not change lists", async () => {
+  const React=require("react"),{create,act}=require("react-test-renderer");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  let active=catalog.defaultCatalogEntries();
+  active=catalog.insertRestrictionIntoList(active,"gem_marketcap","GEM_JR",0);
+  active=catalog.insertRestrictionIntoList(active,"gem_marketcap","PIPELINE",0);
+  active=catalog.insertRestrictionIntoList(active,"public","PIPELINE",1);
+  function Wrapper(){const [items,setItems]=React.useState(active);return React.createElement(Component,{rows,asOf,managedEntries:items,onManagedEntriesChange:setItems});}
+  const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
+  global.IS_REACT_ACT_ENVIRONMENT=true;global.window={setInterval:()=>1,clearInterval(){}};
+  global.fetch=async()=>({ok:true,json:async()=>evidence});
+  let renderer;
+  try {
+    await act(async()=>{renderer=create(React.createElement(Wrapper));});
+    const top=()=>renderer.root.findByProps({"aria-label":"Remove Current market-cap range from PIPELINE list"});
+    assert.equal(top().props.children,"REMOVE ×");
+    await act(async()=>top().props.onClick());
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Confirm restriction removal"}).length,1);
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Edit Current market-cap range in PIPELINE list"}).length,1,"nothing is removed before confirmation");
+    await act(async()=>renderer.root.findAllByType("button").find(b=>b.children.join("")==="CANCEL").props.onClick());
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Confirm restriction removal"}).length,0);
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Remove Current market-cap range from PIPELINE list"}).length,1);
+    await act(async()=>renderer.root.findByProps({"aria-label":"Edit PIPELINE restriction list"}).props.onClick());
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Remove Current market-cap range from PIPELINE list"}).length,2,"the popup also has a REMOVE control");
+    const popup=renderer.root.findByProps({"aria-label":"Current restriction list"});
+    await act(async()=>popup.findByProps({"aria-label":"Remove Current market-cap range from PIPELINE list"}).props.onClick());
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Restriction list popup"}).length,0);
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Confirm restriction removal"}).length,1);
+    await act(async()=>renderer.root.findAllByType("button").find(b=>b.children.join("")==="CONFIRM REMOVE").props.onClick());
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Confirm restriction removal"}).length,0);
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Remove Current market-cap range from PIPELINE list"}).length,0);
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Edit Current market-cap range in GEM JR list"}).length,1,"other list still has rule");
+    assert.equal(renderer.root.findByProps({"aria-label":"Edit Publicly traded company in PIPELINE list"}).findByType("strong").children.join(""),"#1");
+  } finally {
+    if(renderer)await act(async()=>renderer.unmount());
+    global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;
+  }
+});
