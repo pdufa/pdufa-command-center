@@ -196,7 +196,7 @@ test("authenticated evidence endpoint reads real saved source data; unauthentica
 });
 test("full catalog includes all original stage options and only approved Pipeline rules start assigned", () => {
   const entries = catalog.defaultCatalogEntries();
-  assert.equal(entries.length, 39); assert.equal(new Set(entries.map(entry => entry.id)).size, 40);
+  assert.equal(entries.length, 39); assert.equal(new Set(entries.map(entry => entry.id)).size, 39);
   assert.deepEqual(entries.filter(entry => entry.stage).map(entry => [entry.id, entry.stage]), [["public", "PIPELINE"], ["minCap", "PIPELINE"], ["maxCap", "PIPELINE"], ["progress", "PIPELINE"]]);
   assert.equal(entries.filter(entry => entry.id.startsWith("gem_") && entry.id !== "gem_jr_source").length, 16);
   assert.equal(entries.filter(entry => entry.id.startsWith("alert_")).length, 10);
