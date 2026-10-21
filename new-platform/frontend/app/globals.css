@@ -253,6 +253,17 @@ button.secondary { background: white; color: #172b1b; }
 
 .source-health {background:#fff4ce;border:2px solid #b28c35;border-radius:8px;margin:10px 0 18px;padding:12px 15px;display:flex;gap:8px;flex-direction:column;font-size:13px;color:#4e3818;}
 .source-health ul {margin:2px 0 0 18px;padding:0;line-height:1.5;}
+
+/* Full-length source audit bar on both desktop and mobile. */
+.workspace-source-health-full {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 12px 0 20px;
+  box-sizing: border-box;
+}
+
 .scan-result {display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid #d1e0d5;padding:12px 0;font-size:13px;}
 .scan-result strong {color:#294c38;}
 
