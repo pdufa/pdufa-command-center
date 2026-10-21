@@ -35,10 +35,10 @@ def clock(value):
 class PacificAdmissionTests(unittest.TestCase):
     def test_daylight_standard_and_wrong_offset_slots(self):
         for at, cron, expected in (
-            ('2026-10-15T03:00:00Z', '0 3 * * *', True),   # 9 PM PDT
-            ('2026-10-15T04:00:00Z', '0 4 * * *', True),  # wrong DST primary slot
+            ('2026-10-15T03:00:00Z', '0 3 * * *', True),   # 8 PM PDT
+            ('2026-10-15T04:00:00Z', '0 4 * * *', False),  # wrong DST primary slot
             ('2026-01-15T03:00:00Z', '0 3 * * *', False),  # too early in PST
-            ('2026-01-15T04:00:00Z', '0 4 * * *', True),   # 9 PM PST
+            ('2026-01-15T04:00:00Z', '0 4 * * *', True),   # 8 PM PST
             ('2026-01-15T06:00:00Z', '0 6 * * *', False),  # retired 10 PM PST slot
             ('2026-10-15T06:00:00Z', '0 6 * * *', False),
             ('2026-10-15T09:59:00Z', '0 3 * * *', True),
@@ -118,8 +118,8 @@ class PacificAdmissionTests(unittest.TestCase):
         self.assertFalse(decision('push','',[],now=late)['run'])
 
     def test_dst_fall_back_uses_the_offset_at_that_nights_start(self):
-        # The 9 PM start was PDT; by this retry Los Angeles has switched to PST.
-        result = decision('schedule', '0 4 * * *', [], now=clock('2026-11-01T09:30:00Z'))
+        # The 8 PM start was PDT; by this retry Los Angeles has switched to PST.
+        result = decision('schedule', '0 3 * * *', [], now=clock('2026-11-01T09:30:00Z'))
         self.assertTrue(result['run'])
         self.assertEqual(result['night_date_pacific'], '2026-10-31')
 
@@ -147,7 +147,7 @@ class PacificAdmissionTests(unittest.TestCase):
         now = clock('2026-10-14T23:00:00Z')
         self.assertTrue(decision('workflow_dispatch', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=now)['run'])
-        self.assertFalse(decision('push', '', [], now=clock('2026-10-15T03:30:00Z'))['run'])
+        self.assertFalse(decision('push', '', [], now=clock('2026-10-15T02:59:00Z'))['run'])
         self.assertTrue(decision('push', '', [], now=clock('2026-10-15T03:30:00Z'))['run'])
 
 

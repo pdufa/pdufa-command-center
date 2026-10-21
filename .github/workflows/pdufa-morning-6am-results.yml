@@ -1,6 +1,6 @@
 name: PDUFA 6 AM Pacific Morning Results
 
-# Read-only publication of the PREVIOUS NIGHT'S 9 PM Pacific scan results.
+# Read-only publication of the PREVIOUS NIGHT'S 8 PM Pacific scan results.
 # No new Phase 3, FDA, SEC, market, or finance collection is triggered.
 on:
   schedule:
@@ -46,9 +46,9 @@ jobs:
           # morning snapshot is better than a silently missing snapshot:
           # the JSON records its actual generation timestamp and freshness.
           # Do not allow a cron delayed into the next nightly window.
-          if [ $((10#$local_hour)) -lt 6 ] || [ $((10#$local_hour)) -ge 21 ]; then
+          if [ $((10#$local_hour)) -lt 6 ] || [ $((10#$local_hour)) -ge 20 ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Outside the 6 AM–8:59 PM Pacific publication/recovery window."
+            echo "Outside the 6 AM–7:59 PM Pacific publication/recovery window."
             exit 0
           fi
           if { { [ "$CRON_SLOT" = '0 13 * * *' ] || [ "$CRON_SLOT" = '15 13 * * *' ]; } && [ "$offset" = "-0700" ]; } || \

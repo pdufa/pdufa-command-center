@@ -29,7 +29,7 @@ const gemValues: Record<string, Partial<CatalogDefinition>> = {
 export const RESTRICTION_CATALOG: CatalogDefinition[] = [
   ...RESTRICTIONS.map(rule => ({ ...rule, category: rule.proposed ? "Proposed Pipeline addition" : "Approved Pipeline rule", ...coreValues[rule.id] })),
   ...gemChecks.map(([key, title]) => ({ id: "gem_" + key, title, category: "Existing GEM JR / GEM option",
-    help: "Uses the existing stage-checklist evidence for the exact program. Choose a stage and check Use to include it in this page’s live screen.", ...gemValues[key] })),
+    help: "Uses the existing stage-checklist evidence for the exact program. Choose a stage and enter a priority number to include it in this page’s live screen.", ...gemValues[key] })),
   ...availableGemRestrictionOptions().map(rule => ({ id: "alert_" + rule.key, title: rule.title,
     category: "Optional clinical / regulatory goal", value: rule.goal, unit: rule.unit,
     numeric: !!rule.number, help: "This is the same optional goal available in the GEM JR checklist. A goal is not evidence; this check stays unknown until source-verified facts are linked." })),
