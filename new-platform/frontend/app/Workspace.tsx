@@ -80,6 +80,15 @@ type Snapshot = {
   workspaceVersion?: string;
   sourceHealth?: { state: string; issues: string[]; clinicalRows: number; regulatoryRows: number; pipelineSourceParity?: {exactPrograms:number;clinicalAndResults:number;regulatoryPrograms:number;comparison:string}; publishedScan?: { state?: string; finishedAt?: string; complete?: boolean; sources?: Record<string,{status?:string;finished_at?:string}> } | null };
 };
+// Display source-reported timestamps in the operating (Pacific) time zone.
+// Invalid or missing evidence is never replaced with the current clock.
+function pacificSourceTime(value?: string | null): string {
+  if (!value || !Number.isFinite(Date.parse(value))) return "Unavailable";
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles", year: "numeric", month: "short",
+    day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short",
+  }).format(new Date(value));
+}
 // IndexedDB stores only validated, successfully fetched published snapshots.
 // A failed fetch never overwrites the last-known-good local copy.
 const SNAPSHOT_CACHE_DB = "pdufa-workspace-cache-v1";
@@ -776,6 +785,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [refreshing, setRefreshing] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const [cachedAsOf, setCachedAsOf] = useState<string | null>(null);
+  const [lastCheckedAt, setLastCheckedAt] = useState<string | null>(null);
   const workspaceEtag = useRef<string | null>(null);
   const verifiedSnapshotRef = useRef<Snapshot | null>(null);
   const hasVerifiedWorkspace = useRef(false);
@@ -952,6 +962,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
               if (ctrl.signal.aborted) return;
               if (delta.version && delta.unchanged && !delta.reset &&
                   delta.version === baseline.workspaceVersion) {
+                setLastCheckedAt(new Date().toISOString());
                 setFetchError("");
                 return;
               }
@@ -962,6 +973,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                 workspaceEtag.current = null;
                 setSnapshot(patched);
                 void writeWorkspaceCache(patched).catch(() => {});
+                setLastCheckedAt(new Date().toISOString());
                 setFetchError("");
                 return;
               }
@@ -982,7 +994,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         });
         if (response.status === 304) {
           if (!hasVerifiedWorkspace.current) throw new Error("Server returned unchanged without a verified in-memory snapshot");
-          setFetchError("");
+          setLastCheckedAt(new Date().toISOString());
+                setFetchError("");
           return;
         }
         if (!response.ok) {
@@ -1001,7 +1014,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         setSnapshot(data);
         setCachedAsOf(null);
         void writeWorkspaceCache(data).catch(() => { /* Keep fresh in-memory data if storage is unavailable. */ });
-        setFetchError("");
+        setLastCheckedAt(new Date().toISOString());
+                setFetchError("");
       } catch (error) {
         if (ctrl.signal.aborted) return;
         const message = error instanceof Error ? error.message : String(error);
@@ -1681,7 +1695,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </div>
     <div className="workspace-overview">
       <div className="master-quicklink"><strong>Gold reference picture recreated as interactive charts.</strong><button type="button" onClick={()=>{setTop("PDUFA");setNav("MASTER");}}>OPEN GOLD MASTER CHART ↗</button></div>
-      <p className="workspace-banner"><strong>{snapshot?.mode === "LIVE_READ_ONLY_GITHUB_SOURCE" ? "Latest published original-system data" : "Source fallback / stale data"}.</strong> {snapshot?.disclaimer || "Loading source health."} No new orders or duplicate scans are activated.</p>
+      <section className="workspace-update-box" role="status" aria-label="Last updated data status">
+        <div className="workspace-update-title"><span>LAST UPDATED · SOURCE DATA</span><strong>{pacificSourceTime(snapshot?.asOf)}</strong></div>
+        <div className="workspace-update-details">
+          <span><b>DATA STATUS:</b> {!snapshot ? "LOADING" : cachedAsOf ? "PREVIOUSLY PUBLISHED · LOCAL CACHE" : fetchError && !refreshing ? "PREVIOUSLY PUBLISHED · REFRESH NOT VERIFIED" : snapshot.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE" ? "PREVIOUSLY PUBLISHED · SOURCE FALLBACK" : snapshot.sourceHealth?.publishedScan?.complete === true && snapshot.sourceHealth.publishedScan.finishedAt ? "COMPLETED SCAN · PUBLISHED RESULTS" : "PREVIOUSLY PUBLISHED DATA · SCAN NOT CONFIRMED COMPLETE"}</span>
+          <span><b>LAST SCAN FINISHED:</b> {pacificSourceTime(snapshot?.sourceHealth?.publishedScan?.finishedAt)} · {snapshot?.sourceHealth?.publishedScan?.complete === true ? "Confirmed complete in published report" : "Not confirmed complete"}</span>
+          <span><b>DASHBOARD CHECKED:</b> {pacificSourceTime(lastCheckedAt)}</span>
+        </div>
+        <p>Published results are not a live-running scan. Check SCANS for live progress.</p>
+      </section>
       {summaryError && !publishedCounts && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
       {snapshot?.sourceHealth && <div className="source-health" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     </div>
