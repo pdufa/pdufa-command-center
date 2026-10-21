@@ -100,6 +100,23 @@ const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","regist
 const FA_CRITERIA=["registry","marketcap"];
 // This is the authoritative association shared with the one-row Restrictions catalog.
 // FI was retired; FS and FA are the existing, independently operable presets.
+function effectiveNumericCheck(key:string,row:Trial,minimum:number,maximum:number|null):boolean|null {
+  const t=row.technical;
+  if(key==="cash"){
+    const value=t?.runwayMonths??row.trialFilters?.runwayMonths;
+    return value==null||!Number.isFinite(value)?null:value>=minimum;
+  }
+  if(key==="marketcap")return row.marketCap==null||maximum===null?null:row.marketCap>=minimum*1e6&&row.marketCap<=maximum*1e6;
+  if(key==="window"){
+    if(!row.pdufaDate||maximum===null)return null;
+    const days=(Date.parse(row.pdufaDate.slice(0,10)+"T00:00:00Z")-Date.now())/86400000;
+    return Number.isFinite(days)?days>=minimum&&days<=maximum:null;
+  }
+  if(key==="volume")return t?.rvol==null?null:t.rvol>=minimum;
+  if(key==="rsi")return t?.rsi14==null||maximum===null?null:t.rsi14>=minimum&&t.rsi14<=maximum;
+  if(key==="liquidity")return t?.avgDollarVolume20==null?null:t.avgDollarVolume20>=minimum;
+  return null;
+}
 export function gemPresetAssociations(key:string):string[] {
   const matches:string[]=[];
   for(const stage of ["GEM_JR","GEM"] as const){
@@ -182,7 +199,7 @@ export function resolveGemJrSource(gemJrScan:GemScanResult|null,livePreview:GemJ
  };
 }
 
-export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,stageSavedRows,manualStageList,newThisScanIds,scanHistoryReady=true,initiallyExpanded=false,onAddToStageList,onRemoveFromStageList,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,managedSelected,managedGoals,hideChecklistItems=false,onManagedSelectedChange,onOpenMasterRestrictions,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;stageSavedRows:Trial[];manualStageList:Record<string,string>;newThisScanIds?:readonly string[];scanHistoryReady?:boolean;initiallyExpanded?:boolean;onAddToStageList:(row:Trial)=>void;onRemoveFromStageList:(id:string)=>void;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;managedSelected?:string[];managedGoals?:Record<string,string>;hideChecklistItems?:boolean;onManagedSelectedChange?:(keys:string[])=>void;onOpenMasterRestrictions?:()=>void;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
+export default function GemQualificationChecklist({stage,pipeline,asOf,stageTotal,completedScan,stageSavedRows,manualStageList,newThisScanIds,scanHistoryReady=true,initiallyExpanded=false,onAddToStageList,onRemoveFromStageList,gemJrScan,gemJrSavedRows,gemJrLivePreview,gemJrDraft,gemDraft,onGemJrLivePreviewChange,managedSelected,managedGoals,managedThresholds,hideChecklistItems=false,onManagedSelectedChange,onOpenMasterRestrictions,onGemJrDraftChange,onGemLivePreviewChange,onGemDraftChange,onScan,onReset}:{stage:"GEM_JR"|"GEM";pipeline:Trial[];asOf:string;stageTotal:number;completedScan:GemScanResult|null;stageSavedRows:Trial[];manualStageList:Record<string,string>;newThisScanIds?:readonly string[];scanHistoryReady?:boolean;initiallyExpanded?:boolean;onAddToStageList:(row:Trial)=>void;onRemoveFromStageList:(id:string)=>void;gemJrScan:GemScanResult|null;gemJrSavedRows:Trial[];gemJrLivePreview?:GemJrLivePreview|null;gemJrDraft?:GemJrUiDraft|null;gemDraft?:GemJrUiDraft|null;managedSelected?:string[];managedGoals?:Record<string,string>;managedThresholds?:Record<string,{value:string;maximum:string}>;hideChecklistItems?:boolean;onManagedSelectedChange?:(keys:string[])=>void;onOpenMasterRestrictions?:()=>void;onGemLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemDraftChange?:(value:GemJrUiDraft)=>void;onGemJrLivePreviewChange?:(value:GemJrLivePreview)=>void;onGemJrDraftChange?:(value:GemJrUiDraft)=>void;onScan:(result:GemScanResult)=>void;onReset:()=>void}) {
  const storedDraft=stage==="GEM_JR"?gemJrDraft:gemDraft;
  const draft=storedDraft?.asOf===asOf&&storedDraft.sourceTotal===pipeline.length?storedDraft:null;
  // The remaining original checkboxes are the sole source of scan selections.
@@ -226,7 +243,14 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
  const chosen=useMemo(() => {
    // Evaluate exactly the requirements selected in the original checklist.
    const checked=new Set(selected);
-   const checks:[string,string,(x:Trial)=>boolean|null][]=visibleCriteriaByStage(stage).filter(([key])=>checked.has(key));
+   const checks:[string,string,(x:Trial)=>boolean|null][]=visibleCriteriaByStage(stage).filter(([key])=>checked.has(key)).map(([key,title,evaluate])=>{
+      const target=managedThresholds?.[key];
+      if(!target || !["cash","marketcap","window","volume","rsi","liquidity"].includes(key))return [key,title,evaluate];
+      const minimum=target.value.trim()!==""&&Number.isFinite(Number(target.value))&&Number(target.value)>=0?Number(target.value):null;
+      const hasMaximum=target.maximum.trim()!==""&&Number.isFinite(Number(target.maximum))&&Number(target.maximum)>=0;
+      const maximum=hasMaximum?Number(target.maximum):null;
+      return [key,title,(row:Trial)=>minimum===null?null:effectiveNumericCheck(key,row,minimum,maximum)];
+    });
    if(stage==="GEM_JR")for(const item of OPTIONAL_ALL){
      if(!checked.has(item.key))continue;
      // A screening target or an NCT ID is not verification of an FDA/clinical
@@ -237,7 +261,7 @@ export default function GemQualificationChecklist({stage,pipeline,asOf,stageTota
      checks.push([item.key,item.title+" (goal: "+goal+")",()=>null]);
    }
    return checks;
- },[selected,stage,effectiveGoals,twoTrialIds]);
+ },[selected,stage,effectiveGoals,twoTrialIds,managedThresholds]);
  // GEM JR publishes its preview back to Workspace. Its own output must not
  // invalidate this calculation through the downstream GEM input's review set.
  const inheritedReviewIds=useGemJrSource?gemJrNeedsReview:undefined;
