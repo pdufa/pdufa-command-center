@@ -154,3 +154,25 @@ def test_record_view_http_flow_requires_app_auth_and_valid_exact_trial_ticket(is
     assert record.json() == study()
     assert record.headers["x-record-sha256"]
     assert record.headers["access-control-allow-origin"] == "*"
+
+
+def test_large_export_is_lazy_but_remains_complete_on_request(isolated, monkeypatch):
+    archive.start_download(launch=False)
+    archive.run_download(lambda ids: {nct: study(nct) for nct in ids})
+    assert archive.archive_status()["complete"]
+    # Background collection must never assemble the multi-GB uncompressed
+    # full-study ZIP while concurrent startup scoring occupies RAM.
+    assert not archive._EXPORT_PATH.exists()
+    calls = []
+    monkeypatch.setattr(archive, "start_download", lambda: {"complete": True})
+    monkeypatch.setattr(archive, "ensure_cached_export", lambda: calls.append("built"))
+    archive.bootstrap()
+    assert calls == []
+    monkeypatch.undo()
+    # The operator-triggered export remains lossless and uses the same ZIP.
+    export = archive.ensure_cached_export()
+    assert export.is_file()
+    with ZipFile(export) as zipped:
+        assert [json.loads(x) for x in zipped.read("full_studies.jsonl").splitlines()] == [
+            study("NCT00000001"), study("NCT00000002")
+        ]
