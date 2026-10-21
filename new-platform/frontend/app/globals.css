@@ -42,6 +42,20 @@ button.secondary { background: white; color: #172b1b; }
 .worknav { border-bottom:2px solid #266839; padding-bottom:9px; }
 .workspace-stage { margin-left:auto; font-size:12px; font-weight:700; color:#365c3b; }
 .workspace-banner { background:#fef2cb; border:1px solid #ad8a33; color:#40300b; border-radius:8px; padding:12px 16px; margin:14px 0 20px; line-height:1.5; }
+
+/* Read-only, source-backed freshness notice. Keep it legible on phones. */
+.workspace-update-box {
+  background: #fff; border: 2px solid #243b2a; border-radius: 9px;
+  padding: 13px 16px; color: #1b3021; display: flex; flex-direction: column;
+  gap: 9px; line-height: 1.4; min-width: 0;
+}
+.workspace-update-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.workspace-update-title > span { font-size: 12px; font-weight: 800; letter-spacing: .045em; }
+.workspace-update-title > strong { font-size: clamp(16px, 1.4vw, 21px); overflow-wrap: anywhere; }
+.workspace-update-details { display: flex; flex-direction: column; gap: 5px; font-size: 12px; }
+.workspace-update-details b { font-weight: 800; }
+.workspace-update-box p { font-size: 11px; color: #435649; margin: 2px 0 0; }
+
 .migration-workspace .sectionhead { margin:16px 0 14px; flex-wrap:wrap; }
 .migration-workspace h2 { font-size:clamp(17px,2vw,22px); }
 .migration-workspace h3 { font-size:15px; margin:0 0 10px; }
