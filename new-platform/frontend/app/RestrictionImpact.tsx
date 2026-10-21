@@ -55,6 +55,8 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     const timer = window.setInterval(() => { if (document.visibilityState === "visible") { setVersion(v => v + 1); refreshRef.current?.(); } }, 300000);
     return () => window.clearInterval(timer);
   }, []);
+  const [capPopup,setCapPopup]=useState(false);
+  const capStats=useMemo(()=>{let within=0,outside=0,unknown=0;for(const row of rows.filter(isRegisteredTrial)){const issuer=evidence?.issuers[row.ticker.toUpperCase()];const cap=issuer?.marketCap;if(typeof cap!=="number"||!Number.isFinite(cap)||cap<=0)unknown++;else if(cap>=300000000&&cap<=10000000000)within++;else outside++;}return {within,outside,unknown,total:within+outside+unknown};},[rows,evidence]);
   const scoped = useMemo(() => scope === "trials" ? rows.filter(isRegisteredTrial) : rows, [rows, scope]);
   const report = useMemo(() => calculateCatalogImpact(scoped, entries, settings, evidence, asOf), [scoped, entries, settings, evidence, asOf]);
   const visible = entries.filter(entry => (showStage === "all" || entry.stage === showStage) &&
@@ -91,6 +93,8 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     {(cached || error) && <p role="alert" className={styles.notice}>{cached ? "Trial universe is locally cached; latest-source verification is pending. " : ""}{error}</p>}
     {!!evidence?.issues.length && <p role="status" className={styles.notice}>{evidence.issues.join(" ")}</p>}
     <button type="button" onClick={()=>setScanOpen(true)}>SCAN SELECTED RESTRICTIONS — FULL RESULTS</button>
+    <button type="button" onClick={()=>setCapPopup(true)}>SCAN PIPELINE MARKET CAP $300M–$10B</button>
+    {capPopup && <section role="dialog" aria-modal="true" aria-label="Market cap scan" style={{position:"fixed",inset:0,zIndex:10001,background:"white",color:"black",overflowY:"auto",padding:20}}><button type="button" onClick={()=>setCapPopup(false)}>CLOSE ×</button><h2>PIPELINE MARKET CAP SCAN</h2><p>Latest saved market caps, not historical entry-date caps. Registered trials only. Inclusive range: $300 million to $10 billion.</p><div className={styles.totals}><div><span>Trials checked</span><strong>{count(capStats.total)}</strong></div><div><span>Within range</span><strong>{count(capStats.within)}</strong></div><div><span>Outside range</span><strong>{count(capStats.outside)}</strong></div><div><span>Unknown cap</span><strong>{count(capStats.unknown)}</strong></div></div><p>Data fetched: {evidence?.fetchedAt||"Not available"}. Counts reflect available source evidence and do not imply historical Pipeline qualification.</p></section>}
     <h3>LIVE EFFECT FROM THE BEGINNING</h3>
     <div className={styles.totals} aria-live="polite" aria-atomic="true"><div><span>Starting universe</span><strong>{count(report.total)}</strong></div><div><span>Excluded across assigned rules</span><strong>{count(report.excluded)}</strong></div><div><span>Pass all enabled checks</span><strong>{count(report.passed)}</strong></div><div><span>Needs verification</span><strong>{count(report.pending)}</strong></div></div>
     <div className={styles.stageTotals}>{report.stages.map(stage => <div key={stage.stage}><strong>{stageLabel(stage.stage)}</strong><span>Starts {count(stage.before)} · Excludes {count(stage.excluded)}</span><b>{count(stage.remaining)} remain</b><small>{count(stage.passed)} pass · {count(stage.pending)} need verification</small></div>)}</div>
