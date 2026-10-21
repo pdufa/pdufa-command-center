@@ -89,3 +89,11 @@
 .listPreview {margin:12px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:12px;border:1px solid #305941;background:#f0f8f1;}
 .listPreview strong {grid-column:1/-1;}
 @media (max-width:640px){.listModal{padding:12px;}.listModal .controls label{min-width:0;width:100%;}.listPreview{grid-template-columns:1fr;}}
+
+/* Always-visible link to the market-cap restriction, even when its editable
+   catalog row is in the bottom SELECTED section or filtered out. */
+.marketCapShortcut {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #397257;background:#edf6ee;border-radius:6px;margin:12px 0;}
+.marketCapShortcut strong {font-size:15px;}
+.marketCapShortcut p {margin:3px 0 1px;}
+.marketCapShortcut small {display:block;font-size:12px;color:#405047;}
+@media (max-width:640px){.marketCapShortcut .buttons{width:100%;}.marketCapShortcut .buttons button{width:100%;}}

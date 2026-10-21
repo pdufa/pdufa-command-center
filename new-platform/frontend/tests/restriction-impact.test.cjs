@@ -380,3 +380,31 @@ test("restriction popup displays list, defaults Market Cap to Pipeline #1, and a
     assert.equal(renderer.root.findByProps({"aria-label":"Priority for Current market-cap range"}).props.value,"1");
   } finally {if(renderer)await act(async()=>renderer.unmount());global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;}
 });
+
+test("Market Cap always has a visible shortcut even when the catalog row is filtered", async () => {
+  const React=require("react"), {renderToStaticMarkup}=require("react-dom/server");
+  const Component=require("../app/RestrictionImpact.tsx").default;
+  const html=renderToStaticMarkup(React.createElement(Component,{rows,asOf}));
+  assert.match(html, /Market cap restriction quick access/);
+  assert.match(html, /CURRENT MARKET-CAP RANGE/);
+  assert.match(html, /ADD MARKET CAP TO PIPELINE/);
+  assert.match(html, /SHOW MARKET CAP RESTRICTIONS/);
+  assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39,"a shortcut must not duplicate editable rows");
+  const {create,act}=require("react-test-renderer");
+  const before={fetch:global.fetch,window:global.window,act:global.IS_REACT_ACT_ENVIRONMENT};
+  global.IS_REACT_ACT_ENVIRONMENT=true;global.window={setInterval:()=>1,clearInterval(){}};
+  global.fetch=async()=>({ok:true,json:async()=>evidence});
+  let renderer;
+  try {
+    await act(async()=>{renderer=create(React.createElement(Component,{rows,asOf}));});
+    const buttons=()=>renderer.root.findAllByType("button");
+    await act(async()=>buttons().find(b=>b.children.join("")==="SHOW MARKET CAP RESTRICTIONS").props.onClick());
+    assert.equal(renderer.root.findByProps({"aria-label":"Restriction purpose group"}).props.value,"MARKET_CAP");
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Priority for Current market-cap range"}).length,1);
+    assert.equal(renderer.root.findAllByProps({"aria-label":"Priority for Relative volume"}).length,0);
+    await act(async()=>buttons().find(b=>b.children.join("")==="ADD MARKET CAP TO PIPELINE").props.onClick());
+    assert.equal(renderer.root.findAllByProps({role:"dialog","aria-label":"Restriction list popup"}).length,1);
+    assert.equal(renderer.root.findByProps({"aria-label":"Destination restriction list"}).props.value,"PIPELINE");
+    assert.equal(renderer.root.findByProps({"aria-label":"Restriction to add"}).props.value,"gem_marketcap");
+  } finally {if(renderer)await act(async()=>renderer.unmount());global.fetch=before.fetch;global.window=before.window;global.IS_REACT_ACT_ENVIRONMENT=before.act;}
+});

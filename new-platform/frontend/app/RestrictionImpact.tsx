@@ -66,6 +66,9 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     return () => window.clearInterval(timer);
   }, []);
   const [capPopup,setCapPopup]=useState(false);
+  const marketCapEntry = entries.find(entry=>entry.id==="gem_marketcap");
+  const marketCapLists = marketCapEntry && marketCapEntry.enabled
+    ? catalogStages(marketCapEntry).filter(stage=>!!catalogStagePriority(marketCapEntry,stage)) : [];
   const capStats=useMemo(()=>{let within=0,outside=0,unknown=0;for(const row of rows.filter(isRegisteredTrial)){const issuer=evidence?.issuers[row.ticker.toUpperCase()];const cap=issuer?.marketCap;if(typeof cap!=="number"||!Number.isFinite(cap)||cap<=0)unknown++;else if(cap>=300000000&&cap<=10000000000)within++;else outside++;}return {within,outside,unknown,total:within+outside+unknown};},[rows,evidence]);
   const scoped = useMemo(() => scope === "trials" ? rows.filter(isRegisteredTrial) : rows, [rows, scope]);
   const report = useMemo(() => calculateCatalogImpact(scoped, entries, settings, evidence, asOf), [scoped, entries, settings, evidence, asOf]);
@@ -121,7 +124,17 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
     <div className={styles.heading}><div><h2 id="restriction-impact-title">RESTRICTIONS</h2>
       <p>Market Cap first. Select a stage, set the restriction and see how many trials remain. FS/FA associations stay unchanged.</p></div>
       <div className={styles.buttons}><button type="button" className="secondary" disabled={loading} onClick={() => { setVersion(v => v + 1); onRefresh?.(); }}>{loading ? "REFRESHING…" : "REFRESH DATA"}</button></div></div>
-    <p className={styles.note}>Tap <strong>ADD TO LIST</strong> beside a restriction to choose the list and position in a popup. Scan order is separate from group ranking.</p>
+    <div className={styles.marketCapShortcut} aria-label="Market cap restriction quick access">
+      <div><strong>CURRENT MARKET-CAP RANGE</strong>
+        <p>Minimum ${marketCapEntry?.value || "300"}M · Maximum ${marketCapEntry?.maximum || "10000"}M</p>
+        <small>{marketCapLists.length ? marketCapLists.map(stage=>stageLabel(stage)+" #"+catalogStagePriority(marketCapEntry!,stage)).join(" · ") : "Not active in a scan list"}</small>
+      </div>
+      <div className={styles.buttons}>
+        <button type="button" onClick={()=>openListPopup("gem_marketcap")}>ADD MARKET CAP TO PIPELINE</button>
+        <button type="button" className="secondary" onClick={()=>{setPurposeFilter("MARKET_CAP");setShowStage("all");setSearch("");}}>SHOW MARKET CAP RESTRICTIONS</button>
+      </div>
+    </div>
+    <p className={styles.note}>Tap <strong>ADD TO LIST</strong> beside a restriction to choose its list and position. Numbered rules appear in SELECTED below; use the shortcut above to reach Market Cap directly.</p>
     <p className={styles.note} role="status">{saved || "Loading saved assignments…"}</p>
     <div className={styles.controls}>
       <label>Starting universe<select aria-label="Starting universe" value={scope} onChange={event => { setScope(event.target.value); setPage(0); }}><option value="all">All dashboard entries ({count(rows.length)})</option><option value="trials">Registered trials only ({count(rows.filter(isRegisteredTrial).length)})</option></select></label>
