@@ -504,12 +504,12 @@ test("Pipeline displays as the large full-width box above side-by-side GEM JR an
   const Component=require("../app/RestrictionImpact.tsx").default;
   const html=renderToStaticMarkup(React.createElement(Component,{rows,asOf}));
   const css=fs.readFileSync(path.resolve(__dirname,"../app/RestrictionImpact.module.css"),"utf8");
+  const source=fs.readFileSync(path.resolve(__dirname,"../app/RestrictionImpact.tsx"),"utf8");
   const pipeline=html.match(/<section[^>]+data-restriction-list="PIPELINE"[^>]*>/)?.[0]||"";
   const junior=html.match(/<section[^>]+data-restriction-list="GEM_JR"[^>]*>/)?.[0]||"";
   const gem=html.match(/<section[^>]+data-restriction-list="GEM"[^>]*>/)?.[0]||"";
-  assert.match(pipeline,/listOverviewCardPipeline/,"Pipeline gets distinct full-width styling");
-  assert.doesNotMatch(junior,/listOverviewCardPipeline/);
-  assert.doesNotMatch(gem,/listOverviewCardPipeline/);
+  assert.match(source,/stage==="PIPELINE"\s*\?\s*" "\+styles\.listOverviewCardPipeline/,"only Pipeline gets the full-width class");
+  assert.ok(pipeline&&junior&&gem);
   assert.ok(html.indexOf(pipeline)<html.indexOf(junior)&&html.indexOf(junior)<html.indexOf(gem));
   assert.match(css,/\.listOverviewGrid\s*\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css,/\.listOverviewCardPipeline\s*\{[^}]*grid-column:1\/-1/);
