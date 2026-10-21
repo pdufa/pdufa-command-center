@@ -431,7 +431,7 @@ test("Pipeline, GEM JR and GEM selected restriction lists appear together at the
   assert.match(overview, /Publicly traded company/);
   assert.match(overview, /Successful Phase 3 independently verified/);
   assert.match(overview, /Verified PDUFA date source/);
-  assert.equal((overview.match(/ADD \/ REORDER/g)||[]).length,3);
+  assert.equal((overview.match(/>ADD \/ REORDER<\/button>/g)||[]).length,3);
   assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39,"do not duplicate master editor rows");
   assert.equal(catalog.RESTRICTION_CATALOG.find(rule=>rule.id==="gem_registry").associations.join("|"),"GEM JR FS|GEM JR FA");
 });
