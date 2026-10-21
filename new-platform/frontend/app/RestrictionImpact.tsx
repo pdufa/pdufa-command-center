@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { defaultRestrictionSettings, isRegisteredTrial, type ImpactRecord, type RestrictionEvidence } from "../lib/restriction-impact";
 import { calculateCatalogImpact, catalogDefinition, catalogVerdict, defaultCatalogEntries, restoreCatalogEntries,
   catalogStages, RESTRICTION_STAGES, type CatalogEntry, type CustomField, type RestrictionStage } from "../lib/restriction-catalog";
@@ -14,10 +14,12 @@ type Inspection = { id: string; kind: "new" | "alone" | "unknown" };
 function stageLabel(stage: RestrictionStage) { return stage === "GEM_JR" ? "GEM JR" : stage || "Blank"; }
 function StageOptions() { return <><option value="">Blank</option><option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option></>; }
 
-export default function RestrictionImpact({ rows, asOf, cached = false, onRefresh }: {
-  rows: ImpactRecord[]; asOf: string; cached?: boolean; onRefresh?: () => void;
+export default function RestrictionImpact({ rows, asOf, cached = false, onRefresh, managedEntries, onManagedEntriesChange }: {
+  rows: ImpactRecord[]; asOf: string; cached?: boolean; onRefresh?: () => void; managedEntries?:CatalogEntry[]; onManagedEntriesChange?:Dispatch<SetStateAction<CatalogEntry[]>>;
 }) {
-  const [entries, setEntries] = useState(defaultCatalogEntries);
+  const [localEntries, setLocalEntries] = useState(defaultCatalogEntries);
+  const entries = managedEntries ?? localEntries;
+  const setEntries = onManagedEntriesChange ?? setLocalEntries;
   const [settings, setSettings] = useState(defaultRestrictionSettings);
   const [scope, setScope] = useState("all"), [showStage, setShowStage] = useState("all"), [search, setSearch] = useState("");
   const [ready, setReady] = useState(false), [saved, setSaved] = useState("");
@@ -30,12 +32,13 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const refreshRef = useRef(onRefresh);
   useEffect(() => { refreshRef.current = onRefresh; }, [onRefresh]);
   useEffect(() => {
-    try { const raw = window.localStorage.getItem(DRAFT_KEY); if (raw) setEntries(restoreCatalogEntries(JSON.parse(raw))); }
+    try { if(!managedEntries){const raw = window.localStorage.getItem(DRAFT_KEY); if (raw) setEntries(restoreCatalogEntries(JSON.parse(raw)));} }
     catch { setSaved("Draft storage unavailable"); }
     setReady(true);
   }, []);
   useEffect(() => {
     if (!ready) return;
+    if(managedEntries){setSaved("Master restrictions saved for this browser");return;}
     try { window.localStorage.setItem(DRAFT_KEY, JSON.stringify(entries)); setSaved("Draft saved on this browser"); }
     catch { setSaved("Changes are open; this browser could not save the draft"); }
   }, [entries, ready]);
