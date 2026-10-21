@@ -64,7 +64,7 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const report = useMemo(() => calculateCatalogImpact(scoped, entries, settings, evidence, asOf), [scoped, entries, settings, evidence, asOf]);
   const visible = entries.filter(entry => (showStage === "all" || catalogStages(entry).includes(showStage as Exclude<RestrictionStage, "">)) &&
     (!search || (catalogDefinition(entry).title + " " + catalogDefinition(entry).category).toLowerCase().includes(search.toLowerCase()))).sort((a,b) => Number(!!a.priority)-Number(!!b.priority) || (a.stage||"").localeCompare(b.stage||"") || Number(a.priority||0)-Number(b.priority||0));
-  const selectedEntry = entries.find(entry => entry.id === inspection?.id), selectedStep = report.steps.get(inspection?.id || "");
+  const selectedEntry = entries.find(entry => entry.id === inspection?.id), selectedStep = report.steps.get(inspection?.id || "") || (selectedEntry ? report.steps.get(catalogStages(selectedEntry)[0] + "|" + selectedEntry.id) : undefined);
   const inspected = useMemo(() => {
     if (!inspection || !selectedEntry || !selectedStep) return [];
     return report.rows.filter(row => inspection.kind === "new" ? selectedStep.newlyExcludedIds.has(row.id) :
