@@ -27,8 +27,8 @@ const gemValues: Record<string, Partial<CatalogDefinition>> = {
   liquidity: { title: "20-day average dollar volume", value: "5000000", unit: "minimum USD / day", numeric: true },
 };
 export const RESTRICTION_CATALOG: CatalogDefinition[] = [
-  ...RESTRICTIONS.map(rule => ({ ...rule, category: rule.proposed ? "Proposed Pipeline addition" : "Approved Pipeline rule", ...coreValues[rule.id] })),
-  ...gemChecks.map(([key, title]) => ({ id: "gem_" + key, title, category: "Existing GEM JR / GEM option",
+  ...RESTRICTIONS.map(rule => ({ ...rule, category: rule.proposed ? "Proposed Pipeline addition" : "Approved Pipeline rule", associations: rule.id==="runway"?gemPresetAssociations("cash"):[], ...coreValues[rule.id] })),
+  ...gemChecks.filter(([key])=>key!=="cash").map(([key, title]) => ({ id: "gem_" + key, title, category: "Existing GEM JR / GEM option",
     help: "Uses the existing stage-checklist evidence for the exact program. Select a stage and enter a priority number to include it in this page’s live screen.", associations: gemPresetAssociations(key), ...gemValues[key] })),
   ...availableGemRestrictionOptions().map(rule => ({ id: "alert_" + rule.key, title: rule.title,
     category: "Optional clinical / regulatory goal", value: rule.goal, unit: rule.unit,
@@ -63,6 +63,12 @@ export function catalogVerdict(entry: CatalogEntry, row: ImpactRecord, settings:
     const keys: Partial<Record<string, "minCapMillions" | "maxCapMillions" | "minimumPhase" | "minRunwayMonths" | "maxPdufaDays">> = {
       minCap: "minCapMillions", maxCap: "maxCapMillions", phase: "minimumPhase", runway: "minRunwayMonths", pdufaWindow: "maxPdufaDays" };
     const key = keys[core.id];
+    // A single runway rule serves both the Pipeline trial source and GEM's
+    // SEC-backed technical runway: retain whichever verified field exists.
+    if(core.id==="runway"){
+      const months=(row as Candidate).technical?.runwayMonths ?? row.trialFilters?.runwayMonths;
+      return value===null || months==null || !Number.isFinite(months) ? "UNKNOWN" : verdict(months>=value);
+    }
     if (key) {
       if (value === null) return "UNKNOWN";
       const next = { ...settings }; next[key] = value;
@@ -144,5 +150,13 @@ export function restoreCatalogEntries(raw: unknown): CatalogEntry[] {
       ...(e.id.startsWith("custom_") ? { title: e.title!.slice(0, 400), field: e.field, operator: e.operator === "<=" ? "<=" : ">=" } : {}) };
   };
   const saved = new Map(raw.slice(0, 140).map(clean).filter((entry): entry is CatalogEntry => !!entry).map(entry => [entry.id, entry]));
+  const legacyCash=saved.get("gem_cash"),canonicalCash=saved.get("runway");
+  if(legacyCash && (!canonicalCash || !canonicalCash.priority && !!legacyCash.priority)){
+    const stages=[...new Set([...catalogStages(canonicalCash||defaults.find(entry=>entry.id==="runway")!),...catalogStages(legacyCash)])];
+    const primary=(canonicalCash?.stage||legacyCash.stage||stages[0]||"") as RestrictionStage;
+    saved.set("runway",{...(canonicalCash||defaults.find(entry=>entry.id==="runway")!),stage:primary,
+      additionalStages:stages.filter(stage=>stage!==primary),enabled:legacyCash.enabled,
+      priority:legacyCash.priority||canonicalCash?.priority||"",value:legacyCash.value||canonicalCash?.value||"12"});
+  }
   return [...defaults.map(entry => saved.get(entry.id) || entry), ...[...saved.values()].filter(entry => entry.id.startsWith("custom_")).slice(0, 100)];
 }
