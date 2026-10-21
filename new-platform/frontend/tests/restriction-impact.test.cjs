@@ -264,3 +264,47 @@ test("one restriction may apply to multiple stages without duplicate catalog row
   assert.equal(report.stages.length,3);
   assert.equal(report.excluded,1);
 });
+
+test("importance groups put Market Cap first and preserve one master restriction each", () => {
+  assert.equal(catalog.RESTRICTION_PURPOSE_GROUPS[0].id, "MARKET_CAP");
+  assert.deepEqual(
+    catalog.RESTRICTION_CATALOG.filter(rule => ["minCap", "maxCap", "gem_marketcap"].includes(rule.id))
+      .map(rule => catalog.restrictionPurposeGroup({id: rule.id})),
+    ["MARKET_CAP", "MARKET_CAP", "MARKET_CAP"]
+  );
+  const groups = new Set(catalog.RESTRICTION_PURPOSE_GROUPS.map(group => group.id));
+  const mapped = catalog.defaultCatalogEntries().map(entry => catalog.restrictionPurposeGroup(entry));
+  assert.equal(mapped.length, 39);
+  assert.ok(mapped.every(group => groups.has(group)));
+  const React = require("react"), {renderToStaticMarkup} = require("react-dom/server");
+  const Component = require("../app/RestrictionImpact.tsx").default;
+  const html = renderToStaticMarkup(React.createElement(Component, {rows, asOf}));
+  const cap = html.indexOf('data-purpose-group="MARKET_CAP"');
+  const clinical = html.indexOf('data-purpose-group="CLINICAL_RESULTS"');
+  const fda = html.indexOf('data-purpose-group="FDA"');
+  assert.ok(cap >= 0 && clinical > cap && fda > clinical, "Market Cap first, then Clinical Results, then FDA");
+  assert.equal((html.match(/aria-label="Priority for /g) || []).length, 39, "no duplicate editable master rows");
+  assert.match(html, /GEM JR FS/);
+  assert.match(html, /GEM JR FA/);
+  assert.match(html, /GEM FS/);
+  assert.match(html, /GEM FA/);
+  assert.deepEqual(catalog.RESTRICTION_CATALOG.find(rule => rule.id === "gem_registry").associations,
+    ["GEM JR FS", "GEM JR FA"], "Registry remains in both original presets");
+  assert.deepEqual(catalog.RESTRICTION_CATALOG.find(rule => rule.id === "runway").associations,
+    ["GEM JR FS"], "Runway keeps its original preset association");
+});
+
+test("purpose changes group display without changing restriction scan calculations or stored presets", () => {
+  const entries = catalog.defaultCatalogEntries().map(entry => ({...entry}));
+  const prior = JSON.stringify(entries);
+  const before = catalog.calculateCatalogImpact(rows, entries, settings(), evidence, asOf);
+  const sortedForDisplay = [...entries].sort((a, b) =>
+    catalog.RESTRICTION_PURPOSE_GROUPS.findIndex(group => group.id === catalog.restrictionPurposeGroup(a)) -
+    catalog.RESTRICTION_PURPOSE_GROUPS.findIndex(group => group.id === catalog.restrictionPurposeGroup(b)));
+  const after = catalog.calculateCatalogImpact(rows, entries, settings(), evidence, asOf);
+  assert.equal(JSON.stringify(entries), prior);
+  assert.deepEqual([before.passed, before.pending, before.excluded],
+    [after.passed, after.pending, after.excluded]);
+  assert.equal(new Set(sortedForDisplay.map(entry => entry.id)).size, entries.length);
+  assert.equal(catalog.restrictionPurposeGroup({id:"custom_market",field:"marketCapMillions"}),"MARKET_CAP");
+});

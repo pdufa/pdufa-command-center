@@ -36,6 +36,52 @@ export const RESTRICTION_CATALOG: CatalogDefinition[] = [
   { id: "gem_jr_source", title: "GEM JR screening passed", category: "GEM input option", associations: gemPresetAssociations("gem_jr_source"),
     help: "Uses the results of the assigned GEM JR rules on this page. With no enabled GEM JR rules, qualification is unknown. Saved GEM JR membership alone is not proof of passing a screen." },
 ];
+
+/**
+ * Display-only importance order. This classification NEVER changes FS/FA preset
+ * membership, scan priority, user thresholds, stage assignments or persisted IDs.
+ */
+export const RESTRICTION_PURPOSE_GROUPS = [
+  { id: "MARKET_CAP", title: "1. MARKET CAPITALIZATION", note: "Entry and current company market-cap limits" },
+  { id: "CLINICAL_RESULTS", title: "2. CLINICAL TRIAL RESULTS & SUCCESS", note: "Phase 3 outcomes, pivotal evidence, statistical strength and safety" },
+  { id: "FDA", title: "3. FDA & REGULATORY STATUS", note: "FDA pathway, designations, reviews, advisory meetings and holds" },
+  { id: "COMPANY", title: "4. COMPANY ELIGIBILITY", note: "Public listing, identifiable company, drug and indication" },
+  { id: "FINANCIAL", title: "5. FINANCIAL STRENGTH & CASH RUNWAY", note: "Financing, dilution and available cash runway" },
+  { id: "DEVELOPMENT", title: "6. TRIAL PHASE & DEVELOPMENT PROGRESS", note: "Trial phase, registry status, program activity and GEM JR inputs" },
+  { id: "PDUFA", title: "7. PDUFA DATES & CATALYSTS", note: "Decision timing, upcoming events and verified PDUFA dates" },
+  { id: "EVIDENCE", title: "8. EVIDENCE QUALITY & VERIFICATION", note: "Issuer sources, SEC reconciliation and data freshness" },
+  { id: "TRADING", title: "9. TRADING ACTIVITY & LIQUIDITY", note: "Relative volume, dollar liquidity and insider/institutional activity" },
+  { id: "TECHNICAL", title: "10. TECHNICAL INDICATORS & PRICE TRENDS", note: "RSI, moving averages and closing prices" },
+  { id: "OTHER", title: "11. OTHER / OPTIONAL RESTRICTIONS", note: "Commercial market opportunities and uncategorized custom checks" },
+] as const;
+export type RestrictionPurposeGroupId = typeof RESTRICTION_PURPOSE_GROUPS[number]["id"];
+const RESTRICTION_PURPOSE_BY_ID: Record<string, RestrictionPurposeGroupId> = {
+  minCap: "MARKET_CAP", maxCap: "MARKET_CAP", gem_marketcap: "MARKET_CAP",
+  gem_phase3: "CLINICAL_RESULTS", alert_statistical_significance: "CLINICAL_RESULTS",
+  alert_two_trial: "CLINICAL_RESULTS", alert_safety_cleanliness: "CLINICAL_RESULTS",
+  fdaPath: "FDA", hold: "FDA", alert_priority_review: "FDA",
+  alert_breakthrough_rmat: "FDA", alert_star_pilot: "FDA",
+  alert_no_adcom: "FDA", alert_favorable_adcom: "FDA", alert_orphan_unmet: "FDA",
+  public: "COMPANY", identity: "COMPANY",
+  runway: "FINANCIAL", gem_financing: "FINANCIAL", gem_dilution: "FINANCIAL",
+  phase: "DEVELOPMENT", active: "DEVELOPMENT", gem_registry: "DEVELOPMENT", gem_jr_source: "DEVELOPMENT",
+  progress: "PDUFA", pdufaWindow: "PDUFA", gem_pdufa: "PDUFA", gem_window: "PDUFA",
+  documents: "EVIDENCE", gem_issuer: "EVIDENCE", gem_marketfresh: "EVIDENCE", gem_sec: "EVIDENCE",
+  gem_volume: "TRADING", gem_liquidity: "TRADING", gem_insiders: "TRADING", gem_institutions: "TRADING",
+  gem_rsi: "TECHNICAL", gem_trend: "TECHNICAL",
+  alert_tam: "OTHER",
+};
+export function restrictionPurposeGroup(entry: Pick<CatalogEntry, "id" | "field">): RestrictionPurposeGroupId {
+  if (entry.id.startsWith("custom_")) {
+    const byField: Partial<Record<CustomField, RestrictionPurposeGroupId>> = {
+      marketCapMillions: "MARKET_CAP", runwayMonths: "FINANCIAL", pdufaDays: "PDUFA",
+      rvol: "TRADING", avgDollarVolume20: "TRADING", rsi14: "TECHNICAL", close: "TECHNICAL",
+    };
+    return entry.field ? byField[entry.field] || "OTHER" : "OTHER";
+  }
+  return RESTRICTION_PURPOSE_BY_ID[entry.id] || "OTHER";
+}
+
 export function catalogStages(entry:CatalogEntry):Exclude<RestrictionStage,"">[] {
   return [...new Set([entry.stage, ...(entry.additionalStages||[])].filter((value):value is Exclude<RestrictionStage,"">=>RESTRICTION_STAGES.includes(value as Exclude<RestrictionStage,"">)))];
 }
