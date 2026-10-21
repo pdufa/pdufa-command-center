@@ -17,7 +17,7 @@ from email.utils import make_msgid
 from zoneinfo import ZoneInfo
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
-DASHBOARD = "https://pdufa-command-center-hvtzovdjssqmzhrlzbbhwu.streamlit.app/"
+DASHBOARD = "https://pdufa-new-dashboard.vercel.app/"
 
 
 class EmailSetupError(RuntimeError):
