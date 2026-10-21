@@ -13,7 +13,7 @@ WORKFLOW = ".github/workflows/pdufa-overnight-sequential.yml"
 RECOVERY_CRONS = {f"{minute} {hour} * * *" for hour in (7, 8, 9) for minute in (5, 35)}
 # One spaced-out cron expression provides frequent recovery opportunities.
 # GitHub schedule execution is best-effort; the clock gate below ensures
-# pre-9 PM Pacific events cannot start a scan and allows safe late recovery.
+# pre-8 PM Pacific events cannot start a scan and allows safe late recovery.
 SWEEP_CRON = "3-53/10 4-10 * * *"
 ACTIVE = {"queued", "in_progress", "waiting", "pending", "requested"}
 
@@ -23,14 +23,14 @@ def decision(event, cron, runs, *, now=None):
     local = now.astimezone(PACIFIC)
     # Scheduled after-midnight recovery belongs to the preceding night.
     # A manual dispatch should reflect the actual requested Pacific date.
-    night = local if (event == "workflow_dispatch" or local.hour >= 21) else local - timedelta(days=1)
-    start = night.replace(hour=21, minute=0, second=0, microsecond=0)
+    night = local if (event == "workflow_dispatch" or local.hour >= 20) else local - timedelta(days=1)
+    start = night.replace(hour=20, minute=0, second=0, microsecond=0)
     weekly_full = start.weekday() == 6  # Sunday night in Los Angeles, including after-midnight recovery
     result = {"run": False, "night_date_pacific": start.date().isoformat(),
               "scan_mode": "FULL" if weekly_full else "DELTA",
               "gem_action": "RESCAN_ALL" if weekly_full else "REVERIFY_PARTIAL",
               "reason": ""}
-    in_window = local.hour >= 21 or local.hour < 3
+    in_window = local.hour >= 20 or local.hour < 3
     primary_hour = start.astimezone(timezone.utc).hour
     primary = {f"{minute} {primary_hour} * * *" for minute in (0, 15, 30)}
     scheduled_in_window = (event == "schedule" and in_window and
@@ -40,13 +40,13 @@ def decision(event, cron, runs, *, now=None):
     # intended minute. The previous implementation discarded scheduled ticks
     # arriving after 02:59 PT, even if last night's chain never started.
     # Allow a *recognized* late cron to recover yesterday's missing scan from
-    # 03:00 through 20:59 PT, up to the next night's 21:00 admission.
+    # 03:00 through 20:59 PT, up to the next night's 20:00 admission.
     # The existing full-run check below still prevents duplicates and overlaps.
     scheduled_late_recovery = (event == "schedule" and not in_window and
                                 (cron in primary or cron in RECOVERY_CRONS or
                                  cron == SWEEP_CRON))
     allowed = (event == "workflow_dispatch" or
-               (event == "push" and local.hour == 21) or
+               (event == "push" and local.hour == 20) or
                scheduled_in_window or scheduled_late_recovery)
     if not allowed:
         result["reason"] = "Outside the guarded start/recovery period or unknown scheduler cron"
@@ -72,7 +72,7 @@ def decision(event, cron, runs, *, now=None):
                         "Weekday DELTA changes/new-trial check")
     if scheduled_late_recovery:
         scan_description = ("RECOVERY of missed " + start.date().isoformat() +
-                            " Pacific 9 PM start; " + scan_description)
+                            " Pacific 8 PM start; " + scan_description)
     result.update(run=True, reason=scan_description + "; start awaited chain including GEM")
     return result
 
