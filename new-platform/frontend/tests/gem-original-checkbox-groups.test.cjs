@@ -265,3 +265,19 @@ test("A rescanned GEM JR or GEM program is NEW only once per stage, never duplic
  assert.deepEqual(newlyObservedProgramIds({...scan,selected:[]},new Set(),new Set()),[],
    "an unrestricted scan cannot mark the entire Pipeline as new");
 });
+
+test("managed GEM checklist uses one catalog selection and hides redundant checkboxes",()=>{
+  const jr=renderToStaticMarkup(React.createElement(Checklist.default,{
+    stage:"GEM_JR",initiallyExpanded:true,pipeline:[],asOf:"2026-10-20",
+    stageTotal:0,completedScan:null,stageSavedRows:[],manualStageList:{},
+    gemJrScan:null,gemJrSavedRows:[],onAddToStageList:()=>{},onRemoveFromStageList:()=>{},
+    onScan:()=>{},onReset:()=>{},managedSelected:["registry","marketcap"],
+    managedGoals:{priority_review:"6"},hideChecklistItems:true
+  }));
+  assert.match(jr,/ONE MASTER RESTRICTIONS LIST/);
+  assert.doesNotMatch(jr,/gem-original-clinical|gem-original-trading|Optional GEM JR evidence alerts/);
+  assert.match(jr,/aria-pressed="true" aria-label="FA: toggle Phase 3/);
+  assert.match(jr,/aria-label="FS: toggle suggested criteria checkboxes"/);
+  assert.deepEqual(Checklist.gemPresetAssociations("registry"),["GEM JR FS","GEM JR FA"]);
+  assert.deepEqual(Checklist.gemPresetAssociations("gem_jr_source"),["GEM FA"]);
+});
