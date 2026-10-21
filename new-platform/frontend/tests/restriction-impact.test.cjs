@@ -347,7 +347,7 @@ test("Add to List inserts Market Cap in Pipeline at #1 without changing other li
   const current=settings();current.capBasis="current";
   const result=catalog.calculateCatalogImpact(rows,saved,current,evidence,asOf);
   assert.equal(result.steps.get("gem_marketcap").step,1);
-  assert.equal(result.stages[0].excluded,2);
+  assert.equal(result.stages[0].excluded,3); // market cap excludes LOW/HIGH; public-company rule also excludes OLD
 });
 test("Add to List preview does not mutate existing stored catalog and inactive lists stay inactive",()=>{
   const entries=catalog.defaultCatalogEntries();
