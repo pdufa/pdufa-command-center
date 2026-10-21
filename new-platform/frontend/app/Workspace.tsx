@@ -740,6 +740,23 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const jrRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM_JR"),[masterRestrictions]);
   const gemRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM"),[masterRestrictions]);
   const masterAlertGoals=useMemo(()=>Object.fromEntries(masterRestrictions.filter(entry=>entry.id.startsWith("alert_")).map(entry=>[entry.id.slice(6),entry.value])),[masterRestrictions]);
+  const masterThresholds=useMemo(()=>Object.fromEntries(masterRestrictions
+    .filter(entry=>["runway","gem_marketcap","gem_window","gem_volume","gem_rsi","gem_liquidity"].includes(entry.id))
+    .map(entry=>[catalogGemKey(entry.id),{value:entry.value,maximum:entry.maximum}])),[masterRestrictions]);
+  // A changed master selection/target invalidates old completed scan results.
+  // Live previews are recomputed by the existing GEM checklist against the new rules.
+  const masterScanFingerprint=useMemo(()=>JSON.stringify(masterRestrictions
+    .filter(entry=>entry.enabled&&!!entry.priority&&catalogStages(entry).some(stage=>stage==="GEM_JR"||stage==="GEM"))
+    .map(entry=>[entry.id,entry.stage,entry.additionalStages,entry.priority,entry.value,entry.maximum])),[masterRestrictions]);
+  const lastMasterScanFingerprint=useRef<string|null>(null);
+  useEffect(()=>{
+    if(!masterRestrictionsReady)return;
+    if(lastMasterScanFingerprint.current!==null&&lastMasterScanFingerprint.current!==masterScanFingerprint){
+      setGemScans({});
+      setGemSavedOnly({GEM_JR:false,GEM:false});
+    }
+    lastMasterScanFingerprint.current=masterScanFingerprint;
+  },[masterScanFingerprint,masterRestrictionsReady]);
   function changeManagedGemRules(stage:"GEM_JR"|"GEM",next:string[]){
     const desired=new Set(next);
     const allowed=gemAllowedKeys(stage);
@@ -1349,7 +1366,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           return {...current,[stage]:next};
         })}
         gemJrScan={currentJuniorScan} gemJrSavedRows={snapshot?.members.GEM_JR.rows||[]} gemJrLivePreview={currentJuniorPreview} gemJrDraft={currentJuniorDraft} gemDraft={currentGemDraft}
-        managedSelected={stage==="GEM_JR"?jrRuleKeys:gemRuleKeys} managedGoals={masterAlertGoals} hideChecklistItems
+        managedSelected={stage==="GEM_JR"?jrRuleKeys:gemRuleKeys} managedGoals={masterAlertGoals} managedThresholds={masterThresholds} hideChecklistItems
         onManagedSelectedChange={keys=>changeManagedGemRules(stage,keys)} onOpenMasterRestrictions={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}
         onGemJrLivePreviewChange={setGemJrLivePreview} onGemJrDraftChange={setGemJrDraft} onGemLivePreviewChange={setGemLivePreview} onGemDraftChange={setGemDraft}
         onReset={()=>{
