@@ -100,7 +100,7 @@ const suggestedByStage:Record<"GEM_JR"|"GEM",string[]>={GEM_JR:["phase3","regist
 const FA_CRITERIA=["registry","marketcap"];
 // This is the authoritative association shared with the one-row Restrictions catalog.
 // FI was retired; FS and FA are the existing, independently operable presets.
-function effectiveNumericCheck(key:string,row:Trial,minimum:number,maximum:number|null):boolean|null {
+export function effectiveNumericCheck(key:string,row:Trial,minimum:number,maximum:number|null):boolean|null {
   const t=row.technical;
   if(key==="cash"){
     const value=t?.runwayMonths??row.trialFilters?.runwayMonths;
