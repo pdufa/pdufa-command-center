@@ -19,6 +19,14 @@ Fast Track and Accelerated Approval appear under **3. FDA & REGULATORY STATUS**.
 
 Pool membership records an available choice; it does not establish that any trial has that status. The optional regulatory goals currently return **UNKNOWN** until evidence-based evaluation is connected. A requested designation or proposed accelerated-approval strategy does not establish a granted status or approval.
 
+## Pipeline trial designation columns
+
+The Pipeline trial table has **30 columns**, including six columns for **Fast Track, Breakthrough Therapy, RMAT, Orphan Drug, Priority Review, and Accelerated Approval**. The existing Priority Review column is retained and expanded; five designation columns are added.
+
+Each available status expands to show its designation/approval date, last verification date, supporting source, and evidence note. A missing date is **Not recorded**. A missing exact trial/application match is **Not verified**, rather than an inferred negative. Saved source reports are distinguished from the existing application-specific FDA-verified Priority Review alert.
+
+The full trial sheet also shows these six statuses, and its individual JSON download includes the supplemental regulatory details alongside the original registry fields. These display columns do not activate additional restrictions or alter FS/FA memberships.
+
 ## Complete pool
 
 The table lists catalog membership and original FS/FA associations. Actual list selections and priorities remain in the dashboard's saved settings.

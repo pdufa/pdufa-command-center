@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candidate } from "./Workspace";
 import TrialFields from "./TrialFields";
+import { TrialDesignationCells, useTrialDesignations } from "./TrialDesignations";
+import { DESIGNATION_COLUMNS } from "../lib/trial-designations";
 import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
@@ -13,7 +15,7 @@ const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = 
   { label: "Drug / study" }, { label: "Indication" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
   { label: "Primary completion", key: "primaryCompletion" }, { label: "PDUFA", key: "pdufaDate" },
-  { label: "Priority Review" },
+  ...DESIGNATION_COLUMNS.map(({ label }) => ({ label })),
   { label: "Market cap", key: "marketCap" },
   { label: "Registry p-values", key: "pValueCount", sortLabel: "number of reported p-values" },
   { label: "All data" },
@@ -31,6 +33,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
   const [page, setPage] = useState(0);
   const [scoreOrder, setScoreOrder] = useState("source");
   const { records: assessmentRecords } = useAssessments();
+  const designations = useTrialDesignations();
   const [size, setSize] = useState(25);
   const [selected, setSelected] = useState("");
   const [summaries, setSummaries] = useState<Summaries>({ ids: "", records: {} });
@@ -105,6 +108,8 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
       <span className="counter" aria-live="polite">{rows.length.toLocaleString("en-US")} matching trials / programs</span>
     </div>
     <AssessmentStatus stage="PIPELINE" />
+    <p className="subtle small">FDA designation columns show linked source evidence. Expand a status for its date, source, and notes. Missing evidence remains Not verified.</p>
+    {designations.error && <p role="status" className="pipeline-designation-status">{designations.error} <button type="button" className="secondary" onClick={designations.retry}>Retry designation details</button></p>}
     <AssessmentSort value={scoreOrder} onChange={value => { setScoreOrder(value); setPage(0); setSelected(""); }} />
     <p className="subtle small">Click a column heading to sort all matching trials; click again to reverse the order.</p>
     {sortLoading && <p role="status" className="pipeline-sort-status">Preparing {HEADERS.find(column => column.key === sortLoading)?.label.toLowerCase()} sorting for the complete list…</p>}
@@ -145,11 +150,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
           <td>{saved?.status?.replaceAll("_", " ") || (nct ? loading ? "Loading…" : "Not available" : "Regulatory program")}</td>
           <td>{saved?.primary_completion_date?.date || "Not reported"}<small>{saved?.primary_completion_date?.type}</small></td>
           <td>{row.pdufaDate || "Not reported"}</td>
-          <td>{row.priorityReview?.status === "FDA_VERIFIED" && row.priorityReview.source
-            ? <a href={row.priorityReview.source} target="_blank" rel="noopener noreferrer" title="FDA document confirming this application's Priority Review designation">
-                <strong>IMP: Priority Review</strong> ↗
-              </a>
-            : <span title="No application-specific FDA Priority Review evidence has been verified">Not verified</span>}</td>
+          <TrialDesignationCells row={row} index={designations.index} loading={designations.loading} error={designations.error} />
           <td>{row.marketCap == null ? "Not verified" : "$" + (row.marketCap / (row.marketCap >= 1e9 ? 1e9 : 1e6)).toFixed(1) + (row.marketCap >= 1e9 ? "B" : "M")}</td>
           <td>{saved ? <><strong>{saved.p_value_count || 0} reported</strong><small>{saved.p_value_status?.replaceAll("_", " ")}</small></> : nct && loading ? "Loading…" : "Not available"}</td>
           <td>{nct

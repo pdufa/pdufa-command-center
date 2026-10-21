@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Candidate } from "./Workspace";
 import CandidateAssessments from "./CandidateAssessments";
+import { TrialDesignationPanel, useTrialDesignations } from "./TrialDesignations";
+import { resolveTrialDesignations, trialDesignationDownload } from "../lib/trial-designations";
 import { type Json, label, object, registrySections, reportedAnalyses, trialId } from "../lib/pipeline-data";
 
 function text(value: Json | undefined) {
@@ -37,6 +39,8 @@ function FieldTree({ value }: { value: Json }) {
 
 export default function TrialFields({ row, onClose, standalone = false }: { row: Candidate; onClose?: () => void; standalone?: boolean }) {
   const nct = trialId(row);
+  const designations = useTrialDesignations();
+  const designationValues = resolveTrialDesignations(row, designations.index);
   const [study, setStudy] = useState<{ [key: string]: Json } | null>(null);
   const [fetchedAt, setFetchedAt] = useState("");
   const [loading, setLoading] = useState(Boolean(nct));
@@ -76,7 +80,7 @@ export default function TrialFields({ row, onClose, standalone = false }: { row:
   const studyTitle = typeof identification.briefTitle === "string" ? identification.briefTitle : nct;
   function downloadRecord() {
     if (!study) return;
-    const url = URL.createObjectURL(new Blob([JSON.stringify(study, null, 2)], { type: "application/json" }));
+    const url = URL.createObjectURL(new Blob([JSON.stringify(trialDesignationDownload(study, row, designations.index), null, 2)], { type: "application/json" }));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = nct + "-all-fields.json";
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -91,6 +95,7 @@ export default function TrialFields({ row, onClose, standalone = false }: { row:
       </div>
     </div>
     {standalone && <CandidateAssessments row={row} />}
+    <TrialDesignationPanel row={row} values={designationValues} loading={designations.loading} error={designations.error} retry={designations.retry} />
     {loading && <p role="status">Loading all saved registry fields…</p>}
     {error && <div role="alert"><p className="error">{error}</p><button type="button" className="secondary" onClick={() => setRetry(value => value + 1)}>Retry full record</button></div>}
     {!nct && <p className="subtle">No exact NCT trial is linked to this program. Its available Pipeline fields are listed below.</p>}
