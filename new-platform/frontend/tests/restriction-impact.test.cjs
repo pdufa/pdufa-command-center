@@ -498,7 +498,7 @@ test("market cap thresholds appear in all restriction lists with current saved v
   }
 });
 
-test("Pipeline displays as the large full-width box above side-by-side GEM JR and GEM", () => {
+test("Pipeline, GEM JR and GEM lists are equally sized side by side in that order", () => {
   const fs=require("node:fs"),path=require("node:path");
   const React=require("react"),{renderToStaticMarkup}=require("react-dom/server");
   const Component=require("../app/RestrictionImpact.tsx").default;
@@ -508,13 +508,14 @@ test("Pipeline displays as the large full-width box above side-by-side GEM JR an
   const pipeline=html.match(/<section[^>]+data-restriction-list="PIPELINE"[^>]*>/)?.[0]||"";
   const junior=html.match(/<section[^>]+data-restriction-list="GEM_JR"[^>]*>/)?.[0]||"";
   const gem=html.match(/<section[^>]+data-restriction-list="GEM"[^>]*>/)?.[0]||"";
-  assert.match(source,/stage==="PIPELINE"\s*\?\s*" "\+styles\.listOverviewCardPipeline/,"only Pipeline gets the full-width class");
   assert.ok(pipeline&&junior&&gem);
   assert.ok(html.indexOf(pipeline)<html.indexOf(junior)&&html.indexOf(junior)<html.indexOf(gem));
-  assert.match(css,/\.listOverviewGrid\s*\{[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(css,/\.listOverviewCardPipeline\s*\{[^}]*grid-column:1\/-1/);
-  assert.doesNotMatch(css,/min-width:760px/,"no horizontal scrolling requirement on phone");
-  assert.match(css,/@media \(max-width:440px\)/,"narrow phones remain supported");
+  assert.match(source,/className=\{styles\.listOverviewCard\}/);
+  assert.doesNotMatch(source,/listOverviewCardPipeline/,"no list spans an additional grid column");
+  assert.match(css,/\.listOverviewGrid\s*\{[^}]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(css,/\.listOverviewCardPipeline/);
+  assert.match(css,/min-width:750px/,"phone keeps three columns in a horizontally scrollable region");
+  assert.match(css,/\.listOverviewScroll\s*\{[^}]*overflow-x:auto/);
   assert.equal((html.match(/data-restriction-list="/g)||[]).length,3);
   assert.equal((html.match(/aria-label="Priority for /g)||[]).length,39);
 });
