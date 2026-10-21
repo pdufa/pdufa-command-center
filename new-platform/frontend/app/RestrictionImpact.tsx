@@ -242,20 +242,22 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       <label>Find restriction<input type="search" aria-label="Find restriction" maxLength={100} value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or category" /></label></div>
     <p className={styles.note}>{visible.length} of {entries.length} restrictions shown. Use ADD TO LIST to see existing list members and insert a rule at #1 or any position.</p>
     <section aria-label="Individual restriction impact for all rules">
-      <h3>ALL RESTRICTIONS — INDIVIDUAL REDUCTION TABLE</h3>
-      <p className={styles.note}>Each restriction is measured independently against the same {count(report.total)} dashboard entries, not cumulatively. Sorted by exclusions. Unknown evidence is not counted as excluded. Warning-only rules do not exclude trials. CSV includes all rules, stages and original FS/FA associations.</p>
+      <h3>HOW MANY TRIALS DOES EACH RESTRICTION REMOVE?</h3>
+      <div className={styles.totals}><div><span>Same starting universe for every row</span><strong>{count(report.total)}</strong></div><div><span>Restrictions compared</span><strong>{count(individualImpact.length)}</strong></div></div>
+      <p className={styles.note}><strong>Read each row separately:</strong> Removes = trials failing that one rule; Still eligible = starting universe minus Removes; Unknown = insufficient evidence (not automatically removed). Rows are ranked by Removes. <strong>Do not add the rows together:</strong> the same trial can fail multiple restrictions. These are not sequential or cumulative Pipeline results.</p>
       <div className={styles.buttons}><button type="button" onClick={exportIndividualImpact}>DOWNLOAD ALL RESTRICTION COUNTS (CSV)</button></div>
       <div className={styles.scroll} role="region" aria-label="Ranked individual restriction exclusions" tabIndex={0}>
         <table className={styles.table}>
-          <thead><tr><th>#</th><th>Restriction</th><th>Excluded alone</th><th>Remaining</th><th>Excluded %</th><th>Verified pass</th><th>Unknown</th></tr></thead>
+          <thead><tr><th>Rank</th><th>Restriction being tested</th><th>Removes (fails rule)</th><th>Still eligible (not failed)</th><th>Removal %</th><th>Unknown (not removed)</th></tr></thead>
           <tbody>{individualImpact.map((item, index) => <tr key={item.entry.id}>
-            <td>{index + 1}</td><th scope="row">{item.rule.title}{item.rule.warning ? " (warning only)" : ""}</th>
-            <td>{count(item.excluded)}</td><td>{count(item.remaining)}</td>
-            <td>{report.total ? (100 * item.excluded / report.total).toFixed(2) : "0.00"}%</td>
-            <td>{count(item.passed)}</td><td>{count(item.unknown)}</td>
+            <td>{index + 1}</td><th scope="row">{item.rule.title}{item.rule.warning ? " — warning only" : ""}<small>{catalogStages(item.entry).map(stage => stageLabel(stage)).join(" / ") || "Not assigned"}{!item.entry.enabled ? " · Not active" : ""}</small></th>
+            <td><strong>{count(item.excluded)}</strong></td><td>{count(item.remaining)}</td>
+            <td>{report.total ? (100 * item.excluded / report.total).toFixed(1) : "0.0"}%</td>
+            <td>{count(item.unknown)}</td>
           </tr>)}</tbody>
         </table>
       </div>
+      <p className={styles.note}>Still eligible includes unknown/unverified trials; it is not the same as verified passes. The CSV retains the separate verified-pass count and original FS/FA associations. Market cap at first Pipeline entry remains unverified where historical entry-date evidence is missing.</p>
     </section>
     <h3>RESTRICTIONS — MARKET CAP FIRST</h3><div className={styles.scroll} role="region" aria-label="Sequential restriction effects" tabIndex={0}><table className={styles.table + " " + styles.catalog}><caption>Each restriction appears once. Open details for extra diagnostics.</caption>
       <thead><tr><th>Scan order / restriction</th><th>Apply to</th><th>Original FS / FA</th><th>Target</th><th>Results</th><th>More</th></tr></thead><tbody>
