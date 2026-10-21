@@ -164,11 +164,11 @@ def test_large_export_is_lazy_but_remains_complete_on_request(isolated, monkeypa
     # full-study ZIP while concurrent startup scoring occupies RAM.
     assert not archive._EXPORT_PATH.exists()
     calls = []
-    monkeypatch.setattr(archive, "start_download", lambda: {"complete": True})
-    monkeypatch.setattr(archive, "ensure_cached_export", lambda: calls.append("built"))
-    archive.bootstrap()
+    with monkeypatch.context() as startup:
+        startup.setattr(archive, "start_download", lambda: {"complete": True})
+        startup.setattr(archive, "ensure_cached_export", lambda: calls.append("built"))
+        archive.bootstrap()
     assert calls == []
-    monkeypatch.undo()
     # The operator-triggered export remains lossless and uses the same ZIP.
     export = archive.ensure_cached_export()
     assert export.is_file()
