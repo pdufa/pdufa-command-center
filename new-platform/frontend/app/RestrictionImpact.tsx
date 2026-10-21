@@ -73,6 +73,28 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
   const capStats=useMemo(()=>{let within=0,outside=0,unknown=0;for(const row of rows.filter(isRegisteredTrial)){const issuer=evidence?.issuers[row.ticker.toUpperCase()];const cap=issuer?.marketCap;if(typeof cap!=="number"||!Number.isFinite(cap)||cap<=0)unknown++;else if(cap>=300000000&&cap<=10000000000)within++;else outside++;}return {within,outside,unknown,total:within+outside+unknown};},[rows,evidence]);
   const scoped = useMemo(() => scope === "trials" ? rows.filter(isRegisteredTrial) : rows, [rows, scope]);
   const report = useMemo(() => calculateCatalogImpact(scoped, entries, settings, evidence, asOf), [scoped, entries, settings, evidence, asOf]);
+  const individualImpact = useMemo(() => entries.map(entry => {
+    const rule = catalogDefinition(entry);
+    const step = report.steps.get(entry.id) || report.steps.get(catalogStages(entry)[0] + "|" + entry.id);
+    const excluded = rule.warning ? 0 : (step?.aloneFail ?? 0);
+    return { entry, rule, excluded, unknown: step?.aloneUnknown ?? report.total,
+      passed: step?.passed ?? 0, remaining: report.total - excluded };
+  }).sort((a, b) => b.excluded - a.excluded || a.rule.title.localeCompare(b.rule.title)), [entries, report]);
+  function exportIndividualImpact() {
+    const header = ["Restriction","Stage","Original FS/FA","Active","Warning only","Starting trials","Excluded alone","Remaining","Verified pass","Unknown","Percent excluded"];
+    const quote = (value: string | number | boolean) => '"' + String(value).replace(/"/g, '""') + '"';
+    const lines = [header, ...individualImpact.map(item => [
+      item.rule.title, catalogStages(item.entry).join(" / "), (item.rule.associations || []).join(" / "),
+      item.entry.enabled && catalogStages(item.entry).some(stage => !!catalogStagePriority(item.entry, stage)),
+      !!item.rule.warning, report.total, item.excluded, item.remaining, item.passed, item.unknown,
+      report.total ? (100 * item.excluded / report.total).toFixed(2) : "0.00",
+    ])].map(line => line.map(quote).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob(["\uFEFF" + lines], { type: "text/csv;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url; anchor.download = "pdufa-individual-restriction-impact.csv";
+    document.body.appendChild(anchor); anchor.click(); anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   const visible = entries.filter(entry => (showStage === "all" || catalogStages(entry).includes(showStage as Exclude<RestrictionStage, "">)) &&
     (!search || (catalogDefinition(entry).title + " " + catalogDefinition(entry).category + " " + (catalogDefinition(entry).associations || []).join(" ")).toLowerCase().includes(search.toLowerCase()))).sort((a,b) => Number(!!a.priority)-Number(!!b.priority) || (a.stage||"").localeCompare(b.stage||"") || Number(a.priority||0)-Number(b.priority||0));
   const sections = [
@@ -219,6 +241,22 @@ export default function RestrictionImpact({ rows, asOf, cached = false, onRefres
       <label>Show rules<select aria-label="Show restriction stage" value={showStage} onChange={event => setShowStage(event.target.value)}><option value="all">Full list — all stages</option><StageOptions /></select></label>
       <label>Find restriction<input type="search" aria-label="Find restriction" maxLength={100} value={search} onChange={event => setSearch(event.target.value)} placeholder="Name or category" /></label></div>
     <p className={styles.note}>{visible.length} of {entries.length} restrictions shown. Use ADD TO LIST to see existing list members and insert a rule at #1 or any position.</p>
+    <section aria-label="Individual restriction impact for all rules">
+      <h3>ALL RESTRICTIONS — INDIVIDUAL REDUCTION TABLE</h3>
+      <p className={styles.note}>Each restriction is measured independently against the same {count(report.total)} dashboard entries, not cumulatively. Sorted by exclusions. Unknown evidence is not counted as excluded. Warning-only rules do not exclude trials. CSV includes all rules, stages and original FS/FA associations.</p>
+      <div className={styles.buttons}><button type="button" onClick={exportIndividualImpact}>DOWNLOAD ALL RESTRICTION COUNTS (CSV)</button></div>
+      <div className={styles.scroll} role="region" aria-label="Ranked individual restriction exclusions" tabIndex={0}>
+        <table className={styles.table}>
+          <thead><tr><th>#</th><th>Restriction</th><th>Excluded alone</th><th>Remaining</th><th>Excluded %</th><th>Verified pass</th><th>Unknown</th></tr></thead>
+          <tbody>{individualImpact.map((item, index) => <tr key={item.entry.id}>
+            <td>{index + 1}</td><th scope="row">{item.rule.title}{item.rule.warning ? " (warning only)" : ""}</th>
+            <td>{count(item.excluded)}</td><td>{count(item.remaining)}</td>
+            <td>{report.total ? (100 * item.excluded / report.total).toFixed(2) : "0.00"}%</td>
+            <td>{count(item.passed)}</td><td>{count(item.unknown)}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+    </section>
     <h3>RESTRICTIONS — MARKET CAP FIRST</h3><div className={styles.scroll} role="region" aria-label="Sequential restriction effects" tabIndex={0}><table className={styles.table + " " + styles.catalog}><caption>Each restriction appears once. Open details for extra diagnostics.</caption>
       <thead><tr><th>Scan order / restriction</th><th>Apply to</th><th>Original FS / FA</th><th>Target</th><th>Results</th><th>More</th></tr></thead><tbody>
         {sections.map(section => <Fragment key={section.id}>
