@@ -30,7 +30,7 @@ COLUMNS = [
     "phase3_candidate_nct", "phase3_target_start", "promotion_status", "promotion_reason",
     "destination", "promoted_at", "phase3_nct_id", "phase3_start_date", "phase3_source_url",
     "market_cap", "market_cap_source", "market_cap_checked_at", "market_cap_status",
-    "universe_gate", "universe_reason", "stage_evidence_status",
+    "universe_gate", "universe_reason", "stage_evidence_status", "program_phase3_evidence_nct",
 ]
 CAP_COLUMNS = ["ticker", "market_cap", "market_cap_source", "market_cap_checked_at", "market_cap_status"]
 
