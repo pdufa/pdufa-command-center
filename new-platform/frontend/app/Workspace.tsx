@@ -770,8 +770,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     if(!presetsReady)return;
     try{window.localStorage.setItem("pdufa-restriction-presets-v1",JSON.stringify(restrictionPresets));}catch{/* Browser storage unavailable. */}
   },[restrictionPresets,presetsReady]);
-  function saveRestrictionPreset(stage:RestrictionPresetStage){
-    const name=presetNames[stage].trim()||presetChoices[stage];
+  function saveRestrictionPreset(stage:RestrictionPresetStage, overrideName?:string){
+    const name=overrideName?.trim()||presetNames[stage].trim()||presetChoices[stage];
     if(!name)return;
     if(restrictionPresets[stage].some(p=>p.name===name)&&!window.confirm("Overwrite saved preset "+name+"?"))return;
     setRestrictionPresets(old=>({...old,[stage]:[...old[stage].filter(p=>p.name!==name),{name,entries:masterRestrictions.map(e=>({...e,additionalStages:[...(e.additionalStages||[])],stagePriorities:{...e.stagePriorities}}))}]}));
@@ -794,6 +794,16 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         enabled:included?old.enabled:(otherStages.length?entry.enabled:false),
         value:old.value,maximum:old.maximum};
     }));
+  }
+  function bottomPresetSave(stage:RestrictionPresetStage){
+    return <div style={{borderTop:"1px solid #a2b4a4",marginTop:16,paddingTop:14,display:"grid",gap:8}}>
+      <button type="button" style={{padding:"12px 16px",fontWeight:800,width:"100%",background:"#e4f1e2",border:"1px solid #35543a",borderRadius:9,color:"#18321c"}}
+        onClick={()=>{
+          const proposed=window.prompt("Name this new "+stage.replace("_"," ")+" restriction preset:");
+          if(proposed?.trim())saveRestrictionPreset(stage,proposed.trim());
+        }}>SAVE THIS LIST AS A NEW PRESET</button>
+      <small>Save as many named presets as you need. Find them in the Saved Restriction Presets dropdown above.</small>
+    </div>;
   }
   function restrictionPresetControls(stage:RestrictionPresetStage){
     return <div style={{border:"1px solid #a2b4a4",borderRadius:10,padding:12,margin:"12px 0",display:"grid",gap:9}}>
@@ -1916,9 +1926,10 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Three independent restriction lists" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
       <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>{restrictionPresetControls("PIPELINE")}
         <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
+        {bottomPresetSave("PIPELINE")}
       </details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{restrictionPresetControls("GEM_JR")}{gemBlock("GEM_JR")}</details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{restrictionPresetControls("GEM")}{gemBlock("GEM")}</details>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{restrictionPresetControls("GEM_JR")}{gemBlock("GEM_JR")}{bottomPresetSave("GEM_JR")}</details>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{restrictionPresetControls("GEM")}{gemBlock("GEM")}{bottomPresetSave("GEM")}</details>
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
