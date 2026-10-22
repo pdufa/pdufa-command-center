@@ -46,7 +46,9 @@ def decision(event, cron, runs, *, now=None):
                                 (cron in primary or cron in RECOVERY_CRONS or
                                  cron == SWEEP_CRON))
     allowed = (event == "workflow_dispatch" or
-               (event == "push" and local.hour == 20) or
+               # A guarded operator-triggered workflow-file push may recover tonight
+               # after 8 PM Pacific; the full-run check below still blocks duplicates.
+               (event == "push" and local.hour >= 20) or
                scheduled_in_window or scheduled_late_recovery)
     if not allowed:
         result["reason"] = "Outside the guarded start/recovery period or unknown scheduler cron"
