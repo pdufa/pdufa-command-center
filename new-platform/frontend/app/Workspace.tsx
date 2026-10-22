@@ -1879,6 +1879,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
+    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <DiseaseRestriction />}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Original Pipeline filters" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
@@ -1896,7 +1897,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <button type="button" onClick={()=>setMasterRestrictions(old=>removeRestrictionFromList(old,e.id,restrictionListView))}>REMOVE</button>
         </div>)}
       </div>
-      <DiseaseRestriction />
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
         const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
