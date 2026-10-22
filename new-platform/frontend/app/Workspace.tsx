@@ -1796,25 +1796,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <details className="panel" id="restriction-special-designations" aria-label="FDA special designations" style={{padding:16,margin:"12px 0"}}>
-      <summary style={{fontWeight:700,cursor:"pointer",fontSize:"1.05rem"}}>FDA SPECIAL DESIGNATIONS ▾ ({SPECIAL_DESIGNATION_CATEGORIES.length})</summary>
-      <p className="subtle">Choose the whole group or add individual designations to Pipeline. Selections are draft filters until you press DISPLAY TRIALS.</p>
-      <div className="pipeline-actions">
-        <button type="button" onClick={()=>setDesignationFilters(SPECIAL_DESIGNATION_CATEGORIES.map(item=>item.key))}>ADD WHOLE GROUP</button>
-        <button type="button" className="secondary" onClick={()=>setDesignationFilters([])}>CLEAR SELECTION</button>
-      </div>
-      <p><strong>{designationFilters.length} of {SPECIAL_DESIGNATION_CATEGORIES.length} selected</strong> · Trial impact: before {possible.length.toLocaleString("en-US")} · removed {designationIndex?(possible.length-filterBySelectedDesignations(possible,designationFilters,designationIndex).length).toLocaleString("en-US"):"unavailable"} · remaining {designationIndex?filterBySelectedDesignations(possible,designationFilters,designationIndex).length.toLocaleString("en-US"):"unavailable"}</p>
-      <div style={{display:"grid",gap:8}}>
-        {[...SPECIAL_DESIGNATION_CATEGORIES].sort((a,b)=>a.label.localeCompare(b.label)).map(item=>{
-          const selected=designationFilters.includes(item.key);
-          return <div key={item.key} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,borderBottom:"1px solid var(--border, #ccc)",padding:"7px 0"}}>
-            <span>{item.label}</span>
-            <button type="button" className={selected?"secondary":""} aria-pressed={selected} onClick={()=>setDesignationFilters(previous=>selected?previous.filter(key=>key!==item.key):[...previous,item.key])}>{selected?"REMOVE":"ADD"}</button>
-          </div>;
-        })}
-      </div>
-      <small>Only source-linked granted designations qualify. Unknown evidence is not a confirmed grant. GEM JR, GEM and FS/FA presets are unchanged.</small>
-    </details>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
