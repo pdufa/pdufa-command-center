@@ -1634,17 +1634,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </fieldset>
   );
   const pipelineMovedFilters = (
-    <section className="pipeline-filters-compact" style={{margin:0,padding:0,width:"100%",maxWidth:"100%",minWidth:0,display:"grid",gap:12,boxSizing:"border-box"}}>
-      <details className="panel" style={{margin:0,padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>STAGE COUNTS — PHASES ▾ ({stageFilters.length} selected)</summary>
+    <section style={{margin:0,padding:0,width:"100%",maxWidth:"100%",minWidth:0,display:"contents"}}>
+      <details className="panel" style={{margin:"12px 0",padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>STAGE COUNTS — PHASES ▾ ({stageFilters.length} selected)</summary>
         {stageAndDateFilter({title:"STAGE COUNTS",description:"Available by current stage",total:"PHASE TOTAL",items:stageCounts,selected:stageFilters,setter:setStageFilters})}
       </details>
-      <details className="panel" style={{margin:0,padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>DATE TRIAL COUNTS — PDUFA ▾ ({dateFilters.length} selected)</summary>
+      <details className="panel" style={{margin:"12px 0",padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>DATE TRIAL COUNTS — PDUFA ▾ ({dateFilters.length} selected)</summary>
         {stageAndDateFilter({title:"DATE TRIAL COUNTS",description:"Available by PDUFA countdown",total:"DATE TOTAL",items:dateCounts,selected:dateFilters,setter:setDateFilters})}
       </details>
-      <details className="panel" style={{margin:0,padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>TRIAL QUALIFICATION FILTERS ▾ ({activeTrialFilters(trialFilters)} selected)</summary>
+      <details className="panel" style={{margin:"12px 0",padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>TRIAL QUALIFICATION FILTERS ▾ ({activeTrialFilters(trialFilters)} selected)</summary>
         <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf||""} ready={snapshot?.trialFilterSchema===1} />
       </details>
-      <details className="panel" style={{margin:0,padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>FDA SPECIAL DESIGNATIONS — ORIGINAL COUNTS ▾ ({designationFilters.length} selected)</summary>
+      <details className="panel" style={{margin:"12px 0",padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>FDA SPECIAL DESIGNATIONS — ORIGINAL COUNTS ▾ ({designationFilters.length} selected)</summary>
         <SpecialDesignationCounts rows={possible} asOf={snapshot?.asOf||""} selected={designationFilters} onChange={setDesignationFilters} index={designationIndex} loading={designationLoading} error={designationError} onRetry={retryDesignations}/>
       </details>
       <div className="panel" style={{padding:12,width:"100%",minWidth:0,boxSizing:"border-box"}}>
