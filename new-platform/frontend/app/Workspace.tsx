@@ -1806,11 +1806,11 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <div style={{display:"grid",gap:8}}>{entries.map(entry=><div key={entry.id} style={{borderBottom:"1px solid var(--border, #ccc)",padding:"8px 0"}}>
             <strong>{catalogDefinition(entry).title}</strong>
             <div className="subtle">{catalogDefinition(entry).help}</div>
-            <div className="subtle">Assigned: {catalogStages(entry).join(", ")||"Not assigned"} · {entry.enabled?"Enabled":"Disabled"}</div>
+            <div className="subtle">Lists: {catalogStages(entry).join(", ")||"None"} · {entry.enabled?"Active":"Inactive"}</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10}}>
               {(["PIPELINE","GEM_JR","GEM"] as const).map(stage=>{
                 const assigned=catalogStages(entry).includes(stage);
-                return <button key={stage} type="button" disabled={!assigned && !!catalogDefinition(entry).warning}
+                return <button key={stage} type="button"
                   aria-label={(assigned?"Remove from ":"Add to ")+stage.replace("_"," ")+" list: "+catalogDefinition(entry).title}
                   onClick={()=>setMasterRestrictions(previous=>assigned
                     ?removeRestrictionFromList(previous,entry.id,stage)
