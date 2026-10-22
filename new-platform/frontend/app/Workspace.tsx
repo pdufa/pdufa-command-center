@@ -796,7 +796,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const hasVerifiedWorkspace = useRef(false);
   const cachedAsOfRef = useRef<string | null>(null);
   const freshSnapshotReceived = useRef(false);
-  const [top, setTop] = useState<TopNav>("RESULTS");
+  const [top, setTop] = useState<TopNav>("PDUFA");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
