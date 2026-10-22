@@ -250,8 +250,10 @@ def reconcile_records(previous, incoming, today=None, max_source_age=180):
                 row["destination"] = "MASTER TABLE"
                 for field in ("promoted_at", "phase3_nct_id", "phase3_start_date", "phase3_source_url"):
                     row[field] = chosen.get(field, "")
-                row["promotion_status"] = chosen["promotion_status"]
-                row["promotion_reason"] = chosen["promotion_reason"]
+                # Keep each trial's independent qualification verdict. A verified
+                # sibling can establish a program milestone, but must not turn an
+                # unverified or stale trial into a verified Phase 3 trial.
+                row["program_phase3_evidence_nct"] = chosen["nct_id"]
             elif "PHASE2" in row.get("phases", "").split("|"):
                 row["destination"] = "PIPELINE"
                 if row.get("phases") == "PHASE2" and row.get("program_identity_status") == "VERIFIED":
