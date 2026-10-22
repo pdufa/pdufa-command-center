@@ -1807,6 +1807,18 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             <strong>{catalogDefinition(entry).title}</strong>
             <div className="subtle">{catalogDefinition(entry).help}</div>
             <div className="subtle">Assigned: {catalogStages(entry).join(", ")||"Not assigned"} · {entry.enabled?"Enabled":"Disabled"}</div>
+            <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginTop:8}}>
+              <label style={{display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={entry.enabled} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,enabled:event.target.checked}:item))}/> Enabled</label>
+              {(catalogDefinition(entry).numeric || entry.value!=="" || entry.maximum!=="") && <>
+                <label style={{display:"flex",flexDirection:"column",gap:4}}>Minimum / value
+                  <input aria-label={catalogDefinition(entry).title+" minimum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.value} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,value:event.target.value}:item))}/>
+                </label>
+                {(entry.maximum!=="" || catalogDefinition(entry).maximum!==undefined) && <label style={{display:"flex",flexDirection:"column",gap:4}}>Maximum
+                  <input aria-label={catalogDefinition(entry).title+" maximum value"} type="number" step="any" style={{width:130,maxWidth:"100%"}} value={entry.maximum} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,maximum:event.target.value}:item))}/>
+                </label>}
+              </>}
+              {catalogDefinition(entry).unit && <span className="subtle">{catalogDefinition(entry).unit}</span>}
+            </div>
           </div>)}</div>
         </details>;
       })}
