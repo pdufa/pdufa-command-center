@@ -14,7 +14,7 @@ import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
 import { useTrialDesignations } from "./TrialDesignations";
-import { SPECIAL_DESIGNATION_CATEGORIES, filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
+import { filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
@@ -1797,8 +1797,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
             + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")
             + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")
-            + (appliedDesignationFilters.length ? " · FDA designation: " +
-              SPECIAL_DESIGNATION_CATEGORIES.filter(item => appliedDesignationFilters.includes(item.key)).map(item => item.label).join(", ") : "")} /> :
+            + (appliedDesignationFilters.length ? " · FDA designation: " + appliedDesignationFilters.join(", ") : "")} /> :
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
