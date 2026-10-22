@@ -149,6 +149,14 @@ class PacificAdmissionTests(unittest.TestCase):
         self.assertFalse(decision('push', '', [], now=now)['run'])
         self.assertFalse(decision('push', '', [], now=clock('2026-10-15T02:59:00Z'))['run'])
         self.assertTrue(decision('push', '', [], now=clock('2026-10-15T03:30:00Z'))['run'])
+        # Operator can recover a missed 8 PM launch at 9:30 PM Pacific.
+        late_push = clock('2026-10-15T04:30:00Z')
+        self.assertTrue(decision('push', '', [], now=late_push)['run'])
+        already = dict(id=1234, path=WORKFLOW, head_branch='main',
+                       event='workflow_dispatch', display_title=RUN_TITLE,
+                       status='in_progress', created_at='2026-10-15T03:10:00Z')
+        self.assertFalse(decision('push', '', [already], now=late_push)['run'])
+
 
 
 class SourceStageTests(unittest.TestCase):
