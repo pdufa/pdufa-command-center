@@ -1,0 +1,25 @@
+name: Sync PDUFA Published Data to Google Sheets
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["PDUFA Overnight Sequential Scans"]
+    types: [completed]
+permissions:
+  contents: read
+jobs:
+  sync:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Sheets dependencies
+        run: python -m pip install google-auth requests
+      - name: Sync published candidate and audit data
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_pdufa_google_sheets.py
