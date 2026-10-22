@@ -110,7 +110,7 @@ def record(run_id: int, started: str, conclusion: str) -> dict:
     )
     status = "RUN_FAILED" if conclusion != "success" else "UNVERIFIED"
     if same_run:
-        status = "PARTIAL"
+        status = "PARTIAL" if conclusion == "success" else "RUN_FAILED"
         sections["master"] = trial_total()
         try:
             ledger = json.loads(MEMBERSHIP.read_text(encoding="utf-8"))
@@ -154,7 +154,8 @@ def publish(run_id: int, started: str, conclusion: str) -> None:
         print("Newer run already registered for", entry["date_pacific"])
         return
     # A failed, source-unmatched retry must not erase same-day recorded evidence.
-    if old and old.get("status") == "PARTIAL" and entry["status"] != "PARTIAL":
+    if (old and old.get("status") == "PARTIAL" and entry["status"] != "PARTIAL"
+            and old.get("run_id") != run_id):
         prior_notes = list(old.get("notes") or [])
         failure_note = "Another run on this date did not publish matching evidence: #" + str(run_id)
         if failure_note not in prior_notes:
