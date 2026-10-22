@@ -816,6 +816,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
     </div>;
   }
+  const [restrictionDestination,setRestrictionDestination]=useState<Record<string,"PIPELINE"|"GEM_JR"|"GEM">>({});
+  const [restrictionListView,setRestrictionListView]=useState<"PIPELINE"|"GEM_JR"|"GEM">("PIPELINE");
   const jrRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM_JR"),[masterRestrictions]);
   const gemRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM"),[masterRestrictions]);
   const masterAlertGoals=useMemo(()=>Object.fromEntries(masterRestrictions.filter(entry=>entry.id.startsWith("alert_")).map(entry=>[entry.id.slice(6),entry.value])),[masterRestrictions]);
@@ -1863,6 +1865,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       {pipelineMovedFilters}
     </section>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
+      <div className="panel" style={{padding:12,display:"grid",gap:8}}>
+        <strong>SAVED RESTRICTION LISTS</strong>
+        <label>View list <select value={restrictionListView} onChange={e=>setRestrictionListView(e.target.value as "PIPELINE"|"GEM_JR"|"GEM")}>
+          <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+        </select></label>
+        <div>{masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).length} saved restrictions</div>
+        {masterRestrictions.filter(e=>catalogStages(e).includes(restrictionListView)).map(e=><div key={e.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          <span>{catalogDefinition(e).title} · {e.enabled?"Enabled":"Disabled"}</span>
+          <button type="button" onClick={()=>setMasterRestrictions(old=>removeRestrictionFromList(old,e.id,restrictionListView))}>REMOVE</button>
+        </div>)}
+      </div>
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
         const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
@@ -1873,18 +1886,16 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             <strong>{catalogDefinition(entry).title}</strong>
             <div className="subtle">{catalogDefinition(entry).help}</div>
             <div className="subtle">Lists: {catalogStages(entry).join(", ")||"None"} · {entry.enabled?"Active":"Inactive"}</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10}}>
-              {(["PIPELINE","GEM_JR","GEM"] as const).map(stage=>{
+            <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,marginTop:10}}>
+              <label>Choose restriction list <select aria-label={"Destination list for "+catalogDefinition(entry).title} value={restrictionDestination[entry.id]||"PIPELINE"} onChange={e=>setRestrictionDestination(old=>({...old,[entry.id]:e.target.value as "PIPELINE"|"GEM_JR"|"GEM"}))}>
+                <option value="PIPELINE">Pipeline</option><option value="GEM_JR">GEM JR</option><option value="GEM">GEM</option>
+              </select></label>
+              {(()=>{
+                const stage=restrictionDestination[entry.id]||"PIPELINE";
                 const assigned=catalogStages(entry).includes(stage);
-                return <button key={stage} type="button"
-                  aria-label={(assigned?"Remove from ":"Add to ")+stage.replace("_"," ")+" list: "+catalogDefinition(entry).title}
-                  onClick={()=>setMasterRestrictions(previous=>assigned
-                    ?removeRestrictionFromList(previous,entry.id,stage)
-                    :insertRestrictionIntoList(previous,entry.id,stage,selectedRestrictionList(previous,stage).length))}
-                  style={{padding:"8px 12px",border:"1px solid #35543a",borderRadius:8,background:assigned?"#e4f1e2":"#fff",color:"#18321c",fontWeight:700,cursor:"pointer"}}>
-                  {stage.replace("_"," ")} · {assigned?"REMOVE":"ADD"}
-                </button>;
-              })}
+                return <button type="button" onClick={()=>setMasterRestrictions(old=>assigned?removeRestrictionFromList(old,entry.id,stage):insertRestrictionIntoList(old,entry.id,stage,selectedRestrictionList(old,stage).length))}>{assigned?"REMOVE FROM LIST":"SAVE TO LIST"}</button>;
+              })()}
+              <small>Saved in: {catalogStages(entry).map(stage=>stage.replace("_"," ")).join(", ")||"None"}</small>
             </div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginTop:8}}>
               <label style={{display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={entry.enabled} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,enabled:event.target.checked}:item))}/> Enabled</label>
