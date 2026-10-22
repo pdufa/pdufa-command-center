@@ -390,10 +390,22 @@ async def lifespan(app: FastAPI):
     yield
 
 
+from .reconciliation_review import ReviewPackage
+
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 # Compress large read-only candidate inventories before sending them to Vercel.
 # This does not change persisted records, identifiers, scans, or trading state.
 app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=5)
+
+
+@app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def validate_reconciliation_package(payload: ReviewPackage):
+    """Authenticated, read-only identity check. No scanner or preset writes."""
+    from .reconciliation_review import validate_review_package
+    try:
+        return validate_review_package(payload, ENGINE, ProgramIdentity)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.get("/health")
