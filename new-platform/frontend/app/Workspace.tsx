@@ -15,7 +15,7 @@ import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
 import { useTrialDesignations } from "./TrialDesignations";
-import { filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
+import { filterBySelectedDesignations, SPECIAL_DESIGNATION_CATEGORIES, type DesignationKey } from "../lib/trial-designations";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
@@ -823,6 +823,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [designationFilters, setDesignationFilters] = useState<DesignationKey[]>([]);
+  const [specialGroupAdded, setSpecialGroupAdded] = useState(false);
   const [appliedDesignationFilters, setAppliedDesignationFilters] = useState<DesignationKey[]>([]);
   const [query, setQuery] = useState("");
   const [onlyBand, setOnlyBand] = useState(false);
@@ -1802,6 +1803,23 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")
             + (appliedDesignationFilters.length ? " · FDA designation: " + appliedDesignationFilters.join(", ") : "")} /> :
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
+      </div>
+    </section>}
+    {snapshot && top==="RESTRICTIONS" && <section className="panel" aria-label="Pipeline grouped FDA special designations" style={{padding:16,margin:"12px 0"}}>
+      <h3>PIPELINE — GROUPED RESTRICTIONS</h3>
+      <p><strong>1. MARKET CAP</strong> · Mandatory baseline: $300M–$10B. Existing market-cap restriction and thresholds are preserved.</p>
+      <div style={{border:"1px solid var(--border, #8c969a)",borderRadius:8,padding:12}}>
+        <strong>2. FDA SPECIAL DESIGNATIONS — ONE GROUP</strong>
+        <p className="subtle">{SPECIAL_DESIGNATION_CATEGORIES.length} tracked regulatory designations and mechanisms · Match ANY source-supported granted designation. Missing evidence is not counted as a verified match.</p>
+        <p>Group status: <strong>{specialGroupAdded?"ADDED TO PIPELINE":"NOT ADDED"}</strong> · Filter <strong>{designationFilters.length===SPECIAL_DESIGNATION_CATEGORIES.length?"ON":"OFF"}</strong></p>
+        <div className="pipeline-actions">
+          <button type="button" disabled={specialGroupAdded} onClick={()=>setSpecialGroupAdded(true)}>ADD ENTIRE GROUP TO PIPELINE</button>
+          <button type="button" disabled={!specialGroupAdded || designationFilters.length===SPECIAL_DESIGNATION_CATEGORIES.length} onClick={()=>setDesignationFilters(SPECIAL_DESIGNATION_CATEGORIES.map(item=>item.key))}>ENABLE GROUP</button>
+          <button type="button" className="secondary" disabled={!specialGroupAdded || designationFilters.length===0} onClick={()=>setDesignationFilters([])}>DISABLE GROUP</button>
+          <button type="button" className="secondary" disabled={!specialGroupAdded} onClick={()=>{setDesignationFilters([]);setSpecialGroupAdded(false);}}>REMOVE GROUP</button>
+        </div>
+        <p>Trial impact (current Pipeline source): before <strong>{possible.length.toLocaleString("en-US")}</strong> · excluded <strong>{designationIndex?(possible.length-filterBySelectedDesignations(possible,SPECIAL_DESIGNATION_CATEGORIES.map(item=>item.key),designationIndex).length).toLocaleString("en-US"):"unavailable"}</strong> · remaining <strong>{designationIndex?filterBySelectedDesignations(possible,SPECIAL_DESIGNATION_CATEGORIES.map(item=>item.key),designationIndex).length.toLocaleString("en-US"):"unavailable"}</strong>.</p>
+        <small>Preview only when OFF. Counts require linked designation evidence; unavailable evidence must not be interpreted as a verified absence. Changes to the Pipeline display require DISPLAY TRIALS. GEM JR / GEM and FS / FA presets are unchanged.</small>
       </div>
     </section>}
     {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{pipelineMovedFilters}{gemBlock("GEM_JR")}{gemBlock("GEM")}</>}
