@@ -791,8 +791,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       const priorityByStage={...entry.stagePriorities,[stage]:included?catalogStagePriority(old,stage):""};
       return {...entry,stage:stages[0]||"",additionalStages:stages.slice(1),
         stagePriorities:priorityByStage,priority:stages.length?priorityByStage[stages[0]]||entry.priority:"",
-        enabled:included?old.enabled:(otherStages.length?entry.enabled:false),
-        value:old.value,maximum:old.maximum};
+        enabled:otherStages.length?entry.enabled:(included?old.enabled:false),
+        value:otherStages.length?entry.value:old.value,maximum:otherStages.length?entry.maximum:old.maximum};
     }));
   }
   function bottomPresetSave(stage:RestrictionPresetStage){
