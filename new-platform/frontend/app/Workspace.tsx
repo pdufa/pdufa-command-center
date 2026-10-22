@@ -28,6 +28,7 @@ import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, tr
 import { activeTrialFilters, EMPTY_TRIAL_FILTERS, trialFilterSummary, type TrialFilterFacts, type TrialFilterValues } from "../lib/trial-filters";
 
 const DiseaseRestriction = dynamic(() => import("./DiseaseRestriction"), { loading: () => <p role="status">Loading populated disease catalog…</p> });
+const CompanyDiseaseLinks = dynamic(() => import("./CompanyDiseaseLinks"), { loading: () => <p role="status">Loading company–disease relationships…</p> });
 
 type Stage = "PIPELINE" | "GEM_JR" | "GEM";
 function catalogGemKey(id:string){return id==="runway"?"cash":id==="gem_jr_source"?"gem_jr_source":id.startsWith("gem_")?id.slice(4):id.startsWith("alert_")?id.slice(6):"";}
@@ -1880,6 +1881,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
     </section>}
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <DiseaseRestriction />}
+    {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <CompanyDiseaseLinks rows={[...snapshot.pipeline,...snapshot.members.GEM_JR.rows,...snapshot.members.GEM.rows]} />}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Original Pipeline filters" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
