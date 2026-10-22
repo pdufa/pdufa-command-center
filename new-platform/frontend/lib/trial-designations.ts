@@ -10,7 +10,23 @@ export const DESIGNATION_COLUMNS = [
   { key: "priority_review", label: "Priority Review" },
   { key: "accelerated_approval", label: "Accelerated Approval" },
 ] as const;
-export type DesignationKey = typeof DESIGNATION_COLUMNS[number]["key"];
+/** The 13 agreed FDA designations and regulatory mechanisms; not all are designations in the statutory sense. */
+export const SPECIAL_DESIGNATION_CATEGORIES = [
+  { key: "fast_track", label: "Fast Track Designation" },
+  { key: "breakthrough_therapy", label: "Breakthrough Therapy Designation" },
+  { key: "priority_review", label: "Priority Review" },
+  { key: "accelerated_approval", label: "Accelerated Approval" },
+  { key: "orphan_drug", label: "Orphan Drug Designation" },
+  { key: "rmat", label: "Regenerative Medicine Advanced Therapy (RMAT)" },
+  { key: "qidp", label: "Qualified Infectious Disease Product (QIDP)" },
+  { key: "rare_pediatric_disease", label: "Rare Pediatric Disease Designation" },
+  { key: "tropical_disease_prv", label: "Tropical Disease Priority Review Voucher" },
+  { key: "rare_pediatric_disease_prv", label: "Rare Pediatric Disease Priority Review Voucher" },
+  { key: "material_threat_mcm_prv", label: "Material Threat Medical Countermeasure Priority Review Voucher" },
+  { key: "lpad", label: "Limited Population Pathway for Antibacterial and Antifungal Drugs (LPAD)" },
+  { key: "animal_rule", label: "Animal Rule" },
+] as const;
+export type DesignationKey = typeof SPECIAL_DESIGNATION_CATEGORIES[number]["key"];
 export type DesignationEvidence = {
   status: "GRANTED" | "REQUESTED" | "NOT_GRANTED" | "WITHDRAWN" | "UNKNOWN" | "CONFLICT";
   verification: "FDA_VERIFIED" | "SOURCE_RECORDED" | "UNVERIFIED";
@@ -23,6 +39,8 @@ export type DesignationProgram = {
 };
 export type DesignationIndex = {
   schemaVersion: 1; fetchedAt: string; linkageAvailable: boolean;
+  /** False means the saved scanner has no field for this category: counts must show unavailable, not zero. */
+  availableKeys?: Partial<Record<DesignationKey, boolean>>;
   programs: Record<string, DesignationProgram>; trialEvents: Record<string, string[]>;
 };
 
@@ -48,7 +66,7 @@ function unknown(note = "No designation evidence is linked to this exact trial o
   return { status: "UNKNOWN", verification: "UNVERIFIED", source: "", designationDate: "", checkedAt: "", note };
 }
 export function emptyTrialDesignations(note?: string): TrialDesignations {
-  return Object.fromEntries(DESIGNATION_COLUMNS.map(({ key }) => [key, unknown(note)])) as TrialDesignations;
+  return Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({ key }) => [key, unknown(note)])) as TrialDesignations;
 }
 function evidenceFor(row: Record<string, string>, key: DesignationKey): DesignationEvidence {
   const value = (row[key] || "").trim().toUpperCase();
@@ -78,6 +96,7 @@ export function buildDesignationIndex(csv: string, applicationsCsv: string | nul
       ["event_key", "ticker", ...DESIGNATION_COLUMNS.map(x => x.key)].some(key => !(key in rows[0]))) {
     throw new Error("Invalid designation source");
   }
+  const availableKeys = Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({key}) => [key, key in rows[0]])) as Record<DesignationKey, boolean>;
   const programs: DesignationIndex["programs"] = Object.create(null);
   const trialEvents: DesignationIndex["trialEvents"] = Object.create(null);
   const seen = new Set<string>(), duplicate = new Set<string>();
@@ -87,7 +106,7 @@ export function buildDesignationIndex(csv: string, applicationsCsv: string | nul
     if (seen.has(eventKey)) duplicate.add(eventKey);
     seen.add(eventKey);
     programs[eventKey] = { eventKey, ticker, drug: "", indication: "",
-      designations: Object.fromEntries(DESIGNATION_COLUMNS.map(({ key }) => [key, evidenceFor(row, key)])) as TrialDesignations };
+      designations: Object.fromEntries(SPECIAL_DESIGNATION_CATEGORIES.map(({ key }) => [key, evidenceFor(row, key)])) as TrialDesignations };
   }
   for (const key of duplicate) delete programs[key];
   const link = (row: Record<string, string>) => {
@@ -110,7 +129,7 @@ export function buildDesignationIndex(csv: string, applicationsCsv: string | nul
       }
     } catch { /* Keep exact application records available when trial links are unavailable. */ }
   }
-  return { schemaVersion: 1, fetchedAt, linkageAvailable, programs, trialEvents };
+  return { schemaVersion: 1, fetchedAt, linkageAvailable, availableKeys, programs, trialEvents };
 }
 
 export function resolveTrialDesignations(row: Candidate, index?: DesignationIndex | null): TrialDesignations {
@@ -128,7 +147,7 @@ export function resolveTrialDesignations(row: Candidate, index?: DesignationInde
     if (matches.length === 1) program = matches[0];
     else if (matches.length > 1) return emptyTrialDesignations("Multiple applications are linked to this trial; the applicable drug/indication needs review.");
   }
-  if (program) for (const { key } of DESIGNATION_COLUMNS) result[key] = { ...program.designations[key] };
+  if (program) for (const { key } of SPECIAL_DESIGNATION_CATEGORIES) result[key] = { ...(program.designations[key] || result[key]) };
   // Preserve the existing application-specific FDA-verified Priority Review alert.
   const priority = row.priorityReview;
   if (priority?.status === "FDA_VERIFIED" && fdaDocument(priority.source || "")) {
