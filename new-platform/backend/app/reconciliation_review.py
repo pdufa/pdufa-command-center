@@ -33,15 +33,19 @@ def validate_review_package(payload: ReviewPackage, engine, identity_model):
             identity_model.source_key.in_(keys))).all()) if keys else set()
     results = []
     for row in payload.records:
-        parsed = urlparse(row.evidenceUrl)
+        try:
+            parsed = urlparse(row.evidenceUrl)
+            valid_url = (parsed.scheme == "https" and bool(parsed.hostname)
+                         and not parsed.username and not parsed.password)
+        except ValueError:
+            valid_url = False
         try:
             date.fromisoformat(row.reviewedOn)
             valid_date = len(row.reviewedOn) == 10
         except ValueError:
             valid_date = False
         valid = (row.status in ("confirmed", "separate")
-                 and parsed.scheme == "https" and bool(parsed.hostname)
-                 and not parsed.username and not parsed.password and valid_date)
+                 and valid_url and valid_date)
         # A composite UI key alone is insufficient to identify a backend application.
         outcome = ("INVALID_EVIDENCE" if not valid else
                    "EXACT_IDENTITY_MATCH" if row.exactSourceKey in known else
