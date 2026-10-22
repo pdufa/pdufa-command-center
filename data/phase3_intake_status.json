@@ -1,24 +1,15 @@
 {
   "mode": "daily",
-  "started_at": "2026-10-22T04:29:50.687050+00:00",
+  "started_at": "2026-10-22T04:30:28.219254+00:00",
   "registry_companies": 717,
   "pages": 4,
   "studies_checked": 3951,
   "matched_posted_results": 94,
-  "new_records": 1,
-  "new_record_details": [
-    {
-      "ticker": "GILD",
-      "drug": "BIC/LEN FDC | Bictegravir | Lenacapavir | Stable Baseline Regimen",
-      "nct_id": "NCT05502341",
-      "results_posted_at": "2026-10-21",
-      "source_url": "https://clinicaltrials.gov/study/NCT05502341",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
-    }
-  ],
+  "new_records": 0,
+  "new_record_details": [],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-10-22T04:29:59.874402+00:00",
+  "finished_at": "2026-10-22T04:30:36.392705+00:00",
   "stored_results": 2493,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
