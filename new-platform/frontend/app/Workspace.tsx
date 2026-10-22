@@ -1812,12 +1812,9 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <small>Only source-linked granted designations qualify. Unknown evidence is not a confirmed grant. GEM JR, GEM and FS/FA presets are unchanged.</small>
     </details>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
-      <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
-      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS — BY CLASS (11)</summary>
-      <div style={{margin:"16px 0 8px",fontWeight:700}}>REMAINING RESTRICTIONS — BY CLASS</div>
+      <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
         const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
-        if(!entries.length)return null;
         return <details className="panel" key={group.id} style={{margin:"12px 0",padding:12}}>
           <summary style={{fontWeight:700,cursor:"pointer"}}>{group.title} ({entries.length})</summary>
           <p className="subtle">{group.note}</p>
@@ -1828,14 +1825,14 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>)}</div>
         </details>;
       })}
-      </details>
-      {pipelineMovedFilters}
       <div style={{margin:"24px 0 12px",fontWeight:800,fontSize:"1.1rem"}}>LIST-SPECIFIC RESTRICTIONS</div>
       <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>
         <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
       </details>
       <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}</details>
       <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}</details>
+      <div style={{fontWeight:800,marginTop:16}}>ORIGINAL PIPELINE FILTERS</div>
+      {pipelineMovedFilters}
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
