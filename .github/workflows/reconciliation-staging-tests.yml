@@ -1,0 +1,30 @@
+name: Reconciliation Staging Tests
+on:
+  push:
+    branches: [new-platform-bootstrap]
+    paths:
+      - 'new-platform/backend/app/reconciliation_review.py'
+      - 'new-platform/backend/app/main.py'
+      - 'new-platform/backend/tests/test_reconciliation_review.py'
+      - '.github/workflows/reconciliation-staging-tests.yml'
+  workflow_dispatch:
+jobs:
+  reconciliation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    env:
+      DATABASE_URL: sqlite:///./reconciliation_ci.sqlite3
+      PDUFA_REQUIRE_POSTGRES: '0'
+      PDUFA_INTERNAL_API_KEY: test-only-secret
+      PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install backend dependencies
+        run: pip install -r requirements.txt
+      - name: Run reconciliation tests
+        run: python -m pytest -q tests/test_reconciliation_review.py
