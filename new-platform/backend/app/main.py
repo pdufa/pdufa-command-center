@@ -387,6 +387,9 @@ async def lifespan(app: FastAPI):
         threading.Thread(target=bootstrap, daemon=True).start()
     from .full_trial_archive import cleanup_retired_zip_exports
     cleanup_retired_zip_exports()
+    if _DB_STATE["available"] and os.getenv("PDUFA_RECONCILIATION_SELFTEST", "1") == "1":
+        from .reconciliation_selftest import verify_live_reconciliation
+        threading.Thread(target=verify_live_reconciliation, args=(ENGINE, ProgramIdentity), daemon=True).start()
     yield
 
 
