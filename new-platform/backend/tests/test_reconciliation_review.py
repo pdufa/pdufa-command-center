@@ -41,3 +41,11 @@ def test_invalid_evidence_rejected_without_writes():
     p.records[0].evidenceUrl = "http://insecure.example"
     result = validate_review_package(p, ENGINE, ProgramIdentity)
     assert result["invalid"] == 1
+
+
+def test_malformed_ipv6_evidence_is_invalid_not_server_error():
+    p = ReviewPackage.model_validate(_package("TRIAL|MISSING"))
+    p.records[0].evidenceUrl = "https://[invalid-ipv6"
+    result = validate_review_package(p, ENGINE, ProgramIdentity)
+    assert result["invalid"] == 1
+    assert result["records"][0]["outcome"] == "INVALID_EVIDENCE"
