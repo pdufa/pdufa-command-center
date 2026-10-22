@@ -1,0 +1,32 @@
+name: Daily Reconciliation Regression Check
+on:
+  schedule:
+    - cron: '15 11 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reconciliation-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: new-platform/backend
+    env:
+      DATABASE_URL: sqlite:///./reconciliation_daily_ci.sqlite3
+      PDUFA_REQUIRE_POSTGRES: '0'
+      PDUFA_INTERNAL_API_KEY: test-only-secret
+      PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP: '0'
+    steps:
+      - name: Checkout isolated staging test suite
+        uses: actions/checkout@v4
+        with:
+          ref: new-platform-bootstrap
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run read-only reconciliation regression tests
+        run: python -m pytest -q tests/test_reconciliation_review.py
