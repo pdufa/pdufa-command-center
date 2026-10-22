@@ -163,6 +163,25 @@ export function resolveTrialDesignations(row: Candidate, index?: DesignationInde
   return result;
 }
 
+/** Selected designation checkboxes act as an OR filter within their group.
+ * Unlike a missing datum, a source-recorded positive must have a linked HTTPS citation.
+ */
+export function matchesSelectedDesignations(
+  row: Candidate, selected: readonly DesignationKey[], index?: DesignationIndex | null,
+): boolean {
+  if (!selected.length) return true;
+  if (!index) return false;
+  const evidence = resolveTrialDesignations(row, index);
+  return selected.some(key => evidence[key]?.status === "GRANTED" &&
+    evidence[key].verification !== "UNVERIFIED" && !!evidence[key].source);
+}
+
+export function filterBySelectedDesignations(
+  rows: Candidate[], selected: readonly DesignationKey[], index?: DesignationIndex | null,
+): Candidate[] {
+  return selected.length ? rows.filter(row => matchesSelectedDesignations(row, selected, index)) : rows;
+}
+
 export function designationLabel(value: DesignationEvidence, key: DesignationKey): string {
   if (value.status === "GRANTED") return value.verification === "FDA_VERIFIED"
     ? key === "priority_review" ? "IMP: Priority Review" : "Granted · FDA verified"
