@@ -207,6 +207,7 @@ export default function Home() {
         <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT → TRADING · Trial counts directly below navigation</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
+      <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>
       <Workspace onInspect={inspectProgram} />
       {programId ? <div id="checklist-workbench" className="checklist-workbench"><h2>PERMANENT PROGRAM · PERSISTENT CHECKLIST</h2><p className="subtle">Checklist and notes belong to the selected exact program and stage.</p><p><strong className="permanent-id">{programId}</strong></p>
       <div className="panel controls">
