@@ -14,16 +14,16 @@ type Counts = Record<DesignationKey, Matched[]>;
 type Props = {
   rows: Candidate[];
   asOf: string;
-  selected: DesignationKey[];
-  onChange: (next: DesignationKey[]) => void;
-  index: DesignationIndex | null;
-  loading: boolean;
-  error: string;
-  onRetry: () => void;
+  selected?: DesignationKey[];
+  onChange?: (next: DesignationKey[]) => void;
+  index?: DesignationIndex | null;
+  loading?: boolean;
+  error?: string;
+  onRetry?: () => void;
 };
 
 export default function SpecialDesignationCounts({
-  rows, asOf, selected, onChange, index, loading, error, onRetry,
+  rows, asOf, selected = [], onChange = () => {}, index = null, loading = false, error = "", onRetry = () => {},
 }: Props) {
   const matches = useMemo<Counts>(() => {
     const result = {} as Counts;
