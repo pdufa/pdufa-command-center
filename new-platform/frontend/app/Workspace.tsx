@@ -13,6 +13,8 @@ import PipelineData from "./PipelineData";
 import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
+import { useTrialDesignations } from "./TrialDesignations";
+import { filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
@@ -196,7 +198,7 @@ type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceSta
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT" | "TRADING";
 type TopNav = "PDUFA" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
-type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
+type PipelineSelection = { stages: string[]; dates: string[]; designations: DesignationKey[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
 const LEGACY_TAG_KEY = "pdufa_new_watch_trade_v1";
 const WT_TRIAL_INDICATORS_KEY = "pdufa_wt_trial_indicators_v1";
@@ -620,6 +622,7 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
 
 function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
   const { records: assessmentRecords } = useAssessments();
+  const { index: designationIndex, loading: designationLoading, error: designationError, retry: retryDesignations } = useTrialDesignations();
   const [assessmentOrder, setAssessmentOrder] = useState({ GEM_JR: "source", GEM: "source" });
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [publishedCounts, setPublishedCounts] = useState<PublishedCounts | null>(null);
@@ -817,6 +820,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [masterProgram, setMasterProgram] = useState("");
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
+  const [designationFilters, setDesignationFilters] = useState<DesignationKey[]>([]);
   const [query, setQuery] = useState("");
   const [onlyBand, setOnlyBand] = useState(false);
   const [trialFilters, setTrialFilters] = useState<TrialFilterValues>({ ...EMPTY_TRIAL_FILTERS });
@@ -1111,12 +1115,17 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const availability = useMemo(() => pipelineAvailability(pipeline, { query, onlyBand, trial: trialFilters, asOf: snapshot?.asOf }, dateBand, STAGES, BANDS), [pipeline, onlyBand, query, trialFilters, snapshot?.asOf]);
   const possible = availability.rows;
   const qualificationBase = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand, stages: stageFilters, dates: dateFilters }, dateBand), [pipeline, query, onlyBand, stageFilters, dateFilters]);
-  const counted = useMemo(() => filterPipelineRows(possible, { stages: stageFilters, dates: dateFilters }, dateBand), [possible, stageFilters, dateFilters]);
-  const displayed = useMemo(() => displayFilters ? filterPipelineRows(pipeline, displayFilters, dateBand) : [], [pipeline, displayFilters]);
+  const designationQualified = useMemo(
+    () => filterBySelectedDesignations(possible, designationFilters, designationIndex),
+    [possible, designationFilters, designationIndex]);
+  const counted = useMemo(() => filterPipelineRows(designationQualified, { stages: stageFilters, dates: dateFilters }, dateBand), [designationQualified, stageFilters, dateFilters]);
+  const displayed = useMemo(() => displayFilters
+    ? filterBySelectedDesignations(filterPipelineRows(pipeline, displayFilters, dateBand), displayFilters.designations, designationIndex)
+    : [], [pipeline, displayFilters, designationIndex]);
   const selectionKey = (selection: PipelineSelection) => JSON.stringify([
-    [...selection.stages].sort(), [...selection.dates].sort(), selection.query, selection.onlyBand, selection.trial,
+    [...selection.stages].sort(), [...selection.dates].sort(), [...selection.designations].sort(), selection.query, selection.onlyBand, selection.trial,
   ]);
-  const draftKey = selectionKey({ stages: stageFilters, dates: dateFilters, query, onlyBand, trial: trialFilters });
+  const draftKey = selectionKey({ stages: stageFilters, dates: dateFilters, designations: designationFilters, query, onlyBand, trial: trialFilters });
   const appliedKey = displayFilters ? selectionKey(displayFilters) : "";
   const selectionsChanged = displayFilters !== null && draftKey !== appliedKey;
 
@@ -1125,12 +1134,14 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   }, [displayVersion]);
 
   function displayTrials() {
-    setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], query, onlyBand, trial: { ...trialFilters }, asOf: snapshot?.asOf });
+    if (designationFilters.length && !designationIndex) return;
+    setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], designations: [...designationFilters], query, onlyBand, trial: { ...trialFilters }, asOf: snapshot?.asOf });
     setDisplayVersion(value => value + 1);
   }
   function clearPipelineSelections() {
     setStageFilters([]);
     setDateFilters([]);
+    setDesignationFilters([]);
     setQuery("");
     setOnlyBand(false);
     setTrialFilters({ ...EMPTY_TRIAL_FILTERS });
@@ -1234,7 +1245,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     return "Saved members";
   }
   const pageTotals: Record<"PIPELINE" | "GEM_JR" | "GEM" | "WT",number> = {
-    PIPELINE: possible.length,
+    PIPELINE: designationQualified.length,
     GEM_JR: gemPageRows.GEM_JR.length,
     GEM: gemPageRows.GEM.length,
     WT: tags.watch.length + tags.trade.length,
@@ -1609,20 +1620,20 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // The user has not yet asked to connect them to the separate live-impact
   // restrictions catalog; relocation is display-only.
   const pipelineMovedFilters = (
-    <details className="panel moved-pipeline-restrictions" aria-label="Original PIPELINE stage, date, trial and market-cap restrictions">
+    <details className="panel moved-pipeline-restrictions" defaultOpen aria-label="Pipeline stage, date, trial, market-cap and special designation filters">
       <summary>PIPELINE — ORIGINAL STAGE / DATE / TRIAL / MARKET-CAP FILTERS</summary>
       <p className="subtle">Moved intact from PIPELINE. These remain separate from the approved rules and live-impact catalog above; no new qualifications have been silently enabled. Select options here and choose DISPLAY TRIALS to return to PIPELINE.</p>
       <section className="panel pipeline-filters pipeline-filters-compact migrated-pipeline-filter-panel" aria-labelledby="pipeline-filters-title">
         <div className="pipeline-filter-heading">
-          <h3 id="pipeline-filters-title">PIPELINE — ORIGINAL STAGE, DATE, MARKET-CAP &amp; TRIAL FILTERS</h3>
-          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters</span>
+          <h3 id="pipeline-filters-title">PIPELINE — STAGE, DATE, TRIAL &amp; SPECIAL DESIGNATION FILTERS</h3>
+          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters · {designationFilters.length} designations</span>
         </div>
         <div className="pipeline-row pipeline-filter-toolbar">
           <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
         </div>
         <details className="pipeline-filter-details" open>
-          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
+          <summary>Choose stages, PDUFA dates, trial filters and FDA designations <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters) + designationFilters.length} selected</span></summary>
           <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
           <div className="filter-columns pipeline-four-filter-columns">
             {[
@@ -1642,11 +1653,14 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
               </button>
             </fieldset>)}
             <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf || ""} ready={snapshot?.trialFilterSchema === 1} />
-            <SpecialDesignationCounts rows={possible} asOf={snapshot?.asOf || ""} />
+            <SpecialDesignationCounts rows={possible} asOf={snapshot?.asOf || ""}
+              selected={designationFilters} onChange={setDesignationFilters} index={designationIndex}
+              loading={designationLoading} error={designationError} onRetry={retryDesignations} />
           </div>
         </details>
         <div className="pipeline-actions pipeline-display-actions">
-          <button type="button" onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
+          <button type="button" disabled={designationFilters.length>0 && !designationIndex}
+            onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
           <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
         </div>
         {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
@@ -1781,11 +1795,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         {displayFilters ? <PipelineData key={appliedKey + "|" + displayVersion + "|" + snapshot.asOf} rows={displayed}
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
             + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")
-            + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")} /> :
+            + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")
+            + (displayFilters.designations.length ? " · FDA designations: " + displayFilters.designations.join(", ") : "")} /> :
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}{pipelineMovedFilters}</>}
+    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{pipelineMovedFilters}{gemBlock("GEM_JR")}{gemBlock("GEM")}</>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
