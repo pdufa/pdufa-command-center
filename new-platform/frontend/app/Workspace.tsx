@@ -1621,7 +1621,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // The user has not yet asked to connect them to the separate live-impact
   // restrictions catalog; relocation is display-only.
   const pipelineMovedFilters = (
-    <details className="panel moved-pipeline-restrictions" defaultOpen aria-label="Pipeline stages, dates, trials and FDA special designation checkboxes">
+    <details className="panel moved-pipeline-restrictions" open aria-label="Pipeline stages, dates, trials and FDA special designation checkboxes">
       <summary>PIPELINE — ORIGINAL STAGE / DATE / TRIAL / MARKET-CAP FILTERS</summary>
       <p className="subtle">Moved intact from PIPELINE. These remain separate from the approved rules and live-impact catalog above; no new qualifications have been silently enabled. Select options here and choose DISPLAY TRIALS to return to PIPELINE.</p>
       <section className="panel pipeline-filters pipeline-filters-compact migrated-pipeline-filter-panel" aria-labelledby="pipeline-filters-title">
