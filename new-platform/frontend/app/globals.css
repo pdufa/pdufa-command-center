@@ -3183,3 +3183,43 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
   .moved-pipeline-restrictions > summary {font-size:13px;}
   .pipeline-restrictions-shortcut .pipeline-row button {width:100%;flex:1 1 100%;}
 }
+
+
+/* Informational FDA designation count column alongside the three original Pipeline filter groups. */
+.pipeline-filters-compact .filter-columns.pipeline-four-filter-columns {
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.pipeline-filters-compact .special-designation-counts {min-width:0;padding:0;margin:0;border:0;}
+.special-designation-hint,.special-designation-footnote {
+  font-size:10px;line-height:1.42;color:#436047;margin:7px 2px;overflow-wrap:anywhere;
+}
+.special-designation-error {font-size:11px;color:#75471c;overflow-wrap:anywhere;}
+.special-designation-error button {font-size:10px;padding:4px 7px;}
+.special-designation-list {display:grid;gap:5px;max-height:460px;overflow-y:auto;overscroll-behavior:contain;padding:7px 1px;}
+.special-designation-item {border:1px solid #d6e5d7;border-radius:5px;background:#f5fbf5;min-width:0;}
+.special-designation-item > summary {
+  display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:7px;row-gap:3px;
+  align-items:start;padding:7px;cursor:pointer;font-size:11px;color:#163d24;list-style:none;
+}
+.special-designation-item > summary::-webkit-details-marker {display:none;}
+.special-designation-item[open] {border-color:#41946c;background:#edf8ee;}
+.special-designation-name {font-weight:700;line-height:1.35;overflow-wrap:anywhere;}
+.special-designation-total {font-size:12px;font-variant-numeric:tabular-nums;color:#1b5a32;text-align:right;}
+.special-designation-view {grid-column:1 / -1;text-align:right;font-size:9px;text-decoration:underline;color:#155d39;font-weight:700;}
+.special-designation-detail {padding:0 8px 9px;font-size:10px;line-height:1.4;overflow-wrap:anywhere;}
+.special-designation-detail p {margin:5px 0 8px;}
+.special-designation-records {padding-left:18px;margin:7px 0;max-height:180px;overflow:auto;}
+.special-designation-records li {padding:5px 0;border-bottom:1px solid #d0e0d0;}
+.special-designation-records a {display:inline-block;margin-left:6px;overflow-wrap:anywhere;}
+.special-designation-records small {display:block;font-size:9px;color:#4d6453;}
+@container pipeline-compact (max-width:1000px) {
+  .pipeline-filters-compact .filter-columns.pipeline-four-filter-columns {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .pipeline-filters-compact .trial-qualification-filters {grid-column:auto;}
+}
+@container pipeline-compact (max-width:520px) {
+  .pipeline-filters-compact .filter-columns.pipeline-four-filter-columns {grid-template-columns:minmax(0,1fr);}
+}
+@media (max-width:760px) {
+  .pipeline-filters-compact .filter-columns.pipeline-four-filter-columns {grid-template-columns:minmax(0,1fr);}
+}
