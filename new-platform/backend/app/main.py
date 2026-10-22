@@ -389,7 +389,19 @@ async def lifespan(app: FastAPI):
     yield
 
 
+from .reconciliation_review import ReviewPackage
+
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
+
+
+@app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def validate_reconciliation_package(payload: "ReviewPackage"):
+    """Authenticated, read-only validation. No identity, preset, or scanner writes."""
+    from .reconciliation_review import validate_review_package
+    try:
+        return validate_review_package(payload, ENGINE, ProgramIdentity)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.get("/health")
