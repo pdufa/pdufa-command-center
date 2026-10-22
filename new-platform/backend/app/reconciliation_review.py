@@ -5,7 +5,7 @@ regulatory application from a shared company, drug, indication, or NCT.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime, timezone
 from urllib.parse import urlparse
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -36,12 +36,13 @@ def validate_review_package(payload: ReviewPackage, engine, identity_model):
         parsed = urlparse(row.evidenceUrl)
         try:
             date.fromisoformat(row.reviewedOn)
-            valid_date = len(row.reviewedOn) == 10
+            valid_date = len(row.reviewedOn) == 10 and date.fromisoformat(row.reviewedOn) <= datetime.now(timezone.utc).date()
         except ValueError:
             valid_date = False
         valid = (row.status in ("confirmed", "separate")
                  and parsed.scheme == "https" and bool(parsed.hostname)
-                 and not parsed.username and not parsed.password and valid_date)
+                 and not parsed.username and not parsed.password and valid_date
+                 and not any(ch.isspace() for ch in row.evidenceUrl))
         # A composite UI key alone is insufficient to identify a backend application.
         outcome = ("INVALID_EVIDENCE" if not valid else
                    "EXACT_IDENTITY_MATCH" if row.exactSourceKey in known else
