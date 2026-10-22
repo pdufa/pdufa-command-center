@@ -1754,7 +1754,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </div>}
     {top!=="RESTRICTIONS" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
-        <strong>Section: {top==="RESULTS"?"RESULTS":top==="RESTRICTIONS"?"RESTRICTIONS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
+        <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
           onClick={()=>setMobileNavOpen(current=>!current)}>
           {mobileNavOpen ? "Close menu ×" : "☰ Browse sections"}
