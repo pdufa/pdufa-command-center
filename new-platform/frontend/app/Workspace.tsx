@@ -9,6 +9,7 @@ import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import PublishedScansPanel from "./PublishedScansPanel";
+import DailyResultsPanel from "./DailyResultsPanel";
 import PipelineData from "./PipelineData";
 import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
@@ -196,7 +197,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT" | "TRADING";
-type TopNav = "PDUFA" | "CALENDAR" | "RESTRICTIONS";
+type TopNav = "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -795,11 +796,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const hasVerifiedWorkspace = useRef(false);
   const cachedAsOfRef = useRef<string | null>(null);
   const freshSnapshotReceived = useRef(false);
-  const [top, setTop] = useState<TopNav>("PDUFA");
+  const [top, setTop] = useState<TopNav>("RESULTS");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
+    if (requested === "RESULTS") { setTop("RESULTS"); return; }
     if (requested === "RESTRICTIONS") { setTop("RESTRICTIONS"); return; }
     if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
       setTop("PDUFA");
@@ -1671,6 +1673,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
 
   return <div className="migration-workspace">
     <div className="worktop">
+      <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
       <button type="button" className={top==="RESTRICTIONS"?"nav-selected":""} aria-current={top==="RESTRICTIONS"?"page":undefined} onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
@@ -1679,7 +1682,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </div>
     <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
-        <strong>Section: {top==="RESTRICTIONS"?"RESTRICTIONS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
+        <strong>Section: {top==="RESULTS"?"RESULTS":top==="RESTRICTIONS"?"RESTRICTIONS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
           onClick={()=>setMobileNavOpen(current=>!current)}>
           {mobileNavOpen ? "Close menu ×" : "☰ Browse sections"}
@@ -1894,6 +1897,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>)}
       </section>}
     </div>}
+    {top==="RESULTS" && <DailyResultsPanel />}
     {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
      {top==="PDUFA" && nav==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
