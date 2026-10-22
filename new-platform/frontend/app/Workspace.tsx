@@ -1813,7 +1813,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </details>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
-      {pipelineMovedFilters}
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS — BY CLASS (11)</summary>
       <div style={{margin:"16px 0 8px",fontWeight:700}}>REMAINING RESTRICTIONS — BY CLASS</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
@@ -1830,6 +1829,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </details>;
       })}
       </details>
+      {pipelineMovedFilters}
       <div style={{margin:"24px 0 12px",fontWeight:800,fontSize:"1.1rem"}}>LIST-SPECIFIC RESTRICTIONS</div>
       <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>
         <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
