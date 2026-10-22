@@ -880,6 +880,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const freshSnapshotReceived = useRef(false);
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [restrictionTab,setRestrictionTab]=useState<"PRESET"|"RESTRICTIONS">("RESTRICTIONS");
+  const [restrictionFocus,setRestrictionFocus]=useState<"DISEASE"|"COMPANY">("DISEASE");
   const [nav, setNav] = useState<Nav>("PIPELINE");
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
@@ -1756,6 +1757,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" aria-current={restrictionTab==="RESTRICTIONS"?"page":undefined} className={restrictionTab==="RESTRICTIONS"?"nav-selected":""} onClick={()=>{setRestrictionTab("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
       <button type="button" aria-current={restrictionTab==="PRESET"?"page":undefined} className={restrictionTab==="PRESET"?"nav-selected":""} onClick={()=>{setRestrictionTab("PRESET");setMobileNavOpen(false);}}>PRESET</button>
     </div>}
+    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <div aria-label="Disease and company tools" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"8px 0 14px"}}><button type="button" className={restrictionFocus==="DISEASE"?"nav-selected":""} aria-pressed={restrictionFocus==="DISEASE"} onClick={()=>setRestrictionFocus("DISEASE")}>DISEASE · 5,168</button><button type="button" className={restrictionFocus==="COMPANY"?"nav-selected":""} aria-pressed={restrictionFocus==="COMPANY"} onClick={()=>setRestrictionFocus("COMPANY")}>COMPANY ↔ DISEASE</button></div>}
     {top!=="RESTRICTIONS" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
         <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
@@ -1880,8 +1882,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
-    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <DiseaseRestriction />}
-    {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <CompanyDiseaseLinks rows={[...snapshot.pipeline,...snapshot.members.GEM_JR.rows,...snapshot.members.GEM.rows]} />}
+    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="DISEASE" && <DiseaseRestriction />}
+    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="COMPANY" && (snapshot ? <CompanyDiseaseLinks rows={[...snapshot.pipeline,...snapshot.members.GEM_JR.rows,...snapshot.members.GEM.rows]} /> : <section className="panel"><h3>COMPANY ↔ DISEASE</h3><p>Loading published scanner records…</p></section>)}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Original Pipeline filters" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
