@@ -12,6 +12,7 @@ const FILES = {
   gem: "gem_scan_block_report.json",
   pipelineState: "phase_pipeline_state.json",
   membership: "gem_stage_membership.json",
+  daily: "daily_scan_results.json",
 } as const;
 
 async function published(filename: string) {
@@ -40,12 +41,13 @@ export async function GET(req: NextRequest) {
       catch { return [name, null] as const; }
     }),
   );
-  const [clinical, sources, gem, pipelineState, membership] = [
+  const [clinical, sources, gem, pipelineState, membership, daily] = [
     entries.find(([name]) => name === "clinical")?.[1],
     entries.find(([name]) => name === "sources")?.[1],
     entries.find(([name]) => name === "gem")?.[1],
     entries.find(([name]) => name === "pipelineState")?.[1],
     entries.find(([name]) => name === "membership")?.[1],
+    entries.find(([name]) => name === "daily")?.[1],
   ];
   if (!clinical && !sources && !gem) {
     return NextResponse.json({ error: "Original published scans temporarily unavailable" },
@@ -53,7 +55,7 @@ export async function GET(req: NextRequest) {
   }
   return NextResponse.json({
     status: [clinical, sources, gem].every(Boolean) ? "PUBLISHED" : "PARTIAL_PUBLISHED",
-    clinical, sources, gem,
+    clinical, sources, gem, daily,
     newFromScan: newFromScanSummary(clinical, gem, pipelineState, membership),
     caveat: "Read-only original Streamlit reports. Does not certify new-platform storage or trading readiness.",
   }, { headers: { "Cache-Control": "private, no-store" } });
