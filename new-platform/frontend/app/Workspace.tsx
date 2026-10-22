@@ -1622,53 +1622,41 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // The original PIPELINE filter state and handlers stay unchanged.
   // The user has not yet asked to connect them to the separate live-impact
   // restrictions catalog; relocation is display-only.
+  const stageAndDateFilter = (group: {title:string;description:string;total:string;items:{label:string;count:number}[];selected:string[];setter:typeof setStageFilters}) => (
+    <fieldset className="filter-count-group">
+      <legend>{group.title}</legend>
+      <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
+      <div className="filter-checks">{[...group.items].sort((a,b)=>a.label.localeCompare(b.label)).map(item=><label className={group.selected.includes(item.label)?"filter-option filter-option-selected":"filter-option"} key={item.label}>
+        <input type="checkbox" checked={group.selected.includes(item.label)} onChange={()=>toggleFilter(group.selected,item.label,group.setter)} />
+        <span className="filter-label-text">{item.label}</span><b className="filter-count">{item.count.toLocaleString("en-US")}</b>
+      </label>)}</div>
+      <button type="button" className="secondary pipeline-group-select-toggle" onClick={()=>group.setter(group.items.every(item=>group.selected.includes(item.label))?[]:group.items.map(item=>item.label))}>{group.items.every(item=>group.selected.includes(item.label))?"NONE":"ALL"}</button>
+    </fieldset>
+  );
   const pipelineMovedFilters = (
-    <details className="panel moved-pipeline-restrictions" open aria-label="Pipeline stages, dates, trials and FDA special designation checkboxes">
-      <summary>PIPELINE — ORIGINAL STAGE / DATE / TRIAL / MARKET-CAP FILTERS</summary>
-      <p className="subtle">Moved intact from PIPELINE. These remain separate from the approved rules and live-impact catalog above; no new qualifications have been silently enabled. Select options here and choose DISPLAY TRIALS to return to PIPELINE.</p>
-      <section className="panel pipeline-filters pipeline-filters-compact migrated-pipeline-filter-panel" aria-labelledby="pipeline-filters-title">
-        <div className="pipeline-filter-heading">
-          <h3 id="pipeline-filters-title">PIPELINE — STAGE, DATE, TRIAL &amp; SPECIAL DESIGNATION FILTERS</h3>
-          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters · {designationFilters.length} FDA designation checkboxes</span>
-        </div>
-        <div className="pipeline-row pipeline-filter-toolbar">
-          <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
-          <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
-        </div>
-        <details className="pipeline-filter-details" open>
-          <summary>Choose stages, PDUFA dates, trial filters and special designations <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters) + designationFilters.length} selected</span></summary>
-          <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
-          <div className="filter-columns pipeline-four-filter-columns">
-            {[
-              { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
-              { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
-            ].map(group => <fieldset className="filter-count-group" key={group.title}>
-              <legend>{group.title}</legend>
-              <div className="filter-group-total"><span>{group.description} · {group.total}</span><strong>{possible.length.toLocaleString("en-US")}</strong></div>
-              <div className="filter-checks">{group.items.map(item => <label className={group.selected.includes(item.label) ? "filter-option filter-option-selected" : "filter-option"} key={item.label}>
-                <input type="checkbox" aria-label={item.label} checked={group.selected.includes(item.label)} onChange={() => toggleFilter(group.selected, item.label, group.setter)} />
-                <span className="filter-label-text">{item.label}</span><b className="filter-count" title="Available trials / programs">{item.count.toLocaleString("en-US")}</b>
-                <span className="filter-mini-track" aria-hidden="true"><span style={{ width: (item.count / Math.max(1, ...group.items.map(value => value.count)) * 100) + "%" }} /></span>
-              </label>)}</div>
-              <button type="button" className="secondary pipeline-group-select-toggle" aria-pressed={group.items.every(item => group.selected.includes(item.label))} aria-label={group.title + ": " + (group.items.every(item => group.selected.includes(item.label)) ? "select none" : "select all")}
-                onClick={() => group.setter(group.items.every(item => group.selected.includes(item.label)) ? [] : group.items.map(item => item.label))}>
-                {group.items.every(item => group.selected.includes(item.label)) ? "NONE" : "ALL"}
-              </button>
-            </fieldset>)}
-            <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf || ""} ready={snapshot?.trialFilterSchema === 1} />
-            <SpecialDesignationCounts rows={possible} asOf={snapshot?.asOf || ""}
-              selected={designationFilters} onChange={setDesignationFilters} index={designationIndex}
-              loading={designationLoading} error={designationError} onRetry={retryDesignations} />
-          </div>
-        </details>
+    <section className="pipeline-filters pipeline-filters-compact">
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>STAGE COUNTS — PHASES ▾ ({stageFilters.length} selected)</summary>
+        {stageAndDateFilter({title:"STAGE COUNTS",description:"Available by current stage",total:"PHASE TOTAL",items:stageCounts,selected:stageFilters,setter:setStageFilters})}
+      </details>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>DATE TRIAL COUNTS — PDUFA ▾ ({dateFilters.length} selected)</summary>
+        {stageAndDateFilter({title:"DATE TRIAL COUNTS",description:"Available by PDUFA countdown",total:"DATE TOTAL",items:dateCounts,selected:dateFilters,setter:setDateFilters})}
+      </details>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>TRIAL QUALIFICATION FILTERS ▾ ({activeTrialFilters(trialFilters)} selected)</summary>
+        <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf||""} ready={snapshot?.trialFilterSchema===1} />
+      </details>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>FDA SPECIAL DESIGNATIONS — ORIGINAL COUNTS ▾ ({designationFilters.length} selected)</summary>
+        <SpecialDesignationCounts rows={possible} asOf={snapshot?.asOf||""} selected={designationFilters} onChange={setDesignationFilters} index={designationIndex} loading={designationLoading} error={designationError} onRetry={retryDesignations}/>
+      </details>
+      <div className="panel" style={{padding:12}}>
+        <label>Search Program ID, ticker, drug, indication, NCT <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search"/></label>
+        <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)}/>Market cap $300M–$10B only (optional)</label>
         <div className="pipeline-actions pipeline-display-actions">
-          <button type="button" disabled={designationFilters.length > 0 && !designationIndex}
-            onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
+          <button type="button" disabled={designationFilters.length>0&&!designationIndex} onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
           <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
         </div>
-        {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
-      </section>
-    </details>
+        {selectionsChanged&&<p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
+      </div>
+    </section>
   );
 
   return <div className="migration-workspace">
@@ -1825,7 +1813,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </details>}
     {snapshot && top==="RESTRICTIONS" && <>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>
-      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE FILTERS — OPEN / COLLAPSE</summary>{pipelineMovedFilters}</details>
+      {pipelineMovedFilters}
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM_JR")}</details>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM")}</details>
     </>}
