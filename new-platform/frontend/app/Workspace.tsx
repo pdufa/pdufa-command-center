@@ -1883,7 +1883,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
     </section>}
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="DISEASE" && <DiseaseRestriction />}
-    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="COMPANY" && (snapshot ? <CompanyDiseaseLinks rows={[...snapshot.pipeline,...snapshot.members.GEM_JR.rows,...snapshot.members.GEM.rows]} /> : <section className="panel"><h3>COMPANY ↔ DISEASE</h3><p>Loading published scanner records…</p></section>)}
+    {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && restrictionFocus==="COMPANY" && (snapshot ? <CompanyDiseaseLinks rows={[...snapshot.pipeline,...snapshot.members.GEM_JR.rows,...snapshot.members.GEM.rows]} pipelineRows={snapshot.pipeline} gemJrRows={snapshot.members.GEM_JR.rows} gemRows={snapshot.members.GEM.rows} /> : <section className="panel"><h3>COMPANY ↔ DISEASE</h3><p>Loading published scanner records…</p></section>)}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Original Pipeline filters" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
