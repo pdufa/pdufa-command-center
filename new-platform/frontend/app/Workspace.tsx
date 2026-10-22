@@ -1876,7 +1876,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
     </section>}
-    {top==="RESTRICTIONS" && <div className="panel" style={{display:"flex",gap:8,padding:10}}><button type="button" onClick={()=>setRestrictionTab("PRESET")}>PRESET</button><button type="button" onClick={()=>setRestrictionTab("RESTRICTIONS")}>RESTRICTIONS</button></div>}
+    {top==="RESTRICTIONS" && <div className="panel" style={{display:"flex",gap:8,padding:10}}><button type="button" onClick={()=>setRestrictionTab("RESTRICTIONS")}>RESTRICTIONS</button><button type="button" onClick={()=>setRestrictionTab("PRESET")}>PRESET</button></div>}
     {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
       <div className="panel" style={{padding:12,display:"grid",gap:8}}>
         <strong>SAVED RESTRICTION LISTS</strong>
