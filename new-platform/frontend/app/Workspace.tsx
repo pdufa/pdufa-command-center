@@ -20,7 +20,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
-import { catalogStages, catalogStagePriority, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
+import { catalogStages, catalogStagePriority, catalogDefinition, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
@@ -1813,9 +1813,25 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </details>}
     {snapshot && top==="RESTRICTIONS" && <>
       {pipelineMovedFilters}
+      <div style={{margin:"16px 0 8px",fontWeight:700}}>REMAINING RESTRICTIONS — BY CLASS</div>
+      {RESTRICTION_PURPOSE_GROUPS.map(group=>{
+        const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
+        if(!entries.length)return null;
+        return <details className="panel" key={group.id} style={{margin:"12px 0",padding:12}}>
+          <summary style={{fontWeight:700,cursor:"pointer"}}>{group.title} ({entries.length})</summary>
+          <p className="subtle">{group.note}</p>
+          <div style={{display:"grid",gap:8}}>{entries.map(entry=><div key={entry.id} style={{borderBottom:"1px solid var(--border, #ccc)",padding:"8px 0"}}>
+            <strong>{catalogDefinition(entry).title}</strong>
+            <div className="subtle">{catalogDefinition(entry).help}</div>
+            <div className="subtle">Assigned: {catalogStages(entry).join(", ")||"Not assigned"} · {entry.enabled?"Enabled":"Disabled"}</div>
+          </div>)}</div>
+        </details>;
+      })}
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>EXISTING RESTRICTION EDITORS — PIPELINE / GEM JR / GEM</summary>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM_JR")}</details>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM")}</details>
+      </details>
     </>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
