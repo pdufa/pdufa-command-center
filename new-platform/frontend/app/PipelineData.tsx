@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Candidate } from "./Workspace";
 import TrialFields from "./TrialFields";
+import DetailSheet, {type DetailItem} from "./DetailSheet";
 import { TrialDesignationCells, useTrialDesignations } from "./TrialDesignations";
 import { DESIGNATION_COLUMNS } from "../lib/trial-designations";
 import CandidateAssessments, { AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
@@ -10,7 +11,7 @@ import { sortByAssessment } from "../lib/candidate-assessments";
 import { needsRegistrySort, pageRows, sortPipelineRows, trialId, type PipelineSort, type PipelineSortKey, type RegistrySortIndex } from "../lib/pipeline-data";
 
 const HEADERS: { label: string; key?: PipelineSortKey; sortLabel?: string }[] = [
-  { label: "Score trial" }, { label: "#" }, { label: "Program ID", key: "programId" },
+  { label: "Details" }, { label: "Score trial" }, { label: "#" }, { label: "Program ID", key: "programId" },
   { label: "Ticker / company", key: "ticker", sortLabel: "ticker" },
   { label: "Drug / study" }, { label: "Indication" }, { label: "Registered phase", key: "registeredPhase" }, { label: "Pipeline stage", key: "stage" },
   { label: "NCT ID", key: "nctId" }, { label: "Trial status", key: "status" },
@@ -30,6 +31,9 @@ type TrialSummary = {
 type Summaries = { ids: string; records: Record<string, TrialSummary> };
 
 export default function PipelineData({ rows, filterSummary }: { rows: Candidate[]; filterSummary?: string }) {
+  const [detailItem, setDetailItem] = useState<DetailItem|null>(null);
+  const [detailKind,setDetailKind] = useState<"trial"|"company"|"disease"|"all">("all");
+  const showDetails=(row:Candidate,kind:typeof detailKind)=>{setDetailKind(kind);setDetailItem(row as DetailItem)};
   const [page, setPage] = useState(0);
   const [scoreOrder, setScoreOrder] = useState("source");
   const { records: assessmentRecords } = useAssessments();
@@ -139,6 +143,7 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
         const nct = trialId(row), saved = enriched[nct];
         const active = selected === row.id;
         return <tr key={row.id} className={active ? "selected-record" : ""}>
+          <td><button type="button" className="secondary" onClick={()=>showDetails(row,"all")}>DETAILS</button></td>
           <td><ScoreProgressButton label="Score Trial" stage="PIPELINE" rowId={row.id} onScore={() => setSelected(row.id)} /></td>
           <td>{current.start + index}</td><td className="permanent-id">{row.programId || "Not assigned"}</td>
           <td><strong>{row.ticker}</strong><small>{row.company}</small></td>
@@ -165,5 +170,6 @@ export default function PipelineData({ rows, filterSummary }: { rows: Candidate[
       <button type="button" className="secondary" disabled={current.page + 1 >= current.pages} onClick={() => navigate(current.page + 1)}>Next</button>
     </div></div>
     {selectedRow && <div id="pipeline-expanded-record" ref={detailsRef}><CandidateAssessments key={selectedRow.id + "-scores"} row={selectedRow} /><TrialFields key={selectedRow.id} row={selectedRow} onClose={() => setSelected("")} /></div>}
+    <DetailSheet item={detailItem} initial={detailKind} onClose={()=>setDetailItem(null)} />
   </section>;
 }
