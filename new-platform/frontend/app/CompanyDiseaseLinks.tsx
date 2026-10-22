@@ -64,7 +64,7 @@ export default function CompanyDiseaseLinks({rows,pipelineRows=[],gemJrRows=[],g
  const unresolved=linked.filter(r=>!r.programId||!r.ticker||!r.drug||!r.indication).length;
  const matchedCount=filtered.filter(r=>!!diseaseMatch(r.indication)).length;
  const companies=new Set(filtered.map(r=>norm(r.company||r.ticker)).filter(Boolean));const diseases=new Set(filtered.map(r=>norm(r.indication||"")).filter(Boolean));const drugs=new Set(filtered.map(r=>norm(r.drug||"")).filter(Boolean));
- return <section className="panel" style={{padding:14}} aria-label="Company disease drug FDA relationships">
+ return <><section className="panel" style={{padding:14}} aria-label="Company disease drug FDA relationships">
  <h3>COMPANY ↔ DISEASE ↔ DRUG ↔ TRIAL ↔ PDUFA</h3>
  <p className="subtle">Cross-reference relationships found in the currently published scanner records. Indications are matched conservatively against the bundled DISEASE hierarchy using exact names or aliases. Ambiguous and unmatched indications remain unclassified. No external connections or changes to saved restrictions.</p>
  <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
@@ -104,5 +104,5 @@ export default function CompanyDiseaseLinks({rows,pipelineRows=[],gemJrRows=[],g
  <div style={{overflowX:"auto"}}><table><thead><tr><th>Company</th><th>Relationship</th><th>Related company</th><th>Evidence</th><th>Verified on</th><th>Remove</th></tr></thead><tbody>{relations.filter(r=>!query||[r.company,r.relatedCompany,r.type].some(x=>norm(x).includes(norm(query)))).map(r=><tr key={r.id}><td>{r.company}</td><td>{r.type}</td><td>{r.relatedCompany}</td><td><a href={r.source} target="_blank" rel="noopener noreferrer">Source ↗</a></td><td>{r.verifiedOn}</td><td><button type="button" onClick={()=>setRelations(old=>old.filter(x=>x.id!==r.id))}>REMOVE</button></td></tr>)}</tbody></table></div>
  </details>
  <p className="subtle">A blank field means no verified link is present in this published record. PDUFA dates are shown only for the specific program record, not inherited by other drugs or indications. Company, drug and indication labels are not evidence of corporate ownership or FDA approval.</p>
- </section>
+ </section><DetailSheet item={detailItem} initial={detailKind} onClose={()=>setDetailItem(null)}/></>;
 }
