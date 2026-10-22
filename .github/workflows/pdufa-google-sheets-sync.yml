@@ -23,3 +23,7 @@ jobs:
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
         run: python scripts/sync_pdufa_google_sheets.py
+      - name: Sync complete published trial feed and saved GEM memberships
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_pdufa_published_trials.py
