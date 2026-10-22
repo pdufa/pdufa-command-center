@@ -1792,6 +1792,10 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
+    {snapshot && top==="RESTRICTIONS" && <section aria-label="Original Pipeline filters" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
+      <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
+      {pipelineMovedFilters}
+    </section>}
     {snapshot && top==="RESTRICTIONS" && <details className="panel" id="restriction-special-designations" aria-label="FDA special designations" style={{padding:16,margin:"12px 0"}}>
       <summary style={{fontWeight:700,cursor:"pointer",fontSize:"1.05rem"}}>FDA SPECIAL DESIGNATIONS ▾ ({SPECIAL_DESIGNATION_CATEGORIES.length})</summary>
       <p className="subtle">Choose the whole group or add individual designations to Pipeline. Selections are draft filters until you press DISPLAY TRIALS.</p>
@@ -1832,8 +1836,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>)}</div>
         </details>;
       })}
-      <div style={{fontWeight:800,marginTop:16}}>ORIGINAL PIPELINE FILTERS</div>
-      {pipelineMovedFilters}
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
