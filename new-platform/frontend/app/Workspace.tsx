@@ -1811,6 +1811,13 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
       <small>Only source-linked granted designations qualify. Unknown evidence is not a confirmed grant. GEM JR, GEM and FS/FA presets are unchanged.</small>
     </details>}
+    {snapshot && top==="RESTRICTIONS" && <section aria-label="Three independent restriction lists" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
+      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>
+        <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
+      </details>
+      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}</details>
+      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}</details>
+    </section>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
@@ -1825,12 +1832,6 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>)}</div>
         </details>;
       })}
-      <div style={{margin:"24px 0 12px",fontWeight:800,fontSize:"1.1rem"}}>LIST-SPECIFIC RESTRICTIONS</div>
-      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>
-        <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
-      </details>
-      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}</details>
-      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}</details>
       <div style={{fontWeight:800,marginTop:16}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
     </section>}
