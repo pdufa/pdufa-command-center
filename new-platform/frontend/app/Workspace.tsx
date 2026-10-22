@@ -1813,6 +1813,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </details>}
     {snapshot && top==="RESTRICTIONS" && <>
       {pipelineMovedFilters}
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS — BY CLASS (11)</summary>
       <div style={{margin:"16px 0 8px",fontWeight:700}}>REMAINING RESTRICTIONS — BY CLASS</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
         const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
@@ -1827,6 +1828,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>)}</div>
         </details>;
       })}
+      </details>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>EXISTING RESTRICTION EDITORS — PIPELINE / GEM JR / GEM</summary>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>
       <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM_JR")}</details>
