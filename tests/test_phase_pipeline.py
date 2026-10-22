@@ -1,8 +1,11 @@
 import copy
+import csv
+import tempfile
 import unittest
+from pathlib import Path
 from datetime import date
 
-from scripts.phase_pipeline import master_additions, manual_master_additions, phase3_gate, reconcile_records, registry_index, study_record
+from scripts.phase_pipeline import master_additions, manual_master_additions, phase3_gate, reconcile_records, registry_index, study_record, write_rows
 
 TODAY = date(2026, 10, 8)
 
@@ -99,6 +102,17 @@ class PhasePipelineTests(unittest.TestCase):
         self.assertEqual(stopped["destination"], "MASTER TABLE")
         self.assertEqual(stopped["promotion_status"], "REVIEW")
         self.assertEqual(stopped["program_phase3_evidence_nct"], "NCT00000002")
+
+    def test_program_phase3_evidence_nct_survives_csv_write(self):
+        records = reconcile_records([], [trial(), trial("NCT00000002", "PHASE3")], TODAY)
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "pipeline.csv"
+            write_rows(path, records)
+            with path.open(newline="", encoding="utf-8") as handle:
+                saved = list(csv.DictReader(handle))
+        self.assertEqual(len(saved), 2)
+        self.assertTrue(all(row["program_phase3_evidence_nct"] == "NCT00000002" for row in saved))
+        self.assertEqual(next(row for row in saved if row["nct_id"] == "NCT00000001")["promotion_status"], "REVIEW")
 
     def test_planned_and_estimated_starts_do_not_move(self):
         for patch in ({"trial_status": "NOT_YET_RECRUITING"}, {"start_date_type": "ESTIMATED"},
