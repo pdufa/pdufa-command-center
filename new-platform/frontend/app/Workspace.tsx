@@ -14,7 +14,7 @@ import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
 import { useTrialDesignations } from "./TrialDesignations";
-import { type DesignationKey } from "../lib/trial-designations";
+import { filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
@@ -821,6 +821,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [stageFilters, setStageFilters] = useState<string[]>([]);
   const [dateFilters, setDateFilters] = useState<string[]>([]);
   const [designationFilters, setDesignationFilters] = useState<DesignationKey[]>([]);
+  const [appliedDesignationFilters, setAppliedDesignationFilters] = useState<DesignationKey[]>([]);
   const [query, setQuery] = useState("");
   const [onlyBand, setOnlyBand] = useState(false);
   const [trialFilters, setTrialFilters] = useState<TrialFilterValues>({ ...EMPTY_TRIAL_FILTERS });
@@ -1115,13 +1116,16 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const availability = useMemo(() => pipelineAvailability(pipeline, { query, onlyBand, trial: trialFilters, asOf: snapshot?.asOf }, dateBand, STAGES, BANDS), [pipeline, onlyBand, query, trialFilters, snapshot?.asOf]);
   const possible = availability.rows;
   const qualificationBase = useMemo(() => filterPipelineRows(pipeline, { query, onlyBand, stages: stageFilters, dates: dateFilters }, dateBand), [pipeline, query, onlyBand, stageFilters, dateFilters]);
-  const counted = useMemo(() => filterPipelineRows(possible, { stages: stageFilters, dates: dateFilters }, dateBand), [possible, stageFilters, dateFilters]);
-  const displayed = useMemo(() => displayFilters ? filterPipelineRows(pipeline, displayFilters, dateBand) : [], [pipeline, displayFilters]);
+  const designationQualified = useMemo(() => filterBySelectedDesignations(possible, designationFilters, designationIndex), [possible, designationFilters, designationIndex]);
+  const counted = useMemo(() => filterPipelineRows(designationQualified, { stages: stageFilters, dates: dateFilters }, dateBand), [designationQualified, stageFilters, dateFilters]);
+  const displayed = useMemo(() => displayFilters ? filterBySelectedDesignations(
+    filterPipelineRows(pipeline, displayFilters, dateBand), appliedDesignationFilters, designationIndex
+  ) : [], [pipeline, displayFilters, appliedDesignationFilters, designationIndex]);
   const selectionKey = (selection: PipelineSelection) => JSON.stringify([
     [...selection.stages].sort(), [...selection.dates].sort(), selection.query, selection.onlyBand, selection.trial,
   ]);
-  const draftKey = selectionKey({ stages: stageFilters, dates: dateFilters, query, onlyBand, trial: trialFilters });
-  const appliedKey = displayFilters ? selectionKey(displayFilters) : "";
+  const draftKey = JSON.stringify([selectionKey({ stages: stageFilters, dates: dateFilters, query, onlyBand, trial: trialFilters }), [...designationFilters].sort()]);
+  const appliedKey = displayFilters ? JSON.stringify([selectionKey(displayFilters), [...appliedDesignationFilters].sort()]) : "";
   const selectionsChanged = displayFilters !== null && draftKey !== appliedKey;
 
   useEffect(() => {
@@ -1129,12 +1133,16 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   }, [displayVersion]);
 
   function displayTrials() {
+    if (designationFilters.length && !designationIndex) return;
     setDisplayFilters({ stages: [...stageFilters], dates: [...dateFilters], query, onlyBand, trial: { ...trialFilters }, asOf: snapshot?.asOf });
+    setAppliedDesignationFilters([...designationFilters]);
     setDisplayVersion(value => value + 1);
   }
   function clearPipelineSelections() {
     setStageFilters([]);
     setDateFilters([]);
+    setDesignationFilters([]);
+    setAppliedDesignationFilters([]);
     setQuery("");
     setOnlyBand(false);
     setTrialFilters({ ...EMPTY_TRIAL_FILTERS });
@@ -1238,7 +1246,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     return "Saved members";
   }
   const pageTotals: Record<"PIPELINE" | "GEM_JR" | "GEM" | "WT",number> = {
-    PIPELINE: possible.length,
+    PIPELINE: designationQualified.length,
     GEM_JR: gemPageRows.GEM_JR.length,
     GEM: gemPageRows.GEM.length,
     WT: tags.watch.length + tags.trade.length,
@@ -1652,7 +1660,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>
         </details>
         <div className="pipeline-actions pipeline-display-actions">
-          <button type="button" onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
+          <button type="button" disabled={designationFilters.length > 0 && !designationIndex}
+            onClick={()=>{displayTrials();setTop("PDUFA");setNav("PIPELINE");setMobileNavOpen(false);}}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
           <button type="button" className="secondary" onClick={clearPipelineSelections}>CLEAR SELECTIONS</button>
         </div>
         {selectionsChanged && <p className="filter-pending" role="status">Selections changed — press DISPLAY TRIALS to update the list.</p>}
