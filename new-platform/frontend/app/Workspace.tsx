@@ -1804,7 +1804,16 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <details className="panel" aria-label="FDA special designations" style={{padding:16,margin:"12px 0"}}>
+    {top==="RESTRICTIONS" && <nav className="panel" aria-label="Restriction group shortcuts" style={{padding:14,margin:"12px 0"}}>
+      <strong>RESTRICTION GROUPS — TAP TO OPEN</strong>
+      <div style={{display:"flex",flexWrap:"wrap",gap:10,marginTop:10}}>
+        <a href="#restriction-special-designations">FDA SPECIAL DESIGNATIONS</a>
+        <a href="#restriction-stage-pipeline">PIPELINE RESTRICTIONS</a>
+        <a href="#restriction-stage-gem_jr">GEM JR RESTRICTIONS</a>
+        <a href="#restriction-stage-gem">GEM RESTRICTIONS</a>
+      </div>
+    </nav>}
+    {snapshot && top==="RESTRICTIONS" && <details className="panel" id="restriction-special-designations" aria-label="FDA special designations" style={{padding:16,margin:"12px 0"}}>
       <summary style={{fontWeight:700,cursor:"pointer",fontSize:"1.05rem"}}>FDA SPECIAL DESIGNATIONS ▾ ({SPECIAL_DESIGNATION_CATEGORIES.length})</summary>
       <p className="subtle">Choose the whole group or add individual designations to Pipeline. Selections are draft filters until you press DISPLAY TRIALS.</p>
       <div className="pipeline-actions">
@@ -1827,7 +1836,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       const eligible=[...masterRestrictions].filter(entry=>!catalogDefinition(entry).warning).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
       const active=selectedRestrictionList(masterRestrictions,stage);
       const label=stage==="GEM_JR"?"GEM JR":stage;
-      return <details key={stage} className="panel" style={{padding:16,margin:"12px 0"}}>
+      return <details key={stage} id={"restriction-stage-"+stage.toLowerCase()} open className="panel" style={{padding:16,margin:"12px 0"}}>
         <summary style={{fontWeight:700,cursor:"pointer",fontSize:"1.05rem"}}>{label} — RESTRICTION LIST ▾ ({active.length} added)</summary>
         <p className="subtle">Add the whole available catalog or individual restrictions to {label}. Existing thresholds and other lists are preserved.</p>
         <div className="pipeline-actions">
