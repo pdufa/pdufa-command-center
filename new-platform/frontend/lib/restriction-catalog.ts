@@ -119,7 +119,8 @@ export function insertRestrictionIntoList(entries: CatalogEntry[], id: string, s
 export function removeRestrictionFromList(entries: CatalogEntry[], id: string, stage: Exclude<RestrictionStage, "">): CatalogEntry[] {
   if (!RESTRICTION_STAGES.includes(stage)) return entries;
   const current=selectedRestrictionList(entries,stage);
-  if (!catalogStages(entries.find(entry=>entry.id===id) || {stage:"",additionalStages:[]} as CatalogEntry).includes(stage)) return entries;
+  const target=entries.find(entry=>entry.id===id);
+  if (!target || !catalogStages(target).includes(stage)) return entries;
   const ranks=new Map(current.filter(entry=>entry.id!==id).map((entry,i)=>[entry.id,String(i+1)]));
   return entries.map(entry=>{
     if (entry.id!==id) {
