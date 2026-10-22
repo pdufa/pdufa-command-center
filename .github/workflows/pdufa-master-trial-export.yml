@@ -1,0 +1,36 @@
+name: Export PDUFA Master Trial Archive
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate configured database connection
+        env:
+          DATABASE_URL: ${{ secrets.PDUFA_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::PDUFA_DATABASE_URL is not configured in GitHub Actions secrets."
+            exit 1
+          fi
+      - name: Install export dependencies
+        run: python -m pip install 'sqlalchemy>=2.0' 'psycopg2-binary>=2.9'
+      - name: Export and verify all archived trials
+        env:
+          DATABASE_URL: ${{ secrets.PDUFA_DATABASE_URL }}
+          TRIAL_EXPORT_PATH: ${{ runner.temp }}/pdufa-master-trials.csv
+        run: python new-platform/backend/export_master_trials.py
+      - name: Save verified CSV as private workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-master-trials
+          path: ${{ runner.temp }}/pdufa-master-trials.csv
+          retention-days: 7
+          if-no-files-found: error
