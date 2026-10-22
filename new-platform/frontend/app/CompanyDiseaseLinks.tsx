@@ -2,8 +2,17 @@
 import {useEffect,useMemo,useState} from "react";
 import {buildDiseaseIndex,diseasePath,emptyDiseaseEdits,restoreDiseaseEdits,DISEASE_STORAGE_KEY,LEGACY_DISEASE_STORAGE_KEY,type DiseaseEdits} from "../lib/disease-catalog";
 export type ProgramLink={id:string;ticker:string;company?:string;drug?:string;indication?:string;nctId?:string;pdufaDate?:string;fdaSource?:string;stage?:string};
+type CompanyRelation={id:string;company:string;relatedCompany:string;type:"parent"|"subsidiary"|"license"|"collaboration"|"acquisition";source:string;verifiedOn:string};
+const RELATION_KEY="pdufa-company-relationships-v1";
+const validSource=(v:string)=>{try{const u=new URL(v);return u.protocol==="https:"&&!u.username&&!u.password}catch{return false}};
 const norm=(s:string)=>s.trim().toLowerCase().replace(/[^a-z0-9]+/g," ");
 export default function CompanyDiseaseLinks({rows}:{rows:ProgramLink[]}){
+ const [relations,setRelations]=useState<CompanyRelation[]>([]);
+ const [relationReady,setRelationReady]=useState(false);
+ const [relationForm,setRelationForm]=useState({company:"",relatedCompany:"",type:"license" as CompanyRelation["type"],source:"",verifiedOn:""});
+ const [relationError,setRelationError]=useState("");
+ useEffect(()=>{try{const saved=localStorage.getItem(RELATION_KEY);if(saved){const parsed:unknown=JSON.parse(saved);if(Array.isArray(parsed))setRelations(parsed.filter((v):v is CompanyRelation=>!!v&&typeof v==="object"&&typeof v.id==="string"&&typeof v.company==="string"&&typeof v.relatedCompany==="string"&&typeof v.source==="string"&&validSource(v.source)&&["parent","subsidiary","license","collaboration","acquisition"].includes(v.type)))}}catch{}setRelationReady(true)},[]);
+ useEffect(()=>{if(relationReady)try{localStorage.setItem(RELATION_KEY,JSON.stringify(relations))}catch{setRelationError("Could not save relationships on this device")}},[relations,relationReady]);
  const [edits,setEdits]=useState<DiseaseEdits>(emptyDiseaseEdits);
  useEffect(()=>{try{const saved=localStorage.getItem(DISEASE_STORAGE_KEY)||localStorage.getItem(LEGACY_DISEASE_STORAGE_KEY);if(saved)setEdits(restoreDiseaseEdits(JSON.parse(saved)));}catch{}},[]);
  const diseaseIndex=useMemo(()=>buildDiseaseIndex(edits),[edits]);
@@ -27,6 +36,20 @@ export default function CompanyDiseaseLinks({rows}:{rows:ProgramLink[]}){
  {filtered.slice(0,limit).map((r,i)=><tr key={r.id+"-"+i}><td><button type="button" onClick={()=>{setSelected(r.company||r.ticker);setQuery("")}}>{r.company||r.ticker||"Unknown"} {r.ticker&&"("+r.ticker+")"}</button></td><td><button type="button" onClick={()=>{setSelected(r.indication||"");setQuery("")}}>{r.indication||"Unspecified"}</button></td><td>{diseaseMatch(r.indication)?<span title="Exact name or alias match; not a manually verified clinical classification">{diseasePath(diseaseMatch(r.indication)!.id,diseaseIndex).map(n=>n.name).join(" → ")} · Exact text match</span>:"Unmatched / review"}</td><td><button type="button" onClick={()=>{setSelected(r.drug||"");setQuery("")}}>{r.drug||"Unspecified"}</button></td><td>{r.nctId||"—"}</td><td>{r.pdufaDate||"—"}</td></tr>)}
  </tbody></table></div>
  {filtered.length>limit&&<button type="button" onClick={()=>setLimit(v=>v+50)}>SHOW 50 MORE</button>}
+ <details style={{marginTop:16}}><summary style={{fontWeight:800,cursor:"pointer"}}>COMPANY OWNERSHIP, LICENSING & COLLABORATION — SOURCE-BASED RELATIONSHIPS</summary>
+ <p className="subtle">Enter relationships supported by a public source. Nothing is inferred from ticker or trial sponsor. Saved locally on this device; no external connections or automated verification.</p>
+ <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+ <input aria-label="Company" placeholder="Company" value={relationForm.company} onChange={e=>setRelationForm(v=>({...v,company:e.target.value}))}/>
+ <select aria-label="Relationship type" value={relationForm.type} onChange={e=>setRelationForm(v=>({...v,type:e.target.value as CompanyRelation["type"]}))}>{(["parent","subsidiary","license","collaboration","acquisition"] as const).map(t=><option key={t} value={t}>{t}</option>)}</select>
+ <input aria-label="Related company" placeholder="Related company" value={relationForm.relatedCompany} onChange={e=>setRelationForm(v=>({...v,relatedCompany:e.target.value}))}/>
+ <input aria-label="Evidence URL" placeholder="https:// evidence URL" value={relationForm.source} onChange={e=>setRelationForm(v=>({...v,source:e.target.value}))}/>
+ <input aria-label="Verified date" type="date" value={relationForm.verifiedOn} onChange={e=>setRelationForm(v=>({...v,verifiedOn:e.target.value}))}/>
+ <button type="button" onClick={()=>{if(!relationForm.company.trim()||!relationForm.relatedCompany.trim()||!validSource(relationForm.source)||!relationForm.verifiedOn){setRelationError("Both company names, an HTTPS evidence URL, and a verified date are required.");return}setRelations(old=>[...old,{...relationForm,id:crypto.randomUUID()}]);setRelationForm({company:"",relatedCompany:"",type:"license",source:"",verifiedOn:""});setRelationError("")}}>ADD EVIDENCED RELATIONSHIP</button>
+ </div>
+ {relationError&&<p role="alert">{relationError}</p>}
+ <p>{relations.length} saved company relationships</p>
+ <div style={{overflowX:"auto"}}><table><thead><tr><th>Company</th><th>Relationship</th><th>Related company</th><th>Evidence</th><th>Verified on</th><th>Remove</th></tr></thead><tbody>{relations.filter(r=>!query||[r.company,r.relatedCompany,r.type].some(x=>norm(x).includes(norm(query)))).map(r=><tr key={r.id}><td>{r.company}</td><td>{r.type}</td><td>{r.relatedCompany}</td><td><a href={r.source} target="_blank" rel="noopener noreferrer">Source ↗</a></td><td>{r.verifiedOn}</td><td><button type="button" onClick={()=>setRelations(old=>old.filter(x=>x.id!==r.id))}>REMOVE</button></td></tr>)}</tbody></table></div>
+ </details>
  <p className="subtle">A blank field means no verified link is present in this published record. PDUFA dates are shown only for the specific program record, not inherited by other drugs or indications. Company, drug and indication labels are not evidence of corporate ownership or FDA approval.</p>
  </section>
 }
