@@ -46,7 +46,7 @@ test("every original Pipeline filter appears only beneath the existing central R
   assert.equal((ws.match(/<RestrictionImpact /g)||[]).length,1);
   assert.equal((ws.match(/<GemQualificationChecklist /g)||[]).length,1);
   const central=ws.slice(ws.indexOf('top==="RESTRICTIONS" && <><details'),ws.indexOf('top==="PDUFA" && (nav==="GEM_JR"'));
-  assert.match(central,/RestrictionImpact[\s\S]*?gemBlock\("GEM_JR"\)[\s\S]*?gemBlock\("GEM"\)[\s\S]*?pipelineMovedFilters/);
+  assert.match(central,/RestrictionImpact[\s\S]*?pipelineMovedFilters[\s\S]*?gemBlock\("GEM_JR"\)[\s\S]*?gemBlock\("GEM"\)/);
   assert.match(ws,/if \(top==="RESTRICTIONS"\) return <details/);
   assert.ok(restrictionContent.includes('className="panel moved-pipeline-restrictions"'));
   assert.ok(!restrictionContent.includes("setTags("));

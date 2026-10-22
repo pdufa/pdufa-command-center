@@ -20,7 +20,7 @@ test("Top cards are above research body and use real corresponding page totals",
  const row=ws.indexOf('className="workflow-counts"');
  const body=ws.indexOf('className="workspace-update-row"');
  assert.ok(nav>=0 && row>nav && body>row);
- for(const [field,source] of [["PIPELINE","possible.length"],["GEM_JR","gemPageRows.GEM_JR.length"],["GEM","gemPageRows.GEM.length"],["WT","tags.watch.length + tags.trade.length"]]) {
+ for(const [field,source] of [["PIPELINE","designationQualified.length"],["GEM_JR","gemPageRows.GEM_JR.length"],["GEM","gemPageRows.GEM.length"],["WT","tags.watch.length + tags.trade.length"]]) {
    assert.ok(ws.includes(field+": "+source),field+" total must match its page");
  }
  assert.match(ws,/localStorage\.setItem\("pdufa_stage_totals_v1"/);

@@ -106,12 +106,12 @@ test("designation details expose dates and source links while an unknown never r
   assert.equal((unknown.match(/Not verified/g)||[]).length,6);assert.doesNotMatch(unknown,/Not granted|Grant reported/);
 });
 
-test("individual trial download retains every registry section and adds six supplemental statuses",()=>{
+test("individual trial download retains every registry section and adds all thirteen supplemental statuses",()=>{
   const study={protocolSection:{identificationModule:{nctId:"NCT00000001"}},resultsSection:{example:[1,2]},futureSection:{keep:true}};
   const before=JSON.stringify(study),output=lib.trialDesignationDownload(study,candidate,build());
   assert.equal(JSON.stringify(study),before);assert.equal(output.protocolSection,study.protocolSection);
   assert.equal(output.resultsSection,study.resultsSection);assert.equal(output.futureSection,study.futureSection);
-  assert.deepEqual(Object.keys(output.pdufaRegulatoryDetails.designations),keys);
+  assert.deepEqual(Object.keys(output.pdufaRegulatoryDetails.designations),["fast_track","breakthrough_therapy","priority_review","accelerated_approval","orphan_drug","rmat","qidp","rare_pediatric_disease","tropical_disease_prv","rare_pediatric_disease_prv","material_threat_mcm_prv","lpad","animal_rule"]);
   assert.equal(output.pdufaRegulatoryDetails.designations.fast_track.designationDate,"");
 });
 

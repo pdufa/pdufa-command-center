@@ -14,6 +14,10 @@ require.extensions[".css"] = loaded => { loaded.exports = new Proxy({}, { get: (
 const impact = require("../lib/restriction-impact.ts");
 const { buildRestrictionEvidence, parseEvidenceCsv } = require("../lib/restriction-evidence.ts");
 const catalog = require("../lib/restriction-catalog.ts");
+// Isolate list-editing scenarios from the application's enabled startup defaults.
+function emptyCatalog() {
+  return catalog.defaultCatalogEntries().map(entry => ({ ...entry, enabled:false, stage:"", additionalStages:[], priority:"", stagePriorities:{} }));
+}
 const asOf = "2026-10-20";
 function settings(enabled = []) {
   const result = impact.defaultRestrictionSettings();
@@ -125,7 +129,7 @@ test("the visible controls include every restriction, editable values, full base
   assert.match(html, /Entry-date market caps have not been retained/);
   assert.match(html, /Minimum cap \(\$ millions\)/);
   assert.equal((html.match(/aria-label="Priority for /g) || []).length, catalog.RESTRICTION_CATALOG.length);
-  assert.equal((html.match(/aria-label="Priority for [^"]*" value=""/g) || []).length, catalog.RESTRICTION_CATALOG.length);
+  assert.equal((html.match(/aria-label="Priority for [^"]*" value=""/g) || []).length, catalog.RESTRICTION_CATALOG.length - 5);
 });
 test("priority selection, numeric edits and inline affected-record controls update without navigation", async () => {
   const React = require("react"), { create, act } = require("react-test-renderer");
@@ -134,9 +138,13 @@ test("priority selection, numeric edits and inline affected-record controls upda
   global.IS_REACT_ACT_ENVIRONMENT = true;
   global.window = { setInterval: () => 1, clearInterval() {} };
   global.fetch = async () => ({ ok: true, json: async () => evidence });
+  function Harness() {
+    const [entries, setEntries] = React.useState(() => emptyCatalog().map(entry => ({...entry, stage:["public","minCap","maxCap"].includes(entry.id)?"PIPELINE":""})));
+    return React.createElement(Component,{rows,asOf,managedEntries:entries,onManagedEntriesChange:setEntries});
+  }
   let renderer;
   try {
-    await act(async () => { renderer = create(React.createElement(Component, { rows, asOf })); });
+    await act(async () => { renderer = create(React.createElement(Harness)); });
     const totals = () => renderer.root.findByProps({ "aria-atomic": "true" }).findAllByType("strong").map(node => node.children.join(""));
     assert.deepEqual(totals(), ["6", "6", "0", "0"]);
     for (const [i, id] of ["public", "minCap", "maxCap"].entries()) {
@@ -157,7 +165,7 @@ test("priority selection, numeric edits and inline affected-record controls upda
     assert.deepEqual(totals(), ["6", "4", "2", "1"]);
     await act(async () => { renderer.root.findAllByType("button").find(node => node.children.join("") === "RESET TO APPROVED RULES").props.onClick(); });
     assert.equal(renderer.root.findByProps({ "aria-label": "Market-cap evidence" }).props.value, "entry");
-    assert.deepEqual(totals(), ["6", "6", "0", "0"]);
+    assert.deepEqual(totals(), ["6", "5", "1", "5"]);
   } finally {
     if (renderer) await act(async () => renderer.unmount());
     global.fetch = before.fetch; global.window = before.window; global.IS_REACT_ACT_ENVIRONMENT = before.act;
@@ -197,7 +205,7 @@ test("authenticated evidence endpoint reads real saved source data; unauthentica
 test("full catalog includes all original stage options and only approved Pipeline rules start assigned", () => {
   const entries = catalog.defaultCatalogEntries();
   assert.equal(entries.length, 41); assert.equal(new Set(entries.map(entry => entry.id)).size, 41);
-  assert.deepEqual(entries.filter(entry => entry.stage).map(entry => [entry.id, entry.stage]), [["public", "PIPELINE"], ["minCap", "PIPELINE"], ["maxCap", "PIPELINE"], ["progress", "PIPELINE"]]);
+  assert.deepEqual(entries.filter(entry => entry.stage).map(entry => [entry.id, entry.stage]), [["public", "PIPELINE"], ["minCap", "PIPELINE"], ["maxCap", "PIPELINE"], ["fdaPath", "PIPELINE"], ["phase", "PIPELINE"]]);
   assert.equal(entries.filter(entry => entry.id.startsWith("gem_") && entry.id !== "gem_jr_source").length, 16);
   assert.equal(entries.filter(entry => entry.id.startsWith("alert_")).length, 12);
 });
@@ -326,8 +334,8 @@ test("compact default Restrictions view preserves editable rules and hidden diag
 });
 
 test("Add to List inserts Market Cap in Pipeline at #1 without changing other list ranks or FS/FA presets", () => {
-  const entries=catalog.defaultCatalogEntries().map(entry=>({...entry}));
-  const existing=entries.find(e=>e.id==="public");existing.priority="1";existing.enabled=true;
+  const entries=emptyCatalog().map(entry=>({...entry}));
+  const existing=entries.find(e=>e.id==="public");existing.stage="PIPELINE";existing.priority="1";existing.enabled=true;
   const cap=entries.find(e=>e.id==="gem_marketcap");
   cap.stage="GEM_JR";cap.priority="8900";cap.enabled=true;
   const beforeJunior=catalog.selectedRestrictionList(entries,"GEM_JR").map(entry=>entry.id);
@@ -350,7 +358,7 @@ test("Add to List inserts Market Cap in Pipeline at #1 without changing other li
   assert.equal(result.stages[0].excluded,3); // market cap excludes LOW/HIGH; public-company rule also excludes OLD
 });
 test("Add to List preview does not mutate existing stored catalog and inactive lists stay inactive",()=>{
-  const entries=catalog.defaultCatalogEntries();
+  const entries=emptyCatalog();
   const before=JSON.stringify(entries);
   const next=catalog.insertRestrictionIntoList(entries,"gem_marketcap","PIPELINE",0);
   assert.equal(JSON.stringify(entries),before);
@@ -459,7 +467,7 @@ test("each top restriction list opens the editor for the corresponding stage", a
 test("market cap thresholds appear in all restriction lists with current saved values", async () => {
   const React=require("react"), {renderToStaticMarkup}=require("react-dom/server");
   const Component=require("../app/RestrictionImpact.tsx").default;
-  const active=catalog.defaultCatalogEntries().map(e=>({...e}));
+  const active=emptyCatalog().map(e=>({...e}));
   const range=active.find(e=>e.id==="gem_marketcap");
   range.stage="PIPELINE";range.enabled=true;range.priority="1";range.value="450";range.maximum="8500";
   const min=active.find(e=>e.id==="minCap");
@@ -521,7 +529,7 @@ test("Pipeline, GEM JR and GEM lists are equally sized side by side in that orde
 });
 
 test("Remove from one restriction list preserves other memberships, values and compact scan numbering", () => {
-  let entries=catalog.defaultCatalogEntries();
+  let entries=emptyCatalog();
   entries=catalog.insertRestrictionIntoList(entries,"gem_marketcap","GEM_JR",0);
   entries=catalog.insertRestrictionIntoList(entries,"gem_marketcap","GEM",0);
   entries=catalog.insertRestrictionIntoList(entries,"gem_marketcap","PIPELINE",0);
