@@ -1829,11 +1829,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </details>;
       })}
       </details>
-      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS — OPEN / COLLAPSE</summary>
+      <div style={{margin:"24px 0 12px",fontWeight:800,fontSize:"1.1rem"}}>LIST-SPECIFIC RESTRICTIONS</div>
+      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>
         <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
       </details>
-      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM_JR")}</details>
-      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM")}</details>
+      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}</details>
+      <details className="panel" style={{margin:"16px 0 24px",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}</details>
     </>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
