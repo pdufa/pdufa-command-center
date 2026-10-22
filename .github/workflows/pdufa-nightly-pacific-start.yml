@@ -166,3 +166,4 @@ jobs:
             echo "- Admission decision: ${GUARD_REASON:-UNAVAILABLE}"
             echo "- Duplicate safety: once per Pacific night; previous recorded full scan blocks a second."
           } >> "$GITHUB_STEP_SUMMARY"
+# Operator-requested guarded kickoff of missed 2026-10-21 Pacific 8 PM scan; duplicate gate remains authoritative.
