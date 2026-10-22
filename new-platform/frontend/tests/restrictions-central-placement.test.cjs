@@ -17,7 +17,7 @@ for(const ext of [".ts",".tsx"]){
 const ws=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
 
 test("every original Pipeline filter appears only beneath the existing central Restrictions blocks",()=>{
-  const definitionStart=ws.indexOf("const pipelineMovedFilters = (");
+  const definitionStart=ws.indexOf("const stageAndDateFilter = (");
   const migrationStart=ws.indexOf('return <div className="migration-workspace">');
   const restrictionContent=ws.slice(definitionStart,migrationStart);
   const pipelineStart=ws.indexOf('nav==="PIPELINE" && <section className="pipeline-page">');
@@ -34,8 +34,8 @@ test("every original Pipeline filter appears only beneath the existing central R
     if(exact.startsWith("onChange={()=>"))continue;
     assert.ok(restrictionContent.includes(exact), "Missing moved Pipeline filter: "+exact);
   }
-  assert.ok(restrictionContent.includes("setter: setStageFilters"));
-  assert.ok(restrictionContent.includes("setter: setDateFilters"));
+  assert.match(restrictionContent,/setter:\s*setStageFilters/);
+  assert.match(restrictionContent,/setter:\s*setDateFilters/);
   assert.ok(restrictionContent.includes("group.setter("));
   assert.ok(restrictionContent.includes("DISPLAY TRIALS"));
   assert.ok(!pipelineContent.includes("TrialQualificationFilters"),
@@ -45,10 +45,10 @@ test("every original Pipeline filter appears only beneath the existing central R
   assert.equal((ws.match(/<TrialQualificationFilters /g)||[]).length,1);
   assert.equal((ws.match(/<RestrictionImpact /g)||[]).length,1);
   assert.equal((ws.match(/<GemQualificationChecklist /g)||[]).length,1);
-  const central=ws.slice(ws.indexOf('top==="RESTRICTIONS" && <><details'),ws.indexOf('top==="PDUFA" && (nav==="GEM_JR"'));
-  assert.match(central,/RestrictionImpact[\s\S]*?pipelineMovedFilters[\s\S]*?gemBlock\("GEM_JR"\)[\s\S]*?gemBlock\("GEM"\)/);
+  const central=ws.slice(ws.indexOf('aria-label="Original Pipeline filters"'),ws.indexOf('top==="PDUFA" && (nav==="GEM_JR"'));
+  assert.match(central,/pipelineMovedFilters[\s\S]*?RestrictionImpact[\s\S]*?gemBlock\("GEM_JR"\)[\s\S]*?gemBlock\("GEM"\)/);
   assert.match(ws,/if \(top==="RESTRICTIONS"\) return <details/);
-  assert.ok(restrictionContent.includes('className="panel moved-pipeline-restrictions"'));
+  assert.match(central,/aria-label="Three independent restriction lists"/);
   assert.ok(!restrictionContent.includes("setTags("));
 });
 
@@ -118,7 +118,7 @@ test("Restrictions page mounts all four filter groups once, with GEM JR/GEM FS/F
     await act(async()=>{tree.root.findAllByType("button").find(x=>x.children.join("")==="RESTRICTIONS").props.onClick();await tick();});
     assert.equal(tree.root.findAllByType(OriginalFilter).length,1,"Exactly one original Pipeline filter group");
     assert.equal(tree.root.findAllByType(OriginalGem).length,2,"Both separate GEM checklists mounted");
-    assert.equal(tree.root.findAllByProps({className:"panel moved-pipeline-restrictions"}).length,1);
+    assert.equal(tree.root.findAllByProps({"aria-label":"Original Pipeline filters"}).length,1);
     // The existing GEM controls correctly begin collapsed. Open both as a
     // real user would, then ensure each stage has its own FS and FA button.
     for(const stage of ["GEM_JR","GEM"]){
