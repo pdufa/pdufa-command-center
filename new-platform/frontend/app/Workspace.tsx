@@ -876,6 +876,15 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const freshSnapshotReceived = useRef(false);
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [restrictionTab,setRestrictionTab]=useState<"PRESET"|"RESTRICTIONS">("RESTRICTIONS");
+  type DiseaseNode = {id:string;name:string;parentId:string|null};
+  const [diseaseNodes,setDiseaseNodes]=useState<DiseaseNode[]>([]);
+  const [diseaseReady,setDiseaseReady]=useState(false);
+  useEffect(()=>{try{const raw=localStorage.getItem("pdufa-disease-hierarchy-v1");if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed))setDiseaseNodes(parsed.filter((n:unknown):n is DiseaseNode=>!!n&&typeof n==="object"&&typeof (n as DiseaseNode).id==="string"&&typeof (n as DiseaseNode).name==="string"&&("parentId" in (n as DiseaseNode))));}}catch{}setDiseaseReady(true);},[]);
+  useEffect(()=>{if(diseaseReady)try{localStorage.setItem("pdufa-disease-hierarchy-v1",JSON.stringify(diseaseNodes));}catch{}},[diseaseNodes,diseaseReady]);
+  const addDisease=(parentId:string|null)=>{const name=window.prompt("Disease classification name");if(!name?.trim())return;setDiseaseNodes(old=>[...old,{id:crypto.randomUUID(),name:name.trim(),parentId}]);};
+  const renameDisease=(id:string)=>{const item=diseaseNodes.find(n=>n.id===id);if(!item)return;const name=window.prompt("Rename disease classification",item.name);if(name?.trim())setDiseaseNodes(old=>old.map(n=>n.id===id?{...n,name:name.trim()}:n));};
+  const renderDisease=(parentId:string|null,depth=0):ReactNode=>diseaseNodes.filter(n=>n.parentId===parentId).map(n=><div key={n.id} style={{marginLeft:Math.min(depth,8)*12,padding:"8px 0",borderBottom:"1px solid #ccc"}}><div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}><strong>{depth<5?"Level "+(depth+1):"Level "+(depth+1)} · {n.name}</strong><button type="button" onClick={()=>addDisease(n.id)}>+ ADD SUBLEVEL</button><button type="button" onClick={()=>renameDisease(n.id)}>RENAME</button></div>{renderDisease(n.id,depth+1)}</div>);
+
   const [nav, setNav] = useState<Nav>("PIPELINE");
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
@@ -1893,6 +1902,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <button type="button" onClick={()=>setMasterRestrictions(old=>removeRestrictionFromList(old,e.id,restrictionListView))}>REMOVE</button>
         </div>)}
       </div>
+      <details className="panel" style={{padding:14}}><summary style={{fontWeight:800,cursor:"pointer"}}>DISEASE — restriction subtype</summary>
+        <p className="subtle">Five default classification levels, with optional additional levels. Disease names are entered manually. No external connections or automatic classifications.</p>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button type="button" onClick={()=>addDisease(null)}>+ ADD DISEASE / LEVEL 1</button><span>{diseaseNodes.length} classifications saved on this device</span></div>
+        {renderDisease(null)}
+        <p className="subtle">Level 1: Therapeutic area · Level 2: Disease group · Level 3: Disease family · Level 4: Specific disease · Level 5: Disease subtype. Add deeper levels using + ADD SUBLEVEL.</p>
+      </details>
       <div style={{fontWeight:800}}>RESTRICTION CLASSES — ALL 11 LISTED BELOW</div>
       {RESTRICTION_PURPOSE_GROUPS.map(group=>{
         const entries=masterRestrictions.filter(entry=>restrictionPurposeGroup(entry)===group.id).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
