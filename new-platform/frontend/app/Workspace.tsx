@@ -20,7 +20,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
-import { catalogStages, catalogStagePriority, catalogDefinition, selectedRestrictionList, insertRestrictionIntoList, removeRestrictionFromList, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
+import { catalogStages, catalogStagePriority, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
@@ -1823,30 +1823,12 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
       <small>Only source-linked granted designations qualify. Unknown evidence is not a confirmed grant. GEM JR, GEM and FS/FA presets are unchanged.</small>
     </details>}
-    {snapshot && top==="RESTRICTIONS" && (["PIPELINE","GEM_JR","GEM"] as const).map(stage=>{
-      const eligible=[...masterRestrictions].filter(entry=>!catalogDefinition(entry).warning).sort((a,b)=>catalogDefinition(a).title.localeCompare(catalogDefinition(b).title));
-      const active=selectedRestrictionList(masterRestrictions,stage);
-      const label=stage==="GEM_JR"?"GEM JR":stage;
-      return <details key={stage} id={"restriction-stage-"+stage.toLowerCase()} open className="panel" style={{padding:16,margin:"12px 0"}}>
-        <summary style={{fontWeight:700,cursor:"pointer",fontSize:"1.05rem"}}>{label} — RESTRICTION LIST ▾ ({active.length} added)</summary>
-        <p className="subtle">Add the whole available catalog or individual restrictions to {label}. Existing thresholds and other lists are preserved.</p>
-        <div className="pipeline-actions">
-          <button type="button" onClick={()=>setMasterRestrictions(previous=>eligible.reduce((next,entry)=>insertRestrictionIntoList(next,entry.id,stage,selectedRestrictionList(next,stage).length),previous))}>ADD WHOLE GROUP</button>
-        </div>
-        <div style={{display:"grid",gap:8}}>
-          {eligible.map(entry=>{
-            const added=active.some(item=>item.id===entry.id);
-            const mandatory=stage==="PIPELINE"&&(entry.id==="minCap"||entry.id==="maxCap");
-            return <div key={entry.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,borderBottom:"1px solid var(--border, #ccc)",padding:"7px 0"}}>
-              <span>{catalogDefinition(entry).title}{mandatory?" · Mandatory":""}</span>
-              <button type="button" className={added?"secondary":""} disabled={mandatory&&added} aria-pressed={added}
-                onClick={()=>setMasterRestrictions(previous=>added?removeRestrictionFromList(previous,entry.id,stage):insertRestrictionIntoList(previous,entry.id,stage,selectedRestrictionList(previous,stage).length))}>{added?"REMOVE":"ADD"}</button>
-            </div>;
-          })}
-        </div>
-      </details>;
-    })}
-    {snapshot && top==="RESTRICTIONS" && <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>ADVANCED SETTINGS — EXISTING RESTRICTION CONTROLS</summary><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>MASTER RESTRICTION CATALOG</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE FILTERS — OPEN / COLLAPSE</summary>{pipelineMovedFilters}</details><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM_JR")}</details><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM")}</details></details>}
+    {snapshot && top==="RESTRICTIONS" && <>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE FILTERS — OPEN / COLLAPSE</summary>{pipelineMovedFilters}</details>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM_JR")}</details>
+      <details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS — OPEN / COLLAPSE</summary>{gemBlock("GEM")}</details>
+    </>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
