@@ -106,7 +106,7 @@ test("Current top workflow totals appear below navigation in Pipeline, GEM JR, G
 test("Each top count is exactly the number displayed on its stage page",()=>{
  const src=fs.readFileSync(path.join(__dirname,"../app/Workspace.tsx"),"utf8");
  const totals=src.slice(src.indexOf('const pageTotals:'),src.indexOf('function wtButton'));
- assert.match(totals,/PIPELINE: possible\.length/);
+ assert.match(totals,/PIPELINE: designationQualified\.length/);
  assert.match(totals,/GEM_JR: gemPageRows\.GEM_JR\.length/);
  assert.match(totals,/GEM: gemPageRows\.GEM\.length/);
  assert.match(totals,/WT: tags\.watch\.length \+ tags\.trade\.length/);
