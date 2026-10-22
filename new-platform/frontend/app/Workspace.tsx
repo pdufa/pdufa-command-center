@@ -20,7 +20,7 @@ import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
 import GemQualificationChecklist, {newlyObservedProgramIds,checkboxGroupsForStage,availableGemRestrictionOptions,type GemScanResult,type GemJrLivePreview,type GemJrUiDraft} from "./GemQualificationChecklist";
-import { catalogStages, catalogStagePriority, catalogDefinition, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
+import { catalogStages, catalogStagePriority, catalogDefinition, selectedRestrictionList, insertRestrictionIntoList, removeRestrictionFromList, RESTRICTION_PURPOSE_GROUPS, restrictionPurposeGroup, defaultCatalogEntries, restoreCatalogEntries, type CatalogEntry } from "../lib/restriction-catalog";
 import { validatePipelinePage, type PipelinePage } from "../lib/workspace-pages";
 import {pickGemResearchRows} from "../lib/gem-screen-rows";
 import { filterPipelineRows, pipelineAvailability, PIPELINE_STAGES as STAGES, trialId } from "../lib/pipeline-data";
@@ -1807,6 +1807,19 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             <strong>{catalogDefinition(entry).title}</strong>
             <div className="subtle">{catalogDefinition(entry).help}</div>
             <div className="subtle">Assigned: {catalogStages(entry).join(", ")||"Not assigned"} · {entry.enabled?"Enabled":"Disabled"}</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10}}>
+              {(["PIPELINE","GEM_JR","GEM"] as const).map(stage=>{
+                const assigned=catalogStages(entry).includes(stage);
+                return <button key={stage} type="button" disabled={!assigned && !!catalogDefinition(entry).warning}
+                  aria-label={(assigned?"Remove from ":"Add to ")+stage.replace("_"," ")+" list: "+catalogDefinition(entry).title}
+                  onClick={()=>setMasterRestrictions(previous=>assigned
+                    ?removeRestrictionFromList(previous,entry.id,stage)
+                    :insertRestrictionIntoList(previous,entry.id,stage,selectedRestrictionList(previous,stage).length))}
+                  style={{padding:"8px 12px",border:"1px solid #35543a",borderRadius:8,background:assigned?"#e4f1e2":"#fff",color:"#18321c",fontWeight:700,cursor:"pointer"}}>
+                  {stage.replace("_"," ")} · {assigned?"REMOVE":"ADD"}
+                </button>;
+              })}
+            </div>
             <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12,marginTop:8}}>
               <label style={{display:"flex",alignItems:"center",gap:6}}><input type="checkbox" checked={entry.enabled} onChange={event=>setMasterRestrictions(previous=>previous.map(item=>item.id===entry.id?{...item,enabled:event.target.checked}:item))}/> Enabled</label>
               {(catalogDefinition(entry).numeric || entry.value!=="" || entry.maximum!=="") && <>
