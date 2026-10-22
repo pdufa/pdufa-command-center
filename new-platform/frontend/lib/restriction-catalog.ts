@@ -100,7 +100,7 @@ export function selectedRestrictionList(entries: CatalogEntry[], stage: Exclude<
 /** Insert or move a single master rule; never changes static FS/FA associations. */
 export function insertRestrictionIntoList(entries: CatalogEntry[], id: string, stage: Exclude<RestrictionStage, "">, index: number): CatalogEntry[] {
   const picked = entries.find(entry=>entry.id===id);
-  if(!picked || catalogDefinition(picked).warning || !RESTRICTION_STAGES.includes(stage))return entries;
+  if(!picked || !RESTRICTION_STAGES.includes(stage))return entries;
   const priorList=selectedRestrictionList(entries,stage).filter(entry=>entry.id!==id);
   const at=Number.isFinite(index)?Math.max(0,Math.min(priorList.length,Math.trunc(index))):0;
   const ordered=[...priorList.slice(0,at),picked,...priorList.slice(at)];
@@ -119,7 +119,7 @@ export function insertRestrictionIntoList(entries: CatalogEntry[], id: string, s
 export function removeRestrictionFromList(entries: CatalogEntry[], id: string, stage: Exclude<RestrictionStage, "">): CatalogEntry[] {
   if (!RESTRICTION_STAGES.includes(stage)) return entries;
   const current=selectedRestrictionList(entries,stage);
-  if (!current.some(entry=>entry.id===id)) return entries;
+  if (!catalogStages(entries.find(entry=>entry.id===id) || {stage:"",additionalStages:[]} as CatalogEntry).includes(stage)) return entries;
   const ranks=new Map(current.filter(entry=>entry.id!==id).map((entry,i)=>[entry.id,String(i+1)]));
   return entries.map(entry=>{
     if (entry.id!==id) {
