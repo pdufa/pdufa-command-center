@@ -750,6 +750,72 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     try{window.localStorage.setItem("pdufa-restriction-catalog-v1",JSON.stringify(masterRestrictions));}
     catch{/* Editing remains available in memory. */}
   },[masterRestrictions,masterRestrictionsReady]);
+  type RestrictionPresetStage = "PIPELINE" | "GEM_JR" | "GEM";
+  type RestrictionPreset = {name:string; entries:CatalogEntry[]};
+  const [restrictionPresets,setRestrictionPresets]=useState<Record<RestrictionPresetStage,RestrictionPreset[]>>({PIPELINE:[],GEM_JR:[],GEM:[]});
+  const [presetNames,setPresetNames]=useState<Record<RestrictionPresetStage,string>>({PIPELINE:"",GEM_JR:"",GEM:""});
+  const [presetChoices,setPresetChoices]=useState<Record<RestrictionPresetStage,string>>({PIPELINE:"",GEM_JR:"",GEM:""});
+  const [presetsReady,setPresetsReady]=useState(false);
+  useEffect(()=>{
+    try {
+      const saved=window.localStorage.getItem("pdufa-restriction-presets-v1");
+      if(saved){
+        const parsed=JSON.parse(saved);
+        setRestrictionPresets({PIPELINE:Array.isArray(parsed.PIPELINE)?parsed.PIPELINE:[],GEM_JR:Array.isArray(parsed.GEM_JR)?parsed.GEM_JR:[],GEM:Array.isArray(parsed.GEM)?parsed.GEM:[]});
+      }
+    }catch{/* Keep presets usable in memory. */}
+    setPresetsReady(true);
+  },[]);
+  useEffect(()=>{
+    if(!presetsReady)return;
+    try{window.localStorage.setItem("pdufa-restriction-presets-v1",JSON.stringify(restrictionPresets));}catch{/* Browser storage unavailable. */}
+  },[restrictionPresets,presetsReady]);
+  function saveRestrictionPreset(stage:RestrictionPresetStage){
+    const name=presetNames[stage].trim()||presetChoices[stage];
+    if(!name)return;
+    if(restrictionPresets[stage].some(p=>p.name===name)&&!window.confirm("Overwrite saved preset "+name+"?"))return;
+    setRestrictionPresets(old=>({...old,[stage]:[...old[stage].filter(p=>p.name!==name),{name,entries:masterRestrictions.map(e=>({...e,additionalStages:[...(e.additionalStages||[])],stagePriorities:{...e.stagePriorities}}))}]}));
+    setPresetChoices(old=>({...old,[stage]:name}));
+    setPresetNames(old=>({...old,[stage]:""}));
+  }
+  function loadRestrictionPreset(stage:RestrictionPresetStage){
+    const saved=restrictionPresets[stage].find(p=>p.name===presetChoices[stage]);
+    if(!saved||!window.confirm("Load "+saved.name+" for "+stage.replace("_"," ")+"? Current unsaved changes to this list will be replaced."))return;
+    const stored=new Map(saved.entries.map(e=>[e.id,e]));
+    setMasterRestrictions(current=>current.map(entry=>{
+      const old=stored.get(entry.id);
+      if(!old)return entry;
+      const otherStages=catalogStages(entry).filter(s=>s!==stage);
+      const included=catalogStages(old).includes(stage);
+      const stages=[...otherStages,...(included?[stage]:[])];
+      const priorityByStage={...entry.stagePriorities,[stage]:included?catalogStagePriority(old,stage):""};
+      return {...entry,stage:stages[0]||"",additionalStages:stages.slice(1),
+        stagePriorities:priorityByStage,priority:stages.length?priorityByStage[stages[0]]||entry.priority:"",
+        enabled:included?old.enabled:(otherStages.length?entry.enabled:false),
+        value:old.value,maximum:old.maximum};
+    }));
+  }
+  function restrictionPresetControls(stage:RestrictionPresetStage){
+    return <div style={{border:"1px solid #a2b4a4",borderRadius:10,padding:12,margin:"12px 0",display:"grid",gap:9}}>
+      <strong>SAVED RESTRICTION PRESETS — {stage.replace("_"," ")}</strong>
+      <small>Save this list's membership, priority, enabled status and numeric values. Stored in this browser; other lists' membership is preserved on load.</small>
+      <select aria-label={stage+" saved restriction preset"} style={{width:"100%",maxWidth:440}} value={presetChoices[stage]} onChange={e=>setPresetChoices(old=>({...old,[stage]:e.target.value}))}>
+        <option value="">Select a saved preset</option>
+        {restrictionPresets[stage].map(p=><option key={p.name} value={p.name}>{p.name}</option>)}
+      </select>
+      <input aria-label={stage+" new preset name"} placeholder="New preset name (e.g. Pipeline 1)" style={{width:"100%",maxWidth:440}} value={presetNames[stage]} onChange={e=>setPresetNames(old=>({...old,[stage]:e.target.value}))}/>
+      <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+        <button type="button" disabled={!presetNames[stage].trim()&&!presetChoices[stage]} onClick={()=>saveRestrictionPreset(stage)}>SAVE / SAVE AS</button>
+        <button type="button" disabled={!presetChoices[stage]} onClick={()=>loadRestrictionPreset(stage)}>LOAD</button>
+        <button type="button" disabled={!presetChoices[stage]} onClick={()=>{
+          const name=presetChoices[stage];
+          if(!window.confirm("Delete saved preset "+name+"?"))return;
+          setRestrictionPresets(old=>({...old,[stage]:old[stage].filter(p=>p.name!==name)}));
+          setPresetChoices(old=>({...old,[stage]:""}));
+        }}>DELETE PRESET</button>
+      </div>
+    </div>;
+  }
   const jrRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM_JR"),[masterRestrictions]);
   const gemRuleKeys=useMemo(()=>selectedGemKeys(masterRestrictions,"GEM"),[masterRestrictions]);
   const masterAlertGoals=useMemo(()=>Object.fromEntries(masterRestrictions.filter(entry=>entry.id.startsWith("alert_")).map(entry=>[entry.id.slice(6),entry.value])),[masterRestrictions]);
@@ -1837,11 +1903,11 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       })}
     </section>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Three independent restriction lists" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>{restrictionPresetControls("PIPELINE")}
         <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
       </details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}</details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}</details>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{restrictionPresetControls("GEM_JR")}{gemBlock("GEM_JR")}</details>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{restrictionPresetControls("GEM")}{gemBlock("GEM")}</details>
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
