@@ -197,7 +197,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT" | "TRADING";
-type TopNav = "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
+type TopNav = "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS" | "PRESET";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -880,7 +880,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
     if (requested === "RESULTS") { setTop("RESULTS"); return; }
-    if (requested === "RESTRICTIONS") { setTop("RESTRICTIONS"); return; }
+    if (requested === "RESTRICTIONS" || requested === "PRESET") { setTop(requested); return; }
     if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
       setTop("PDUFA");
       setNav(requested as Nav);
@@ -1742,6 +1742,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
+      <button type="button" className={top==="PRESET"?"nav-selected":""} aria-current={top==="PRESET"?"page":undefined} onClick={()=>{setTop("PRESET");setMobileNavOpen(false);}}>PRESET</button>
       <button type="button" className={top==="RESTRICTIONS"?"nav-selected":""} aria-current={top==="RESTRICTIONS"?"page":undefined} onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? (cachedAsOf ? "Verifying latest data…" : "Loading published candidates…") : "Load published candidates"}</button>
       <span className="workspace-stage">{cachedAsOf ? "CACHED SNAPSHOT · " + cachedAsOf + " · NOT VERIFIED CURRENT" : snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
@@ -1923,13 +1924,20 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </details>;
       })}
     </section>}
+    {top==="PRESET" && <section aria-label="Saved restriction presets" style={{display:"grid",gap:12,width:"100%",minWidth:0}}>
+      <h2>PRESET — Saved restriction configurations</h2>
+      <p className="subtle">Choose Pipeline, GEM JR or GEM presets below. Load, rename by saving under a new name, overwrite or delete. Edit restriction values on the RESTRICTIONS tab, then save your changes as a preset at the bottom of that list.</p>
+      {(["PIPELINE","GEM_JR","GEM"] as RestrictionPresetStage[]).map(stage=><div key={stage} className="panel" style={{padding:16}}>
+        <h3>{stage.replace("_"," ")} PRESETS · {restrictionPresets[stage].length} saved</h3>
+        {restrictionPresetControls(stage)}
+      </div>)}
+    </section>}
     {snapshot && top==="RESTRICTIONS" && <section aria-label="Three independent restriction lists" style={{display:"flex",flexDirection:"column",gap:12,width:"100%",minWidth:0}}>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary>{restrictionPresetControls("PIPELINE")}
-        <RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>PIPELINE RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} />
         {bottomPresetSave("PIPELINE")}
       </details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{restrictionPresetControls("GEM_JR")}{gemBlock("GEM_JR")}{bottomPresetSave("GEM_JR")}</details>
-      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{restrictionPresetControls("GEM")}{gemBlock("GEM")}{bottomPresetSave("GEM")}</details>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM JR RESTRICTIONS</summary>{gemBlock("GEM_JR")}{bottomPresetSave("GEM_JR")}</details>
+      <details className="panel" style={{margin:"4px 0",padding:16,width:"100%",boxSizing:"border-box"}}><summary style={{fontWeight:700,cursor:"pointer"}}>GEM RESTRICTIONS</summary>{gemBlock("GEM")}{bottomPresetSave("GEM")}</details>
     </section>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
