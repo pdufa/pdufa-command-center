@@ -1748,7 +1748,11 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? (cachedAsOf ? "Verifying latest data…" : "Loading published candidates…") : "Load published candidates"}</button>
       <span className="workspace-stage">{cachedAsOf ? "CACHED SNAPSHOT · " + cachedAsOf + " · NOT VERIFIED CURRENT" : snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
     </div>
-    <div className="nav-wrapper">
+    {top==="RESTRICTIONS" && <div aria-label="Restriction sub-tabs" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"12px 0"}}>
+      <button type="button" aria-current={restrictionTab==="RESTRICTIONS"?"page":undefined} className={restrictionTab==="RESTRICTIONS"?"nav-selected":""} onClick={()=>{setRestrictionTab("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
+      <button type="button" aria-current={restrictionTab==="PRESET"?"page":undefined} className={restrictionTab==="PRESET"?"nav-selected":""} onClick={()=>{setRestrictionTab("PRESET");setMobileNavOpen(false);}}>PRESET</button>
+    </div>}
+    {top!=="RESTRICTIONS" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
         <strong>Section: {top==="RESULTS"?"RESULTS":top==="RESTRICTIONS"?"RESTRICTIONS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
@@ -1761,7 +1765,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <button type="button" key={key} className={top==="PDUFA"&&nav===key?"nav-selected":""} aria-current={top==="PDUFA"&&nav===key?"page":undefined}
             onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
-    </div>
+    </div>}
     <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
         {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null, detail:"Total candidates"},
@@ -1876,7 +1880,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <div style={{fontWeight:800}}>ORIGINAL PIPELINE FILTERS</div>
       {pipelineMovedFilters}
     </section>}
-    {top==="RESTRICTIONS" && <div className="panel" style={{display:"flex",gap:8,padding:10}}><button type="button" onClick={()=>setRestrictionTab("RESTRICTIONS")}>RESTRICTIONS</button><button type="button" onClick={()=>setRestrictionTab("PRESET")}>PRESET</button></div>}
+    
     {snapshot && top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <section aria-label="Restrictions page sections" style={{width:"100%",minWidth:0,display:"flex",flexDirection:"column",gap:16}}>
       <div className="panel" style={{padding:12,display:"grid",gap:8}}>
         <strong>SAVED RESTRICTION LISTS</strong>
