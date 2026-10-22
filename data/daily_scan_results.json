@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "updated_at_utc": "2026-10-22T04:33:51.114531+00:00",
+  "days": [
+    {
+      "date_pacific": "2026-10-21",
+      "run_id": 39722233373,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373",
+      "status": "PARTIAL",
+      "registered_at_utc": "2026-10-22T04:33:51.114531+00:00",
+      "sections": {
+        "master": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": 11583,
+          "basis": "Published unique-NCT registry inventory imported October 21; not verified as the total from the complete overnight run."
+        },
+        "pipeline": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Clinical collection is reported, but mandatory qualified Pipeline filter totals are not verified."
+        },
+        "designations": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "FDA designation grant evidence has not been imported and verified; no total can be asserted."
+        },
+        "gem_jr": {
+          "previous": 11,
+          "new": 0,
+          "updated": null,
+          "removed": 0,
+          "total": 11,
+          "basis": "Saved active membership ledger has 11 GEM JR entries, last complete snapshot 2026-10-21; no membership found/left on this date. This is not the newly posted Phase 3 results count."
+        },
+        "gem": {
+          "previous": 6,
+          "new": 0,
+          "updated": null,
+          "removed": 0,
+          "total": 6,
+          "basis": "Saved active membership ledger has 6 GEM entries, last complete snapshot 2026-10-21; no membership found/left on this date; independent GEM FS/FA preserved."
+        }
+      },
+      "notes": [
+        "Preliminary dated publication: clinical-only scan report was PARTIAL and the sequential nightly workflow had not finished at the time of registration.",
+        "Unverified fields are null (—), never treated as zero. The nightly publication job may replace this dated entry when same-run evidence is available."
+      ]
+    }
+  ]
+}
