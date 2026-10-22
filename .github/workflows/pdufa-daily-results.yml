@@ -1,0 +1,62 @@
+name: Publish dated PDUFA RESULTS
+
+on:
+  workflow_run:
+    workflows: ["PDUFA Overnight Sequential Scans"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-daily-results-archive-main
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    if: >-
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.event == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout published main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Register this Pacific night only after the overnight workflow ends
+        env:
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_STARTED_AT: ${{ github.event.workflow_run.run_started_at }}
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          python scripts/pdufa_daily_results.py \
+            --run-id "$SOURCE_RUN_ID" \
+            --started-at "$SOURCE_STARTED_AT" \
+            --conclusion "$SOURCE_CONCLUSION"
+      - name: Retain all earlier dated snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily_scan_results.json
+          if git diff --cached --quiet; then
+            echo "No new daily results to publish."
+            exit 0
+          fi
+          git commit -m "Archive Pacific overnight RESULTS for run ${{ github.event.workflow_run.id }}"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Dated RESULTS archive published."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Failed to publish dated RESULTS after 3 attempts."
+          exit 1
