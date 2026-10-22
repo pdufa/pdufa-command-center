@@ -81,6 +81,25 @@ class PhasePipelineTests(unittest.TestCase):
             self.assertEqual(additions[0][field], "")
         self.assertEqual(additions[0]["entry_gate"], "REVIEW")
 
+    def test_sibling_phase2_does_not_inherit_verified_trial_gate(self):
+        records = reconcile_records([], [trial(), trial("NCT00000002", "PHASE3")], TODAY)
+        phase2 = next(r for r in records if r["nct_id"] == "NCT00000001")
+        phase3 = next(r for r in records if r["nct_id"] == "NCT00000002")
+        self.assertEqual(phase2["destination"], "MASTER TABLE")
+        self.assertEqual(phase2["stage_evidence_status"], "REVIEW")
+        self.assertEqual(phase2["promotion_status"], "REVIEW")
+        self.assertEqual(phase2["program_phase3_evidence_nct"], "NCT00000002")
+        self.assertEqual(phase3["promotion_status"], "VERIFIED")
+        self.assertEqual(phase3["program_phase3_evidence_nct"], "NCT00000002")
+
+    def test_sibling_halted_phase3_does_not_inherit_verified_gate(self):
+        halted = {**trial("NCT00000003", "PHASE3"), "trial_status": "TERMINATED"}
+        records = reconcile_records([], [trial("NCT00000002", "PHASE3"), halted], TODAY)
+        stopped = next(r for r in records if r["nct_id"] == "NCT00000003")
+        self.assertEqual(stopped["destination"], "MASTER TABLE")
+        self.assertEqual(stopped["promotion_status"], "REVIEW")
+        self.assertEqual(stopped["program_phase3_evidence_nct"], "NCT00000002")
+
     def test_planned_and_estimated_starts_do_not_move(self):
         for patch in ({"trial_status": "NOT_YET_RECRUITING"}, {"start_date_type": "ESTIMATED"},
                       {"start_date": "2026-11-01"}, {"start_date": "2026-10"}):
