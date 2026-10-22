@@ -12,6 +12,7 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import PipelineData from "./PipelineData";
 import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
+import SpecialDesignationCounts from "./SpecialDesignationCounts";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
@@ -1623,7 +1624,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         <details className="pipeline-filter-details" open>
           <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
           <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
-          <div className="filter-columns pipeline-three-filter-columns">
+          <div className="filter-columns pipeline-four-filter-columns">
             {[
               { title: "STAGE COUNTS", description: "Available by current stage", total: "PHASE TOTAL", items: stageCounts, selected: stageFilters, setter: setStageFilters },
               { title: "DATE TRIAL COUNTS", description: "Available by PDUFA countdown", total: "DATE TOTAL", items: dateCounts, selected: dateFilters, setter: setDateFilters },
@@ -1641,6 +1642,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
               </button>
             </fieldset>)}
             <TrialQualificationFilters rows={pipeline} countRows={qualificationBase} value={trialFilters} onChange={setTrialFilters} asOf={snapshot?.asOf || ""} ready={snapshot?.trialFilterSchema === 1} />
+            <SpecialDesignationCounts rows={possible} asOf={snapshot?.asOf || ""} />
           </div>
         </details>
         <div className="pipeline-actions pipeline-display-actions">
