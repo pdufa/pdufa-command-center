@@ -14,7 +14,7 @@ import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
 import { useTrialDesignations } from "./TrialDesignations";
-import { filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
+import { SPECIAL_DESIGNATION_CATEGORIES, filterBySelectedDesignations, type DesignationKey } from "../lib/trial-designations";
 import TrialFields from "./TrialFields";
 import CandidateAssessments, { AssessmentProvider, AssessmentCells, AssessmentHeaders, AssessmentSort, AssessmentStatus, ScoreProgressButton, useAssessments } from "./CandidateAssessments";
 import { sortByAssessment } from "../lib/candidate-assessments";
@@ -1621,20 +1621,20 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // The user has not yet asked to connect them to the separate live-impact
   // restrictions catalog; relocation is display-only.
   const pipelineMovedFilters = (
-    <details className="panel moved-pipeline-restrictions" aria-label="Original PIPELINE stage, date, trial and market-cap restrictions">
+    <details className="panel moved-pipeline-restrictions" defaultOpen aria-label="Pipeline stages, dates, trials and FDA special designation checkboxes">
       <summary>PIPELINE — ORIGINAL STAGE / DATE / TRIAL / MARKET-CAP FILTERS</summary>
       <p className="subtle">Moved intact from PIPELINE. These remain separate from the approved rules and live-impact catalog above; no new qualifications have been silently enabled. Select options here and choose DISPLAY TRIALS to return to PIPELINE.</p>
       <section className="panel pipeline-filters pipeline-filters-compact migrated-pipeline-filter-panel" aria-labelledby="pipeline-filters-title">
         <div className="pipeline-filter-heading">
-          <h3 id="pipeline-filters-title">PIPELINE — ORIGINAL STAGE, DATE, MARKET-CAP &amp; TRIAL FILTERS</h3>
-          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters</span>
+          <h3 id="pipeline-filters-title">PIPELINE — STAGE, DATE, TRIAL &amp; SPECIAL DESIGNATION FILTERS</h3>
+          <span className="pipeline-filter-selection" aria-live="polite">{stageFilters.length ? stageFilters.length + " stages" : "All stages"} · {dateFilters.length ? dateFilters.length + " dates" : "All dates"} · {activeTrialFilters(trialFilters)} trial filters · {designationFilters.length} FDA designation checkboxes</span>
         </div>
         <div className="pipeline-row pipeline-filter-toolbar">
           <label>Search Program ID, ticker, drug, indication, NCT<input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Optional search" /></label>
           <label className="cap-filter"><input type="checkbox" checked={onlyBand} onChange={e=>setOnlyBand(e.target.checked)} />Market cap $300M–$10B only (optional; off by default)</label>
         </div>
         <details className="pipeline-filter-details" open>
-          <summary>Choose stages, PDUFA dates and trial filters <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters)} selected</span></summary>
+          <summary>Choose stages, PDUFA dates, trial filters and special designations <span>{stageFilters.length + dateFilters.length + activeTrialFilters(trialFilters) + designationFilters.length} selected</span></summary>
           <p className="subtle">Leave a group unchecked to include all records. Selected groups combine together; stage and date counts reflect your trial filters. Trial-checkbox counts show matches with your other selections.</p>
           <div className="filter-columns pipeline-four-filter-columns">
             {[
@@ -1785,10 +1785,10 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <section className="panel pipeline-restrictions-shortcut" aria-labelledby="pipeline-moved-title">
         <h3 id="pipeline-moved-title">PIPELINE RESTRICTIONS MOVED</h3>
         <p>All stage, PDUFA date, trial, financing, evidence and market-cap filter controls now appear beneath the existing rules on the <strong>RESTRICTIONS</strong> page. Your current selections have not been reset or combined with the separate restriction catalog.</p>
-        <p className="subtle" role="status">{stageFilters.length} stage selections · {dateFilters.length} date selections · {activeTrialFilters(trialFilters)} trial filters{onlyBand?" · $300M–$10B optional cap enabled":""}{query?" · Search active":""}.</p>
+        <p className="subtle" role="status">{stageFilters.length} stage selections · {dateFilters.length} date selections · {activeTrialFilters(trialFilters)} trial filters · {designationFilters.length} designation selections{onlyBand?" · $300M–$10B optional cap enabled":""}{query?" · Search active":""}.</p>
         <div className="pipeline-row">
           <button type="button" onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>OPEN RESTRICTIONS — EDIT FILTERS</button>
-          <button type="button" className="secondary" onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
+          <button type="button" className="secondary" disabled={designationFilters.length > 0 && !designationIndex} onClick={displayTrials}>DISPLAY TRIALS · {counted.length.toLocaleString("en-US")} matching</button>
         </div>
         {selectionsChanged && <p className="filter-pending" role="status">Your saved display has not been refreshed for the current selections. Press DISPLAY TRIALS to update it.</p>}
       </section>
@@ -1796,11 +1796,13 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         {displayFilters ? <PipelineData key={appliedKey + "|" + displayVersion + "|" + snapshot.asOf} rows={displayed}
           filterSummary={"Stages: " + (displayFilters.stages.join(", ") || "All") + " · PDUFA dates: " + (displayFilters.dates.join(", ") || "All")
             + (displayFilters.query ? " · Search: " + displayFilters.query : "") + (displayFilters.onlyBand ? " · Market cap: $300M–$10B" : "")
-            + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")} /> :
+            + (activeTrialFilters(displayFilters.trial) ? " · " + trialFilterSummary(displayFilters.trial) : "")
+            + (appliedDesignationFilters.length ? " · FDA designation: " +
+              SPECIAL_DESIGNATION_CATEGORIES.filter(item => appliedDesignationFilters.includes(item.key)).map(item => item.label).join(", ") : "")} /> :
           <section className="panel pipeline-data"><h3>PIPELINE DATA</h3><p className="subtle">Edit criteria under RESTRICTIONS, then press DISPLAY TRIALS to show the matching trials and programs here.</p></section>}
       </div>
     </section>}
-    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{gemBlock("GEM_JR")}{gemBlock("GEM")}{pipelineMovedFilters}</>}
+    {snapshot && top==="RESTRICTIONS" && <><details className="panel" style={{margin:"12px 0",padding:12}}><summary style={{fontWeight:700,cursor:"pointer"}}>RESTRICTIONS</summary><RestrictionImpact rows={restrictionRows} asOf={snapshot.asOf} managedEntries={masterRestrictions} onManagedEntriesChange={setMasterRestrictions} cached={!!cachedAsOf || snapshot.sourceHealth?.state === "STALE"} onRefresh={() => { if (!refreshing) setFetchVersion(value => value + 1); }} /></details>{pipelineMovedFilters}{gemBlock("GEM_JR")}{gemBlock("GEM")}</>}
     {snapshot && top==="PDUFA" && (nav==="GEM_JR" || nav==="GEM") && <div className="gems-page">
       <div className="sectionhead"><div><h2>{nav==="GEM_JR"?"GEM JR":"GEM"} — Candidate research</h2><p className="subtle">The same permanent Program ID follows an exact candidate from Pipeline through GEM JR, GEM and WT. An observed junior does not automatically qualify as GEM.</p></div>
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
