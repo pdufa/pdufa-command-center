@@ -1,13 +1,13 @@
 {
-  "generated_at_utc": "2026-10-21T05:08:03+00:00",
+  "generated_at_utc": "2026-10-22T04:45:42+00:00",
   "source_checks": [
     {
       "Source": "Clinical trial pipeline",
-      "Collector status": "COMPLETE",
+      "Collector status": "COMPLETE WITH WARNINGS",
       "Freshness": "RECENT",
-      "Health": "RECENT",
-      "Last checked UTC": "2026-10-21T04:52:38.958488+00:00",
-      "Details": "7369 exact ticker+NCT records; scope is not exhaustive",
+      "Health": "RECENT WITH WARNINGS",
+      "Last checked UTC": "2026-10-22T04:29:32.381639+00:00",
+      "Details": "7376 exact ticker+NCT records; scope is not exhaustive",
       "Blocked records": 0
     },
     {
@@ -15,8 +15,8 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-21T04:53:37.042138+00:00",
-      "Details": "2492 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
+      "Last checked UTC": "2026-10-22T04:30:36.392705+00:00",
+      "Details": "2493 saved result observations; registry postings and issuer releases are separate; outcomes require clinical review",
       "Blocked records": 0
     },
     {
@@ -51,7 +51,7 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-21T04:52:38.261252+00:00",
+      "Last checked UTC": "2026-10-22T04:29:29.154100+00:00",
       "Details": "417 provider-labeled quotes; price/volume not included",
       "Blocked records": 0
     },
@@ -69,16 +69,16 @@
       "Collector status": "COMPLETE",
       "Freshness": "RECENT",
       "Health": "RECENT",
-      "Last checked UTC": "2026-10-21T05:07:40.646657+00:00",
+      "Last checked UTC": "2026-10-22T04:45:21.606484+00:00",
       "Details": "34/34 recent session quotes; not a stability certification",
       "Blocked records": 0
     }
   ],
-  "trial_rows": 7369,
+  "trial_rows": 7376,
   "financing_events": 38,
-  "review_priority_rows": 7369,
-  "review_priority_ranked": 1826,
-  "review_priority_excluded": 5543,
+  "review_priority_rows": 7376,
+  "review_priority_ranked": 1831,
+  "review_priority_excluded": 5545,
   "review_priority_rubric": "REVIEW-PRIORITY-V1",
   "market_eod_rows": 34,
   "listing_exclusions": [
