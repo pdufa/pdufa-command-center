@@ -13,6 +13,7 @@ type MarketEnrichment = {
   latestIexVolume?: number | null;
   coverage?: string;
   orderExecutionEnabled?: boolean;
+  marketEvidenceReview?: { status: string; observations: {metric: string; value: number; unit: string}[]; recommendation: null; };
   marketSignals?: {
     status: string;
     validBars: number;
@@ -62,6 +63,13 @@ export default function ProgramMarketEnrichment({ programId, exactKey }: { progr
         {" · "}Latest / average IEX volume: {data.marketSignals.volumeRatio20?.toFixed(2) ?? "Unavailable"}×
         {" · "}Valid bars: {data.marketSignals.validBars}
       </p> : <p role="status">Insufficient validated history for market signals.</p>}
+    </div>}
+    {data?.status === "OK" && <div aria-label="Program market evidence review">
+      <strong>GEM research evidence · Separate from the 21 assessment scores</strong>
+      {data.marketEvidenceReview?.status === "RESEARCH_ONLY" && data.marketEvidenceReview.observations.length === 2
+        ? <p>20-bar change: {data.marketEvidenceReview.observations[0].value.toFixed(2)}%
+            {" · "}Relative IEX volume: {data.marketEvidenceReview.observations[1].value.toFixed(2)}×</p>
+        : <p role="status">Market evidence incomplete; no assessment or trade rating inferred.</p>}
     </div>}
     <small>IEX volume is single-exchange coverage, not consolidated market volume. No trades or restrictions are changed.</small>
   </div>;
