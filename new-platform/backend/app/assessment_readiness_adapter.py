@@ -28,3 +28,23 @@ def assessment_readiness_inputs(record: dict, *, program_id: str, exact_key: str
                 "status": "ASSESSMENT_INCOMPLETE"}
     return {"assessment_score": float(score), "assessment_coverage": float(coverage),
             "status": "COMPLETE"}
+
+
+def readiness_from_existing_assessment(*, program_id: str, exact_key: str,
+                                       record: dict, market_review: dict,
+                                       catalyst_verified: bool = False,
+                                       financing_risk_reviewed: bool = False,
+                                       stage: str = "GEM_JR") -> dict:
+    """Read-only adapter: an assessment alone never authorizes a trade."""
+    from .decision_readiness import decision_readiness
+    verified = assessment_readiness_inputs(record, program_id=program_id,
+                                           exact_key=exact_key, stage=stage)
+    result = decision_readiness(
+        program_id=program_id, exact_key=exact_key,
+        assessment_score=verified["assessment_score"],
+        assessment_coverage=verified["assessment_coverage"],
+        market_review=market_review,
+        catalyst_verified=catalyst_verified,
+        financing_risk_reviewed=financing_risk_reviewed,
+    )
+    return {**result, "assessmentEvidenceStatus": verified["status"], "assessmentStage": stage}
