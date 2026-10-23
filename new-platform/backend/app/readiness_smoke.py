@@ -106,6 +106,49 @@ def check_program(base: str, key: str, program_id: str, exact_key: str | None = 
         )
 
 
+def check_source_catalog(base: str, key: str) -> None:
+    """Verify all reviewed source keys and one real application readiness link."""
+    from .source_catalyst_review import catalog
+    if base not in {REVIEW_URL, "http://127.0.0.1:8000"}:
+        raise ValueError("Refusing non-isolated review address")
+    opener = build_opener(_NoRedirect())
+    request = Request(base + "/api/review/catalyst-evidence", headers={"x-pdufa-internal-key": key})
+    with opener.open(request, timeout=60) as response:
+        batch = json.load(response)
+    expected = catalog()["programs"]
+    records = batch.get("records") or []
+    if (batch.get("status") != "CHECKED" or len(records) != len(expected)
+            or {r.get("exactKey") for r in records} != set(expected)
+            or len({r.get("programId") for r in records}) != len(expected)
+            or any(not r.get("programId") for r in records)
+            or batch.get("ordersEnabled") is not False or batch.get("fsFaChanges") is not False
+            or batch.get("assessmentScoreChange") is not False):
+        raise ValueError("Source catalog identity or research boundary mismatch")
+    targets = sum(v["status"] == "CONFIRMED_TARGET" for v in expected.values())
+    past = sum(v["status"] == "READOUT_ALREADY_REPORTED" for v in expected.values())
+    if batch.get("confirmedTargets") != targets or batch.get("reportedReadouts") != past:
+        raise ValueError("Source date review needs reconciliation or refresh")
+    for record in records:
+        source = expected[record["exactKey"]]
+        if (record.get("source") != source["sourceUrl"]
+                or record.get("eventDate") != source["eventDate"]
+                or record.get("catalystVerified") is not (source["status"] == "CONFIRMED_TARGET")):
+            raise ValueError("Source catalog evidence mismatch")
+    sample = next(r for r in records if r["status"] == "CONFIRMED")
+    for stage in STAGES:
+        request = Request(base + f"/api/review/program-decision-readiness/{sample['programId']}?stage={stage}",
+                          headers={"x-pdufa-internal-key": key})
+        with opener.open(request, timeout=60) as response:
+            payload = json.load(response)
+        verify_payload(payload, sample["programId"], stage, sample["exactKey"])
+        if (payload.get("primaryCatalystReview", {}).get("status") != "CONFIRMED"
+                or payload["riskEvidenceReview"].get("catalystVerified") is not True):
+            raise ValueError("Primary-source catalyst did not reach exact-program readiness")
+    LOG.warning("PDUFA_CATALYST_SOURCE_SMOKE status=PASS programs=%d confirmed_targets=%d "
+                "reported_readouts=%d application_stages=2 orders_enabled=False fs_fa_changes=False",
+                len(records), targets, past)
+
+
 def check_deployed_program(program_id: str, exact_key: str) -> None:
     """Runs once on the isolated service; never exports its existing secret."""
     if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in {"1", "true", "yes"}:
@@ -120,6 +163,7 @@ def check_deployed_program(program_id: str, exact_key: str) -> None:
     while True:
         try:
             check_program("http://127.0.0.1:8000", key, program_id, exact_key)
+            check_source_catalog("http://127.0.0.1:8000", key)
             return
         except HTTPError as exc:
             if exc.code not in {409, 503}:

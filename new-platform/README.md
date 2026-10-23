@@ -45,6 +45,18 @@ windows apply. A reviewed risk can be adverse: its grade, measurements, and
 risk flags are retained. Readiness only means ready for human research review;
 orders and trade recommendations remain disabled in this isolated endpoint.
 
+The isolated primary-source catalog covers the 17 saved GEM JR/GEM programs
+reviewed on October 23, 2026. Fourteen application target dates have issuer/SEC
+source support; three trial readouts have already been reported and do not
+establish a future public event date. Confirmed date facts can satisfy the
+separate catalyst-readiness input without assigning numeric assessment grades.
+The catalog is available at the authenticated `/api/review/catalyst-evidence`
+route and each exact-program response retains its primary source. It expires
+after seven days and requires re-review if the published date changes. Issuer
+financing observations remain distinct from dilution clearance and exact-program
+financing qualification. The startup smoke checks all 17 immutable identities
+and the source-to-readiness link for a real application in both GEM stages.
+
 ## Automated local setup
 
 On a machine with Docker Compose and Python 3 installed, check out this branch and run `bash new-platform/install-local.sh`. The installer generates isolated, private random credentials, builds only the new-platform containers and starts them on localhost:3000. Keep the generated dashboard password safe. It does not edit the Streamlit branch, deploy Streamlit, or touch its files and data.

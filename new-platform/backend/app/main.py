@@ -656,6 +656,7 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
     from .assessment_readiness_adapter import assessment_readiness_inputs
     from .decision_readiness import decision_readiness
     from .risk_evidence_review import risk_evidence_from_assessment
+    from .source_catalyst_review import primary_catalyst_review, apply_primary_catalyst
     market = enrich_program_market(program_id, exact_key, ticker, "1M")
     assessment = {"assessment_score": None, "assessment_coverage": None,
                   "status": "ASSESSMENT_UNAVAILABLE"}
@@ -670,6 +671,11 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
             raise
     risk_evidence = risk_evidence_from_assessment(
         detail, program_id=program_id, exact_key=exact_key, stage=stage)
+    candidate = ((detail or {}).get("data") or {}).get("candidate") or {}
+    primary = primary_catalyst_review(program_id, exact_key, ticker, candidate.get("pdufaDate"),
+                                     current=(risk_evidence["identityStatus"] == "EXACT_IDENTITY_MATCH"
+                                              and candidate.get("ticker") == ticker))
+    risk_evidence = apply_primary_catalyst(risk_evidence, primary)
     readiness = decision_readiness(
         program_id=program_id, exact_key=exact_key,
         assessment_score=assessment["assessment_score"],
@@ -681,8 +687,38 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
     return {"programId": program_id, "exactKey": exact_key, "stage": stage,
             "assessmentEvidence": assessment, "marketEvidenceReview": market["marketEvidenceReview"],
             "riskEvidenceReview": risk_evidence,
+            "primaryCatalystReview": primary,
             "decisionReadiness": readiness, "researchOnly": True,
             "ordersEnabled": False, "fsFaChanges": False}
+
+
+@app.get("/api/review/catalyst-evidence", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def review_primary_catalyst_catalog():
+    """Bounded source evidence batch; no scans, grades, or list/preset writes."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in {"1", "true", "yes"}:
+        raise HTTPException(status_code=404, detail="Isolated review disabled")
+    from .source_catalyst_review import catalog, primary_catalyst_review
+    from .source_workspace import workspace, unique
+    source = catalog()
+    current = unique(workspace()["pipeline"], "id")
+    with Session(ENGINE) as session:
+        registered = {r.source_key: (f"PDUFA-{r.id:06d}", r.ticker) for r in session.scalars(
+            select(ProgramIdentity).where(ProgramIdentity.source_key.in_(source["programs"]))).all()}
+    records = []
+    for key, item in source["programs"].items():
+        identity = registered.get(key)
+        if identity is None:
+            records.append({"programId": None, "exactKey": key, "status": "UNREGISTERED_PROGRAM", "catalystVerified": False})
+            continue
+        pid, ticker = identity
+        row = current.get(key) or {}
+        records.append(primary_catalyst_review(pid, key, ticker, row.get("pdufaDate"),
+                       current=row.get("ticker") == ticker))
+    return {"status": "CHECKED", "catalogReviewedOn": source["reviewedOn"], "total": len(records),
+            "confirmedTargets": sum(r["status"] == "CONFIRMED" for r in records),
+            "reportedReadouts": sum(r["status"] == "READOUT_ALREADY_REPORTED" for r in records),
+            "records": records, "researchOnly": True, "ordersEnabled": False,
+            "assessmentScoreChange": False, "fsFaChanges": False}
 
 
 @app.get("/api/review/alpaca-program-smoke", dependencies=[

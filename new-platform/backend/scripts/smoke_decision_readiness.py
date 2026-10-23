@@ -11,7 +11,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.readiness_smoke import REVIEW_URL, check_program
+from app.readiness_smoke import REVIEW_URL, check_program, check_source_catalog
 
 
 def main():
@@ -21,5 +21,6 @@ def main():
     key = os.environ["PDUFA_INTERNAL_API_KEY"]
     logging.basicConfig(level=logging.WARNING)
     check_program(base, key, "PDUFA-000001")
+    check_source_catalog(base, key)
 if __name__ == "__main__":
     main()
