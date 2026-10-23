@@ -10,6 +10,7 @@ from .alpaca_market_chart import get_alpaca_bars
 from .market_signal_analysis import summarize_daily_bars
 from .market_evidence_review import market_evidence_review
 from .decision_readiness import decision_readiness
+from .decision_readiness import decision_readiness
 
 
 def enrich_program_market(program_id: str, source_key: str, ticker: str, range_label: str = "1Y") -> dict:
@@ -31,6 +32,10 @@ def enrich_program_market(program_id: str, source_key: str, ticker: str, range_l
         market_review=review, catalyst_verified=False,
         financing_risk_reviewed=False,
     )
+    review = market_evidence_review(program_id, source_key, signals)
+    readiness = decision_readiness(program_id=program_id, exact_key=source_key,
+        assessment_score=None, assessment_coverage=None, market_review=review,
+        catalyst_verified=False, financing_risk_reviewed=False)
     return {
         "programId": program_id,
         "exactKey": source_key,
