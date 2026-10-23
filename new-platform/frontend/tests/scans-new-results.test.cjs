@@ -164,10 +164,14 @@ test("SCANS page places new results summary ahead of job progress and identifies
 
 test("Source Verification Ledger is behind a default-closed caret with unresolved count", () => {
   const page = fs.readFileSync(require.resolve("../app/PublishedScansPanel.tsx"), "utf8");
-  const fold = page.match(/<details className="nested-expander source-verification-caret">([\\s\\S]*?)<\\/details>/);
-  assert.ok(fold, "Expected collapsible source verification section");
-  assert.ok(fold[1].includes("<summary>"), "A clickable caret label is required");
-  assert.ok(fold[1].includes("sources.required_findings_unresolved"), "Show live review count");
-  assert.ok(fold[1].includes("<VerificationLedgerPanel />"), "Keep full evidence table inside caret");
-  assert.ok(!fold[0].startsWith("<details open"), "Caret should be collapsed by default");
+  const marker = '<details className="nested-expander source-verification-caret">';
+  const start = page.indexOf(marker);
+  assert.ok(start >= 0, "Expected collapsible source verification section");
+  const end = page.indexOf("</details>", start);
+  assert.ok(end > start, "Expected closing caret");
+  const fold = page.slice(start, end);
+  assert.ok(fold.includes("<summary>"), "A clickable caret label is required");
+  assert.ok(fold.includes("sources.required_findings_unresolved"), "Show live review count");
+  assert.ok(fold.includes("<VerificationLedgerPanel />"), "Keep full evidence table inside caret");
+  assert.ok(!fold.includes("<details open"), "Caret should be collapsed by default");
 });
