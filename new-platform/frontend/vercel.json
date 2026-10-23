@@ -2,8 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/cron/pdufa-nightly-backup",
-      "schedule": "40 5 * * *"
+      "path": "/api/cron/pdufa-nightly-backup-pdt",
+      "schedule": "15 3 * * *"
+    },
+    {
+      "path": "/api/cron/pdufa-nightly-backup-pst",
+      "schedule": "15 4 * * *"
     }
   ]
 }
