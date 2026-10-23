@@ -21,6 +21,9 @@ class ProgramMarketEnrichmentTests(unittest.TestCase):
         self.assertEqual(result["latestIexVolume"], 250)
         self.assertEqual(result["marketSignals"]["status"], "INSUFFICIENT_DATA")
         self.assertIsNone(result["marketSignals"]["return20Pct"])
+        self.assertEqual(result["decisionReadiness"]["status"], "NOT_READY")
+        self.assertIn("complete verified assessment", result["decisionReadiness"]["missingRequirements"])
+        self.assertIsNone(result["decisionReadiness"]["tradeCall"])
         self.assertFalse(result["orderExecutionEnabled"])
         self.assertFalse(result["restrictionChanges"])
         self.assertFalse(result["fsFaChanges"])
@@ -31,6 +34,7 @@ class ProgramMarketEnrichmentTests(unittest.TestCase):
         self.assertIsNone(result["latestDailyClose"])
         self.assertIsNone(result["latestIexVolume"])
         self.assertEqual(result["barsAvailable"], 0)
+        self.assertEqual(result["decisionReadiness"]["status"], "NOT_READY")
         self.assertEqual(result["marketSignals"]["status"], "INSUFFICIENT_DATA")
 
     def test_requires_exact_identity(self):
