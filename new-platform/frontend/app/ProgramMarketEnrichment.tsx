@@ -13,6 +13,7 @@ type MarketEnrichment = {
   latestIexVolume?: number | null;
   coverage?: string;
   orderExecutionEnabled?: boolean;
+  decisionReadiness?: { status: string; missingRequirements: string[]; tradeCall: null; };
   marketEvidenceReview?: { status: string; observations: {metric: string; value: number; unit: string}[]; recommendation: null; };
   marketSignals?: {
     status: string;
@@ -70,6 +71,11 @@ export default function ProgramMarketEnrichment({ programId, exactKey }: { progr
         ? <p>20-bar change: {data.marketEvidenceReview.observations[0].value.toFixed(2)}%
             {" · "}Relative IEX volume: {data.marketEvidenceReview.observations[1].value.toFixed(2)}×</p>
         : <p role="status">Market evidence incomplete; no assessment or trade rating inferred.</p>}
+    </div>}
+    {data && <div aria-label="Investment research readiness">
+      <strong>Investment review readiness: {data.decisionReadiness?.status === "READY_FOR_HUMAN_RESEARCH_REVIEW" ? "Ready for human review" : "Not ready"}</strong>
+      {data.decisionReadiness?.missingRequirements?.length ? <p>Evidence needed: {data.decisionReadiness.missingRequirements.join("; ")}</p>
+        : <p>Market-only snapshot does not certify clinical or financing evidence.</p>}
     </div>}
     <small>IEX volume is single-exchange coverage, not consolidated market volume. No trades or restrictions are changed.</small>
   </div>;
