@@ -201,8 +201,8 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
   } finally { db.close(); }
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
-type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "SCANS" | "WT" | "TRADING";
-type TopNav = "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
+type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "WT" | "TRADING";
+type TopNav = "SCANS" | "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -887,6 +887,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
+    if (requested === "SCANS") { setTop("SCANS"); return; }
     if (requested === "RESULTS") { setTop("RESULTS"); return; }
     if (requested === "RESTRICTIONS" || requested === "PRESET") { setTop("RESTRICTIONS"); if(requested==="PRESET")setRestrictionTab("PRESET"); return; }
     if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
@@ -1748,6 +1749,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
 
   return <div className="migration-workspace">
     <div className="worktop">
+      <button type="button" className={top==="SCANS"?"nav-selected":""} aria-current={top==="SCANS"?"page":undefined} onClick={()=>{setTop("SCANS");setMobileNavOpen(false);}}>SCANS</button>
       <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
@@ -1761,7 +1763,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" aria-current={restrictionTab==="PRESET"?"page":undefined} className={restrictionTab==="PRESET"?"nav-selected":""} onClick={()=>{setRestrictionTab("PRESET");setMobileNavOpen(false);}}>PRESET</button>
     </div>}
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <div aria-label="Disease and company tools" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"8px 0 14px"}}><button type="button" className={restrictionFocus==="DISEASE"?"nav-selected":""} aria-pressed={restrictionFocus==="DISEASE"} onClick={()=>setRestrictionFocus("DISEASE")}>DISEASE · 5,168</button><button type="button" className={restrictionFocus==="COMPANY"?"nav-selected":""} aria-pressed={restrictionFocus==="COMPANY"} onClick={()=>setRestrictionFocus("COMPANY")}>COMPANY ↔ DISEASE</button></div>}
-    {top!=="RESTRICTIONS" && <div className="nav-wrapper">
+    {top!=="RESTRICTIONS" && top!=="SCANS" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
         <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
@@ -1770,7 +1772,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </button>
       </div>
       <nav id="pdufa-section-navigation" className="worknav" aria-label="PDUFA sections" data-open={mobileNavOpen?"true":"false"}>
-        {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["SCANS","SCANS"],["WT","WT"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
+        {([["PIPELINE","PIPELINE"],["GEM_JR","GEM JR"],["GEM","GEM"],["MASTER","GOLD MASTER CHART"],["WT","WT"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
           <button type="button" key={key} className={top==="PDUFA"&&nav===key?"nav-selected":""} aria-current={top==="PDUFA"&&nav===key?"page":undefined}
             onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
@@ -1782,8 +1784,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         {id:"GEM" as Nav, label:"GEM", count:snapshot ? verifiedStageCount("GEM") : publishedCounts?.gem ?? null, detail:stageCountDetail("GEM")},
         {id:"WT" as Nav, label:"WT", count:tagsReady ? pageTotals.WT : null, detail:"Tracked watch / trade"},
       ]).map(item=><button type="button" key={item.id}
-        className={"workflow-count workflow-count--"+item.id.toLowerCase()+(nav===item.id?" workflow-count-selected":"")}
-        aria-current={nav===item.id?"page":undefined}
+        className={"workflow-count workflow-count--"+item.id.toLowerCase()+(top==="PDUFA"&&nav===item.id?" workflow-count-selected":"")}
+        aria-current={top==="PDUFA"&&nav===item.id?"page":undefined}
         aria-label={item.label+": "+(item.count===null?"loading":item.count.toLocaleString("en-US"))+" · Open "+item.label}
         onClick={()=>{setTop("PDUFA");setNav(item.id);setMobileNavOpen(false);}}>
         <span className="workflow-count-icon"><WorkflowStageIcon stage={item.id as "PIPELINE"|"GEM_JR"|"GEM"|"WT"}/></span>
@@ -2050,7 +2052,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     </div>}
     {top==="RESULTS" && <DailyResultsPanel />}
     {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
-     {top==="PDUFA" && nav==="SCANS" && <PublishedScansPanel />}
+    {top==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
       <p className="subtle">Reported dates only, not FDA-confirmed future events unless the source explicitly verifies them.</p>
       <div className="table-scroll"><table><thead><tr><th>PDUFA</th><th>Program ID</th><th>Ticker</th><th>Drug</th><th>Program</th><th>Days away</th><th>FDA/source</th></tr></thead>
