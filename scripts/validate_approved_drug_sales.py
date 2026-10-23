@@ -44,7 +44,7 @@ def validate(path=PATH):
             # Require a precise reporting window; do not mix fiscal-year
             # totals with partial-year periods under ambiguous labels.
             period = row["period"].strip().upper()
-            if not re.fullmatch(r"(?:FY|H1|H2|Q[1-4]|9M)20[0-9]{2}", period):
+            if not re.fullmatch(r"(?:FY|H1|H2|Q[1-4]|9M) ?20[0-9]{2}", period):
                 raise ValueError(f"Line {line}: unsupported reporting period")
             if row["currency"] != "USD millions":
                 raise ValueError(f"Line {line}: unsupported units")
