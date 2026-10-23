@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate clock, failure paths, source lineage and publication gates
+      - name: Validate clock, source lineage, and dated RESULTS publication
         run: python -m unittest discover -s tests -p 'test_nightly_pacific_sequence.py' -v
 
   clinical:
