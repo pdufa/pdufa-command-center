@@ -11,7 +11,9 @@ def assessment_readiness_inputs(record: dict, *, program_id: str, exact_key: str
                                 stage: str = "GEM_JR") -> dict:
     if stage not in {"GEM_JR", "GEM"}:
         raise ValueError("Only GEM JR and GEM assessments are eligible")
-    if record.get("programId") != program_id or record.get("exactKey") != exact_key:
+    candidate = (record.get("data") or {}).get("candidate") or {}
+    if (record.get("programId") != program_id or record.get("id") != exact_key
+            or candidate.get("id") != exact_key or candidate.get("programId") != program_id):
         return {"assessment_score": None, "assessment_coverage": None,
                 "status": "IDENTITY_MISMATCH"}
     model = (record.get("models") or {}).get(stage)
