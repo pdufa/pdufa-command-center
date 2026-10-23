@@ -283,25 +283,32 @@ async def lifespan(app: FastAPI):
             if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() in ("1", "true", "yes"):
                 try:
                     with Session(ENGINE) as review_session:
-                        sample = review_session.scalars(
+                        samples = review_session.scalars(
                             select(ProgramIdentity).where(ProgramIdentity.ticker != "")
-                            .order_by(ProgramIdentity.id).limit(1)
-                        ).first()
-                        row = ((sample.id, sample.ticker, sample.source_key) if sample else None)
-                    if row is None:
+                            .order_by(ProgramIdentity.id).limit(5)
+                        ).all()
+                        rows = [(sample.id, sample.ticker, sample.source_key) for sample in samples]
+                    if not rows:
                         logging.getLogger(__name__).warning(
                             "PDUFA_ALPACA_PROGRAM_CHECK status=NO_REGISTERED_PROGRAM")
                     else:
                         from .program_market_enrichment import enrich_program_market
-                        pid = f"PDUFA-{row[0]:06d}"
-                        result = enrich_program_market(pid, row[2], row[1], "1M")
-                        logging.getLogger(__name__).warning(
-                            "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=%s bars=%d close_present=%s volume_present=%s",
-                            pid, row[1], result.get("status"),
-                            result.get("barsAvailable", 0),
-                            isinstance(result.get("latestDailyClose"), (int, float)),
-                            isinstance(result.get("latestIexVolume"), (int, float)),
-                        )
+                        for program_id, ticker, exact_key in rows:
+                            pid = f"PDUFA-{program_id:06d}"
+                            try:
+                                result = enrich_program_market(pid, exact_key, ticker, "1M")
+                                logging.getLogger(__name__).warning(
+                                    "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s exact_key_match=%s status=%s bars=%d close_present=%s volume_present=%s",
+                                    pid, ticker, result.get("exactKey") == exact_key,
+                                    result.get("status"), result.get("barsAvailable", 0),
+                                    isinstance(result.get("latestDailyClose"), (int, float)),
+                                    isinstance(result.get("latestIexVolume"), (int, float)),
+                                )
+                            except Exception as program_exc:
+                                logging.getLogger(__name__).error(
+                                    "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=ERROR error_type=%s",
+                                    pid, ticker, type(program_exc).__name__,
+                                )
                 except Exception as exc:
                     logging.getLogger(__name__).error(
                         "PDUFA_ALPACA_PROGRAM_CHECK status=ERROR error_type=%s",
