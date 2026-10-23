@@ -63,6 +63,48 @@ def main():
                 append_url = BASE + "/values/" + requests.utils.quote("'Scan History'!A:N", safe="!:'") + ":append"
                 response = session.post(append_url, params={"valueInputOption":"RAW","insertDataOption":"INSERT_ROWS"}, json={"values":[row]}, timeout=45)
                 response.raise_for_status()
+    # Historical FDA model outcomes: append only separately identifiable research
+    # records, explicitly marked retrospective. Never label model outcomes as
+    # independently FDA-verified decisions or assign live ratings.
+    historical_path = Path("data/fda_100_on_100_historical.csv")
+    if historical_path.is_file():
+        records = list(csv.DictReader(historical_path.open(newline="", encoding="utf-8-sig")))
+        expected = {"event_key", "ticker", "pdufa_date", "qualified_direction", "actual_outcome", "source_layer", "status"}
+        if records and all(expected.issubset(record) for record in records):
+            history_url = BASE + "/values/" + requests.utils.quote("'FDA Outcome History'!A1:L500", safe="!:'")
+            existing_response = session.get(history_url, timeout=45)
+            existing_response.raise_for_status()
+            existing = existing_response.json().get("values", [])
+            header = ["Company", "Ticker", "Drug", "Indication", "NDA/BLA", "PDUFA Date",
+                      "FDA Decision", "Rating", "Rating Date", "Decision Source URL",
+                      "Verified On", "Notes"]
+            if existing and existing[0] == header:
+                # Preserve previously sourced rows; the event key is carried in Notes.
+                seen = {cell for row in existing[1:] for cell in row[11:12] if cell}
+                new_rows = []
+                for record in records:
+                    key = record["event_key"].strip()
+                    if not key or any(key in note for note in seen):
+                        continue
+                    # Event key often embeds drug identity; no reliable NDA/BLA,
+                    # indication, primary FDA decision URL or numeric rating here.
+                    parts = key.split("|")
+                    drug = parts[2] if len(parts) > 2 else ""
+                    note = ("MODEL_HISTORY " + key + " | " + record.get("source_layer", "") +
+                            " | " + record.get("status", "") +
+                            " | historical outcome from research dataset; primary FDA decision not independently verified")
+                    new_rows.append(["", record.get("ticker", ""), drug, "", "",
+                                     record.get("pdufa_date", ""),
+                                     record.get("actual_outcome", ""), "", "", "", "", note])
+                if new_rows:
+                    append_url = BASE + "/values/" + requests.utils.quote("'FDA Outcome History'!A:L", safe="!:'") + ":append"
+                    response = session.post(append_url,
+                        params={"valueInputOption": "RAW", "insertDataOption": "INSERT_ROWS"},
+                        json={"values": new_rows}, timeout=45)
+                    response.raise_for_status()
+                print(f"Historical FDA research records appended: {len(new_rows)} (not independent FDA verification)")
+            else:
+                print("FDA Outcome History headers changed; skipping research import")
     print(f"Published Candidates synced: {len(candidates)} rows. Full Pipeline/GEM data is not included in this snapshot.")
 
 
