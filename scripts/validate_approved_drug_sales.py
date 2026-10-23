@@ -5,6 +5,7 @@ This does not verify the underlying SEC/issuer disclosure amounts.
 import csv
 import datetime
 import math
+import re
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -42,7 +43,6 @@ def validate(path=PATH):
                 raise ValueError(f"Line {line}: missing required metadata")
             # Require a precise reporting window; do not mix fiscal-year
             # totals with partial-year periods under ambiguous labels.
-            import re
             period = row["period"].strip().upper()
             if not re.fullmatch(r"(?:FY|H1|H2|Q[1-4]|9M)20[0-9]{2}", period):
                 raise ValueError(f"Line {line}: unsupported reporting period")
