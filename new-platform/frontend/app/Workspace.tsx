@@ -12,6 +12,7 @@ import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import PublishedScansPanel from "./PublishedScansPanel";
 import DailyResultsPanel from "./DailyResultsPanel";
 import PipelineData from "./PipelineData";
+import DetailButton from "./DetailButton";
 import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
@@ -549,6 +550,7 @@ function GemInlineSection({title,description,open,onToggle,children}:{
 function SourceDetails({ record }: { record: Candidate }) {
   return (
     <div className="program-details">
+      <DetailButton item={record} />
       <div className="trial-details">
         <div><strong>Permanent Program ID</strong><span className="permanent-id">{stated(record.programId,"REGISTRY UNAVAILABLE")}</span></div>
         <div><strong>Exact Pipeline source key</strong><span>{record.id}</span></div>
@@ -1634,6 +1636,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                 <td>{r.candidateLinked===false?"UNLINKED":stated(r.membershipStatus||r.phase3Status,"—")}</td>
                 <td><button type="button" className="secondary" onClick={()=>selectTrial(r,"chart")}>Alpaca chart ↓</button></td>
                 <td>
+                  <DetailButton item={r} />
                   {trialSheetUrl(r) && <a href={trialSheetUrl(r)} target="_blank" rel="noopener noreferrer" className="trial-sheet-link">Full trial sheet ↗</a>}
                   <button type="button" className="record-select" onClick={()=>selectTrial(r,"overview")}>Research details ↓<small>{stated(r.drug)} · {r.id}</small></button>
                 </td>

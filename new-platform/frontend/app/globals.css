@@ -3255,3 +3255,16 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .disease-coverage { font-size: 13px; }
 .disease-coverage summary { cursor: pointer; }
 .disease-coverage p { margin-top: 8px; }
+
+/* Historical issuer sales inside the shared company detail sheet. */
+.approved-sales-panel { margin-top: 18px; min-width: 0; }
+.approved-sales-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.approved-sales-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 10px; margin: 14px 0; }
+.approved-sales-summary article { border: 1px solid #9bb2c8; border-radius: 8px; padding: 12px; min-width: 0; }
+.approved-sales-summary strong, .approved-sales-summary small { display: block; margin-top: 6px; }
+.approved-sales-products { display: grid; gap: 10px; }
+.approved-sales-product { border: 1px solid #9bb2c8; border-radius: 8px; padding: 12px; min-width: 0; overflow-wrap: anywhere; }
+.approved-sales-product header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.approved-sales-product p { margin: 8px 0; }
+.approved-sales-evidence { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .9em; }
+.approved-sales-heading select { max-width: 100%; min-height: 44px; }
