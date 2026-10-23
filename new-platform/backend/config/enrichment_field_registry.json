@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "mode": "read_only",
+  "qualification_changes": false,
+  "auto_activate_restrictions": false,
+  "fs_fa_preserved": true,
+  "stages": [
+    "PIPELINE",
+    "GEM_JR",
+    "GEM"
+  ],
+  "fields": [
+    {
+      "key": "company_name",
+      "group": "identity",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "ticker",
+      "group": "identity",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "cik",
+      "group": "identity",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "program_id",
+      "group": "identity",
+      "kind": "source",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "nct_id",
+      "group": "identity",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "drug_name",
+      "group": "identity",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "indication",
+      "group": "identity",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "trial_phase",
+      "group": "identity",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "trial_status",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "trial_start_date",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "primary_completion_date",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "enrollment",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "primary_endpoint",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "primary_endpoint_result",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "p_value",
+      "group": "clinical",
+      "kind": "source",
+      "source": "trial_publication",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "adverse_events",
+      "group": "clinical",
+      "kind": "source",
+      "source": "ClinicalTrials.gov",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "comparator_effect",
+      "group": "clinical",
+      "kind": "derived",
+      "source": "trial_publication",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "application_number",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "application_type",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "application_status",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "pdufa_date",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "issuer_disclosure",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "priority_review",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "fast_track",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "breakthrough_therapy",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "orphan_drug",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "FDA",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "clinical_hold",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "issuer_disclosure",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "prior_crl",
+      "group": "regulatory",
+      "kind": "source",
+      "source": "issuer_disclosure",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "cash_balance",
+      "group": "financial",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "operating_cash_flow",
+      "group": "financial",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "debt",
+      "group": "financial",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "shares_outstanding",
+      "group": "financial",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "revenue",
+      "group": "financial",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "financing_event",
+      "group": "financial",
+      "kind": "source",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "cash_runway_months",
+      "group": "financial",
+      "kind": "derived",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "dilution_pct",
+      "group": "financial",
+      "kind": "derived",
+      "source": "SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "last_price",
+      "group": "market",
+      "kind": "source",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "daily_volume",
+      "group": "market",
+      "kind": "source",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "historical_prices",
+      "group": "market",
+      "kind": "source",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "market_cap",
+      "group": "market",
+      "kind": "derived",
+      "source": "Alpaca+SEC",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "avg_dollar_volume",
+      "group": "market",
+      "kind": "derived",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "relative_volume",
+      "group": "market",
+      "kind": "derived",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "momentum_30d",
+      "group": "market",
+      "kind": "derived",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "realized_volatility",
+      "group": "market",
+      "kind": "derived",
+      "source": "Alpaca",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "clinical_score",
+      "group": "assessment",
+      "kind": "modeled",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "evidence_completeness",
+      "group": "assessment",
+      "kind": "derived",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "regulatory_probability",
+      "group": "assessment",
+      "kind": "modeled",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "base_case_upside",
+      "group": "assessment",
+      "kind": "modeled",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "downside_estimate",
+      "group": "assessment",
+      "kind": "modeled",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "reward_risk_ratio",
+      "group": "assessment",
+      "kind": "derived",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    },
+    {
+      "key": "expected_return",
+      "group": "assessment",
+      "kind": "modeled",
+      "source": "internal",
+      "status": "not_connected",
+      "filter_enabled": false
+    }
+  ]
+}

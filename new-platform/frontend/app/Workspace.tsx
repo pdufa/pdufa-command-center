@@ -13,6 +13,7 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import DailyResultsPanel from "./DailyResultsPanel";
 import PipelineData from "./PipelineData";
 import DetailButton from "./DetailButton";
+import SharedEnrichment from "./SharedEnrichment";
 import RestrictionImpact from "./RestrictionImpact";
 import TrialQualificationFilters from "./TrialQualificationFilters";
 import SpecialDesignationCounts from "./SpecialDesignationCounts";
@@ -1815,6 +1816,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       </div>
     {summaryError && !publishedCounts && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
     {snapshot?.sourceHealth && <div className="source-health workspace-source-health-full" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
+    {(top==="RESTRICTIONS" || top==="PDUFA" && (nav==="PIPELINE" || nav==="GEM_JR" || nav==="GEM")) && <SharedEnrichment key={top+nav} stage={nav==="GEM_JR" || nav==="GEM" ? nav : "PIPELINE"}/>}
     {!snapshot && <div className="panel" role="status" aria-live="polite">
       <p>{fetchError || "Loading the complete workspace. You can browse the pipeline quick view below."}</p>
       <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>

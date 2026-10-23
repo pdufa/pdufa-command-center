@@ -235,10 +235,13 @@ class AwaitedWorkflowTests(unittest.TestCase):
         sequence = read('pdufa-overnight-sequential.yml')
         self.assertIn('pdufa-complete-overnight-sequence-', sequence)
         self.assertIn('cancel-in-progress: false', sequence)
-        stages = ['validate', 'clinical', 'report', 'sources', 'scoring-and-repair']
+        stages = ['validate', 'clinical', 'report', 'sources', 'shared-data', 'scoring-and-repair']
         for previous, current in zip(stages, stages[1:]):
             part = job(sequence, current)
-            self.assertIn('needs: ' + previous, part)
+            needs = re.search(r'(?m)^    needs: (.+)$', part)
+            self.assertIsNotNone(needs)
+            dependencies = needs.group(1).strip('[]').replace(' ', '').split(',')
+            self.assertIn(previous, dependencies)
             self.assertIn('uses: ./.github/workflows/', part)
             if current != 'clinical': self.assertIn('always()', part)
         self.assertIn('include_gem: true', job(sequence, 'clinical'))

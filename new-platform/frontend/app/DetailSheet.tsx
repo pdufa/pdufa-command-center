@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 import ApprovedDrugSales from "./ApprovedDrugSales";
+import {SharedProgramFields} from "./SharedEnrichment";
 export type DetailItem={id?:string;programId?:string;ticker?:string;company?:string;drug?:string;indication?:string;nctId?:string;stage?:string;pdufaDate?:string;marketCap?:number|null;fdaSource?:string;lastChecked?:string};
 type Kind="trial"|"company"|"disease"|"all";
 const missing="Not verified / not available";
@@ -19,6 +20,7 @@ export default function DetailSheet({item,onClose,initial="all"}:{item:DetailIte
  {(kind==="trial"||kind==="all")&&<section className="panel" style={{padding:12,marginBottom:10}}><h3>TRIAL / PROGRAM</h3>{field("Program ID",item.programId||item.id)}{field("Drug",item.drug)}{field("Trial NCT",item.nctId)}{field("Phase / stage",item.stage)}{field("PDUFA",item.pdufaDate)}{item.nctId&&/^NCT\d{8}$/.test(item.nctId)&&<a href={"https://clinicaltrials.gov/study/"+item.nctId} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov record ↗</a>}</section>}
  {(kind==="company"||kind==="all")&&<section className="panel" style={{padding:12,marginBottom:10}}><h3>COMPANY</h3>{field("Company",item.company)}{field("Ticker",item.ticker)}{field("Market capitalization",typeof item.marketCap==="number"?"$"+item.marketCap.toLocaleString("en-US"):null)}{field("Previous PDUFA winners / ratings",null)}{field("Previous CRLs / setbacks",null)}{field("Other current pipeline programs",null)}<ApprovedDrugSales ticker={item.ticker}/><p className="subtle">Historical FDA outcomes and ratings remain unavailable until sourced.</p></section>}
  {(kind==="disease"||kind==="all")&&<section className="panel" style={{padding:12,marginBottom:10}}><h3>DISEASE / INDICATION</h3>{field("Disease / indication",item.indication)}{field("Drug under review",item.drug)}{field("Sponsor / company",item.company||item.ticker)}{field("Competing programs and approved treatments",null)}</section>}
+ <SharedProgramFields key={(item.ticker||"")+"|"+(item.id||"")} ticker={item.ticker} exactKey={item.id}/>
  <p className="subtle">Last source check: {item.lastChecked||missing}. {source&&<a href={source} target="_blank" rel="noopener noreferrer">FDA evidence ↗</a>}</p>
  <button type="button" className="secondary" onClick={onClose}>CLOSE DETAILS</button>
  </section></div>;
