@@ -7,6 +7,7 @@ associations or changes qualification, restrictions, scoring or trading state.
 from __future__ import annotations
 
 from .alpaca_market_chart import get_alpaca_bars
+from .market_signal_analysis import summarize_daily_bars
 
 
 def enrich_program_market(program_id: str, source_key: str, ticker: str, range_label: str = "1Y") -> dict:
@@ -20,6 +21,7 @@ def enrich_program_market(program_id: str, source_key: str, ticker: str, range_l
     bars = chart.get("bars") or []
     status = chart.get("status", "ALPACA_UNAVAILABLE")
     last = bars[-1] if status == "OK" and bars else None
+    signals = summarize_daily_bars(bars) if status == "OK" else summarize_daily_bars([])
     return {
         "programId": program_id,
         "exactKey": source_key,
@@ -32,6 +34,7 @@ def enrich_program_market(program_id: str, source_key: str, ticker: str, range_l
         "latestDailyClose": last["close"] if last else None,
         "latestIexVolume": last["volume"] if last else None,
         "barsAvailable": len(bars) if status == "OK" else 0,
+        "marketSignals": signals,
         "source": chart.get("source"),
         "researchOnly": True,
         "orderExecutionEnabled": False,
