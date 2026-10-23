@@ -278,6 +278,33 @@ async def lifespan(app: FastAPI):
                     "PDUFA_ALPACA_CHART_CHECK status=%s feed=%s daily_bars=%d",
                     probe["status"], probe["feed"], len(probe.get("bars") or []),
                 )
+            # Isolated-review-only, read-only end-to-end program identity check.
+            # Uses the internal DB connection; no public auth bypass or write.
+            if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() in ("1", "true", "yes"):
+                try:
+                    with Session(ENGINE) as review_session:
+                        sample = review_session.scalars(
+                            select(ProgramIdentity).where(ProgramIdentity.ticker != "")
+                            .order_by(ProgramIdentity.id).limit(1)
+                        ).first()
+                        row = ((sample.id, sample.ticker, sample.source_key) if sample else None)
+                    if row is None:
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_ALPACA_PROGRAM_CHECK status=NO_REGISTERED_PROGRAM")
+                    else:
+                        from .program_market_enrichment import enrich_program_market
+                        pid = f"PDUFA-{row[0]:06d}"
+                        result = enrich_program_market(pid, row[2], row[1], "1M")
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=%s bars=%d",
+                            pid, row[1], result.get("status"),
+                            len(result.get("bars") or []),
+                        )
+                except Exception as exc:
+                    logging.getLogger(__name__).error(
+                        "PDUFA_ALPACA_PROGRAM_CHECK status=ERROR error_type=%s",
+                        type(exc).__name__,
+                    )
             from .source_workspace import workspace
             from .workspace_response import prepared
             published = prepared(workspace())
