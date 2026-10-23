@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 REPORT = ROOT / "data" / "nightly_scan_report.json"
 TRIALS = ROOT / "data" / "all_phase_trials.csv"
 MEMBERSHIP = ROOT / "data" / "gem_stage_membership.json"
+SOURCES = ROOT / "data" / "pdufa_source_report.json"
 ARCHIVE = ROOT / "data" / "daily_scan_results.json"
 PACIFIC = ZoneInfo("America/Los_Angeles")
 
@@ -49,6 +50,53 @@ def trial_total() -> dict:
     except (OSError, ValueError):
         pass
     return result
+
+
+def same_run_trial_inventory(report: dict, run_id: int) -> dict | None:
+    """Show same-run tracked trial totals and record changes, not invented additions."""
+    for scan in report.get("scans", []):
+        if (not isinstance(scan, dict) or str(scan.get("scan")) != "2"
+                or scan.get("run_id") != run_id
+                or scan.get("collector_status") != "COMPLETE"):
+            continue
+        metrics = scan.get("metrics", {})
+        total = metrics.get("tracked_trials_total") if isinstance(metrics, dict) else None
+        changed = scan.get("changed_trials_this_execution")
+        if not isinstance(total, int) or isinstance(total, bool) or total < 0:
+            continue
+        counts = empty(
+            "Same-night verified collector: tracked clinical trial inventory. "
+            "This is not the qualified Pipeline total or an independently certified "
+            "unique-NCT published master feed. Updated means trial records changed, "
+            "not new trials or new GEM candidates."
+        )
+        counts["total"] = total
+        if isinstance(changed, int) and not isinstance(changed, bool) and 0 <= changed <= total:
+            counts["updated"] = changed
+        return counts
+    return None
+
+
+def same_run_source_note(run_id: int) -> str | None:
+    try:
+        sources = json.loads(SOURCES.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if str(sources.get("latest_run_id")) != str(run_id):
+        return None
+    names = ("findings_verified", "findings_due", "findings_unresolved",
+             "findings_unavailable", "findings_not_applicable")
+    if not all(isinstance(sources.get(name), int) and
+               not isinstance(sources.get(name), bool) and sources[name] >= 0
+               for name in names):
+        return None
+    return (
+        f"Same-run source audit: {sources['findings_verified']} of "
+        f"{sources['findings_due']} verified; {sources['findings_unresolved']} "
+        f"unresolved, {sources['findings_unavailable']} unavailable, "
+        f"{sources['findings_not_applicable']} not applicable. "
+        f"Full coverage verified: {'yes' if sources.get('full_coverage_verified') is True else 'no'}."
+    )
 
 
 def stage_total(ledger: dict, stage: str, day: str) -> dict:
@@ -111,7 +159,16 @@ def record(run_id: int, started: str, conclusion: str) -> dict:
     status = "RUN_FAILED" if conclusion != "success" else "UNVERIFIED"
     if same_run:
         status = "PARTIAL" if conclusion == "success" else "RUN_FAILED"
-        sections["master"] = trial_total()
+        # Prefer exact-run inventory evidence to a feed copied at an unrelated time.
+        sections["master"] = same_run_trial_inventory(report, run_id) or trial_total()
+        if sections["master"].get("updated") is not None:
+            notes.append(
+                f"{sections['master']['updated']} tracked trial records changed during "
+                "this run; newly added trials and qualified Pipeline additions remain unverified."
+            )
+        source_note = same_run_source_note(run_id)
+        if source_note:
+            notes.append(source_note)
         try:
             ledger = json.loads(MEMBERSHIP.read_text(encoding="utf-8"))
         except (OSError, ValueError):
