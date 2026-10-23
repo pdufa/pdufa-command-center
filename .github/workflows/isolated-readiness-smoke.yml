@@ -1,0 +1,25 @@
+name: Isolated PDUFA Readiness Smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: isolated-alpaca-review
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check isolated endpoint without exposing credentials
+        env:
+          PDUFA_REVIEW_BASE_URL: https://pdufa-alpaca-enrichment-review.onrender.com
+          PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_INTERNAL_API_KEY }}
+        run: |
+          if [ -z "$PDUFA_INTERNAL_API_KEY" ]; then
+            echo "Missing isolated-alpaca-review environment secret PDUFA_INTERNAL_API_KEY"
+            exit 1
+          fi
+          python new-platform/backend/scripts/smoke_decision_readiness.py
