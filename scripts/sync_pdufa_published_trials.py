@@ -198,6 +198,58 @@ def main() -> None:
     else:
         print("Daily Results tab missing; skipping history without changing source imports")
 
+    # Publish import status only after all source and history writes succeed.
+    # A successful import is separate from completion of the overnight scanner.
+    if "Import Status" in sheets:
+        status_rows = read("Import Status", "A1:D100")
+        status_header = ["Dataset", "Records", "Status", "Source / important qualification"]
+        if not status_rows or status_rows[0] != status_header:
+            raise SystemExit("Import Status schema changed; refusing to overwrite status")
+        import subprocess
+        source_sha = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], text=True
+        ).strip()
+        imported_at = datetime.now(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d %I:%M:%S %p %Z")
+        event = os.getenv("GITHUB_EVENT_NAME", "local")
+        automatic = event in ("push", "workflow_run", "schedule")
+        repository = os.getenv("GITHUB_REPOSITORY", "pdufa/pdufa-command-center")
+        run_id = os.getenv("GITHUB_RUN_ID", "")
+        run_url = f"https://github.com/{repository}/actions/runs/{run_id}" if run_id else ""
+        updates = {
+            "Master Trials (Published)": [
+                published_count, "IMPORTED · SOURCE VALIDATED",
+                f"Unique NCT IDs in data/all_phase_trials.csv; imported {imported_at}. "
+                "This validates the published feed, not a newly completed scanner run.",
+            ],
+            "GEM JR": [
+                jr_count, "IMPORTED · SAVED MEMBERS",
+                "Published GEM_JR membership ledger; FS/FA and sourced scores retained independently by trial ID.",
+            ],
+            "GEM": [
+                gem_count, "IMPORTED · SAVED MEMBERS",
+                "Published GEM membership ledger; FS/FA and sourced scores retained independently by trial ID.",
+            ],
+            "Automated Google Sheets Sync": [
+                "—", "ACTIVE · AUTOMATIC IMPORT VERIFIED" if automatic else "ACTIVE · MANUAL IMPORT VERIFIED",
+                f"Last completed import: {imported_at}; trigger: {event}. {run_url} "
+                f"Imported {published_count:,} published NCTs, {jr_count} GEM JR and {gem_count} GEM. "
+                "Qualified Pipeline and FDA designations are not populated by this import; "
+                "overnight scanner completion is not verified here.",
+            ],
+            "Published feed commit SHA": [
+                source_sha, "PROVENANCE",
+                f"https://github.com/{repository}/blob/{source_sha}/data/all_phase_trials.csv",
+            ],
+        }
+        data = [
+            {"range": f"'Import Status'!B{number}:D{number}", "values": [updates[row[0]]]}
+            for number, row in enumerate(status_rows, start=1)
+            if row and row[0] in updates
+        ]
+        if data:
+            req("POST", "/values:batchUpdate", json={"valueInputOption": "RAW", "data": data})
+        print(f"Import Status refreshed: {imported_at}; trigger={event}; source={source_sha}")
+
     print(
         f"Synced {len(trials)} unique published trials, "
         f"{len(stage_updates['GEM JR'])} GEM JR, {len(stage_updates['GEM'])} GEM. "
