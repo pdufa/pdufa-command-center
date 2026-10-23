@@ -165,8 +165,16 @@ def main():
                            "Verified On", "Disclosure Status"]
         if not existing or existing[0] != expected_header:
             raise SystemExit("Approved Drug Sales header mismatch; refusing import")
-        seen = {(row[1].upper().strip(), row[2].upper().strip(), row[4].upper().strip())
-                for row in existing[1:] if len(row) > 4}
+        seen = set()
+        for row in existing[1:]:
+            if len(row) <= 4 or not any(str(value).strip() for value in row):
+                continue
+            key = (row[1].upper().strip(), row[2].upper().strip(), row[4].upper().strip())
+            if not all(key):
+                raise SystemExit("Incomplete existing sales identity; refusing import")
+            if key in seen:
+                raise SystemExit("Duplicate sales key already exists in sheet: " + repr(key))
+            seen.add(key)
         additions = []
         for d in disclosures:
             key = (d["ticker"].upper().strip(), d["approved_product"].upper().strip(), d["period"].upper().strip())
