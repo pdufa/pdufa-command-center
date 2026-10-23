@@ -110,3 +110,59 @@ jobs:
           if any(item['result'] != 'success' for item in results.values()):
               raise SystemExit('One or more overnight stages failed or were skipped; inspect their reports.')
           PY
+
+  # Archive this run directly; a separate workflow_run hook may not fire for a token-dispatched workflow.
+  # Execute after the complete sequence (or its failure); never start another scan.
+  archive:
+    needs: result
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout published main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Install Python for Pacific-date archive
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record finished scan under its actual Pacific start date
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SCAN_RESULT: ${{ needs.result.result }}
+        run: |
+          set -euo pipefail
+          STARTED_AT="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" --jq '.run_started_at')"
+          test -n "$STARTED_AT" && test "$STARTED_AT" != "null"
+          if [[ "$SCAN_RESULT" == "success" ]]; then
+            CONCLUSION=success
+          else
+            CONCLUSION=failure
+          fi
+          python scripts/pdufa_daily_results.py \
+            --run-id "$GITHUB_RUN_ID" \
+            --started-at "$STARTED_AT" \
+            --conclusion "$CONCLUSION"
+      - name: Publish date-indexed results for website
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily_scan_results.json
+          if git diff --cached --quiet; then
+            echo "Date already registered; no duplicate publication."
+            exit 0
+          fi
+          git commit -m "Publish Pacific RESULTS for run ${{ github.run_id }}"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Pacific dated RESULTS published to the dashboard source."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Dated RESULTS publication failed; scan evidence remains archived."
+          exit 1
