@@ -25,6 +25,8 @@ def validate(path=PATH):
             raise ValueError("Financial ledger schema mismatch")
         seen = set()
         count = 0
+        known_company_by_ticker = {}
+        source_periods = set()
         for line, row in enumerate(reader, start=2):
             if None in row or any(v is None for v in row.values()):
                 raise ValueError(f"Line {line}: invalid number of fields")
@@ -32,6 +34,11 @@ def validate(path=PATH):
             if not all(key) or key in seen:
                 raise ValueError(f"Line {line}: missing or duplicate ticker/product/period")
             seen.add(key)
+            company = row["company"].strip().casefold()
+            ticker = key[0]
+            if ticker in known_company_by_ticker and known_company_by_ticker[ticker] != company:
+                raise ValueError(f"Line {line}: ticker maps to multiple company names")
+            known_company_by_ticker[ticker] = company
             if any(not row[k].strip() for k in ("company", "indication", "disclosure_status")):
                 raise ValueError(f"Line {line}: missing required metadata")
             if row["currency"] != "USD millions":
