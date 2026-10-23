@@ -304,5 +304,62 @@ class AwaitedWorkflowTests(unittest.TestCase):
         self.assertNotIn('pdufa-nightly-clinical.yml/dispatches',scheduler)
 
 
+class DatedArchiveTests(unittest.TestCase):
+    def test_archive_is_awaited_after_the_full_sequence(self):
+        sequence = read('pdufa-overnight-sequential.yml')
+        archive = job(sequence, 'archive')
+        self.assertIn('needs: result', archive)
+        self.assertIn('always()', archive)
+        self.assertIn("github.event_name == 'workflow_dispatch'", archive)
+        self.assertIn('scripts/pdufa_daily_results.py', archive)
+        self.assertIn('git push origin HEAD:main', archive)
+        self.assertNotIn('dispatches', archive)
+
+    def test_same_night_changes_and_saved_membership_not_confused_with_new(self):
+        from scripts import pdufa_daily_results as daily
+        from unittest.mock import patch
+        run_id = 39895404578
+        report = {
+            'latest_run_id': run_id,
+            'latest_run_started_at_utc': '2026-10-23T03:30:41Z',
+            'status': 'PARTIAL',
+            'scans': [{'scan': '2', 'run_id': run_id,
+                       'collector_status': 'COMPLETE',
+                       'changed_trials_this_execution': 49,
+                       'metrics': {'tracked_trials_total': 11594}}],
+        }
+        membership = {'stages': {
+            'GEM_JR': {'last_complete_snapshot': '2026-10-22',
+                       'entries': {'j1': {'status': 'ACTIVE', 'periods': []}}},
+            'GEM': {'last_complete_snapshot': '2026-10-22',
+                    'entries': {'g1': {'status': 'ACTIVE', 'periods': []}}},
+        }}
+        source = {'latest_run_id': str(run_id), 'findings_due': 1121,
+                  'findings_verified': 995, 'findings_unresolved': 23,
+                  'findings_unavailable': 93, 'findings_not_applicable': 10,
+                  'full_coverage_verified': False}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'report.json').write_text(json.dumps(report))
+            (root / 'members.json').write_text(json.dumps(membership))
+            (root / 'sources.json').write_text(json.dumps(source))
+            with (patch.object(daily, 'REPORT', root / 'report.json'),
+                  patch.object(daily, 'MEMBERSHIP', root / 'members.json'),
+                  patch.object(daily, 'SOURCES', root / 'sources.json')):
+                entry = daily.record(run_id, '2026-10-23T03:30:41Z', 'success')
+                self.assertEqual(entry['date_pacific'], '2026-10-22')
+                self.assertEqual(entry['status'], 'PARTIAL')
+                self.assertEqual(entry['sections']['master']['total'], 11594)
+                self.assertEqual(entry['sections']['master']['updated'], 49)
+                self.assertIsNone(entry['sections']['master']['new'])
+                self.assertEqual(entry['sections']['gem_jr']['new'], 0)
+                self.assertEqual(entry['sections']['gem']['new'], 0)
+                self.assertIsNone(entry['sections']['pipeline']['total'])
+                self.assertIsNone(entry['sections']['designations']['total'])
+                self.assertTrue(any('995 of 1121' in note for note in entry['notes']))
+                self.assertIsNone(daily.same_run_trial_inventory(report, run_id + 1))
+
+
+
 if __name__ == '__main__':
     unittest.main()
