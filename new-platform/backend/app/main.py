@@ -298,7 +298,7 @@ async def lifespan(app: FastAPI):
                         logging.getLogger(__name__).warning(
                             "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=%s bars=%d",
                             pid, row[1], result.get("status"),
-                            len(result.get("bars") or []),
+                            result.get("barsAvailable", 0),
                         )
                 except Exception as exc:
                     logging.getLogger(__name__).error(
