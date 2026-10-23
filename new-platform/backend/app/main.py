@@ -631,6 +631,47 @@ def read_program_market_enrichment(program_id: str, range: str = "1Y"):
     return enrich_program_market(program_id, source_key, ticker, range)
 
 
+@app.get("/api/review/program-decision-readiness/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
+    """Isolated, read-only evidence readiness. No trading or preset changes."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    if stage not in {"GEM_JR", "GEM"}:
+        raise HTTPException(status_code=422, detail="Invalid research stage")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        exact_key, ticker = identity.source_key, identity.ticker
+    from .program_market_enrichment import enrich_program_market
+    from .assessment_readiness_adapter import assessment_readiness_inputs
+    from .decision_readiness import decision_readiness
+    market = enrich_program_market(program_id, exact_key, ticker, "1M")
+    assessment = {"assessment_score": None, "assessment_coverage": None,
+                  "status": "ASSESSMENT_UNAVAILABLE"}
+    try:
+        from .assessment_service import exact_detail
+        detail = exact_detail(exact_key)
+        assessment = assessment_readiness_inputs(
+            detail, program_id=program_id, exact_key=exact_key, stage=stage)
+    except HTTPException as exc:
+        if exc.status_code not in {404, 409, 503}:
+            raise
+    readiness = decision_readiness(
+        program_id=program_id, exact_key=exact_key,
+        assessment_score=assessment["assessment_score"],
+        assessment_coverage=assessment["assessment_coverage"],
+        market_review=market["marketEvidenceReview"],
+        catalyst_verified=False, financing_risk_reviewed=False,
+    )
+    return {"programId": program_id, "exactKey": exact_key, "stage": stage,
+            "assessmentEvidence": assessment, "marketEvidenceReview": market["marketEvidenceReview"],
+            "decisionReadiness": readiness, "researchOnly": True,
+            "ordersEnabled": False, "fsFaChanges": False}
+
+
 @app.get("/api/review/alpaca-program-smoke", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
