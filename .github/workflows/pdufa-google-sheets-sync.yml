@@ -1,15 +1,30 @@
 name: Sync PDUFA Published Data to Google Sheets
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-google-sheets-sync.yml'
+      - 'scripts/sync_pdufa_google_sheets.py'
+      - 'scripts/sync_pdufa_published_trials.py'
+      - 'scripts/test_approved_drug_sales.py'
+      - 'scripts/validate_approved_drug_sales.py'
+      - 'data/approved_drug_sales_verified.csv'
+      - 'data/fda_100_on_100_historical.csv'
+      - 'data/post_phase3_discoveries.csv'
   workflow_dispatch:
   workflow_run:
     workflows: ["PDUFA Overnight Sequential Scans"]
     types: [completed]
 permissions:
   contents: read
+concurrency:
+  group: pdufa-google-sheets-sync
+  cancel-in-progress: false
 jobs:
   sync:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
