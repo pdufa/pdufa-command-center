@@ -287,7 +287,14 @@ export default function PublishedScansPanel() {
       <p className="subtle">If the new platform's persistent database is unavailable, source reports can remain readable here while saved checklists, program IDs, and other database-dependent operations stay blocked to prevent data loss.</p>
       </div>
     </>}
-    <VerificationLedgerPanel />
+    <details className="nested-expander source-verification-caret">
+      <summary>
+        Source Verification Ledger · {typeof sources?.required_findings_unresolved === "number"
+          ? `${sources.required_findings_unresolved} required findings need review`
+          : "expand to inspect saved findings"}
+      </summary>
+      <VerificationLedgerPanel />
+    </details>
 
   </section>;
 }
