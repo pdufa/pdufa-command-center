@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from fastapi import HTTPException
-from app.main import read_program_market_enrichment
+from app.main import read_program_market_enrichment, require_internal_key, require_storage
 
 
 class _Session:
@@ -24,6 +24,27 @@ class _Session:
 
 
 class MarketEnrichmentEndpointTests(unittest.TestCase):
+    def test_unconfigured_or_wrong_internal_key_is_rejected(self):
+        with patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY": "test-only-key"}):
+            for supplied in (None, "wrong-key"):
+                with self.assertRaises(HTTPException) as raised:
+                    require_internal_key(supplied)
+                self.assertEqual(raised.exception.status_code, 401)
+            require_internal_key("test-only-key")
+        with patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY": ""}):
+            with self.assertRaises(HTTPException) as raised:
+                require_internal_key("test-only-key")
+            self.assertEqual(raised.exception.status_code, 503)
+
+    def test_review_service_rejects_ephemeral_storage(self):
+        with patch("app.main.REQUIRE_POSTGRES", True), patch(
+            "app.main.DATABASE_URL", "sqlite:///./checklists_dev.sqlite3"
+        ), patch("app.main._DB_STATE", {"available": False, "reason": "STARTING"}):
+            with self.assertRaises(HTTPException) as raised:
+                require_storage()
+        self.assertEqual(raised.exception.status_code, 503)
+        self.assertIn("PostgreSQL", raised.exception.detail)
+
     def test_exact_registry_mapping(self):
         identity = SimpleNamespace(ticker="ABC", source_key="EXACT|NCT01234567")
         session = _Session(identity)
