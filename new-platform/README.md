@@ -29,6 +29,22 @@ and technical confirmation. No orders are placed.
 - **Autosave:** edits write to database and restore on screen return (optimistic version checks).
 - Production surveys, Gmail alerts, Streamlit deployment, and other live jobs **are not migrated or started** by this bootstrap.
 
+### Isolated research evidence review
+
+The isolated Program ID readiness endpoint reads the existing selected GEM JR or
+GEM assessment. It reports source links, review dates, missing evidence, and risk
+flags for catalyst timing, SEC cash runway, and financing/dilution review. It
+does not assign or change any of the 21 assessment scores or FS/FA presets.
+
+An observed `catalystTiming` review must retain `eventType` (`PDUFA`,
+`PUBLIC_READOUT`, or `FDA_ADCOM`), `eventDate`, and `dateConfirmed: true` in its
+existing `measurements`. A registry primary-completion date or reported PDUFA
+date alone is insufficient. Past events and conflicting PDUFA dates remain
+unverified. Existing seven-day catalyst/dilution and 120-day runway review
+windows apply. A reviewed risk can be adverse: its grade, measurements, and
+risk flags are retained. Readiness only means ready for human research review;
+orders and trade recommendations remain disabled in this isolated endpoint.
+
 ## Automated local setup
 
 On a machine with Docker Compose and Python 3 installed, check out this branch and run `bash new-platform/install-local.sh`. The installer generates isolated, private random credentials, builds only the new-platform containers and starts them on localhost:3000. Keep the generated dashboard password safe. It does not edit the Streamlit branch, deploy Streamlit, or touch its files and data.

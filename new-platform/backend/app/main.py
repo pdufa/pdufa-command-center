@@ -655,9 +655,11 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
     from .program_market_enrichment import enrich_program_market
     from .assessment_readiness_adapter import assessment_readiness_inputs
     from .decision_readiness import decision_readiness
+    from .risk_evidence_review import risk_evidence_from_assessment
     market = enrich_program_market(program_id, exact_key, ticker, "1M")
     assessment = {"assessment_score": None, "assessment_coverage": None,
                   "status": "ASSESSMENT_UNAVAILABLE"}
+    detail = None
     try:
         from .assessment_service import exact_detail
         detail = exact_detail(exact_key)
@@ -666,15 +668,19 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
     except HTTPException as exc:
         if exc.status_code not in {404, 409, 503}:
             raise
+    risk_evidence = risk_evidence_from_assessment(
+        detail, program_id=program_id, exact_key=exact_key, stage=stage)
     readiness = decision_readiness(
         program_id=program_id, exact_key=exact_key,
         assessment_score=assessment["assessment_score"],
         assessment_coverage=assessment["assessment_coverage"],
         market_review=market["marketEvidenceReview"],
-        catalyst_verified=False, financing_risk_reviewed=False,
+        catalyst_verified=risk_evidence["catalystVerified"],
+        financing_risk_reviewed=risk_evidence["financingRiskReviewed"],
     )
     return {"programId": program_id, "exactKey": exact_key, "stage": stage,
             "assessmentEvidence": assessment, "marketEvidenceReview": market["marketEvidenceReview"],
+            "riskEvidenceReview": risk_evidence,
             "decisionReadiness": readiness, "researchOnly": True,
             "ordersEnabled": False, "fsFaChanges": False}
 

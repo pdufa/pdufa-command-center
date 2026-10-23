@@ -33,8 +33,9 @@ def verify_payload(payload: dict, program_id: str, stage: str, exact_key: str | 
         raise ValueError("Review identity mismatch")
     decision = payload.get("decisionReadiness") or {}
     market = payload.get("marketEvidenceReview") or {}
+    risk = payload.get("riskEvidenceReview") or {}
     if any(value.get("programId") != program_id or value.get("exactKey") != key
-           for value in (decision, market)):
+           for value in (decision, market, risk)):
         raise ValueError("Evidence identity mismatch")
     if (payload.get("researchOnly") is not True or payload.get("ordersEnabled") is not False
             or payload.get("fsFaChanges") is not False
@@ -43,14 +44,15 @@ def verify_payload(payload: dict, program_id: str, stage: str, exact_key: str | 
             or decision.get("fsFaChange") is not False
             or market.get("assessmentScoreChange") is not False
             or market.get("qualificationChange") is not False
-            or market.get("fsFaChange") is not False):
+            or market.get("fsFaChange") is not False
+            or risk.get("researchOnly") is not True or risk.get("ordersEnabled") is not False
+            or risk.get("assessmentScoreChange") is not False
+            or risk.get("qualificationChange") is not False or risk.get("fsFaChange") is not False):
         raise ValueError("Research boundary mismatch")
-    if (decision.get("status") != "NOT_READY" or decision.get("tradeCall") is not None
+    if (decision.get("tradeCall") is not None
             or any(decision.get(field) is not None for field in ("entryPrice", "targetPrice", "stopLoss"))
-            or market.get("recommendation") is not None
-            or not {"verified catalyst", "financing and dilution risk review"}.issubset(
-                decision.get("missingRequirements") or [])):
-        raise ValueError("Missing evidence must prevent readiness")
+            or market.get("recommendation") is not None):
+        raise ValueError("Research must not produce trading instructions")
     if (market.get("status") != "RESEARCH_ONLY"
             or market.get("coverage") != "IEX_ONLY_NOT_CONSOLIDATED"
             or len(market.get("observations") or []) != 2):
@@ -60,6 +62,27 @@ def verify_payload(payload: dict, program_id: str, stage: str, exact_key: str | 
         raise _AssessmentPending("Assessment index rebuilding")
     if assessment.get("status") not in {"COMPLETE", "ASSESSMENT_INCOMPLETE", "ASSESSMENT_MISSING"}:
         raise ValueError("Exact-program assessment unavailable")
+    checks = risk.get("checks") or []
+    if (risk.get("stage") != stage or risk.get("identityStatus") != "EXACT_IDENTITY_MATCH"
+            or len(checks) != 3
+            or {item.get("id") for item in checks} != {"catalystTiming", "cashRunway", "dilutionRisk"}):
+        raise ValueError("Exact-program risk evidence checks unavailable")
+    reviewed = {item["id"] for item in checks if item.get("status") == "REVIEWED"}
+    catalyst = "catalystTiming" in reviewed
+    financing = {"cashRunway", "dilutionRisk"}.issubset(reviewed)
+    if (risk.get("catalystVerified") is not catalyst
+            or risk.get("financingRiskReviewed") is not financing):
+        raise ValueError("Risk readiness must match its source checks")
+    missing = set()
+    if assessment["status"] != "COMPLETE":
+        missing.add("complete verified assessment")
+    if not catalyst:
+        missing.add("verified catalyst")
+    if not financing:
+        missing.add("financing and dilution risk review")
+    expected_status = "NOT_READY" if missing else "READY_FOR_HUMAN_RESEARCH_REVIEW"
+    if set(decision.get("missingRequirements") or []) != missing or decision.get("status") != expected_status:
+        raise ValueError("Decision readiness must reflect missing source evidence")
 
 
 def check_program(base: str, key: str, program_id: str, exact_key: str | None = None) -> None:
@@ -75,9 +98,11 @@ def check_program(base: str, key: str, program_id: str, exact_key: str | None = 
         verify_payload(payload, program_id, stage, exact_key)
         LOG.warning(
             "PDUFA_READINESS_SMOKE program_id=%s stage=%s status=PASS market=%s assessment=%s "
-            "decision=NOT_READY orders_enabled=False fs_fa_changes=False",
+            "decision=%s risk=%s missing_risk_evidence=%d orders_enabled=False fs_fa_changes=False",
             program_id, stage, payload["marketEvidenceReview"]["status"],
             payload["assessmentEvidence"]["status"],
+            payload["decisionReadiness"]["status"], payload["riskEvidenceReview"]["status"],
+            len(payload["riskEvidenceReview"]["missingEvidence"]),
         )
 
 
