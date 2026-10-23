@@ -1,4 +1,4 @@
-/** Dedicated DST-aware admission gate for Vercel Cron, independent of GitHub schedule. */
+/** DST-aware admission gate for independent Vercel Cron that uses the guarded GitHub scheduler. */
 export const SCAN_WORKFLOW = "pdufa-overnight-sequential.yml";
 export const SCAN_REPO = "pdufa/pdufa-command-center";
 export const SCAN_TITLE = "ALL + GEM — PDUFA overnight";
@@ -19,7 +19,7 @@ export function pacificTime(date:Date) {
 }
 export function backupDecision(history:unknown,now:Date):Decision {
   const {night,hour,weekday}=pacificTime(now);
-  if (hour<21||hour>23) return {action:"skip",night,reason:"Outside nighttime recovery window"};
+  if (hour<20||hour>23) return {action:"skip",night,reason:"Outside nighttime recovery window"};
   if (!Array.isArray(history)||history.length>=100)
     return {action:"error",night,reason:"Missing or potentially truncated workflow history"};
   for (const row of history) {
@@ -35,7 +35,7 @@ export function backupDecision(history:unknown,now:Date):Decision {
       return {action:"error",night,reason:"Future-dated scan; clock uncertain"};
     if(ACTIVE.has(r.status))return {action:"skip",night,runId:r.id,reason:"Existing full sequence active"};
     const pacific=pacificTime(created);
-    if(pacific.night===night&&pacific.hour>=21)
+    if(pacific.night===night&&pacific.hour>=20)
       return {action:"skip",night,runId:r.id,reason:r.conclusion==="success"
         ?"Today's full sequence already completed":
         "Today's full sequence already launched (check failure status; no automatic duplicate)"};
