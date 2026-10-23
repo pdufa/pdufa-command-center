@@ -16,7 +16,7 @@ COLUMNS = [
     "royalties", "combined_total", "source_url", "verified_on",
     "disclosure_status",
 ]
-ALLOWED_DOMAINS = {"www.sec.gov", "sec.gov", "investors.vrtx.com", "ir.biocryst.com"}
+ALLOWED_DOMAINS = {"www.sec.gov", "sec.gov", "investors.vrtx.com", "ir.biocryst.com", "investors.alnylam.com"}
 
 
 def validate(path=PATH):
