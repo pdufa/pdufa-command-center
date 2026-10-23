@@ -140,6 +140,73 @@ def main():
                 print(f"Reported Phase 3 milestones appended: {len(new_rows)}")
             else:
                 print("Trial Milestone History headers changed; skipping milestones")
+    # Curated financial disclosures only. SEC companyfacts cannot by itself
+    # reliably allocate issuer-wide revenue to individual drugs or partners.
+    sales_path = Path("data/approved_drug_sales_verified.csv")
+    if sales_path.is_file():
+        import datetime
+        from urllib.parse import urlparse
+        required = ["company", "ticker", "approved_product", "indication", "period",
+                    "individual_sales", "currency", "company_net_sales",
+                    "partner_sales", "royalties", "combined_total", "source_url",
+                    "verified_on", "disclosure_status"]
+        with sales_path.open(newline="", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f)
+            if reader.fieldnames != required:
+                raise SystemExit("Approved-drug sales ledger headers changed; refusing import")
+            disclosures = list(reader)
+        sheet_range = "'Approved Drug Sales'!A1:N500"
+        response = session.get(BASE + "/values/" + requests.utils.quote(sheet_range, safe="!:'"), timeout=45)
+        response.raise_for_status()
+        existing = response.json().get("values", [])
+        expected_header = ["Company", "Ticker", "Approved Product", "Indication", "Period",
+                           "Individual Sales", "Currency", "Company Net Sales", "Partner Sales",
+                           "Royalties", "Combined Total", "SEC / Annual Report URL",
+                           "Verified On", "Disclosure Status"]
+        if not existing or existing[0] != expected_header:
+            raise SystemExit("Approved Drug Sales header mismatch; refusing import")
+        seen = {(row[1].upper().strip(), row[2].upper().strip(), row[4].upper().strip())
+                for row in existing[1:] if len(row) > 4}
+        additions = []
+        for d in disclosures:
+            key = (d["ticker"].upper().strip(), d["approved_product"].upper().strip(), d["period"].upper().strip())
+            if not all(key):
+                raise SystemExit("Incomplete sales identity; refusing import")
+            if not d["company"].strip() or not d["indication"].strip() or not d["disclosure_status"].strip():
+                raise SystemExit("Incomplete sales metadata; refusing import")
+            if d["currency"] != "USD millions":
+                raise SystemExit("Unexpected sales units; refusing import")
+            source = urlparse(d["source_url"])
+            if source.scheme != "https" or source.hostname not in {
+                "www.sec.gov", "sec.gov", "investors.vrtx.com", "ir.biocryst.com"
+            }:
+                raise SystemExit("Sales source must be an approved SEC or issuer disclosure URL")
+            try:
+                datetime.date.fromisoformat(d["verified_on"])
+            except ValueError:
+                raise SystemExit("Sales verification date must be YYYY-MM-DD")
+            for col in ["individual_sales", "company_net_sales", "partner_sales",
+                        "royalties", "combined_total"]:
+                if d[col].strip():
+                    try:
+                        value = float(d[col])
+                        if not (0 <= value < 1e9):
+                            raise ValueError("outside valid range")
+                    except ValueError:
+                        raise SystemExit("Invalid numeric sales disclosure: " + col)
+            if not d["individual_sales"].strip():
+                raise SystemExit("Individual sales disclosure required; refusing import")
+            if key in seen:
+                continue
+            additions.append([d[k] for k in required])
+            seen.add(key)
+        if additions:
+            append_url = BASE + "/values/" + requests.utils.quote("'Approved Drug Sales'!A:N", safe="!:'") + ":append"
+            response = session.post(append_url,
+                params={"valueInputOption": "RAW", "insertDataOption": "INSERT_ROWS"},
+                json={"values": additions}, timeout=45)
+            response.raise_for_status()
+        print(f"Curated sales disclosure rows appended: {len(additions)}; no inferred product allocations")
     print(f"Published Candidates synced: {len(candidates)} rows. Full Pipeline/GEM data is not included in this snapshot.")
 
 
