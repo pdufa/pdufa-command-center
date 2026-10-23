@@ -4,6 +4,7 @@ import { backupDecision, SCAN_WORKFLOW, SCAN_REPO } from "../../../../lib/nightl
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
+const GUARDED_SCHEDULER = "pdufa-nightly-pacific-start.yml";
 
 function response(payload:object,status=200){
   return NextResponse.json(payload,{status,headers:{"Cache-Control":"no-store"}});
@@ -19,7 +20,7 @@ async function github(path:string,token:string,options:RequestInit={}){
   });
 }
 
-/** Independent missed-start fallback; no public or password-session invocation. */
+/** Independent 8 PM Pacific fallback; only signed Vercel Cron may request the guarded GitHub scheduler. */
 export async function GET(request:NextRequest){
   const secret=process.env.CRON_SECRET?.trim();
   if(!secret||secret.length<16||request.headers.get("authorization")!=="Bearer "+secret)
@@ -45,21 +46,22 @@ export async function GET(request:NextRequest){
       console.info("PDUFA backup skipped",decision.night,decision.reason);
       return response({ok:true,...decision});
     }
-    const dispatched=await github("/actions/workflows/"+SCAN_WORKFLOW+"/dispatches",token,{
+    // Dispatch the EXISTING guarded scheduler, not the scan directly: GitHub serializes
+    // admission against its own scheduled ticks and rejects duplicate full scans.
+    const dispatched=await github("/actions/workflows/"+GUARDED_SCHEDULER+"/dispatches",token,{
       method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ref:"main",inputs:{
-        scan_mode:decision.scanMode,gem_action:decision.gemAction,validate_only:false
-      }})
+      body:JSON.stringify({ref:"main"})
     });
     if(dispatched.status!==204){
       console.error("PDUFA backup dispatch HTTP",dispatched.status);
       return response({ok:false,action:"error",night:decision.night,
-        reason:"GitHub rejected backup dispatch; check Actions write permission"},502);
+        reason:"GitHub rejected guarded scheduler dispatch; check Actions write permission"},502);
     }
-    console.info("PDUFA backup requested sequence",decision.night,decision.scanMode);
-    return response({ok:true,action:"dispatched",night:decision.night,
+    console.info("PDUFA independent clock requested guarded nightly admission",decision.night,decision.scanMode);
+    return response({ok:true,action:"scheduler_requested",night:decision.night,
       scanMode:decision.scanMode,gemAction:decision.gemAction,
-      workflowUrl:"https://github.com/"+SCAN_REPO+"/actions/workflows/"+SCAN_WORKFLOW},202);
+      note:"GitHub accepted the scheduler request; the scheduler independently confirms if a full scan should start.",
+      workflowUrl:"https://github.com/"+SCAN_REPO+"/actions/workflows/"+GUARDED_SCHEDULER},202);
   } catch {
     return response({ok:false,reason:"GitHub check or dispatch unavailable; no confirmed launch"},503);
   }
