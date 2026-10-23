@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-22T04:33:51.114531+00:00",
-  "latest_run_id": 39722233373,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373",
-  "latest_run_started_at_utc": "2026-10-22T04:24:50Z",
+  "updated_at_utc": "2026-10-23T03:40:36.611323+00:00",
+  "latest_run_id": 39895404578,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578",
+  "latest_run_started_at_utc": "2026-10-23T03:30:41Z",
   "latest_run_conclusion": null,
   "scope": "CLINICAL_PIPELINE_AND_GEM_JR_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-10-22T04:33:51.114547+00:00",
+    "checked_at_utc": "2026-10-23T03:40:36.611341+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -19,76 +19,67 @@
       "label": "PIPELINE \u2014 trial inventory",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 39722233373,
+      "run_id": 39895404578,
       "new_records": null,
-      "changed_trials_this_execution": 42,
+      "changed_trials_this_execution": 49,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_checked": 717,
         "companies_due": 717,
-        "tracked_trials_checked": 11586,
-        "tracked_trials_total": 11586,
+        "tracked_trials_checked": 11594,
+        "tracked_trials_total": 11594,
         "registry_companies": 717,
         "companies_with_warnings": 0,
         "tracked_trials_with_warnings": 0
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-10-22T04:28:55.352611+00:00",
+      "collected_at_utc": "2026-10-23T03:35:01.407391+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 39722233373,
+      "run_id": 39895404578,
       "new_records": null,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 15600,
-        "matched_trials": 3692,
+        "studies_checked": 15612,
+        "matched_trials": 3697,
         "registry_companies": 717,
-        "market_cap_source_unavailable": 228
+        "market_cap_source_unavailable": 0
       },
-      "collector_status": "COMPLETE WITH WARNINGS",
-      "collected_at_utc": "2026-10-22T04:29:32.570320+00:00",
+      "collector_status": "COMPLETE",
+      "collected_at_utc": "2026-10-23T03:35:51.891042+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578"
     },
     {
       "scan": "4",
       "label": "GEM JR \u2014 Phase 3 readout",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 39722233373,
-      "new_records": 1,
+      "run_id": 39895404578,
+      "new_records": 0,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 3951,
-        "matched_posted_results": 94,
+        "studies_checked": 3958,
+        "matched_posted_results": 95,
         "registry_companies": 717
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-10-22T04:29:59.966641+00:00",
-      "new_record_details": [
-        {
-          "ticker": "GILD",
-          "drug": "BIC/LEN FDC | Bictegravir | Lenacapavir | Stable Baseline Regimen",
-          "nct_id": "NCT05502341",
-          "results_posted_at": "2026-10-21",
-          "source_url": "https://clinicaltrials.gov/study/NCT05502341",
-          "verification_status": "DRUG_IDENTITY_REVIEW"
-        }
-      ],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373"
+      "collected_at_utc": "2026-10-23T03:36:16.809348+00:00",
+      "new_record_details": [],
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578"
     }
   ],
   "metrics": {
@@ -105,6 +96,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 39895404578,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578",
+      "started_at_utc": "2026-10-23T03:30:41Z",
+      "run_conclusion": null,
+      "status": "PARTIAL",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": 0
+    },
     {
       "run_id": 39722233373,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373",
