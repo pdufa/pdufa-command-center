@@ -30,7 +30,7 @@ export function SalesDisclosureView({ data }: { data: CompanySales }) {
       </p>}
       <div className="approved-sales-evidence"><a href={product.sourceUrl} target="_blank" rel="noopener noreferrer">SEC / issuer disclosure ↗</a><span>Source checked: {product.verifiedOn}</span></div>
     </article>)}</div>
-    <p className="subtle">USD millions. Each reporting period is shown separately. Historical approved-product revenue is company context for the selected trial; it is not a sales forecast for the drug under review.</p>
+    <p className="subtle">USD millions. Each reporting period is shown separately. Historical approved-product revenue is company context for the selected trial; it is not a sales forecast for the drug under review. The sales ledger does not establish that this company has an upcoming PDUFA date. Confirm the selected program and its regulatory evidence separately.</p>
   </div>;
 }
 
