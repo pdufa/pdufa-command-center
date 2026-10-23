@@ -13,6 +13,13 @@ type MarketEnrichment = {
   latestIexVolume?: number | null;
   coverage?: string;
   orderExecutionEnabled?: boolean;
+  marketSignals?: {
+    status: string;
+    validBars: number;
+    return20Pct: number | null;
+    averageVolume20: number | null;
+    volumeRatio20: number | null;
+  };
 };
 
 export default function ProgramMarketEnrichment({ programId, exactKey }: { programId: string; exactKey: string }) {
@@ -48,6 +55,14 @@ export default function ProgramMarketEnrichment({ programId, exactKey }: { progr
           {" · "}IEX volume: {typeof data.latestIexVolume === "number" ? data.latestIexVolume.toLocaleString() : "Unavailable"}
           {" · "}As of: {data.asOf || "Unknown"}
           {" · "}Feed: {data.feed || "Unknown"}</p>}
+    {data?.status === "OK" && <div aria-label="Research-only market signals">
+      <strong>20-bar market signals · Not a trade recommendation</strong>
+      {data.marketSignals?.status === "OK" ? <p>
+        Price movement: {data.marketSignals.return20Pct?.toFixed(2) ?? "Unavailable"}%
+        {" · "}Latest / average IEX volume: {data.marketSignals.volumeRatio20?.toFixed(2) ?? "Unavailable"}×
+        {" · "}Valid bars: {data.marketSignals.validBars}
+      </p> : <p role="status">Insufficient validated history for market signals.</p>}
+    </div>}
     <small>IEX volume is single-exchange coverage, not consolidated market volume. No trades or restrictions are changed.</small>
   </div>;
 }
