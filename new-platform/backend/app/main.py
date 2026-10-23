@@ -309,6 +309,11 @@ async def lifespan(app: FastAPI):
                                     "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=ERROR error_type=%s",
                                     pid, ticker, type(program_exc).__name__,
                                 )
+                        from .readiness_smoke import check_deployed_program
+                        threading.Thread(
+                            target=check_deployed_program,
+                            args=(f"PDUFA-{rows[0][0]:06d}", rows[0][2]), daemon=True,
+                        ).start()
                 except Exception as exc:
                     logging.getLogger(__name__).error(
                         "PDUFA_ALPACA_PROGRAM_CHECK status=ERROR error_type=%s",
@@ -636,6 +641,8 @@ def read_program_market_enrichment(program_id: str, range: str = "1Y"):
 ])
 def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
     """Isolated, read-only evidence readiness. No trading or preset changes."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in {"1", "true", "yes"}:
+        raise HTTPException(status_code=404, detail="Isolated review disabled")
     if not PROGRAM_ID_PATTERN.fullmatch(program_id):
         raise HTTPException(status_code=422, detail="Invalid Program ID")
     if stage not in {"GEM_JR", "GEM"}:

@@ -5,33 +5,21 @@ Usage (only against the isolated service):
 """
 from __future__ import annotations
 
-import json
+import logging
 import os
-from urllib.request import Request, urlopen
-from urllib.parse import urlencode
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from app.readiness_smoke import REVIEW_URL, check_program
 
 
 def main():
     base = os.environ["PDUFA_REVIEW_BASE_URL"].rstrip("/")
-    if base != "https://pdufa-alpaca-enrichment-review.onrender.com":
+    if base != REVIEW_URL:
         raise SystemExit("Refusing non-isolated service")
     key = os.environ["PDUFA_INTERNAL_API_KEY"]
-    for stage in ("GEM_JR", "GEM"):
-        path = "/api/review/program-decision-readiness/PDUFA-000001?" + urlencode({"stage": stage})
-        request = Request(base + path, headers={"x-pdufa-internal-key": key})
-        with urlopen(request, timeout=60) as response:
-            payload = json.load(response)
-        assert payload["programId"] == "PDUFA-000001"
-        assert payload["stage"] == stage
-        assert payload["decisionReadiness"]["status"] == "NOT_READY"
-        assert payload["decisionReadiness"]["tradeCall"] is None
-        assert payload["decisionReadiness"]["ordersEnabled"] is False
-        assert payload["ordersEnabled"] is False
-        assert payload["fsFaChanges"] is False
-        assert payload["marketEvidenceReview"]["programId"] == payload["programId"]
-        assert payload["marketEvidenceReview"]["exactKey"] == payload["exactKey"]
-        assert "verified catalyst" in payload["decisionReadiness"]["missingRequirements"]
-        assert "financing and dilution risk review" in payload["decisionReadiness"]["missingRequirements"]
-        print(stage + " isolated research readiness: PASS (no trade)")
+    logging.basicConfig(level=logging.WARNING)
+    check_program(base, key, "PDUFA-000001")
 if __name__ == "__main__":
     main()
