@@ -161,3 +161,13 @@ test("SCANS page places new results summary ahead of job progress and identifies
   assert.ok(panel.includes("counts come from the"));
   assert.ok(api.includes("newFromScan: newFromScanSummary"));
 });
+
+test("Source Verification Ledger is behind a default-closed caret with unresolved count", () => {
+  const page = fs.readFileSync(require.resolve("../app/PublishedScansPanel.tsx"), "utf8");
+  const fold = page.match(/<details className="nested-expander source-verification-caret">([\\s\\S]*?)<\\/details>/);
+  assert.ok(fold, "Expected collapsible source verification section");
+  assert.ok(fold[1].includes("<summary>"), "A clickable caret label is required");
+  assert.ok(fold[1].includes("sources.required_findings_unresolved"), "Show live review count");
+  assert.ok(fold[1].includes("<VerificationLedgerPanel />"), "Keep full evidence table inside caret");
+  assert.ok(!fold[0].startsWith("<details open"), "Caret should be collapsed by default");
+});
