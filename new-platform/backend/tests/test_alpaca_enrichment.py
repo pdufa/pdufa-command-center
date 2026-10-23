@@ -20,7 +20,7 @@ class AlpacaEnrichmentTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 latest_daily_bars(["AAPL?"])
             with self.assertRaises(ValueError):
-                latest_daily_bars(["A"] * 26 + ["B"])
+                latest_daily_bars([f"A{i}" for i in range(26)])
             get.assert_not_called()
 
     def test_history_rejects_truncated_results(self):
