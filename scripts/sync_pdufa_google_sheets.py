@@ -194,7 +194,7 @@ def main():
                 raise SystemExit("Unexpected sales units; refusing import")
             source = urlparse(d["source_url"])
             if source.scheme != "https" or source.hostname not in {
-                "www.sec.gov", "sec.gov", "investors.vrtx.com", "ir.biocryst.com"
+                "www.sec.gov", "sec.gov", "investors.vrtx.com", "ir.biocryst.com", "investors.alnylam.com"
             }:
                 raise SystemExit("Sales source must be an approved SEC or issuer disclosure URL")
             try:
