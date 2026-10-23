@@ -55,6 +55,20 @@ class OfflineMarketIntegrationTests(unittest.TestCase):
             for flag in ("orderExecutionEnabled", "qualificationChanges", "restrictionChanges", "fsFaChanges"):
                 self.assertFalse(result[flag])
 
+    def test_empty_success_response_stays_empty(self):
+        identities = {165: SimpleNamespace(ticker="ABC", source_key="TRIAL|NCT00000165")}
+        with patch("app.main.Session", return_value=_Session(identities)), patch(
+            "app.program_market_enrichment.get_alpaca_bars",
+            return_value={"status": "OK", "feed": "IEX", "coverage": "IEX ONLY", "bars": []},
+        ) as market:
+            result = read_program_market_enrichment("PDUFA-000165", "ALL")
+        market.assert_called_once_with("ABC", "ALL")
+        self.assertEqual(result["status"], "OK")
+        self.assertIsNone(result["latestDailyClose"])
+        self.assertIsNone(result["latestIexVolume"])
+        self.assertEqual(result["barsAvailable"], 0)
+        self.assertFalse(result["orderExecutionEnabled"])
+
     def test_provider_failure_does_not_fabricate_price(self):
         identities = {165: SimpleNamespace(ticker="ABC", source_key="TRIAL|NCT00000165")}
         with patch("app.main.Session", return_value=_Session(identities)), patch(
