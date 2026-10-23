@@ -26,7 +26,6 @@ def validate(path=PATH):
         seen = set()
         count = 0
         known_company_by_ticker = {}
-        source_periods = set()
         for line, row in enumerate(reader, start=2):
             if None in row or any(v is None for v in row.values()):
                 raise ValueError(f"Line {line}: invalid number of fields")
