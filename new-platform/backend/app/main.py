@@ -588,6 +588,31 @@ def read_alpaca_chart(program_id: str, range: str = "1Y"):
             **get_alpaca_bars(ticker, range)}
 
 
+@app.get("/api/review/investment-readiness/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_program_investment_readiness(program_id: str, identity: str, stage: str = "GEM_JR"):
+    """Isolated research review only; no trading or scoring mutations."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in ("1", "true", "yes"):
+        raise HTTPException(status_code=404, detail="Isolated review disabled")
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id) or not identity or len(identity) > 512:
+        raise HTTPException(status_code=422, detail="Exact program identity required")
+    if stage not in ("GEM_JR", "GEM"):
+        raise HTTPException(status_code=422, detail="Invalid research stage")
+    with Session(ENGINE) as session:
+        registered = session.get(ProgramIdentity, int(program_id[6:]))
+        if registered is None or registered.source_key != identity:
+            raise HTTPException(status_code=404, detail="Exact program not registered")
+    from .assessment_service import exact_detail
+    from .assessment_readiness_adapter import readiness_from_existing_assessment
+    from .market_evidence_review import market_evidence_review
+    record = exact_detail(identity)
+    market = market_evidence_review(program_id, identity, {"status": "INSUFFICIENT_EVIDENCE"})
+    # No market/financing/catalyst claims are inferred from scoring records.
+    return readiness_from_existing_assessment(program_id=program_id, exact_key=identity,
+        record=record, market_review=market, stage=stage)
+
+
 @app.get("/api/program-market-enrichment/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
