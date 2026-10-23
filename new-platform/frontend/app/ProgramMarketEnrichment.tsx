@@ -14,7 +14,6 @@ type MarketEnrichment = {
   coverage?: string;
   orderExecutionEnabled?: boolean;
   decisionReadiness?: { status: string; missingRequirements: string[]; tradeCall: null; };
-  decisionReadiness?: {status: string; missingRequirements: string[]; tradeCall: null};
   marketEvidenceReview?: { status: string; observations: {metric: string; value: number; unit: string}[]; recommendation: null; };
   marketSignals?: {
     status: string;
