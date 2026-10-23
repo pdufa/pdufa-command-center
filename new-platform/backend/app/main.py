@@ -570,6 +570,27 @@ def read_program_market_enrichment(program_id: str, range: str = "1Y"):
     return enrich_program_market(program_id, source_key, ticker, range)
 
 
+@app.get("/api/review/alpaca-program-smoke", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def review_alpaca_program_smoke():
+    """Read-only, authenticated, isolated-review program-to-Alpaca smoke test."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in ("1", "true", "yes"):
+        raise HTTPException(status_code=404, detail="Review smoke check disabled")
+    with Session(ENGINE) as session:
+        identity = session.scalars(
+            select(ProgramIdentity).where(ProgramIdentity.ticker != "").order_by(ProgramIdentity.id).limit(1)
+        ).first()
+        if identity is None:
+            return {"status": "NO_REGISTERED_PROGRAM", "verified": False}
+        program_id = f"PDUFA-{identity.id:06d}"
+        ticker, source_key = identity.ticker, identity.source_key
+    from .program_market_enrichment import enrich_program_market
+    result = enrich_program_market(program_id, source_key, ticker, "1M")
+    return {"status": "CHECKED", "programId": program_id, "exactKey": source_key,
+            "ticker": ticker, "enrichment": result}
+
+
 @app.get("/api/wt-research/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
