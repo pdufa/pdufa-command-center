@@ -23,7 +23,8 @@ def assessment_readiness_inputs(record: dict, *, program_id: str, exact_key: str
     score, coverage = model.get("score"), model.get("coverage")
     valid = all(isinstance(v, (int, float)) and not isinstance(v, bool) and isfinite(v)
                 for v in (score, coverage))
-    if not valid or not 0 <= score <= 100 or not 99.99 <= coverage <= 100:
+    if (not valid or model.get("status") != "COMPLETE"
+            or not 0 <= score <= 100 or not 99.99 <= coverage <= 100):
         return {"assessment_score": None, "assessment_coverage": None,
                 "status": "ASSESSMENT_INCOMPLETE"}
     return {"assessment_score": float(score), "assessment_coverage": float(coverage),
