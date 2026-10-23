@@ -1,22 +1,38 @@
 {
-  "started_at": "2026-10-22T04:29:05.977378+00:00",
-  "status": "COMPLETE WITH WARNINGS",
+  "started_at": "2026-10-23T03:35:15.611968+00:00",
+  "status": "COMPLETE",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-10-22",
+  "scope": "Industry Phase 2/3 records updated since 2024-10-23",
   "source_max_age_days": 180,
-  "studies_scanned": 15600,
-  "matched_trials": 3692,
+  "studies_scanned": 15612,
+  "matched_trials": 3697,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [],
-  "finished_at": "2026-10-22T04:29:32.381639+00:00",
-  "stored_trials": 7376,
-  "phase2_programs": 1012,
-  "master_programs": 122,
-  "review_trials": 3081,
+  "new_master_programs": [
+    {
+      "ticker": "PCVX",
+      "drug": "31 valent pneumococcal conjugate vaccine",
+      "nct_id": "NCT07284654"
+    },
+    {
+      "ticker": "XFOR",
+      "drug": "Mavorixafor",
+      "nct_id": "NCT06056297"
+    },
+    {
+      "ticker": "XFOR",
+      "drug": "Mavorixafor",
+      "nct_id": "NCT03995108"
+    }
+  ],
+  "finished_at": "2026-10-23T03:35:51.700517+00:00",
+  "stored_trials": 7380,
+  "phase2_programs": 1020,
+  "master_programs": 126,
+  "review_trials": 3080,
   "market_cap_verified_tickers": 417,
   "market_cap_listing_excluded_tickers": 1,
-  "market_cap_source_unavailable": 228,
-  "market_cap_recent_cache_retained": 228
+  "market_cap_source_unavailable": 0,
+  "market_cap_recent_cache_retained": 0
 }
