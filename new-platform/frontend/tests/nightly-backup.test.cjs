@@ -54,14 +54,38 @@ test("Missing, truncated or invalid state fails closed; unsafe local time skips"
  assert.equal(backupDecision([{...RUN,created_at:"bad"}],now).action,"error");
  assert.equal(backupDecision([],at("2026-10-18T20:00:00Z")).action,"skip");
 });
-test("Vercel schedule remains daily, authenticated and direct GitHub dispatch",()=>{
+test("Vercel backup clocks are daily, authenticated and dispatch through guarded GitHub scheduler",()=>{
  const data=JSON.parse(fs.readFileSync(path.join(__dirname,"../vercel.json"),"utf8"));
- assert.deepEqual(data.crons,[{path:"/api/cron/pdufa-nightly-backup",schedule:"40 5 * * *"}]);
- const source=fs.readFileSync(path.join(__dirname,"../app/api/cron/pdufa-nightly-backup/route.ts"),"utf8");
+ assert.deepEqual(data.crons,[
+   {path:"/api/cron/pdufa-nightly-backup-pdt",schedule:"15 3 * * *"},
+   {path:"/api/cron/pdufa-nightly-backup-pst",schedule:"15 4 * * *"}
+ ]);
+ const base=path.join(__dirname,"../app/api/cron");
+ const source=fs.readFileSync(path.join(base,"pdufa-nightly-backup/route.ts"),"utf8");
  assert.match(source,/process.env.CRON_SECRET/);
  assert.match(source,/request.headers.get\("authorization"\)/);
  assert.match(source,/process.env.PDUFA_GITHUB_TOKEN/);
  assert.match(source,/backupDecision\(history,new Date\(\)\)/);
- assert.match(source,/scan_mode:decision.scanMode/);
+ assert.match(source,/pdufa-nightly-pacific-start.yml/);
  assert.match(source,/dispatched.status!==204/);
+ assert.ok(!source.includes('SCAN_WORKFLOW+"/dispatches"'),
+   "Backup must not directly dispatch the full scan");
+ for(const slot of ["pdt","pst"]){
+   const alias=fs.readFileSync(path.join(base,"pdufa-nightly-backup-"+slot+"/route.ts"),"utf8");
+   assert.ok(alias.includes('export { GET } from "../pdufa-nightly-backup/route"'));
+ }
+});
+test("Backup only admits 8 PM-or-later Pacific; any 8 PM scan blocks duplicates",()=>{
+ const summer=at("2026-10-23T03:15:00Z"); // 8:15 PM PDT October 22
+ const winter=at("2026-12-23T04:15:00Z"); // 8:15 PM PST December 22
+ assert.deepEqual(pacificTime(summer),{night:"2026-10-22",hour:20,weekday:"Thu"});
+ assert.deepEqual(pacificTime(winter),{night:"2026-12-22",hour:20,weekday:"Tue"});
+ assert.equal(backupDecision([],summer).action,"dispatch");
+ assert.equal(backupDecision([],winter).action,"dispatch");
+ assert.equal(backupDecision([],at("2026-12-23T03:15:00Z")).action,"skip",
+   "DST backup must not start prior to 8 PM standard time");
+ const existing={...RUN,created_at:"2026-10-23T03:01:00Z",status:"completed",conclusion:"success"};
+ const decision=backupDecision([existing],summer);
+ assert.equal(decision.action,"skip");
+ assert.equal(decision.runId,123);
 });
