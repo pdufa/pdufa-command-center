@@ -155,6 +155,14 @@ def main():
             if reader.fieldnames != required:
                 raise SystemExit("Approved-drug sales ledger headers changed; refusing import")
             disclosures = list(reader)
+            if any(None in row or any(value is None for value in row.values()) for row in disclosures):
+                raise SystemExit("Malformed sales CSV row; refusing import")
+        ledger_keys = set()
+        for row in disclosures:
+            ledger_key = (row["ticker"].strip().upper(), row["approved_product"].strip().upper(), row["period"].strip().upper())
+            if ledger_key in ledger_keys:
+                raise SystemExit("Duplicate sales key in source ledger: " + repr(ledger_key))
+            ledger_keys.add(ledger_key)
         sheet_range = "'Approved Drug Sales'!A1:N500"
         response = session.get(BASE + "/values/" + requests.utils.quote(sheet_range, safe="!:'"), timeout=45)
         response.raise_for_status()
