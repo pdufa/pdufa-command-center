@@ -552,6 +552,24 @@ def read_alpaca_chart(program_id: str, range: str = "1Y"):
             **get_alpaca_bars(ticker, range)}
 
 
+@app.get("/api/program-market-enrichment/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_program_market_enrichment(program_id: str, range: str = "1Y"):
+    """Read-only market enrichment by immutable program identity."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    if range not in {"1M", "3M", "6M", "1Y", "ALL"}:
+        raise HTTPException(status_code=422, detail="Invalid Alpaca chart range")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        ticker, source_key = identity.ticker, identity.source_key
+    from .program_market_enrichment import enrich_program_market
+    return enrich_program_market(program_id, source_key, ticker, range)
+
+
 @app.get("/api/wt-research/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])
