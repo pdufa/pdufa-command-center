@@ -170,8 +170,9 @@ def main() -> None:
         "Phase 3 Results", "Scanner Completion", "Source Health",
         "Evidence / Notes",
     ]
-    from datetime import datetime, timezone
-    snapshot_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    snapshot_date = datetime.now(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d")
     published_count = len(trials)
     jr_count = len(stage_updates["GEM JR"])
     gem_count = len(stage_updates["GEM"])
