@@ -29,27 +29,27 @@
     "missing_or_stale": 1922,
     "source_backed_pass": 16,
     "target_count": 34,
-    "under_12_months": 31
+    "under_12_months": 32
   },
   "caveat": "GEM is a research-only fourth scan block. Two entry benchmarks: source-verified Phase 3 results released and independently verified second post-readout financing closed. Financial and market factors are rankings and risk warnings only. PDUFA -3 is a planned exit, not an executed sale.",
   "clinical_registry": {
-    "finished_at": "2026-10-22T04:30:36.392705+00:00",
-    "matched_posted_results": 94,
+    "finished_at": "2026-10-23T03:36:57.268235+00:00",
+    "matched_posted_results": 95,
     "new_records": 0,
     "stored_results": 2493,
-    "studies_checked": 3951
+    "studies_checked": 3958
   },
   "collector_performed": true,
   "collector_status": "COMPLETE \u2014 REGISTRY POSTINGS ONLY",
   "errors": [],
   "full_universe_coverage_verified": false,
-  "generated_at_utc": "2026-10-22T04:32:51.724304+00:00",
+  "generated_at_utc": "2026-10-23T03:39:35.127095+00:00",
   "hedge_fund_13f": {
     "collector_status": "COMPLETE \u2014 SELECTED FUNDS ONLY",
     "issuer_name_matched_tickers": 217,
     "managers_complete": 4,
     "managers_targeted": 4,
-    "matched_programs": 1250,
+    "matched_programs": 1251,
     "with_manager_accumulation": 430
   },
   "historical_return_edge_validated": false,
@@ -57,7 +57,7 @@
     "collector_status": "PARTIAL \u2014 ISSUER SOURCE FAILURES",
     "issuers_complete": 31,
     "issuers_targeted": 34,
-    "matched_program_rows": 305,
+    "matched_program_rows": 306,
     "source_errors": 3,
     "with_open_market_purchases": 11
   },
@@ -75,14 +75,14 @@
     "Post-Financing": 0
   },
   "research_status": "HOLD_STALE_OR_MISSING_SOURCES",
-  "run_id": 39722233373,
-  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39722233373",
+  "run_id": 39895404578,
+  "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578",
   "saved_phase3_reconciled": true,
   "scan": "GEM",
   "schema_version": 1,
   "sec_source_health": {
     "blocked_records": 38,
-    "last_check_age_days": 16,
+    "last_check_age_days": 17,
     "source_completeness_not_guaranteed": true,
     "status": "PARTIAL_STALE_OR_BLOCKED"
   },
