@@ -778,7 +778,7 @@ button.secondary { background: white; color: #172b1b; }
     align-items: stretch;
   }
   .worktop > button { width: 100%; min-height: 44px; padding: 9px 6px; font-size: 12px; }
-  .worktop > button:nth-of-type(3) { grid-column: 1 / -1; }
+  /* Six top navigation buttons now fill three balanced rows on narrow screens. */
   .worktop > .workspace-stage {
     grid-column: 1 / -1;
     width: 100%;
