@@ -40,6 +40,12 @@ def validate(path=PATH):
             known_company_by_ticker[ticker] = company
             if any(not row[k].strip() for k in ("company", "indication", "disclosure_status")):
                 raise ValueError(f"Line {line}: missing required metadata")
+            # Require a precise reporting window; do not mix fiscal-year
+            # totals with partial-year periods under ambiguous labels.
+            import re
+            period = row["period"].strip().upper()
+            if not re.fullmatch(r"(?:FY|H1|H2|Q[1-4]|9M)20[0-9]{2}", period):
+                raise ValueError(f"Line {line}: unsupported reporting period")
             if row["currency"] != "USD millions":
                 raise ValueError(f"Line {line}: unsupported units")
             source = urlparse(row["source_url"])
