@@ -1,7 +1,61 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-10-22T04:33:51.114531+00:00",
+  "updated_at_utc": "2026-10-23T04:15:08.631Z",
   "days": [
+    {
+      "date_pacific": "2026-10-22",
+      "run_id": 39895404578,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39895404578",
+      "status": "PARTIAL",
+      "registered_at_utc": "2026-10-23T04:15:08.631Z",
+      "sections": {
+        "master": {
+          "previous": null,
+          "new": null,
+          "updated": 49,
+          "removed": null,
+          "total": 11594,
+          "basis": "Same-night collector: tracked clinical trial inventory. This is not the qualified Pipeline total or independently certified unique-NCT published feed. Updated indicates changed trial records, not new entries or new GEM candidates."
+        },
+        "pipeline": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Full mandatory Pipeline-qualified total is unverified; clinical tracking does not imply qualification."
+        },
+        "designations": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "FDA special designation grant evidence and grant dates not fully verified; do not infer zero."
+        },
+        "gem_jr": {
+          "previous": 11,
+          "new": 0,
+          "updated": null,
+          "removed": 0,
+          "total": 11,
+          "basis": "Same-day saved GEM JR membership ledger; independent FS/FA associations unchanged. New/removed are membership changes, not posted Phase 3 result counts."
+        },
+        "gem": {
+          "previous": 6,
+          "new": 0,
+          "updated": null,
+          "removed": 0,
+          "total": 6,
+          "basis": "Same-day saved GEM membership ledger; independent FS/FA associations unchanged. New/removed are membership changes, not posted Phase 3 result counts."
+        }
+      },
+      "notes": [
+        "49 tracked trial records changed in this overnight scan; this is NOT the count of newly added trials or new qualified candidates.",
+        "Same-run source audit: 995 of 1121 verified; 23 unresolved, 93 unavailable, 10 not applicable. Full source coverage is not verified.",
+        "GitHub Actions completed successfully, but overall scientific/regulatory source verification remains PARTIAL. Old/new trial counts and qualified Pipeline/FDA designation totals are withheld rather than guessed."
+      ]
+    },
     {
       "date_pacific": "2026-10-21",
       "run_id": 39722233373,
