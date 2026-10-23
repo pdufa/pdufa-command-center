@@ -105,6 +105,41 @@ def main():
                 print(f"Historical FDA research records appended: {len(new_rows)} (not independent FDA verification)")
             else:
                 print("FDA Outcome History headers changed; skipping research import")
+    # Phase 3 discovery milestones, keyed by NCT + date + event.
+    # These are reported readouts, not independently confirmed regulatory events.
+    milestone_path = Path("data/post_phase3_discoveries.csv")
+    if milestone_path.is_file():
+        discoveries = list(csv.DictReader(milestone_path.open(newline="", encoding="utf-8-sig")))
+        expected = {"ticker", "drug", "indication", "nct_id", "readout_date", "source_url"}
+        if discoveries and all(expected.issubset(d) for d in discoveries):
+            range_name = "'Trial Milestone History'!A1:M500"
+            response = session.get(BASE + "/values/" + requests.utils.quote(range_name, safe="!:'"), timeout=45)
+            response.raise_for_status()
+            existing = response.json().get("values", [])
+            header = ["Company", "Ticker", "Drug", "Indication", "NCT ID", "Program ID",
+                      "Event Date", "Previous Stage", "New Stage", "Direction",
+                      "Evidence URL", "Verified On", "Notes"]
+            if existing and existing[0] == header:
+                seen = {(row[4], row[6], row[8]) for row in existing[1:] if len(row) > 8}
+                new_rows = []
+                for d in discoveries:
+                    key = (d["nct_id"], d["readout_date"], "Phase 3 readout")
+                    if key in seen or not all(key[:2]):
+                        continue
+                    new_rows.append(["", d["ticker"], d["drug"], d["indication"],
+                                     d["nct_id"], "", d["readout_date"], "",
+                                     "Phase 3 readout", "REPORTED", d["source_url"], "",
+                                     "Published post-Phase 3 discovery; not independent trial outcome verification"])
+                    seen.add(key)
+                if new_rows:
+                    append_url = BASE + "/values/" + requests.utils.quote("'Trial Milestone History'!A:M", safe="!:'") + ":append"
+                    response = session.post(append_url,
+                        params={"valueInputOption": "RAW", "insertDataOption": "INSERT_ROWS"},
+                        json={"values": new_rows}, timeout=45)
+                    response.raise_for_status()
+                print(f"Reported Phase 3 milestones appended: {len(new_rows)}")
+            else:
+                print("Trial Milestone History headers changed; skipping milestones")
     print(f"Published Candidates synced: {len(candidates)} rows. Full Pipeline/GEM data is not included in this snapshot.")
 
 
