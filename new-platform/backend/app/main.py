@@ -296,9 +296,11 @@ async def lifespan(app: FastAPI):
                         pid = f"PDUFA-{row[0]:06d}"
                         result = enrich_program_market(pid, row[2], row[1], "1M")
                         logging.getLogger(__name__).warning(
-                            "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=%s bars=%d",
+                            "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=%s bars=%d close_present=%s volume_present=%s",
                             pid, row[1], result.get("status"),
                             result.get("barsAvailable", 0),
+                            isinstance(result.get("latestDailyClose"), (int, float)),
+                            isinstance(result.get("latestIexVolume"), (int, float)),
                         )
                 except Exception as exc:
                     logging.getLogger(__name__).error(
