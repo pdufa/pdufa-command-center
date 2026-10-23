@@ -162,6 +162,41 @@ def main() -> None:
         if old_count > len(records):
             last_col = "K" if title == "GEM JR" else "J"
             clear(title, f"A{len(records)+2}:{last_col}{old_count+1}")
+    # Idempotent dated publication snapshot. This is NOT evidence of a completed scan.
+    # Keep the independently verified backend universe separate from the published feed.
+    daily_header = [
+        "Date", "Snapshot Type", "Pipeline", "GEM JR", "GEM",
+        "Clinical Rows", "Regulatory Programs", "Phase 3 Programs",
+        "Phase 3 Results", "Scanner Completion", "Source Health",
+        "Evidence / Notes",
+    ]
+    from datetime import datetime, timezone
+    snapshot_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    published_count = len(trials)
+    jr_count = len(stage_updates["GEM JR"])
+    gem_count = len(stage_updates["GEM"])
+    if "Daily Results" in sheets:
+        history = read("Daily Results", "A1:L500")
+        if not history or history[0][:len(daily_header)] != daily_header:
+            raise SystemExit("Daily Results schema changed; refusing to write history")
+        snapshot_type = "GitHub published feed"
+        if not any(len(row) >= 2 and row[0] == snapshot_date and row[1] == snapshot_type for row in history[1:]):
+            snapshot = [
+                snapshot_date, snapshot_type, "", jr_count, gem_count,
+                published_count, "", "", "", "NOT VERIFIED",
+                "PUBLISHED FEED ONLY",
+                "Validated unique NCTs from data/all_phase_trials.csv; saved GEM memberships. "
+                "No qualified Pipeline count, regulatory count, or completed scanner status inferred.",
+            ]
+            req("POST", "/values/" + a1("Daily Results", "A:L") + ":append",
+                params={"valueInputOption": "RAW", "insertDataOption": "INSERT_ROWS"},
+                json={"values": [snapshot]})
+            print(f"Daily Results publication snapshot appended for {snapshot_date}")
+        else:
+            print(f"Daily Results publication snapshot already present for {snapshot_date}")
+    else:
+        print("Daily Results tab missing; skipping history without changing source imports")
+
     print(
         f"Synced {len(trials)} unique published trials, "
         f"{len(stage_updates['GEM JR'])} GEM JR, {len(stage_updates['GEM'])} GEM. "
