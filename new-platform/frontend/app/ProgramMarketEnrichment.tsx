@@ -14,6 +14,7 @@ type MarketEnrichment = {
   coverage?: string;
   orderExecutionEnabled?: boolean;
   decisionReadiness?: { status: string; missingRequirements: string[]; tradeCall: null; };
+  decisionReadiness?: {status: string; missingRequirements: string[]; tradeCall: null};
   marketEvidenceReview?: { status: string; observations: {metric: string; value: number; unit: string}[]; recommendation: null; };
   marketSignals?: {
     status: string;
@@ -76,6 +77,11 @@ export default function ProgramMarketEnrichment({ programId, exactKey }: { progr
       <strong>Investment review readiness: {data.decisionReadiness?.status === "READY_FOR_HUMAN_RESEARCH_REVIEW" ? "Ready for human review" : "Not ready"}</strong>
       {data.decisionReadiness?.missingRequirements?.length ? <p>Evidence needed: {data.decisionReadiness.missingRequirements.join("; ")}</p>
         : <p>Market-only snapshot does not certify clinical or financing evidence.</p>}
+    </div>}
+    {data?.decisionReadiness && <div aria-label="Investment research readiness">
+      <strong>Investment research readiness: {data.decisionReadiness.status === "READY_FOR_HUMAN_RESEARCH_REVIEW" ? "Ready for human review" : "Not ready"}</strong>
+      {data.decisionReadiness.missingRequirements.length > 0 && <p>Required evidence: {data.decisionReadiness.missingRequirements.join("; ")}.</p>}
+      <small>Assessment, catalyst, and financing verification are not yet connected to this view. No trade recommendation is generated.</small>
     </div>}
     <small>IEX volume is single-exchange coverage, not consolidated market volume. No trades or restrictions are changed.</small>
   </div>;
