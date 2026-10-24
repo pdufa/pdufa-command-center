@@ -145,3 +145,95 @@ test("GOAL cannot claim before/after counts after source outage",async()=>{
     assert.equal(view.root.findAllByProps({"aria-label":"Pipeline restriction impact"}).length,0);
   }finally{if(view)await act(async()=>view.unmount());global.fetch=old;}
 });
+
+
+test("excluded IDs are the exact newly removed saved programs, never ticker-based joins",()=>{
+  let rules=empty();
+  rules=catalog.insertRestrictionIntoList(rules,"public","PIPELINE",0);
+  rules=catalog.insertRestrictionIntoList(rules,"phase","PIPELINE",1);
+  const rows=[
+    {id:"TRIAL|NCT00000001",programId:"PDUFA-000001",ticker:"AA",drug:"Drug A",stage:"Phase 3"},
+    {id:"TRIAL|NCT00000002",programId:"PDUFA-000002",ticker:"BB",drug:"Drug B",stage:"Phase 2"},
+    {id:"TRIAL|NCT00000003",programId:"PDUFA-000003",ticker:"CC",stage:"Phase 3"},
+    {id:"TRIAL|NCT00000004",programId:"PDUFA-000004",ticker:"AA",drug:"Drug D",stage:"Phase 2"},
+  ];
+  const previous=structuredClone(rows),originalRules=structuredClone(rules);
+  const report=calculateGoalRestrictionImpact(rows,rules,evidence(),"2026-10-23");
+  const steps=report.stages.PIPELINE.steps;
+  assert.equal(steps[0].excluded,1);
+  assert.deepEqual(steps[0].excludedPrograms.map(p=>p.id),["TRIAL|NCT00000002"]);
+  assert.deepEqual(steps[0].excludedPrograms.map(p=>p.programId),["PDUFA-000002"]);
+  assert.equal(steps[0].excludedPrograms[0].nctId,"NCT00000002");
+  assert.equal(steps[1].excluded,1,"Phase 2 BB was already removed; AA's Phase 2 record is separate");
+  assert.deepEqual(steps[1].excludedPrograms.map(p=>p.id),["TRIAL|NCT00000004"]);
+  assert.equal(report.stages.PIPELINE.excluded,2);
+  assert.equal(report.stages.PIPELINE.pending,1);
+  assert.equal(report.stages.PIPELINE.remaining,2);
+  for(const step of steps)assert.equal(step.excludedPrograms.length,step.excluded);
+  assert.deepEqual(rows,previous);
+  assert.deepEqual(rules,originalRules);
+});
+
+test("GOAL's clicked exclusion drilldown searches exact IDs and paginates all excluded programs",async()=>{
+  let rules=catalog.insertRestrictionIntoList(empty(),"public","PIPELINE",0);
+  const restrictions=require("../lib/goal-restrictions.ts").goalRestrictionSummaries(rules);
+  const many=[{id:"TRIAL|NCT90000000",programId:"PDUFA-900000",ticker:"AA",drug:"Retained",
+    stage:"Phase 3"},...Array.from({length:27},(_,i)=>{
+      const nct="NCT"+String(i+1).padStart(8,"0");
+      return {id:"TRIAL|"+nct,programId:"PDUFA-"+String(i+1).padStart(6,"0"),
+        nctId:nct,ticker:"BB",drug:i===26?"Distinct patient trial":"Other therapy",
+        indication:"Test indication",stage:"Phase 2"};
+    })];
+  const old=global.fetch;
+  global.fetch=async url=>url==="/api/restriction-evidence"
+    ? {ok:true,json:async()=>evidence()}
+    : {ok:false,status:503,json:async()=>({})};
+  let view;
+  try{
+    await act(async()=>{view=create(React.createElement(GoalDashboard,{
+      records:many,impactRows:many,impactEntries:rules,restrictions,
+      pipelineCount:28,gemJrCount:0,gemCount:0,
+      sourceAsOf:"2026-10-23",onOpen:()=>{}
+    }));});
+    assert.equal(view.root.findAllByProps({"aria-label":"Pipeline excluded programs for Publicly traded company"}).length,0);
+    const calc=view.root.findAllByType("button").find(x=>x.props.children==="CALCULATE SAVED IMPACT");
+    await act(async()=>await calc.props.onClick());
+    const open=view.root.findAllByType("button").find(x=>
+      x.props["aria-label"]==="View 27 excluded programs for Pipeline rule Publicly traded company");
+    assert.ok(open);
+    await act(async()=>open.props.onClick());
+    const detail=view.root.findByProps({"aria-label":"Pipeline excluded programs for Publicly traded company"});
+    assert.equal(detail.findAllByType("tbody")[0].findAllByType("tr").length,20);
+    assert.match(JSON.stringify(detail.toJSON()),/Page 1 of 2/);
+    const next=detail.findAllByType("button").find(x=>x.props.children==="Next →");
+    await act(async()=>next.props.onClick());
+    assert.equal(detail.findAllByType("tbody")[0].findAllByType("tr").length,7);
+    assert.match(JSON.stringify(detail.toJSON()),/Distinct patient trial/);
+    const input=detail.findByType("input");
+    await act(async()=>input.props.onChange({target:{value:"PDUFA-000027"}}));
+    assert.equal(detail.findAllByType("tbody")[0].findAllByType("tr").length,1);
+    assert.match(JSON.stringify(detail.toJSON()),/NCT00000027/);
+    assert.doesNotMatch(JSON.stringify(detail.toJSON()),/NCT00000026/);
+    const link=detail.findAllByType("a")[0];
+    assert.equal(link.props.href,"https://clinicaltrials.gov/study/NCT00000027");
+    assert.equal(link.props.rel,"noopener noreferrer");
+    const close=detail.findAllByType("button").find(x=>x.props.children==="Close details");
+    await act(async()=>close.props.onClick());
+    assert.equal(view.root.findAllByProps({"aria-label":"Pipeline excluded programs for Publicly traded company"}).length,0);
+    assert.equal(many.length,28,"Viewing must not modify source programs");
+  }finally{
+    if(view)await act(async()=>view.unmount());
+    global.fetch=old;
+  }
+});
+
+test("missing permanent IDs are declared missing, without inventing ticker joins",()=>{
+  const rules=catalog.insertRestrictionIntoList(empty(),"public","PIPELINE",0);
+  const rows=[{id:"TRIAL|NCT01234567",ticker:"BB",drug:"Test",nctId:"NCT01234567"}];
+  const result=calculateGoalRestrictionImpact(rows,rules,evidence(),"2026-10-23");
+  const excluded=result.stages.PIPELINE.steps[0].excludedPrograms[0];
+  assert.equal(excluded.id,"TRIAL|NCT01234567");
+  assert.equal(excluded.programId,null);
+  assert.equal(excluded.nctId,"NCT01234567");
+  assert.equal(excluded.ticker,"BB");
+});
