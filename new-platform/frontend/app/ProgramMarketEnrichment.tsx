@@ -106,6 +106,23 @@ export default function ProgramMarketEnrichment({ programId, exactKey, stage }: 
           {evidenceSource(check.source) && <a href={evidenceSource(check.source)} target="_blank" rel="noopener noreferrer">Primary source ↗</a>}
         </li>)}</ul>
         {currentReview.riskEvidenceReview.riskFlags.length > 0 && <p>Recorded risks: {currentReview.riskEvidenceReview.riskFlags.join("; ")}</p>}
+        {currentReview.sourceEvidence && <details>
+          <summary>Clinical &amp; financing source facts</summary>
+          <p>Source observations support review. Clinical interpretation and financing clearance still require review.</p>
+          {(["clinical", "financial"] as const).map(kind => {
+            const group = currentReview.sourceEvidence![kind];
+            return <section key={kind} aria-label={kind === "clinical" ? "Exact trial registry facts" : "Company financial source facts"}>
+              <h4>{kind === "clinical" ? "Exact trial registry" : "Company financials · " + currentReview.sourceEvidence!.ticker}</h4>
+              <p>{group.status.replaceAll("_", " ")} · {group.note}</p>
+              <ul>{group.facts.map((item, index) => <li key={item.label + index}>
+                <strong>{item.label}: {item.value}</strong> · {item.status}
+                <p>Source date: {item.sourceDate || "Not recorded"} · Checked: {item.checkedAt || "Not recorded"}{" "}
+                  {evidenceSource(item.source) && <a href={evidenceSource(item.source)} target="_blank" rel="noopener noreferrer">Source ↗</a>}
+                </p>
+              </li>)}</ul>
+            </section>;
+          })}
+        </details>}
       </>}
       <small>Research review retains the existing assessment scores. No trade recommendation is generated.</small>
     </div>

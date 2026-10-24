@@ -684,6 +684,10 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
         catalyst_verified=risk_evidence["catalystVerified"],
         financing_risk_reviewed=risk_evidence["financingRiskReviewed"],
     )
+    from .research_source_evidence import source_evidence
+    observations = source_evidence(program_id, exact_key, ticker,
+                                  current=(risk_evidence["identityStatus"] == "EXACT_IDENTITY_MATCH"
+                                           and candidate.get("ticker") == ticker))
     return {"programId": program_id, "exactKey": exact_key, "stage": stage,
             "assessmentEvidence": assessment, "marketEvidenceReview": market["marketEvidenceReview"],
             "marketDataStatus": market.get("status"),
@@ -691,7 +695,7 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
             "marketDataFeed": market.get("feed"),
             "marketSignalStatus": (market.get("marketSignals") or {}).get("status"),
             "riskEvidenceReview": risk_evidence,
-            "primaryCatalystReview": primary,
+            "primaryCatalystReview": primary, "sourceEvidence": observations,
             "decisionReadiness": readiness, "researchOnly": True,
             "ordersEnabled": False, "fsFaChanges": False}
 

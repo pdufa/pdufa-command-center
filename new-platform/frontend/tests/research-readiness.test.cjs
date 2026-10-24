@@ -26,6 +26,24 @@ function review(stage = 'GEM_JR', ready = false, programId = PID, exactKey = EXA
   };
 }
 
+function withSources(data) {
+  data.sourceEvidence = {programId: data.programId, exactKey: data.exactKey, ticker: 'ABC', researchOnly: true,
+    ordersEnabled: false, assessmentScoreChange: false, fsFaChanges: false, financingRiskReviewed: false,
+    clinical: {status: 'OBSERVED', note: 'Exact trial record', facts: [{label: 'Enrollment', value: '963 (ACTUAL)', source: 'https://clinicaltrials.gov/study/NCT01234567', sourceDate: '2026-03-25', checkedAt: '2026-10-23', status: 'OBSERVED'}]},
+    financial: {status: 'OBSERVED', note: 'Company source; financing clearance still required', facts: []}};
+  return data;
+}
+
+test('source facts cannot cross program identities or claim financing clearance', () => {
+  const data = withSources(review());
+  assert.equal(researchReadiness(data, PID, EXACT, 'GEM_JR'), data);
+  for (const change of [r => r.sourceEvidence.exactKey = 'OTHER', r => r.sourceEvidence.financingRiskReviewed = true,
+    r => r.sourceEvidence.assessmentScoreChange = true, r => r.sourceEvidence.clinical.facts[0].value = {unknown: true}]) {
+    const bad = structuredClone(data); change(bad);
+    assert.throws(() => researchReadiness(bad, PID, EXACT, 'GEM_JR'));
+  }
+});
+
 test('readiness requires the exact program, selected assessment stage, and all source evidence', () => {
   for (const stage of ['GEM_JR', 'GEM']) {
     for (const ready of [false, true]) assert.equal(researchReadiness(review(stage, ready), PID, EXACT, stage).stage, stage);
@@ -114,13 +132,16 @@ test('trial panel loads risk reviews independently of market failure and aborts 
     await act(async () => requests[1].resolve({ok: true, json: async () => review('GEM_JR', true)}));
     assert.doesNotMatch(JSON.stringify(view.toJSON()), /Ready for human review/);
     await act(async () => requests[2].resolve({ok: false, status: 503}));
-    await act(async () => requests[3].resolve({ok: true, json: async () => review('GEM')}));
+    await act(async () => requests[3].resolve({ok: true, json: async () => withSources(review('GEM'))}));
     let rendered = JSON.stringify(view.toJSON());
     assert.match(rendered, /Alpaca rejected the configured API credentials/);
     assert.match(rendered, /Source review required for this program/);
     assert.match(rendered, /Dilution remains a recorded risk/);
     assert.equal(view.root.findAllByProps({'aria-label': 'Investment research readiness'}).length, 1);
-    assert.equal(view.root.findAllByType('a').length, 3);
+    assert.equal(view.root.findAllByType('a').length, 4);
+    assert.equal(view.root.findAllByType('details').length, 1);
+    assert.notEqual(view.root.findByType('details').props.open, true);
+    assert.match(rendered, /963 \(ACTUAL\)/);
     const second = {...props, programId: 'PDUFA-000002', exactKey: 'TRIAL|NCT00000002|DEF', stage: 'GEM'};
     await act(async () => view.update(React.createElement(View, second)));
     assert.ok(requests.slice(2, 4).every(r => r.options.signal.aborted));

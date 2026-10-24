@@ -66,6 +66,19 @@ Market and risk evidence load independently, so an Alpaca credential rejection
 does not hide the clinical or financing evidence gaps. A mismatched immutable
 Program ID, exact source key, stage, or unsupported readiness claim is withheld.
 
+The same panel includes collapsed **Clinical & financing source facts** for the
+17 saved review programs. It retains three complete native ClinicalTrials.gov
+records with exact NCT IDs and SHA-256 receipts, and financial observations for
+15 unique issuers from saved SEC snapshots or issuer-published statements. Trial
+design/enrollment, registry results availability, cash, matched-period operating
+cash flow, and a cash-only runway calculation retain their source dates. Liquid
+securities stay separate from cash; positive cash flow and mismatched periods
+do not produce a runway estimate. Filing metadata, unused ATM capacity, and
+issuer-level financing proceeds do not establish an exact-program financing
+close or dilution clearance. Source receipt freshness is reevaluated on every
+read. These source observations do not assign grades, change the 21 scores,
+update the clinical database, or remove its write freeze.
+
 ## Automated local setup
 
 On a machine with Docker Compose and Python 3 installed, check out this branch and run `bash new-platform/install-local.sh`. The installer generates isolated, private random credentials, builds only the new-platform containers and starts them on localhost:3000. Keep the generated dashboard password safe. It does not edit the Streamlit branch, deploy Streamlit, or touch its files and data.

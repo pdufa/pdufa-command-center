@@ -1,12 +1,15 @@
 export type ResearchStage = "GEM_JR" | "GEM";
 
 type Identity = { programId: string; exactKey: string };
+type SourceGroup = { status: string; note: string; facts: { label: string; value: string; source: string; sourceDate: string; checkedAt: string; status: string }[] };
 export type ResearchReadiness = Identity & {
   stage: ResearchStage;
   researchOnly: true;
   ordersEnabled: false;
   fsFaChanges: false;
   marketDataStatus: string | null;
+  sourceEvidence?: Identity & { ticker: string; clinical: SourceGroup; financial: SourceGroup;
+    researchOnly: true; ordersEnabled: false; assessmentScoreChange: false; fsFaChanges: false; financingRiskReviewed: false };
   assessmentEvidence: { status: string; assessment_score: number | null; assessment_coverage: number | null };
   marketEvidenceReview: Identity & { status: string; recommendation: null; assessmentScoreChange: false; qualificationChange: false; fsFaChange: false };
   decisionReadiness: Identity & {
@@ -87,6 +90,15 @@ export function researchReadiness(value: unknown, programId: string, exactKey: s
       || decision.status !== (expected.length ? "NOT_READY" : "READY_FOR_HUMAN_RESEARCH_REVIEW")
       || (!expected.length && risk.identityStatus !== "EXACT_IDENTITY_MATCH")) {
     throw new Error("Readiness does not match the available evidence");
+  }
+  const sources = r.sourceEvidence;
+  if (sources && (sources.programId !== programId || sources.exactKey !== exactKey
+      || typeof sources.ticker !== "string" || sources.researchOnly !== true || sources.ordersEnabled !== false
+      || sources.assessmentScoreChange !== false || sources.fsFaChanges !== false || sources.financingRiskReviewed !== false
+      || [sources.clinical, sources.financial].some(group => !group || typeof group.status !== "string" || typeof group.note !== "string"
+        || !Array.isArray(group.facts) || group.facts.length > 30 || group.facts.some(f => !f
+          || [f.label, f.value, f.source, f.sourceDate, f.checkedAt, f.status].some(v => typeof v !== "string"))))) {
+    throw new Error("Source observations do not match the selected research program");
   }
   return r;
 }

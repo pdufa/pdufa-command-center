@@ -202,6 +202,7 @@ def check_source_catalog(base: str, key: str) -> None:
             raise ValueError("Source catalog evidence mismatch")
     LOG.warning("PDUFA_CATALYST_CATALOG_SMOKE status=PASS programs=%d confirmed_targets=%d reported_readouts=%d",
                 len(records), targets, past)
+    clinical_programs, financial_issuers = set(), set()
     for record in records:
         for stage in STAGES:
             request = Request(base + f"/api/review/program-decision-readiness/{record['programId']}?stage={stage}",
@@ -209,11 +210,24 @@ def check_source_catalog(base: str, key: str) -> None:
             with opener.open(request, timeout=60) as response:
                 payload = json.load(response)
             verify_source_link(payload, record, stage)
+            observations = payload.get("sourceEvidence") or {}
+            if (observations.get("programId") != record["programId"] or observations.get("exactKey") != record["exactKey"]
+                    or observations.get("ticker") != expected[record["exactKey"]]["ticker"]
+                    or observations.get("researchOnly") is not True
+                    or any(observations.get(field) is not False for field in ("ordersEnabled", "assessmentScoreChange", "fsFaChanges", "financingRiskReviewed"))):
+                raise ValueError("Source observation identity or research boundary mismatch")
+            if (observations.get("clinical") or {}).get("status") == "OBSERVED":
+                clinical_programs.add(record["programId"])
+            if (observations.get("financial") or {}).get("facts"):
+                financial_issuers.add(observations["ticker"])
             LOG.warning("PDUFA_CATALYST_LINK_SMOKE program_id=%s stage=%s status=PASS decision=%s market=%s",
                         record["programId"], stage, payload["decisionReadiness"]["status"], payload["marketEvidenceReview"]["status"])
     LOG.warning("PDUFA_CATALYST_SOURCE_SMOKE status=PASS programs=%d confirmed_targets=%d "
                 "reported_readouts=%d program_stages=%d orders_enabled=False fs_fa_changes=False",
                 len(records), targets, past, len(records) * len(STAGES))
+    LOG.warning("PDUFA_SOURCE_OBSERVATIONS_SMOKE status=PASS programs=%d clinical_sources=%d financial_issuers=%d "
+                "assessment_score_changes=False financing_clearance_changes=False",
+                len(records), len(clinical_programs), len(financial_issuers))
 
 
 def _retryable(exc: Exception) -> bool:
