@@ -57,6 +57,15 @@ financing observations remain distinct from dilution clearance and exact-program
 financing qualification. The startup smoke checks all 17 immutable identities
 and the source-to-readiness link for a real application in both GEM stages.
 
+The expanded GEM JR/GEM trial's stock-price section displays the selected stage's
+existing research-readiness review, including the three catalyst/runway/dilution
+checks, review dates, primary-source links, retained risks, and missing requirements.
+Its authenticated frontend proxy uses the configured backend and never falls back
+to another deployment. A disabled isolated endpoint is shown as unavailable.
+Market and risk evidence load independently, so an Alpaca credential rejection
+does not hide the clinical or financing evidence gaps. A mismatched immutable
+Program ID, exact source key, stage, or unsupported readiness claim is withheld.
+
 ## Automated local setup
 
 On a machine with Docker Compose and Python 3 installed, check out this branch and run `bash new-platform/install-local.sh`. The installer generates isolated, private random credentials, builds only the new-platform containers and starts them on localhost:3000. Keep the generated dashboard password safe. It does not edit the Streamlit branch, deploy Streamlit, or touch its files and data.

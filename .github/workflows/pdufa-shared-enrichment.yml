@@ -1,0 +1,71 @@
+name: PDUFA Shared Research Data
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/shared_enrichment.py'
+      - 'scripts/collect_shared_enrichment.py'
+      - 'tests/test_shared_enrichment.py'
+      - '.github/workflows/pdufa-shared-enrichment.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pdufa-shared-research-data
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Refresh shared fields after primary sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check evidence lineage and calculations before collection
+        run: python -m unittest discover -s tests -p 'test_shared_enrichment.py' -v
+      - name: Expand SEC coverage and collect optional Alpaca daily history
+        env:
+          SEC_USER_AGENT: PDUFACommandCenter/1.0 ${{ secrets.PDUFA_GMAIL_USER }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          ALPACA_DATA_FEED: ${{ vars.ALPACA_DATA_FEED || 'iex' }}
+        run: python scripts/collect_shared_enrichment.py --max-tickers 25
+      - name: Build all three lists from the same source observations
+        run: python scripts/shared_enrichment.py
+      - name: Publish a complete shared-data revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/shared_enrichment data/shared_financials.json data/shared_market.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Refresh shared research field observations and coverage"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 5
+          done
+          echo "::error::Shared data could not be published; previous revision remains available."
+          exit 1
+      - name: Retain source and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-enrichment-${{ github.run_id }}
+          retention-days: 14
+          path: |
+            data/shared_enrichment/index.json
+            data/shared_financials.json
+            data/shared_market.json

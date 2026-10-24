@@ -79,8 +79,14 @@ jobs:
       scan_mode: ${{ inputs.gem_action == 'RESCAN_ALL' && 'FULL' || inputs.scan_mode || 'DELTA' }}
     secrets: inherit
 
-  scoring-and-repair:
+  shared-data:
     needs: sources
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped'
+    uses: ./.github/workflows/pdufa-shared-enrichment.yml
+    secrets: inherit
+
+  scoring-and-repair:
+    needs: [sources, shared-data]
     if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped'
     uses: ./.github/workflows/pdufa-nightly-scoring-then-repair.yml
     with:
@@ -89,7 +95,7 @@ jobs:
     secrets: inherit
 
   result:
-    needs: [validate, clinical, report, sources, scoring-and-repair]
+    needs: [validate, clinical, report, sources, shared-data, scoring-and-repair]
     if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only
     runs-on: ubuntu-latest
     timeout-minutes: 5

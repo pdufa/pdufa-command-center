@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   isolated-readiness:
+    if: github.ref == 'refs/heads/feature/pipeline-enrichment-foundation-20261023'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: isolated-alpaca-review
