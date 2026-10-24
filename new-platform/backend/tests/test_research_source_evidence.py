@@ -76,6 +76,28 @@ def test_stale_or_wrong_issuer_financials_cannot_supply_a_current_runway():
     assert source_evidence(PID, TRIAL, "CLDX", today=TODAY, data=data)["financial"]["facts"] == []
 
 
+def test_financial_group_summary_does_not_mask_stale_or_review_only_facts():
+    stale_sec = source_evidence(PID, APPLICATION, "COGT", today=date(2026, 11, 5))
+    assert stale_sec["financial"]["status"] == "STALE"
+    assert all(item["status"] == "STALE" for item in stale_sec["financial"]["facts"])
+
+    stale_issuer = source_evidence(PID, TRIAL, "CLDX", today=date(2026, 11, 5))
+    assert stale_issuer["financial"]["status"] == "STALE"
+    assert all(item["status"] == "STALE" for item in stale_issuer["financial"]["facts"])
+
+    data = deepcopy(sources())
+    review_only = data[1]["issuers"]["COGT"]
+    review_only["cash_usd"] = None
+    review_only["operating_cash_flow_usd"] = None
+    review_only["review_flags"] = ["Financial statement requires reconciliation."]
+    result = source_evidence(PID, APPLICATION, "COGT", today=TODAY, data=data)
+    assert result["financial"]["status"] == "REVIEW_REQUIRED"
+    assert result["financial"]["facts"]
+    assert all(item["status"] == "REVIEW" for item in result["financial"]["facts"])
+    assert result["financingRiskReviewed"] is False
+    assert result["ordersEnabled"] is False
+
+
 def test_http_readiness_adds_source_facts_without_clearing_missing_reviews_or_modifying_scores():
     from app.candidate_assessments import score_candidate
     from app.main import review_program_decision_readiness
