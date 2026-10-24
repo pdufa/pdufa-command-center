@@ -14,6 +14,7 @@ import PublishedScansPanel from "./PublishedScansPanel";
 import GoalDashboard, { type GoalSection } from "./GoalDashboard";
 import { goalRestrictionSummaries } from "../lib/goal-restrictions";
 import DailyResultsPanel from "./DailyResultsPanel";
+import BackupStatusPanel from "./BackupStatusPanel";
 import PipelineData from "./PipelineData";
 import DetailButton from "./DetailButton";
 import SharedEnrichment from "./SharedEnrichment";
@@ -206,7 +207,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "WT" | "TRADING";
-type TopNav = "GOAL" | "SCANS" | "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
+type TopNav = "GOAL" | "SCANS" | "RESULTS" | "BACKUP" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -894,6 +895,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
     if (requested === "GOAL") { setTop("GOAL"); return; }
     if (requested === "SCANS") { setTop("SCANS"); return; }
     if (requested === "RESULTS") { setTop("RESULTS"); return; }
+    if (requested === "BACKUP") { setTop("BACKUP"); return; }
     if (requested === "RESTRICTIONS" || requested === "PRESET") { setTop("RESTRICTIONS"); if(requested==="PRESET")setRestrictionTab("PRESET"); return; }
     if (requested && (["PIPELINE","GEM_JR","GEM","WT","TRADING"] as const).some(section => section === requested)) {
       setTop("PDUFA");
@@ -1757,6 +1759,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className={top==="GOAL"?"nav-selected":""} aria-current={top==="GOAL"?"page":undefined} onClick={()=>{setTop("GOAL");setMobileNavOpen(false);}}>GOAL</button>
       <button type="button" className={top==="SCANS"?"nav-selected":""} aria-current={top==="SCANS"?"page":undefined} onClick={()=>{setTop("SCANS");setMobileNavOpen(false);}}>SCANS</button>
       <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
+      <button type="button" className={top==="BACKUP"?"nav-selected":""} aria-current={top==="BACKUP"?"page":undefined} onClick={()=>{setTop("BACKUP");setMobileNavOpen(false);}}>BACKUP</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
       
@@ -2080,6 +2083,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       }}
     />}
     {top==="RESULTS" && <DailyResultsPanel />}
+    {top==="BACKUP" && <BackupStatusPanel />}
     {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
     {top==="SCANS" && <PublishedScansPanel />}
     {snapshot && top==="CALENDAR" && <section className="panel"><h2>PDUFA Calendar — Saved event snapshot</h2>
