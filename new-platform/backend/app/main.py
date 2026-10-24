@@ -419,7 +419,9 @@ async def lifespan(app: FastAPI):
                 traceback_entry.tb_frame.f_code.co_name if traceback_entry else "UNKNOWN",
                 traceback_entry.tb_lineno if traceback_entry else "UNKNOWN",
             )
-    if _DB_STATE["available"]:
+    # Avoid racing the isolated SQLite test database teardown with this
+    # optional read-only startup probe. Production still performs the probe.
+    if _DB_STATE["available"] and not os.getenv("PYTEST_CURRENT_TEST"):
         threading.Thread(target=verify_published_sources, daemon=True).start()
     if (_DB_STATE["available"] and os.getenv("PDUFA_FULL_TRIAL_DOWNLOAD_BOOTSTRAP") == "1"
             and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in ("1", "true", "yes")):
