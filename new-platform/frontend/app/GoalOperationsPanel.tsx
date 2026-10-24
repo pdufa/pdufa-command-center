@@ -39,9 +39,11 @@ export default function GoalOperationsPanel({scan,scoring,loading,onOpenScans}:P
       </article>
       <article className={styles.card}>
         <strong>Google Drive data backup</strong>
-        <span className={styles.concern}>Recurring backup not verified</span>
-        <p>An October 23 master-data snapshot was manually created and verified in Drive.
-          No automatic nightly Google Drive copy or tested full-site restoration has been established.</p>
+        <span className={styles.concern}>Daily task configured · first automatic run unverified</span>
+        <p>As of October 23, a separate ChatGPT task was configured to copy the PDUFA Master Scan Data
+          Google Sheet daily around 8 AM Pacific. An October 23 snapshot was verified in Drive,
+          but this site cannot confirm that the unattended task runs or stays enabled.
+          No complete site/Git history backup or tested restore has been established.</p>
       </article>
       <article className={styles.card}>
         <strong>Text and email notifications</strong>
