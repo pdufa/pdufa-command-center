@@ -34,11 +34,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Reject unauthenticated scientific assessment requests
+      - name: Probe scientific API without credentials
         shell: bash
         run: |
-          set -euo pipefail
-          url="https://pdufa-scientific-assessment-review.onrender.com/api/scientific-assessment?exact_id=TRIAL%7CNCT00000001"
-          code="$(curl --silent --show-error --location --retry 3 --retry-delay 5 --max-time 90 --output /dev/null --write-out '%{http_code}' "$url")"
-          echo "Unauthenticated HTTP status: $code"
-          test "$code" = "401" || { echo "::error::Expected 401; got $code"; exit 1; }
+          python - <<'PY'
+          import urllib.request
+          import urllib.error
+          import sys
+          url = "https://pdufa-scientific-assessment-review.onrender.com/api/scientific-assessment?exact_id=TRIAL%7CNCT00000001"
+          try:
+              with urllib.request.urlopen(url, timeout=90) as response:
+                  status = response.status
+          except urllib.error.HTTPError as exc:
+              status = exc.code
+          except Exception as exc:
+              print(f"NETWORK ERROR: {type(exc).__name__}: {exc}", flush=True)
+              sys.exit(2)
+          print(f"Unauthenticated HTTP status: {status}", flush=True)
+          if status != 401:
+              print(f"SECURITY/CONFIGURATION CHECK FAILED: expected 401, received {status}", flush=True)
+              sys.exit(1)
+          print("PASS: authentication enforced")
+          PY
