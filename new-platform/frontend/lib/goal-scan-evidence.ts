@@ -55,7 +55,7 @@ export function goalScanView(data: unknown, now = new Date()): GoalScanView | nu
   const dailyRows = data.daily.days.filter(object).filter(x => day(x.date_pacific))
     .sort((a,b) => String(b.date_pacific).localeCompare(String(a.date_pacific)));
   const today = pacificGoalDay(now);
-  const recorded = dailyRows.find(x => x.date_pacific === today) || dailyRows.find(x => x.date_pacific <= today);
+  const recorded = dailyRows.find(x => x.date_pacific === today) || dailyRows.find(x => String(x.date_pacific) <= today);
   if (!recorded || !["COMPLETE","PARTIAL","RUN_FAILED"].includes(String(recorded.status))) return null;
   const runId = count(recorded.run_id);
   const runUrl = trustedRun(runId, recorded.run_url);
