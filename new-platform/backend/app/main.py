@@ -435,6 +435,21 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 
+@app.get("/api/scientific-assessment/storage-status", dependencies=[Depends(require_internal_key)])
+def scientific_assessment_storage_status():
+    """Authenticated, read-only schema and record-count diagnostic."""
+    if not storage_ready() or not _DB_STATE["available"]:
+        return {"storageReady": False, "trialTablePresent": False, "storedTrialCount": None}
+    try:
+        from sqlalchemy import func, inspect
+        with Session(ENGINE) as session:
+            table_present = inspect(session.get_bind()).has_table("full_trial_records")
+            count = session.scalar(select(func.count()).select_from(FullTrialRecord)) if table_present else None
+        return {"storageReady": True, "trialTablePresent": table_present, "storedTrialCount": count}
+    except Exception:
+        return {"storageReady": False, "trialTablePresent": None, "storedTrialCount": None}
+
+
 @app.get("/api/scientific-assessment", dependencies=[Depends(require_internal_key)])
 def get_scientific_assessment(exact_id: str):
     """Read-only scientific assessment; never invent missing trial evidence."""
