@@ -2063,6 +2063,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       gemJrCount={snapshot ? snapshot.members.GEM_JR.rows.length : publishedCounts?.gemJr ?? null}
       gemCount={snapshot ? snapshot.members.GEM.rows.length : publishedCounts?.gem ?? null}
       restrictions={masterRestrictionsReady ? goalRestrictionSummaries(masterRestrictions) : null}
+      impactRows={snapshot ? restrictionRows : null}
+      impactEntries={masterRestrictionsReady ? masterRestrictions : null}
       sourceAsOf={snapshot?.asOf}
       sourceState={snapshot?.sourceHealth?.state}
       scanFinishedAt={snapshot?.sourceHealth?.publishedScan?.finishedAt}
