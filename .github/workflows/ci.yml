@@ -9,6 +9,10 @@ on:
       - 'scripts/phase3_results_intake.py'
       - 'scripts/nightly_clinical_collection.py'
       - 'scripts/pdufa_scan_audit.py'
+      - 'scripts/run_scan_with_email.py'
+      - 'scripts/scan_sms.py'
+      - 'tests/test_scan_email_notifications.py'
+      - 'tests/test_scan_sms_notifications.py'
       - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
@@ -21,6 +25,10 @@ on:
       - 'scripts/phase3_results_intake.py'
       - 'scripts/nightly_clinical_collection.py'
       - 'scripts/pdufa_scan_audit.py'
+      - 'scripts/run_scan_with_email.py'
+      - 'scripts/scan_sms.py'
+      - 'tests/test_scan_email_notifications.py'
+      - 'tests/test_scan_sms_notifications.py'
       - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
@@ -52,6 +60,10 @@ jobs:
         run: python -m py_compile scripts/validate_gem_source_ledgers.py
       - name: Validate strict GEM evidence ledger
         run: python scripts/validate_gem_source_ledgers.py
+      - name: Offline scan email and SMS notification safety regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_scan_email_notifications.py' -v
+          python -m unittest discover -s tests -p 'test_scan_sms_notifications.py' -v
 
   scan-new-results:
     name: Audited new-scan identities and duplicate prevention
