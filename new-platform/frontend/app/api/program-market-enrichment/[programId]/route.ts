@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
+import { researchBackendBase } from "../../../../lib/research-backend";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ program
   if (!new Set(["1M", "3M", "6M", "1Y", "ALL"]).has(range)) {
     return NextResponse.json({ error: "Invalid market-data range" }, { status: 422 });
   }
-  const base = process.env.PDUFA_API_BASE_URL?.replace(/\/$/, "");
+  const base = researchBackendBase();
   const key = process.env.PDUFA_INTERNAL_API_KEY;
   if (!base || !/^https:\/\//.test(base) || !key) {
     return NextResponse.json({ error: "Backend not configured" }, { status: 503 });
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ program
   try {
     const response = await fetch(base + "/api/program-market-enrichment/" + encodeURIComponent(programId) + "?range=" + encodeURIComponent(range), {
       headers: { "x-pdufa-internal-key": key },
-      cache: "no-store",
+      cache: "no-store", redirect: "error",
       signal: AbortSignal.timeout(30000),
     });
     const data = await response.json().catch(() => ({}));

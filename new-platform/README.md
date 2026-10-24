@@ -29,6 +29,26 @@ and technical confirmation. No orders are placed.
 - **Autosave:** edits write to database and restore on screen return (optimistic version checks).
 - Production surveys, Gmail alerts, Streamlit deployment, and other live jobs **are not migrated or started** by this bootstrap.
 
+### Production research-only API integration
+
+Production Next.js remains bound to `PDUFA_API_BASE_URL` for ordinary workspace
+pages, saved assessment history, trial storage, and program management. Its
+read-only market-enrichment and program-decision-readiness proxies may instead
+use `PDUFA_RESEARCH_API_BASE_URL`. Only these two authenticated GET handlers
+consult the research override. It is not a replacement for the storage API,
+and no trading, alternate scheduler, or filesystem migration is initiated.
+
+The research backend must verify each requested permanent Program ID and the
+matching exact trial source key. A mismatch is withheld, not silently joined
+by ticker, even if the same company appears in both databases. Research
+responses remain for human review, never orders or approvals.
+
+Configure the override as a server-only HTTPS URL under Vercel Production and
+Preview environments, and retain `PDUFA_INTERNAL_API_KEY` server-side.
+Changing the override requires a new deployment for the setting to take
+effect. Disabling it falls back to `PDUFA_API_BASE_URL`; it does not
+automatically copy any Program ID or clinical evidence between services.
+
 ### Isolated research evidence review
 
 The isolated Program ID readiness endpoint reads the existing selected GEM JR or

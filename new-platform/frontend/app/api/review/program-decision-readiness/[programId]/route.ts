@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../../../lib/auth";
 import { researchReadiness } from "../../../../../lib/research-readiness";
+import { researchBackendBase } from "../../../../../lib/research-backend";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ program
       || (stage !== "GEM_JR" && stage !== "GEM")) {
     return reply({ error: "Exact program identity and GEM assessment stage required" }, 422);
   }
-  const base = process.env.PDUFA_API_BASE_URL?.replace(/\/$/, "");
+  const base = researchBackendBase();
   const key = process.env.PDUFA_INTERNAL_API_KEY;
   if (!base || !/^https:\/\//.test(base) || !key) {
     return reply({ error: "Research readiness unavailable" }, 503);
