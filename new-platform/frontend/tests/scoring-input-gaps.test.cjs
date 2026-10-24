@@ -20,7 +20,13 @@ function report(){
       {Test:"Public PoA coverage",Status:"DATA GAP",Result:"0/45 missing", "Why it matters":"No fake public probability"},
       {Test:"Market overlap",Status:"SHARED INPUT",Result:"34 observations", "Why it matters":"Not independent"}
     ],
-    provenance_note:"Saved source inputs, not necessarily fresh scan artifacts."
+    provenance_note:"Saved source inputs, not necessarily fresh scan artifacts.",
+    scope:"Read-only saved-input column/overlap checks",
+    sources:[
+      {dataset:"PDUFA candidates",path:"data/pdufa_candidates.csv",file_present:true,saved_records:45},
+      {dataset:"FDA V3 review",path:"data/fda_review_engine.csv",file_present:true,saved_records:45},
+      {dataset:"Post financing gates",path:"data/step7_financing_review.csv",file_present:true,saved_records:38},
+    ],
   };
 }
 test("correctly keeps source-input gaps rather than fabricating scores",()=>{
@@ -41,12 +47,27 @@ test("inconsistent or invalid published scoring evidence is withheld",()=>{
     x=>x.checks[1].Status="READY_TO_TRADE",
     x=>x.checks[1]["Why it matters"]=null,
     x=>x.checks="unsourced",
+    x=>x.sources[0].saved_records=-1,
+    x=>x.sources[1].file_present="yes",
+    x=>x.sources[1].path="https://host/unsafe.csv",
+    x=>x.scope={unexpected:"object"},
   ]){
     const item=report();bad(item);
     assert.equal(scoreAuditView(item,time),null);
   }
   assert.equal(scoreAuditView(null,time),null);
 });
+test("partial observed coverage is not misreported as a fully clear score audit",()=>{
+  const partial=report();
+  partial.checks[0].Status="REVIEW";
+  partial.checks[0].Result="1/45 stock rows contain trade_score";
+  partial.counts.data_gaps=1;
+  partial.counts.reviews=1;
+  assert.equal(scoreAuditView(partial,time).audit.status,"REVIEW_REQUIRED");
+  partial.status="NO_INPUT_GAPS_FOUND";
+  assert.equal(scoreAuditView(partial,time),null);
+});
+
 test("four scoring gaps have distinct source-specific resolution steps",()=>{
   const examples=[
     ["Trade Score coverage","data/pdufa_candidates.csv",/trade_score/],
@@ -76,13 +97,19 @@ test("SCANS shows its saved audit and collapsible evidence checklist",async()=>{
     await act(async()=>{view=create(React.createElement(Component,{report:report()}));});
     let content=JSON.stringify(view.toJSON());
     assert.match(content,/REVIEW REQUIRED/);
-    assert.match(content,/"2"," data gaps"/);
+    assert.match(content,/"2"," data gaps/);
     assert.match(content,/Trade Score coverage/);
     assert.match(content,/OPEN ORIGINAL NIGHTLY SCAN RUN/);
     assert.match(content,/Next evidence check:/);
     assert.match(content,/OPEN SAVED INPUT DATASET/);
     assert.match(content,/trade_score/);
     assert.match(content,/public_approval_probability/);
+    assert.match(content,/NOT whole-universe trial scoring/);
+    assert.match(content,/Saved audit dataset coverage/);
+    assert.match(content,/45/);
+    assert.match(content,/38/);
+    assert.match(content,/not all Pipeline programs/);
+    assert.match(content,/needing attention/);
     assert.equal(view.root.findAllByProps({"aria-label":"Evidence needed for Trade Score coverage"}).length,1);
 
     assert.equal(view.root.findAllByType("details").length,1);

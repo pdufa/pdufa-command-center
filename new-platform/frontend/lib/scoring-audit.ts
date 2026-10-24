@@ -7,12 +7,15 @@ export type ScoreAuditCheck = {
   Result: string;
   "Why it matters": string;
 };
+export type ScoreAuditSource = { dataset: string; path: string; file_present: boolean; saved_records: number };
 export type ScoreAudit = {
   generated_at_utc: string;
   status: "REVIEW_REQUIRED" | "NO_INPUT_GAPS_FOUND" | "SCAN_FAILURE" | "INPUTS_UNAVAILABLE";
   source_scan: { workflow: string; run_id: number; conclusion: string };
   counts: { input_tests: number; data_gaps: number; reviews: number; models_mapped: number; overlaps: number };
   checks: ScoreAuditCheck[];
+  sources?: ScoreAuditSource[];
+  scope?: string;
   provenance_note: string;
 };
 export type ScoreAuditView = { audit: ScoreAudit; freshness: "CURRENT" | "STALE" | "CLOCK_UNVERIFIED" };
@@ -40,6 +43,14 @@ export function scoreAuditView(value: unknown, now = Date.now()): ScoreAuditView
   if (counts.data_gaps !== gaps || counts.reviews !== reviews
       || (value.status === "NO_INPUT_GAPS_FOUND" && (gaps || reviews))
       || (value.status === "REVIEW_REQUIRED" && !gaps && !reviews)) return null;
+  if (value.sources !== undefined) {
+    if (!Array.isArray(value.sources) || value.sources.length > 20
+        || value.sources.some((x: unknown) => !object(x)
+          || typeof x.dataset !== "string" || x.dataset.length > 120
+          || typeof x.path !== "string" || !/^data\/[a-z0-9_.-]+\.csv$/.test(x.path)
+          || typeof x.file_present !== "boolean" || !isCount(x.saved_records))) return null;
+  }
+  if (value.scope !== undefined && (typeof value.scope !== "string" || value.scope.length > 500)) return null;
   const stamp = Date.parse(value.generated_at_utc);
   const freshness = !Number.isFinite(stamp) || !Number.isFinite(now) || stamp > now + 5 * 60_000
     ? "CLOCK_UNVERIFIED"

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from score_input_audit import (
     CLINICAL, SOURCES, audit_tests, clinical_agreement, load_sources,
-    score_inputs_for_ticker, present, has_saved_gate_pass,
+    score_inputs_for_ticker, present, has_saved_gate_pass, coverage_status,
 )
 
 
@@ -82,6 +82,43 @@ def test_financing_gate_pass_must_be_explicit_state_not_incidental_word():
     assert has_saved_gate_pass({"Audited gate details":
         "trial_identity: REVIEW — EVIDENCE MISSING | phase3_primary: PASS — reviewed source"})
     assert has_saved_gate_pass({"Audited gate details": "safety: PASS"})
+
+
+def test_partial_coverage_remains_review_until_every_saved_row_is_observed():
+    assert coverage_status(0, 45) == "DATA GAP"
+    assert coverage_status(1, 45) == "REVIEW"
+    assert coverage_status(44, 45) == "REVIEW"
+    assert coverage_status(45, 45) == "OBSERVED"
+    assert coverage_status(0, 0) == "DATA GAP"
+    assert coverage_status(2, 1) == "DATA GAP"
+    assert coverage_status(-1, 5) == "DATA GAP"
+
+    data = _data()
+    for label in ("PDUFA candidates", "FDA V3 review", "Post financing gates"):
+        data[label].append({**data[label][0], "ticker": "TEST2", "event_key": "TEST2|EVENT"})
+
+    data["PDUFA candidates"][0]["trade_score"] = "70"
+    data["PDUFA candidates"][0]["public_approval_probability"] = "65"
+    data["FDA V3 review"][0]["fda_probability"] = "65"
+    data["Post financing gates"][0]["Audited gate details"] = (
+        "trial_identity: PASS — source verified | safety: REVIEW — EVIDENCE MISSING")
+
+    statuses = {r["Test"]: r["Status"] for r in audit_tests(data)}
+    for name in ("Trade Score coverage", "Public PoA coverage",
+                 "FDA V3 calculated probability", "Post Phase 3 entry gates"):
+        assert statuses[name] == "REVIEW", (name, statuses[name])
+
+    data["PDUFA candidates"][1]["trade_score"] = "60"
+    data["PDUFA candidates"][1]["public_approval_probability"] = "70"
+    data["FDA V3 review"][1]["fda_probability"] = "70"
+    data["Post financing gates"][1]["Audited gate details"] = (
+        "trial_identity: PASS — source verified | safety: REVIEW")
+    statuses = {r["Test"]: r["Status"] for r in audit_tests(data)}
+    for name in ("Trade Score coverage", "Public PoA coverage",
+                 "FDA V3 calculated probability", "Post Phase 3 entry gates"):
+        assert statuses[name] == "OBSERVED", (name, statuses[name])
+    # OBSERVED is saved-field coverage, never a claim that the source is
+    # independent, that any clinical gate cleared, or that trades are safe.
 
 
 def test_missing_values_do_not_count_as_zero_or_verified():

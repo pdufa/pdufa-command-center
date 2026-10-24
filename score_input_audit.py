@@ -104,6 +104,20 @@ def has_saved_gate_pass(row):
                             part, flags=re.IGNORECASE) is not None for part in parts)
 
 
+def coverage_status(observed, total):
+    """Classify data *coverage*, not clinical quality or trade eligibility.
+
+    One populated row out of hundreds must never make a missing-input finding
+    look resolved. OBSERVED only means the expected field is filled throughout
+    this saved snapshot; it does not certify values or FDA/financing outcomes.
+    """
+    if not isinstance(observed, int) or not isinstance(total, int) or total <= 0 or observed < 0 or observed > total:
+        return "DATA GAP"
+    if observed == 0:
+        return "DATA GAP"
+    return "REVIEW" if observed < total else "OBSERVED"
+
+
 def audit_tests(data):
     candidates = data["PDUFA candidates"]
     fda = data["FDA V3 review"]
@@ -120,18 +134,18 @@ def audit_tests(data):
          "Status": "SHARED INPUT" if agreement["matched"] and agreement["matched"] == agreement["equal"] else "REVIEW",
          "Result": f'{agreement["equal"]}/{agreement["matched"]} matching PRE pilot score inputs agree',
          "Why it matters": "Matching point ledgers are not independent clinical confirmations."},
-        {"Test": "Trade Score coverage", "Status": "DATA GAP" if trading == 0 else "OBSERVED",
+        {"Test": "Trade Score coverage", "Status": coverage_status(trading, num),
          "Result": f"{trading}/{num} stock rows contain trade_score",
          "Why it matters": "Missing saved scores must not be replaced by a clinical mean without a distinct label."},
-        {"Test": "Public PoA coverage", "Status": "DATA GAP" if public == 0 else "OBSERVED",
+        {"Test": "Public PoA coverage", "Status": coverage_status(public, num),
          "Result": f"{public}/{num} stock rows contain public_approval_probability",
          "Why it matters": "All-sources PoA requires both estimates; missing does not equal 0%."},
-        {"Test": "FDA V3 calculated probability", "Status": "DATA GAP" if fda_p == 0 else "OBSERVED",
+        {"Test": "FDA V3 calculated probability", "Status": coverage_status(fda_p, len(fda)),
          "Result": f"{fda_p}/{len(fda)} FDA review rows have fda_probability",
          "Why it matters": "Approval model remains gated until review evidence is sufficient."},
-        {"Test": "Post Phase 3 entry gates", "Status": "DATA GAP" if gates == 0 else "OBSERVED",
+        {"Test": "Post Phase 3 entry gates", "Status": coverage_status(gates, len(finance)),
          "Result": f"{gates}/{len(finance)} financing-review rows contain at least one gate PASS",
-         "Why it matters": "No verified PASS is not evidence of an eligible entry; gate status overrides scores."},
+         "Why it matters": "A recorded PASS covers only its named gate, not the whole event or a trading authorization; unresolved records remain blocked."},
         {"Test": "Market data overlap", "Status": "SHARED INPUT",
          "Result": f'{len(market)} market records; momentum + relative volume reused across 2 post models',
          "Why it matters": "One quote and date may legitimately support multiple models, but not multiple independent votes."},
