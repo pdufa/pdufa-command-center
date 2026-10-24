@@ -11,6 +11,7 @@ import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import PublishedScansPanel from "./PublishedScansPanel";
+import GoalDashboard, { type GoalSection } from "./GoalDashboard";
 import DailyResultsPanel from "./DailyResultsPanel";
 import PipelineData from "./PipelineData";
 import DetailButton from "./DetailButton";
@@ -204,7 +205,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "WT" | "TRADING";
-type TopNav = "SCANS" | "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
+type TopNav = "GOAL" | "SCANS" | "RESULTS" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -889,6 +890,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
+    if (requested === "GOAL") { setTop("GOAL"); return; }
     if (requested === "SCANS") { setTop("SCANS"); return; }
     if (requested === "RESULTS") { setTop("RESULTS"); return; }
     if (requested === "RESTRICTIONS" || requested === "PRESET") { setTop("RESTRICTIONS"); if(requested==="PRESET")setRestrictionTab("PRESET"); return; }
@@ -1751,6 +1753,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
 
   return <div className="migration-workspace">
     <div className="worktop">
+      <button type="button" className={top==="GOAL"?"nav-selected":""} aria-current={top==="GOAL"?"page":undefined} onClick={()=>{setTop("GOAL");setMobileNavOpen(false);}}>GOAL</button>
       <button type="button" className={top==="SCANS"?"nav-selected":""} aria-current={top==="SCANS"?"page":undefined} onClick={()=>{setTop("SCANS");setMobileNavOpen(false);}}>SCANS</button>
       <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
@@ -1765,7 +1768,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" aria-current={restrictionTab==="PRESET"?"page":undefined} className={restrictionTab==="PRESET"?"nav-selected":""} onClick={()=>{setRestrictionTab("PRESET");setMobileNavOpen(false);}}>PRESET</button>
     </div>}
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <div aria-label="Disease and company tools" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"8px 0 14px"}}><button type="button" className={restrictionFocus==="DISEASE"?"nav-selected":""} aria-pressed={restrictionFocus==="DISEASE"} onClick={()=>setRestrictionFocus("DISEASE")}>DISEASE · 5,168</button><button type="button" className={restrictionFocus==="COMPANY"?"nav-selected":""} aria-pressed={restrictionFocus==="COMPANY"} onClick={()=>setRestrictionFocus("COMPANY")}>COMPANY ↔ DISEASE</button></div>}
-    {top!=="RESTRICTIONS" && top!=="SCANS" && <div className="nav-wrapper">
+    {top!=="GOAL" && top!=="RESTRICTIONS" && top!=="SCANS" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
         <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
@@ -1779,7 +1782,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
             onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
     </div>}
-    <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
+    {top!=="GOAL" && <div className="workflow-counts" role="group" aria-label="Pipeline to WT current totals">
       {([
         {id:"PIPELINE" as Nav, label:"PIPELINE", count:snapshot ? pageTotals.PIPELINE : publishedCounts?.pipeline ?? null, detail:"Total candidates"},
         {id:"GEM_JR" as Nav, label:"GEM JR", count:snapshot ? verifiedStageCount("GEM_JR") : publishedCounts?.gemJr ?? null, detail:stageCountDetail("GEM_JR")},
@@ -1797,8 +1800,8 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <span className="workflow-count-detail">{item.detail}</span>
         </span>
       </button>)}
-    </div>
-    <div className="workspace-update-row" role="status" aria-label="Data freshness and scan status">
+    </div>}
+    {top!=="GOAL" && <div className="workspace-update-row" role="status" aria-label="Data freshness and scan status">
         <section className="workspace-update-card">
           <span className="workspace-update-label">LAST UPDATED · SOURCE DATA</span>
           <strong className="workspace-update-value">{pacificSourceTime(snapshot?.asOf)}</strong>
@@ -1814,11 +1817,11 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           <strong className="workspace-update-value">{pacificSourceTime(lastCheckedAt)}</strong>
           <span className="workspace-update-detail">Data was checked, not a new scan. See SCANS for live progress.</span>
         </section>
-      </div>
-    {summaryError && !publishedCounts && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
-    {snapshot?.sourceHealth && <div className="source-health workspace-source-health-full" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
+      </div>}
+    {summaryError && !publishedCounts && top!=="GOAL" && <p className="workspace-banner" role="alert">{summaryError} Candidate lists are preserved; retry loading candidates to try again.</p>}
+    {snapshot?.sourceHealth && top!=="GOAL" && <div className="source-health workspace-source-health-full" role="status"><strong>Source health: {snapshot.sourceHealth.state}</strong><span>{snapshot.sourceHealth.regulatoryRows} regulatory programs · {snapshot.sourceHealth.clinicalRows} published clinical trials</span>{snapshot.sourceHealth.issues.length>0 && <ul>{snapshot.sourceHealth.issues.map(issue=><li key={issue}>{issue}</li>)}</ul>}</div>}
     {(top==="RESTRICTIONS" || top==="PDUFA" && (nav==="PIPELINE" || nav==="GEM_JR" || nav==="GEM")) && <SharedEnrichment key={top+nav} stage={nav==="GEM_JR" || nav==="GEM" ? nav : "PIPELINE"}/>}
-    {!snapshot && <div className="panel" role="status" aria-live="polite">
+    {!snapshot && top!=="GOAL" && <div className="panel" role="status" aria-live="polite">
       <p>{fetchError || "Loading the complete workspace. You can browse the pipeline quick view below."}</p>
       <p className="subtle">Saved trial identities and WT selections are not erased by a source connection problem.</p>
       <div className="panel" aria-label="Pipeline quick view">
@@ -2053,6 +2056,25 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
           </div>)}
       </section>}
     </div>}
+    {top==="GOAL" && <GoalDashboard
+      records={snapshot?.pipeline ?? null}
+      pipelineCount={snapshot ? snapshot.pipeline.length : publishedCounts?.pipeline ?? null}
+      gemJrCount={snapshot ? snapshot.members.GEM_JR.rows.length : publishedCounts?.gemJr ?? null}
+      gemCount={snapshot ? snapshot.members.GEM.rows.length : publishedCounts?.gem ?? null}
+      sourceAsOf={snapshot?.asOf}
+      sourceState={snapshot?.sourceHealth?.state}
+      scanFinishedAt={snapshot?.sourceHealth?.publishedScan?.finishedAt}
+      scanComplete={snapshot?.sourceHealth?.publishedScan?.complete === true}
+      cached={Boolean(cachedAsOf || fetchError || snapshot?.mode !== "LIVE_READ_ONLY_GITHUB_SOURCE")}
+      onOpen={(section:GoalSection)=>{
+        if(section==="PIPELINE" || section==="GEM_JR" || section==="GEM"){
+          setTop("PDUFA");setNav(section);
+        } else {
+          setTop(section);
+        }
+        setMobileNavOpen(false);
+      }}
+    />}
     {top==="RESULTS" && <DailyResultsPanel />}
     {top==="PDUFA" && nav==="TRADING" && <TradingDashboard tickers={tradingTickers} tagsReady={tagsReady} />}
     {top==="SCANS" && <PublishedScansPanel />}
