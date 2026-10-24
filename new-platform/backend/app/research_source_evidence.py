@@ -55,8 +55,8 @@ def financial_summary(result):
     statuses = {item["status"] for item in result["facts"]}
     if not statuses:
         result.update(status="MISSING", note="No usable financial measurements in the saved source.")
-    elif statuses == {"STALE"}:
-        result.update(status="STALE", note="All saved financial measurements are stale and need refreshing.")
+    elif "STALE" in statuses and not statuses.intersection({"OBSERVED", "CALCULATED"}):
+        result.update(status="STALE", note="No current financial measurement is verified; stale values must be refreshed and any pending filings reviewed.")
     elif not statuses.intersection({"OBSERVED", "CALCULATED"}):
         result.update(status="REVIEW_REQUIRED", note="Financial items need review; no current measurement is verified.")
     return result
