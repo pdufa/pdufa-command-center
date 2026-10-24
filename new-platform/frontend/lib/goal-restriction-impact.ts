@@ -27,6 +27,8 @@ export type GoalImpactStep = {
   unknownAlone: number;
   /** Exactly the IDs counted by this step's newlyExcluded result. */
   excludedPrograms: GoalExcludedProgram[];
+  /** After this step: cumulatively UNKNOWN and not excluded; not just this rule's aloneUnknown. */
+  pendingPrograms: GoalExcludedProgram[];
 };
 export type GoalImpactStage = {
   total: number;
@@ -86,7 +88,7 @@ export function calculateGoalRestrictionImpact(
     const stageOnly=selected.map(rule=>({...rule,stage,additionalStages:[],
       priority:rule.stagePriorities?.[stage] || rule.priority || "1",
       stagePriorities:{[stage]:rule.stagePriorities?.[stage] || rule.priority || "1"}}));
-    const calculated=calculateCatalogImpact(rows,stageOnly,settings,evidence,asOf);
+    const calculated=calculateCatalogImpact(rows,stageOnly,settings,evidence,asOf,true);
     const steps:GoalImpactStep[]=[];
     for(const rule of selected){
       const key=rule.id;
@@ -109,9 +111,29 @@ export function calculateGoalRestrictionImpact(
       }
       if(excludedPrograms.length !== step.newlyExcluded) throw new Error("Excluded row count mismatch");
       excludedPrograms.sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.id.localeCompare(b.id));
+      if(!step.pendingIds) throw new Error("Pending IDs not available from restriction engine");
+      const pendingPrograms:GoalExcludedProgram[]=[];
+      for(const id of step.pendingIds){
+        const row=baseline.get(id);
+        if(!row) throw new Error("Pending identity missing from saved Pipeline");
+        const nctId=/^NCT\d{8}$/.test(row.nctId || "") ? row.nctId! :
+          /^TRIAL\|(NCT\d{8})$/.exec(row.id)?.[1] || null;
+        pendingPrograms.push({
+          id:row.id,
+          programId:typeof row.programId==="string" && row.programId.trim() ? row.programId : null,
+          ticker:row.ticker,
+          drug:typeof row.drug==="string" && row.drug.trim() ? row.drug : null,
+          indication:typeof row.indication==="string" && row.indication.trim() ? row.indication : null,
+          nctId,
+        });
+      }
+      pendingPrograms.sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.id.localeCompare(b.id));
+      if(pendingPrograms.length!==step.pending
+        || pendingPrograms.some(record=>step.newlyExcludedIds.has(record.id)))
+        throw new Error("Pending evidence count inconsistent with sequential exclusions");
       steps.push({id:rule.id,title:catalogDefinition(rule).title,
         before:step.before,excluded:step.newlyExcluded,after:step.remaining,
-        pending:step.pending,unknownAlone:step.aloneUnknown,excludedPrograms});
+        pending:step.pending,unknownAlone:step.aloneUnknown,excludedPrograms,pendingPrograms});
     }
     const final=calculated.stages.find(item=>item.stage===stage);
     if(!final) throw new Error("Missing stage impact");
