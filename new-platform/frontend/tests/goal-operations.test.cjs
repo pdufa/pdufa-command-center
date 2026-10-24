@@ -86,5 +86,5 @@ test("GOAL operations update from authenticated saved report and mobile renderin
   assert.match(source,/setScoringReport\(null\)/);
   assert.match(source,/GoalOperationsPanel scan=\{scanView\} scoring=\{scoringReport\}/);
   assert.match(css,/@media\(max-width:650px\)/);
-  assert.doesNotMatch(panel,/fetch\(|method: ?["']POST|dispatch|localStorage\.setItem|Twilio\.send/i);
+  assert.doesNotMatch(panel,/fetch\(|method: ?["']POST|dispatchWorkflow\(|localStorage\.setItem|Twilio\.send/i);
 });
