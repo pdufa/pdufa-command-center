@@ -15,6 +15,7 @@ import { impactSummaryCsv, impactProgramCsv } from "../lib/goal-impact-export";
 import styles from "./GoalDashboard.module.css";
 import GoalOperationsPanel from "./GoalOperationsPanel";
 import GoalDailyHistory from "./GoalDailyHistory";
+import GoalSourceCoverage from "./GoalSourceCoverage";
 
 export type GoalRecord = {
   id: string;
@@ -228,6 +229,7 @@ export default function GoalDashboard({
   const [scanView, setScanView] = useState<GoalScanView | null>(null);
   const [scoringReport, setScoringReport] = useState<unknown>(null);
   const [dailyLedger, setDailyLedger] = useState<unknown>(null);
+  const [sourceCoverageReport, setSourceCoverageReport] = useState<unknown>(null);
   const [scanLoading, setScanLoading] = useState(true);
   const [scanError, setScanError] = useState("");
   const [scanRefresh, setScanRefresh] = useState(0);
@@ -282,6 +284,7 @@ export default function GoalDashboard({
         const scoring = data && typeof data==="object" && !Array.isArray(data) && "scoring" in data
           ? data.scoring : null;
         setScoringReport(scoring);
+        setSourceCoverageReport(data && typeof data==="object" && !Array.isArray(data) && "sources" in data ? data.sources : null);
         setDailyLedger(data && typeof data==="object" && !Array.isArray(data) && "daily" in data ? data.daily : null);
         setScanView(result);
         setScanError(result ? "" : "No run-matched dated report is available.");
@@ -290,6 +293,7 @@ export default function GoalDashboard({
         if (controller.signal.aborted) return;
         setScanError("Dated scan report could not be verified.");
         setScoringReport(null);
+        setSourceCoverageReport(null);
         setDailyLedger(null);
         setScanView(null);
       })
@@ -422,6 +426,7 @@ export default function GoalDashboard({
       </div>
     </section>
     <GoalDailyHistory daily={dailyLedger} loading={scanLoading} error={scanError}/>
+    <GoalSourceCoverage source={sourceCoverageReport} scan={scanView} loading={scanLoading}/>
     <section className={styles.impactIntro} aria-label="GOAL restriction before and after comparison">
       <div className={styles.sectionHeader}>
         <div><h3>Restriction impact · before → after</h3>
