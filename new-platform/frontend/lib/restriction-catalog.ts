@@ -218,9 +218,9 @@ export function catalogVerdict(entry: CatalogEntry, row: ImpactRecord, settings:
   return n == null || !Number.isFinite(n) ? "UNKNOWN" : verdict(entry.operator === "<=" ? n <= value : n >= value);
 }
 export type CatalogStep = { id: string; stage: RestrictionStage; alonePass: number; aloneFail: number; aloneUnknown: number;
-  step: number | null; before: number; newlyExcluded: number; remaining: number; passed: number; pending: number; newlyExcludedIds: Set<string> };
+  step: number | null; before: number; newlyExcluded: number; remaining: number; passed: number; pending: number; newlyExcludedIds: Set<string>; pendingIds?: Set<string> };
 export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEntry[], settings: RestrictionSettings,
-    evidence: RestrictionEvidence | null, asOf: string) {
+    evidence: RestrictionEvidence | null, asOf: string, capturePendingIds = false) {
   const rows = [...new Map(input.map(row => [row.id, row])).values()];
   const states = new Map<string, Verdict>(rows.map(row => [row.id, "PASS"]));
   const stages: { stage: Exclude<RestrictionStage, "">; before: number; remaining: number; passed: number; pending: number; excluded: number }[] = [];
@@ -245,7 +245,8 @@ export function calculateCatalogImpact(input: ImpactRecord[], entries: CatalogEn
         else if (a.values[i] === "UNKNOWN") states.set(id, "UNKNOWN");
       }
       steps.set(stage === entry.stage ? entry.id : stage + "|" + entry.id, { id: entry.id, stage, alonePass: a.alonePass, aloneFail: a.aloneFail, aloneUnknown: a.aloneUnknown,
-        step: used ? ++stepNumber : null, before, newlyExcluded: newlyExcludedIds.size, ...summary(), newlyExcludedIds });
+        step: used ? ++stepNumber : null, before, newlyExcluded: newlyExcludedIds.size, ...summary(), newlyExcludedIds,
+        ...(capturePendingIds && used ? { pendingIds: new Set([...states].filter(([,verdict]) => verdict === "UNKNOWN").map(([id]) => id)) } : {}) });
     }
     const s = summary(); stages.push({ stage, before: beforeStage, ...s, excluded: beforeStage - s.remaining });
     if (stage === "GEM_JR" && entries.some(e => catalogStages(e).includes(stage) && e.enabled && !!catalogStagePriority(e,stage) && !catalogDefinition(e).warning)) junior = new Map(states);
