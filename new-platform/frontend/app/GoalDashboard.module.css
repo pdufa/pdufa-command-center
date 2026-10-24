@@ -110,3 +110,24 @@
 .impactTableScroll thead{background:#eaf3ed;position:sticky;top:0;z-index:1}
 .impactTableScroll tbody tr:nth-child(even){background:#f9fcfa}
 @media(max-width:650px){.impactIntro{padding:12px}.impactIntro .sectionHeader button{min-height:44px;width:100%}.impactTableScroll table{min-width:380px}.ruleImpact{padding:8px}}
+
+/* Exact-program exclusion details: accessible drilldowns and mobile-safe paging. */
+.goal button.exclusionButton{background:#e8f1ff;border-color:#79a5db;color:#154f99;padding:4px 8px;min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
+.goal button.exclusionButton:hover{background:#d6e8ff}
+.exclusionDetails{margin-top:12px;padding:12px;background:#f5faf6;border:1.5px solid #9bb8a2;border-radius:8px;min-width:0}
+.exclusionHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.exclusionHeading strong{font-size:13px;color:#193f2a}
+.exclusionHeading p{margin:5px 0 0!important;font-size:12px;line-height:1.45;color:#4b6651}
+.exclusionSearch{display:flex;flex-direction:column;gap:5px;margin:11px 0;font-size:12px;font-weight:750;color:#2f5039}
+.exclusionSearch input{background:#fff;border:1.5px solid #adc4b3;border-radius:7px;padding:10px;font-size:13px;min-width:0;width:100%}
+.exclusionCount{font-size:12px;color:#344e3d;font-variant-numeric:tabular-nums}
+.exclusionScroll{width:100%;overflow:auto;border:1px solid #d6e4d9;border-radius:7px;max-height:350px}
+.exclusionScroll table{border-collapse:collapse;min-width:620px;width:100%;font-size:11px}
+.exclusionScroll th,.exclusionScroll td{padding:9px 8px;border-bottom:1px solid #e3ebe5;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.exclusionScroll th{background:#e8f3eb;position:sticky;top:0;z-index:1}
+.exclusionScroll td code{font-size:11px;white-space:normal;overflow-wrap:anywhere}
+.exclusionScroll td small{display:block;margin-top:3px;color:#587063;line-height:1.4}
+.exclusionScroll td a{color:#1359ae}
+.exclusionPages{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0;font-size:12px;font-variant-numeric:tabular-nums}
+.exclusionPages button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:650px){.exclusionHeading{flex-direction:column}.exclusionHeading button{min-height:44px;align-self:flex-end}.exclusionDetails{padding:9px}.exclusionPages button{min-height:44px}}
