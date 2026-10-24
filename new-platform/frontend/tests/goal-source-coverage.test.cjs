@@ -85,7 +85,8 @@ test("GOAL shows source audit as a read-only expandable mobile panel",async()=>{
     assert.match(json,/Published coverage partial/);
     assert.match(json,/995/);
     assert.match(json,/1,121/);
-    assert.match(json,/88.8%/);
+    assert.match(json,/88.8/);
+    assert.match(json,/of due findings/);
     assert.match(json,/Required source families still missing: FDA, SEC, FINANCIAL/);
     assert.match(json,/Full source coverage NOT verified/);
     assert.match(json,/source findings, not/);
