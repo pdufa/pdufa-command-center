@@ -686,6 +686,10 @@ def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
     )
     return {"programId": program_id, "exactKey": exact_key, "stage": stage,
             "assessmentEvidence": assessment, "marketEvidenceReview": market["marketEvidenceReview"],
+            "marketDataStatus": market.get("status"),
+            "marketBarsAvailable": market.get("barsAvailable"),
+            "marketDataFeed": market.get("feed"),
+            "marketSignalStatus": (market.get("marketSignals") or {}).get("status"),
             "riskEvidenceReview": risk_evidence,
             "primaryCatalystReview": primary,
             "decisionReadiness": readiness, "researchOnly": True,
