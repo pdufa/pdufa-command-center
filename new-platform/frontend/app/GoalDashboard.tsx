@@ -51,8 +51,8 @@ export function daysUntilReportedDate(date: string | undefined, now = new Date()
 function sourceTime(text?: string | null) {
   if (!text || !Number.isFinite(Date.parse(text))) return "Not verified";
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Los_Angeles", dateStyle: "medium",
-    timeStyle: "short", timeZoneName: "short",
+    timeZone: "America/Los_Angeles", month: "short", day: "numeric",
+    year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short",
   }).format(new Date(text));
 }
 export function goalSummary(records: GoalRecord[] | null, now = new Date()) {
