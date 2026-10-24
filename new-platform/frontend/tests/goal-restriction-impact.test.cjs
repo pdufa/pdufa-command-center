@@ -238,3 +238,99 @@ test("missing permanent IDs are declared missing, without inventing ticker joins
   assert.equal(excluded.nctId,"NCT01234567");
   assert.equal(excluded.ticker,"BB");
 });
+
+
+test("GOAL pending IDs are cumulative UNKNOWN survivors, never confirmed excluded trials",()=>{
+  let rules=empty();
+  rules=catalog.insertRestrictionIntoList(rules,"public","PIPELINE",0);
+  rules=catalog.insertRestrictionIntoList(rules,"phase","PIPELINE",1);
+  const rows=[
+    {id:"TRIAL|NCT00000001",programId:"PDUFA-000001",ticker:"AA",stage:"Phase 3"},
+    {id:"TRIAL|NCT00000002",programId:"PDUFA-000002",ticker:"BB",stage:"Phase 2"},
+    {id:"TRIAL|NCT00000003",programId:"PDUFA-000003",ticker:"CC"},
+  ];
+  const ruleCopy=structuredClone(rules);
+  const report=calculateGoalRestrictionImpact(rows,rules,evidence(),"2026-10-23");
+  for(const step of report.stages.PIPELINE.steps){
+    assert.equal(step.pending,1);
+    assert.deepEqual(step.pendingPrograms.map(x=>x.id),["TRIAL|NCT00000003"]);
+    assert.deepEqual(step.excludedPrograms.map(x=>x.id),
+      step.id==="public"?["TRIAL|NCT00000002"]:[]);
+    assert.equal(step.pendingPrograms.length,step.pending);
+    assert.ok(!step.pendingPrograms.some(p=>step.excludedPrograms.some(x=>x.id===p.id)));
+  }
+  assert.deepEqual(ruleCopy,rules);
+});
+
+test("legacy catalog impact keeps pending ID capture opt-in and outcome unchanged",()=>{
+  let rules=catalog.insertRestrictionIntoList(empty(),"public","PIPELINE",0);
+  const settings=require("../lib/restriction-impact.ts").defaultRestrictionSettings();
+  const legacy=catalog.calculateCatalogImpact(baseline,rules,settings,evidence(),"2026-10-23");
+  const observed=legacy.steps.get("public");
+  assert.equal(observed.pending,1);
+  assert.equal(observed.pendingIds,undefined);
+  assert.equal(observed.newlyExcluded,1);
+  const inspect=catalog.calculateCatalogImpact(baseline,rules,settings,evidence(),"2026-10-23",true);
+  assert.deepEqual([...inspect.steps.get("public").pendingIds],["TRIAL|NCT00000003"]);
+  assert.equal(inspect.steps.get("public").pending,observed.pending);
+});
+
+test("GOAL pending drilldown reveals only source-matched UNKNOWN rows, with exact IDs",async()=>{
+  const rules=catalog.insertRestrictionIntoList(empty(),"public","PIPELINE",0);
+  const restrictions=require("../lib/goal-restrictions.ts").goalRestrictionSummaries(rules);
+  const old=global.fetch;
+  global.fetch=async url=>url==="/api/restriction-evidence"
+    ? {ok:true,json:async()=>evidence()}
+    : {ok:false,status:503,json:async()=>({})};
+  let view;
+  try{
+    await act(async()=>{view=create(React.createElement(GoalDashboard,{
+      records:baseline,impactRows:baseline,impactEntries:rules,restrictions,
+      pipelineCount:3,gemJrCount:0,gemCount:0,sourceAsOf:"2026-10-23",onOpen:()=>{}
+    }));});
+    const calculate=view.root.findAllByType("button").find(b=>b.props.children==="CALCULATE SAVED IMPACT");
+    await act(async()=>await calculate.props.onClick());
+    const pending=view.root.findAllByType("button").find(b=>
+      b.props["aria-label"]==="View 1 pending programs after Pipeline rule Publicly traded company");
+    assert.ok(pending);
+    await act(async()=>pending.props.onClick());
+    const details=view.root.findByProps({"aria-label":"Pipeline pending programs after Publicly traded company"});
+    assert.match(JSON.stringify(view.toJSON()),/retained with UNKNOWN evidence/);
+    const tr=details.findByType("tbody").findAllByType("tr");
+    assert.equal(tr.length,1);
+    assert.match(JSON.stringify(view.toJSON()),/TRIAL\|NCT00000003/);
+    assert.doesNotMatch(JSON.stringify(tr[0].children),/TRIAL\|NCT00000002/);
+    assert.ok(details.findAllByType("button").some(b=>b.props.children==="Export pending CSV"));
+    await act(async()=>pending.props.onClick());
+    assert.equal(view.root.findAllByProps({"aria-label":"Pipeline pending programs after Publicly traded company"}).length,0);
+  } finally{
+    if(view)await act(async()=>view.unmount());
+    global.fetch=old;
+  }
+});
+
+test("GOAL CSV export retains original IDs, distinguishes pending from excluded, and escapes formulas",()=>{
+  const {impactSummaryCsv,impactProgramCsv}=require("../lib/goal-impact-export.ts");
+  const rules=catalog.insertRestrictionIntoList(empty(),"public","PIPELINE",0);
+  const rows=[
+    {id:"TRIAL|NCT00000001",programId:"PDUFA-000001",ticker:"AA",drug:"Safe source"},
+    {id:"TRIAL|NCT00000002",programId:"PDUFA-000002",ticker:"BB",drug:'=HYPERLINK("url")'},
+    {id:"TRIAL|NCT00000003",programId:"PDUFA-000003",ticker:"CC",drug:"Unknown source"},
+  ];
+  const report=calculateGoalRestrictionImpact(rows,rules,evidence(),"2026-10-23");
+  const summary=impactSummaryCsv(report);
+  assert.match(summary,/Saved source as of/);
+  assert.match(summary,/READ_ONLY_SAVED_SCREENING/);
+  const excluded=impactProgramCsv(report,"PIPELINE","public","EXCLUDED");
+  const pending=impactProgramCsv(report,"PIPELINE","public","PENDING");
+  assert.match(excluded,/PDUFA-000002/);
+  assert.match(excluded,/TRIAL\|NCT00000002/);
+  assert.match(excluded,/'=HYPERLINK\(""url""\)/);
+  assert.doesNotMatch(excluded,/PDUFA-000003/);
+  assert.match(pending,/PDUFA-000003/);
+  assert.doesNotMatch(pending,/PDUFA-000002/);
+  assert.match(excluded,/EXCLUDED/);
+  assert.match(pending,/PENDING/);
+  assert.throws(()=>impactProgramCsv(report,"PIPELINE","unknown","PENDING"));
+  assert.ok(excluded.startsWith("\uFEFF"));
+});
