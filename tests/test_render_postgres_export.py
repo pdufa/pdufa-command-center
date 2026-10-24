@@ -60,5 +60,20 @@ class ExportTests(unittest.TestCase):
             self.assertFalse(target.exists())
 
 
+    def test_encoded_credentials_are_decoded_without_leaking(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "encoded.dump"
+            def fake_run(argv, stdout, stderr, env, timeout, check):
+                self.assertEqual(env["PGUSER"], "test@user")
+                self.assertEqual(env["PGPASSWORD"], "s:p@ss/word")
+                self.assertEqual(env["PGDATABASE"], "my db")
+                self.assertEqual(env["PGHOST"], "localhost")
+                self.assertNotIn("s:p@ss/word", " ".join(argv))
+                stdout.write(b"PGDMP")
+                return type("Result", (), {"returncode": 0})()
+            with patch.object(module.shutil, "which", return_value="/usr/bin/pg_dump"), patch.object(module.subprocess, "run", side_effect=fake_run):
+                self.assertEqual(self.run_cli(["--output", str(target)], {"DATABASE_URL": "postgresql://test%40user:s%3Ap%40ss%2Fword@localhost:5432/my%20db"}), 0)
+            self.assertEqual(target.read_bytes(), b"PGDMP")
+
 if __name__ == "__main__":
     unittest.main()
