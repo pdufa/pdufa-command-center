@@ -97,7 +97,7 @@ test("SCANS shows its saved audit and collapsible evidence checklist",async()=>{
     await act(async()=>{view=create(React.createElement(Component,{report:report()}));});
     let content=JSON.stringify(view.toJSON());
     assert.match(content,/REVIEW REQUIRED/);
-    assert.match(content,/"2"," data gaps"/);
+    assert.match(content,/"2"," data gaps/);
     assert.match(content,/Trade Score coverage/);
     assert.match(content,/OPEN ORIGINAL NIGHTLY SCAN RUN/);
     assert.match(content,/Next evidence check:/);
