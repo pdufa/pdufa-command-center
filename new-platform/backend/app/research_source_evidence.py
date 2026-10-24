@@ -50,6 +50,18 @@ def fact(label, value, source, observed, checked, status="OBSERVED"):
             "checkedAt": checked, "status": status}
 
 
+def financial_summary(result):
+    """Never label exclusively stale or review-only financial facts as observed."""
+    statuses = {item["status"] for item in result["facts"]}
+    if not statuses:
+        result.update(status="MISSING", note="No usable financial measurements in the saved source.")
+    elif statuses == {"STALE"}:
+        result.update(status="STALE", note="All saved financial measurements are stale and need refreshing.")
+    elif not statuses.intersection({"OBSERVED", "CALCULATED"}):
+        result.update(status="REVIEW_REQUIRED", note="Financial items need review; no current measurement is verified.")
+    return result
+
+
 def clinical_facts(nct, exact_key, records, today):
     if not nct:
         return group("NO_EXACT_TRIAL_LINK", "This application has no source-confirmed NCT link in the review catalog.")
@@ -101,7 +113,7 @@ def financial_facts(ticker, identity, data, today):
                 return group("INVALID_SOURCE_REVIEW")
             state = "STALE" if (today - checked).days > 7 or (today - observed).days > 150 else item.get("status", "REVIEW")
             result["facts"].append(fact(item["label"], item["value"], observations["source"], item["sourceDate"], item["checkedAt"], state))
-        return result
+        return financial_summary(result)
     snap = (data.get("issuers") or {}).get(ticker)
     if not isinstance(snap, dict):
         return group("MISSING", "No matching saved SEC financial snapshot.")
@@ -138,9 +150,7 @@ def financial_facts(ticker, identity, data, today):
         if link.scheme == "https" and link.hostname == "www.sec.gov" and not link.username and not link.password and filed and filed <= checked:
             result["facts"].append(fact("Financing filing — contents need review", filing.get("form", "") + " · " + filing.get("accession", ""),
                                         filing["source_url"], filed.isoformat(), checked.isoformat(), "REVIEW"))
-    if not result["facts"]:
-        result.update(status="MISSING", note="No usable financial measurements in the saved source.")
-    return result
+    return financial_summary(result)
 
 
 def source_evidence(program_id, exact_key, ticker, *, current=True, today=None, data=None):
