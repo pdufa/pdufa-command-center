@@ -9,7 +9,7 @@ global.IS_REACT_ACT_ENVIRONMENT=true;
 for(const ext of [".ts",".tsx"]) require.extensions[ext] = (mod,file) => mod._compile(
   ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{
     module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,
-    jsx:ts.JsxEmit.ReactJS,esModuleInterop:true
+    jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true
   }}).outputText,file);
 require.extensions[".css"]=(mod)=>{mod.exports=new Proxy({}, {get:(_obj,key)=>String(key)});};
 const {goalSummary,daysUntilReportedDate,default:GoalDashboard}=require("../app/GoalDashboard.tsx");
