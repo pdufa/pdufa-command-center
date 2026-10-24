@@ -69,12 +69,15 @@ export function calculateGoalRestrictionImpact(
   const stages={} as Record<GoalRestrictionStage,GoalImpactStage>;
   for(const stage of STAGES) {
     const selected=selectedRestrictionList(entries,stage);
-    // A separate calculation with *only* the selected stage's own rules:
-    // GEM JR and GEM are not pre-filtered by another stage's checklist.
-    const calculated=calculateCatalogImpact(rows,selected,settings,evidence,asOf);
+    // Clone to isolate this stage; a rule may also belong to another stage
+    // in the original catalog. Never mutate the real saved stage memberships.
+    const stageOnly=selected.map(rule=>({...rule,stage,additionalStages:[],
+      priority:rule.stagePriorities?.[stage] || rule.priority || "1",
+      stagePriorities:{[stage]:rule.stagePriorities?.[stage] || rule.priority || "1"}}));
+    const calculated=calculateCatalogImpact(rows,stageOnly,settings,evidence,asOf);
     const steps:GoalImpactStep[]=[];
     for(const rule of selected){
-      const key=rule.stage===stage ? rule.id : stage+"|"+rule.id;
+      const key=rule.id;
       const step=calculated.steps.get(key);
       if(!step || step.step===null) throw new Error("Missing selected rule result");
       steps.push({id:rule.id,title:catalogDefinition(rule).title,
