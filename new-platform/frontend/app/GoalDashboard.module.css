@@ -58,3 +58,21 @@
 @media(max-width:900px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.statusRow{gap:8px}.stageGrid{gap:9px}.milestones{grid-template-columns:1fr}.stageHeader{flex-wrap:wrap}}
 @media(max-width:650px){.intro{padding:13px;align-items:flex-start;flex-direction:column}.intro h2{font-size:23px}.statusRow{grid-template-columns:1fr}.statusCard{padding:11px 13px}.statusCard strong{font-size:17px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{padding:11px}.metric strong{font-size:27px}.stageGrid{grid-template-columns:1fr}.sectionHeader{align-items:flex-start;flex-direction:column}.filters label{width:100%;flex-direction:column;align-items:stretch}.filters input{min-width:0;width:100%}.results{padding:12px}.actions button{flex:1 1 130px}}
 @media(prefers-reduced-motion:reduce){.goal *{scroll-behavior:auto}}
+
+/* Dated, source-reconciled scan preview. No illustrative counts are rendered. */
+.dualMetric{display:flex;flex-wrap:wrap;gap:3px 5px;align-items:baseline;font-size:clamp(18px,1.8vw,29px)!important;line-height:1.3!important}
+.dualMetric span{font-size:11px;font-weight:750;color:#556850}
+.scanSection{background:#fff;border:2px solid #193322;border-radius:12px;padding:17px;min-width:0}
+.scanSummary{display:flex;flex-wrap:wrap;gap:10px 17px;align-items:center;margin:15px 0 8px;padding:11px 13px;background:#f4f9f5;border:1px solid #c2d5c6;border-radius:8px;font-size:13px}
+.scanSummary>a{color:#115abd;font-weight:750;overflow-wrap:anywhere}
+.scanGood,.scanPartial{border-radius:30px;padding:4px 10px;font-weight:850;font-size:12px}
+.scanGood{color:#0b5a2a;background:#d6f4df}
+.scanPartial{color:#7b3b05;background:#fff0c6}
+.scanEmpty{font-size:13px;line-height:1.45;border:1px dashed #a9bbb0;border-radius:8px;background:#fafcfb;padding:15px;margin:12px 0}
+.scanSection .tableScroll{max-height:340px}
+.scanSection table{border-collapse:collapse;width:100%;min-width:700px;font-size:12px}
+.scanSection th,.scanSection td{padding:9px 11px;border-bottom:1px solid #e5ebe6;text-align:left;vertical-align:top}
+.scanSection thead{position:sticky;top:0;background:#f0f5f0;z-index:1}
+.scanSection tr:nth-child(even){background:#fafcfb}
+.scanSection td a{color:#1357ac}
+@media(max-width:650px){.scanSection{padding:12px}.scanSummary{gap:8px;align-items:flex-start;flex-direction:column}.dualMetric{font-size:22px!important}}
