@@ -14,7 +14,8 @@ export default function ScoringInputGapsPanel({ report }: { report: unknown }) {
   const unresolved = audit.checks.filter(check => check.Status === "DATA GAP" || check.Status === "REVIEW");
   const clear = audit.status === "NO_INPUT_GAPS_FOUND" && freshness === "CURRENT";
   return <section className="source-health" aria-label="Nightly scoring evidence status">
-    <strong>Scoring-input audit: {audit.status.replaceAll("_", " ")} · {audit.counts.data_gaps} data gaps</strong>
+    <strong>Scoring-input audit: {audit.status.replaceAll("_", " ")} · {unresolved.length} needing attention · {audit.counts.data_gaps} data gaps · {audit.counts.reviews} review flags</strong>
+    <p className="subtle">Scope: saved stock/FDA/financing snapshots only — not all Pipeline programs. Data present does not mean independently source-verified.</p>
     <p role="status">{freshness === "CURRENT" ? "Saved audit is within 48 hours of publication." :
       freshness === "STALE" ? "Saved audit is older than 48 hours. A new audit is required." :
       "Audit publication time could not be verified. Treat all findings as unverified."}</p>
@@ -24,6 +25,14 @@ export default function ScoringInputGapsPanel({ report }: { report: unknown }) {
       inferred FDA probabilities, invented financing PASS values, or missing-as-zero figures.</p>}
     <details className="nested-expander">
       <summary>Show scoring evidence checks · {unresolved.length} needing attention / {audit.checks.length} inspected</summary>
+      {audit.sources && <section aria-label="Saved audit dataset coverage">
+        <strong>Saved input snapshots (NOT whole-universe trial scoring)</strong>
+        <ul>{audit.sources.map(source => <li key={source.path}>
+          {source.dataset}: {source.saved_records.toLocaleString("en-US")} saved rows
+          {" · "}{source.file_present ? "File present" : "File unavailable"}
+        </li>)}</ul>
+        <p className="subtle">These are input-row counts. The number of scored Pipeline programs must be verified separately from the backend score index.</p>
+      </section>}
       <ul>{audit.checks.map((item, i) => {
         const guide = scoringGapGuidance(item);
         return <li key={item.Test + i}>
