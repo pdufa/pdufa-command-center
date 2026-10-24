@@ -60,3 +60,43 @@ def test_existing_output_not_overwritten(tmp_path):
     r = run("--partial", partial, "--main-dump", dump, "--alpaca-dump", dump, "--output", output)
     assert r.returncode != 0
     assert output.read_bytes() == b"keep"
+
+
+def test_empty_database_dump_rejected(tmp_path):
+    partial = tmp_path / "partial.zip"
+    with zipfile.ZipFile(partial, "w") as z:
+        z.writestr("ok", "ok")
+    empty = tmp_path / "empty.dump"
+    empty.write_bytes(b"")
+    good = tmp_path / "good.dump"
+    good.write_bytes(b"synthetic")
+    output = tmp_path / "out.zip"
+    r = run("--partial", partial, "--main-dump", empty, "--alpaca-dump", good, "--output", output)
+    assert r.returncode != 0
+    assert not output.exists()
+
+
+def test_duplicate_database_dump_paths_rejected(tmp_path):
+    partial = tmp_path / "partial.zip"
+    with zipfile.ZipFile(partial, "w") as z:
+        z.writestr("ok", "ok")
+    dump = tmp_path / "same.dump"
+    dump.write_bytes(b"synthetic")
+    output = tmp_path / "out.zip"
+    r = run("--partial", partial, "--main-dump", dump, "--alpaca-dump", dump, "--output", output)
+    assert r.returncode != 0
+    assert not output.exists()
+
+
+def test_output_cannot_be_an_input(tmp_path):
+    partial = tmp_path / "partial.zip"
+    with zipfile.ZipFile(partial, "w") as z:
+        z.writestr("ok", "ok")
+    main = tmp_path / "main.dump"
+    main.write_bytes(b"synthetic main")
+    alpaca = tmp_path / "alpaca.dump"
+    alpaca.write_bytes(b"synthetic alpaca")
+    original = main.read_bytes()
+    r = run("--partial", partial, "--main-dump", main, "--alpaca-dump", alpaca, "--output", main)
+    assert r.returncode != 0
+    assert main.read_bytes() == original
