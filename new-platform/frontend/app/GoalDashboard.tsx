@@ -4,7 +4,8 @@
  * It displays saved facts; missing source evidence remains visibly unavailable.
  * Existing RESULTS/SCANS and FS/FA qualification controls remain authoritative.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { goalScanView, type GoalScanView } from "../lib/goal-scan-evidence";
 import styles from "./GoalDashboard.module.css";
 
 export type GoalRecord = {
@@ -73,6 +74,32 @@ export default function GoalDashboard({
 }: GoalDashboardProps) {
   const [query, setQuery] = useState("");
   const [windowDays, setWindowDays] = useState<30 | 90 | 180>(180);
+  const [scanView, setScanView] = useState<GoalScanView | null>(null);
+  const [scanLoading, setScanLoading] = useState(true);
+  const [scanError, setScanError] = useState("");
+  const [scanRefresh, setScanRefresh] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    setScanLoading(true);
+    fetch("/api/published-scans", {cache:"no-store", signal:controller.signal})
+      .then(async response => {
+        if (!response.ok) throw new Error("Published daily scan report unavailable");
+        return response.json() as Promise<unknown>;
+      })
+      .then(data => {
+        if (controller.signal.aborted) return;
+        const result = goalScanView(data);
+        setScanView(result);
+        setScanError(result ? "" : "No run-matched dated report is available.");
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setScanError("Dated scan report could not be verified.");
+        setScanView(null);
+      })
+      .finally(() => { if (!controller.signal.aborted) setScanLoading(false); });
+    return () => controller.abort();
+  }, [scanRefresh]);
   const summary = useMemo(() => goalSummary(records), [records]);
   const rows = summary.dated.filter(row =>
     row.days <= windowDays &&
@@ -109,8 +136,19 @@ export default function GoalDashboard({
       <section className={styles.metric}><span>Pipeline candidates</span><strong>{number(pipelineCount)}</strong><small>Reported source programs, not every monitored trial</small></section>
       <section className={styles.metric}><span>Reported PDUFA ≤180 days</span><strong>{number(summary.upcoming)}</strong><small>Saved dates; individual FDA verification required</small></section>
       <section className={styles.metric}><span>Review-tagged programs</span><strong>{number(summary.review)}</strong><small>Saved program statuses, not scan-finding totals</small></section>
-      <section className={styles.metric}><span>New / updated today</span><strong>—</strong><small>Dated scan reconciliation not connected here yet</small></section>
-      <section className={styles.metric}><span>Special designations</span><strong>—</strong><small>Verified designation summary pending integration</small></section>
+      <section className={styles.metric} aria-label="Dated master-trial changes">
+        <span>{scanView?.today ? "New / updated today" : "New / updated · latest saved day"}</span>
+        <strong className={styles.dualMetric}>{scanView?.today ? number(scanView.masterNew) : "—"} <span>new</span> / {scanView?.today ? number(scanView.masterUpdated) : "—"} <span>updated</span></strong>
+        <small>{scanView ? "Tracked master clinical-trial records · " + scanView.date +
+          (scanView.status === "PARTIAL" ? " · partial verification" : "") :
+          scanLoading ? "Reading published daily scan ledger…" : "Daily changes not verified"}</small>
+      </section>
+      <section className={styles.metric}><span>Special designations</span>
+        <strong>{scanView?.today ? number(scanView.designationTotal) : "—"}</strong>
+        <small>{scanView?.today && scanView.designationTotal !== null ?
+          "Dated FDA designation total · check individual grant evidence" :
+          "Authoritative FDA designation count not verified for today"}</small>
+      </section>
     </div>
     <section className={styles.results} aria-label="Upcoming saved PDUFA candidates">
       <div className={styles.sectionHeader}>
@@ -142,6 +180,51 @@ export default function GoalDashboard({
       </div>
       <p className={styles.footnote}>Showing up to 20 matches; the full list and restrictions remain in PIPELINE. Missing values are not zero.</p>
     </section>
+    <section className={styles.scanSection} aria-label="GOAL latest published scan findings">
+      <div className={styles.sectionHeader}>
+        <div><h3>Latest published scan findings</h3>
+          <p>Exact dated source records from SCANS, separate from the upcoming-PDUFA table above.</p>
+        </div>
+        <button type="button" disabled={scanLoading} onClick={() => setScanRefresh(value => value + 1)}>
+          {scanLoading ? "Checking report…" : "Refresh scan findings"}
+        </button>
+      </div>
+      {scanView ? <>
+        <div className={styles.scanSummary} role="status">
+          <strong>{scanView.date}{scanView.today ? " · Today" : " · Previous published day"}</strong>
+          <span className={scanView.status === "COMPLETE" ? styles.scanGood : styles.scanPartial}>
+            {scanView.status === "COMPLETE" ? "Published report complete" :
+              scanView.status === "PARTIAL" ? "Partial evidence" : "Run failed"}
+          </span>
+          <span>New master programs: <b>{number(scanView.newPrograms)}</b></span>
+          <span>Updated tracked trials: <b>{number(scanView.changedPrograms ?? scanView.masterUpdated)}</b></span>
+          <a href={scanView.runUrl} target="_blank" rel="noopener noreferrer">
+            Open original scan #{scanView.runId} ↗
+          </a>
+        </div>
+        <p className={styles.footnote}>{scanView.note} New programs, changed clinical records, and GEM memberships are different quantities; they cannot be summed.</p>
+        {scanView.rows.length ? <div className={styles.tableScroll}>
+          <table><thead><tr><th>Stage</th><th>New finding</th><th>Ticker</th><th>Drug / program</th><th>Clinical trial</th><th>Evidence</th></tr></thead>
+            <tbody>{scanView.rows.map((row, index) =>
+              <tr key={row.stage + "|" + row.kind + "|" + (row.trialId || index)}>
+                <td>{row.stage}</td>
+                <td>{row.kind === "NEW_STAGE_MEMBER" ? "New saved member" :
+                  row.kind === "NEW_PHASE3_RESULT" ? "Posted Phase 3 result" : "New master program"}</td>
+                <td>{row.ticker || "Not published"}</td>
+                <td>{row.drug || "Not published"}</td>
+                <td>{row.trialId || "—"}</td>
+                <td>{row.link ? <a href={row.link} target="_blank" rel="noopener noreferrer">Registry ↗</a> :
+                  row.exactRun ? "Same-run report" : "Same-day saved ledger"}</td>
+              </tr>)}</tbody>
+          </table>
+        </div> : <p className={styles.scanEmpty}>No individually identified new findings were published for this matched scan. This does not establish that no new programs exist.</p>}
+      </> : <p className={styles.scanEmpty} role="status">{scanLoading ?
+        "Checking published scan evidence…" : scanError || "Latest scan evidence not verified."}</p>}
+      <div className={styles.actions}>
+        <button type="button" onClick={() => onOpen("SCANS")}>Open full SCANS report →</button>
+        <button type="button" onClick={() => onOpen("RESULTS")}>View dated RESULTS →</button>
+      </div>
+    </section>
     <div className={styles.stageGrid} aria-label="Goal candidate stage previews">
       <section><div className={styles.stageHeader}><h3>♧ Pipeline</h3><button type="button" onClick={() => onOpen("PIPELINE")}>View all →</button></div>
         <strong>{number(pipelineCount)}</strong><span>Saved Pipeline candidates</span>
@@ -157,7 +240,7 @@ export default function GoalDashboard({
       <h3>Building this screen toward the reference image</h3>
       <div className={styles.milestones}>
         <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, Pipeline and GEM links</span></div>
-        <div><strong>Next integration</strong><span>Verified daily new/review/designation counts, scan-result detail table, restriction summaries</span></div>
+        <div><strong>Next integration</strong><span>Complete FDA designation/review evidence, detailed restriction summaries, and expanded scan-result drilldowns</span></div>
         <div><strong>Still pending</strong><span>Google Drive backup controls, CSV/Excel export, unified settings and phone layout polish</span></div>
       </div>
       <div className={styles.actions}>
