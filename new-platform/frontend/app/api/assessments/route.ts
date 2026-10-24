@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { gzipSync } from "node:zlib";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../lib/auth";
+import { fetchReadOnlyWithWarmRetry } from "../../../lib/read-only-warm-retry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
   const key = process.env.PDUFA_INTERNAL_API_KEY;
   if (!base?.startsWith("https://") || !key) return NextResponse.json({ error: "Backend is not configured" }, { status: 503 });
   try {
-    const response = await fetch(base + "/api/candidate-assessments" + (identity ? "/detail?identity=" + encodeURIComponent(identity) : ""), {
+    const response = await fetchReadOnlyWithWarmRetry(base + "/api/candidate-assessments" + (identity ? "/detail?identity=" + encodeURIComponent(identity) : ""), {
       headers: { "x-pdufa-internal-key": key }, cache: "no-store", signal: AbortSignal.timeout(45000),
     });
     const data = await response.json();

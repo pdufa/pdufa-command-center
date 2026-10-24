@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
 import { validatePipelinePage } from "../../../../lib/workspace-pages";
+import { fetchReadOnlyWithWarmRetry } from "../../../../lib/read-only-warm-retry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (version) query.set("version", version);
   if (queryText.trim()) query.set("query", queryText.trim());
   try {
-    const response = await fetch(base + "/api/workspace/page?" + query.toString(), {
+    const response = await fetchReadOnlyWithWarmRetry(base + "/api/workspace/page?" + query.toString(), {
       headers: { "x-pdufa-internal-key": key },
       cache: "no-store",
       signal: AbortSignal.timeout(45000),
