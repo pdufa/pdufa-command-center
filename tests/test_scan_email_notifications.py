@@ -432,9 +432,10 @@ class ScanEmailTests(unittest.TestCase):
             root = Path(folder)
             status = root / "status.json"
             messages, sms_attempts = [], []
-            collector = Mock(side_effect=lambda *_, **__: (
-                status.write_text('{"status":"PARTIAL"}') or
-                SimpleNamespace(returncode=1)))
+            def collect_once(*_, **__):
+                status.write_text('{"status":"PARTIAL"}')
+                return SimpleNamespace(returncode=1)
+            collector = Mock(side_effect=collect_once)
             def sms_sender(_settings, message):
                 sms_attempts.append(message)
                 if len(sms_attempts) == 2:
