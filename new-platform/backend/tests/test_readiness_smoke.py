@@ -94,3 +94,17 @@ def test_smoke_cannot_target_staging_or_run_without_isolated_opt_in(monkeypatch)
         monkeypatch.delenv("PDUFA_ALPACA_REVIEW_SMOKE", raising=False)
         check_deployed_program(PID, EXACT)
         opener.assert_not_called()
+
+
+def test_market_data_unavailable_reports_diagnostics_and_does_not_pass(review_client):
+    client, _ = review_client
+    payload = copy.deepcopy(client.get(PATH, headers=HEADERS).json())
+    payload["marketEvidenceReview"]["status"] = "INSUFFICIENT_EVIDENCE"
+    payload["marketDataStatus"] = "RATE_LIMITED"
+    payload["marketSignalStatus"] = "INSUFFICIENT_BARS"
+    payload["marketBarsAvailable"] = 0
+    payload["marketDataFeed"] = "IEX"
+    with pytest.raises(ValueError, match="market_data_status='RATE_LIMITED'") as exc:
+        verify_payload(payload, PID, "GEM_JR", EXACT)
+    assert "market_bars=0" in str(exc.value)
+    assert "research readiness remains NOT_READY" in str(exc.value)
