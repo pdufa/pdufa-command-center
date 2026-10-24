@@ -39,6 +39,10 @@ on:
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
       - '.github/workflows/ci.yml'
+  # Run an unattended read-only verification every day, including days with no pushes.
+  # GitHub cron is UTC; 15:00 UTC is 07:00 PST / 08:00 PDT.
+  schedule:
+    - cron: '0 15 * * *'
   workflow_dispatch:
 
 permissions:
