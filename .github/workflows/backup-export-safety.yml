@@ -1,0 +1,28 @@
+name: Backup Export Safety Tests
+
+on:
+  push:
+    paths:
+      - "scripts/export_render_postgres.py"
+      - "tests/test_render_postgres_export.py"
+      - ".github/workflows/backup-export-safety.yml"
+  pull_request:
+    paths:
+      - "scripts/export_render_postgres.py"
+      - "tests/test_render_postgres_export.py"
+      - ".github/workflows/backup-export-safety.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run mocked backup-export tests
+        run: python -m unittest discover -s tests -p test_render_postgres_export.py -v
