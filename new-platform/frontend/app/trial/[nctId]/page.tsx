@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import TrialFields from "../../TrialFields";
+import ScientificAssessment from "../../ScientificAssessment";
 import TrialWorkflowCounts from "../../TrialWorkflowCounts";
 import type { Candidate } from "../../Workspace";
 
@@ -32,7 +33,7 @@ export default function FullTrialSheet() {
     <TrialWorkflowCounts />
     {!valid ?
       <div className="panel" role="alert">Invalid trial identifier. Open a full trial sheet from a linked NCT row in PIPELINE, GEM JR, or GEM.</div> :
-      <TrialFields row={row} standalone />
+      <><TrialFields row={row} standalone /><ScientificAssessment exactId={"TRIAL|" + nct} /></>
     }
   </main>;
 }

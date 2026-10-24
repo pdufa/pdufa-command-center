@@ -1,0 +1,31 @@
+name: Scientific Assessment Verification
+on:
+  push:
+    branches: [feature/scientific-assessment-v1]
+    paths:
+      - 'scientific_assessment.py'
+      - 'scientific_assessment_ui.py'
+      - 'tests/test_scientific_assessment.py'
+      - '.github/workflows/scientific-assessment-verification.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scientific_assessment.py'
+      - 'scientific_assessment_ui.py'
+      - 'tests/test_scientific_assessment.py'
+      - '.github/workflows/scientific-assessment-verification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scientific-assessment-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile assessment modules
+        run: python -m py_compile scientific_assessment.py scientific_assessment_ui.py
+      - name: Run evidence safety regressions
+        run: python -m unittest discover -s tests -p 'test_scientific_assessment.py' -v
