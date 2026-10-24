@@ -84,7 +84,24 @@ function GoalRuleDetails({
   impact: GoalImpactStage | null;
   onOpen: (section:GoalSection)=>void;
 }) {
+  const [selectedRule, setSelectedRule] = useState<string | null>(null);
+  const [excludedSearch, setExcludedSearch] = useState("");
+  const [excludedPage, setExcludedPage] = useState(0);
+  useEffect(() => {
+    setSelectedRule(null);setExcludedSearch("");setExcludedPage(0);
+  }, [impact]);
   const label = stage === "GEM_JR" ? "GEM JR" : stage === "PIPELINE" ? "Pipeline" : "GEM";
+  const focused = impact?.steps.find(step=>step.id === selectedRule && step.excluded > 0) ?? null;
+  const matching = focused ? focused.excludedPrograms.filter(program =>
+    [program.id,program.programId,program.ticker,program.drug,program.indication,program.nctId]
+      .some(field=>(field || "").toLowerCase().includes(excludedSearch.trim().toLowerCase()))) : [];
+  const pageSize=20, maxPage=Math.max(0,Math.ceil(matching.length/pageSize)-1);
+  const activePage=Math.min(excludedPage,maxPage);
+  const visible = matching.slice(activePage*pageSize,(activePage+1)*pageSize);
+  const viewRule = (id:string)=>{
+    setSelectedRule(previous=>previous===id ? null : id);
+    setExcludedSearch("");setExcludedPage(0);
+  };
   return <div className={styles.rulePreview} aria-label={label + " saved restriction preview"}>
     {entries === null
       ? <p className={styles.rulePending}>Loading this browser's saved restriction list…</p>
@@ -110,10 +127,55 @@ function GoalRuleDetails({
         <thead><tr><th>Priority / rule</th><th>Before</th><th>Removed</th><th>After</th><th>Pending</th></tr></thead>
         <tbody>{impact.steps.map(step=><tr key={step.id}>
           <th scope="row">{step.title}</th>
-          <td>{number(step.before)}</td><td>{number(step.excluded)}</td>
+          <td>{number(step.before)}</td>
+          <td>{step.excluded > 0
+            ? <button type="button" className={styles.exclusionButton}
+                aria-expanded={focused?.id===step.id}
+                aria-label={"View " + step.excluded + " excluded programs for " + label + " rule " + step.title}
+                onClick={()=>viewRule(step.id)}>{number(step.excluded)} ↗</button>
+            : number(step.excluded)}</td>
           <td>{number(step.after)}</td><td>{number(step.pending)}</td>
         </tr>)}</tbody>
       </table></div> : <p>No selected restrictions: the starting baseline remains unchanged.</p>}
+      {focused && <section className={styles.exclusionDetails}
+        aria-label={label + " excluded programs for " + focused.title}>
+        <div className={styles.exclusionHeading}>
+          <div><strong>{focused.title} — excluded programs</strong>
+            <p>{number(focused.excluded)} removed at this step. Exact saved identities only; a ticker alone does not establish a trial match.</p></div>
+          <button type="button" onClick={()=>setSelectedRule(null)}>Close details</button>
+        </div>
+        <label className={styles.exclusionSearch}>Find an excluded program
+          <input type="search" value={excludedSearch} onChange={event=>{
+            setExcludedSearch(event.target.value);setExcludedPage(0);
+          }} placeholder="Ticker, Program ID, NCT, drug…" />
+        </label>
+        <p className={styles.exclusionCount} role="status">
+          Showing {number(visible.length)} of {number(matching.length)} matching excluded records
+          {matching.length !== focused.excluded ? " ("+number(focused.excluded)+" total removed)" : ""}
+        </p>
+        {visible.length ? <div className={styles.exclusionScroll}><table>
+          <thead><tr><th>Ticker</th><th>Permanent Program ID</th><th>Saved row ID</th><th>Trial</th><th>Drug / indication</th></tr></thead>
+          <tbody>{visible.map(program=><tr key={program.id}>
+            <td><strong>{program.ticker || "Not recorded"}</strong></td>
+            <td>{program.programId || "Not recorded"}</td>
+            <td><code>{program.id}</code></td>
+            <td>{program.nctId
+              ? <a href={"https://clinicaltrials.gov/study/"+program.nctId}
+                  target="_blank" rel="noopener noreferrer">{program.nctId} ↗</a>
+              : "Not recorded"}</td>
+            <td>{program.drug || "Drug not recorded"}
+              {program.indication && <small>{program.indication}</small>}</td>
+          </tr>)}</tbody>
+        </table></div> : <p className={styles.rulePending}>No excluded records match this search.</p>}
+        {matching.length>pageSize && <nav className={styles.exclusionPages} aria-label="Excluded programs pages">
+          <button type="button" disabled={activePage===0}
+            onClick={()=>setExcludedPage(value=>Math.max(0,value-1))}>← Previous</button>
+          <span>Page {activePage+1} of {maxPage+1}</span>
+          <button type="button" disabled={activePage===maxPage}
+            onClick={()=>setExcludedPage(value=>Math.min(maxPage,value+1))}>Next →</button>
+        </nav>}
+        <p className={styles.ruleNote}>Exclusions use the original restriction evaluation on published saved evidence, not a new scoring model. Check the source and complete record in RESTRICTIONS before making decisions.</p>
+      </section>}
       <p className={styles.ruleNote}>Sequential, within this stage only. UNKNOWN records are retained; these figures are not GEM qualifications, approval probabilities, or trade recommendations.</p>
     </div>}
     <button type="button" className={styles.manageRules} onClick={() => onOpen("RESTRICTIONS")}>
