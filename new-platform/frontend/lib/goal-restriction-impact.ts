@@ -8,6 +8,15 @@ import { calculateCatalogImpact, selectedRestrictionList, catalogDefinition } fr
 import { defaultRestrictionSettings, type ImpactRecord, type RestrictionEvidence } from "./restriction-impact";
 import type { GoalRestrictionStage } from "./goal-restrictions";
 
+export type GoalExcludedProgram = {
+  /** Original immutable row identity, not a ticker-level inferred join. */
+  id: string;
+  programId: string | null;
+  ticker: string;
+  drug: string | null;
+  indication: string | null;
+  nctId: string | null;
+};
 export type GoalImpactStep = {
   id: string;
   title: string;
@@ -16,6 +25,8 @@ export type GoalImpactStep = {
   after: number;
   pending: number;
   unknownAlone: number;
+  /** Exactly the IDs counted by this step's newlyExcluded result. */
+  excludedPrograms: GoalExcludedProgram[];
 };
 export type GoalImpactStage = {
   total: number;
@@ -62,6 +73,7 @@ export function calculateGoalRestrictionImpact(
     ids.add(row.id);
   }
   if(!ids.size) throw new Error("No saved Pipeline records");
+  const baseline = new Map(rows.map(row => [row.id, row]));
   const settings=defaultRestrictionSettings();
   // Preserve approved entry-cap semantics: current-market-cap observations do
   // not stand in for missing admission-date market-cap evidence.
@@ -80,9 +92,26 @@ export function calculateGoalRestrictionImpact(
       const key=rule.id;
       const step=calculated.steps.get(key);
       if(!step || step.step===null) throw new Error("Missing selected rule result");
+      const excludedPrograms:GoalExcludedProgram[] = [];
+      for(const id of step.newlyExcludedIds) {
+        const row=baseline.get(id);
+        if(!row) throw new Error("Excluded identity not found in Pipeline baseline");
+        const nctId=/^NCT\d{8}$/.test(row.nctId || "") ? row.nctId! :
+          /^TRIAL\|(NCT\d{8})$/.exec(row.id)?.[1] || null;
+        excludedPrograms.push({
+          id:row.id,
+          programId:typeof row.programId==="string" && row.programId.trim() ? row.programId : null,
+          ticker:row.ticker,
+          drug:typeof row.drug==="string" && row.drug.trim() ? row.drug : null,
+          indication:typeof row.indication==="string" && row.indication.trim() ? row.indication : null,
+          nctId,
+        });
+      }
+      if(excludedPrograms.length !== step.newlyExcluded) throw new Error("Excluded row count mismatch");
+      excludedPrograms.sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.id.localeCompare(b.id));
       steps.push({id:rule.id,title:catalogDefinition(rule).title,
         before:step.before,excluded:step.newlyExcluded,after:step.remaining,
-        pending:step.pending,unknownAlone:step.aloneUnknown});
+        pending:step.pending,unknownAlone:step.aloneUnknown,excludedPrograms});
     }
     const final=calculated.stages.find(item=>item.stage===stage);
     if(!final) throw new Error("Missing stage impact");
