@@ -29,6 +29,7 @@ export default function ProgramMarketEnrichment({ programId, exactKey, stage }: 
   const [error, setError] = useState("");
   const [review, setReview] = useState<ResearchReadiness | null>(null);
   const [reviewError, setReviewError] = useState("");
+  const [recheck, setRecheck] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     setData(null);
@@ -62,13 +63,25 @@ export default function ProgramMarketEnrichment({ programId, exactKey, stage }: 
       if (!controller.signal.aborted) setReviewError("Research readiness is unavailable for this deployment.");
     });
     return () => controller.abort();
-  }, [programId, exactKey, stage]);
+  }, [programId, exactKey, stage, recheck]);
 
   const currentData = data?.programId === programId && data.exactKey === exactKey ? data : null;
   const currentReview = review?.programId === programId && review.exactKey === exactKey && review.stage === stage ? review : null;
   const authFailed = currentData?.status === "ALPACA_AUTH_FAILED" || currentReview?.marketDataStatus === "ALPACA_AUTH_FAILED";
+  const connectionStatus = error || reviewError
+    ? "NOT VERIFIED — one or both research endpoints failed"
+    : !currentData || !currentReview
+    ? "CHECKING"
+    : authFailed || currentData.status !== "OK"
+    ? "BACKEND CONNECTED — MARKET FEED NEEDS REVIEW"
+    : "CONNECTED — exact Program ID and GEM stage verified";
 
   return <div className="program-market-enrichment" aria-label="Alpaca read-only market enrichment">
+    <div aria-label="Live research connection verification" role="status">
+      <strong>Research connection: {connectionStatus}</strong>
+      <p>Authenticated, read-only checks for this exact program. Connection does not mean a trial or financing gate passed.</p>
+      <button type="button" onClick={() => setRecheck(value => value + 1)}>RECHECK RESEARCH CONNECTION</button>
+    </div>
     <strong>Alpaca market snapshot · Research only</strong>
     {authFailed && <p role="status">Alpaca rejected the configured API credentials. Update the Alpaca key pair to load market evidence.</p>}
     {error ? <p role="status">{error}</p> : !currentData ? <p role="status">Loading verified market snapshot…</p>

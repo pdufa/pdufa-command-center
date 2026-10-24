@@ -135,6 +135,7 @@ test('trial panel loads risk reviews independently of market failure and aborts 
     await act(async () => requests[3].resolve({ok: true, json: async () => withSources(review('GEM'))}));
     let rendered = JSON.stringify(view.toJSON());
     assert.match(rendered, /Alpaca rejected the configured API credentials/);
+    assert.match(view.root.findByProps({'aria-label':'Live research connection verification'}).findByType('strong').props.children.join(''), /Research connection: NOT VERIFIED/);
     assert.match(rendered, /Source review required for this program/);
     assert.match(rendered, /Dilution remains a recorded risk/);
     assert.equal(view.root.findAllByProps({'aria-label': 'Investment research readiness'}).length, 1);
@@ -153,4 +154,37 @@ test('trial panel loads risk reviews independently of market failure and aborts 
     if (view) await act(async () => view.unmount());
     global.fetch = previousFetch;
   }
+});
+
+
+test('exact-program connection status and manual recheck never trigger writes or scans',async()=>{
+  const React=require('react');
+  const {create,act}=require('react-test-renderer');
+  const View=require('../app/ProgramMarketEnrichment.tsx').default;
+  global.IS_REACT_ACT_ENVIRONMENT=true;
+  const oldFetch=global.fetch,calls=[];
+  const market={
+    programId:PID,exactKey:EXACT,ticker:'ABC',status:'OK',feed:'IEX',
+    latestDailyClose:12.4,latestIexVolume:300,marketSignals:{status:'INSUFFICIENT_DATA'},
+    marketEvidenceReview:{status:'INSUFFICIENT_EVIDENCE',observations:[]}
+  };
+  global.fetch=(url,options)=>{
+    calls.push({url,options});
+    return Promise.resolve({ok:true,status:200,json:async()=>String(url).includes('market-enrichment')?market:review('GEM_JR',true)});
+  };
+  let view;
+  try {
+    await act(async()=>{view=create(React.createElement(View,{programId:PID,exactKey:EXACT,stage:'GEM_JR'}));});
+    assert.equal(calls.length,2);
+    assert.ok(calls.every(c=>!c.options.method || c.options.method==='GET'));
+    assert.ok(calls.every(c=>c.options.cache==='no-store'));
+    assert.match(view.root.findByProps({'aria-label':'Live research connection verification'}).findByType('strong').props.children.join(''),/Research connection: CONNECTED/);
+    const button=view.root.findAllByType('button').find(b=>b.props.children==='RECHECK RESEARCH CONNECTION');
+    assert.ok(button);
+    await act(async()=>{button.props.onClick();});
+    assert.equal(calls.length,4);
+    assert.match(view.root.findByProps({'aria-label':'Live research connection verification'}).findByType('strong').props.children.join(''),/Research connection: CONNECTED/);
+    assert.ok(calls.every(c=>!String(c.url).includes('/scans/')&&!String(c.url).includes('/orders/')));
+    assert.ok(calls.slice(0,2).every(c=>c.options.signal.aborted));
+  }finally{if(view)await act(async()=>view.unmount());global.fetch=oldFetch;}
 });
