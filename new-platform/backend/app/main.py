@@ -441,7 +441,27 @@ def get_scientific_assessment(exact_id: str):
     if not exact_id or len(exact_id) > 512 or not exact_id.startswith(("TRIAL|", "REG|", "PDUFA|")):
         raise HTTPException(status_code=422, detail="Exact trial identity required")
     from .scientific_assessment_adapter import scientific_trial_payload
-    return scientific_trial_payload(exact_id)
+    result = scientific_trial_payload(exact_id)
+    result["registryEvidence"] = None
+    result["registryEvidenceStatus"] = "not_available"
+    # Never use an ephemeral SQLite fallback on hosted review services.
+    match = re.fullmatch(r"TRIAL\\|(NCT[0-9]{8})", exact_id)
+    if match and storage_ready() and _DB_STATE["available"]:
+        try:
+            from .scientific_stored_record import evidence_from_archive
+            with Session(ENGINE) as session:
+                record = session.get(FullTrialRecord, match.group(1))
+                if record is not None:
+                    result["registryEvidence"] = evidence_from_archive(
+                        match.group(1), record.payload_gzip, record.sha256
+                    )
+                    result["registryEvidenceStatus"] = "source_record_loaded"
+                else:
+                    result["registryEvidenceStatus"] = "record_not_found"
+        except Exception:
+            # A corrupt archive or unavailable database must never produce a score.
+            result["registryEvidenceStatus"] = "record_unavailable_or_invalid"
+    return result
 
 
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
