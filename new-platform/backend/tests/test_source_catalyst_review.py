@@ -1,10 +1,12 @@
 """Real source dates must stay exact-program facts, separate from numeric grades."""
 from copy import deepcopy
 from datetime import date, datetime
+from io import StringIO
 import json
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
+from urllib.parse import urlsplit
 
 from fastapi.testclient import TestClient
 import pytest
@@ -12,7 +14,7 @@ import pytest
 from app.candidate_assessments import score_candidate
 from app.main import app
 from app.market_evidence_review import market_evidence_review
-from app.readiness_smoke import verify_payload
+from app.readiness_smoke import REVIEW_URL, check_all, check_source_catalog, verify_payload, verify_source_link
 from app.risk_evidence_review import risk_evidence_from_assessment
 from app.source_catalyst_review import catalog, primary_catalyst_review, apply_primary_catalyst
 
@@ -108,11 +110,13 @@ def test_primary_date_does_not_change_scores_or_clear_financing_and_cannot_cross
 
 
 @pytest.mark.parametrize("stage", ["GEM_JR", "GEM"])
-def test_http_source_date_reaches_readiness_while_incomplete_assessments_stay_blocked(stage):
+@pytest.mark.parametrize("market_available", [True, False])
+def test_http_source_date_reaches_readiness_while_incomplete_assessments_stay_blocked(stage, market_available):
     row = {"id": KEY, "programId": PID, "ticker": "COGT", "pdufaDate": "2026-11-30"}
     record = score_candidate(row, today=TODAY)
     original = deepcopy(record)
-    market = market_evidence_review(PID, KEY, {"status": "OK", "return20Pct": 4, "volumeRatio20": 1.2})
+    market = market_evidence_review(PID, KEY, {"status": "OK", "return20Pct": 4, "volumeRatio20": 1.2}
+                                    if market_available else {"status": "INSUFFICIENT_BARS"})
     session = MagicMock()
     session.__enter__.return_value.get.return_value = SimpleNamespace(source_key=KEY, ticker="COGT")
     with (patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY": "test-only", "PDUFA_ALPACA_REVIEW_SMOKE": "1"}),
@@ -126,12 +130,31 @@ def test_http_source_date_reaches_readiness_while_incomplete_assessments_stay_bl
                                       headers={"x-pdufa-internal-key": "test-only"})
     assert response.status_code == 200
     result = response.json()
-    verify_payload(result, PID, stage, KEY)
+    verify_source_link(result, source_review(), stage)
+    if market_available:
+        verify_payload(result, PID, stage, KEY)
+    else:
+        with pytest.raises(ValueError, match="Live Alpaca market observations unavailable"):
+            verify_payload(result, PID, stage, KEY)
     assert result["primaryCatalystReview"]["status"] == "CONFIRMED"
     assert result["riskEvidenceReview"]["catalystVerified"] is True
     assert result["decisionReadiness"]["status"] == "NOT_READY"
-    assert result["decisionReadiness"]["missingRequirements"] == [
-        "complete verified assessment", "financing and dilution risk review"]
+    assert result["decisionReadiness"]["missingRequirements"] == (
+        ["complete verified assessment"]
+        + ([] if market_available else ["exact-program market evidence"])
+        + ["financing and dilution risk review"])
+    for field, value in (("source", "https://other.example/review"),
+                         ("programId", "PDUFA-000039"), ("eventDate", "2027-05-08"),
+                         ("ordersEnabled", True), ("assessmentScoreChange", True)):
+        incorrect = deepcopy(result)
+        incorrect["primaryCatalystReview"][field] = value
+        with pytest.raises(ValueError):
+            verify_source_link(incorrect, source_review(), stage)
+    if not market_available:
+        incorrect = deepcopy(result)
+        incorrect["decisionReadiness"]["missingRequirements"].remove("exact-program market evidence")
+        with pytest.raises(ValueError, match="Decision readiness"):
+            verify_source_link(incorrect, source_review(), stage)
     assert record == original
     session.__enter__.return_value.commit.assert_not_called()
 
@@ -158,4 +181,56 @@ def test_http_batch_reconciles_all_17_immutable_registry_identities_and_requires
     assert (result["total"], result["confirmedTargets"], result["reportedReadouts"]) == (17, 14, 3)
     assert len({r["programId"] for r in result["records"]}) == 17
     assert result["ordersEnabled"] is result["fsFaChanges"] is False
+    session.__enter__.return_value.commit.assert_not_called()
+
+
+def test_all_34_live_source_links_are_checked_when_alpaca_auth_fails(caplog):
+    rows, identities, details = [], {}, {}
+    for i, (key, item) in enumerate(catalog()["programs"].items(), 1):
+        pid = f"PDUFA-{i:06d}"
+        row = {"id": key, "programId": pid, "ticker": item["ticker"], "pdufaDate": item["eventDate"]}
+        rows.append(row)
+        identities[i] = SimpleNamespace(id=i, source_key=key, ticker=item["ticker"])
+        details[key] = score_candidate(row, today=TODAY)
+    before = deepcopy(details)
+    session = MagicMock()
+    session.__enter__.return_value.get.side_effect = lambda model, number: identities[number]
+    session.__enter__.return_value.scalars.return_value.all.return_value = list(identities.values())
+
+    def unavailable_market(pid, key, ticker, range_label):
+        return {"status": "ALPACA_AUTH_FAILED", "feed": "IEX", "barsAvailable": 0,
+                "marketEvidenceReview": market_evidence_review(pid, key, {"status": "INSUFFICIENT_BARS"})}
+
+    with (patch.dict("os.environ", {"PDUFA_INTERNAL_API_KEY": "test-only", "PDUFA_ALPACA_REVIEW_SMOKE": "1"}),
+          patch("app.main.Session", return_value=session),
+          patch("app.main._DB_STATE", {"available": True, "reason": "READY"}),
+          patch("app.source_workspace.workspace", return_value={"pipeline": rows}),
+          patch("app.assessment_service.exact_detail", side_effect=lambda key: details[key]),
+          patch("app.program_market_enrichment.enrich_program_market", side_effect=unavailable_market),
+          patch("app.source_catalyst_review.datetime") as clock,
+          patch("app.readiness_smoke.build_opener") as opener):
+        clock.now.return_value = datetime(2026, 10, 23)
+        client = TestClient(app)
+        visited = []
+
+        def http_response(request, timeout):
+            url = urlsplit(request.full_url)
+            visited.append(url.path + "?" + url.query)
+            response = client.get(url.path + "?" + url.query, headers=dict(request.header_items()))
+            assert response.status_code == 200
+            return StringIO(response.text)
+
+        opener.return_value.open.side_effect = http_response
+        check_source_catalog(REVIEW_URL, "test-only")
+        links = [path for path in visited if "/program-decision-readiness/" in path]
+        assert len(links) == len(set(links)) == 34
+        assert "program_stages=34" in caplog.text
+        assert "status=PASS decision=NOT_READY market=INSUFFICIENT_EVIDENCE" in caplog.text
+        # Completing all source links must never turn the aggregate check green
+        # while the real market check has no observations.
+        with pytest.raises(ValueError, match="market_data_status='ALPACA_AUTH_FAILED'"):
+            check_all(REVIEW_URL, "test-only", "PDUFA-000001")
+    assert "status=PASS checks=2" not in caplog.text
+    assert "test-only" not in caplog.text
+    assert details == before
     session.__enter__.return_value.commit.assert_not_called()

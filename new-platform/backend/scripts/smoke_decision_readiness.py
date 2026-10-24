@@ -11,7 +11,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.readiness_smoke import REVIEW_URL, check_program, check_source_catalog
+from app.readiness_smoke import REVIEW_URL, check_all
 
 
 def main():
@@ -20,7 +20,6 @@ def main():
         raise SystemExit("Refusing non-isolated service")
     key = os.environ["PDUFA_INTERNAL_API_KEY"]
     logging.basicConfig(level=logging.WARNING)
-    check_program(base, key, "PDUFA-000001")
-    check_source_catalog(base, key)
+    check_all(base, key, "PDUFA-000001")
 if __name__ == "__main__":
     main()

@@ -8,7 +8,9 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.market_evidence_review import market_evidence_review
-from app.readiness_smoke import check_deployed_program, check_program, verify_payload
+from app.readiness_smoke import (
+    REVIEW_URL, _AssessmentPending, check_all, check_deployed_program, check_program, verify_payload,
+)
 
 PID = "PDUFA-000001"
 EXACT = "TRIAL|NCT01234567|ABC"
@@ -112,3 +114,48 @@ def test_market_data_unavailable_reports_diagnostics_and_does_not_pass(review_cl
         verify_payload(payload, PID, "GEM_JR", EXACT)
     assert "market_bars=0" in str(exc.value)
     assert "research readiness remains NOT_READY" in str(exc.value)
+
+
+@pytest.mark.parametrize("failed_check", ["check_source_catalog", "check_program"])
+def test_independent_checks_are_both_attempted_and_any_failure_still_fails(failed_check, caplog):
+    with (patch("app.readiness_smoke.check_source_catalog") as sources,
+          patch("app.readiness_smoke.check_program") as market):
+        failing = sources if failed_check == "check_source_catalog" else market
+        failing.side_effect = ValueError("untrusted message with secret unit-test-only")
+        with pytest.raises(ValueError):
+            check_all(REVIEW_URL, "unit-test-only", PID, EXACT)
+        sources.assert_called_once_with(REVIEW_URL, "unit-test-only")
+        market.assert_called_once_with(REVIEW_URL, "unit-test-only", PID, EXACT)
+    assert "status=PASS checks=2" not in caplog.text
+    assert "unit-test-only" not in caplog.text
+    assert "untrusted message" not in caplog.text
+
+
+def test_temporary_source_index_error_does_not_hide_a_nonretryable_market_failure():
+    with (patch("app.readiness_smoke.check_source_catalog", side_effect=_AssessmentPending()),
+          patch("app.readiness_smoke.check_program", side_effect=ValueError("Research boundary mismatch"))):
+        with pytest.raises(ValueError, match="Research boundary mismatch"):
+            check_all(REVIEW_URL, "unit-test-only", PID, EXACT)
+
+
+def test_source_index_retries_complete_independently_of_alpaca_auth_failure():
+    with (patch("app.readiness_smoke.check_source_catalog", side_effect=[_AssessmentPending(), None]) as sources,
+          patch("app.readiness_smoke.check_program", side_effect=ValueError("market unavailable")) as market,
+          patch("app.readiness_smoke.time.sleep") as pause):
+        with pytest.raises(ValueError, match="market unavailable"):
+            check_all(REVIEW_URL, "unit-test-only", PID, EXACT, retry_seconds=180)
+        assert sources.call_count == 2
+        market.assert_called_once()
+        pause.assert_called_once_with(5)
+
+
+def test_unsafe_diagnostics_are_not_repeated_in_market_error(review_client):
+    client, _ = review_client
+    payload = copy.deepcopy(client.get(PATH, headers=HEADERS).json())
+    payload["marketEvidenceReview"]["status"] = "INSUFFICIENT_EVIDENCE"
+    for field in ("marketDataStatus", "marketSignalStatus", "marketBarsAvailable", "marketDataFeed"):
+        payload[field] = "unit-test-only\ncredential=value"
+    with pytest.raises(ValueError) as exc:
+        verify_payload(payload, PID, "GEM_JR", EXACT)
+    assert "unit-test-only" not in str(exc.value)
+    assert "credential=value" not in str(exc.value)
