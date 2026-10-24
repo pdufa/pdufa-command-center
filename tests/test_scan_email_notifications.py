@@ -339,6 +339,122 @@ class ScanEmailTests(unittest.TestCase):
             self.assertIn("FAILED", messages[1][0])
             self.assertIn("TimeoutExpired", messages[1][1])
 
+    def test_opt_in_dual_channel_sends_one_start_and_end_per_provider(self):
+        from scripts.scan_sms import SMSSettings
+        sms = SMSSettings("AC" + "a" * 32, "private-sms-token",
+                          "+15035550101", "+15035550202")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            status = root / "status.json"
+            events = []
+
+            def email_sender(settings, subject, body):
+                events.append(("email", "START" if "START" in subject else "END", body))
+                return {"status": "submitted_not_delivered"}
+
+            def sms_sender(settings, message):
+                events.append(("sms", "START" if "START" in message else "END", message))
+                return {"status": "submitted_not_delivered", "provider_message_id": "SMtest"}
+
+            def collector(*_, **__):
+                events.append(("scan", "", ""))
+                status.write_text(json.dumps({
+                    "status": "COMPLETE", "full_coverage_verified": True,
+                    "companies_checked": 10, "companies_due": 10
+                }))
+                return SimpleNamespace(returncode=0)
+
+            code, audit = run_scan(
+                scan="2", mode="DELTA", command=["mock"],
+                status_file=status, audit_dir=root / "audits",
+                settings=self.settings(), sender=email_sender, executor=collector,
+                require_sms=True, sms_settings=sms, sms_sender=sms_sender)
+            self.assertEqual(code, 0)
+            self.assertEqual([(kind, event) for kind, event, _ in events],
+                             [("email", "START"), ("sms", "START"), ("scan", ""),
+                              ("email", "END"), ("sms", "END")])
+            self.assertEqual(audit["channel"], "EMAIL_AND_SMS")
+            self.assertEqual(audit["start_sms"], "submitted_not_delivered")
+            self.assertEqual(audit["end_sms"], "submitted_not_delivered")
+            saved = (root / "audits" / (audit["run_id"] + ".json")).read_text()
+            self.assertNotIn(sms.auth_token, saved)
+            self.assertNotIn(self.settings().app_password, saved)
+
+    def test_unconfigured_dual_channel_blocks_before_email_or_scan(self):
+        with tempfile.TemporaryDirectory() as folder:
+            sender, executor = Mock(), Mock()
+            with patch.dict(os.environ, {}, clear=True):
+                from scripts.scan_sms import SMSSetupError
+                with self.assertRaises(SMSSetupError):
+                    run_scan(
+                        scan="2", mode="DELTA", command=["mock"],
+                        status_file=Path(folder) / "status.json",
+                        audit_dir=Path(folder) / "audit",
+                        settings=self.settings(), sender=sender, executor=executor,
+                        require_sms=True)
+            sender.assert_not_called()
+            executor.assert_not_called()
+
+    def test_sms_start_failure_aborts_scan_and_emails_end_aborted(self):
+        from scripts.scan_sms import SMSSettings, SMSSendError
+        sms = SMSSettings("AC" + "a" * 32, "private-token",
+                          "+15035550101", "+15035550202")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            messages, sms_attempts = [], []
+            executor = Mock()
+            def sms_fail(_settings, message):
+                sms_attempts.append(message)
+                raise SMSSendError("ambiguous provider acknowledgement")
+            code, audit = run_scan(
+                scan="3", mode="DELTA", command=["mock"],
+                status_file=root / "status.json", audit_dir=root / "audit",
+                settings=self.settings(),
+                sender=lambda _, subject, body: (messages.append((subject, body)) or {
+                    "status": "submitted_not_delivered"}),
+                executor=executor, require_sms=True, sms_settings=sms, sms_sender=sms_fail)
+            self.assertEqual(code, 4)
+            executor.assert_not_called()
+            self.assertEqual(len(sms_attempts), 1)
+            self.assertEqual(len(messages), 2)
+            self.assertIn("START", messages[0][0])
+            self.assertIn("END", messages[1][0])
+            self.assertEqual(audit["start_email"], "submitted_not_delivered")
+            self.assertEqual(audit["end_sms"], "NOT_SENT_SCAN_NOT_STARTED")
+            self.assertEqual(audit["coverage_status"], "FAILED")
+            self.assertFalse(audit["scan_executed"])
+
+    def test_sms_end_failure_does_not_resend_email_or_repeat_scan(self):
+        from scripts.scan_sms import SMSSettings, SMSSendError
+        sms = SMSSettings("AC" + "a" * 32, "private-token",
+                          "+15035550101", "+15035550202")
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            status = root / "status.json"
+            messages, sms_attempts = [], []
+            collector = Mock(side_effect=lambda *_, **__: (
+                status.write_text('{"status":"PARTIAL"}') or
+                SimpleNamespace(returncode=1)))
+            def sms_sender(_settings, message):
+                sms_attempts.append(message)
+                if len(sms_attempts) == 2:
+                    raise SMSSendError("unknown END receipt")
+                return {"status": "submitted_not_delivered"}
+            code, audit = run_scan(
+                scan="4", mode="DELTA", command=["mock"],
+                status_file=status, audit_dir=root / "audit",
+                settings=self.settings(),
+                sender=lambda _, subject, body: (messages.append((subject, body)) or {
+                    "status": "submitted_not_delivered"}),
+                executor=collector, require_sms=True, sms_settings=sms,
+                sms_sender=sms_sender)
+            self.assertEqual(code, 4)
+            self.assertEqual(collector.call_count, 1)
+            self.assertEqual(len(messages), 2)
+            self.assertEqual(len(sms_attempts), 2)
+            self.assertEqual(audit["end_sms"], "FAILED_OR_UNKNOWN")
+
+
     def test_settings_fail_closed_without_real_smtp_secrets(self):
         with tempfile.TemporaryDirectory() as folder:
             with patch.dict(os.environ, {}, clear=True):
