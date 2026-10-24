@@ -88,7 +88,8 @@ test("GOAL shows source audit as a read-only expandable mobile panel",async()=>{
     assert.match(json,/88.8%/);
     assert.match(json,/Required source families still missing: FDA, SEC, FINANCIAL/);
     assert.match(json,/Full source coverage NOT verified/);
-    assert.match(json,/not numbers of clinical trials/);
+    assert.match(json,/source findings, not/);
+    assert.match(json,/numbers of clinical trials/);
     const links=view.root.findAllByType("a");
     assert.equal(links.length,1);
     assert.equal(links[0].props.href,url);
