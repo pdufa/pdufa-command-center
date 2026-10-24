@@ -6,6 +6,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { goalScanView, type GoalScanView } from "../lib/goal-scan-evidence";
+import type { GoalRestrictionItem, GoalRestrictionStage, GoalRestrictionSummaries } from "../lib/goal-restrictions";
 import styles from "./GoalDashboard.module.css";
 
 export type GoalRecord = {
@@ -23,6 +24,7 @@ export type GoalDashboardProps = {
   pipelineCount: number | null;
   gemJrCount: number | null;
   gemCount: number | null;
+  restrictions?: GoalRestrictionSummaries | null;
   sourceAsOf?: string | null;
   sourceState?: string | null;
   scanFinishedAt?: string | null;
@@ -68,8 +70,39 @@ export function goalSummary(records: GoalRecord[] | null, now = new Date()) {
   return { upcoming: dateItems.length, review, dated: dateItems };
 }
 
+function GoalRuleDetails({
+  stage, entries, onOpen,
+}:{
+  stage: GoalRestrictionStage;
+  entries: GoalRestrictionItem[] | null;
+  onOpen: (section:GoalSection)=>void;
+}) {
+  const label = stage === "GEM_JR" ? "GEM JR" : stage === "PIPELINE" ? "Pipeline" : "GEM";
+  return <div className={styles.rulePreview} aria-label={label + " saved restriction preview"}>
+    {entries === null
+      ? <p className={styles.rulePending}>Loading this browser's saved restriction list…</p>
+      : <details className={styles.ruleDetails}>
+          <summary>Active restrictions ({entries.length}) <span>View rules ▾</span></summary>
+          {entries.length > 0 ? <ol className={styles.ruleList}>
+            {entries.map((entry, index) => <li key={entry.id}>
+              <span className={styles.ruleRank} aria-label={"Saved priority " + entry.priority}>
+                {entry.priority || index + 1}
+              </span>
+              <div><strong>{entry.title}</strong>
+                {entry.valueLabel && <small>{entry.valueLabel}</small>}
+              </div>
+            </li>)}
+          </ol> : <p className={styles.rulePending}>No prioritized active restrictions are saved for this stage.</p>}
+          <p className={styles.ruleNote}>Read-only current-browser selections. These are rules, not independently verified trial passes or calculated exclusions.</p>
+        </details>}
+    <button type="button" className={styles.manageRules} onClick={() => onOpen("RESTRICTIONS")}>
+      Open restriction controls →
+    </button>
+  </div>;
+}
+
 export default function GoalDashboard({
-  records, pipelineCount, gemJrCount, gemCount,
+  records, pipelineCount, gemJrCount, gemCount, restrictions = null,
   sourceAsOf, sourceState, scanFinishedAt, scanComplete = false, cached = false, onOpen,
 }: GoalDashboardProps) {
   const [query, setQuery] = useState("");
@@ -228,19 +261,22 @@ export default function GoalDashboard({
     <div className={styles.stageGrid} aria-label="Goal candidate stage previews">
       <section><div className={styles.stageHeader}><h3>♧ Pipeline</h3><button type="button" onClick={() => onOpen("PIPELINE")}>View all →</button></div>
         <strong>{number(pipelineCount)}</strong><span>Saved Pipeline candidates</span>
-        <p>Market-cap, public-company and Phase 3 criteria remain governed by the RESTRICTIONS page.</p></section>
+        <p>Market-cap, public-company and Phase 3 criteria remain governed by the RESTRICTIONS page.</p>
+        <GoalRuleDetails stage="PIPELINE" entries={restrictions?.PIPELINE ?? null} onOpen={onOpen}/></section>
       <section><div className={styles.stageHeader}><h3>◇ GEM JR</h3><button type="button" onClick={() => onOpen("GEM_JR")}>View all →</button></div>
         <strong>{number(gemJrCount)}</strong><span>Saved stage members</span>
-        <p>Existing GEM JR restrictions and independent FS/FA selections are preserved.</p></section>
+        <p>Existing GEM JR restrictions and independent FS/FA selections are preserved.</p>
+        <GoalRuleDetails stage="GEM_JR" entries={restrictions?.GEM_JR ?? null} onOpen={onOpen}/></section>
       <section><div className={styles.stageHeader}><h3>◆ GEM</h3><button type="button" onClick={() => onOpen("GEM")}>View all →</button></div>
         <strong>{number(gemCount)}</strong><span>Saved stage members</span>
-        <p>Existing GEM restrictions, scores and independent FS/FA selections are preserved.</p></section>
+        <p>Existing GEM restrictions, scores and independent FS/FA selections are preserved.</p>
+        <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} onOpen={onOpen}/></section>
     </div>
     <section className={styles.next} aria-label="GOAL dashboard build milestones">
       <h3>Building this screen toward the reference image</h3>
       <div className={styles.milestones}>
         <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, Pipeline and GEM links</span></div>
-        <div><strong>Next integration</strong><span>Complete FDA designation/review evidence, detailed restriction summaries, and expanded scan-result drilldowns</span></div>
+        <div><strong>Next integration</strong><span>Verified FDA designations, stage-wise filter impact counts, and expanded scan-result drilldowns</span></div>
         <div><strong>Still pending</strong><span>Google Drive backup controls, CSV/Excel export, unified settings and phone layout polish</span></div>
       </div>
       <div className={styles.actions}>
