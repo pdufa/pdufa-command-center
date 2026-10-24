@@ -12,6 +12,7 @@ import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators
 import {WT_GROUPS} from "../lib/wt-entry-stay-exit";
 import PublishedScansPanel from "./PublishedScansPanel";
 import GoalDashboard, { type GoalSection } from "./GoalDashboard";
+import { goalRestrictionSummaries } from "../lib/goal-restrictions";
 import DailyResultsPanel from "./DailyResultsPanel";
 import PipelineData from "./PipelineData";
 import DetailButton from "./DetailButton";
@@ -2061,6 +2062,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       pipelineCount={snapshot ? snapshot.pipeline.length : publishedCounts?.pipeline ?? null}
       gemJrCount={snapshot ? snapshot.members.GEM_JR.rows.length : publishedCounts?.gemJr ?? null}
       gemCount={snapshot ? snapshot.members.GEM.rows.length : publishedCounts?.gem ?? null}
+      restrictions={masterRestrictionsReady ? goalRestrictionSummaries(masterRestrictions) : null}
       sourceAsOf={snapshot?.asOf}
       sourceState={snapshot?.sourceHealth?.state}
       scanFinishedAt={snapshot?.sourceHealth?.publishedScan?.finishedAt}
