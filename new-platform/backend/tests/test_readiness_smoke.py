@@ -43,6 +43,10 @@ def test_authenticated_exact_program_keeps_missing_reviews_blocked(review_client
     payload = response.json()
     verify_payload(payload, PID, stage, EXACT)
     assert payload["assessmentEvidence"]["status"] == "COMPLETE"
+    assert payload["marketDataStatus"] is None  # mocked enrichment supplies only reviewed evidence
+    assert payload["marketBarsAvailable"] is None
+    assert payload["marketDataFeed"] is None
+    assert payload["marketSignalStatus"] is None
     assert payload["decisionReadiness"]["missingRequirements"] == [
         "verified catalyst", "financing and dilution risk review"]
     session.__enter__.return_value.get.assert_called_once()
