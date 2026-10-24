@@ -27,7 +27,7 @@ jobs:
       - name: Create and safely extract source archive
         run: |
           mkdir -p "$RUNNER_TEMP/recovered"
-          git archive --format=tar HEAD new-platform/frontend | tar -xf - -C "$RUNNER_TEMP/recovered"
+          git archive --format=tar HEAD | tar -xf - -C "$RUNNER_TEMP/recovered"
           test -f "$RUNNER_TEMP/recovered/new-platform/frontend/package-lock.json"
       - name: Install exact locked dependencies
         working-directory: ${{ runner.temp }}/recovered/new-platform/frontend
@@ -54,7 +54,7 @@ jobs:
       - name: Create and safely extract source archive
         run: |
           mkdir -p "$RUNNER_TEMP/recovered"
-          git archive --format=tar HEAD new-platform/backend | tar -xf - -C "$RUNNER_TEMP/recovered"
+          git archive --format=tar HEAD | tar -xf - -C "$RUNNER_TEMP/recovered"
           test -f "$RUNNER_TEMP/recovered/new-platform/backend/requirements.txt"
       - name: Install backend dependencies
         working-directory: ${{ runner.temp }}/recovered/new-platform/backend
