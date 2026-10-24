@@ -1,0 +1,21 @@
+.history{border:2px solid #294b34;border-radius:11px;background:#f7fbf8;min-width:0}
+.details{min-width:0}
+.summary{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;padding:14px 16px;color:#173e28;font-size:15px;font-weight:850}
+.summary small{font-size:12px;color:#385e43;font-weight:700}
+.details[open] .summary{border-bottom:1px solid #d2dfd5}
+.body{padding:12px 14px 14px;min-width:0}
+.explainer,.note{font-size:12px;color:#4a6252;line-height:1.5;margin:0 0 11px}
+.note{margin:10px 0 0}
+.scroll{overflow:auto;width:100%;max-height:350px;border:1px solid #cbded0;border-radius:8px;background:#fff}
+.scroll table{border-collapse:collapse;width:100%;min-width:1010px;font-size:12px}
+.scroll th,.scroll td{padding:10px 9px;text-align:right;border-bottom:1px solid #e0e9e2;white-space:nowrap;font-variant-numeric:tabular-nums}
+.scroll th:first-child,.scroll td:first-child{text-align:left}
+.scroll thead{position:sticky;top:0;background:#eaf3ed;z-index:1}
+.scroll tbody tr:nth-child(even){background:#f8fbf9}
+.scroll a{color:#1156a9;font-weight:800}
+.partial,.failed,.complete{font-size:11px;border-radius:6px;padding:4px 7px;font-weight:800}
+.partial{color:#764500;background:#fff0c4}
+.failed{color:#912624;background:#ffe0df}
+.complete{color:#19582f;background:#dcf1e1}
+.empty{padding:12px;border:1px dashed #bfcec4;border-radius:6px;color:#53685a;font-size:12px}
+@media(max-width:650px){.summary{align-items:flex-start;flex-direction:column;padding:13px}.body{padding:10px}.scroll{max-height:340px}.details summary{min-height:44px}}

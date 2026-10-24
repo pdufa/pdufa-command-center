@@ -14,6 +14,7 @@ import type { CatalogEntry } from "../lib/restriction-catalog";
 import { impactSummaryCsv, impactProgramCsv } from "../lib/goal-impact-export";
 import styles from "./GoalDashboard.module.css";
 import GoalOperationsPanel from "./GoalOperationsPanel";
+import GoalDailyHistory from "./GoalDailyHistory";
 
 export type GoalRecord = {
   id: string;
@@ -226,6 +227,7 @@ export default function GoalDashboard({
   const [windowDays, setWindowDays] = useState<30 | 90 | 180>(180);
   const [scanView, setScanView] = useState<GoalScanView | null>(null);
   const [scoringReport, setScoringReport] = useState<unknown>(null);
+  const [dailyLedger, setDailyLedger] = useState<unknown>(null);
   const [scanLoading, setScanLoading] = useState(true);
   const [scanError, setScanError] = useState("");
   const [scanRefresh, setScanRefresh] = useState(0);
@@ -280,6 +282,7 @@ export default function GoalDashboard({
         const scoring = data && typeof data==="object" && !Array.isArray(data) && "scoring" in data
           ? data.scoring : null;
         setScoringReport(scoring);
+        setDailyLedger(data && typeof data==="object" && !Array.isArray(data) && "daily" in data ? data.daily : null);
         setScanView(result);
         setScanError(result ? "" : "No run-matched dated report is available.");
       })
@@ -287,6 +290,7 @@ export default function GoalDashboard({
         if (controller.signal.aborted) return;
         setScanError("Dated scan report could not be verified.");
         setScoringReport(null);
+        setDailyLedger(null);
         setScanView(null);
       })
       .finally(() => { if (!controller.signal.aborted) setScanLoading(false); });
@@ -417,6 +421,7 @@ export default function GoalDashboard({
         <button type="button" onClick={() => onOpen("RESULTS")}>View dated RESULTS →</button>
       </div>
     </section>
+    <GoalDailyHistory daily={dailyLedger} loading={scanLoading} error={scanError}/>
     <section className={styles.impactIntro} aria-label="GOAL restriction before and after comparison">
       <div className={styles.sectionHeader}>
         <div><h3>Restriction impact · before → after</h3>
