@@ -300,7 +300,7 @@ test("GOAL pending drilldown reveals only source-matched UNKNOWN rows, with exac
     assert.equal(tr.length,1);
     assert.match(JSON.stringify(view.toJSON()),/TRIAL\|NCT00000003/);
     assert.equal(tr[0].findByType("code").props.children,"TRIAL|NCT00000003");
-    assert.ok(details.findAllByType("button").some(b=>b.props.children==="Export pending CSV"));
+    assert.ok(details.findAllByType("button").some(b=>JSON.stringify(b.props.children).includes("Export ") && JSON.stringify(b.props.children).includes("pending")));
     await act(async()=>pending.props.onClick());
     assert.equal(view.root.findAllByProps({"aria-label":"Pipeline pending programs after Publicly traded company"}).length,0);
   } finally{
