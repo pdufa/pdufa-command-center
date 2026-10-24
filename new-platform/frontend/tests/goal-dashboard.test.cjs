@@ -60,7 +60,7 @@ test("GOAL displays missing evidence as unavailable, never mockup counts",async(
     assert.match(rendered,/GOAL · Dashboard design workspace/);
     assert.match(rendered,/Not confirmed complete/);
     assert.match(rendered,/Not verified/);
-    assert.match(rendered,/Dated scan reconciliation not connected here yet/);
+    assert.match(rendered,/Daily changes not verified/);
     assert.match(rendered,/Loading the published Pipeline/);
     assert.doesNotMatch(rendered,/11,248|348|128/);
     const buttons=renderer.root.findAllByType("button");
@@ -101,6 +101,49 @@ test("GOAL keeps live saved totals and buttons for existing sections",async()=>{
   }finally{if(renderer)await act(async()=>renderer.unmount());}
 });
 
+test("GOAL refresh reads only the authenticated scan report and displays actual update counts",async()=>{
+  const original=global.fetch;
+  const calls=[];
+  const payload={daily:{schema_version:1,days:[{
+    date_pacific:new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",
+      year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date())
+      .filter(x=>["year","month","day"].includes(x.type))
+      .reduce((acc,x)=>{acc[x.type]=x.value;return acc;},{}),
+    run_id:40057578041,run_url:"https://github.com/pdufa/pdufa-command-center/actions/runs/40057578041",
+    status:"PARTIAL",sections:{master:{new:null,updated:68},designations:{total:null}}
+  }]}};
+  const date=payload.daily.days[0].date_pacific;
+  const dateParts=date;
+  payload.daily.days[0].date_pacific=dateParts.year+"-"+dateParts.month+"-"+dateParts.day;
+  payload.newFromScan={runId:40057578041,scanPacificDate:payload.daily.days[0].date_pacific,
+    pipelineNewPrograms:null,pipelineChangedTrials:68,rows:[]};
+  let view;
+  try{
+    global.fetch=async(url,init)=>{
+      calls.push({url,init});
+      return {ok:true,json:async()=>payload};
+    };
+    await act(async()=>{view=create(React.createElement(GoalDashboard,{
+      records:[],pipelineCount:11795,gemJrCount:11,gemCount:6,onOpen:()=>{}
+    }));});
+    let content=JSON.stringify(view.toJSON());
+    assert.match(content,/68/);
+    assert.match(content,/Partial evidence/);
+    assert.match(content,/not verified for today/);
+    assert.match(content,/No individually identified new findings were published/);
+    const button=view.root.findAllByType("button")
+      .find(x=>x.props.children==="Refresh scan findings");
+    assert.ok(button);
+    await act(async()=>{button.props.onClick();});
+    assert.equal(calls.length,2);
+    assert.ok(calls.every(x=>x.url==="/api/published-scans" &&
+      x.init.cache==="no-store" && !x.init.method));
+  } finally{
+    if(view)await act(async()=>view.unmount());
+    global.fetch=original;
+  }
+});
+
 test("GOAL desktop and phone layouts are responsive without creating separate routes",()=>{
   const css=fs.readFileSync(path.join(__dirname,"../app/GoalDashboard.module.css"),"utf8");
   assert.match(css,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
@@ -109,5 +152,6 @@ test("GOAL desktop and phone layouts are responsive without creating separate ro
   assert.match(css,/\.stageGrid\{grid-template-columns:1fr\}/);
   assert.match(css,/overflow:auto/);
   const source=fs.readFileSync(path.join(__dirname,"../app/GoalDashboard.tsx"),"utf8");
-  assert.doesNotMatch(source,/fetch\(|localStorage|sessionStorage|POST|runScan|ORDER_EXECUTION/);
+  assert.match(source,/fetch\("\/api\/published-scans"/);
+  assert.doesNotMatch(source,/localStorage|sessionStorage|method: ?"POST"|runScan|ORDER_EXECUTION/);
 });
