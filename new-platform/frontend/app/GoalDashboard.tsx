@@ -11,6 +11,7 @@ import { calculateGoalRestrictionImpact, fullGoalRestrictionEvidence,
   type GoalImpactReport, type GoalImpactStage } from "../lib/goal-restriction-impact";
 import type { ImpactRecord } from "../lib/restriction-impact";
 import type { CatalogEntry } from "../lib/restriction-catalog";
+import { impactSummaryCsv, impactProgramCsv } from "../lib/goal-impact-export";
 import styles from "./GoalDashboard.module.css";
 
 export type GoalRecord = {
@@ -76,30 +77,48 @@ export function goalSummary(records: GoalRecord[] | null, now = new Date()) {
   return { upcoming: dateItems.length, review, dated: dateItems };
 }
 
+function downloadGoalCsv(filename:string, body:string) {
+  const blob = new Blob([body], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  try {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } finally { URL.revokeObjectURL(url); }
+}
 function GoalRuleDetails({
-  stage, entries, impact, onOpen,
+  stage, entries, impact, report, onOpen,
 }:{
   stage: GoalRestrictionStage;
   entries: GoalRestrictionItem[] | null;
   impact: GoalImpactStage | null;
+  report: GoalImpactReport | null;
   onOpen: (section:GoalSection)=>void;
 }) {
   const [selectedRule, setSelectedRule] = useState<string | null>(null);
+  const [selectedKind, setSelectedKind] = useState<"EXCLUDED" | "PENDING">("EXCLUDED");
   const [excludedSearch, setExcludedSearch] = useState("");
   const [excludedPage, setExcludedPage] = useState(0);
   useEffect(() => {
     setSelectedRule(null);setExcludedSearch("");setExcludedPage(0);
   }, [impact]);
   const label = stage === "GEM_JR" ? "GEM JR" : stage === "PIPELINE" ? "Pipeline" : "GEM";
-  const focused = impact?.steps.find(step=>step.id === selectedRule && step.excluded > 0) ?? null;
-  const matching = focused ? focused.excludedPrograms.filter(program =>
+  const focused = impact?.steps.find(step=>step.id === selectedRule &&
+    (selectedKind==="EXCLUDED"?step.excluded:step.pending)>0) ?? null;
+  const focusedCount=focused ? (selectedKind==="EXCLUDED"?focused.excluded:focused.pending) : 0;
+  const pendingView=selectedKind==="PENDING";
+  const matching = focused ? (pendingView?focused.pendingPrograms:focused.excludedPrograms).filter(program =>
     [program.id,program.programId,program.ticker,program.drug,program.indication,program.nctId]
       .some(field=>(field || "").toLowerCase().includes(excludedSearch.trim().toLowerCase()))) : [];
   const pageSize=20, maxPage=Math.max(0,Math.ceil(matching.length/pageSize)-1);
   const activePage=Math.min(excludedPage,maxPage);
   const visible = matching.slice(activePage*pageSize,(activePage+1)*pageSize);
-  const viewRule = (id:string)=>{
-    setSelectedRule(previous=>previous===id ? null : id);
+  const viewRule = (id:string,kind:"EXCLUDED"|"PENDING"="EXCLUDED")=>{
+    setSelectedRule(previous=>previous===id && selectedKind===kind ? null : id);
+    setSelectedKind(kind);
     setExcludedSearch("");setExcludedPage(0);
   };
   return <div className={styles.rulePreview} aria-label={label + " saved restriction preview"}>
@@ -134,24 +153,36 @@ function GoalRuleDetails({
                 aria-label={"View " + step.excluded + " excluded programs for " + label + " rule " + step.title}
                 onClick={()=>viewRule(step.id)}>{number(step.excluded)} ↗</button>
             : number(step.excluded)}</td>
-          <td>{number(step.after)}</td><td>{number(step.pending)}</td>
+          <td>{number(step.after)}</td><td>{step.pending>0
+            ? <button type="button" className={styles.pendingButton}
+                aria-expanded={focused?.id===step.id && pendingView}
+                aria-label={"View " + step.pending + " pending programs after " + label + " rule " + step.title}
+                onClick={()=>viewRule(step.id,"PENDING")}>{number(step.pending)} ?</button>
+            : number(step.pending)}</td>
         </tr>)}</tbody>
       </table></div> : <p>No selected restrictions: the starting baseline remains unchanged.</p>}
       {focused && <section className={styles.exclusionDetails}
-        aria-label={label + " excluded programs for " + focused.title}>
+        aria-label={label + (pendingView ? " pending programs after " : " excluded programs for ") + focused.title}>
         <div className={styles.exclusionHeading}>
-          <div><strong>{focused.title} — excluded programs</strong>
-            <p>{number(focused.excluded)} removed at this step. Exact saved identities only; a ticker alone does not establish a trial match.</p></div>
-          <button type="button" onClick={()=>setSelectedRule(null)}>Close details</button>
+          <div><strong>{focused.title} — {pendingView?"pending evidence":"excluded programs"}</strong>
+            <p>{pendingView
+              ? number(focusedCount)+" retained with UNKNOWN evidence after this step (cumulative, including earlier rules). These are not confirmed failures."
+              : number(focusedCount)+" removed at this step. Exact saved identities only; a ticker alone does not establish a trial match."}</p></div>
+          <div className={styles.exclusionActions}>
+            <button type="button" onClick={()=>{if(report)downloadGoalCsv(
+              "GOAL_"+stage+"_"+focused.id+"_"+selectedKind.toLowerCase()+".csv",
+              impactProgramCsv(report,stage,focused.id,selectedKind));}}>Export {pendingView?"pending":"excluded"} CSV</button>
+            <button type="button" onClick={()=>setSelectedRule(null)}>Close details</button>
+          </div>
         </div>
-        <label className={styles.exclusionSearch}>Find an excluded program
+        <label className={styles.exclusionSearch}>Find a {pendingView?"pending":"excluded"} program
           <input type="search" value={excludedSearch} onChange={event=>{
             setExcludedSearch(event.target.value);setExcludedPage(0);
           }} placeholder="Ticker, Program ID, NCT, drug…" />
         </label>
         <p className={styles.exclusionCount} role="status">
-          Showing {number(visible.length)} of {number(matching.length)} matching excluded records
-          {matching.length !== focused.excluded ? " ("+number(focused.excluded)+" total removed)" : ""}
+          Showing {number(visible.length)} of {number(matching.length)} matching {pendingView?"pending":"excluded"} records
+          {matching.length !== focusedCount ? " ("+number(focusedCount)+" total "+(pendingView?"pending":"removed")+")" : ""}
         </p>
         {visible.length ? <div className={styles.exclusionScroll}><table>
           <thead><tr><th>Ticker</th><th>Permanent Program ID</th><th>Saved row ID</th><th>Trial</th><th>Drug / indication</th></tr></thead>
@@ -166,7 +197,7 @@ function GoalRuleDetails({
             <td>{program.drug || "Drug not recorded"}
               {program.indication && <small>{program.indication}</small>}</td>
           </tr>)}</tbody>
-        </table></div> : <p className={styles.rulePending}>No excluded records match this search.</p>}
+        </table></div> : <p className={styles.rulePending}>No {pendingView?"pending":"excluded"} records match this search.</p>}
         {matching.length>pageSize && <nav className={styles.exclusionPages} aria-label="Excluded programs pages">
           <button type="button" disabled={activePage===0}
             onClick={()=>setExcludedPage(value=>Math.max(0,value-1))}>← Previous</button>
@@ -174,7 +205,9 @@ function GoalRuleDetails({
           <button type="button" disabled={activePage===maxPage}
             onClick={()=>setExcludedPage(value=>Math.min(maxPage,value+1))}>Next →</button>
         </nav>}
-        <p className={styles.ruleNote}>Exclusions use the original restriction evaluation on published saved evidence, not a new scoring model. Check the source and complete record in RESTRICTIONS before making decisions.</p>
+        <p className={styles.ruleNote}>{pendingView
+          ? "Pending records are cumulative UNKNOWN survivors after this rule, not necessarily newly made pending by it. This is not a list of clinical failures."
+          : "Exclusions use the original restriction evaluation on published saved evidence, not a new scoring model."} Check the source and complete record in RESTRICTIONS before making decisions.</p>
       </section>}
       <p className={styles.ruleNote}>Sequential, within this stage only. UNKNOWN records are retained; these figures are not GEM qualifications, approval probabilities, or trade recommendations.</p>
     </div>}
@@ -388,6 +421,9 @@ export default function GoalDashboard({
           {impactLoading ? "Calculating saved impacts…" : "CALCULATE SAVED IMPACT"}
         </button>
       </div>
+      {impact && <button type="button" className={styles.goalExport}
+        onClick={()=>downloadGoalCsv("GOAL_restriction_impact_"+impact.asOf.slice(0,10)+".csv",
+          impactSummaryCsv(impact))}>EXPORT IMPACT CSV</button>}
       {impact ? <p className={styles.impactStatus} role="status">
         Baseline: <strong>{number(impact.total)}</strong> distinct saved programs · Source date: {impact.asOf} ·
         Evidence files: {impact.sources.length}/3 · Entry-date cap evidence is never replaced with current cap.
@@ -402,22 +438,22 @@ export default function GoalDashboard({
       <section><div className={styles.stageHeader}><h3>♧ Pipeline</h3><button type="button" onClick={() => onOpen("PIPELINE")}>View all →</button></div>
         <strong>{number(pipelineCount)}</strong><span>Saved Pipeline candidates</span>
         <p>Market-cap, public-company and Phase 3 criteria remain governed by the RESTRICTIONS page.</p>
-        <GoalRuleDetails stage="PIPELINE" entries={restrictions?.PIPELINE ?? null} impact={impact?.stages.PIPELINE ?? null} onOpen={onOpen}/></section>
+        <GoalRuleDetails stage="PIPELINE" entries={restrictions?.PIPELINE ?? null} impact={impact?.stages.PIPELINE ?? null} report={impact} onOpen={onOpen}/></section>
       <section><div className={styles.stageHeader}><h3>◇ GEM JR</h3><button type="button" onClick={() => onOpen("GEM_JR")}>View all →</button></div>
         <strong>{number(gemJrCount)}</strong><span>Saved stage members</span>
         <p>Existing GEM JR restrictions and independent FS/FA selections are preserved.</p>
-        <GoalRuleDetails stage="GEM_JR" entries={restrictions?.GEM_JR ?? null} impact={impact?.stages.GEM_JR ?? null} onOpen={onOpen}/></section>
+        <GoalRuleDetails stage="GEM_JR" entries={restrictions?.GEM_JR ?? null} impact={impact?.stages.GEM_JR ?? null} report={impact} onOpen={onOpen}/></section>
       <section><div className={styles.stageHeader}><h3>◆ GEM</h3><button type="button" onClick={() => onOpen("GEM")}>View all →</button></div>
         <strong>{number(gemCount)}</strong><span>Saved stage members</span>
         <p>Existing GEM restrictions, scores and independent FS/FA selections are preserved.</p>
-        <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} impact={impact?.stages.GEM ?? null} onOpen={onOpen}/></section>
+        <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} impact={impact?.stages.GEM ?? null} report={impact} onOpen={onOpen}/></section>
     </div>
     <section className={styles.next} aria-label="GOAL dashboard build milestones">
       <h3>Building this screen toward the reference image</h3>
       <div className={styles.milestones}>
         <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, Pipeline and GEM links</span></div>
-        <div><strong>Next integration</strong><span>Verified FDA designations, candidate-level restriction drilldowns, and expanded scan-result detail</span></div>
-        <div><strong>Still pending</strong><span>Google Drive backup controls, CSV/Excel export, unified settings and phone layout polish</span></div>
+        <div><strong>Next integration</strong><span>Verified FDA designations, connected backup status, and expanded scan-result detail</span></div>
+        <div><strong>Still pending</strong><span>Google Drive backup verification, Excel integration, external notification delivery, and signed-in phone visual review</span></div>
       </div>
       <div className={styles.actions}>
         <button type="button" onClick={() => onOpen("SCANS")}>Open SCANS</button>
