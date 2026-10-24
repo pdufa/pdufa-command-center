@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
 import { researchBackendBase } from "../../../../lib/research-backend";
+import { verifiedMarketEnrichment } from "../../../../lib/verified-market-enrichment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,8 +30,13 @@ export async function GET(req: NextRequest, context: { params: Promise<{ program
       cache: "no-store", redirect: "error",
       signal: AbortSignal.timeout(30000),
     });
-    const data = await response.json().catch(() => ({}));
-    return NextResponse.json(data, { status: response.status, headers: { "Cache-Control": "private, no-store" } });
+    // Never return raw backend errors, internal credentials, or a different trial.
+    if (!response.ok) {
+      return NextResponse.json({ error: "Research market backend unavailable" },
+        { status: response.status === 404 ? 404 : 503, headers: { "Cache-Control": "private, no-store" } });
+    }
+    const data = verifiedMarketEnrichment(await response.json(), programId);
+    return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });
   } catch {
     return NextResponse.json({ error: "Alpaca market enrichment unavailable" }, { status: 503 });
   }
