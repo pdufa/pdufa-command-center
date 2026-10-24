@@ -56,7 +56,7 @@ test("Missing or stale audit cannot be treated as score completion",()=>{
   assert.equal(goalOperationalState({...mockScan,status:"COMPLETE"},clear).scan.concern,false);
 });
 
-test("Operational panel lists actual blockers, never starts scans or claims Drive cron",async()=>{
+test("Operational panel distinguishes configured Drive task from verified backup completion",async()=>{
   let view,opened=[];
   try{
     await act(async()=>{view=create(React.createElement(Panel,{
@@ -66,7 +66,11 @@ test("Operational panel lists actual blockers, never starts scans or claims Driv
     assert.match(output,/Partial published evidence/);
     assert.match(output,/4 scoring-input checks need attention/);
     assert.match(output,/not a Google Drive data backup/);
-    assert.match(output,/Recurring backup not verified/);
+    assert.match(output,/Daily task configured/);
+    assert.match(output,/first automatic run unverified/);
+    assert.match(output,/8 AM Pacific/);
+    assert.match(output,/cannot confirm that the unattended task runs/);
+    assert.match(output,/No complete site\/Git history backup/);
     assert.match(output,/Delivery not verified/);
     assert.match(output,/Alpaca HTTP 401/);
     const links=view.root.findAllByType("a");
