@@ -228,6 +228,21 @@ async def lifespan(app: FastAPI):
         try:
             Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
             _DB_STATE.update(available=True, reason="READY")
+            # Safe, read-only startup diagnostic; logs counts only, never trial data or secrets.
+            try:
+                from sqlalchemy import func, inspect
+                with Session(ENGINE) as session:
+                    present = inspect(session.get_bind()).has_table("full_trial_records")
+                    total = session.scalar(select(func.count()).select_from(FullTrialRecord)) if present else None
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_ARCHIVE_STATUS table_present=%s stored_trial_count=%s",
+                    present, total,
+                )
+            except Exception as diagnostic_error:
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_ARCHIVE_STATUS unavailable error_type=%s",
+                    type(diagnostic_error).__name__,
+                )
         except Exception as exc:
             # Neon's free-plan quota can return HTTP 402 while Postgres tables
             # and identities remain intact. Keep the health endpoint available
