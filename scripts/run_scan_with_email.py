@@ -99,6 +99,9 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
     except Exception as exc:
         audit["start_email"] = "FAILED_OR_UNKNOWN"
         audit["end_email"] = "NOT_SENT_SCAN_NOT_STARTED"
+        if require_sms:
+            audit["start_sms"] = "NOT_SENT_SCAN_NOT_STARTED"
+            audit["end_sms"] = "NOT_SENT_SCAN_NOT_STARTED"
         audit["error_type"] = type(exc).__name__
         save_audit(audit_dir, run_id, audit)
         return 4, audit
