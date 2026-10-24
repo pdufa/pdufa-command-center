@@ -73,7 +73,9 @@ test("GOAL displays missing evidence as unavailable, never mockup counts",async(
 test("GOAL keeps live saved totals and buttons for existing sections",async()=>{
   const navigation=[];
   const now=new Date();
-  const today=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).format(now);
+  const fields=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(now);
+  const part=name=>fields.find(x=>x.type===name).value;
+  const today=[part("year"),part("month"),part("day")].join("-");
   const records=[{id:"TEST|A",ticker:"TEST",drug:"Test drug",indication:"Example",
     pdufaDate:today,checkStatus:"UPCOMING"}];
   let renderer;
