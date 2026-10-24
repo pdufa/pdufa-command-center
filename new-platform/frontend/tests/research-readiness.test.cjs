@@ -135,7 +135,7 @@ test('trial panel loads risk reviews independently of market failure and aborts 
     await act(async () => requests[3].resolve({ok: true, json: async () => withSources(review('GEM'))}));
     let rendered = JSON.stringify(view.toJSON());
     assert.match(rendered, /Alpaca rejected the configured API credentials/);
-    assert.match(rendered, /Research connection: NOT VERIFIED/);
+    assert.match(view.root.findByProps({'aria-label':'Live research connection verification'}).findByType('strong').props.children.join(''), /Research connection: NOT VERIFIED/);
     assert.match(rendered, /Source review required for this program/);
     assert.match(rendered, /Dilution remains a recorded risk/);
     assert.equal(view.root.findAllByProps({'aria-label': 'Investment research readiness'}).length, 1);
@@ -178,12 +178,12 @@ test('exact-program connection status and manual recheck never trigger writes or
     assert.equal(calls.length,2);
     assert.ok(calls.every(c=>!c.options.method || c.options.method==='GET'));
     assert.ok(calls.every(c=>c.options.cache==='no-store'));
-    assert.match(JSON.stringify(view.toJSON()),/Research connection: CONNECTED/);
+    assert.match(view.root.findByProps({'aria-label':'Live research connection verification'}).findByType('strong').props.children.join(''),/Research connection: CONNECTED/);
     const button=view.root.findAllByType('button').find(b=>b.props.children==='RECHECK RESEARCH CONNECTION');
     assert.ok(button);
     await act(async()=>{button.props.onClick();});
     assert.equal(calls.length,4);
-    assert.match(JSON.stringify(view.toJSON()),/Research connection: CONNECTED/);
+    assert.match(view.root.findByProps({'aria-label':'Live research connection verification'}).findByType('strong').props.children.join(''),/Research connection: CONNECTED/);
     assert.ok(calls.every(c=>!String(c.url).includes('/scans/')&&!String(c.url).includes('/orders/')));
     assert.ok(calls.slice(0,2).every(c=>c.options.signal.aborted));
   }finally{if(view)await act(async()=>view.unmount());global.fetch=oldFetch;}
