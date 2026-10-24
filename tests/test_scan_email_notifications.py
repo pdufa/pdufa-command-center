@@ -456,6 +456,17 @@ class ScanEmailTests(unittest.TestCase):
             self.assertEqual(audit["end_sms"], "FAILED_OR_UNKNOWN")
 
 
+    def test_nightly_sms_requires_explicit_verified_delivery_opt_in(self):
+        root = Path(__file__).resolve().parents[1]
+        clinical = (root / ".github/workflows/pdufa-nightly-clinical.yml").read_text()
+        self.assertEqual(clinical.count('scripts/run_scan_with_email.py "${sms_opt[@]}"'), 3)
+        self.assertEqual(clinical.count('sms_opt+=(--require-sms)'), 3)
+        self.assertEqual(clinical.count('if [[ "${PDUFA_SMS_VERIFIED:-}" == "true" ]]'), 3)
+        for secret in ("PDUFA_SMS_VERIFIED", "TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN",
+                       "TWILIO_FROM_NUMBER", "PDUFA_SMS_TO_NUMBER"):
+            self.assertEqual(clinical.count("secrets." + secret), 2)
+        self.assertNotIn("scripts/run_scan_with_sms.py", clinical)
+
     def test_settings_fail_closed_without_real_smtp_secrets(self):
         with tempfile.TemporaryDirectory() as folder:
             with patch.dict(os.environ, {}, clear=True):
