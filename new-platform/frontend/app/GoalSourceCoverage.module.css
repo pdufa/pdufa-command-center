@@ -17,5 +17,24 @@
 .content a{font-size:12px;font-weight:850;color:#185ba4;overflow-wrap:anywhere}
 .empty{padding:12px;border:1px dashed #bac9bf;background:#fff;border-radius:7px;font-size:12px;color:#52645a}
 .foot{margin:12px 0 0}
+.review{margin-top:14px;min-width:0;border:1px solid #bdcfc1;border-radius:8px;background:#fff}
+.reviewSummary{display:flex;justify-content:space-between;gap:12px;padding:13px;min-height:44px;align-items:center;cursor:pointer;font-size:13px;font-weight:800;color:#254832}
+.reviewSummary span{font-size:12px;white-space:nowrap}
+.reviewBody{padding:0 13px 13px;min-width:0}
+.reviewFilters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:12px}
+.reviewFilters label{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;font-weight:750;color:#2b4834}
+.reviewFilters input,.reviewFilters select{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid #9cb4a3;border-radius:6px;padding:8px;background:#fff;font-size:14px;color:#173c27}
+.reviewCount{font-size:12px;color:#536859;line-height:1.5}
+.issueList{display:grid;gap:10px;min-width:0}
+.issue{min-width:0;padding:12px;border:1px solid #cadbce;border-radius:7px;background:#f8fbf9;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.issueHeading{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.issueHeading strong{font-size:14px;color:#22472e}
+.issueHeading span{color:#79501b;font-weight:750;font-size:11px}
+.issueKey{font-family:monospace;color:#536859}
+.issueClaim{font-size:11px}
+.issueSource{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#536859;font-size:11px}
+.reviewPages{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;font-size:12px;flex-wrap:wrap}
+.reviewPages button{min-height:44px;padding:8px 12px;border:1px solid #8eab98;border-radius:6px;background:#f0f7f2;color:#22472e;font-size:12px;cursor:pointer}
+.reviewPages button:disabled{opacity:.5;cursor:default}
 @media(max-width:750px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.summary{flex-direction:column;align-items:flex-start;padding:13px;min-height:44px}.content{padding:11px}.metrics>div{padding:10px}.metrics strong{font-size:19px}}
+@media(max-width:650px){.summary{flex-direction:column;align-items:flex-start;padding:13px;min-height:44px}.content{padding:11px}.metrics>div{padding:10px}.metrics strong{font-size:19px}.reviewFilters{grid-template-columns:minmax(0,1fr)}.reviewSummary{align-items:flex-start;flex-direction:column}.reviewPages button{flex:1}}

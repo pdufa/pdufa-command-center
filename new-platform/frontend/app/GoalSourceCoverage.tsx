@@ -1,6 +1,8 @@
 "use client";
 import type { GoalScanView } from "../lib/goal-scan-evidence";
 import { goalSourceCoverage } from "../lib/goal-source-coverage";
+import { goalSourceReview } from "../lib/goal-source-review";
+import GoalSourceReview from "./GoalSourceReview";
 import styles from "./GoalSourceCoverage.module.css";
 
 type Props={source:unknown;scan:GoalScanView|null;loading:boolean};
@@ -41,6 +43,7 @@ export default function GoalSourceCoverage({source,scan,loading}:Props){
           <a href={audit.runUrl} target="_blank" rel="noopener noreferrer">
             Open original source audit run #{audit.runId} ↗
           </a>
+          <GoalSourceReview key={audit.runId} review={goalSourceReview(source,scan)} />
         </> : <p className={styles.empty}>{loading
           ? "Reading the original source audit…"
           : "No valid source audit could be matched to this dated clinical run. Counts withheld rather than copied from another date or run."}</p>}
