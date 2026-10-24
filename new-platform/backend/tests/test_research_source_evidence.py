@@ -79,7 +79,9 @@ def test_stale_or_wrong_issuer_financials_cannot_supply_a_current_runway():
 def test_financial_group_summary_does_not_mask_stale_or_review_only_facts():
     stale_sec = source_evidence(PID, APPLICATION, "COGT", today=date(2026, 11, 5))
     assert stale_sec["financial"]["status"] == "STALE"
-    assert all(item["status"] == "STALE" for item in stale_sec["financial"]["facts"])
+    assert any(item["status"] == "STALE" for item in stale_sec["financial"]["facts"])
+    assert all(item["status"] not in {"OBSERVED", "CALCULATED"} for item in stale_sec["financial"]["facts"])
+    assert any(item["status"] == "REVIEW" for item in stale_sec["financial"]["facts"])
 
     stale_issuer = source_evidence(PID, TRIAL, "CLDX", today=date(2026, 11, 5))
     assert stale_issuer["financial"]["status"] == "STALE"
