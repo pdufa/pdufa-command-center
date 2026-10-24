@@ -204,7 +204,8 @@ test("GOAL's clicked exclusion drilldown searches exact IDs and paginates all ex
     await act(async()=>open.props.onClick());
     const detail=view.root.findByProps({"aria-label":"Pipeline excluded programs for Publicly traded company"});
     assert.equal(detail.findAllByType("tbody")[0].findAllByType("tr").length,20);
-    assert.match(JSON.stringify(view.toJSON()),/Page 1 of 2/);
+    assert.deepEqual(detail.findByProps({"aria-label":"Excluded programs pages"})
+      .findByType("span").props.children,["Page ",1," of ",2]);
     const next=detail.findAllByType("button").find(x=>x.props.children==="Next →");
     await act(async()=>next.props.onClick());
     assert.equal(detail.findAllByType("tbody")[0].findAllByType("tr").length,7);
