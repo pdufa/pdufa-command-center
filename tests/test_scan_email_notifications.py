@@ -380,6 +380,26 @@ class ScanEmailTests(unittest.TestCase):
             self.assertNotIn(sms.auth_token, saved)
             self.assertNotIn(self.settings().app_password, saved)
 
+    def test_email_start_failure_does_not_attempt_sms_or_run_scanner(self):
+        from scripts.scan_sms import SMSSettings
+        sms = SMSSettings("AC" + "a" * 32, "private-token",
+                          "+15035550101", "+15035550202")
+        with tempfile.TemporaryDirectory() as folder:
+            sms_sender, collector = Mock(), Mock()
+            code, audit = run_scan(
+                scan="2", mode="DELTA", command=["mock"],
+                status_file=Path(folder) / "status.json",
+                audit_dir=Path(folder) / "audit",
+                settings=self.settings(), sender=Mock(side_effect=EmailSendError("SMTP unavailable")),
+                executor=collector, require_sms=True,
+                sms_settings=sms, sms_sender=sms_sender)
+            self.assertEqual(code, 4)
+            collector.assert_not_called()
+            sms_sender.assert_not_called()
+            self.assertEqual(audit["start_sms"], "NOT_SENT_SCAN_NOT_STARTED")
+            self.assertEqual(audit["end_sms"], "NOT_SENT_SCAN_NOT_STARTED")
+
+
     def test_unconfigured_dual_channel_blocks_before_email_or_scan(self):
         with tempfile.TemporaryDirectory() as folder:
             sender, executor = Mock(), Mock()
