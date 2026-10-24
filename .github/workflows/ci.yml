@@ -19,6 +19,8 @@ on:
       - 'tests/test_new_scan_result_identities.py'
       - 'data/pdufa_candidates.csv'
       - 'data/second_financing_status.csv'
+      - 'scripts/verify_backup_archive.py'
+      - 'tests/test_backup_archive_verification.py'
       - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
@@ -78,6 +80,18 @@ jobs:
         run: |
           python -m pip install pytest
           python -m pytest -q tests/test_score_input_audit.py tests/test_nightly_scoring_audit.py
+
+  backup-archive-integrity:
+    name: Offline ZIP backup integrity regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify backup archive safety and CRC validation
+        run: python -m unittest discover -s tests -p 'test_backup_archive_verification.py' -v
 
   scan-new-results:
     name: Audited new-scan identities and duplicate prevention
