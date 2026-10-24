@@ -1,4 +1,5 @@
 import { scoreAuditView } from "../lib/scoring-audit";
+import { scoringGapGuidance } from "../lib/scoring-gap-guidance";
 
 /** Original, dated read-only evidence ledger. Never calculates approval, trading,
  * investment readiness, or Gemini-style stage qualifications. */
@@ -23,10 +24,19 @@ export default function ScoringInputGapsPanel({ report }: { report: unknown }) {
       inferred FDA probabilities, invented financing PASS values, or missing-as-zero figures.</p>}
     <details className="nested-expander">
       <summary>Show scoring evidence checks · {unresolved.length} needing attention / {audit.checks.length} inspected</summary>
-      <ul>{audit.checks.map((item, i) => <li key={item.Test + i}>
-        <strong>{item.Test} — {item.Status}</strong>
-        <p>{item.Result}</p><p className="subtle">{item["Why it matters"]}</p>
-      </li>)}</ul>
+      <ul>{audit.checks.map((item, i) => {
+        const guide = scoringGapGuidance(item);
+        return <li key={item.Test + i}>
+          <strong>{item.Test} — {item.Status}</strong>
+          <p>{item.Result}</p><p className="subtle">{item["Why it matters"]}</p>
+          {guide && <div aria-label={"Evidence needed for " + item.Test}>
+            <p><strong>Next evidence check:</strong> {guide.nextCheck}</p>
+            <p className="subtle">{guide.caveat}</p>
+            <p><a href={guide.datasetUrl} target="_blank" rel="noopener noreferrer">
+              OPEN SAVED INPUT DATASET ↗ ({guide.dataset})</a></p>
+          </div>}
+        </li>;
+      })}</ul>
       <p className="subtle">{audit.provenance_note}</p>
       <p><a target="_blank" rel="noopener noreferrer"
         href={"https://github.com/pdufa/pdufa-command-center/actions/runs/" + audit.source_scan.run_id}>

@@ -8,6 +8,7 @@ for(const extension of [".ts",".tsx"]) require.extensions[extension] = (mod,file
     jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true
   }}).outputText,file);
 const {scoreAuditView} = require("../lib/scoring-audit.ts");
+const {scoringGapGuidance} = require("../lib/scoring-gap-guidance.ts");
 const time = Date.parse("2026-10-24T04:00:00Z");
 function report(){
   return {
@@ -46,6 +47,25 @@ test("inconsistent or invalid published scoring evidence is withheld",()=>{
   }
   assert.equal(scoreAuditView(null,time),null);
 });
+test("four scoring gaps have distinct source-specific resolution steps",()=>{
+  const examples=[
+    ["Trade Score coverage","data/pdufa_candidates.csv",/trade_score/],
+    ["Public PoA coverage","data/pdufa_candidates.csv",/public_approval_probability/],
+    ["FDA V3 calculated probability","data/fda_review_engine.csv",/fda_probability/],
+    ["Post Phase 3 entry gates","data/step7_financing_review.csv",/explicit gate PASS/],
+  ];
+  for(const [name,path,requirement] of examples){
+    const info=scoringGapGuidance({Test:name,Status:"DATA GAP"});
+    assert.ok(info,name);
+    assert.equal(info.dataset,path);
+    assert.match(info.nextCheck,requirement);
+    assert.equal(info.datasetUrl,"https://github.com/pdufa/pdufa-command-center/blob/main/"+path);
+    assert.ok(info.caveat.length>35);
+  }
+  assert.equal(scoringGapGuidance({Test:"Market data overlap",Status:"SHARED INPUT"}),null);
+  assert.equal(scoringGapGuidance({Test:"Trade Score coverage",Status:"OBSERVED"}),null);
+  assert.equal(scoringGapGuidance({Test:"Unknown",Status:"DATA GAP"}),null);
+});
 test("SCANS shows its saved audit and collapsible evidence checklist",async()=>{
   const React=require("react");
   const {create,act}=require("react-test-renderer");
@@ -59,6 +79,12 @@ test("SCANS shows its saved audit and collapsible evidence checklist",async()=>{
     assert.match(content,/"2"," data gaps"/);
     assert.match(content,/Trade Score coverage/);
     assert.match(content,/OPEN ORIGINAL NIGHTLY SCAN RUN/);
+    assert.match(content,/Next evidence check:/);
+    assert.match(content,/OPEN SAVED INPUT DATASET/);
+    assert.match(content,/trade_score/);
+    assert.match(content,/public_approval_probability/);
+    assert.equal(view.root.findAllByProps({"aria-label":"Evidence needed for Trade Score coverage"}).length,1);
+
     assert.equal(view.root.findAllByType("details").length,1);
     await act(async()=>view.update(React.createElement(Component,{report:null})));
     content=JSON.stringify(view.toJSON());
