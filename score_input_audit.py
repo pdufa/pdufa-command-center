@@ -100,7 +100,7 @@ def has_saved_gate_pass(row):
     or substitutes for independent primary-source evidence checks.
     """
     parts = str(row.get("Audited gate details") or "").split("|")
-    return any(re.fullmatch(r"\\s*[A-Za-z][A-Za-z_0-9 -]*:\\s*PASS(?:\\s*[—–-].*)?\\s*",
+    return any(re.fullmatch(r"\s*[A-Za-z][A-Za-z_0-9 -]*:\s*PASS(?:\s*[—–-].*)?\s*",
                             part, flags=re.IGNORECASE) is not None for part in parts)
 
 
