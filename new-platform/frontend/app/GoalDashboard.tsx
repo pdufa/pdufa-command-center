@@ -13,6 +13,7 @@ import type { ImpactRecord } from "../lib/restriction-impact";
 import type { CatalogEntry } from "../lib/restriction-catalog";
 import { impactSummaryCsv, impactProgramCsv } from "../lib/goal-impact-export";
 import styles from "./GoalDashboard.module.css";
+import GoalOperationsPanel from "./GoalOperationsPanel";
 
 export type GoalRecord = {
   id: string;
@@ -224,6 +225,7 @@ export default function GoalDashboard({
   const [query, setQuery] = useState("");
   const [windowDays, setWindowDays] = useState<30 | 90 | 180>(180);
   const [scanView, setScanView] = useState<GoalScanView | null>(null);
+  const [scoringReport, setScoringReport] = useState<unknown>(null);
   const [scanLoading, setScanLoading] = useState(true);
   const [scanError, setScanError] = useState("");
   const [scanRefresh, setScanRefresh] = useState(0);
@@ -275,12 +277,16 @@ export default function GoalDashboard({
       .then(data => {
         if (controller.signal.aborted) return;
         const result = goalScanView(data);
+        const scoring = data && typeof data==="object" && !Array.isArray(data) && "scoring" in data
+          ? data.scoring : null;
+        setScoringReport(scoring);
         setScanView(result);
         setScanError(result ? "" : "No run-matched dated report is available.");
       })
       .catch(() => {
         if (controller.signal.aborted) return;
         setScanError("Dated scan report could not be verified.");
+        setScoringReport(null);
         setScanView(null);
       })
       .finally(() => { if (!controller.signal.aborted) setScanLoading(false); });
@@ -448,12 +454,14 @@ export default function GoalDashboard({
         <p>Existing GEM restrictions, scores and independent FS/FA selections are preserved.</p>
         <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} impact={impact?.stages.GEM ?? null} report={impact} onOpen={onOpen}/></section>
     </div>
+    <GoalOperationsPanel scan={scanView} scoring={scoringReport} loading={scanLoading}
+      onOpenScans={()=>onOpen("SCANS")}/>
     <section className={styles.next} aria-label="GOAL dashboard build milestones">
       <h3>Building this screen toward the reference image</h3>
       <div className={styles.milestones}>
         <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, Pipeline and GEM links</span></div>
-        <div><strong>Next integration</strong><span>Verified FDA designations, connected backup status, and expanded scan-result detail</span></div>
-        <div><strong>Still pending</strong><span>Google Drive backup verification, Excel integration, external notification delivery, and signed-in phone visual review</span></div>
+        <div><strong>Next integration</strong><span>Verified FDA designations, end-to-end provider tests, and expanded scan-result detail</span></div>
+        <div><strong>Still pending</strong><span>Recurring Google Drive data backup, end-to-end notification delivery, staging Alpaca repair, and signed-in phone visual review</span></div>
       </div>
       <div className={styles.actions}>
         <button type="button" onClick={() => onOpen("SCANS")}>Open SCANS</button>
