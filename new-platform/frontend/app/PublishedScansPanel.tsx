@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import VerificationLedgerPanel from "./VerificationLedgerPanel";
 import LiveScansProgress from "./LiveScansProgress";
+import ScoringInputGapsPanel from "./ScoringInputGapsPanel";
 import ScanNewResultsPanel from "./ScanNewResultsPanel";
 import type { NewFromScanSummary } from "../lib/scan-new-results";
 
@@ -14,6 +15,7 @@ type SourceRow = {
 type Report = {
   status?: string;
   newFromScan?: NewFromScanSummary;
+  scoring?: unknown;
   clinical?: { latest_run_id?: number; updated_at_utc?: string; scans?: Array<{
     scan?: string; label?: string; collector_status?: string; metrics?: Record<string, number>;
   }> } | null;
@@ -175,6 +177,7 @@ export default function PublishedScansPanel() {
     <p><a href={SCAN_WORKFLOW} target="_blank" rel="noopener noreferrer">OPEN EXISTING GITHUB SCAN RUN CONTROLS ↗</a></p>
     <button type="button" className="secondary" onClick={()=>setRefresh(x=>x+1)}>REFRESH PUBLISHED SCAN STATUS</button>
     <ScanNewResultsPanel summary={record?.newFromScan} loading={!record && !error} />
+    {record && <ScoringInputGapsPanel report={record.scoring} />}
     <LiveScansProgress />
     <div className="scans-actions-grid">
     <div className="source-health">
