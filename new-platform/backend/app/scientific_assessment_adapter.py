@@ -9,7 +9,7 @@ from typing import Mapping, Any
 def scientific_trial_payload(exact_id: str, evidence: Mapping[str, Any] | None = None) -> dict:
     if not isinstance(exact_id, str) or not exact_id.strip():
         raise ValueError("Exact trial identity required")
-    from scientific_assessment import assess
+    from .scientific_assessment import assess
     result = assess(dict(evidence or {}))
     return {
         "exactId": exact_id,
