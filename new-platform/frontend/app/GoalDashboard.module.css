@@ -97,3 +97,16 @@
 .goal button.manageRules:hover{background:#dbeddf}
 @media(max-width:900px){.stageGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stageGrid>section:last-child{grid-column:1/-1}}
 @media(max-width:650px){.stageGrid{grid-template-columns:1fr}.stageGrid>section:last-child{grid-column:auto}.ruleDetails>summary{padding:12px}.ruleList{max-height:240px}.goal button.manageRules{min-height:44px}}
+
+/* GOAL: independent, evidence-backed before/after screen with restrained mobile tables. */
+.impactIntro{background:linear-gradient(120deg,#f7fcf8,#e9f7ee);border:2px solid #21462c;border-radius:11px;padding:17px;min-width:0}
+.impactStatus{padding:11px 13px;margin:13px 0 6px;background:#fff;border:1px solid #c7d9cb;border-radius:7px;color:#28553b;font-size:13px;line-height:1.5}
+.ruleImpact{background:#fff;border:1px solid #bacfc0;border-radius:8px;padding:10px;min-width:0}
+.ruleImpact>p{font-size:12px;line-height:1.5;margin:0 0 7px;color:#33583f}
+.impactTableScroll{overflow:auto;width:100%;max-height:320px;border:1px solid #e2ebe4;border-radius:6px}
+.impactTableScroll table{width:100%;border-collapse:collapse;min-width:380px;font-size:11px;white-space:nowrap}
+.impactTableScroll th,.impactTableScroll td{border-bottom:1px solid #e5eee7;padding:7px;text-align:right;font-variant-numeric:tabular-nums}
+.impactTableScroll th:first-child{text-align:left;min-width:120px;white-space:normal;overflow-wrap:anywhere}
+.impactTableScroll thead{background:#eaf3ed;position:sticky;top:0;z-index:1}
+.impactTableScroll tbody tr:nth-child(even){background:#f9fcfa}
+@media(max-width:650px){.impactIntro{padding:12px}.impactIntro .sectionHeader button{min-height:44px;width:100%}.impactTableScroll table{min-width:380px}.ruleImpact{padding:8px}}
