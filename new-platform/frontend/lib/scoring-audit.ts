@@ -47,7 +47,7 @@ export function scoreAuditView(value: unknown, now = Date.now()): ScoreAuditView
     if (!Array.isArray(value.sources) || value.sources.length > 20
         || value.sources.some((x: unknown) => !object(x)
           || typeof x.dataset !== "string" || x.dataset.length > 120
-          || typeof x.path !== "string" || !/^data\/[a-z0-9_./-]+\.csv$/.test(x.path)
+          || typeof x.path !== "string" || !/^data\/[a-z0-9_.-]+\.csv$/.test(x.path)
           || typeof x.file_present !== "boolean" || !isCount(x.saved_records))) return null;
   }
   if (value.scope !== undefined && (typeof value.scope !== "string" || value.scope.length > 500)) return null;
