@@ -21,6 +21,8 @@ from scripts.scan_email import (
     EmailSettings, EmailSetupError, EmailSendError,
     compose_start, compose_end, report_summary, send_email
 )
+from scripts.scan_sms import (SMSSettings, SMSSetupError, SMSSendError,
+                              begin_text, finish_text, submit_sms)
 
 
 def fingerprint(path):
@@ -52,7 +54,8 @@ def save_audit(folder, run_id, data):
 
 def run_scan(*, scan, mode, command, status_file, audit_dir,
              settings=None, sender=send_email, executor=subprocess.run,
-             timeout_seconds=None, cwd=None, clock=None, timer=None):
+             timeout_seconds=None, cwd=None, clock=None, timer=None,
+             require_sms=False, sms_settings=None, sms_sender=submit_sms):
     if not re.fullmatch(r"[A-Za-z0-9 _-]{1,40}", scan):
         raise ValueError("Invalid scan name")
     if mode not in {"BASELINE", "DELTA", "DEEP", "RECONCILE", "MANUAL"}:
@@ -62,6 +65,10 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
     if timeout_seconds is not None and timeout_seconds < 1:
         raise ValueError("timeout_seconds must be positive")
     settings = settings if settings is not None else EmailSettings.from_env()
+    # SMS is opt-in until a real handset delivery test is confirmed. Validate
+    # both transports BEFORE a single START notification or any scan begins.
+    if require_sms:
+        sms_settings = sms_settings if sms_settings is not None else SMSSettings.from_env()
     clock = clock or (lambda: datetime.now(timezone.utc))
     timer = timer or time.monotonic
     run_id = str(uuid.uuid4())
@@ -77,8 +84,10 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
         "start_email": "PENDING",
         "end_email": "PENDING",
         "coverage_status": "NOT_STARTED",
-        "channel": "EMAIL",
+        "channel": "EMAIL_AND_SMS" if require_sms else "EMAIL",
         "policy": "START_AND_FINAL_SUMMARY_PER_SCAN",
+        "start_sms": "PENDING" if require_sms else "NOT_ENABLED",
+        "end_sms": "PENDING" if require_sms else "NOT_ENABLED",
     }
     try:
         subject, body = compose_start(scan, mode, run_id, start)
@@ -94,6 +103,31 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
         save_audit(audit_dir, run_id, audit)
         return 4, audit
 
+    if require_sms:
+        try:
+            result = sms_sender(sms_settings, begin_text(scan, mode, run_id, start))
+            audit["start_sms"] = result["status"]
+            audit["start_sms_message_id"] = result.get("provider_message_id")
+            if audit["start_sms"] != "submitted_not_delivered":
+                raise SMSSendError("Provider did not acknowledge START SMS")
+        except Exception as exc:
+            # An already-submitted START email needs a matching abort email.
+            # Never retry an ambiguous SMS response or execute the scan.
+            audit["start_sms"] = "FAILED_OR_UNKNOWN"
+            audit["end_sms"] = "NOT_SENT_SCAN_NOT_STARTED"
+            audit["scan_executed"] = False
+            audit["coverage_status"] = "FAILED"
+            audit["error_type"] = type(exc).__name__
+            try:
+                subject, body = compose_end(
+                    scan, mode, run_id, clock(), "FAILED",
+                    "SMS START unconfirmed; scan was not launched", 0)
+                audit["end_email"] = sender(settings, subject, body)["status"]
+            except Exception:
+                audit["end_email"] = "FAILED_OR_UNKNOWN"
+            save_audit(audit_dir, run_id, audit)
+            return 4, audit
+
     try:
         save_audit(audit_dir, run_id, audit)
     except OSError:
@@ -107,6 +141,13 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
             audit["end_email"] = sender(settings, subject, body)["status"]
         except Exception:
             audit["end_email"] = "FAILED_OR_UNKNOWN"
+        if require_sms:
+            try:
+                final = sms_sender(sms_settings, finish_text(
+                    scan, mode, run_id, "FAILED", audit["summary"], 0))
+                audit["end_sms"] = final["status"]
+            except Exception:
+                audit["end_sms"] = "FAILED_OR_UNKNOWN"
         return 4, audit
 
     returncode = 1
@@ -151,8 +192,19 @@ def run_scan(*, scan, mode, command, status_file, audit_dir,
         except Exception as exc:
             audit["end_email"] = "FAILED_OR_UNKNOWN"
             audit["end_error_type"] = type(exc).__name__
+        if require_sms:
+            try:
+                final = sms_sender(sms_settings, finish_text(
+                    scan, mode, run_id, state, details, duration))
+                audit["end_sms"] = final["status"]
+                audit["end_sms_message_id"] = final.get("provider_message_id")
+                if audit["end_sms"] != "submitted_not_delivered":
+                    audit["end_sms"] = "FAILED_OR_UNKNOWN"
+            except Exception as exc:
+                audit["end_sms"] = "FAILED_OR_UNKNOWN"
+                audit["end_sms_error_type"] = type(exc).__name__
         save_audit(audit_dir, run_id, audit)
-    if audit["end_email"] != "submitted_not_delivered":
+    if audit["end_email"] != "submitted_not_delivered" or (require_sms and audit["end_sms"] != "submitted_not_delivered"):
         return 4, audit
     if returncode:
         return returncode, audit
@@ -167,6 +219,8 @@ def main():
     parser.add_argument("--status-file", type=Path, required=True)
     parser.add_argument("--audit-dir", type=Path, default=Path("reports/scan_notifications"))
     parser.add_argument("--timeout-seconds", type=int)
+    parser.add_argument("--require-sms", action="store_true",
+                        help="Require one SMS and one email at START and END; off until SMS delivery is verified")
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
@@ -174,8 +228,9 @@ def main():
         code, audit = run_scan(
             scan=args.scan, mode=args.mode, command=command,
             status_file=args.status_file, audit_dir=args.audit_dir,
-            timeout_seconds=args.timeout_seconds, cwd=Path.cwd())
-    except (EmailSetupError, ValueError) as exc:
+            timeout_seconds=args.timeout_seconds, cwd=Path.cwd(),
+            require_sms=args.require_sms)
+    except (EmailSetupError, SMSSetupError, ValueError) as exc:
         print("Scan blocked; notification configuration unavailable: " +
               type(exc).__name__, file=sys.stderr)
         return 2
@@ -183,6 +238,8 @@ def main():
         "status": audit["coverage_status"],
         "start_email": audit["start_email"],
         "end_email": audit["end_email"],
+        "start_sms": audit["start_sms"],
+        "end_sms": audit["end_sms"],
         "start_inbox": audit.get("start_inbox", "NOT_CONFIRMED"),
         "end_inbox": audit.get("end_inbox", "NOT_CONFIRMED"),
         "summary": audit.get("summary", ""),
