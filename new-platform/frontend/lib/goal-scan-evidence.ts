@@ -2,7 +2,6 @@
  * Never turn a partial source run, another day's record, or a null count into
  * a current-day new trial, FDA designation, or qualified GEM admission.
  */
-import type { NewFromScanSummary, NewFromScanRow } from "./scan-new-results";
 
 type Obj = Record<string, unknown>;
 const object = (v: unknown): v is Obj => v !== null && typeof v === "object" && !Array.isArray(v);
