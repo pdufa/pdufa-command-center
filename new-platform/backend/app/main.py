@@ -271,6 +271,21 @@ async def lifespan(app: FastAPI):
                 "PDUFA_DATABASE_COPY_FAILED error_type=%s", type(exc).__name__
             )
             raise RuntimeError("PDUFA migration verification failed; source left unchanged") from None
+    # Explicit one-record bootstrap for isolated review; disabled by default.
+    # Never runs for production unless separately and deliberately configured.
+    bootstrap_nct = os.getenv("PDUFA_SCIENTIFIC_BOOTSTRAP_NCT", "").strip()
+    if bootstrap_nct and _DB_STATE["available"] and REQUIRE_POSTGRES:
+        try:
+            from .scientific_import import import_one
+            bootstrap_result = import_one(bootstrap_nct)
+            logging.getLogger(__name__).warning(
+                "SCIENTIFIC_BOOTSTRAP nct_id=%s status=%s", bootstrap_nct, bootstrap_result
+            )
+        except Exception as bootstrap_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_BOOTSTRAP status=ERROR error_type=%s",
+                type(bootstrap_exc).__name__,
+            )
     logging.getLogger(__name__).warning(
         "PDUFA checklist write freeze active: %s",
         os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"),
