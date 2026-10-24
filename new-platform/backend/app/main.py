@@ -435,6 +435,15 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 
 
+@app.get("/api/scientific-assessment", dependencies=[Depends(require_internal_key)])
+def get_scientific_assessment(exact_id: str):
+    """Read-only scientific assessment; never invent missing trial evidence."""
+    if not exact_id or len(exact_id) > 512 or not exact_id.startswith(("TRIAL|", "REG|", "PDUFA|")):
+        raise HTTPException(status_code=422, detail="Exact trial identity required")
+    from .scientific_assessment_adapter import scientific_trial_payload
+    return scientific_trial_payload(exact_id)
+
+
 @app.post("/api/reconciliation/validate", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def validate_reconciliation_package(payload: "ReviewPackage"):
     """Authenticated, read-only validation. No identity, preset, or scanner writes."""
