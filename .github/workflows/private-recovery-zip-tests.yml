@@ -7,13 +7,13 @@ on:
       - "tests/test_private_recovery_zip_assembler.py"
       - "scripts/validate_private_recovery_zip.py"
       - "tests/test_validate_private_recovery_zip.py"
-      - "scripts/validate_private_recovery_zip.py"
-      - "tests/test_validate_private_recovery_zip.py"
       - ".github/workflows/private-recovery-zip-tests.yml"
   pull_request:
     paths:
       - "scripts/assemble_private_recovery_zip.py"
       - "tests/test_private_recovery_zip_assembler.py"
+      - "scripts/validate_private_recovery_zip.py"
+      - "tests/test_validate_private_recovery_zip.py"
       - ".github/workflows/private-recovery-zip-tests.yml"
   workflow_dispatch:
 
