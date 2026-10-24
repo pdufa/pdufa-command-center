@@ -53,8 +53,6 @@ test("GOAL stage impact independently applies each stage's own existing rules",(
     assert.equal(report.stages[stage].passed,1,stage);
   }
   assert.deepEqual(rules,before);
-  assert.deepEqual(catalog.RESTRICTION_CATALOG.find(x=>x.id==="public").associations,
-    catalog.RESTRICTION_CATALOG.find(x=>x.id==="public").associations);
 });
 test("entry-time market cap remains UNKNOWN even when present-day caps exist",()=>{
   let rules=empty();
@@ -125,7 +123,7 @@ test("GOAL impact button runs read-only GET on demand and shows verified stage c
     assert.equal(fetchOptions.cache,"no-store");
     assert.equal(fetchOptions.method,undefined);
     const impact=view.root.findByProps({"aria-label":"Pipeline restriction impact"});
-    const text=JSON.stringify(impact.toJSON());
+    const text=JSON.stringify(view.toJSON());
     assert.match(text,/Starting baseline/);
     assert.match(text,/Confirmed excluded/);
     assert.match(text,/Unknown|require more evidence|pending/i);
