@@ -45,7 +45,7 @@ def import_one(nct_id: str) -> str:
     canonical = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     checksum = hashlib.sha256(canonical).hexdigest()
     from .scientific_registry_evidence import extract_trial_evidence
-    evidence = extract_trial_evidence(nct_id, record)
+    extract_trial_evidence(nct_id, record)  # Validate identity before persisting
     with Session(ENGINE) as session:
         existing = session.get(FullTrialRecord, nct_id)
         if existing is not None:
