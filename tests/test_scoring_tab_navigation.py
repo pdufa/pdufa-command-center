@@ -8,21 +8,25 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_consolidated_pdufa_subtabs_keep_scans_and_trading():
+def test_scans_is_top_level_before_results_and_pdufa_subtabs_keep_trading():
     source = (ROOT / "new-platform/frontend/app/Workspace.tsx").read_text(encoding="utf-8")
 
     # Test the active Next.js workspace, not the retired Streamlit module.
-    for nav in ('"PIPELINE"', '"GEM_JR"', '"GEM"', '"SCANS"', '"WT"'):
+    for nav in ('"PIPELINE"', '"GEM_JR"', '"GEM"', '"WT"', '"TRADING"'):
         assert nav in source
     assert '["PIPELINE","PIPELINE"]' in source
     assert '["GEM_JR","GEM JR"]' in source
     assert '["GEM","GEM"]' in source
-    assert '["SCANS","SCANS"]' in source
+    # SCANS was intentionally moved out of the inner PDUFA tabs, before RESULTS.
+    assert 'type TopNav = "SCANS" | "RESULTS" | "PDUFA"' in source
+    assert '["SCANS","SCANS"]' not in source
+    assert '>SCANS</button>' in source and '>RESULTS</button>' in source
+    assert source.index('>SCANS</button>') < source.index('>RESULTS</button>')
     assert '["WT","WT"]' in source
     assert 'nav==="PIPELINE"' in source
     assert 'nav==="GEM_JR" || nav==="GEM"' in source
     assert 'gemBlock(nav==="GEM_JR"?"GEM_JR":"GEM")' in source
-    assert 'nav==="SCANS" && <PublishedScansPanel />' in source
+    assert 'top==="SCANS" && <PublishedScansPanel />' in source
     assert 'nav==="WT"' in source
 
     # Retired scoring UI must stay removed; nightly input audits still run.
