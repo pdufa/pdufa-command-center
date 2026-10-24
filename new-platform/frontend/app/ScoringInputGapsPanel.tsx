@@ -19,7 +19,7 @@ export default function ScoringInputGapsPanel({ report }: { report: unknown }) {
       freshness === "STALE" ? "Saved audit is older than 48 hours. A new audit is required." :
       "Audit publication time could not be verified. Treat all findings as unverified."}</p>
     <p className="subtle">Audit timestamp: {audit.generated_at_utc} · Source scan #{audit.source_scan.run_id}
-      {" "}(audit.source_scan.conclusion). This is a saved-input inspection, not evidence of complete fresh scan artifacts.</p>
+      {" "}({audit.source_scan.conclusion}). This is a saved-input inspection, not evidence of complete fresh scan artifacts.</p>
     {!clear && <p className="risk-line">These missing inputs remain REVIEW REQUIRED. Do not substitute stock averages,
       inferred FDA probabilities, invented financing PASS values, or missing-as-zero figures.</p>}
     <details className="nested-expander">
