@@ -21,6 +21,8 @@ jobs:
         working-directory: new-platform/backend
       - run: python -m unittest discover -s tests -p 'test_scientific_assessment_auth.py' -v
         working-directory: new-platform/backend
+      - run: python -m unittest discover -s tests -p 'test_scientific_registry_evidence.py' -v
+        working-directory: new-platform/backend
   frontend:
     runs-on: ubuntu-latest
     defaults:
