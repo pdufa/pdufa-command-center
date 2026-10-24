@@ -2,10 +2,12 @@
 
 ## Current state
 
-**Not active yet.** Scanner schedules remain removed. The Twilio provider
-integration exists, but real texts require an SMS-enabled Twilio number,
-applicable US messaging registration/verification and four GitHub Actions
-secrets. An acknowledged provider API request does not prove device delivery.
+**SMS delivery is not active.** The existing 8 PM Pacific overnight scan
+currently uses Gmail email notifications. Twilio messages require an
+SMS-enabled Twilio number, applicable US messaging registration/verification,
+and four GitHub Actions secrets. An acknowledged provider API request does
+not prove actual handset delivery. The nightly scan stays email-only unless
+the explicit verified-delivery opt-in is enabled.
 
 A manually triggered single-text connectivity test is installed at
 `.github/workflows/sms-delivery-test.yml`. It makes **no scan requests** and
@@ -56,18 +58,34 @@ If it fails, check the workflow's error and Twilio's Messaging Logs
 and sender compliance status. Don't repeatedly click Run; failed/unknown
 network submissions can cause duplicates.
 
-## 4. Production scan messaging (not enabled yet)
+## 4. Opt in to dual email + SMS only after delivery is proven
 
-When actual delivery is verified, the scan orchestrator will use
-`scripts/run_scan_with_sms.py` and `scripts/scan_sms.py`.
-For EACH separately executed scan it must submit two SMS messages:
-one START before scanning and one END when the scan finishes (including
-PARTIAL/FAILED and a reliable result summary). The SMS wrapper fails
-closed when configuration or the START submission is unavailable.
+The staging code supports START and END email **and** SMS for the three
+nightly clinical collectors (#2 PIPELINE, #3 PRE3, #4 GEM JR).
 
-At that stage, integrate the complete multi-source #2/#3/#4 scanner
-with verified baselines, audited coverage and source updates. Do not
-enable nightly workflows until all prerequisites are satisfied.
+1. Confirm the **single** SMS test arrived on the intended handset.
+2. Save the four Twilio/recipient secrets listed above in the repository.
+3. In the repository GitHub Actions secrets, add `PDUFA_SMS_VERIFIED` with
+   exact value `true` **only after** that delivery test. Keep it missing
+   otherwise; email-only scanning is the default.
+4. Deploy the reviewed scanner change to main and verify the next nightly
+   run's notification audit for both channel receipts.
+
+The opt-in uses the existing `run_scan_with_email.py` wrapper with
+`--require-sms`. Both channels must acknowledge START before the scan
+runs. It sends each END once, recording incomplete or failed delivery rather
+than reporting success or automatically retrying ambiguous submissions.
+The mode does not dispatch any extra scan or enable trading.
+
+**Important:** This capability is presently in a review branch and is
+not installed in production. Sender eligibility and handset delivery must
+be independently verified. If SMS is opted in and START submission fails,
+the clinical collector is deliberately blocked; remove the verified opt-in
+secret to return to the existing email-only scan after diagnosing the issue.
+
+Manual SMS test (no scans): `.github/workflows/sms-delivery-test.yml`
+Existing nightly schedule: `.github/workflows/pdufa-nightly-pacific-start.yml`
+No new or duplicate scheduler is created.
 
 Official guidance:
 - https://www.twilio.com/docs/usage/trials

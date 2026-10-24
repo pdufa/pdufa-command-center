@@ -54,6 +54,11 @@ jobs:
       PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
       PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
       PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      PDUFA_SMS_VERIFIED: ${{ secrets.PDUFA_SMS_VERIFIED }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+      PDUFA_SMS_TO_NUMBER: ${{ secrets.PDUFA_SMS_TO_NUMBER }}
     steps:
       - name: Checkout saved clinical source snapshots
         uses: actions/checkout@v4
@@ -79,7 +84,10 @@ jobs:
         shell: bash
         run: |
           set +e
-          python scripts/run_scan_with_email.py \
+          sms_opt=()
+          # Never activate untested SMS delivery: opt in only after real handset verification.
+          if [[ "${PDUFA_SMS_VERIFIED:-}" == "true" ]]; then sms_opt+=(--require-sms); fi
+          python scripts/run_scan_with_email.py "${sms_opt[@]}" \
             --scan "2" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-2.json" \
             --audit-dir reports/scan_notifications \
@@ -130,7 +138,10 @@ jobs:
         shell: bash
         run: |
           set +e
-          python scripts/run_scan_with_email.py \
+          sms_opt=()
+          # Never activate untested SMS delivery: opt in only after real handset verification.
+          if [[ "${PDUFA_SMS_VERIFIED:-}" == "true" ]]; then sms_opt+=(--require-sms); fi
+          python scripts/run_scan_with_email.py "${sms_opt[@]}" \
             --scan "3" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-3.json" \
             --audit-dir reports/scan_notifications \
@@ -189,6 +200,11 @@ jobs:
       PDUFA_GMAIL_USER: ${{ secrets.PDUFA_GMAIL_USER }}
       PDUFA_GMAIL_APP_PASSWORD: ${{ secrets.PDUFA_GMAIL_APP_PASSWORD }}
       PDUFA_ALERT_EMAIL: ${{ secrets.PDUFA_ALERT_EMAIL }}
+      PDUFA_SMS_VERIFIED: ${{ secrets.PDUFA_SMS_VERIFIED }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+      PDUFA_SMS_TO_NUMBER: ${{ secrets.PDUFA_SMS_TO_NUMBER }}
     steps:
       - name: Checkout saved clinical source snapshots
         uses: actions/checkout@v4
@@ -214,7 +230,10 @@ jobs:
         shell: bash
         run: |
           set +e
-          python scripts/run_scan_with_email.py \
+          sms_opt=()
+          # Never activate untested SMS delivery: opt in only after real handset verification.
+          if [[ "${PDUFA_SMS_VERIFIED:-}" == "true" ]]; then sms_opt+=(--require-sms); fi
+          python scripts/run_scan_with_email.py "${sms_opt[@]}" \
             --scan "4" --mode "${{ inputs.scan_mode == 'FULL' && 'BASELINE' || 'DELTA' }}" \
             --status-file "reports/nightly-clinical-4.json" \
             --audit-dir reports/scan_notifications \

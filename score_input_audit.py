@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from pathlib import Path
 
 SOURCES = {
@@ -92,6 +93,17 @@ def clinical_agreement(data):
             disagreements.append(str(pilot.get("ticker") or pilot.get("nct_id")))
     return {"matched": matched, "equal": equal, "disagreements": disagreements}
 
+def has_saved_gate_pass(row):
+    """Only a gate's exact PASS state counts, not phrases like NOT PASS.
+
+    This inspects stored text only and never certifies a newly verified entry
+    or substitutes for independent primary-source evidence checks.
+    """
+    parts = str(row.get("Audited gate details") or "").split("|")
+    return any(re.fullmatch(r"\s*[A-Za-z][A-Za-z_0-9 -]*:\s*PASS(?:\s*[—–-].*)?\s*",
+                            part, flags=re.IGNORECASE) is not None for part in parts)
+
+
 def audit_tests(data):
     candidates = data["PDUFA candidates"]
     fda = data["FDA V3 review"]
@@ -102,7 +114,7 @@ def audit_tests(data):
     public = filled(candidates, "public_approval_probability")
     trading = filled(candidates, "trade_score")
     fda_p = filled(fda, "fda_probability")
-    gates = sum("PASS" in str(r.get("Audited gate details") or "") for r in finance)
+    gates = sum(has_saved_gate_pass(row) for row in finance)
     tests = [
         {"Test": "Clinical model redundancy",
          "Status": "SHARED INPUT" if agreement["matched"] and agreement["matched"] == agreement["equal"] else "REVIEW",

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from score_input_audit import (
     CLINICAL, SOURCES, audit_tests, clinical_agreement, load_sources,
-    score_inputs_for_ticker, present,
+    score_inputs_for_ticker, present, has_saved_gate_pass,
 )
 
 
@@ -66,6 +66,22 @@ def test_stored_and_exact_event_input_inspection_are_kept_distinct():
                and r["Event / Trial"] == "TEST|EVENT" for r in result)
     assert any(r["Source"] == "Post market (ticker observation only)"
                for r in result)
+
+
+def test_financing_gate_pass_must_be_explicit_state_not_incidental_word():
+    rejected = (
+        "trial_identity: NOT PASS",
+        "trial_identity: REVIEW — will PASS only with source",
+        "trial_identity: PASS PENDING",
+        "trial_identity: COMPASS",
+        "trial_identity: RECHECK | phase3_primary: REVIEW — EVIDENCE MISSING",
+        "OPTIONAL financing #2: PASS not confirmed",
+    )
+    for sample in rejected:
+        assert not has_saved_gate_pass({"Audited gate details": sample})
+    assert has_saved_gate_pass({"Audited gate details":
+        "trial_identity: REVIEW — EVIDENCE MISSING | phase3_primary: PASS — reviewed source"})
+    assert has_saved_gate_pass({"Audited gate details": "safety: PASS"})
 
 
 def test_missing_values_do_not_count_as_zero_or_verified():

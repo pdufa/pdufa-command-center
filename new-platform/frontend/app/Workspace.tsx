@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import MasterChart from "./MasterChart";
 import WorkflowStageIcon from "./WorkflowStageIcon";
 import AlpacaStockChart from "./AlpacaStockChart";
+import ProgramMarketEnrichment from "./ProgramMarketEnrichment";
 import TradingDashboard, { type TradingTicker } from "./TradingDashboard";
 import EntrySignal from "./EntrySignal";
 import WtTradingSections, {areWtSuggestedIndicatorsChecked,suggestedWtIndicators,nextWtPresetFlags,wtEffectivePresetKeys,type WtPresetFlags} from "./WtTradingSections";
@@ -1659,7 +1660,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
                     <div className="gem-inline-sections">
                       <GemInlineSection title="Stock price / Alpaca chart" description="Saved close and volume evidence for this exact permanent program"
                         open={isSectionOpen("chart")} onToggle={()=>toggleSection("chart")}>
-                        {r.programId ? <><EntrySignal programId={r.programId} ticker={r.ticker}/><AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} /></>
+                        {r.programId ? <><ProgramMarketEnrichment key={r.programId+"-market"} programId={r.programId} exactKey={r.id} stage={stage}/><EntrySignal programId={r.programId} ticker={r.ticker}/><AlpacaStockChart key={r.programId} programId={r.programId} ticker={r.ticker} /></>
                           : <p className="subtle">Alpaca chart awaits a verified permanent Program ID.</p>}
                       </GemInlineSection>
                       <GemInlineSection title="Stock / program details" description="Company, drug, trial identity, SEC financing, FDA evidence"

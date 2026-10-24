@@ -29,6 +29,56 @@ and technical confirmation. No orders are placed.
 - **Autosave:** edits write to database and restore on screen return (optimistic version checks).
 - Production surveys, Gmail alerts, Streamlit deployment, and other live jobs **are not migrated or started** by this bootstrap.
 
+### Isolated research evidence review
+
+The isolated Program ID readiness endpoint reads the existing selected GEM JR or
+GEM assessment. It reports source links, review dates, missing evidence, and risk
+flags for catalyst timing, SEC cash runway, and financing/dilution review. It
+does not assign or change any of the 21 assessment scores or FS/FA presets.
+
+An observed `catalystTiming` review must retain `eventType` (`PDUFA`,
+`PUBLIC_READOUT`, or `FDA_ADCOM`), `eventDate`, and `dateConfirmed: true` in its
+existing `measurements`. A registry primary-completion date or reported PDUFA
+date alone is insufficient. Past events and conflicting PDUFA dates remain
+unverified. Existing seven-day catalyst/dilution and 120-day runway review
+windows apply. A reviewed risk can be adverse: its grade, measurements, and
+risk flags are retained. Readiness only means ready for human research review;
+orders and trade recommendations remain disabled in this isolated endpoint.
+
+The isolated primary-source catalog covers the 17 saved GEM JR/GEM programs
+reviewed on October 23, 2026. Fourteen application target dates have issuer/SEC
+source support; three trial readouts have already been reported and do not
+establish a future public event date. Confirmed date facts can satisfy the
+separate catalyst-readiness input without assigning numeric assessment grades.
+The catalog is available at the authenticated `/api/review/catalyst-evidence`
+route and each exact-program response retains its primary source. It expires
+after seven days and requires re-review if the published date changes. Issuer
+financing observations remain distinct from dilution clearance and exact-program
+financing qualification. The startup smoke checks all 17 immutable identities
+and the source-to-readiness link for a real application in both GEM stages.
+
+The expanded GEM JR/GEM trial's stock-price section displays the selected stage's
+existing research-readiness review, including the three catalyst/runway/dilution
+checks, review dates, primary-source links, retained risks, and missing requirements.
+Its authenticated frontend proxy uses the configured backend and never falls back
+to another deployment. A disabled isolated endpoint is shown as unavailable.
+Market and risk evidence load independently, so an Alpaca credential rejection
+does not hide the clinical or financing evidence gaps. A mismatched immutable
+Program ID, exact source key, stage, or unsupported readiness claim is withheld.
+
+The same panel includes collapsed **Clinical & financing source facts** for the
+17 saved review programs. It retains three complete native ClinicalTrials.gov
+records with exact NCT IDs and SHA-256 receipts, and financial observations for
+15 unique issuers from saved SEC snapshots or issuer-published statements. Trial
+design/enrollment, registry results availability, cash, matched-period operating
+cash flow, and a cash-only runway calculation retain their source dates. Liquid
+securities stay separate from cash; positive cash flow and mismatched periods
+do not produce a runway estimate. Filing metadata, unused ATM capacity, and
+issuer-level financing proceeds do not establish an exact-program financing
+close or dilution clearance. Source receipt freshness is reevaluated on every
+read. These source observations do not assign grades, change the 21 scores,
+update the clinical database, or remove its write freeze.
+
 ## Automated local setup
 
 On a machine with Docker Compose and Python 3 installed, check out this branch and run `bash new-platform/install-local.sh`. The installer generates isolated, private random credentials, builds only the new-platform containers and starts them on localhost:3000. Keep the generated dashboard password safe. It does not edit the Streamlit branch, deploy Streamlit, or touch its files and data.

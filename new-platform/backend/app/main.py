@@ -278,6 +278,47 @@ async def lifespan(app: FastAPI):
                     "PDUFA_ALPACA_CHART_CHECK status=%s feed=%s daily_bars=%d",
                     probe["status"], probe["feed"], len(probe.get("bars") or []),
                 )
+            # Isolated-review-only, read-only end-to-end program identity check.
+            # Uses the internal DB connection; no public auth bypass or write.
+            if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() in ("1", "true", "yes"):
+                try:
+                    with Session(ENGINE) as review_session:
+                        samples = review_session.scalars(
+                            select(ProgramIdentity).where(ProgramIdentity.ticker != "")
+                            .order_by(ProgramIdentity.id).limit(5)
+                        ).all()
+                        rows = [(sample.id, sample.ticker, sample.source_key) for sample in samples]
+                    if not rows:
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_ALPACA_PROGRAM_CHECK status=NO_REGISTERED_PROGRAM")
+                    else:
+                        from .program_market_enrichment import enrich_program_market
+                        for program_id, ticker, exact_key in rows:
+                            pid = f"PDUFA-{program_id:06d}"
+                            try:
+                                result = enrich_program_market(pid, exact_key, ticker, "1M")
+                                logging.getLogger(__name__).warning(
+                                    "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s exact_key_match=%s status=%s bars=%d close_present=%s volume_present=%s",
+                                    pid, ticker, result.get("exactKey") == exact_key,
+                                    result.get("status"), result.get("barsAvailable", 0),
+                                    isinstance(result.get("latestDailyClose"), (int, float)),
+                                    isinstance(result.get("latestIexVolume"), (int, float)),
+                                )
+                            except Exception as program_exc:
+                                logging.getLogger(__name__).error(
+                                    "PDUFA_ALPACA_PROGRAM_CHECK program_id=%s ticker=%s status=ERROR error_type=%s",
+                                    pid, ticker, type(program_exc).__name__,
+                                )
+                        from .readiness_smoke import check_deployed_program
+                        threading.Thread(
+                            target=check_deployed_program,
+                            args=(f"PDUFA-{rows[0][0]:06d}", rows[0][2]), daemon=True,
+                        ).start()
+                except Exception as exc:
+                    logging.getLogger(__name__).error(
+                        "PDUFA_ALPACA_PROGRAM_CHECK status=ERROR error_type=%s",
+                        type(exc).__name__,
+                    )
             from .source_workspace import workspace
             from .workspace_response import prepared
             published = prepared(workspace())
@@ -550,6 +591,163 @@ def read_alpaca_chart(program_id: str, range: str = "1Y"):
     from .alpaca_market_chart import get_alpaca_bars
     return {"programId": program_id, "exactKey": row.source_key,
             **get_alpaca_bars(ticker, range)}
+
+
+@app.get("/api/review/investment-readiness/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_program_investment_readiness(program_id: str, identity: str, stage: str = "GEM_JR"):
+    """Isolated research review only; no trading or scoring mutations."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in ("1", "true", "yes"):
+        raise HTTPException(status_code=404, detail="Isolated review disabled")
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id) or not identity or len(identity) > 512:
+        raise HTTPException(status_code=422, detail="Exact program identity required")
+    if stage not in ("GEM_JR", "GEM"):
+        raise HTTPException(status_code=422, detail="Invalid research stage")
+    with Session(ENGINE) as session:
+        registered = session.get(ProgramIdentity, int(program_id[6:]))
+        if registered is None or registered.source_key != identity:
+            raise HTTPException(status_code=404, detail="Exact program not registered")
+    from .assessment_service import exact_detail
+    from .assessment_readiness_adapter import readiness_from_existing_assessment
+    from .market_evidence_review import market_evidence_review
+    record = exact_detail(identity)
+    market = market_evidence_review(program_id, identity, {"status": "INSUFFICIENT_EVIDENCE"})
+    # No market/financing/catalyst claims are inferred from scoring records.
+    return readiness_from_existing_assessment(program_id=program_id, exact_key=identity,
+        record=record, market_review=market, stage=stage)
+
+
+@app.get("/api/program-market-enrichment/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def read_program_market_enrichment(program_id: str, range: str = "1Y"):
+    """Read-only market enrichment by immutable program identity."""
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    if range not in {"1M", "3M", "6M", "1Y", "ALL"}:
+        raise HTTPException(status_code=422, detail="Invalid Alpaca chart range")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        ticker, source_key = identity.ticker, identity.source_key
+    from .program_market_enrichment import enrich_program_market
+    return enrich_program_market(program_id, source_key, ticker, range)
+
+
+@app.get("/api/review/program-decision-readiness/{program_id}", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def review_program_decision_readiness(program_id: str, stage: str = "GEM_JR"):
+    """Isolated, read-only evidence readiness. No trading or preset changes."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in {"1", "true", "yes"}:
+        raise HTTPException(status_code=404, detail="Isolated review disabled")
+    if not PROGRAM_ID_PATTERN.fullmatch(program_id):
+        raise HTTPException(status_code=422, detail="Invalid Program ID")
+    if stage not in {"GEM_JR", "GEM"}:
+        raise HTTPException(status_code=422, detail="Invalid research stage")
+    with Session(ENGINE) as session:
+        identity = session.get(ProgramIdentity, int(program_id[6:]))
+        if identity is None:
+            raise HTTPException(status_code=404, detail="Program ID not registered")
+        exact_key, ticker = identity.source_key, identity.ticker
+    from .program_market_enrichment import enrich_program_market
+    from .assessment_readiness_adapter import assessment_readiness_inputs
+    from .decision_readiness import decision_readiness
+    from .risk_evidence_review import risk_evidence_from_assessment
+    from .source_catalyst_review import primary_catalyst_review, apply_primary_catalyst
+    market = enrich_program_market(program_id, exact_key, ticker, "1M")
+    assessment = {"assessment_score": None, "assessment_coverage": None,
+                  "status": "ASSESSMENT_UNAVAILABLE"}
+    detail = None
+    try:
+        from .assessment_service import exact_detail
+        detail = exact_detail(exact_key)
+        assessment = assessment_readiness_inputs(
+            detail, program_id=program_id, exact_key=exact_key, stage=stage)
+    except HTTPException as exc:
+        if exc.status_code not in {404, 409, 503}:
+            raise
+    risk_evidence = risk_evidence_from_assessment(
+        detail, program_id=program_id, exact_key=exact_key, stage=stage)
+    candidate = ((detail or {}).get("data") or {}).get("candidate") or {}
+    primary = primary_catalyst_review(program_id, exact_key, ticker, candidate.get("pdufaDate"),
+                                     current=(risk_evidence["identityStatus"] == "EXACT_IDENTITY_MATCH"
+                                              and candidate.get("ticker") == ticker))
+    risk_evidence = apply_primary_catalyst(risk_evidence, primary)
+    readiness = decision_readiness(
+        program_id=program_id, exact_key=exact_key,
+        assessment_score=assessment["assessment_score"],
+        assessment_coverage=assessment["assessment_coverage"],
+        market_review=market["marketEvidenceReview"],
+        catalyst_verified=risk_evidence["catalystVerified"],
+        financing_risk_reviewed=risk_evidence["financingRiskReviewed"],
+    )
+    from .research_source_evidence import source_evidence
+    observations = source_evidence(program_id, exact_key, ticker,
+                                  current=(risk_evidence["identityStatus"] == "EXACT_IDENTITY_MATCH"
+                                           and candidate.get("ticker") == ticker))
+    return {"programId": program_id, "exactKey": exact_key, "stage": stage,
+            "assessmentEvidence": assessment, "marketEvidenceReview": market["marketEvidenceReview"],
+            "marketDataStatus": market.get("status"),
+            "marketBarsAvailable": market.get("barsAvailable"),
+            "marketDataFeed": market.get("feed"),
+            "marketSignalStatus": (market.get("marketSignals") or {}).get("status"),
+            "riskEvidenceReview": risk_evidence,
+            "primaryCatalystReview": primary, "sourceEvidence": observations,
+            "decisionReadiness": readiness, "researchOnly": True,
+            "ordersEnabled": False, "fsFaChanges": False}
+
+
+@app.get("/api/review/catalyst-evidence", dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def review_primary_catalyst_catalog():
+    """Bounded source evidence batch; no scans, grades, or list/preset writes."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in {"1", "true", "yes"}:
+        raise HTTPException(status_code=404, detail="Isolated review disabled")
+    from .source_catalyst_review import catalog, primary_catalyst_review
+    from .source_workspace import workspace, unique
+    source = catalog()
+    current = unique(workspace()["pipeline"], "id")
+    with Session(ENGINE) as session:
+        registered = {r.source_key: (f"PDUFA-{r.id:06d}", r.ticker) for r in session.scalars(
+            select(ProgramIdentity).where(ProgramIdentity.source_key.in_(source["programs"]))).all()}
+    records = []
+    for key, item in source["programs"].items():
+        identity = registered.get(key)
+        if identity is None:
+            records.append({"programId": None, "exactKey": key, "status": "UNREGISTERED_PROGRAM", "catalystVerified": False})
+            continue
+        pid, ticker = identity
+        row = current.get(key) or {}
+        records.append(primary_catalyst_review(pid, key, ticker, row.get("pdufaDate"),
+                       current=row.get("ticker") == ticker))
+    return {"status": "CHECKED", "catalogReviewedOn": source["reviewedOn"], "total": len(records),
+            "confirmedTargets": sum(r["status"] == "CONFIRMED" for r in records),
+            "reportedReadouts": sum(r["status"] == "READOUT_ALREADY_REPORTED" for r in records),
+            "records": records, "researchOnly": True, "ordersEnabled": False,
+            "assessmentScoreChange": False, "fsFaChanges": False}
+
+
+@app.get("/api/review/alpaca-program-smoke", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def review_alpaca_program_smoke():
+    """Read-only, authenticated, isolated-review program-to-Alpaca smoke test."""
+    if os.getenv("PDUFA_ALPACA_REVIEW_SMOKE", "").lower() not in ("1", "true", "yes"):
+        raise HTTPException(status_code=404, detail="Review smoke check disabled")
+    with Session(ENGINE) as session:
+        identity = session.scalars(
+            select(ProgramIdentity).where(ProgramIdentity.ticker != "").order_by(ProgramIdentity.id).limit(1)
+        ).first()
+        if identity is None:
+            return {"status": "NO_REGISTERED_PROGRAM", "verified": False}
+        program_id = f"PDUFA-{identity.id:06d}"
+        ticker, source_key = identity.ticker, identity.source_key
+    from .program_market_enrichment import enrich_program_market
+    result = enrich_program_market(program_id, source_key, ticker, "1M")
+    return {"status": "CHECKED", "programId": program_id, "exactKey": source_key,
+            "ticker": ticker, "enrichment": result}
 
 
 @app.get("/api/wt-research/{program_id}", dependencies=[
