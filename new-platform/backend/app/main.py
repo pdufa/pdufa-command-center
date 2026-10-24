@@ -445,7 +445,7 @@ def get_scientific_assessment(exact_id: str):
     result["registryEvidence"] = None
     result["registryEvidenceStatus"] = "not_available"
     # Never use an ephemeral SQLite fallback on hosted review services.
-    match = re.fullmatch(r"TRIAL\\|(NCT[0-9]{8})", exact_id)
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id)
     if match and storage_ready() and _DB_STATE["available"]:
         try:
             from .scientific_stored_record import evidence_from_archive
