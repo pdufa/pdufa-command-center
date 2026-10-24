@@ -12,7 +12,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import unquote, urlsplit
 
 
 def main() -> int:
@@ -36,9 +36,9 @@ def main() -> int:
     env = os.environ.copy()
     env["PGHOST"] = parsed.hostname
     env["PGPORT"] = str(parsed.port or 5432)
-    env["PGUSER"] = parsed.username or ""
-    env["PGPASSWORD"] = parsed.password or ""
-    env["PGDATABASE"] = parsed.path.lstrip("/")
+    env["PGUSER"] = unquote(parsed.username or "")
+    env["PGPASSWORD"] = unquote(parsed.password or "")
+    env["PGDATABASE"] = unquote(parsed.path.lstrip("/"))
     env["PGSSLMODE"] = "require"
     try:
         with output.open("xb") as target:
