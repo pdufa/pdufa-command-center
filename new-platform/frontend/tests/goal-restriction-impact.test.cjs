@@ -299,7 +299,7 @@ test("GOAL pending drilldown reveals only source-matched UNKNOWN rows, with exac
     const tr=details.findByType("tbody").findAllByType("tr");
     assert.equal(tr.length,1);
     assert.match(JSON.stringify(view.toJSON()),/TRIAL\|NCT00000003/);
-    assert.doesNotMatch(JSON.stringify(tr[0].children),/TRIAL\|NCT00000002/);
+    assert.equal(tr[0].findByType("code").props.children,"TRIAL|NCT00000003");
     assert.ok(details.findAllByType("button").some(b=>b.props.children==="Export pending CSV"));
     await act(async()=>pending.props.onClick());
     assert.equal(view.root.findAllByProps({"aria-label":"Pipeline pending programs after Publicly traded company"}).length,0);
