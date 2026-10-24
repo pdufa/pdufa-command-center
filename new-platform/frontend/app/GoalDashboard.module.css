@@ -131,3 +131,10 @@
 .exclusionPages{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0;font-size:12px;font-variant-numeric:tabular-nums}
 .exclusionPages button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:650px){.exclusionHeading{flex-direction:column}.exclusionHeading button{min-height:44px;align-self:flex-end}.exclusionDetails{padding:9px}.exclusionPages button{min-height:44px}}
+
+.goal button.pendingButton{border:1px solid #d59f3a;background:#fff2ce;color:#754d00;padding:4px 8px;min-width:48px;font-variant-numeric:tabular-nums}
+.goal button.pendingButton:hover{background:#fce5aa}
+.exclusionActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.exclusionActions button:first-child{border-color:#4a815c;background:#e9f6ec;color:#205436}
+.goal button.goalExport{margin-top:10px;border-color:#4a815c;background:#e2f3e7;color:#205436}
+@media(max-width:650px){.exclusionActions{width:100%}.exclusionActions button{flex:1 1 130px;min-height:44px}}
