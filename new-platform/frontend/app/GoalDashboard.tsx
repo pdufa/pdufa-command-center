@@ -4,9 +4,13 @@
  * It displays saved facts; missing source evidence remains visibly unavailable.
  * Existing RESULTS/SCANS and FS/FA qualification controls remain authoritative.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { goalScanView, type GoalScanView } from "../lib/goal-scan-evidence";
 import type { GoalRestrictionItem, GoalRestrictionStage, GoalRestrictionSummaries } from "../lib/goal-restrictions";
+import { calculateGoalRestrictionImpact, fullGoalRestrictionEvidence,
+  type GoalImpactReport, type GoalImpactStage } from "../lib/goal-restriction-impact";
+import type { ImpactRecord } from "../lib/restriction-impact";
+import type { CatalogEntry } from "../lib/restriction-catalog";
 import styles from "./GoalDashboard.module.css";
 
 export type GoalRecord = {
@@ -25,6 +29,8 @@ export type GoalDashboardProps = {
   gemJrCount: number | null;
   gemCount: number | null;
   restrictions?: GoalRestrictionSummaries | null;
+  impactRows?: ImpactRecord[] | null;
+  impactEntries?: CatalogEntry[] | null;
   sourceAsOf?: string | null;
   sourceState?: string | null;
   scanFinishedAt?: string | null;
@@ -71,10 +77,11 @@ export function goalSummary(records: GoalRecord[] | null, now = new Date()) {
 }
 
 function GoalRuleDetails({
-  stage, entries, onOpen,
+  stage, entries, impact, onOpen,
 }:{
   stage: GoalRestrictionStage;
   entries: GoalRestrictionItem[] | null;
+  impact: GoalImpactStage | null;
   onOpen: (section:GoalSection)=>void;
 }) {
   const label = stage === "GEM_JR" ? "GEM JR" : stage === "PIPELINE" ? "Pipeline" : "GEM";
@@ -95,6 +102,20 @@ function GoalRuleDetails({
           </ol> : <p className={styles.rulePending}>No prioritized active restrictions are saved for this stage.</p>}
           <p className={styles.ruleNote}>Read-only current-browser selections. These are rules, not independently verified trial passes or calculated exclusions.</p>
         </details>}
+    {impact && <div className={styles.ruleImpact} aria-label={label + " restriction impact"}>
+      <p><strong>Starting baseline: {number(impact.total)}</strong></p>
+      <p>Confirmed excluded: <strong>{number(impact.excluded)}</strong> · Remaining: <strong>{number(impact.remaining)}</strong></p>
+      <p>Of the remaining: <strong>{number(impact.pending)}</strong> require more evidence; {number(impact.passed)} have no recorded FAIL/UNKNOWN for these selected rules.</p>
+      {impact.steps.length ? <div className={styles.impactTableScroll}><table>
+        <thead><tr><th>Priority / rule</th><th>Before</th><th>Removed</th><th>After</th><th>Pending</th></tr></thead>
+        <tbody>{impact.steps.map(step=><tr key={step.id}>
+          <th scope="row">{step.title}</th>
+          <td>{number(step.before)}</td><td>{number(step.excluded)}</td>
+          <td>{number(step.after)}</td><td>{number(step.pending)}</td>
+        </tr>)}</tbody>
+      </table></div> : <p>No selected restrictions: the starting baseline remains unchanged.</p>}
+      <p className={styles.ruleNote}>Sequential, within this stage only. UNKNOWN records are retained; these figures are not GEM qualifications, approval probabilities, or trade recommendations.</p>
+    </div>}
     <button type="button" className={styles.manageRules} onClick={() => onOpen("RESTRICTIONS")}>
       Open restriction controls →
     </button>
@@ -102,7 +123,7 @@ function GoalRuleDetails({
 }
 
 export default function GoalDashboard({
-  records, pipelineCount, gemJrCount, gemCount, restrictions = null,
+  records, pipelineCount, gemJrCount, gemCount, restrictions = null, impactRows = null, impactEntries = null,
   sourceAsOf, sourceState, scanFinishedAt, scanComplete = false, cached = false, onOpen,
 }: GoalDashboardProps) {
   const [query, setQuery] = useState("");
@@ -111,6 +132,43 @@ export default function GoalDashboard({
   const [scanLoading, setScanLoading] = useState(true);
   const [scanError, setScanError] = useState("");
   const [scanRefresh, setScanRefresh] = useState(0);
+  const [impact, setImpact] = useState<GoalImpactReport | null>(null);
+  const [impactLoading, setImpactLoading] = useState(false);
+  const [impactError, setImpactError] = useState("");
+  const impactAbort = useRef<AbortController | null>(null);
+  useEffect(() => () => impactAbort.current?.abort(), []);
+  useEffect(() => {
+    impactAbort.current?.abort();
+    setImpact(null);
+    setImpactError("");
+    setImpactLoading(false);
+  }, [impactRows,impactEntries,sourceAsOf]);
+  async function calculateSavedImpact() {
+    if (!impactRows?.length || !impactEntries || !sourceAsOf) {
+      setImpact(null); setImpactError("Full saved Pipeline and current-browser restriction settings are required.");
+      return;
+    }
+    impactAbort.current?.abort();
+    const ctrl=new AbortController();
+    impactAbort.current=ctrl;
+    setImpactLoading(true); setImpactError(""); setImpact(null);
+    try {
+      const response=await fetch("/api/restriction-evidence",{
+        cache:"no-store",signal:AbortSignal.any([ctrl.signal,AbortSignal.timeout(25000)]),
+      });
+      if(!response.ok) throw new Error("Published restriction evidence unavailable");
+      const evidence:unknown=await response.json();
+      if(!fullGoalRestrictionEvidence(evidence))
+        throw new Error("All three published restriction-evidence files are required; no counts were calculated");
+      const result=calculateGoalRestrictionImpact(impactRows,impactEntries,evidence,sourceAsOf);
+      if(!ctrl.signal.aborted) setImpact(result);
+    }catch{
+      if(!ctrl.signal.aborted){
+        setImpact(null);
+        setImpactError("Impact not verified — complete published restriction evidence is unavailable.");
+      }
+    }finally{if(!ctrl.signal.aborted) setImpactLoading(false);}
+  }
   useEffect(() => {
     const controller = new AbortController();
     setScanLoading(true);
@@ -258,25 +316,45 @@ export default function GoalDashboard({
         <button type="button" onClick={() => onOpen("RESULTS")}>View dated RESULTS →</button>
       </div>
     </section>
+    <section className={styles.impactIntro} aria-label="GOAL restriction before and after comparison">
+      <div className={styles.sectionHeader}>
+        <div><h3>Restriction impact · before → after</h3>
+          <p>Independent rule sequences for Pipeline, GEM JR and GEM, each starting with the same complete saved Pipeline universe.</p>
+        </div>
+        <button type="button" onClick={calculateSavedImpact}
+          disabled={impactLoading || !impactRows?.length || !impactEntries || !sourceAsOf}>
+          {impactLoading ? "Calculating saved impacts…" : "CALCULATE SAVED IMPACT"}
+        </button>
+      </div>
+      {impact ? <p className={styles.impactStatus} role="status">
+        Baseline: <strong>{number(impact.total)}</strong> distinct saved programs · Source date: {impact.asOf} ·
+        Evidence files: {impact.sources.length}/3 · Entry-date cap evidence is never replaced with current cap.
+      </p> : <p className={styles.impactStatus} role="status">
+        {impactError || (impactLoading ? "Checking published evidence and calculating…" :
+          !impactRows?.length ? "Full Pipeline snapshot unavailable — impact numbers withheld." :
+          "Not calculated. Use the button to check the source files and calculate each stage separately.")}
+      </p>}
+      <p className={styles.footnote}>Saved snapshot comparison, not a live trade signal. Rules with insufficient evidence leave programs pending. Original FS/FA presets are not altered.</p>
+    </section>
     <div className={styles.stageGrid} aria-label="Goal candidate stage previews">
       <section><div className={styles.stageHeader}><h3>♧ Pipeline</h3><button type="button" onClick={() => onOpen("PIPELINE")}>View all →</button></div>
         <strong>{number(pipelineCount)}</strong><span>Saved Pipeline candidates</span>
         <p>Market-cap, public-company and Phase 3 criteria remain governed by the RESTRICTIONS page.</p>
-        <GoalRuleDetails stage="PIPELINE" entries={restrictions?.PIPELINE ?? null} onOpen={onOpen}/></section>
+        <GoalRuleDetails stage="PIPELINE" entries={restrictions?.PIPELINE ?? null} impact={impact?.stages.PIPELINE ?? null} onOpen={onOpen}/></section>
       <section><div className={styles.stageHeader}><h3>◇ GEM JR</h3><button type="button" onClick={() => onOpen("GEM_JR")}>View all →</button></div>
         <strong>{number(gemJrCount)}</strong><span>Saved stage members</span>
         <p>Existing GEM JR restrictions and independent FS/FA selections are preserved.</p>
-        <GoalRuleDetails stage="GEM_JR" entries={restrictions?.GEM_JR ?? null} onOpen={onOpen}/></section>
+        <GoalRuleDetails stage="GEM_JR" entries={restrictions?.GEM_JR ?? null} impact={impact?.stages.GEM_JR ?? null} onOpen={onOpen}/></section>
       <section><div className={styles.stageHeader}><h3>◆ GEM</h3><button type="button" onClick={() => onOpen("GEM")}>View all →</button></div>
         <strong>{number(gemCount)}</strong><span>Saved stage members</span>
         <p>Existing GEM restrictions, scores and independent FS/FA selections are preserved.</p>
-        <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} onOpen={onOpen}/></section>
+        <GoalRuleDetails stage="GEM" entries={restrictions?.GEM ?? null} impact={impact?.stages.GEM ?? null} onOpen={onOpen}/></section>
     </div>
     <section className={styles.next} aria-label="GOAL dashboard build milestones">
       <h3>Building this screen toward the reference image</h3>
       <div className={styles.milestones}>
         <div><strong>In place</strong><span>GOAL tab, desktop/mobile layout, live source-backed cards, Pipeline and GEM links</span></div>
-        <div><strong>Next integration</strong><span>Verified FDA designations, stage-wise filter impact counts, and expanded scan-result drilldowns</span></div>
+        <div><strong>Next integration</strong><span>Verified FDA designations, candidate-level restriction drilldowns, and expanded scan-result detail</span></div>
         <div><strong>Still pending</strong><span>Google Drive backup controls, CSV/Excel export, unified settings and phone layout polish</span></div>
       </div>
       <div className={styles.actions}>
