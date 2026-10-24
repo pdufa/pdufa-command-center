@@ -56,7 +56,15 @@ def verify_payload(payload: dict, program_id: str, stage: str, exact_key: str | 
     if (market.get("status") != "RESEARCH_ONLY"
             or market.get("coverage") != "IEX_ONLY_NOT_CONSOLIDATED"
             or len(market.get("observations") or []) != 2):
-        raise ValueError("Live Alpaca market observations unavailable")
+        raise ValueError(
+            "Live Alpaca market observations unavailable: "
+            f"market_data_status={payload.get('marketDataStatus')!r} "
+            f"market_signal_status={payload.get('marketSignalStatus')!r} "
+            f"market_bars={payload.get('marketBarsAvailable')!r} "
+            f"market_feed={payload.get('marketDataFeed')!r} "
+            f"review_status={market.get('status')!r}; "
+            "research readiness remains NOT_READY until verified market evidence exists"
+        )
     assessment = payload.get("assessmentEvidence") or {}
     if assessment.get("status") == "ASSESSMENT_UNAVAILABLE":
         raise _AssessmentPending("Assessment index rebuilding")
