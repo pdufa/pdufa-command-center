@@ -450,3 +450,58 @@ def test_page_candidates_require_matching_shared_pdf_inventory(tmp_path: Path):
     result = hop_readiness_status(shared_pdf_audit_path=p)
     assert result["fda_provisional_pdf_page_candidates"] is None
     assert result["prediction_available"] is False
+
+
+def test_fda_manual_page_review_worksheet_is_ready_but_unadjudicated():
+    result = hop_readiness_status()
+    worksheet = result["fda_page_review_worksheet"]
+    assert worksheet["shared_pdf_documents"] == 61
+    assert worksheet["published_letter_review_rows"] == 154
+    assert worksheet["review_priority_counts"] == {
+        "1": 4, "3": 53, "4": 21, "5": 71, "6": 5
+    }
+    assert worksheet["letter_candidate_status_counts"] == {
+        "DATE_AND_ID_PAGE_CANDIDATES": 74,
+        "ID_ONLY_PAGE_CANDIDATES": 75,
+        "NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES": 3,
+        "TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW": 2,
+    }
+    assert worksheet["independently_verified_page_ranges"] == 0
+    assert worksheet["independently_verified_action_dates"] == 0
+    assert worksheet["independently_verified_review_cycle_outcomes"] == 0
+    assert worksheet["model_eligible_records"] == 0
+    assert worksheet["complete_denominator_verified"] is False
+    assert result["prediction_probability"] is None
+
+
+def test_fda_review_worksheet_refuses_self_certified_outcomes(tmp_path: Path):
+    from app.hop_status import PAGE_REVIEW_WORKSHEET_AUDIT_PATH
+    audit = json.loads(PAGE_REVIEW_WORKSHEET_AUDIT_PATH.read_text())
+    output = tmp_path / "queue.json"
+    output.write_text(json.dumps(audit))
+    assert hop_readiness_status(page_review_worksheet_path=output)["fda_page_review_worksheet"]
+    audit["independently_verified_review_cycle_outcomes"] = 154
+    output.write_text(json.dumps(audit))
+    assert hop_readiness_status(page_review_worksheet_path=output)["fda_page_review_worksheet"] is None
+    audit["independently_verified_review_cycle_outcomes"] = 0
+    audit["review_priority_counts"]["3"] = 54
+    output.write_text(json.dumps(audit))
+    assert hop_readiness_status(page_review_worksheet_path=output)["fda_page_review_worksheet"] is None
+    audit["review_priority_counts"]["3"] = 53
+    audit["all_reviewer_fields_initially_blank"] = False
+    output.write_text(json.dumps(audit))
+    result = hop_readiness_status(page_review_worksheet_path=output)
+    assert result["fda_page_review_worksheet"] is None
+    assert result["prediction_available"] is False
+
+
+def test_fda_worksheet_requires_corresponding_pdf_evidence_inventory(tmp_path: Path):
+    from app.hop_status import PAGE_CANDIDATE_AUDIT_PATH
+    source = json.loads(PAGE_CANDIDATE_AUDIT_PATH.read_text())
+    source["source_letter_records_examined"] += 1
+    source["letter_candidate_status_counts"]["ID_ONLY_PAGE_CANDIDATES"] += 1
+    path = tmp_path / "tampered_pages.json"
+    path.write_text(json.dumps(source))
+    result = hop_readiness_status(page_candidate_audit_path=path)
+    assert result["fda_page_review_worksheet"] is None
+    assert result["prediction_probability"] is None
