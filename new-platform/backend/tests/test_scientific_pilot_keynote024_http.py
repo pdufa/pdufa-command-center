@@ -83,6 +83,20 @@ class Keynote024PilotHttpTests(unittest.TestCase):
         self.assertFalse(audit["independentProtocolSapReviewComplete"])
         self.assertEqual(audit["registrySafety"]["status"], "no_groups_documented_in_snapshot")
         self.assertTrue(audit["registrySafety"]["missingGroupsDoNotImplyZeroEvents"])
+        safety = result["publishedSafetyReconciliation"]
+        self.assertEqual(safety["original2016"]["asTreated"], {
+            "pembrolizumab": 154, "chemotherapy": 150,
+        })
+        self.assertEqual(safety["original2016"]["randomized"], {
+            "pembrolizumab": 154, "chemotherapy": 151,
+        })
+        self.assertEqual(safety["updated2019"]["publicationDate"], "2019-01-08")
+        self.assertEqual(safety["updated2019"]["reportedGrade3to5TreatmentRelatedPercent"]["pembrolizumab"], 31.2)
+        self.assertFalse(safety["registryReconciliation"]["crossSystemAEReconciliationCompleted"])
+        self.assertFalse(safety["inputReadinessGradeChanged"])
+        self.assertFalse(safety["reluctanceGradeChanged"])
+        self.assertIsNone(safety["scientificScore"])
+        self.assertIsNone(safety["fdaApprovalProbability"])
         self.assertIsNone(audit["scientificScore"])
         self.assertIsNone(audit["fdaApprovalProbability"])
         self.assertEqual(len(result["publishedResults"]["analysis_snapshots"]), 3)
