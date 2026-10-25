@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from typing import Iterable
+from urllib.parse import urlparse
 
 @dataclass(frozen=True)
 class HistoricalCase:
@@ -47,9 +48,12 @@ def match_historical_cases(target: TargetCase, history: Iterable[HistoricalCase]
         raise ValueError("limit must be positive")
     matched: list[Comparator] = []
     for case in history:
-        if (not case.case_id or not case.source_url.startswith("https://")
+        parsed = urlparse(case.source_url)
+        if (not case.case_id or parsed.scheme != "https"
+            or parsed.hostname not in {"fda.gov", "www.fda.gov", "accessdata.fda.gov"}
             or case.outcome not in VALID_OUTCOMES
             or case.decision_date >= target.prediction_as_of
+            or case.evidence_as_of >= case.decision_date
             or case.evidence_as_of > target.prediction_as_of
             or case.phase < 3):
             continue
