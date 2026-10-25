@@ -365,7 +365,7 @@ def require_internal_key(
 def require_isolated_scientific_read_key(
     x_pdufa_internal_key: Annotated[str | None, Header()] = None,
 ) -> None:
-    """Allow a SECOND, read-only key on this one scientific GET, not other APIs.
+    """Allow a SECOND, read-only key on three explicit scientific GETs only.
 
     Production and ordinary review APIs still use require_internal_key.
     The preview credential is useful only on the isolated Render review
@@ -1679,7 +1679,7 @@ def scientific_assessment_storage_status():
 
 
 @app.get("/api/scientific-assessment/pilot/keynote024", dependencies=[
-    Depends(require_internal_key), Depends(require_storage),
+    Depends(require_isolated_scientific_read_key), Depends(require_storage),
 ])
 def get_keynote024_scientific_pilot(response: Response):
     """Source-attributed historical Phase 3 pilot; never a scoring decision.
@@ -1844,7 +1844,7 @@ def get_scientific_dossier_references(
 
 
 @app.get("/api/scientific-assessment/dossier", dependencies=[
-    Depends(require_internal_key), Depends(require_storage),
+    Depends(require_isolated_scientific_read_key), Depends(require_storage),
 ])
 def get_scientific_dossier(exact_id: str, response: Response):
     """Authenticated, read-only dossier from a verified, stored NCT source.
