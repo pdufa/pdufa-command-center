@@ -56,7 +56,8 @@ export function compareLocalPdfWithCapturedArchive(
   const ids = new Set<string>();
   const hashes = new Set<string>();
   const matches: CapturedArchiveComparison["matches"] = [];
-  for (const raw of data.documents) {
+  const entries = data.documents as unknown[];
+  for (const raw of entries) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) denied();
     const d = raw as Record<string, unknown>;
     if (typeof d.documentId !== "string" || !/^[a-f0-9]{32}$/.test(d.documentId)
@@ -68,12 +69,15 @@ export function compareLocalPdfWithCapturedArchive(
         || (d.byteLength as number) < 32 || (d.byteLength as number) > 5 * 1024 * 1024
         || d.captureStatus !== "byte_integrity_checked_unverified"
         || d.scientificVerificationComplete !== false) denied();
-    ids.add(d.documentId);
-    hashes.add(d.sha256);
-    if (d.sha256 === pdfSha256 && d.byteLength === pdfByteLength) {
-      matches.push({
-        documentId: d.documentId, gateId: d.gateId, sourceType: d.sourceType,
-      });
+    // Guards above establish the concrete string types from untrusted input.
+    const documentId = d.documentId as string;
+    const digest = d.sha256 as string;
+    const gateId = d.gateId as string;
+    const sourceType = d.sourceType as string;
+    ids.add(documentId);
+    hashes.add(digest);
+    if (digest === pdfSha256 && d.byteLength === pdfByteLength) {
+      matches.push({ documentId, gateId, sourceType });
     }
   }
   return {
