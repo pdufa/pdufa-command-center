@@ -464,6 +464,13 @@ def health():
     }
 
 
+@app.get("/api/hop/readiness", dependencies=[Depends(require_internal_key)])
+def hop_readiness():
+    """Research-only status; no storage dependency and no predictions."""
+    from .hop_status import hop_readiness_status
+    return hop_readiness_status()
+
+
 @app.get("/api/candidate-assessments", dependencies=[Depends(require_internal_key), Depends(require_storage)])
 def candidate_assessment_index():
     from .assessment_service import get_index
