@@ -30,6 +30,8 @@ def keynote024_eu_protocol_crosscheck(
     if (not isinstance(interim, Mapping) or not isinstance(published, Mapping)
         or not isinstance(readiness, Mapping)
         or interim.get("nctId") != NCT or published.get("nct_id") != NCT
+        or published.get("overall_score") is not None
+        or published.get("fda_approval_probability") is not None
         or readiness.get("nctId") != NCT
         or interim.get("status") != "published_design_not_authenticated_original_sap"
         or interim.get("scientificScore") is not None
