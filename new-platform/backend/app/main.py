@@ -596,6 +596,14 @@ def get_scientific_batch(job_id: str):
     return result
 
 
+@app.get("/api/scientific-assessment/batches-recovery-status",
+         dependencies=[Depends(require_internal_key), Depends(require_storage)])
+def scientific_batch_recovery_status():
+    """Authenticated read-only indication of potentially stranded batches."""
+    from .scientific_batch_jobs import recovery_diagnostics
+    return recovery_diagnostics()
+
+
 @app.post("/api/scientific-assessment/batches", status_code=202,
           dependencies=[Depends(require_internal_key), Depends(require_storage),
                         Depends(require_scientific_batch_review_write)])
