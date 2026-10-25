@@ -167,6 +167,7 @@ def build_review_packet(nct_id: str, *, generated_at: datetime | None = None) ->
         "quantitativeResults": numbers,
         "evidenceInputGrades": grades,
         "independentSourceLedger": ledger,
+        "adjudicationPreflight": ledger["adjudicationPreflight"],
         "reconciliation": {
             "scope": worklist["scope"],
             "unresolvedCount": len(checks),
