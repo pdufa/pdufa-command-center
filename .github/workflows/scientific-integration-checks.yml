@@ -39,6 +39,9 @@ jobs:
       - name: Verify no guessed WT/GEM program matches or unapproved scientific archive imports
         run: python -m unittest discover -s tests -p 'test_scientific_archive_reconciliation.py' -v
         working-directory: new-platform/backend
+      - name: Preserve historical application-to-multiple-NCT source hints as unapproved candidates
+        run: python -m unittest discover -s tests -p 'test_scientific_historical_crosswalk.py' -v
+        working-directory: new-platform/backend
   frontend:
     runs-on: ubuntu-latest
     defaults:
