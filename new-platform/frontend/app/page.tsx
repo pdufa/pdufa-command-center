@@ -208,7 +208,7 @@ export default function Home() {
         <div><h1>PDUFA Command Center</h1><p className="subtle">PIPELINE → GEM JR → GEM → WT → TRADING · Trial counts directly below navigation</p></div>
         <button className="secondary" onClick={() => void signOut()}>Sign out</button>
       </header>
-      <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a></p>
+      <p><a href="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit" target="_blank" rel="noopener noreferrer">Open PDUFA Master Google Sheet ↗</a> · <a href="#trial-science-pilot">Open historical Trial Science pilot</a></p>
       <Workspace onInspect={inspectProgram} />
       <TrialSciencePilot />
       <p className="subtle">Historical trial science research: <a href="/trial/NCT02142738">KEYNOTE-024 (NCT02142738)</a> · <a href="/trial/NCT04280705">Second archived trial (NCT04280705)</a>. Evidence remains independently reviewable.</p>
