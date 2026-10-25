@@ -4,6 +4,7 @@ from __future__ import annotations
 import io
 import json
 import zipfile
+from pathlib import Path
 from datetime import date
 
 import pytest
@@ -123,3 +124,51 @@ def test_source_summary_rejects_external_redirect(tmp_path):
 
 def test_pinned_official_fda_source_is_valid_https():
     assert _official_final_url(OFFICIAL_DOWNLOAD) is True
+
+
+
+def test_actual_fda_aggregate_snapshot_has_no_approval_or_cycle_claims():
+    """Immutable counts are published-source REFERENCES, not verified decisions."""
+    path = (Path(__file__).resolve().parents[1]
+            / "app" / "research_sources"
+            / "hop_drugsfda_original_submissions_20261025.json")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["source_collection_workflow_run_url"].endswith("/40246351051")
+    assert data["status"] == "OFFICIAL_FDA_TABLE_ORIGINAL_SUBMISSIONS_QUARANTINED"
+    assert data["application_rows_in_extract"] == 29417
+    assert data["validated_application_identity_rows"] == 29415
+    assert data["quarantined_application_row_reason_counts"] == {
+        "MALFORMED_OR_PLACEHOLDER_APPLICATION_ID": 2,
+    }
+    assert data["application_type_counts"] == {
+        "ANDA": 23023, "BLA": 485, "NDA": 5907,
+    }
+    assert sum(data["application_type_counts"].values()) == 29415
+    assert data["submission_rows_in_extract"] == 194280
+    assert data["original_nda_bla_submission_rows"] == 6033
+    assert data["distinct_nda_bla_applications_in_original_submission_inventory"] == 5973
+    assert data["submission_rows_in_extract"] == (
+        data["original_nda_bla_submission_rows"]
+        + sum(data["excluded_submission_row_reason_counts"].values())
+        + data["source_data_quality_flag_counts"].get(
+            "DUPLICATE_SUBMISSION_KEY_REQUIRES_RECONCILIATION", 0
+        )
+    )
+    assert data["source_submissions_tsv_encoding"] == "cp1252"
+    for key in (
+        "source_zip_sha256", "applications_tsv_sha256", "submissions_tsv_sha256",
+    ):
+        assert len(data[key]) == 64
+        assert all(char in "0123456789abcdef" for char in data[key])
+    assert data["independently_verified_fda_review_cycles"] == 0
+    assert data["original_action_dates_independently_verified"] == 0
+    assert data["complete_original_nda_bla_application_denominator_verified"] is False
+    assert data["unapproved_applications_absent_from_export_possible"] is True
+    assert data["submission_number_is_not_review_cycle"] is True
+    assert data["raw_status_not_a_verified_decision_label"] is True
+    assert data["model_eligible_records"] == 0
+    assert data["approval_rate"] is None
+    assert data["prediction_probability"] is None
+    assert data["predictive_accuracy"] is None
+    assert data["complete_nda_bla_review_cycle_population"] is None
+    assert data["no_training_or_production_import"] is True
