@@ -135,3 +135,40 @@ def test_unresolved_or_qualified_source_counts_cannot_exceed_audit_totals(tmp_pa
     src["identity_link_status_counts"]["NOT_IN_COHORT"] = 1
     path.write_text(json.dumps(src))
     assert hop_readiness_status(crosswalk_audit_path=path)["fda_identity_crosswalk"] is None
+
+
+def test_real_fda_repeat_letter_triage_exposes_audit_only():
+    result = hop_readiness_status()
+    repeated = result["fda_repeat_letter_triage"]
+    assert repeated is not None
+    assert repeated["published_letter_records"] == 458
+    assert repeated["grouped_letter_records"] == 441
+    assert repeated["excluded_letter_records"] == {"unresolved_or_ambiguous_identity": 17}
+    assert repeated["single_letter_application_groups"] == 239
+    assert repeated["repeated_letter_application_groups"] == 83
+    assert repeated["letter_records_in_repeated_groups"] == 202
+    assert repeated["potential_same_day_type_duplicate_groups"] == 2
+    assert repeated["independently_verified_review_cycles"] == 0
+    assert repeated["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_repeat_letter_triage_counts_and_validation_never_self_promote(tmp_path: Path):
+    from app.hop_status import REPEAT_LETTER_AUDIT_PATH
+    src = json.loads(REPEAT_LETTER_AUDIT_PATH.read_text())
+    path = tmp_path / "repeat.json"
+    path.write_text(json.dumps(src))
+    assert hop_readiness_status(repeat_letter_audit_path=path)["fda_repeat_letter_triage"] is not None
+    src["independently_verified_review_cycles"] = 2
+    path.write_text(json.dumps(src))
+    result = hop_readiness_status(repeat_letter_audit_path=path)
+    assert result["fda_repeat_letter_triage"] is None
+    assert result["model_validated"] is False
+    src["independently_verified_review_cycles"] = 0
+    src["grouped_letter_records"] = 442
+    path.write_text(json.dumps(src))
+    assert hop_readiness_status(repeat_letter_audit_path=path)["fda_repeat_letter_triage"] is None
+    src["grouped_letter_records"] = 441
+    src["excluded_letter_records"]["unresolved_or_ambiguous_identity"] = 16
+    path.write_text(json.dumps(src))
+    assert hop_readiness_status(repeat_letter_audit_path=path)["fda_repeat_letter_triage"] is None
