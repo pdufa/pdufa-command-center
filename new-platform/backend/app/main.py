@@ -363,6 +363,21 @@ async def lifespan(app: FastAPI):
                     "candidate_revision_count=%d verified_gate_count=0",
                     evidence_count,
                 )
+                from .scientific_reviewer_findings import read_reviewer_statements
+                reviewer = read_reviewer_statements("NCT02142738")
+                reviewer_ok = (
+                    reviewer["questionsIndependentlyResolved"] == 0
+                    and reviewer["independentConfirmationImplemented"] is False
+                    and reviewer["fdaApprovalProbability"] is None
+                )
+                logging.getLogger(__name__).warning(
+                    "SCIENTIFIC_REVIEWER_NOTES_READBACK status=%s "
+                    "statements=%d conflicted_questions=%d "
+                    "independent_verification=False read_only=True",
+                    "PASS" if reviewer_ok else "FAIL",
+                    reviewer["totalStatements"],
+                    reviewer["questionsWithConflictingStatements"],
+                )
                 from .scientific_evidence_ledger import pilot_candidates
                 from .scientific_reconciliation_worklist import reconciliation_worklist
                 worklist = reconciliation_worklist("NCT02142738")
