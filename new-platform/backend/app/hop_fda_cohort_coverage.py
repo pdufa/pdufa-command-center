@@ -231,32 +231,23 @@ def audit_fda_source_coverage(indexes: dict[str, dict], *,
             }):
         raise ValueError("Page evidence candidate categories do not reconcile")
     priorities = _counts(worksheet, "review_priority_counts")
+    # Priority-1 entries in this frozen worksheet are the four ID-only
+    # multi-application references. Priority-6 covers the five records with
+    # no narrowed page match. These are SOURCE REFERENCES, not FDA cycles.
     if (sum(priorities.values()) != shared_refs
             or set(priorities) != {"1", "3", "4", "5", "6"}
-            or _integer(pages, "letter_date_id_one_candidate_page_records") != priorities["3"]
-            or _integer(pages, "letter_date_id_multiple_candidate_pages_records") != priorities["4"]
-            or _integer(pages, "id_only_multiple_candidate_pages_records") != priorities["5"]
-            or priorities["3"] + priorities["4"] !=
-               candidate_counts["DATE_AND_ID_PAGE_CANDIDATES"]
-            or priorities["5"] != candidate_counts["ID_ONLY_PAGE_CANDIDATES"]
-            or priorities["1"] + priorities["6"] != (
-                candidate_counts["NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES"]
-                + candidate_counts["TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW"]
-                + _integer(docs, "shared_documents_containing_multiple_applications")
-                + _integer(docs, "same_date_and_letter_type_collision_groups")
-            )):
-        # Priorities 1/6 count LETTERS, document collision counters count
-        # GROUPS, so they are not directly additive as a scientific identity.
-        # Leave only checks with guaranteed same-unit equivalence.
-        pass
-
-    # Priority 1 and 6 may override otherwise matched page categories. They
-    # are workflow-priority LETTER references, not PDF/document group counts.
-    if (sum(priorities.values()) != shared_refs
             or priorities["3"] != _integer(pages, "letter_date_id_one_candidate_page_records")
             or priorities["4"] != _integer(pages, "letter_date_id_multiple_candidate_pages_records")
-            or priorities["5"] != _integer(pages, "id_only_multiple_candidate_pages_records")):
-        raise ValueError("FDA page worklist review-priority distribution mismatch")
+            or priorities["3"] + priorities["4"] !=
+               candidate_counts["DATE_AND_ID_PAGE_CANDIDATES"]
+            or priorities["1"] + priorities["5"] !=
+               candidate_counts["ID_ONLY_PAGE_CANDIDATES"]
+            or _integer(pages, "id_only_multiple_candidate_pages_records") !=
+               candidate_counts["ID_ONLY_PAGE_CANDIDATES"]
+            or priorities["6"] != (
+               candidate_counts["NO_APPLICATION_TOKEN_ON_EXTRACTED_PAGES"]
+               + candidate_counts["TOO_MANY_PAGES_REQUIRE_MANUAL_REVIEW"])):
+        raise ValueError("FDA page candidate / priority review distributions mismatch")
 
     if (letters.get("source_export_date") != pdfs.get("official_fda_crl_export_date")
             or letters.get("source_export_date") != docs.get("fda_crl_source_export_date")
