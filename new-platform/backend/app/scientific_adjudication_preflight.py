@@ -69,7 +69,10 @@ def adjudication_preflight(
         raise ValueError("Adjudication statement identity mismatch")
     if any(not isinstance(q, Mapping) or not isinstance(q.get("id"), str) or not q["id"]
            or not isinstance(q.get("gateId"), str) or not isinstance(q.get("priority"), str)
-           or not isinstance(q.get("title"), str) for q in questions):
+           or not isinstance(q.get("title"), str)
+           or not isinstance(q.get("sourceUrls", []), list)
+           or any(not isinstance(url, str) for url in q.get("sourceUrls", []))
+           for q in questions):
         raise ValueError("Malformed adjudication question")
     if any(not isinstance(x.get("threadId"), str) or not x["threadId"]
            or type(x.get("revision")) is not int or x["revision"] < 1
