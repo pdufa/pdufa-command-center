@@ -305,3 +305,60 @@ export function compareLocalSourceSha256Claims(
     promotionAllowed: false,
   };
 }
+
+
+/**
+ * Compare TWO actually computed local PDF digests to each reviewer's own
+ * untrusted claim, and describe whether the PDFs share identical bytes.
+ * Identical PDF bytes DO NOT establish two independent reviewers; different
+ * bytes DO NOT prove a contradiction or source misrepresentation.
+ */
+export type DualLocalSourceByteMatch = {
+  nctId: string;
+  assessmentTaskKey: string;
+  reviewerAPdfSha256: string;
+  reviewerBPdfSha256: string;
+  reviewerAClaim: LocalSourceByteMatch["reviewerA"];
+  reviewerBClaim: LocalSourceByteMatch["reviewerB"];
+  pdfByteRelation: "IDENTICAL_BYTES" | "DISTINCT_BYTES";
+  independentOriginalSourceAuthenticated: false;
+  independentReviewersAuthenticated: false;
+  sourcePublicationDatesVerified: false;
+  signedAdjudicationsVerified: false;
+  independentlyAdjudicatedTasks: 0;
+  scientificScore: null;
+  fdaApprovalProbability: null;
+  promotionAllowed: false;
+};
+
+export function compareTwoLocalSourcePdfSha256Claims(
+  matrix: ScientificDepthMatrix, inventoryCsv: string,
+  reviewerACsv: string, reviewerBCsv: string,
+  assessmentTaskKey: string, reviewerAPdfSha256: string, reviewerBPdfSha256: string,
+): DualLocalSourceByteMatch {
+  const a = compareLocalSourceSha256Claims(
+    matrix, inventoryCsv, reviewerACsv, reviewerBCsv, assessmentTaskKey, reviewerAPdfSha256,
+  );
+  const b = compareLocalSourceSha256Claims(
+    matrix, inventoryCsv, reviewerACsv, reviewerBCsv, assessmentTaskKey, reviewerBPdfSha256,
+  );
+  if (a.nctId !== b.nctId || a.assessmentTaskKey !== b.assessmentTaskKey
+      || a.promotionAllowed !== false || b.promotionAllowed !== false) problem();
+  return {
+    nctId: matrix.nctId,
+    assessmentTaskKey,
+    reviewerAPdfSha256: a.calculatedSha256,
+    reviewerBPdfSha256: b.calculatedSha256,
+    reviewerAClaim: a.reviewerA,
+    reviewerBClaim: b.reviewerB,
+    pdfByteRelation: a.calculatedSha256 === b.calculatedSha256 ? "IDENTICAL_BYTES" : "DISTINCT_BYTES",
+    independentOriginalSourceAuthenticated: false,
+    independentReviewersAuthenticated: false,
+    sourcePublicationDatesVerified: false,
+    signedAdjudicationsVerified: false,
+    independentlyAdjudicatedTasks: 0,
+    scientificScore: null,
+    fdaApprovalProbability: null,
+    promotionAllowed: false,
+  };
+}

@@ -15,7 +15,7 @@ require.extensions[".ts"] = (mod, file) => mod._compile(
 );
 const { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } =
   require("../lib/scientific-depth-review-csv.ts");
-const { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims } =
+const { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, compareTwoLocalSourcePdfSha256Claims } =
   require("../lib/scientific-reviewer-local-audit.ts");
 
 const LAYERS = [
@@ -294,4 +294,78 @@ test("source byte check is browser-only PDF SHA-256, not evidence import or outc
   assert.match(source, /Original source authenticated: NO/);
   assert.match(source, /PDF is not uploaded/);
   assert.doesNotMatch(source, /uploadPdfForReview|admitEvidence|approveScientificReview/);
+});
+
+
+test("two physical PDF digests are compared separately to each reviewer own hash claim", () => {
+  const { m, inventory, a, b } = worksheets();
+  const shaA = "a".repeat(64);
+  const shaB = "b".repeat(64);
+  const claimA = changeRow(a, 1, row => { row[14] = shaA.toUpperCase(); });
+  const claimB = changeRow(b, 1, row => { row[14] = shaB; });
+  const report = compareTwoLocalSourcePdfSha256Claims(
+    m, inventory, claimA, claimB, "trial_design.assessment_1:1", shaA, shaB,
+  );
+  assert.equal(report.pdfByteRelation, "DISTINCT_BYTES");
+  assert.equal(report.reviewerAClaim, "MATCHES_CLAIMED_BYTES");
+  assert.equal(report.reviewerBClaim, "MATCHES_CLAIMED_BYTES");
+  assert.equal(report.reviewerAPdfSha256, shaA);
+  assert.equal(report.reviewerBPdfSha256, shaB);
+  assert.equal(report.nctId, "NCT02142738");
+  assert.equal(report.independentOriginalSourceAuthenticated, false);
+  assert.equal(report.independentReviewersAuthenticated, false);
+  assert.equal(report.sourcePublicationDatesVerified, false);
+  assert.equal(report.signedAdjudicationsVerified, false);
+  assert.equal(report.independentlyAdjudicatedTasks, 0);
+  assert.equal(report.scientificScore, null);
+  assert.equal(report.fdaApprovalProbability, null);
+  assert.equal(report.promotionAllowed, false);
+});
+
+test("same PDF bytes do not imply independent reviewer verification", () => {
+  const { m, inventory, a, b } = worksheets();
+  const sha = "f".repeat(64);
+  const report = compareTwoLocalSourcePdfSha256Claims(
+    m, inventory, changeRow(a, 1, row => { row[14] = sha; }),
+    changeRow(b, 1, row => { row[14] = "0".repeat(64); }),
+    "trial_design.assessment_1:1", sha, sha,
+  );
+  assert.equal(report.pdfByteRelation, "IDENTICAL_BYTES");
+  assert.equal(report.reviewerAClaim, "MATCHES_CLAIMED_BYTES");
+  assert.equal(report.reviewerBClaim, "DIFFERS_FROM_CLAIM");
+  assert.equal(report.independentReviewersAuthenticated, false);
+  assert.equal(report.independentlyAdjudicatedTasks, 0);
+});
+
+test("two-PDF check rejects unrecognized task, forged status, bad digest and cross-trial files", () => {
+  const mutations = [
+    x => { x.task = "trial_design.assessment_1:9"; },
+    x => { x.inventory = x.inventory.replace("NCT02142738", "NCT00000001"); },
+    x => { x.a = x.a.replace('"NOT_ASSIGNED"', '"95"'); },
+    x => { x.b = x.b.replace('"NOT_VERIFIED"', '"VERIFIED"'); },
+    x => { x.digestB = "not-a-sha"; },
+    x => { x.digestA = "f".repeat(65); },
+    x => { x.b = x.b.replace('"B","","NOT_VERIFIED"', '"A","","NOT_VERIFIED"'); },
+  ];
+  for (const mutate of mutations) {
+    const x = { ...worksheets(), task: "trial_design.assessment_1:1",
+      digestA: "a".repeat(64), digestB: "b".repeat(64) };
+    mutate(x);
+    assert.throws(() => compareTwoLocalSourcePdfSha256Claims(
+      x.m, x.inventory, x.a, x.b, x.task, x.digestA, x.digestB,
+    ), /Reviewer worksheet comparison blocked|Scientific task export blocked/, String(mutate));
+  }
+});
+
+test("dual-PDF preview hashes local PDF bytes after checking PDF markers, without uploading", () => {
+  const source = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(source, /Compare reviewer A and B PDF bytes independently/);
+  assert.match(source, /sha256LocalPdf\(localSourcePdf\), sha256LocalPdf\(localReviewerBPdf\)/);
+  assert.match(source, /String\.fromCharCode\(\.\.\.data\.subarray\(0, 5\)\) !== "%PDF-"/);
+  assert.match(source, /tail\.includes\("%%EOF"\)/);
+  assert.match(source, /crypto\.subtle\.digest\("SHA-256", bytes\)/);
+  assert.match(source, /compareTwoLocalSourcePdfSha256Claims\(/);
+  assert.match(source, /Files are not uploaded or stored/);
+  assert.match(source, /Identical bytes do not prove independent review/);
+  assert.doesNotMatch(source, /uploadTwoPdfs|storeReviewerPdf|admitPdfEvidence/);
 });
