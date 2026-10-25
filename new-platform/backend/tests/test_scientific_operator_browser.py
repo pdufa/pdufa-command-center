@@ -115,6 +115,27 @@ class Handler(BaseHTTPRequestHandler):
                     "analysisReadiness": {"grade": "C"},
                     "scientificReluctance": {"grade": "F"},
                 },
+                "evidenceLedger": {
+                    "sourceReconciliation": {
+                        "totalChecks": 8, "unresolvedChecks": 8, "verifiedChecks": 0,
+                        "checks": [
+                            {
+                                "id": "test_question_" + str(i), "gateId": "protocol_sap",
+                                "title": "Source reconciliation question " + str(i),
+                                "priority": "critical", "status": "open_unadjudicated",
+                                "independentlyVerified": False,
+                                "question": "Reconcile original dated documents",
+                                "observedDiscrepancy": "Source version needs validation" if i == 1 else None,
+                                "nextAction": "Inspect original source and independent methods",
+                                "sourceUrls": (["https://clinicaltrials.gov/study/NCT02142738"]
+                                               if i < 8 else ["javascript:alert(1)"]),
+                            }
+                            for i in range(1, 9)
+                        ],
+                    },
+                    "capturedSourceDocuments": {"sourceDocumentCount": 0},
+                    "verifiedGateCount": 0,
+                },
                 "assessment": {"overall_score": None},
             })
             return
@@ -163,6 +184,11 @@ def test_browser_single_operator_loads_twenty_stages_and_forty_unscored_assessme
             assert Handler.research_calls == 1
             assert page.locator("#levels details").count() == 20
             assert page.locator("#layers details").count() == 8
+            assert page.locator("#evidence-questions details").count() == 8
+            assert page.get_by_text("Source reconciliation question 1", exact=False).count() >= 1
+            page.locator("#evidence-questions details").first.locator("summary").click()
+            assert page.locator("#evidence-questions a[href='https://clinicaltrials.gov/study/NCT02142738']").count() == 7
+            assert page.locator("#evidence-questions a[href^='javascript:']").count() == 0
             assert page.get_by_text("0 / 40").count() == 1
             assert page.get_by_text("Not assigned").count() == 1
             assert page.get_by_text("C", exact=True).count() >= 1
