@@ -49,3 +49,30 @@ def test_audit_readback_detects_modified_statement(monkeypatch, tmp_path):
     result = audit_readback("NCT02142738", "safety_endpoint_taxonomy")
     assert result["integrityVerified"] is False
     assert result["events"][0]["integrityVerified"] is False
+
+
+def test_empty_audit_is_not_verified(monkeypatch, tmp_path):
+    engine = create_engine("sqlite:///" + str(tmp_path / "empty.db"))
+    main.Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, "ENGINE", engine)
+    result = audit_readback("NCT02142738", "safety_endpoint_taxonomy")
+    assert result["hasRecordedReview"] is False
+    assert result["integrityVerified"] is False
+
+
+def test_deleted_audit_event_fails_completeness(monkeypatch, tmp_path):
+    engine = create_engine("sqlite:///" + str(tmp_path / "missing.db"))
+    main.Base.metadata.create_all(engine)
+    monkeypatch.setattr(main, "ENGINE", engine)
+    with Session(engine) as session:
+        session.add(main.ScientificReviewSubmission(
+            id="f" * 32, nct_id="NCT02142738",
+            question_id="safety_endpoint_taxonomy", source_sha256="a" * 64,
+            google_subject="reviewer-a", decision="requires_review",
+            attestation={}, content_sha256="b" * 64,
+            submitted_at=datetime.now(timezone.utc)))
+        session.commit()
+    result = audit_readback("NCT02142738", "safety_endpoint_taxonomy")
+    assert result["recordedSubmissionCount"] == 1
+    assert result["auditHistoryComplete"] is False
+    assert result["integrityVerified"] is False
