@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from .hop_fda_filing_benchmarks import audit_fda_filing_benchmarks
 
 STAGING_PATH = Path(__file__).parent / "research_sources" / "hop_fda_outcome_staging.json"
 SOURCE_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_openfda_crl_audit_index.json"
@@ -14,6 +15,7 @@ CROSSWALK_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_cro
 REPEAT_LETTER_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_repeat_letter_triage_index.json"
 IDENTITY_REVIEW_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_identity_review_queue_index.json"
 OFFICIAL_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdf_document_verification_index.json"
+FILING_BENCHMARK_PATH = Path(__file__).parent / "research_sources" / "hop_fda_pdufa_filing_benchmarks.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -260,12 +262,23 @@ def _quarantined_official_pdf_document_audit(path: Path) -> dict | None:
     except (OSError, KeyError, ValueError, TypeError):
         return None
 
+
+def _fda_annual_filing_reference(path: Path) -> dict | None:
+    try:
+        return audit_fda_filing_benchmarks(
+            json.loads(path.read_text(encoding="utf-8"))
+        )
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
                          crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
                          repeat_letter_audit_path: Path = REPEAT_LETTER_AUDIT_PATH,
                          identity_review_audit_path: Path = IDENTITY_REVIEW_AUDIT_PATH,
-                         official_pdf_audit_path: Path = OFFICIAL_PDF_AUDIT_PATH) -> dict:
+                         official_pdf_audit_path: Path = OFFICIAL_PDF_AUDIT_PATH,
+                         filing_benchmark_path: Path = FILING_BENCHMARK_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -313,6 +326,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_repeat_letter_triage": repeat_letters,
             "fda_identity_review_queue": identity_review,
             "fda_official_pdf_checks": source_pdfs,
+            "fda_annual_filing_reference": _fda_annual_filing_reference(filing_benchmark_path),
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -331,6 +345,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_repeat_letter_triage": None,
             "fda_identity_review_queue": None,
             "fda_official_pdf_checks": None,
+            "fda_annual_filing_reference": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,

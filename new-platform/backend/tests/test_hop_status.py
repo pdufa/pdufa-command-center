@@ -271,3 +271,29 @@ def test_official_pdf_audit_requires_matching_identity_review_queue(tmp_path: Pa
     result = hop_readiness_status(identity_review_audit_path=path)
     assert result["fda_official_pdf_checks"] is None
     assert result["prediction_available"] is False
+
+
+def test_fda_annual_filing_reference_tracks_revision_not_prediction_cohort():
+    result = hop_readiness_status()
+    filing = result["fda_annual_filing_reference"]
+    assert filing["latest_original_applications_filed_by_fy"] == {
+        "2024": 129, "2025": 157,
+    }
+    assert filing["documented_revisions"]["2024"]["earlier_total"] == 128
+    assert filing["documented_revisions"]["2024"]["later_total"] == 129
+    assert filing["applications_individually_enumerated"] is False
+    assert filing["complete_review_cycle_denominator_verified"] is False
+    assert filing["model_eligible_records"] == 0
+    assert result["historical_model_eligible"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_fda_annual_filing_reference_is_quarantined_on_false_cohort_claim(tmp_path: Path):
+    from app.hop_status import FILING_BENCHMARK_PATH
+    data = json.loads(FILING_BENCHMARK_PATH.read_text())
+    data["source_for_training_labels"] = True
+    path = tmp_path / "aggregate.json"
+    path.write_text(json.dumps(data))
+    result = hop_readiness_status(filing_benchmark_path=path)
+    assert result["fda_annual_filing_reference"] is None
+    assert result["prediction_available"] is False
