@@ -12,7 +12,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from pydantic import BaseModel, Field
-from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, create_engine, select, update
+from sqlalchemy import JSON, DateTime, Integer, LargeBinary, String, UniqueConstraint, create_engine, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -118,6 +118,33 @@ class ScientificBatchJob(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ScientificEvidenceLedgerEntry(Base):
+    """Append-only independent-source candidate, never an auto-verified conclusion."""
+    __tablename__ = "scientific_evidence_ledger"
+    __table_args__ = (
+        # Concurrent attempts to correct the same version cannot both succeed.
+        UniqueConstraint("nct_id", "thread_id", "revision",
+                         name="uq_scientific_evidence_revision"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    thread_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    supersedes_id: Mapped[str | None] = mapped_column(String(32))
+    gate_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(800), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    source_published_at: Mapped[str | None] = mapped_column(String(10))
+    claim_text: Mapped[str] = mapped_column(String(1000), nullable=False)
+    relationship: Mapped[str] = mapped_column(String(24), nullable=False)
+    caution: Mapped[str] = mapped_column(String(1000), nullable=False)
+    review_status: Mapped[str] = mapped_column(String(40), nullable=False)
+    recorded_by: Mapped[str] = mapped_column(String(80), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
 
 class ScientificSmokeClaim(Base):
