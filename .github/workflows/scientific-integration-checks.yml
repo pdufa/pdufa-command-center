@@ -33,6 +33,9 @@ jobs:
       - name: Verify offline GEM JR/GEM/WT archive-transfer planning is read-only
         run: python -m unittest discover -s tests -p 'test_scientific_cohort_import_plan.py' -v
         working-directory: new-platform/backend
+      - name: Reject unverified application-to-trial NCT crosswalks
+        run: python -m unittest discover -s tests -p 'test_scientific_program_identity_audit.py' -v
+        working-directory: new-platform/backend
   frontend:
     runs-on: ubuntu-latest
     defaults:
