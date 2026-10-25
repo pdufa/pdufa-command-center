@@ -21,6 +21,11 @@ jobs:
         working-directory: new-platform/backend
       - run: python -m unittest discover -s tests -p 'test_scientific_assessment_auth.py' -v
         working-directory: new-platform/backend
+      - name: Verify read-only authenticated API acceptance
+        run: python -m pytest -q tests/test_scientific_api_read_probe.py
+        working-directory: new-platform/backend
+      - name: Verify private exporters including deployed container copy
+        run: python -m unittest discover -s tests -p 'test_render_postgres_export.py' -v
       - run: python -m unittest discover -s tests -p 'test_scientific_registry_evidence.py' -v
         working-directory: new-platform/backend
       - run: python -m unittest discover -s tests -p 'test_scientific_stored_record.py' -v

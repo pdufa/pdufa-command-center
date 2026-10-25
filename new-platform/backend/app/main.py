@@ -897,6 +897,8 @@ async def lifespan(app: FastAPI):
     if _DB_STATE["available"]:
         from .scientific_live_smoke import launch_once_if_requested
         launch_once_if_requested()
+    from .scientific_api_read_probe import launch_if_isolated_review
+    launch_if_isolated_review()
     yield
 
 
