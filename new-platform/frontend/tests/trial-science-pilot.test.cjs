@@ -22,7 +22,11 @@ const TrialSciencePilot = require("../app/TrialSciencePilot.tsx").default;
 const domains = Object.keys(SCIENCE_DOMAIN_LABELS);
 const ref = (id, analysis, date) => ({
   analysis_id: analysis,
-  report_type: "published_analysis",
+  report_type: analysis === "keynote024_initial_2016"
+    ? "original_randomized_trial_interim_analysis"
+    : analysis === "keynote024_pros_2017"
+      ? "prespecified_exploratory_patient_reported_outcomes"
+      : "long_term_followup",
   publication_date: date,
   source_id: id,
   source_url: "https://pubmed.ncbi.nlm.nih.gov/" + id + "/",
