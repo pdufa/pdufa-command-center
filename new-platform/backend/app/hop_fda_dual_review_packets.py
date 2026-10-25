@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 
 from .hop_fda_page_review_worksheet import COLUMNS, ALLOWED_STATUS
 
-SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
+SHA256 = re.compile(r"[0-9a-f]{64}")
 VERIFICATION_FIELDS = (
     "original_letter_page_range_verified", "effective_fda_action_date_verified",
     "regulatory_review_cycle_verified", "regulatory_outcome_verified",
