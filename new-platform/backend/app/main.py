@@ -528,6 +528,10 @@ async def lifespan(app: FastAPI):
         threading.Thread(target=bootstrap, daemon=True).start()
     from .full_trial_archive import cleanup_retired_zip_exports
     cleanup_retired_zip_exports()
+    # Explicit, temporary isolated-service opt-in only; never starts ordinary scans.
+    if _DB_STATE["available"]:
+        from .scientific_live_smoke import launch_once_if_requested
+        launch_once_if_requested()
     yield
 
 
