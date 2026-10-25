@@ -49,6 +49,57 @@ export type StudySnapshot = {
   source_evidence_status: string;
   effective_crossover_percent_from_chemotherapy?: number;
 };
+export type ScientificReadinessCheck = {
+  id: string;
+  title: string;
+  status: "SOURCE_SUPPORTED" | "REVIEW_REQUIRED" | "BLOCKED";
+  critical: boolean;
+  finding: string;
+  next_action: string;
+  sources: { url: string; locator: string }[];
+};
+
+export type ScientificReadiness = {
+  modelVersion: "scientific-readiness-two-grade-v1";
+  nctId: typeof PILOT_NCT;
+  protocol: {
+    url: string;
+    documentDate: "2017-12-20";
+    interimDataCutoff: "2016-05-09";
+    amendment: "024-11";
+    regionalScope: string;
+    afterInterimDataCutoff: true;
+    notProofOf2016Prespecification: true;
+  };
+  inputReadiness: {
+    grade: "PASS" | "FAIL";
+    status: string;
+    criteriaTotal: number;
+    sourceSupported: number;
+    unresolved: number;
+    unresolvedIds: string[];
+    meaning: string;
+  };
+  reluctance: {
+    grade: "LOW" | "MODERATE" | "ELEVATED" | "HIGH";
+    status: string;
+    criticalBlockedIds: string[];
+    criticalReviewIds: string[];
+    meaning: string;
+  };
+  checks: ScientificReadinessCheck[];
+  readOnly: true;
+  scientificScore: null;
+  fdaApprovalProbability: null;
+  fullTwentyLevelAnalysisCompleted: false;
+  preliminarySourceReviewAllowed: true;
+  independentReanalysisPerformed: false;
+  approvalForecastProduced: false;
+  fsFaModified: false;
+  tradingActionsEnabled: false;
+  disclaimer: string;
+};
+
 export type TrialSciencePilot = {
   pilot: {
     nct_id: string;
@@ -69,6 +120,7 @@ export type TrialSciencePilot = {
     fda_approval_probability: null;
     read_only: true;
   };
+  scientificReadiness?: ScientificReadiness;
   publishedResults: {
     nct_id: string;
     randomized_population: number;
@@ -121,6 +173,89 @@ function exactDomains(input: unknown, scoreField: boolean): boolean {
   });
 }
 
+const APPROVED_READINESS_SOURCES = new Set([
+  "https://clinicaltrials.gov/study/NCT02142738",
+  "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf",
+  "https://pubmed.ncbi.nlm.nih.gov/27718847/",
+  "https://pubmed.ncbi.nlm.nih.gov/29129441/",
+  "https://pubmed.ncbi.nlm.nih.gov/33872070/",
+  "https://pmc.ncbi.nlm.nih.gov/articles/PMC5679831/",
+]);
+
+/** An input grade is valid only if it agrees with every sourced check. */
+export function validScientificReadiness(input: unknown): input is ScientificReadiness {
+  if (!object(input) || !object(input.protocol) || !object(input.inputReadiness)
+      || !object(input.reluctance) || !Array.isArray(input.checks)
+      || input.modelVersion !== "scientific-readiness-two-grade-v1"
+      || input.nctId !== PILOT_NCT
+      || input.protocol.url !== "https://cdn.clinicaltrials.gov/large-docs/38/NCT02142738/Prot_SAP_000.pdf"
+      || input.protocol.documentDate !== "2017-12-20"
+      || input.protocol.interimDataCutoff !== "2016-05-09"
+      || input.protocol.amendment !== "024-11"
+      || input.protocol.afterInterimDataCutoff !== true
+      || input.protocol.notProofOf2016Prespecification !== true
+      || !str(input.protocol.regionalScope)
+      || input.readOnly !== true || input.scientificScore !== null
+      || input.fdaApprovalProbability !== null
+      || input.fullTwentyLevelAnalysisCompleted !== false
+      || input.preliminarySourceReviewAllowed !== true
+      || input.independentReanalysisPerformed !== false
+      || input.approvalForecastProduced !== false
+      || input.fsFaModified !== false || input.tradingActionsEnabled !== false
+      || !str(input.disclaimer)
+      || input.checks.length !== 12) return false;
+
+  const identifiers = new Set<string>();
+  const unresolved: string[] = [];
+  const criticalBlocked: string[] = [];
+  const criticalPending: string[] = [];
+  let sourceSupported = 0;
+  for (const item of input.checks) {
+    if (!object(item) || !str(item.id) || !/^[a-z][a-z0-9_]{2,63}$/.test(item.id)
+        || identifiers.has(item.id)
+        || !str(item.title) || !str(item.finding)
+        || !str(item.next_action) || typeof item.critical !== "boolean"
+        || !["SOURCE_SUPPORTED", "REVIEW_REQUIRED", "BLOCKED"].includes(String(item.status))
+        || !Array.isArray(item.sources) || item.sources.length < 1
+        || item.sources.length > 5) return false;
+    identifiers.add(item.id);
+    for (const ref of item.sources) {
+      if (!object(ref) || !str(ref.url) || !APPROVED_READINESS_SOURCES.has(ref.url)
+          || !str(ref.locator)) return false;
+    }
+    if (item.status === "SOURCE_SUPPORTED") sourceSupported += 1;
+    else {
+      unresolved.push(item.id);
+      if (item.critical && item.status === "BLOCKED") criticalBlocked.push(item.id);
+      if (item.critical && item.status === "REVIEW_REQUIRED") criticalPending.push(item.id);
+    }
+  }
+  // Known blockers are immutable until a new reviewed model version
+  // explicitly replaces their historical source evidence.
+  if (!criticalBlocked.includes("pre_cutoff_protocol") ||
+      !criticalBlocked.includes("full_regulatory_cmc")) return false;
+  const { inputReadiness: ready, reluctance } = input;
+  const eq = (first: unknown, second: string[]): boolean =>
+    Array.isArray(first) && first.length === second.length &&
+    first.every((item, i) => item === second[i]);
+  return ready.grade === (unresolved.length ? "FAIL" : "PASS")
+    && ready.status === (unresolved.length ? "NOT_READY_FOR_FULL_ANALYSIS"
+      : "READY_FOR_FULL_ANALYSIS_INPUT_REVIEW")
+    && ready.criteriaTotal === input.checks.length
+    && ready.sourceSupported === sourceSupported
+    && ready.unresolved === unresolved.length
+    && eq(ready.unresolvedIds, unresolved)
+    && str(ready.meaning)
+    && reluctance.grade === (criticalBlocked.length ? "HIGH"
+      : criticalPending.length ? "ELEVATED"
+      : unresolved.length ? "MODERATE" : "LOW")
+    && reluctance.status === (unresolved.length ? "CONCLUSIONS_WITHHELD"
+      : "REVIEW_EVIDENCE_BEFORE_CONCLUSIONS")
+    && eq(reluctance.criticalBlockedIds, criticalBlocked)
+    && eq(reluctance.criticalReviewIds, criticalPending)
+    && str(reluctance.meaning);
+}
+
 /**
  * Deny a mismatched or scored payload entirely rather than showing selective
  * fragments from an unverified or non-pilot response.
@@ -129,6 +264,7 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
   if (!object(input) || !object(input.pilot) || !object(input.dossier)
       || !object(input.publishedResults)) return false;
   const { pilot, dossier, publishedResults: data } = input;
+  if (input.scientificReadiness !== undefined && !validScientificReadiness(input.scientificReadiness)) return false;
   const scores = data.domain_scores;
   if (!object(scores)) return false;
   if (pilot.nct_id !== PILOT_NCT || dossier.nct_id !== PILOT_NCT
