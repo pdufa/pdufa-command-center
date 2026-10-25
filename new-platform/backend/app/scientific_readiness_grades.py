@@ -10,7 +10,7 @@ self-declare independent evidence or bypass missing regulatory documents.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from .scientific_investigation_20 import NCT_PATTERN, _lookup
@@ -68,6 +68,34 @@ def _has_arms(record: Mapping[str, Any]) -> bool:
     return bool(arms and interventions)
 
 
+def _number(value: Any) -> Decimal | None:
+    if not isinstance(value, str) or len(value) > 40:
+        return None
+    try:
+        parsed = Decimal(value)
+    except (InvalidOperation, ValueError):
+        return None
+    return parsed if parsed.is_finite() else None
+
+
+def _valid_pvalue(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    raw = value.strip()
+    for operator in ("<=", ">=", "<", ">"):
+        if raw.startswith(operator):
+            raw = raw[len(operator):].strip()
+            break
+    numeric = _number(raw)
+    return numeric is not None and 0 <= numeric <= 1
+
+
+def _valid_interval(analysis: Mapping[str, Any]) -> bool:
+    lower = _number(analysis.get("confidenceIntervalLower"))
+    upper = _number(analysis.get("confidenceIntervalUpper"))
+    return lower is not None and upper is not None and lower <= upper
+
+
 def _has_primary_analysis(report: Mapping[str, Any]) -> bool:
     for outcome in _items(report.get("outcomes")):
         o = _map(outcome)
@@ -75,10 +103,9 @@ def _has_primary_analysis(report: Mapping[str, Any]) -> bool:
             continue
         for raw in _items(o.get("analyses")):
             analysis = _map(raw)
-            if (analysis.get("reportedEstimate") is not None
-                    and (analysis.get("pValueReported") is not None
-                         or (analysis.get("confidenceIntervalLower") is not None
-                             and analysis.get("confidenceIntervalUpper") is not None))):
+            if (_number(analysis.get("reportedEstimate")) is not None
+                    and (_valid_pvalue(analysis.get("pValueReported"))
+                         or _valid_interval(analysis))):
                 return True
     return False
 
@@ -89,7 +116,11 @@ def _safety_with_denominators(report: Mapping[str, Any]) -> bool:
         for event in _items(safety.get(bucket)):
             for row in _items(_map(event).get("groupStats")):
                 group = _map(row)
-                if group.get("numAffected") is not None and group.get("numAtRisk") is not None:
+                affected = _number(group.get("numAffected"))
+                at_risk = _number(group.get("numAtRisk"))
+                if (affected is not None and at_risk is not None
+                        and 0 <= affected <= at_risk and at_risk > 0
+                        and affected == int(affected) and at_risk == int(at_risk)):
                     return True
     return False
 
