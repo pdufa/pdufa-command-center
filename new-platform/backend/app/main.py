@@ -1852,13 +1852,14 @@ def get_scientific_dossier(exact_id: str, response: Response):
 
 
 @app.get("/api/scientific-assessment", dependencies=[Depends(require_internal_key)])
-def get_scientific_assessment(exact_id: str, response: Response):
+def get_scientific_assessment(exact_id: str, response: Response = None):
     """Read-only scientific assessment; never invent missing trial evidence."""
     # A stable, nonsecret integration contract marker lets protected previews
     # reject a LIVE but older scientific Render service. This attests only to
     # installed API code, NOT scientific validity, scoring, or FDA outcomes.
-    response.headers["X-PDUFA-Scientific-API-Contract"] = "science-integrated-v1"
-    response.headers["Cache-Control"] = "private, no-store"
+    if response is not None:
+        response.headers["X-PDUFA-Scientific-API-Contract"] = "science-integrated-v1"
+        response.headers["Cache-Control"] = "private, no-store"
     if not exact_id or len(exact_id) > 512 or not exact_id.startswith(("TRIAL|", "REG|", "PDUFA|")):
         raise HTTPException(status_code=422, detail="Exact trial identity required")
     from .scientific_assessment_adapter import scientific_trial_payload
