@@ -11,6 +11,7 @@ require.extensions[".ts"] = (module, filename) => module._compile(ts.transpileMo
 const { NextRequest } = require("next/server");
 const auth = require("../lib/auth.ts");
 const { normalizeHopReadiness } = require("../lib/hop-readiness.ts");
+const { hopBackendBase } = require("../lib/hop-backend.ts");
 const route = require("../app/api/hop/readiness/route.ts");
 
 function sourceFixture() {
@@ -69,22 +70,46 @@ test("Unauthenticated HOP requests never contact upstream sources", async () => 
   } finally { global.fetch = original; }
 });
 
+test("HOP readiness uses its installed service independently of both other backends", () => {
+  const keys = ["PDUFA_HOP_API_BASE_URL", "PDUFA_API_BASE_URL", "PDUFA_RESEARCH_API_BASE_URL"];
+  const saved = Object.fromEntries(keys.map(k => [k, process.env[k]]));
+  try {
+    delete process.env.PDUFA_HOP_API_BASE_URL;
+    process.env.PDUFA_API_BASE_URL = "https://storage.example";
+    process.env.PDUFA_RESEARCH_API_BASE_URL = "https://market.example";
+    assert.equal(hopBackendBase(), "https://pdufa-hop-readonly-review.onrender.com");
+    process.env.PDUFA_HOP_API_BASE_URL = " https://hop.example/ ";
+    assert.equal(hopBackendBase(), "https://hop.example");
+    for (const invalid of ["", "http://hop.example", "https://user:secret@hop.example",
+      "https://hop.example/path", "https://hop.example?key=x", "https://hop.example/#x", "not a URL"]) {
+      process.env.PDUFA_HOP_API_BASE_URL = invalid;
+      assert.equal(hopBackendBase(), null, invalid);
+    }
+  } finally {
+    for (const [key, value] of Object.entries(saved)) {
+      if (value === undefined) delete process.env[key]; else process.env[key] = value;
+    }
+  }
+});
+
 test("Authenticated HOP proxy reads only approved backend endpoint and hides credentials", async () => {
-  const keys = ["DASHBOARD_PASSWORD", "SESSION_SIGNING_KEY", "PDUFA_API_BASE_URL", "PDUFA_INTERNAL_API_KEY"];
+  const keys = ["DASHBOARD_PASSWORD", "SESSION_SIGNING_KEY", "PDUFA_API_BASE_URL", "PDUFA_INTERNAL_API_KEY", "PDUFA_HOP_API_BASE_URL"];
   const originals = Object.fromEntries(keys.map(k => [k, process.env[k]]));
   const originalFetch = global.fetch;
   Object.assign(process.env, {
     DASHBOARD_PASSWORD: "test-only-hop-password",
     SESSION_SIGNING_KEY: "test-only-signing-key-long-enough-2026",
-    PDUFA_API_BASE_URL: "https://backend.example",
+    PDUFA_API_BASE_URL: "https://storage.example",
     PDUFA_INTERNAL_API_KEY: "internal-hop-test-only-secret",
   });
+  delete process.env.PDUFA_HOP_API_BASE_URL;
   let calls = 0;
   global.fetch = async (url, init) => {
     calls += 1;
-    assert.equal(url, "https://backend.example/api/hop/readiness");
+    assert.equal(url, "https://pdufa-hop-readonly-review.onrender.com/api/hop/readiness");
     assert.equal(init.headers["x-pdufa-internal-key"], "internal-hop-test-only-secret");
     assert.ok(!init.method || init.method === "GET");
+    assert.equal(init.redirect, "error");
     return new Response(JSON.stringify(sourceFixture()), { status: 200, headers: { "Content-Type": "application/json" } });
   };
   try {
@@ -104,6 +129,23 @@ test("Authenticated HOP proxy reads only approved backend endpoint and hides cre
     const denied = await route.GET(request);
     assert.equal(denied.status, 503);
     assert.ok(!JSON.stringify(await denied.json()).includes("internal-hop-test-only-secret"));
+    // An explicitly configured source remains isolated; an auth error never
+    // retries against the storage backend or exposes the upstream error body.
+    process.env.PDUFA_HOP_API_BASE_URL = "https://hop.example";
+    calls = 0;
+    global.fetch = async (url) => {
+      calls++;
+      assert.equal(url, "https://hop.example/api/hop/readiness");
+      return new Response(JSON.stringify({ detail: "private-upstream-message" }), { status: 401 });
+    };
+    const upstreamDenied = await route.GET(request);
+    assert.equal(upstreamDenied.status, 503);
+    assert.equal(calls, 1);
+    assert.doesNotMatch(JSON.stringify(await upstreamDenied.json()), /private-upstream-message|internal-hop-test-only-secret/);
+    // Invalid explicit configuration must fail before any credential-bearing request.
+    process.env.PDUFA_HOP_API_BASE_URL = "https://hop.example/path";
+    global.fetch = async () => assert.fail("Invalid HOP source must not fall back");
+    assert.equal((await route.GET(request)).status, 503);
   } finally {
     global.fetch = originalFetch;
     for (const [key, value] of Object.entries(originals)) {
