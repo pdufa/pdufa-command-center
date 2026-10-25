@@ -21,11 +21,18 @@ def audit_readback(nct_id: str, question_id: str, *, max_events: int = 100) -> d
             main.ScientificReviewAuditEvent.question_id == question_id,
         ).order_by(main.ScientificReviewAuditEvent.recorded_at,
                    main.ScientificReviewAuditEvent.id).limit(max_events + 1)).all()
+        submissions = session.scalars(select(main.ScientificReviewSubmission).where(
+            main.ScientificReviewSubmission.nct_id == nct_id,
+            main.ScientificReviewSubmission.question_id == question_id,
+        )).all()
         truncated = len(events) > max_events
         results = []
         for event in events[:max_events]:
             payload = event.event_payload
-            event_digest_valid = (event.event_sha256 == audit_digest(payload))
+            try:
+                event_digest_valid = (event.event_sha256 == audit_digest(payload))
+            except (ValueError, TypeError, OverflowError):
+                event_digest_valid = False
             submission = session.get(main.ScientificReviewSubmission,
                                      payload.get("submissionId", "") if isinstance(payload, dict) else "")
             submission_valid = False
@@ -37,8 +44,12 @@ def audit_readback(nct_id: str, question_id: str, *, max_events: int = 100) -> d
                     "decision": submission.decision,
                     "attestation": submission.attestation,
                 }
+                try:
+                    statement_valid = submission.content_sha256 == audit_digest(statement)
+                except (ValueError, TypeError, OverflowError):
+                    statement_valid = False
                 submission_valid = (
-                    submission.content_sha256 == audit_digest(statement)
+                    statement_valid
                     and submission.content_sha256 == payload.get("contentSha256")
                     and submission.google_subject == event.google_subject
                     and submission.nct_id == event.nct_id
@@ -49,10 +60,21 @@ def audit_readback(nct_id: str, question_id: str, *, max_events: int = 100) -> d
                 "submissionId": payload.get("submissionId") if isinstance(payload, dict) else None,
                 "integrityVerified": event_digest_valid and submission_valid,
             })
+        referenced_ids = [event.event_payload.get("submissionId")
+                          for event in events
+                          if isinstance(event.event_payload, dict)
+                          and event.event_type == "review_statement_submitted"]
+        expected_ids = {submission.id for submission in submissions}
+        history_complete = (not truncated
+                            and len(referenced_ids) == len(expected_ids)
+                            and set(referenced_ids) == expected_ids)
     return {
+        "recordedSubmissionCount": len(submissions),
+        "auditHistoryComplete": history_complete,
+        "hasRecordedReview": bool(submissions),
         "nctId": nct_id, "questionId": question_id,
         "events": results, "truncated": truncated,
-        "integrityVerified": not truncated and all(x["integrityVerified"] for x in results),
+        "integrityVerified": history_complete and bool(submissions) and all(x["integrityVerified"] for x in results),
         "independentSourceVerified": False, "adjudicated": False,
         "scientificScore": None,
     }
