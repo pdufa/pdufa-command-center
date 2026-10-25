@@ -67,6 +67,9 @@ _PAGE = r'''<!doctype html>
       <h2 style="margin-top:24px">Evidence reconciliation · unresolved questions</h2>
       <p class="muted evidence-note">These are review questions and candidate source links, not proven discrepancies or independently verified results. Opening a source does not resolve a scientific evidence gate.</p>
       <div id="evidence-questions"></div>
+      <button id="worksheet" type="button">Show source-review acceptance criteria</button>
+      <p id="worksheet-status" class="muted" role="status"></p>
+      <div id="worksheet-criteria"></div>
     </div>
   </section>
   <p class="footer">Scientific review requires original dated sources and independent corroboration. One operator cannot generate two independent confirmations. <a href="/health">Service health</a></p>
@@ -141,10 +144,51 @@ _PAGE = r'''<!doctype html>
     if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
     status("Signed out. Google identity tokens are not stored.");
   });
+  document.getElementById("worksheet").addEventListener("click", async function () {
+    var id = document.getElementById("trial").value.trim().toUpperCase();
+    var button = document.getElementById("worksheet");
+    var statusText = document.getElementById("worksheet-status");
+    var target = document.getElementById("worksheet-criteria");
+    target.replaceChildren();
+    if (!/^NCT[0-9]{8}$/.test(id)) {
+      statusText.textContent = "Enter an exact NCT ID first.";
+      return;
+    }
+    button.disabled = true;
+    statusText.textContent = "Loading the checksum-protected source review worksheet…";
+    try {
+      var packet = await authorizedFetch("/api/scientific-assessment/operator/worksheet/" +
+        encodeURIComponent(id));
+      var items = packet && packet.reconciliation && packet.reconciliation.checks;
+      if (!Array.isArray(items) || packet.scientificallyVerified !== false ||
+          packet.readyForFullScientificConclusion !== false) {
+        throw Error("Worksheet is missing mandatory evidence-review safeguards");
+      }
+      items.forEach(function (item, index) {
+        var detail = element("details");
+        detail.appendChild(element("summary", (index + 1) + ". " + item.title +
+          " · " + String(item.resolutionCriteria && item.resolutionCriteria.length || 0) + " required checks"));
+        var ol = element("ol");
+        (item.resolutionCriteria || []).forEach(function (criterion) {
+          ol.appendChild(element("li", criterion));
+        });
+        detail.appendChild(ol);
+        detail.appendChild(element("p",
+          "Status: Open. Criteria verified: 0. Independent adjudication pending.", "evidence-note"));
+        target.appendChild(detail);
+      });
+      statusText.textContent = items.length + " review questions loaded. " +
+        "The packet SHA-256 is an integrity checksum only, not scientific verification.";
+    } catch (err) {
+      statusText.textContent = String(err.message || err);
+    } finally { button.disabled = false; }
+  });
   loadButton.addEventListener("click", async function () {
     var id = document.getElementById("trial").value.trim().toUpperCase();
     var msg = document.getElementById("research-status");
     report.classList.add("hide");
+    document.getElementById("worksheet-criteria").replaceChildren();
+    document.getElementById("worksheet-status").textContent = "";
     if (!/^NCT[0-9]{8}$/.test(id)) {
       msg.textContent = "Enter an exact NCT ID, such as NCT02142738.";
       return;
