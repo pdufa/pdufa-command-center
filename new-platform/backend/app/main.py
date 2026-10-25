@@ -1218,6 +1218,32 @@ def scientific_operator_research(
     return result
 
 
+@app.get("/api/scientific-assessment/operator/worksheet/{nct_id}")
+def scientific_operator_review_worksheet(
+    nct_id: str,
+    response: Response,
+    authorization: Annotated[str | None, Header()] = None,
+):
+    """Authenticated read-only source worksheet with reproducible SHA-256.
+
+    A worksheet contains unresolved questions, candidate citations and
+    acceptance criteria; it never marks evidence verified or assigns scores.
+    """
+    scientific_single_operator_me(authorization)
+    if not re.fullmatch(r"NCT[0-9]{8}", nct_id or ""):
+        raise HTTPException(status_code=422, detail="Exact archived NCT identity required")
+    from .scientific_review_packet import build_review_packet
+
+    try:
+        packet = build_review_packet(nct_id)
+    except LookupError:
+        raise HTTPException(status_code=404, detail="Trial not present in scientific archive") from None
+    except ValueError:
+        raise HTTPException(status_code=409, detail="Archived review worksheet integrity failed") from None
+    response.headers["Cache-Control"] = "private, no-store"
+    return packet
+
+
 @app.get("/api/scientific-assessment/storage-status", dependencies=[Depends(require_internal_key)])
 def scientific_assessment_storage_status():
     """Authenticated, read-only schema and record-count diagnostic."""
