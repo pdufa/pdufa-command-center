@@ -104,6 +104,10 @@ def test_worksheet_preserves_source_hashes_and_explicit_not_adjudicated():
     assert parsed[0]["model_eligible"] == "False"
     assert parsed[0]["fda_pdf_sha256"] == "f" * 64
     assert parsed[0]["candidate_pages_1_based"] == "2"
+    assert parsed[0]["first_reviewer"] == ""
+    assert parsed[0]["first_reviewer_original_fda_action_date"] == ""
+    assert parsed[0]["second_reviewer"] == ""
+    assert parsed[0]["independent_discrepancy_resolution"] == ""
 
 
 def test_weak_page_match_can_never_be_labeled_as_strong():
