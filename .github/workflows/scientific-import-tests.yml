@@ -17,6 +17,7 @@ on:
       - "new-platform/backend/app/scientific_quantitative_results.py"
       - "new-platform/backend/app/scientific_readiness_grades.py"
       - "new-platform/backend/app/scientific_evidence_ledger.py"
+      - "new-platform/backend/app/scientific_reconciliation_worklist.py"
       - "new-platform/backend/app/scientific_registry_evidence.py"
       - "new-platform/backend/tests/test_scientific_import.py"
       - "new-platform/backend/tests/test_scientific_integrity.py"
