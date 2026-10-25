@@ -1139,7 +1139,8 @@ class Verifier:
                 or not re.fullmatch(r"\d{3}", supplement)
                 or not letter or letter.group(2) != application
                 or letter.group(3) != supplement
-                or not label_url or self.primary(event, url) != "FDA"
+                or not label_url or label_url != config.get("approval_label_url")
+                or self.primary(event, url) != "FDA"
                 or self.primary(event, label_url) != "FDA"
                 or url not in config.get("urls", ())
                 or not re.search(r"\bNDA\s+" + re.escape(application)
