@@ -20,7 +20,7 @@ export type ScientificInputAudit = {
   analysisReadiness: {
     coveragePercent: number;
     requirementsCovered: number;
-    requirementsTotal: 16;
+    requirementsTotal: number;
     readyForFullScientificConclusion: false;
     verdict: "NOT_READY";
     passFail: "FAIL_INCOMPLETE_INPUTS";
