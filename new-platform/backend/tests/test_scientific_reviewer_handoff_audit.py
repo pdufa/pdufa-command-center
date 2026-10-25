@@ -93,23 +93,21 @@ class DualHandoffAuditTests(unittest.TestCase):
 
     def test_cross_trial_rows_tampered_base_and_malformed_review_are_rejected(self):
         mutations = [
-            (self.inventory, lambda x: x[0].__setitem__("nct_id", "NCT04280705")),
-            (self.a, lambda x: x[0].__setitem__("reviewer_slot", "B")),
-            (self.a, lambda x: x[0].__setitem__("assessment", "other")),
-            (self.b, lambda x: x[1].__setitem__("depth", "mismatch")),
-            (self.b, lambda x: x[0].__setitem__("scientific_score", "98")),
-            (self.a, lambda x: x[0].__setitem__("independently_verified", "TRUE")),
-            (self.a, lambda x: x[0].__setitem__("qualification_verification", "VERIFIED")),
-            (self.b, lambda x: x[0].__setitem__("submission_status", "SIGNED")),
-            (self.a, lambda x: x[0].__setitem__("reviewer_decision", "APPROVED")),
+            ("inventory", lambda x: x[0].__setitem__("nct_id", "NCT04280705")),
+            ("A", lambda x: x[0].__setitem__("reviewer_slot", "B")),
+            ("A", lambda x: x[0].__setitem__("assessment", "other")),
+            ("B", lambda x: x[1].__setitem__("depth", "mismatch")),
+            ("B", lambda x: x[0].__setitem__("scientific_score", "98")),
+            ("A", lambda x: x[0].__setitem__("independently_verified", "TRUE")),
+            ("A", lambda x: x[0].__setitem__("qualification_verification", "VERIFIED")),
+            ("B", lambda x: x[0].__setitem__("submission_status", "SIGNED")),
+            ("A", lambda x: x[0].__setitem__("reviewer_decision", "APPROVED")),
         ]
-        for path, mutate in mutations:
-            with self.subTest(path=path.name, fn=str(mutate)):
-                if path == self.inventory:
-                    self._write(path, audit.BASE_FIELDS, self.rows)
-                else:
-                    # Restore using generator's expected baseline for all 320 rows.
-                    slot = "A" if path == self.a else "B"
+        for target, mutate in mutations:
+            with self.subTest(target=target, mutation=str(mutate)):
+                # Reset all three CSVs, so each rejection tests only one tamper.
+                self._write(self.inventory, audit.BASE_FIELDS, self.rows)
+                for slot, path in (("A", self.a), ("B", self.b)):
                     blank = [
                         dict(row, reviewer_slot=slot, reviewer_name="",
                              qualification_verification="NOT_VERIFIED",
@@ -120,15 +118,14 @@ class DualHandoffAuditTests(unittest.TestCase):
                         for row in self.rows
                     ]
                     self._write(path, audit.BASE_FIELDS + audit.REVIEWER_FIELDS, blank)
-                if path == self.inventory:
-                    source = audit._read_csv(path, audit.BASE_FIELDS)
-                    mutate(source)
-                    self._write(path, audit.BASE_FIELDS, source)
+                if target == "inventory":
+                    items = audit._read_csv(self.inventory, audit.BASE_FIELDS)
+                    mutate(items)
+                    self._write(self.inventory, audit.BASE_FIELDS, items)
                 else:
-                    self._edit(path, mutate)
+                    self._edit(self.a if target == "A" else self.b, mutate)
                 with self.assertRaises(ValueError):
                     audit.reconcile_handoff_files(self.nct_id, self.inventory, self.a, self.b)
-                self._write(self.inventory, audit.BASE_FIELDS, self.rows)
 
     def test_missing_duplicate_and_additional_rows_or_columns_rejected(self):
         original = audit._read_csv(self.a, audit.BASE_FIELDS + audit.REVIEWER_FIELDS)
