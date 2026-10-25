@@ -283,6 +283,42 @@ function paintEvidenceLedger(data, status) {
     candidateList.appendChild(note);
   }
   candidates.appendChild(candidateList);section.appendChild(candidates);
+  const matrix=data.sourceReconciliation;
+  if(matrix && Array.isArray(matrix.checks)){
+    const reconciliation=document.createElement("details");
+    const reconciliationHeading=document.createElement("summary");
+    reconciliationHeading.textContent="Source reconciliation questions ("
+       +matrix.unresolvedChecks+" open of "+matrix.totalChecks+") — not adjudicated";
+    reconciliation.appendChild(reconciliationHeading);
+    const summary=document.createElement("p");
+    summary.textContent="These are unresolved analytical questions; source links and potential discrepancies are not independent clinical findings.";
+    reconciliation.appendChild(summary);
+    const worklist=document.createElement("ol");worklist.className="reconciliation-questions";
+    for(const item of matrix.checks){
+      const li=document.createElement("li");
+      const heading=document.createElement("strong");
+      heading.textContent="["+item.priority.toUpperCase()+"] "+item.title+" — OPEN";
+      li.appendChild(heading);
+      const q=document.createElement("p");q.textContent="Question: "+item.question;
+      li.appendChild(q);
+      if(item.observedDiscrepancy){
+        const contrast=document.createElement("p");
+        contrast.textContent="Potential discrepancy: "+item.observedDiscrepancy;
+        li.appendChild(contrast);
+      }
+      const action=document.createElement("small");
+      action.textContent="Required review: "+item.nextAction;
+      li.appendChild(action);
+      const urls=document.createElement("div");
+      for(const url of item.sourceUrls||[]){
+        safeLink(urls,url,"View source");
+        urls.appendChild(document.createTextNode("  "));
+      }
+      li.appendChild(urls);
+      worklist.appendChild(li);
+    }
+    reconciliation.appendChild(worklist);section.appendChild(reconciliation);
+  }
   const ledger=document.createElement("details");
   const ledgerHeading=document.createElement("summary");
   ledgerHeading.textContent="Persistent source revision history ("+(data.entryCount||0)+")";
