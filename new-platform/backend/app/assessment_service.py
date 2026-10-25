@@ -20,6 +20,37 @@ _REVIEW_CACHE = {"at": 0, "value": {}, "status": "NOT_LOADED"}
 FIELDS = ("nct_id", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
 
 
+def _reclaim_transient_memory():
+    """Release completed scoring temporaries on the 512 MiB staging instance.
+
+    No persistent evidence, index rows, or scores are changed. Python's GC
+    clears unreachable objects; glibc then returns free malloc pages to Linux.
+    Both steps are best-effort and do not gate the scoring result.
+    """
+    import gc
+    gc.collect()
+    try:
+        import ctypes
+        import sys
+        if sys.platform.startswith("linux"):
+            libc = ctypes.CDLL("libc.so.6")
+            trim = libc.malloc_trim
+            trim.argtypes = [ctypes.c_size_t]
+            trim.restype = ctypes.c_int
+            trim(0)
+    except (AttributeError, OSError, ValueError):
+        pass
+
+
+def _build_index_with_reclamation(*args):
+    """Reclaim only after build_index's large local variables have gone away."""
+    try:
+        return build_index(*args)
+    finally:
+        _reclaim_transient_memory()
+
+
+
 def review_evidence():
     if time.monotonic() - _REVIEW_CACHE["at"] < 300: return _REVIEW_CACHE["value"], _REVIEW_CACHE["status"]
     from .source_workspace import fetch
@@ -134,10 +165,10 @@ def get_index(*, synchronous=False):
         _STATE.update(building=True, token=token, error="")
     selected = {**snapshot, "assessmentDate": today}
     if synchronous:
-        build_index(selected, reviews, review_status, key, token)
+        _build_index_with_reclamation(selected, reviews, review_status, key, token)
         if _STATE["error"]: raise HTTPException(status_code=503, detail=_STATE["error"])
         return _STATE["index"]
-    threading.Thread(target=build_index, args=(selected, reviews, review_status, key, token), daemon=True).start()
+    threading.Thread(target=_build_index_with_reclamation, args=(selected, reviews, review_status, key, token), daemon=True).start()
     return {"modelVersion": MODEL, "status": "BUILDING", "total": len(snapshot["pipeline"])}
 
 
