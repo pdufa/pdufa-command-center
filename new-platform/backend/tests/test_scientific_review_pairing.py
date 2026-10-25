@@ -46,6 +46,42 @@ def test_pairing_requires_distinct_subjects_and_valid_audit(monkeypatch, tmp_pat
     assert second["clinicalIndependenceVerified"] is False
     assert second["scientificAdjudicationComplete"] is False
     assert second["mayPromoteScientificScore"] is False
+    assert second["sourceByteIntegrityPassed"] is True
+    assert second["currentlyAuthorizedReviewerCount"] == 2
+    assert second["twoCurrentlyAuthorizedReviewers"] is True
+    assert second["pairingTechnicalPreflightPassed"] is True
+
+    # Current access checks must not rewrite the immutable historical review:
+    # revoking an account leaves the signed statements recorded, but blocks
+    # pairing eligibility until that account is authorized again.
+    with Session(engine) as session:
+        reviewer = session.get(main.ScientificReviewerAccount, "b")
+        reviewer.enabled = False
+        session.commit()
+    revoked = review_pairing_status(args["nct_id"], args["question_id"], args["source_sha256"])
+    assert revoked["twoIndependentStatementsRecorded"] is True
+    assert revoked["currentlyAuthorizedReviewerCount"] == 1
+    assert revoked["twoCurrentlyAuthorizedReviewers"] is False
+    assert revoked["pairingTechnicalPreflightPassed"] is False
+    assert revoked["mayPromoteScientificScore"] is False
+    with Session(engine) as session:
+        reviewer = session.get(main.ScientificReviewerAccount, "b")
+        reviewer.enabled = True
+        source = session.get(main.ScientificSourceDocument, "1" * 32)
+        source.payload = b"%PDF-1.4\\nchanged-source\\n%%EOF"
+        session.commit()
+    corrupted = review_pairing_status(args["nct_id"], args["question_id"], args["source_sha256"])
+    assert corrupted["twoIndependentStatementsRecorded"] is True
+    assert corrupted["sourceByteIntegrityPassed"] is False
+    assert corrupted["pairingTechnicalPreflightPassed"] is False
+    assert corrupted["sourceContentIndependentlyVerified"] is False
+    with Session(engine) as session:
+        source = session.get(main.ScientificSourceDocument, "1" * 32)
+        source.payload = pdf
+        session.commit()
+    restored = review_pairing_status(args["nct_id"], args["question_id"], args["source_sha256"])
+    assert restored["sourceByteIntegrityPassed"] is True
+    assert restored["pairingTechnicalPreflightPassed"] is True
     with Session(engine) as session:
         event = session.scalar(select(main.ScientificReviewAuditEvent))
         event.event_sha256 = "0" * 64
@@ -62,3 +98,6 @@ def test_empty_pairing_never_passes_audit(monkeypatch, tmp_path):
     result = review_pairing_status("NCT02142738", "safety_endpoint_taxonomy", "a" * 64)
     assert result["auditIntegrityPassed"] is False
     assert result["twoDistinctIdentityStatementsRecorded"] is False
+    assert result["sourceByteIntegrityPassed"] is False
+    assert result["currentlyAuthorizedReviewerCount"] == 0
+    assert result["pairingTechnicalPreflightPassed"] is False
