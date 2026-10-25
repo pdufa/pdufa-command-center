@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     });
   }
   const base = process.env.PDUFA_SCIENTIFIC_API_BASE_URL?.replace(/\/$/, "");
-  const key = process.env.PDUFA_INTERNAL_API_KEY;
+  const key = process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY;
   if (!base?.startsWith("https://") || !key) {
     return NextResponse.json({ connection: "scientific_backend_not_configured" }, {
       status: 503, headers: PRIVATE,
