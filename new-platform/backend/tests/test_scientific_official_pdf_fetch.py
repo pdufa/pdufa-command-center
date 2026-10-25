@@ -253,3 +253,35 @@ def test_ema_fourth_source_is_pdf_bytes_only_not_signed_prelock_sap(monkeypatch)
     assert captured[0]["sourceType"]=="official_agency_document"
     assert captured[0]["gateId"]=="protocol_sap"
     assert "independentlyVerified" not in captured[0]
+
+
+
+def test_ema_exact_url_enforces_separate_16_mib_ceiling(monkeypatch):
+    calls=[]
+    # A response just above 4 MiB is allowed only for the pinned EMA PDF.
+    raw=b"%PDF-1.7\n" + b"0"*(sources.MAX_PDF_BYTES+1) + b"\n%%EOF\n"
+    def mocked(url,**kwargs):
+        calls.append(url)
+        return Response(body=raw,length=len(raw))
+    monkeypatch.setattr(sources.requests,"get",mocked)
+    assert sources.fetch_official_pdf("ema") == raw
+    assert calls == [sources.EMA_2016_ASSESSMENT]
+    with pytest.raises(sources.OfficialSourceUnavailable,
+                       match="exceeds archival limit"):
+        sources.fetch_official_pdf("protocol")
+    too_big=Response(length=sources.MAX_EMA_PDF_BYTES+1)
+    monkeypatch.setattr(sources.requests,"get",
+                        lambda url,**kwargs: too_big)
+    with pytest.raises(sources.OfficialSourceUnavailable,
+                       match="exceeds archival limit"):
+        sources.fetch_official_pdf("ema")
+    assert too_big.closed is True
+
+
+def test_bootstrap_only_prints_allowlisted_fetch_error_reasons(monkeypatch,caplog):
+    def rejects(_,source):
+        raise sources.OfficialSourceUnavailable("Private upstream auth token 123")
+    monkeypatch.setattr(sources,"archive_official_pdf",rejects)
+    sources.bootstrap_pinned_pilot_sources()
+    assert "Private upstream auth token" not in caplog.text
+    assert "reason=Local archive validation, conflict, or source unavailable" in caplog.text
