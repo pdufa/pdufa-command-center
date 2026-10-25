@@ -199,6 +199,7 @@ test("trial sheet embeds pilot only on the exact NCT, not across all candidate t
     path.join(__dirname, "../app/trial/[nctId]/page.tsx"), "utf8",
   );
   assert.match(file, /TrialSciencePilot/);
-  assert.match(file, /NCT02142738/);
+  assert.match(file, /import \{ PILOT_NCT \} from/);
+  assert.equal(PILOT_NCT, "NCT02142738");
   assert.match(file, /nct\s*===\s*(?:"NCT02142738"|PILOT_NCT)/);
 });
