@@ -30,9 +30,9 @@ jobs:
       - name: Test conservative identity linkage rules
         working-directory: new-platform/backend
         run: PYTHONPATH=. python -m pytest -q tests/test_hop_fda_application_crosswalk.py tests/test_hop_fda_review_cycle_triage.py tests/test_hop_fda_identity_review_queue.py tests/test_hop_fda_document_probe.py
-      - name: Build source crosswalk and verify first 20 published PDFs
+      - name: Build crosswalk and check all queued official FDA PDFs in bounded batches
         working-directory: new-platform/backend
-        run: PYTHONPATH=. python scripts/collect_hop_fda_crosswalk.py --output-dir "${{ runner.temp }}/hop-crosswalk"
+        run: PYTHONPATH=. python scripts/collect_hop_fda_crosswalk.py --pdf-probe-all --output-dir "${{ runner.temp }}/hop-crosswalk"
       - name: Publish non-model-eligible identity audit artifact
         uses: actions/upload-artifact@v4
         with:

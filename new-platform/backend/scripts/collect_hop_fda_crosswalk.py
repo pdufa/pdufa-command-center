@@ -12,7 +12,7 @@ from app.hop_drugsfda_snapshot import stage_drugsfda_manifest
 from app.hop_fda_application_crosswalk import crosswalk_public_fda_sources
 from app.hop_fda_review_cycle_triage import triage_published_letter_cycles
 from app.hop_fda_identity_review_queue import create_fda_identity_review_queue
-from app.hop_fda_document_probe import probe_fda_review_documents
+from app.hop_fda_document_probe import probe_fda_review_documents, probe_all_fda_review_documents
 
 MANIFEST_URL = "https://api.fda.gov/download.json"
 
@@ -31,6 +31,8 @@ def main() -> None:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--pdf-probe-offset", type=int, default=0)
     parser.add_argument("--pdf-probe-limit", type=int, default=20)
+    parser.add_argument("--pdf-probe-all", action="store_true",
+                        help="Verify all queued official PDF files in conservative bounded batches")
     args = parser.parse_args()
     manifest = json.loads(fetch(MANIFEST_URL, 8_000_000))
     crl_parts = manifest["results"]["transparency"]["crl"]["partitions"]
@@ -48,8 +50,12 @@ def main() -> None:
     crosswalk, audit = crosswalk_public_fda_sources(letters, registry)
     triage_cases, triage_audit = triage_published_letter_cycles(crosswalk, date.today())
     identity_queue, identity_audit = create_fda_identity_review_queue(crosswalk, letters)
-    pdf_sources, pdf_audit = probe_fda_review_documents(
-        identity_queue, offset=args.pdf_probe_offset, limit=args.pdf_probe_limit)
+    if args.pdf_probe_all:
+        pdf_sources, pdf_audit = probe_all_fda_review_documents(
+            identity_queue, batch_size=args.pdf_probe_limit)
+    else:
+        pdf_sources, pdf_audit = probe_fda_review_documents(
+            identity_queue, offset=args.pdf_probe_offset, limit=args.pdf_probe_limit)
     audit["source_letter_archive_sha256"] = letter_audit["archive_sha256_by_url"]
     audit["source_registry_archive_sha256"] = registry_audit["source_archive_sha256"]
     dest = Path(args.output_dir)
