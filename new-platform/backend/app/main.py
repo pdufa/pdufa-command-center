@@ -386,6 +386,25 @@ async def lifespan(app: FastAPI):
                     "candidate_revision_count=%d verified_gate_count=0",
                     evidence_count,
                 )
+                try:
+                    from .scientific_source_documents import read_document_manifest
+                    pdf_manifest = read_document_manifest("NCT02142738")
+                    source_archive_ok = (
+                        pdf_manifest["allCapturedBytesRehashed"] is True
+                        and pdf_manifest["independentSourceVerificationCompleted"] is False
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_PDF_ARCHIVE_READBACK status=%s "
+                        "captured_pdfs=%d byte_integrity_checked=True "
+                        "independent_content_verification=False",
+                        "PASS" if source_archive_ok else "FAIL",
+                        pdf_manifest["sourceDocumentCount"],
+                    )
+                except Exception as pdf_archive_error:
+                    logging.getLogger(__name__).error(
+                        "SCIENTIFIC_PDF_ARCHIVE_READBACK status=FAIL error_type=%s",
+                        type(pdf_archive_error).__name__,
+                    )
                 from .scientific_reviewer_findings import read_reviewer_statements
                 reviewer = read_reviewer_statements("NCT02142738")
                 reviewer_ok = (
