@@ -69,11 +69,13 @@ async function withEnv(run, base = "https://isolated-science.example.org") {
   const before = {
     PDUFA_SCIENTIFIC_API_BASE_URL: process.env.PDUFA_SCIENTIFIC_API_BASE_URL,
     PDUFA_INTERNAL_API_KEY: process.env.PDUFA_INTERNAL_API_KEY,
+    PDUFA_SCIENTIFIC_PREVIEW_READ_KEY: process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY,
     PDUFA_API_BASE_URL: process.env.PDUFA_API_BASE_URL,
   };
   if (base === null) delete process.env.PDUFA_SCIENTIFIC_API_BASE_URL;
   else process.env.PDUFA_SCIENTIFIC_API_BASE_URL = base;
-  process.env.PDUFA_INTERNAL_API_KEY = "TEST_INTERNAL_KEY_NOT_A_REAL_SECRET";
+  process.env.PDUFA_INTERNAL_API_KEY = "TEST_ORDINARY_API_KEY_NOT_A_REAL_SECRET";
+  process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY = "TEST_SCIENTIFIC_READ_KEY_NOT_A_REAL_SECRET";
   process.env.PDUFA_API_BASE_URL = "https://ordinary-dashboard.example.org";
   try { return await run(); }
   finally {
@@ -115,7 +117,8 @@ test("authenticated isolated GET proves exact-trial connection without publishin
   assert.equal(route.calls.length, 1);
   assert.equal(route.calls[0].url,
     "https://isolated-science.example.org/api/scientific-assessment?exact_id=TRIAL%7CNCT02142738");
-  assert.equal(route.calls[0].init.headers["x-pdufa-internal-key"], process.env.PDUFA_INTERNAL_API_KEY);
+  assert.equal(route.calls[0].init.headers["x-pdufa-internal-key"], process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY);
+  assert.notEqual(route.calls[0].init.headers["x-pdufa-internal-key"], process.env.PDUFA_INTERNAL_API_KEY);
   assert.equal(route.calls[0].init.cache, "no-store");
   assert.equal(result.status, 200);
   assert.equal(result.body.connection, "connected");
@@ -170,4 +173,13 @@ test("a network failure is unavailable, not a negative clinical assessment", asy
   assert.equal(result.status, 503);
   assert.equal(result.body.connection, "scientific_backend_unreachable");
   assert.ok(!Object.prototype.hasOwnProperty.call(result.body, "fdaApprovalProbability"));
+}));
+
+test("isolated scientific preview credential is mandatory; ordinary dashboard key cannot substitute", async () => withEnv(async () => {
+  const route = makeRoute();
+  delete process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY;
+  const result = await route.request();
+  assert.equal(result.status, 503);
+  assert.equal(result.body.connection, "scientific_backend_not_configured");
+  assert.equal(route.calls.length, 0);
 }));
