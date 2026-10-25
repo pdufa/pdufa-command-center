@@ -222,6 +222,25 @@ class ScientificReviewAuditEvent(Base):
     recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class ScientificReviewSubmission(Base):
+    """Immutable reviewer submission; no scientific adjudication or score."""
+    __tablename__ = "scientific_review_submissions"
+    __table_args__ = (
+        UniqueConstraint("nct_id", "question_id", "source_sha256", "google_subject",
+                         name="uq_scientific_review_subject_source"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    question_id: Mapped[str] = mapped_column(String(70), nullable=False)
+    source_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    google_subject: Mapped[str] = mapped_column(String(255), nullable=False)
+    decision: Mapped[str] = mapped_column(String(32), nullable=False)
+    attestation: Mapped[dict] = mapped_column(JSON, nullable=False)
+    content_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class ScientificSmokeClaim(Base):
     """One durable execution claim per trial for temporary isolated live smoke."""
     __tablename__ = "scientific_smoke_claims"
