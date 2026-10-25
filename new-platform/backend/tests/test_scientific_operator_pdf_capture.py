@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app import main, scientific_google_identity
-from app.scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR
+from app.scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT
 from app.scientific_source_documents import read_document_manifest
 
 NCT = "NCT02142738"
@@ -330,3 +330,32 @@ def test_operator_can_trigger_only_specific_third_pinned_csr_fetch(isolated, mon
     assert response.json()["independentReviewRequired"] is True
     with Session(engine) as session:
         assert session.query(main.ScientificReviewSubmission).count()==0
+
+
+
+def test_ema_statistical_review_cannot_be_spoofed_or_certify_sap(isolated, monkeypatch):
+    client,engine=isolated
+    enabled(monkeypatch)
+    path="/api/scientific-assessment/operator/source-documents/"+NCT
+    payload=submission(
+        raw=sample_pdf(b"Official EMA December 2016 statistical methods"),
+        gateId="protocol_sap",sourceType="official_agency_document",
+        sourceUrl=EMA_2016_ASSESSMENT,
+    )
+    assert client.post(path, json=payload).status_code==401
+    assert client.post(path,headers=HEADERS,
+                       json={**payload,"gateId":"official_regulatory"}).status_code==422
+    assert client.post(path,headers=HEADERS,
+                       json={**payload,"sourceUrl":"https://www.ema.europa.eu/fake.pdf"}).status_code==422
+    response=client.post(path,headers=HEADERS,json=payload)
+    assert response.status_code==201,response.text
+    body=response.json()
+    assert body["gateId"]=="protocol_sap"
+    assert body["sourceType"]=="official_agency_document"
+    assert body["sourceUrl"]==EMA_2016_ASSESSMENT
+    assert body["documentContentScientificallyVerified"] is False
+    assert body["canCountTowardReadiness"] is False
+    assert body["sourceAuthorshipVerified"] is False
+    with Session(engine) as session:
+        assert session.query(main.ScientificReviewSubmission).count()==0
+        assert session.query(main.ScientificReviewerFinding).count()==0
