@@ -241,6 +241,8 @@ def read_ledger(nct_id: str) -> dict:
     from .scientific_reviewer_findings import read_reviewer_statements
     worklist = reconciliation_worklist(nct_id)
     findings = read_reviewer_statements(nct_id)
+    from .scientific_source_documents import read_document_manifest
+    captured_documents = read_document_manifest(nct_id)
     worklist["reviewerQuestionSummaries"] = findings["questionSummaries"]
     worklist["reviewerStatementCount"] = findings["totalStatements"]
     worklist["questionDisputeCount"] = findings["questionsWithConflictingStatements"]
@@ -257,6 +259,7 @@ def read_ledger(nct_id: str) -> dict:
         "candidateCount": len(candidates),
         "sourceReconciliation": worklist,
         "reviewerFindings": findings,
+        "capturedSourceDocuments": captured_documents,
         "adjudicationPreflight": preflight,
         "externalGateStatuses": [
             {"gateId": gate_id, "label": label, "independentlyVerified": False,
