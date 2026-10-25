@@ -112,6 +112,29 @@ def test_safety_counts_require_affected_and_at_risk():
     assert _by_id(review_readiness(NCT, record))["safety_denominators"]["available"] is True
 
 
+def test_impossible_primary_pvalues_and_reversed_intervals_are_not_gradeable():
+    record = filled_archive()
+    analysis = record["resultsSection"]["outcomeMeasuresModule"]["outcomeMeasures"][0]["analyses"][0]
+    analysis["pValue"] = "1.7"
+    analysis["ciLowerLimit"] = "1.8"
+    analysis["ciUpperLimit"] = "1.1"
+    assert _by_id(review_readiness(NCT, record))["primary_analysis"]["available"] is False
+    analysis["ciLowerLimit"] = "-0.3"
+    analysis["ciUpperLimit"] = "1.1"
+    assert _by_id(review_readiness(NCT, record))["primary_analysis"]["available"] is True
+
+
+def test_safety_gate_rejects_impossible_negative_fractional_and_excess_counts():
+    record = filled_archive()
+    group = record["resultsSection"]["adverseEventsModule"]["seriousEvents"][0]["stats"][0]
+    for affected, at_risk in (("-1", "100"), ("101", "100"), ("1.5", "100"), ("1", "0")):
+        group["numAffected"] = affected
+        group["numAtRisk"] = at_risk
+        assert _by_id(review_readiness(NCT, record))["safety_denominators"]["available"] is False
+    group["numAffected"], group["numAtRisk"] = "0", "100"
+    assert _by_id(review_readiness(NCT, record))["safety_denominators"]["available"] is True
+
+
 def test_registry_claims_about_fda_and_publications_cannot_self_certify():
     record = filled_archive()
     record["externalEvidenceVerified"] = True
