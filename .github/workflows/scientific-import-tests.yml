@@ -23,7 +23,6 @@ on:
       - "new-platform/backend/tests/test_scientific_integrity.py"
       - "new-platform/backend/tests/test_scientific_investigation_20.py"
       - "new-platform/backend/tests/test_scientific_quantitative_results.py"
-      - "new-platform/backend/tests/test_scientific_readiness_grades.py tests/test_scientific_evidence_ledger.py"
       - "new-platform/backend/tests/test_scientific_evidence_ledger.py"
       - "new-platform/backend/tests/test_scientific_batch_import.py"
       - "new-platform/backend/tests/test_scientific_batch_api.py"
@@ -51,4 +50,4 @@ jobs:
         env:
           DATABASE_URL: "sqlite:///./scientific_import_ci.sqlite3"
           PDUFA_REQUIRE_POSTGRES: "0"
-        run: python -m pytest -q tests/test_scientific_import.py tests/test_scientific_batch_import.py tests/test_scientific_batch_api.py tests/test_scientific_live_smoke.py tests/test_scientific_integrity.py tests/test_scientific_investigation_20.py tests/test_scientific_quantitative_results.py tests/test_scientific_readiness_grades.py
+        run: python -m pytest -q tests/test_scientific_import.py tests/test_scientific_batch_import.py tests/test_scientific_batch_api.py tests/test_scientific_live_smoke.py tests/test_scientific_integrity.py tests/test_scientific_investigation_20.py tests/test_scientific_quantitative_results.py tests/test_scientific_readiness_grades.py tests/test_scientific_evidence_ledger.py
