@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_PLAN_ONLY_NOT_A_COLLECTED_COHORT",
+  "sources": [
+    {
+      "source_id": "drugs_at_fda",
+      "title": "Drugs@FDA database and downloadable data files",
+      "url": "https://www.fda.gov/drugs/drug-approvals-and-databases/drugsfda-data-files",
+      "domain": "fda.gov",
+      "role": "Primary application/product history and approved decision evidence",
+      "limitations": [
+        "Approved-product records alone do not enumerate all submitted applications or all non-approval review cycles",
+        "Approval supplements, original applications, resubmissions, and review cycles must be distinguished",
+        "Decision date and outcome must be verified at application/review-cycle level"
+      ],
+      "required_fields": ["application_number", "application_type", "submission_type", "action_date", "action_type", "sponsor", "source_document_url"],
+      "denominator_eligible_by_itself": false
+    },
+    {
+      "source_id": "openfda_crl_transparency",
+      "title": "FDA Complete Response Letter transparency database",
+      "url": "https://open.fda.gov/apis/transparency/completeresponseletters/",
+      "domain": "open.fda.gov",
+      "role": "CRL event discovery and supporting source documents",
+      "limitations": [
+        "Publication is selective and release batches are not a representative sample of all FDA review outcomes",
+        "A CRL is a review-cycle non-approval outcome, not necessarily permanent application failure",
+        "CRL-only counts must never be used as the denominator for approval probability"
+      ],
+      "required_fields": ["application_number", "letter_date", "approval_status_at_release", "letter_url", "source_retrieved_on"],
+      "denominator_eligible_by_itself": false
+    },
+    {
+      "source_id": "fda_drug_approval_packages",
+      "title": "FDA Drugs@FDA approval packages and multidisciplinary reviews",
+      "url": "https://www.accessdata.fda.gov/scripts/cder/daf/",
+      "domain": "accessdata.fda.gov",
+      "role": "Adjudicate approval action, application type, review cycle, and source documents",
+      "limitations": [
+        "Only use evidence publicly available before the target decision when constructing predictors",
+        "An approval package can verify an approval but cannot alone enumerate all applications that were not approved"
+      ],
+      "required_fields": ["application_number", "action_date", "review_cycle", "document_type", "document_url"],
+      "denominator_eligible_by_itself": false
+    }
+  ],
+  "cohort_rules": [
+    "Define the target population before counting outcomes, such as original NDA/BLA review cycles by year and center",
+    "Count each application review cycle as the outcome unit and preserve later cycles only under a predeclared analysis plan",
+    "Reconcile the full denominator against a source that enumerates the defined population, not only published CRLs or approvals",
+    "Record approval, complete response, withdrawal, refusal-to-file, and unresolved outcomes separately; do not silently force them into binary labels",
+    "Capture predictors only from dated sources available strictly before each decision date",
+    "Require independent adjudication of application identity, decision date, outcome, and predictor cutoff",
+    "Do not authorize training or probability output until source coverage and outcome ascertainment are independently reconciled"
+  ]
+}
