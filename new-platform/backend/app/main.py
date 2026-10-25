@@ -1127,6 +1127,7 @@ def get_scientific_assessment(exact_id: str):
     result["registryEvidence"] = None
     result["registryEvidenceStatus"] = "not_available"
     result["investigation20"] = None
+    result["investigation40"] = None
     result["quantitativeResults"] = None
     result["readinessGrades"] = None
     result["evidenceLedger"] = None
@@ -1158,6 +1159,25 @@ def get_scientific_assessment(exact_id: str):
                         match.group(1), snapshot,
                         archive_retrieved_at=record.fetched_at.isoformat() if record.fetched_at else None,
                     )
+                    # Read-only 40-assessment inventory. Candidate citations and
+                    # reviewer statements cannot self-certify independent evidence.
+                    # This view is never a scientific outcome or approval forecast.
+                    from .scientific_investigation_contract import LAYERS, readiness
+                    result["investigation40"] = {
+                        "schemaVersion": "scientific-investigation40-v1",
+                        "nctId": match.group(1),
+                        "layers": [
+                            {"id": layer, "assessments": list(fields)}
+                            for layer, fields in LAYERS.items()
+                        ],
+                        "verification": readiness({}),
+                        "verificationSource": "independent_adjudication_not_available",
+                        "note": (
+                            "This is the required-question inventory only. No"
+                            " independent review gates are satisfied by imported"
+                            " registry records or candidate citations."
+                        ),
+                    }
                     # Optional read-only source queue: ledger failure cannot
                     # contaminate verified archive metadata or readiness grades.
                     try:
