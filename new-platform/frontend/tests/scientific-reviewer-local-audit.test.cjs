@@ -1,0 +1,163 @@
+"use strict";
+const { test } = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const ts = require("typescript");
+require.extensions[".ts"] = (mod, file) => mod._compile(
+  ts.transpileModule(fs.readFileSync(file, "utf8"), {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+      esModuleInterop: true,
+    },
+  }).outputText, file
+);
+const { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } =
+  require("../lib/scientific-depth-review-csv.ts");
+const { auditScientificReviewerCsvs } =
+  require("../lib/scientific-reviewer-local-audit.ts");
+
+const LAYERS = [
+  "trial_design", "efficacy", "safety", "biological_rationale",
+  "statistical_integrity", "evidence_reproducibility", "regulatory",
+  "timeline_and_uncertainty",
+];
+
+function matrix() {
+  const layers = LAYERS.map(id => ({
+    id, assessments: Array.from({ length: 5 }, (_, i) => "assessment_" + (i + 1)),
+  }));
+  const depthLevels = Array.from({ length: 8 }, (_, i) => ({
+    level: i + 1, id: "depth_" + (i + 1), objective: "Review evidence source " + (i + 1),
+  }));
+  return {
+    nctId: "NCT02142738",
+    layers,
+    verification: {
+      required_assessments: 40, verified_assessments: 0, ready_for_analysis: false,
+      scientific_score: null, approval_probability: null,
+    },
+    depthReview: {
+      requiredTasks: 320, completedTasks: 0, readyForScientificConclusion: false,
+      approvalProbability: null, depthLevels,
+      tasks: layers.flatMap(layer => layer.assessments.flatMap(item => depthLevels.map(depth => ({
+        assessmentId: layer.id + "." + item,
+        depthLevel: depth.level,
+        depthId: depth.id,
+        status: "pending_independent_review",
+        independentlyVerified: false,
+        scientificScore: null,
+      })))),
+    },
+  };
+}
+
+function worksheets(m = matrix()) {
+  return {
+    m,
+    inventory: buildScientificDepthReviewCsv(m),
+    a: buildScientificReviewerHandoffCsv(m, "A"),
+    b: buildScientificReviewerHandoffCsv(m, "B"),
+  };
+}
+
+function changeRow(csv, row = 1, change = items => items) {
+  const lines = csv.trimEnd().split("\r\n");
+  const cells = lines[row].match(/"(?:""|[^"])*"/g);
+  assert.equal(cells.length, 21);
+  const raw = cells.map(cell => cell.slice(1, -1).replaceAll('""', '"'));
+  change(raw);
+  lines[row] = raw.map(cell => '"' + cell.replaceAll('"', '""') + '"').join(",");
+  return lines.join("\r\n") + "\r\n";
+}
+
+function observe(csv, decision) {
+  return changeRow(csv, 1, cells => {
+    cells[11] = "Reviewer candidate";
+    cells[13] = "https://clinicaltrials.gov/study/NCT02142738";
+    cells[14] = "a".repeat(64);
+    cells[15] = "2016-10-08";
+    cells[16] = "Table 2";
+    cells[17] = "Observation candidate, not authenticated";
+    cells[18] = decision;
+    cells[19] = "Typed name, NOT a signed claim";
+  });
+}
+
+test("blank A/B exports can be inspected without implying source or reviewer authentication", () => {
+  const { m, inventory, a, b } = worksheets();
+  const before = JSON.stringify(m);
+  const report = auditScientificReviewerCsvs(m, inventory, a, b);
+  assert.equal(report.validatedTaskRows, 320);
+  assert.deepEqual(report.candidateObservations, { A: 0, B: 0 });
+  assert.deepEqual(report.missingProvenance, { A: 0, B: 0 });
+  assert.equal(report.conflictingCandidateDecisions, 0);
+  assert.equal(report.independentlyAdjudicatedTasks, 0);
+  assert.equal(report.reviewerIdentitiesVerified, false);
+  assert.equal(report.sourceBytesVerified, false);
+  assert.equal(report.signaturesVerified, false);
+  assert.equal(report.promotionAllowed, false);
+  assert.equal(report.scientificScore, null);
+  assert.equal(report.fdaApprovalProbability, null);
+  assert.equal(JSON.stringify(m), before);
+});
+
+test("contradictory candidates are identified by task key but never accepted as scientific conclusions", () => {
+  const { m, inventory, a, b } = worksheets();
+  const report = auditScientificReviewerCsvs(
+    m, inventory, observe(a, "supports"), observe(b, "contradicts"),
+  );
+  assert.deepEqual(report.candidateObservations, { A: 1, B: 1 });
+  assert.equal(report.conflictingCandidateDecisions, 1);
+  assert.deepEqual(report.conflictTaskKeys, ["trial_design.assessment_1:1"]);
+  assert.equal(report.promotionAllowed, false);
+  assert.equal(report.independentlyAdjudicatedTasks, 0);
+});
+
+test("one-sided candidate and incomplete document claims are flagged, not approved", () => {
+  const { m, inventory, a, b } = worksheets();
+  const report = auditScientificReviewerCsvs(m, inventory,
+    changeRow(observe(a, "supports"), 1, row => { row[13] = "http://untrusted.example"; }),
+    observe(b, "supports"));
+  assert.deepEqual(report.candidateObservations, { A: 0, B: 1 });
+  assert.deepEqual(report.missingProvenance, { A: 1, B: 0 });
+  assert.equal(report.oneSidedObservations, 1);
+  assert.equal(report.promotionAllowed, false);
+});
+
+test("rejects malformed, wrong-trial, fabricated approval, unsupported reviewer status and forged inventories", () => {
+  const changes = [
+    x => { x.inventory = x.inventory.replace("NCT02142738", "NCT04280705"); },
+    x => { x.a = x.a.replace("NCT02142738", "NCT04280705"); },
+    x => { x.b = x.b.replace('"B","","NOT_VERIFIED"', '"A","","NOT_VERIFIED"'); },
+    x => { x.a = x.a.replace('"NOT_VERIFIED"', '"VERIFIED"'); },
+    x => { x.b = x.b.replace('"NOT_SUBMITTED"', '"SIGNED"'); },
+    x => { x.a = changeRow(x.a, 1, row => { row[8] = "99"; }); },
+    x => { x.a = changeRow(x.a, 1, row => { row[7] = "TRUE"; }); },
+    x => { x.a = changeRow(x.a, 1, row => { row[18] = "APPROVED"; }); },
+    x => { x.inventory = x.inventory.split("\r\n").slice(0, -2).join("\r\n") + "\r\n"; },
+    x => { x.a = x.a.replace('"reviewer_slot"', '"reviewer_slot","duplicate"'); },
+    x => { x.b = x.b.replace('"reviewer_slot"', '"reviewer_slot"x'); },
+    x => { x.a = x.a + x.a.slice(x.a.indexOf("\r\n") + 2); },
+    x => { x.a = "\0" + x.a; },
+    x => { x.b = x.b + "x".repeat(1_048_576); },
+  ];
+  for (const change of changes) {
+    const x = worksheets();
+    change(x);
+    assert.throws(() => auditScientificReviewerCsvs(x.m, x.inventory, x.a, x.b),
+      /Reviewer worksheet comparison blocked|Scientific task export blocked/,
+      String(change));
+  }
+});
+
+test("only exact loaded trial inventory may be compared and no browser network/upload is added", () => {
+  const source = fs.readFileSync(path.join(__dirname, "../app/ScientificAssessment.tsx"), "utf8");
+  assert.match(source, /Compare returned A\/B worksheets locally/);
+  assert.match(source, /Compare three CSV files \(browser only\)/);
+  assert.match(source, /auditScientificReviewerCsvs\(result\.investigation40, inventoryCsv, aCsv, bCsv\)/);
+  assert.match(source, /reviewInventoryFile\.text\(\), reviewerAFile\.text\(\), reviewerBFile\.text\(\)/);
+  assert.match(source, /No clinical review has been independently verified/);
+  assert.doesNotMatch(source, /uploadReviewer|promoteScientificReview|saveReviewerApproval/);
+});

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
+import { auditScientificReviewerCsvs, type LocalReviewerAuditReport } from "../lib/scientific-reviewer-local-audit";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -282,10 +283,24 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [loading, setLoading] = useState(false);
   const [checkingConnection, setCheckingConnection] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
+  const [reviewInventoryFile, setReviewInventoryFile] = useState<File | null>(null);
+  const [reviewerAFile, setReviewerAFile] = useState<File | null>(null);
+  const [reviewerBFile, setReviewerBFile] = useState<File | null>(null);
+  const [localAudit, setLocalAudit] = useState<LocalReviewerAuditReport | null>(null);
+  const [localAuditError, setLocalAuditError] = useState("");
+  const [comparingFiles, setComparingFiles] = useState(false);
+  const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const pendingConnection = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    auditRevision.current++;
+    setReviewInventoryFile(null);
+    setReviewerAFile(null);
+    setReviewerBFile(null);
+    setLocalAudit(null);
+    setLocalAuditError("");
+    setComparingFiles(false);
     pending.current?.abort();
     pendingConnection.current?.abort();
     setResult(null);
@@ -301,6 +316,10 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     pending.current?.abort();
     const controller = new AbortController();
     pending.current = controller;
+    auditRevision.current++;
+    setLocalAudit(null);
+    setLocalAuditError("");
+    setComparingFiles(false);
     setLoading(true);
     setResult(null);
     setError("");
@@ -406,6 +425,31 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Only reads three user-selected local CSV files in this browser. No API call. */
+  async function compareLocalReviewerWorksheets() {
+    if (!result?.investigation40 || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
+    const token = ++auditRevision.current;
+    setLocalAudit(null);
+    setLocalAuditError("");
+    setComparingFiles(true);
+    try {
+      if ([reviewInventoryFile, reviewerAFile, reviewerBFile].some(file => file.size > 1024 * 1024)) {
+        throw new Error("Files must be 1 MB or smaller.");
+      }
+      const [inventoryCsv, aCsv, bCsv] = await Promise.all([
+        reviewInventoryFile.text(), reviewerAFile.text(), reviewerBFile.text(),
+      ]);
+      const report = auditScientificReviewerCsvs(result.investigation40, inventoryCsv, aCsv, bCsv);
+      if (token === auditRevision.current) setLocalAudit(report);
+    } catch {
+      if (token === auditRevision.current) setLocalAuditError(
+        "Local worksheet comparison blocked: CSV files are malformed, mismatched or include unsupported reviewer status. No evidence was imported."
+      );
+    } finally {
+      if (token === auditRevision.current) setComparingFiles(false);
+    }
+  }
+
   const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
   return <section aria-label="Scientific Assessment">
     <button type="button" disabled={!valid || loading} onClick={() => void load()}>
@@ -471,7 +515,7 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
         )}</ol>
       </details> : <p>20-level investigation: no checksum-verified trial archive available.</p>}
 
-      {result.investigation40 && <p>
+      {result.investigation40 && <div>
         <button type="button" disabled={!result.investigation40}
           onClick={() => downloadDepthReviewCsv()}>
           Download 320-task review matrix (CSV)
@@ -492,7 +536,54 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
             upload evidence, or change scientific completion counts. Genuine independent
             identity checks, document review, signed disagreement reconciliation and release approval remain outstanding.</small>
         </details>
-      </p>}
+        <details aria-label="Local A/B scientific worksheet comparison">
+          <summary><strong>Compare returned A/B worksheets locally</strong> · 320-task audit</summary>
+          <p>Choose the three exported CSVs for this exact trial. Files are read only inside your browser—not uploaded, stored or submitted. This is an untrusted worksheet consistency check, not source authentication or independent adjudication.</p>
+          <div>
+            <label>320-task inventory CSV <input type="file" accept=".csv,text/csv" aria-label="Choose inventory CSV"
+              onChange={event => {
+                auditRevision.current++;
+                setReviewInventoryFile(event.target.files?.[0] ?? null);
+                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+              }} /></label>
+          </div>
+          <div>
+            <label>Reviewer A worksheet CSV <input type="file" accept=".csv,text/csv" aria-label="Choose reviewer A CSV"
+              onChange={event => {
+                auditRevision.current++;
+                setReviewerAFile(event.target.files?.[0] ?? null);
+                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+              }} /></label>
+          </div>
+          <div>
+            <label>Reviewer B worksheet CSV <input type="file" accept=".csv,text/csv" aria-label="Choose reviewer B CSV"
+              onChange={event => {
+                auditRevision.current++;
+                setReviewerBFile(event.target.files?.[0] ?? null);
+                setLocalAudit(null); setLocalAuditError(""); setComparingFiles(false);
+              }} /></label>
+          </div>
+          <button type="button"
+            disabled={!reviewInventoryFile || !reviewerAFile || !reviewerBFile || comparingFiles}
+            onClick={() => void compareLocalReviewerWorksheets()}>
+            {comparingFiles ? "Comparing worksheets…" : "Compare three CSV files (browser only)"}
+          </button>
+          {localAuditError && <p role="alert">{localAuditError}</p>}
+          {localAudit && <section aria-label="Unverified local reviewer comparison result" role="status">
+            <p><strong>{localAudit.validatedTaskRows} exact-trial task rows matched.</strong> No clinical review has been independently verified.</p>
+            <p>Candidate entries with syntactically complete source claims: A {localAudit.candidateObservations.A}, B {localAudit.candidateObservations.B}.</p>
+            <p>Incomplete source provenance: A {localAudit.missingProvenance.A}, B {localAudit.missingProvenance.B}.</p>
+            <p>Missing reviewer names or findings: A {localAudit.incompleteObservations.A}, B {localAudit.incompleteObservations.B}.</p>
+            <p>One-sided candidate observations: {localAudit.oneSidedObservations}. Conflicting candidate decisions: {localAudit.conflictingCandidateDecisions}.</p>
+            {localAudit.conflictTaskKeys.length > 0 && <details>
+              <summary>View disputed trial task keys (not resolved)</summary>
+              <ul>{localAudit.conflictTaskKeys.map(key => <li key={key}><code>{key}</code></li>)}</ul>
+            </details>}
+            <p><strong>Independent adjudication: 0/320. Scientific score: NOT ASSIGNED. FDA approval probability: NOT ASSIGNED.</strong></p>
+            <small>Reviewer names, document URLs, claimed hashes and worksheet signatures have not been authenticated; these observations cannot be promoted to verified evidence.</small>
+          </section>}
+        </details>
+      </div>}
 
       {result.investigation40 ? <details>
         <summary><strong>8 scientific layers · 40 assessments</strong>
