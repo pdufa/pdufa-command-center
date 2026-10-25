@@ -111,6 +111,8 @@ def test_source_scoped_claims_protect_2016_vs_2020_2021_2017_windows(archive):
     assert crossover["originalAnalysisCrossover"]["cutoff"] == "2016-05-09"
     assert crossover["documentedPostAnalysisCrossoverAmendment"]["number"] == "P024-06"
     assert crossover["documentedPostAnalysisCrossoverAmendment"]["dateFinalized"] == "2016-07-29"
+    assert crossover["documentedPostAnalysisCrossoverAmendment"]["euRegisterAmendmentDate"] == "2016-08-02"
+    assert crossover["documentedPostAnalysisCrossoverAmendment"]["dateTypesDifferent"] is True
     assert crossover["documentedPostAnalysisCrossoverAmendment"]["afterInitialAnalysisCutoff"] is True
     assert crossover["documentedPostAnalysisCrossoverAmendment"]["patientLevelCrossoverTimingIndependentlyVerified"] is False
     assert crossover["effectiveCrossover"]["patientsWithSubsequentAntiPd1Pdl1"] == 99
