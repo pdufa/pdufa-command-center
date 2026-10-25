@@ -27,6 +27,13 @@ const LAYERS = [
   "statistical_integrity", "evidence_reproducibility", "regulatory", "timeline_and_uncertainty",
 ];
 
+const REQUIREMENT_IDS = [
+  "archive_integrity", "indication", "design", "eligibility", "interventions",
+  "enrollment", "timeline", "registered_primary", "primary_analysis",
+  "safety_denominators", "participant_flow", "baseline", "protocol_sap",
+  "published_results", "independent_replication", "official_regulatory",
+];
+
 function payload(id = ID) {
   return {
     exactId: id,
@@ -37,6 +44,17 @@ function payload(id = ID) {
     readinessGrades: {
       nctId: NCT, externalEvidenceVerified: false,
       scientificScore: null, fdaApprovalProbability: null,
+      requirements: REQUIREMENT_IDS.map((item, i) => ({
+        id: item, label: "Scientific source check " + item,
+        available: i < 10,
+        evidenceLevel: i === 0 ? "archive_verified"
+          : i >= 12 ? "independent_review_not_loaded"
+          : i < 10 ? "registry_field_present" : "missing_in_archive",
+        sourcePath: i >= 12 ? null : "source.path." + item,
+        nextAction: "Independently inspect " + item + " source and reconcile uncertainty",
+        independentlyVerified: false,
+      })),
+      missingRequirementIds: REQUIREMENT_IDS.slice(10),
       analysisReadiness: {
         grade: "C", coveragePercent: 63, requirementsCovered: 10, requirementsTotal: 16,
         readyForFullScientificConclusion: false, verdict: "NOT_READY", passFail: "FAIL_INCOMPLETE_INPUTS",
@@ -122,7 +140,12 @@ test("two evidence grades, 20 stages, 40 assessments and all 320 pending depth t
   assert.match(displayed, /FDA approval probability/);
   assert.match(displayed, /NOT ASSIGNED/);
   assert.doesNotMatch(displayed, /Scientific score: [0-9]/);
-  assert.equal(tree.root.findAllByType("li").length, 380);
+  assert.equal(tree.root.findAllByType("li").length, 396);
+  assert.match(displayed, /Scientific evidence input checklist/);
+  assert.match(displayed, /10\\s*\\/\\s*16 source inputs available/);
+  assert.match(displayed, /Independent review not completed/);
+  assert.match(displayed, /Required next action:/);
+  assert.match(displayed, /Independently verified: NO/);
   assert.match(displayed, /Depth\s+1\s*:\s*identity/);
   assert.match(displayed, /Depth\s+8\s*:\s*adjudication/);
   assert.match(displayed, /Open a layer and then an assessment to inspect each of the 320 pending tasks/);
@@ -147,6 +170,28 @@ test("forged independent depth completion or score fails closed", async () => {
     assert.match(rendered, /Scientific source coverage failed validation/);
     assert.doesNotMatch(rendered, /Analysis readiness:\\s*C/);
     assert.doesNotMatch(rendered, /Depth 8:\\s*adjudication/);
+    await act(async () => tree.unmount());
+  }
+});
+
+test("missing, forged or inconsistent evidence requirements fail closed", async () => {
+  for (const mutate of [
+    p => { delete p.readinessGrades.requirements; },
+    p => { p.readinessGrades.requirements.pop(); },
+    p => { p.readinessGrades.requirements[0].independentlyVerified = true; },
+    p => { p.readinessGrades.requirements[15].available = true; },
+    p => { p.readinessGrades.requirements[13].evidenceLevel = "archive_verified"; },
+    p => { p.readinessGrades.requirements[1].sourcePath = null; },
+    p => { p.readinessGrades.requirements[1].id = "indication_fake"; },
+    p => { p.readinessGrades.analysisReadiness.requirementsCovered = 11; },
+    p => { p.readinessGrades.missingRequirementIds = []; },
+  ]) {
+    const data = payload();
+    mutate(data);
+    const tree = await mountAndLoad(data);
+    const text = allText(tree.root);
+    assert.match(text, /Scientific source coverage failed validation/);
+    assert.doesNotMatch(text, /Scientific evidence input checklist/);
     await act(async () => tree.unmount());
   }
 });
