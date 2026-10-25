@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "OFFICIAL_FDA_ANNUAL_FILING_AGGREGATES_NOT_DECISION_COHORT",
+  "data_scope": "Original NDAs and BLAs filed in fiscal years, including CDER and CBER; not trial outcomes, not unique review-cycle decisions, and not supplements",
+  "report_versions": [
+    {
+      "fiscal_year_of_filing": 2024,
+      "source_report_fy": 2024,
+      "source_document_url": "https://www.fda.gov/media/188188/download",
+      "source_section": "Appendix B Table B-1",
+      "source_page": "B-3",
+      "source_pdf_page_zero_indexed": 97,
+      "record_status": "EARLIER_REPORT_LATER_REVISED",
+      "priority_ndas": 28,
+      "standard_ndas": 57,
+      "priority_blas": 18,
+      "standard_blas": 14,
+      "undesignated_originals": 11,
+      "source_originals_filed_total": 128
+    },
+    {
+      "fiscal_year_of_filing": 2024,
+      "source_report_fy": 2025,
+      "source_document_url": "https://www.fda.gov/media/191112/download",
+      "source_section": "Figure 1",
+      "source_page": "39",
+      "source_pdf_page_zero_indexed": 49,
+      "record_status": "REVISED_TOTAL_LATEST_AVAILABLE",
+      "chart_priority_including_undesignated": 49,
+      "chart_standard": 80,
+      "source_originals_filed_total": 129,
+      "qualification": "FDA states FY 2024 figures were updated; source chart does not publish revision by precise NDA/BLA subtype."
+    },
+    {
+      "fiscal_year_of_filing": 2025,
+      "source_report_fy": 2025,
+      "source_document_url": "https://www.fda.gov/media/191112/download",
+      "source_section": "Appendix B Table B-1",
+      "source_page": "B-3",
+      "source_pdf_page_zero_indexed": 103,
+      "record_status": "REPORTED_2025_WITH_FUTURE_REVISIONS_POSSIBLE",
+      "priority_ndas": 31,
+      "standard_ndas": 78,
+      "priority_blas": 16,
+      "standard_blas": 13,
+      "undesignated_originals": 19,
+      "source_originals_filed_total": 157
+    },
+    {
+      "fiscal_year_of_filing": 2025,
+      "source_report_fy": 2025,
+      "source_document_url": "https://www.fda.gov/media/191112/download",
+      "source_section": "Figure 1",
+      "source_page": "39",
+      "source_pdf_page_zero_indexed": 49,
+      "record_status": "SAME_REPORT_CROSSCHECK",
+      "chart_priority_including_undesignated": 66,
+      "chart_standard": 91,
+      "source_originals_filed_total": 157,
+      "qualification": "FY 2025 undesignated originals are counted under priority in Figure 1; designation can change with later reporting."
+    }
+  ],
+  "latest_reported_original_filings_by_fy": {
+    "2024": 129,
+    "2025": 157
+  },
+  "documented_revision": {
+    "fiscal_year_of_filing": 2024,
+    "earlier_reported": 128,
+    "later_reported": 129,
+    "change_in_reported_count": 1
+  },
+  "application_level_membership_known": false,
+  "individual_fda_action_dates_verified": 0,
+  "review_cycle_outcomes_verified": 0,
+  "complete_application_denominator_verified": false,
+  "source_for_training_labels": false,
+  "model_eligible_records": 0,
+  "prediction_probability": null,
+  "limitations": [
+    "These are fiscal-year original application filing counts, not counts of decisions made in those years.",
+    "FY 2024 count was revised from 128 to 129 in a later FDA report; earlier versions must remain in the audit trail.",
+    "An aggregate total does not identify the applications, supplements, approved cases, CRLs, withdrawals or right-censored outcomes in a complete review-cycle population.",
+    "FDA's Appendix A approval histories can corroborate approvals and historical cycles for eventually approved products, but do not establish the complete nonapproval denominator.",
+    "These values must not be used as an observed approval rate or to activate HOP model training."
+  ]
+}
