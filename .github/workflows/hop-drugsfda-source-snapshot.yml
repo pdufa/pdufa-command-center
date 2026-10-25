@@ -1,0 +1,39 @@
+name: HOP Drugs@FDA approved-product snapshot (research only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/hop-drugsfda-source-snapshot.yml'
+      - 'new-platform/backend/scripts/collect_hop_drugsfda.py'
+      - 'new-platform/backend/app/hop_drugsfda_snapshot.py'
+
+permissions:
+  contents: read
+
+jobs:
+  quarantined-approved-registry:
+    name: Acquire FDA approved-product source without outcome-cohort claims
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependency
+        run: python -m pip install pytest
+      - name: Verify source-parser regression suite
+        working-directory: new-platform/backend
+        run: PYTHONPATH=. python -m pytest -q tests/test_hop_drugsfda_snapshot.py
+      - name: Collect official Drugs@FDA approved-product archive
+        working-directory: new-platform/backend
+        run: PYTHONPATH=. python scripts/collect_hop_drugsfda.py --output-dir "${{ runner.temp }}/hop-drugsfda"
+      - name: Retain quarantined approved-product source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hop-drugsfda-approved-registry-quarantined
+          path: ${{ runner.temp }}/hop-drugsfda/
+          if-no-files-found: error
+          retention-days: 30
