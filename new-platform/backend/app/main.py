@@ -351,6 +351,44 @@ async def lifespan(app: FastAPI):
                 "SCIENTIFIC_ARCHIVE_READBACK status=FAIL error_type=%s",
                 type(verify_exc).__name__,
             )
+    # Isolated review startup: read one known archived Phase 3 pilot, validate
+    # evidence/source identity and eight unscored domains, log only booleans
+    # and counts. Never changes any stored trial or candidate rankings.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")):
+        try:
+            from .scientific_pilot_live_verify import verify_archived_keynote024
+            with Session(ENGINE) as pilot_session:
+                pilot_record = pilot_session.get(FullTrialRecord, "NCT02142738")
+                if pilot_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=NOT_ARCHIVED"
+                    )
+                else:
+                    pilot_diagnostic = verify_archived_keynote024(
+                        pilot_record.nct_id,
+                        pilot_record.payload_gzip,
+                        pilot_record.sha256,
+                        pilot_record.fetched_at,
+                    )
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=%s nct_id=%s "
+                        "archive_verified=%s domains=%d publications=%d "
+                        "completed=%s scored=%s read_only=%s",
+                        pilot_diagnostic["status"],
+                        pilot_diagnostic["nct_id"],
+                        pilot_diagnostic["archived_source_verified"],
+                        pilot_diagnostic["scientific_domains"],
+                        pilot_diagnostic["published_analyses"],
+                        pilot_diagnostic["scientific_assessment_completed"],
+                        pilot_diagnostic["score_assigned"],
+                        pilot_diagnostic["read_only"],
+                    )
+        except Exception as pilot_error:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=FAIL error_type=%s",
+                type(pilot_error).__name__,
+            )
     # Explicit one-record bootstrap for isolated review; disabled by default.
     # Never runs for production unless separately and deliberately configured.
     bootstrap_nct = os.getenv("PDUFA_SCIENTIFIC_BOOTSTRAP_NCT", "").strip()
@@ -567,6 +605,138 @@ def scientific_assessment_storage_status():
         return {"storageReady": True, "trialTablePresent": table_present, "storedTrialCount": count}
     except Exception:
         return {"storageReady": False, "trialTablePresent": None, "storedTrialCount": None}
+
+
+@app.get("/api/scientific-assessment/pilot/keynote024", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_keynote024_scientific_pilot(response: Response):
+    """Source-attributed historical Phase 3 pilot; never a scoring decision.
+
+    Requires a checksum-verified archived registry record for exact NCT ID.
+    No network, imports, candidate score changes, FS/FA changes or DB writes.
+    """
+    from .scientific_pilot_keynote024_results import keynote024_published_results
+    from .scientific_pilot_keynote024 import keynote024_pilot_manifest
+    from .scientific_dossier_archive import dossier_from_archive
+
+    nct_id = "NCT02142738"
+    exact_id = "TRIAL|" + nct_id
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        archived = session.get(FullTrialRecord, nct_id)
+        if archived is None:
+            raise HTTPException(status_code=404, detail="Phase 3 pilot record not archived")
+        try:
+            dossier = dossier_from_archive(
+                exact_id, nct_id,
+                archived.payload_gzip, archived.sha256, archived.fetched_at,
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=503, detail="Archived Phase 3 pilot failed verification",
+            ) from None
+    pilot = keynote024_pilot_manifest()
+    published = keynote024_published_results()
+    if (pilot["nct_id"] != nct_id or published["nct_id"] != nct_id
+            or dossier["nct_id"] != nct_id
+            or published["overall_score"] is not None
+            or published["fda_approval_probability"] is not None):
+        raise HTTPException(status_code=503, detail="Pilot evidence identity validation failed")
+    return {
+        "pilot": pilot,
+        "dossier": dossier,
+        "publishedResults": published,
+        "assessmentStatus": "source_reported_requires_independent_appraisal",
+        "scoringModified": False,
+        "qualificationPresetsModified": False,
+        "researchOnly": True,
+    }
+
+
+@app.get("/api/scientific-assessment/dossier/references", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_scientific_dossier_references(
+    exact_id: str, response: Response, application_number: str = "",
+):
+    """Explicit, bounded, source-only PubMed and FDA lookup for one stored NCT.
+
+    Off by default. This endpoint is never called by a scan or bulk job, does
+    not write to a database, and does not score or adjudicate source findings.
+    """
+    if os.getenv("PDUFA_SCIENTIFIC_EXTERNAL_LOOKUP_ENABLED", "").lower() not in (
+        "1", "true", "yes",
+    ):
+        raise HTTPException(status_code=404, detail="External source research disabled")
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id or "")
+    if match is None:
+        raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
+    from .scientific_external_sources import (
+        APPLICATION_PATTERN, SourceLookupError, attach_research_references,
+        lookup_fda_application, lookup_pubmed_nct,
+    )
+    if application_number and not APPLICATION_PATTERN.fullmatch(application_number):
+        raise HTTPException(status_code=422, detail="Exact NDA/BLA application number required")
+    nct_id = match.group(1)
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        record = session.get(FullTrialRecord, nct_id)
+        if record is None:
+            raise HTTPException(status_code=404, detail="Scientific archive record not found")
+        from .scientific_dossier_archive import dossier_from_archive
+        try:
+            dossier = dossier_from_archive(
+                exact_id, nct_id, record.payload_gzip, record.sha256, record.fetched_at,
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=503, detail="Archived scientific source failed verification",
+            ) from None
+    # Only after validating the archive and caller-provided identifiers may
+    # live lookups run. A lookup failure is not negative scientific evidence.
+    try:
+        pubmed = lookup_pubmed_nct(nct_id)
+        fda = lookup_fda_application(application_number) if application_number else None
+        result = attach_research_references(dossier, pubmed, fda)
+    except SourceLookupError:
+        raise HTTPException(status_code=503, detail="Scientific reference lookup unavailable") from None
+    result["reference_lookups"] = {
+        "pubmed": pubmed["status"],
+        "fda": fda["status"] if fda is not None else "not_requested",
+        "fda_application_linked_to_trial": False,
+    }
+    return result
+
+
+@app.get("/api/scientific-assessment/dossier", dependencies=[
+    Depends(require_internal_key), Depends(require_storage),
+])
+def get_scientific_dossier(exact_id: str, response: Response):
+    """Authenticated, read-only dossier from a verified, stored NCT source.
+
+    This endpoint cannot import sources or change existing rankings, presets,
+    scores, scanning, trade lists, or database records.
+    """
+    match = re.fullmatch(r"TRIAL\|(NCT[0-9]{8})", exact_id or "")
+    if match is None:
+        raise HTTPException(status_code=422, detail="Exact TRIAL|NCT######## identity required")
+    nct_id = match.group(1)
+    response.headers["Cache-Control"] = "private, no-store"
+    with Session(ENGINE) as session:
+        stored = session.get(FullTrialRecord, nct_id)
+        if stored is None:
+            raise HTTPException(status_code=404, detail="Scientific archive record not found")
+        from .scientific_dossier_archive import dossier_from_archive
+        try:
+            return dossier_from_archive(
+                exact_id, nct_id, stored.payload_gzip, stored.sha256, stored.fetched_at,
+            )
+        except ValueError:
+            # Never return a partially verified trial, even with metadata present.
+            raise HTTPException(
+                status_code=503, detail="Archived scientific source failed verification",
+            ) from None
 
 
 @app.get("/api/scientific-assessment", dependencies=[Depends(require_internal_key)])
