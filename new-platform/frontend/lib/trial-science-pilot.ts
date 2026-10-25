@@ -3,6 +3,8 @@
  * trial identity and source-linked analyses; never promote publication facts
  * to GEM / GEM JR / Pipeline or an FDA-approval probability.
  */
+import { validSourceEvidenceAudit, type SourceEvidenceAudit } from "./trial-science-evidence-audit";
+
 export const PILOT_NCT = "NCT02142738";
 
 export const SCIENCE_DOMAIN_LABELS = {
@@ -121,6 +123,7 @@ export type TrialSciencePilot = {
     read_only: true;
   };
   scientificReadiness?: ScientificReadiness;
+  sourceEvidenceAudit?: SourceEvidenceAudit;
   publishedResults: {
     nct_id: string;
     randomized_population: number;
@@ -265,6 +268,7 @@ export function validTrialSciencePilot(input: unknown): input is TrialSciencePil
       || !object(input.publishedResults)) return false;
   const { pilot, dossier, publishedResults: data } = input;
   if (input.scientificReadiness !== undefined && !validScientificReadiness(input.scientificReadiness)) return false;
+  if (input.sourceEvidenceAudit !== undefined && !validSourceEvidenceAudit(input.sourceEvidenceAudit)) return false;
   const scores = data.domain_scores;
   if (!object(scores)) return false;
   if (pilot.nct_id !== PILOT_NCT || dossier.nct_id !== PILOT_NCT
