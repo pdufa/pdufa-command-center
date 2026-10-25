@@ -1,0 +1,91 @@
+.root {
+  margin: 12px 0 20px;
+  padding: 0;
+  overflow: hidden;
+  scroll-margin-top: 16px;
+}
+.heading {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  cursor: pointer;
+  padding: 16px 20px;
+  background: #f0f7ef;
+  color: #163b23;
+  list-style-position: inside;
+}
+.heading strong { font-size: 16px; }
+.heading span { font-size: 12px; font-weight: 700; color: #42694c; }
+.body { padding: 17px 20px 22px; }
+.metadata { color: #4e6355; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.error { color: #7b1f1f; border: 1px solid #c97b7b; background: #fff7f5; padding: 12px; border-radius: 7px; }
+.evidence { margin-top: 17px; border-top: 1px solid #d5e3d4; padding-top: 15px; }
+.evidence h3 { margin: 18px 0 12px; font-size: 17px; color: #213e29; }
+.summary { display: flex; align-items: start; gap: 14px; justify-content: space-between; flex-wrap: wrap; }
+.summary h3 { margin: 5px 0; font-size: 19px; }
+.summary p { margin: 5px 0; line-height: 1.45; }
+.summary a { white-space: nowrap; }
+.label { text-transform: uppercase; font-size: 11px; letter-spacing: .075em; font-weight: 800; color: #526d55; }
+.caution { border-left: 3px solid #956b24; padding: 10px 12px; background: #fff7df; color: #473516; font-size: 13px; line-height: 1.5; }
+.domains { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
+.domain { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; border: 1px solid #cddfcb; background: #f9fcf7; border-radius: 7px; padding: 11px; min-width: 0; }
+.domain strong { font-size: 13px; overflow-wrap: anywhere; }
+.domain span { font-size: 12px; line-height: 1.45; color: #5e593f; }
+.domain small { font-size: 11px; line-height: 1.45; color: #52675a; }
+.snapshots { display: flex; flex-direction: column; gap: 12px; }
+.snapshot { padding: 14px; background: #fff; border: 1px solid #c5d6c5; border-radius: 8px; }
+.snapshotHead { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 12px; }
+.snapshotHead h4 { text-transform: capitalize; margin: 0; font-size: 15px; }
+.snapshotHead a, .summary a, .references a { color: #095b40; }
+.scroll { width: 100%; max-width: 100%; overflow-x: auto; margin: 10px 0; }
+.resultTable { width: 100%; min-width: 620px; border-collapse: collapse; text-align: left; font-size: 12px; line-height: 1.5; }
+.resultTable th, .resultTable td { padding: 10px; border-bottom: 1px solid #e0e8dc; vertical-align: top; }
+.resultTable thead { background: #eaf2e8; }
+.resultTable tbody th { width: 30%; }
+.resultTable small { color: #475a4c; }
+.caveats { margin-top: 10px; padding: 10px; border: 1px solid #d5ded0; border-radius: 5px; background: #fbfcf8; font-size: 12px; line-height: 1.5; }
+.caveats summary { font-weight: 700; cursor: pointer; }
+.caveats li { margin: 7px 0; }
+.references { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.references > div { padding: 11px; border-radius: 7px; border: 1px solid #d2dfd2; background: #fbfdfb; font-size: 12px; line-height: 1.5; }
+.references p { margin: 7px 0; }
+.references small { color: #576758; }
+@media (max-width: 850px) {
+  .domains { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .heading { padding: 14px; }
+  .body { padding: 14px; }
+  .domains { grid-template-columns: minmax(0, 1fr); }
+  .references { grid-template-columns: minmax(0, 1fr); }
+  .summary a { white-space: normal; }
+}
+
+.historyTimeline {
+  list-style: none;
+  padding: 5px 0 5px 13px;
+  margin: 10px 0;
+  border-left: 3px solid #78a486;
+}
+.historyMilestone {
+  display: grid;
+  grid-template-columns: minmax(86px, 118px) minmax(0, 1fr);
+  gap: 11px;
+  padding: 8px 12px;
+  margin: 0 0 7px -13px;
+  border-radius: 6px;
+  border-left: 3px solid #306d46;
+  background: #f4f8f1;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.historyMilestone > div { min-width: 0; overflow-wrap: anywhere; }
+.historyMilestone p { margin: 5px 0; }
+.historyMilestone strong { display: block; font-size: 12px; }
+.historyMilestone a { color: #095b40; }
+.historyDate { color: #173d2c; font-weight: 800; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) {
+  .historyMilestone { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
