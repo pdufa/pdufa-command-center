@@ -445,6 +445,56 @@ async def lifespan(app: FastAPI):
                 "SCIENTIFIC_KEYNOTE024_LIVE_PILOT status=FAIL error_type=%s",
                 type(pilot_error).__name__,
             )
+    # One exact archived-trial evidence audit in the ISOLATED review environment.
+    # Never runs live source requests or scanner jobs and never mutates storage.
+    if (_DB_STATE["available"] and REQUIRE_POSTGRES
+            and os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes")):
+        try:
+            from .scientific_dossier_archive import (
+                dossier_from_archive, verified_archived_registry_record,
+            )
+            from .scientific_pilot_evidence_audit import keynote024_preinterim_evidence_audit
+            from .scientific_protocol_readiness import keynote024_protocol_readiness
+            from .scientific_pilot_keynote024_results import keynote024_published_results
+            with Session(ENGINE) as audit_session:
+                audit_record = audit_session.get(FullTrialRecord, "NCT02142738")
+                if audit_record is None:
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_SOURCE_AUDIT status=NOT_ARCHIVED"
+                    )
+                else:
+                    archived_dossier = dossier_from_archive(
+                        "TRIAL|NCT02142738", audit_record.nct_id,
+                        audit_record.payload_gzip, audit_record.sha256, audit_record.fetched_at,
+                    )
+                    registry = verified_archived_registry_record(
+                        audit_record.nct_id, audit_record.payload_gzip, audit_record.sha256,
+                    )
+                    publication = keynote024_published_results()
+                    source_audit = keynote024_preinterim_evidence_audit(registry, publication)
+                    grade = keynote024_protocol_readiness(archived_dossier, publication)
+                    if (source_audit["earlyDesignEvidence"]["signedSapVerified"] is not False
+                            or source_audit["inputReadinessGradeChanged"] is not False
+                            or grade["inputReadiness"]["grade"] != "FAIL"
+                            or grade["reluctance"]["grade"] != "HIGH"):
+                        raise ValueError("Unsafe historical grade promotion")
+                    logging.getLogger(__name__).warning(
+                        "SCIENTIFIC_KEYNOTE024_SOURCE_AUDIT status=PASS nct_id=%s "
+                        "timeline=%d safety_groups=%d preinterim_sap_verified=%s "
+                        "input_grade=%s reluctance_grade=%s read_only=%s",
+                        source_audit["nctId"],
+                        len(source_audit["timeline"]),
+                        source_audit["registrySafety"]["groupCount"],
+                        source_audit["earlyDesignEvidence"]["signedSapVerified"],
+                        grade["inputReadiness"]["grade"],
+                        grade["reluctance"]["grade"],
+                        source_audit["readOnly"],
+                    )
+        except Exception as audit_exc:
+            logging.getLogger(__name__).error(
+                "SCIENTIFIC_KEYNOTE024_SOURCE_AUDIT status=FAIL error_type=%s",
+                type(audit_exc).__name__,
+            )
     # Explicit one-record bootstrap for isolated review; disabled by default.
     # Never runs for production unless separately and deliberately configured.
     bootstrap_nct = os.getenv("PDUFA_SCIENTIFIC_BOOTSTRAP_NCT", "").strip()
