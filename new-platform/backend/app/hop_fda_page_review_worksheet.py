@@ -40,6 +40,10 @@ COLUMNS = (
     "original_letter_page_range_verified", "effective_fda_action_date_verified",
     "regulatory_review_cycle_verified", "regulatory_outcome_verified",
     "independent_review_complete", "model_eligible", "review_status",
+    "first_reviewer", "first_reviewer_observed_page_range",
+    "first_reviewer_original_fda_action_date", "first_reviewer_document_action_type",
+    "first_reviewer_evidence_notes", "second_reviewer",
+    "second_reviewer_evidence_notes", "independent_discrepancy_resolution",
 )
 
 
@@ -200,6 +204,14 @@ def build_pdf_page_review_worksheet(pages: dict, shared: dict) -> tuple[list[dic
                 "independent_review_complete": False,
                 "model_eligible": False,
                 "review_status": "NOT_ADJUDICATED",
+                "first_reviewer": "",
+                "first_reviewer_observed_page_range": "",
+                "first_reviewer_original_fda_action_date": "",
+                "first_reviewer_document_action_type": "",
+                "first_reviewer_evidence_notes": "",
+                "second_reviewer": "",
+                "second_reviewer_evidence_notes": "",
+                "independent_discrepancy_resolution": "",
             })
             statuses[status] += 1
             priorities[priority] += 1
