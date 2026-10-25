@@ -82,6 +82,16 @@ def test_source_scoped_claims_protect_2016_vs_2020_2021_2017_windows(archive):
     assert protocol["journalProtocolSupplement"]["filename"] == "nejmoa1606774_protocol.pdf"
     assert protocol["journalProtocolSupplement"]["pdfContentRetrievedAndInspected"] is False
     assert protocol["journalProtocolSupplement"]["effectiveDateConfirmedBeforeAnalysis"] is False
+    assert protocol["documentedPreAnalysisAmendment"]["number"] == "P024-03"
+    assert protocol["documentedPreAnalysisAmendment"]["scope"] == "global"
+    assert protocol["documentedPreAnalysisAmendment"]["dateFinalized"] == "2016-01-28"
+    assert protocol["documentedPreAnalysisAmendment"]["secondAuthorityDateCorroboration"] is True
+    assert protocol["documentedPreAnalysisAmendment"]["actualSignedSapRetrieved"] is False
+    assert protocol["documentedPreAnalysisAmendment"]["prospectiveLockIndependentlyVerified"] is False
+    assert "P024-03" in protocol["stillMissing"]
+    assert "P024-04" in protocol["preliminaryObservation"]
+    assert "P024-05" in protocol["preliminaryObservation"]
+    assert "May 9, 2016" in protocol["preliminaryObservation"]
     assert protocol["reportedDesignNotYetIndependentlyAudited"]["oneSidedFamilyAlpha"] == 0.025
     assert protocol["reportedDesignNotYetIndependentlyAudited"]["oneSidedPfsInterimAlpha"] == 0.02
     assert protocol["reportedDesignNotYetIndependentlyAudited"]["fdaReportedInterimOsThreshold"] == 0.0118
@@ -222,6 +232,11 @@ def test_protocol_lead_is_not_misrepresented_as_preunblinding_approval(archive):
     assert protocol["evidenceGateApproved"] is False
     assert report["sources"]["nejm_2016_protocol_lead"]["kind"] == (
         "publisher_supplement_link_not_content_verified")
+    assert report["sources"]["german_regulator_2022_csr"]["kind"] == (
+        "official_regulator_hosted_sponsor_report_retrospective")
+    assert report["sources"]["german_regulator_2022_csr"]["locator"].find("P024-03") >= 0
+    assert report["sources"]["eu_trial_amendments"]["kind"] == (
+        "official_eu_trial_registry_amendment_history")
     assert report["sources"]["fda_2019_review"]["kind"] == (
         "official_fda_multidisciplinary_review_retrospective")
     assert protocol["journalProtocolSupplement"]["publicationYear"] == 2016
