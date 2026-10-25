@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { buildScientificDepthReviewCsv } from "../lib/scientific-depth-review-csv";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -306,6 +307,26 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     }
   }
 
+  /** Browser-local export of ONLY pending tasks from a validated archived inventory. */
+  function downloadDepthReviewCsv() {
+    if (!result?.investigation40) return;
+    try {
+      const csv = buildScientificDepthReviewCsv(result.investigation40);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = result.investigation40.nctId + "_scientific_320_depth_review.csv";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      // Keep the object URL alive briefly for iOS Safari to begin the download.
+      window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch {
+      setError("Scientific review matrix export blocked: inventory incomplete or unverified.");
+    }
+  }
+
   const valid = /^TRIAL\|NCT[0-9]{8}$/.test(exactId);
   return <section aria-label="Scientific Assessment">
     <button type="button" disabled={!valid || loading} onClick={() => void load()}>
@@ -347,6 +368,14 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
           </li>
         )}</ol>
       </details> : <p>20-level investigation: no checksum-verified trial archive available.</p>}
+
+      {result.investigation40 && <p>
+        <button type="button" disabled={!result.investigation40}
+          onClick={() => downloadDepthReviewCsv()}>
+          Download 320-task review matrix (CSV)
+        </button>
+        <small> Read-only pending-task export for independent review. No reviewer attestation or scientific decision is created by downloading.</small>
+      </p>}
 
       {result.investigation40 ? <details>
         <summary><strong>8 scientific layers · 40 assessments</strong>
