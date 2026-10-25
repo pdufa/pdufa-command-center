@@ -9,6 +9,14 @@ on:
       - "new-platform/backend/app/scientific_assessment.py"
       - "new-platform/backend/tests/test_scientific_ui_browser.py"
       - ".github/workflows/scientific-browser-tests.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "new-platform/backend/app/scientific_batch_ui.py"
+      - "new-platform/backend/app/scientific_assessment.py"
+      - "new-platform/backend/tests/test_scientific_ui_browser.py"
+      - ".github/workflows/scientific-browser-tests.yml"
   workflow_dispatch:
 
 permissions:
