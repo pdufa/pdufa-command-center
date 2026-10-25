@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { buildScientificDepthReviewCsv, buildScientificReviewerHandoffCsv } from "../lib/scientific-depth-review-csv";
 import { buildScientificEvidenceRequirementsCsv } from "../lib/scientific-evidence-requirements-csv";
-import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, type LocalReviewerAuditReport } from "../lib/scientific-reviewer-local-audit";
+import { auditScientificReviewerCsvs, buildScientificReviewerAuditReceipt, compareLocalSourceSha256Claims, type LocalReviewerAuditReport, type LocalSourceByteMatch } from "../lib/scientific-reviewer-local-audit";
 
 /**
  * Scientific input coverage, not an FDA decision prediction. Every numeric
@@ -289,6 +289,11 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
   const [localAudit, setLocalAudit] = useState<LocalReviewerAuditReport | null>(null);
   const [localAuditError, setLocalAuditError] = useState("");
   const [comparingFiles, setComparingFiles] = useState(false);
+  const [localSourcePdf, setLocalSourcePdf] = useState<File | null>(null);
+  const [localSourceTaskKey, setLocalSourceTaskKey] = useState("");
+  const [localSourceByteMatch, setLocalSourceByteMatch] = useState<LocalSourceByteMatch | null>(null);
+  const [localSourceByteError, setLocalSourceByteError] = useState("");
+  const [hashingLocalPdf, setHashingLocalPdf] = useState(false);
   const auditRevision = useRef(0);
   const pending = useRef<AbortController | null>(null);
   const pendingConnection = useRef<AbortController | null>(null);
@@ -301,6 +306,11 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(false);
+    setLocalSourcePdf(null);
+    setLocalSourceTaskKey("");
+    setLocalSourceByteMatch(null);
+    setLocalSourceByteError("");
+    setHashingLocalPdf(false);
     pending.current?.abort();
     pendingConnection.current?.abort();
     setResult(null);
@@ -320,6 +330,11 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
     setLocalAudit(null);
     setLocalAuditError("");
     setComparingFiles(false);
+    setLocalSourcePdf(null);
+    setLocalSourceTaskKey("");
+    setLocalSourceByteMatch(null);
+    setLocalSourceByteError("");
+    setHashingLocalPdf(false);
     setLoading(true);
     setResult(null);
     setError("");
@@ -427,6 +442,8 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
 
   /** Only reads three user-selected local CSV files in this browser. No API call. */
   async function compareLocalReviewerWorksheets() {
+    setLocalSourceByteMatch(null);
+    setLocalSourceByteError("");
     if (!result?.investigation40 || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
     const token = ++auditRevision.current;
     setLocalAudit(null);
@@ -466,6 +483,41 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
       window.setTimeout(() => URL.revokeObjectURL(url), 2000);
     } catch {
       setLocalAuditError("Local reviewer audit receipt blocked: unverifiable diagnostic report.");
+    }
+  }
+
+  /** Byte consistency only: SHA-256 equality to typed A/B CSV claims is NOT source authentication. */
+  async function compareLocalSourcePdfBytes() {
+    if (!result?.investigation40 || !localAudit || !localSourcePdf
+        || !localSourceTaskKey || !reviewInventoryFile || !reviewerAFile || !reviewerBFile) return;
+    const token = ++auditRevision.current;
+    setLocalSourceByteMatch(null);
+    setLocalSourceByteError("");
+    setHashingLocalPdf(true);
+    try {
+      if (localSourcePdf.size < 5 || localSourcePdf.size > 25 * 1024 * 1024
+          || [reviewInventoryFile, reviewerAFile, reviewerBFile].some(f => f.size > 1024 * 1024)) {
+        throw new Error("Unsupported local source PDF or reviewer worksheet size");
+      }
+      const [pdfBytes, inventoryCsv, aCsv, bCsv] = await Promise.all([
+        localSourcePdf.arrayBuffer(), reviewInventoryFile.text(), reviewerAFile.text(), reviewerBFile.text(),
+      ]);
+      const header = new Uint8Array(pdfBytes, 0, 5);
+      if (String.fromCharCode(...header) !== "%PDF-") throw new Error("Selected file is not a PDF");
+      if (typeof crypto === "undefined" || !crypto.subtle) throw new Error("Secure browser SHA-256 unavailable");
+      const digest = await crypto.subtle.digest("SHA-256", pdfBytes);
+      const sha256 = Array.from(new Uint8Array(digest))
+        .map(byte => byte.toString(16).padStart(2, "0")).join("");
+      const comparison = compareLocalSourceSha256Claims(
+        result.investigation40, inventoryCsv, aCsv, bCsv, localSourceTaskKey, sha256,
+      );
+      if (token === auditRevision.current) setLocalSourceByteMatch(comparison);
+    } catch {
+      if (token === auditRevision.current) setLocalSourceByteError(
+        "PDF byte comparison blocked: invalid PDF, changed review worksheets, or unsupported task. No source authentication was performed."
+      );
+    } finally {
+      if (token === auditRevision.current) setHashingLocalPdf(false);
     }
   }
 
@@ -606,6 +658,49 @@ export default function ScientificAssessment({ exactId }: { exactId: string }) {
               <small> Local, privacy-minimized diagnostic only; no reviewer identities, raw documents or statements are included. A receipt is not a scientific or regulatory signoff.</small>
             </p>
             <small>Reviewer names, document URLs, claimed hashes and worksheet signatures have not been authenticated; these observations cannot be promoted to verified evidence.</small>
+            <details aria-label="Check local source PDF SHA-256 bytes">
+              <summary><strong>Compare source PDF bytes with A/B worksheet SHA-256 claims</strong></summary>
+              <p>Select one pending exact-trial task and one local source PDF. This computes a SHA-256 checksum in your browser and compares it with the digest claimed in each reviewer worksheet for that task. The PDF is not uploaded. A matching hash proves only byte consistency with an untrusted claim—not authenticity of the original document.</p>
+              <label>Scientific task
+                <select value={localSourceTaskKey} aria-label="Select scientific task for source PDF"
+                  onChange={event => {
+                    auditRevision.current++;
+                    setLocalSourceTaskKey(event.target.value);
+                    setLocalSourceByteMatch(null);
+                    setLocalSourceByteError("");
+                    setHashingLocalPdf(false);
+                  }}>
+                  <option value="">Select one task</option>
+                  {result.investigation40!.depthReview.tasks.map(task => {
+                    const key = task.assessmentId + ":" + task.depthLevel;
+                    return <option key={key} value={key}>{key}</option>;
+                  })}
+                </select>
+              </label>
+              <label>Local PDF
+                <input type="file" accept=".pdf,application/pdf" aria-label="Choose local source PDF"
+                  onChange={event => {
+                    auditRevision.current++;
+                    setLocalSourcePdf(event.target.files?.[0] ?? null);
+                    setLocalSourceByteMatch(null);
+                    setLocalSourceByteError("");
+                    setHashingLocalPdf(false);
+                  }} />
+              </label>
+              <button type="button" disabled={!localSourcePdf || !localSourceTaskKey || hashingLocalPdf}
+                onClick={() => void compareLocalSourcePdfBytes()}>
+                {hashingLocalPdf ? "Checking local PDF SHA-256…" : "Compare PDF bytes with A/B hash claims"}
+              </button>
+              {localSourceByteError && <p role="alert">{localSourceByteError}</p>}
+              {localSourceByteMatch && <div role="status">
+                <p><strong>Exact trial task:</strong> {localSourceByteMatch.assessmentTaskKey}</p>
+                <p><strong>Calculated local PDF SHA-256:</strong> <code>{localSourceByteMatch.calculatedSha256}</code></p>
+                <p>Reviewer A digest claim: {localSourceByteMatch.reviewerA.replaceAll("_", " ")}.</p>
+                <p>Reviewer B digest claim: {localSourceByteMatch.reviewerB.replaceAll("_", " ")}.</p>
+                <p><strong>Original source authenticated: NO. Reviewer identity verified: NO. Scientific adjudication: 0.</strong></p>
+                <small>Worksheet hashes may be incorrect or self-reported; this does not verify publication date, original authorship, trial results, clinical correctness, efficacy or FDA approval.</small>
+              </div>}
+            </details>
           </section>}
         </details>
       </div>}
