@@ -122,3 +122,36 @@ migration and workload plan is needed before any record transfer.
   to be accessed and the signed-in exact-trial connection check succeeds.
 - Verified independent sources/reviewer findings are still absent.
 - Production deployment and bulk import require separate user approval.
+
+
+## Exact program-to-trial identity preflight
+
+The archive inventory alone **does not** establish GEM JR, GEM, or WT
+membership. Before producing proposed transfers, run the pure read-only
+functions:
+
+- \`app.scientific_program_identity_audit.audit_exact_programs(program_rows)\`
+  checks permanent Program IDs and separates directly linked
+  \`TRIAL|NCT########\` records from application/result-level programs.
+- \`app.scientific_archive_reconciliation.reconcile_sources(program_rows,
+  archive_rows)\` matches only those exact linked NCTs to already archived
+  metadata and sends eligible records to the capped, offline planner.
+  Missing archives are reported rather than silently substituted.
+
+As of the 2026-10-25 Neon audit, **two stored WT trading-research tags**
+were present; both resolved to application-level source keys, **not** exact
+\`TRIAL|NCT########\` keys. The safe exact-NCT link count for those two
+tags was therefore **zero**. This does not establish the total number of
+WT trial programs in live application displays; it is only the persisted
+Neon tag snapshot. Neither application may be assigned an arbitrary trial
+by matching a ticker, medication name, or historic date.
+
+The preflight regression tests are:
+
+- \`tests/test_scientific_program_identity_audit.py\`
+- \`tests/test_scientific_archive_reconciliation.py\`
+
+The plan tests, identity tests and reconciliation tests run in the
+\`Scientific Integration Checks\` GitHub workflow. They are disconnected
+from all write-capable Postgres and trial-import functions. No data is
+automatically transferred after any test passes.
