@@ -1321,7 +1321,7 @@ def require_scientific_operator_pdf_archive() -> None:
 @app.post("/api/scientific-assessment/operator/source-documents/{nct_id}/fetch/{source}")
 def scientific_operator_fetch_official_pdf(
     nct_id: str,
-    source: Literal["protocol", "fda", "csr"],
+    source: Literal["protocol", "fda", "csr", "ema"],
     authorization: Annotated[str | None, Header()] = None,
 ):
     """Explicit Google-operator action to fetch a fixed vetted public PDF.
@@ -1367,12 +1367,13 @@ def scientific_operator_archive_pdf(
     require_scientific_operator_pdf_archive()
     if nct_id != "NCT02142738":
         raise HTTPException(status_code=403, detail="Only the archived pilot can accept operator PDFs")
-    from .scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR
+    from .scientific_reconciliation_worklist import PROTOCOL_SAP, FDA_2016_APPROVAL, GERMAN_REGULATOR_CSR, EMA_2016_ASSESSMENT
 
     approved = {
         ("protocol_sap", "protocol_sap", PROTOCOL_SAP),
         ("official_regulatory", "official_agency_document", FDA_2016_APPROVAL),
         ("protocol_sap", "clinical_study_report", GERMAN_REGULATOR_CSR),
+        ("protocol_sap", "official_agency_document", EMA_2016_ASSESSMENT),
     }
     if (body.gate_id, body.source_type, body.source_url) not in approved:
         raise HTTPException(
