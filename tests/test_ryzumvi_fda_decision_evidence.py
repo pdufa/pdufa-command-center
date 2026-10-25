@@ -67,14 +67,14 @@ class RyzumviOutcomeEvidenceTests(unittest.TestCase):
 
     def test_signed_fda_crosswalk_accepts_both_exact_events_only(self):
         letter = (
-            "NDA 217064/S-005\\nSUPPLEMENT APPROVAL\\n"
-            "FamyGen Life Sciences, Inc.\\n"
-            "Ryzumvi (phentolamine mesylate ophthalmic solution) 0.75%.\\n"
+            "NDA 217064/S-005\nSUPPLEMENT APPROVAL\n"
+            "FamyGen Life Sciences, Inc.\n"
+            "Ryzumvi (phentolamine mesylate ophthalmic solution) 0.75%.\n"
             "This Prior Approval sNDA adds a new indication for the treatment "
-            "of presbyopia in adults.\\nAPPROVAL & LABELING\\n"
-            "It is approved, effective on the date of this letter.\\n"
-            "Signature Page 1 of 1\\nThis is a representation of an electronic "
-            "record that was signed electronically.\\n/s/ WILLIAM M BOYD\\n"
+            "of presbyopia in adults.\nAPPROVAL & LABELING\n"
+            "It is approved, effective on the date of this letter.\n"
+            "Signature Page 1 of 1\nThis is a representation of an electronic "
+            "record that was signed electronically.\n/s/ WILLIAM M BOYD\n"
             "10/16/2026 08:47:12 AM"
         )
         label = (
