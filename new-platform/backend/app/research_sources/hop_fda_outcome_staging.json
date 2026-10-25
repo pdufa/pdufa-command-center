@@ -15,7 +15,7 @@
       "modality": "Small-molecule NS3/4A protease inhibitor",
       "phase": 3,
       "evidence_as_of": null,
-      "review_status": "FDA_PIVOTAL_PHASE_3_CONFIRMED_ASOF_EVIDENCE_PENDING",
+      "review_status": "PREDECISION_SPONSOR_DISCLOSURE_FOUND_NOT_INDEPENDENTLY_VERIFIED",
       "model_eligible": false,
       "source_review_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2013/205123Orig1s000ODMemo.pdf",
       "source_label_url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2013/205123s000lbl.pdf",
@@ -39,7 +39,24 @@
         }
       ],
       "pdufa_goal_date": "2013-11-28",
-      "nd_submission_date": "2013-03-28"
+      "nd_submission_date": "2013-03-28",
+      "predecision_public_evidence": [
+        {
+          "published_on": "2013-11-04",
+          "publisher": "Janssen",
+          "description": "AASLD presentation of QUEST-1, QUEST-2 and PROMISE subgroup efficacy findings; contemporaneous public company announcement",
+          "source_url": "https://www.jnj.com/media-center/press-releases/simeprevir-administered-once-daily-as-part-of-combination-therapy-demonstrates-sustained-virologic-response-in-treatment-naive-and-treatment-experienced-genotype-1-chronic-hepatitis-c-adult-patients",
+          "source_class": "SPONSOR_PRESS_RELEASE",
+          "independently_verified": false
+        }
+      ],
+      "postdecision_excluded_evidence": [
+        {
+          "published_on": "2014-06-04",
+          "description": "QUEST-1 full Lancet paper first published online after 2013 FDA approval",
+          "source_url": "https://pubmed.ncbi.nlm.nih.gov/24907225/"
+        }
+      ]
     }
   ]
 }
