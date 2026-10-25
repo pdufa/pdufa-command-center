@@ -94,3 +94,61 @@ def test_operator_scientific_research_is_denied_without_identity(monkeypatch):
         response = client.get("/api/scientific-assessment/operator/research",
                               params={"exact_id": "TRIAL|NCT02142738"})
     assert response.status_code == 401
+
+
+def test_operator_review_worksheet_denies_unauthenticated_requests(monkeypatch):
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "single_operator")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "owner@example.org")
+    with TestClient(main.app) as client:
+        r = client.get("/api/scientific-assessment/operator/worksheet/NCT02142738")
+    assert r.status_code == 401
+
+
+def test_operator_review_worksheet_never_promotes_science(monkeypatch):
+    from app import scientific_google_identity, scientific_review_packet
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "single_operator")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "owner@example.org")
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"verifiedEmail": "OWNER@example.org", "providerSubject": "one-google-id"})
+    called = []
+    def packet(nct):
+        called.append(nct)
+        return {
+            "nctId": nct, "scientificallyVerified": False,
+            "readyForFullScientificConclusion": False,
+            "scientificConclusion": None, "fdaApprovalProbability": None,
+            "reconciliation": {
+                "unresolvedCount": 8, "independentlyResolvedCount": 0,
+                "checks": [{"title": "Original SAP", "resolved": False,
+                            "criteriaSatisfied": 0, "resolutionCriteria": ["Audit protocol date"]}],
+            },
+            "packetIntegrity": {"algorithm": "SHA-256", "digest": "0"*64},
+        }
+    monkeypatch.setattr(scientific_review_packet, "build_review_packet", packet)
+    with TestClient(main.app) as client:
+        r = client.get("/api/scientific-assessment/operator/worksheet/NCT02142738",
+                       headers={"Authorization": "Bearer simulated-test-token"})
+    assert r.status_code == 200
+    assert called == ["NCT02142738"]
+    assert r.headers["cache-control"] == "private, no-store"
+    assert r.json()["scientificallyVerified"] is False
+    assert r.json()["readyForFullScientificConclusion"] is False
+    assert r.json()["reconciliation"]["checks"][0]["resolved"] is False
+
+
+def test_operator_review_worksheet_rejects_wrong_account_and_bad_id(monkeypatch):
+    from app import scientific_google_identity
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_ACCESS_MODE", "single_operator")
+    monkeypatch.setenv("PDUFA_SCIENTIFIC_SINGLE_OPERATOR_EMAIL", "owner@example.org")
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"verifiedEmail": "someoneelse@example.org"})
+    with TestClient(main.app) as client:
+        r = client.get("/api/scientific-assessment/operator/worksheet/NCT02142738",
+                       headers={"Authorization": "Bearer simulated-test-token"})
+    assert r.status_code == 403
+    monkeypatch.setattr(scientific_google_identity, "verified_google_identity",
+                        lambda _: {"verifiedEmail": "owner@example.org"})
+    with TestClient(main.app) as client:
+        r = client.get("/api/scientific-assessment/operator/worksheet/INVALID",
+                       headers={"Authorization": "Bearer simulated-test-token"})
+    assert r.status_code == 422
