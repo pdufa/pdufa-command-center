@@ -455,6 +455,10 @@ def test_browser_fetches_official_pdf_without_local_upload_or_science_signoff():
             assert page.locator("#fetch-official-pdf").is_visible()
             assert Handler.remote_fetch_calls == 0
             assert page.locator("#source-pdf-file").input_value() == ""
+            page.locator("#source-pdf-kind").select_option("csr")
+            assert "P024-03" in page.locator("#official-source-note").inner_text()
+            assert page.locator("#source-pdf-link").get_attribute("href") == (
+                "https://portal.dimdi.de/data/ctr/O-2145_01-2-0-CE336C-20220110151635.pdf")
             page.locator("#source-pdf-kind").select_option("protocol")
             assert "2017" in page.locator("#official-source-note").inner_text()
             page.locator("#fetch-official-pdf").click()
