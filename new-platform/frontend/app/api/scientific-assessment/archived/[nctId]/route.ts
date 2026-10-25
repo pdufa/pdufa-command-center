@@ -29,7 +29,7 @@ export async function GET(
   }
 
   const base = process.env.PDUFA_SCIENTIFIC_API_BASE_URL?.replace(/\/$/, "");
-  const key = process.env.PDUFA_INTERNAL_API_KEY;
+  const key = process.env.PDUFA_SCIENTIFIC_PREVIEW_READ_KEY;
   if (!base?.startsWith("https://") || !key) {
     return NextResponse.json({ error: "Scientific review service unavailable" }, {
       status: 503, headers: PRIVATE,
