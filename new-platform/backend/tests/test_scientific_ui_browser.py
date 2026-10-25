@@ -20,6 +20,7 @@ sync_playwright = pytest.importorskip(
 ).sync_playwright
 
 from app.scientific_assessment import assess
+from app.scientific_investigation_20 import investigation_20
 from app.scientific_batch_ui import render_batch_panel
 
 NCT = "NCT04280705"
@@ -86,6 +87,13 @@ class TestServer(BaseHTTPRequestHandler):
                 "registryEvidence": evidence,
                 "registryEvidenceStatus": "source_record_loaded" if record_found else "record_not_found",
                 "assessment": assess({}),
+                "investigation20": (investigation_20(NCT, {
+                    "protocolSection": {
+                        "identificationModule": {"nctId": NCT, "briefTitle": "Pilot trial"},
+                        "statusModule": {"overallStatus": "COMPLETED"},
+                        "outcomesModule": {"primaryOutcomes": [{"measure": "Endpoint"}]},
+                    }
+                }) if record_found else None),
             })
         else:
             self.reply(404, {"error": "not_found"})
@@ -173,6 +181,17 @@ def test_chromium_scientific_batch_and_evidence_display():
             )
             assert TestServer.science_requests == 1
 
+            # Depth-20 source coverage is genuinely rendered by the browser,
+            # with no invented score or FDA approval probability.
+            page.get_by_role("heading", name="20-stage scientific investigation · source-coverage map").wait_for()
+            assert page.locator("#investigation-20 details").count() == 20
+            page.get_by_text("Scientifically verified: 0/20.", exact=False).wait_for()
+            first_level = page.locator("#investigation-20 details").first
+            first_level.locator("summary").click()
+            first_level.get_by_text("protocolSection.identificationModule.briefTitle").wait_for()
+            assert page.locator("#investigation-20").get_by_text(
+                "FDA approval probability: Not calculated.", exact=False).count() == 1
+
             # Neither address bar nor browser storage may contain the secret.
             assert SECRET not in page.url
             assert page.evaluate("Object.keys(localStorage).length") == 0
@@ -182,6 +201,7 @@ def test_chromium_scientific_batch_and_evidence_display():
             page.get_by_role("button", name="Clear key").click()
             assert page.get_by_label("Internal API key").input_value() == ""
             assert page.locator("#science-domains .science-domain").count() == 0
+            assert page.locator("#investigation-20 details").count() == 0
             page.get_by_role("button", name="Refresh history").click()
             page.get_by_text("Enter the internal API key first.").wait_for()
 
