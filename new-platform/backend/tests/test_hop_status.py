@@ -225,3 +225,127 @@ def test_review_queue_excluded_on_crosswalk_disagreement(tmp_path: Path):
     result = hop_readiness_status(crosswalk_audit_path=p)
     assert result["fda_identity_review_queue"] is None
     assert result["prediction_probability"] is None
+
+
+def test_official_pdf_bytes_available_without_regulatory_outcome_validation():
+    result = hop_readiness_status()
+    pdfs = result["fda_official_pdf_checks"]
+    assert pdfs["identity_review_cases_checked"] == 124
+    assert pdfs["official_pdf_bytes_confirmed"] == 123
+    assert pdfs["source_records_without_pdf_filename"] == 1
+    assert len(pdfs["source_record_unreleased"]) == 64
+    assert pdfs["document_identity_adjudicated"] == 0
+    assert pdfs["effective_action_dates_independently_verified"] == 0
+    assert pdfs["review_cycle_outcomes_independently_verified"] == 0
+    assert pdfs["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_official_pdf_audit_fails_closed_on_false_verified_dates(tmp_path: Path):
+    from app.hop_status import OFFICIAL_PDF_AUDIT_PATH
+    audit = json.loads(OFFICIAL_PDF_AUDIT_PATH.read_text())
+    path = tmp_path / "pdf_audit.json"
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(official_pdf_audit_path=path)["fda_official_pdf_checks"]
+
+    audit["effective_action_dates_independently_verified"] = 123
+    path.write_text(json.dumps(audit))
+    result = hop_readiness_status(official_pdf_audit_path=path)
+    assert result["fda_official_pdf_checks"] is None
+    assert result["model_validated"] is False
+
+    audit["effective_action_dates_independently_verified"] = 0
+    audit["official_pdf_bytes_confirmed"] = 124
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(official_pdf_audit_path=path)["fda_official_pdf_checks"] is None
+
+
+def test_official_pdf_audit_requires_matching_identity_review_queue(tmp_path: Path):
+    from app.hop_status import IDENTITY_REVIEW_AUDIT_PATH
+    audit = json.loads(IDENTITY_REVIEW_AUDIT_PATH.read_text())
+    audit["already_identity_linked_records"] += 1
+    audit["review_queue_records"] -= 1
+    audit["review_reason_counts"]["NOT_FOUND_IN_APPROVED_PRODUCT_REGISTRY_AS_OF_EXPORT"] -= 1
+    path = tmp_path / "changed_review_queue.json"
+    path.write_text(json.dumps(audit))
+    result = hop_readiness_status(identity_review_audit_path=path)
+    assert result["fda_official_pdf_checks"] is None
+    assert result["prediction_available"] is False
+
+
+def test_fda_annual_filing_reference_tracks_revision_not_prediction_cohort():
+    result = hop_readiness_status()
+    filing = result["fda_annual_filing_reference"]
+    assert filing["latest_original_applications_filed_by_fy"] == {
+        "2024": 129, "2025": 157,
+    }
+    assert filing["documented_revisions"]["2024"]["earlier_total"] == 128
+    assert filing["documented_revisions"]["2024"]["later_total"] == 129
+    assert filing["applications_individually_enumerated"] is False
+    assert filing["complete_review_cycle_denominator_verified"] is False
+    assert filing["model_eligible_records"] == 0
+    assert result["historical_model_eligible"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_fda_annual_filing_reference_is_quarantined_on_false_cohort_claim(tmp_path: Path):
+    from app.hop_status import FILING_BENCHMARK_PATH
+    data = json.loads(FILING_BENCHMARK_PATH.read_text())
+    data["source_for_training_labels"] = True
+    path = tmp_path / "aggregate.json"
+    path.write_text(json.dumps(data))
+    result = hop_readiness_status(filing_benchmark_path=path)
+    assert result["fda_annual_filing_reference"] is None
+    assert result["prediction_available"] is False
+
+
+def test_all_457_official_fda_pdfs_are_evidence_not_model_labels():
+    result = hop_readiness_status()
+    all_pdfs = result["fda_all_published_action_documents"]
+    assert all_pdfs["published_letter_records"] == 458
+    assert all_pdfs["official_pdf_bytes_confirmed"] == 457
+    assert all_pdfs["source_records_without_pdf"] == 1
+    assert all_pdfs["published_letter_type_counts"]["COMPLETE RESPONSE"] == 445
+    assert all_pdfs["special_actions_requiring_prior_review"] == 2
+    assert all_pdfs["independently_verified_effective_action_dates"] == 0
+    assert all_pdfs["independently_adjudicated_review_cycle_outcomes"] == 0
+    assert all_pdfs["complete_denominator_verified"] is False
+    assert all_pdfs["model_eligible_records"] == 0
+    assert result["prediction_probability"] is None
+
+
+def test_full_fda_source_audit_fails_closed_if_model_ready_or_counts_change(tmp_path: Path):
+    from app.hop_status import ALL_ACTION_PDF_AUDIT_PATH
+    audit = json.loads(ALL_ACTION_PDF_AUDIT_PATH.read_text())
+    path = tmp_path / "full_action.json"
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(all_action_pdf_audit_path=path)["fda_all_published_action_documents"]
+
+    audit["adjudicated_review_cycle_outcomes"] = 457
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(all_action_pdf_audit_path=path)["fda_all_published_action_documents"] is None
+
+    audit["adjudicated_review_cycle_outcomes"] = 0
+    audit["published_letter_type_counts"]["COMPLETE RESPONSE"] = 446
+    path.write_text(json.dumps(audit))
+    assert hop_readiness_status(all_action_pdf_audit_path=path)["fda_all_published_action_documents"] is None
+
+    audit["published_letter_type_counts"]["COMPLETE RESPONSE"] = 445
+    audit["full_official_pdf_bytes_confirmed"] = 458
+    path.write_text(json.dumps(audit))
+    result = hop_readiness_status(all_action_pdf_audit_path=path)
+    assert result["fda_all_published_action_documents"] is None
+    assert result["prediction_available"] is False
+
+
+def test_all_published_source_summary_requires_original_fda_letter_count(tmp_path: Path):
+    from app.hop_status import SOURCE_AUDIT_PATH
+    source = json.loads(SOURCE_AUDIT_PATH.read_text())
+    source["published_letter_records"] -= 1
+    source["quarantined_letter_records"] -= 1
+    source["letter_type_counts"]["COMPLETE RESPONSE"] -= 1
+    path = tmp_path / "letter_audit.json"
+    path.write_text(json.dumps(source))
+    result = hop_readiness_status(source_audit_path=path)
+    assert result["fda_all_published_action_documents"] is None
+    assert result["prediction_probability"] is None
