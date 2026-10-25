@@ -142,7 +142,7 @@ test("two evidence grades, 20 stages, 40 assessments and all 320 pending depth t
   assert.doesNotMatch(displayed, /Scientific score: [0-9]/);
   assert.equal(tree.root.findAllByType("li").length, 396);
   assert.match(displayed, /Scientific evidence input checklist/);
-  assert.match(displayed, /10\\s*\\/\\s*16 source inputs available/);
+  assert.match(displayed, /10\s*\/\s*16 source inputs available/);
   assert.match(displayed, /Independent review not completed/);
   assert.match(displayed, /Required next action:/);
   assert.match(displayed, /Independently verified: NO/);
