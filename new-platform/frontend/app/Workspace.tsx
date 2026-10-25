@@ -207,7 +207,7 @@ async function writeWorkspaceCache(snapshot: Snapshot): Promise<void> {
 }
 type PublishedCounts = { pipeline: number; gemJr: number; gem: number; sourceState?: string; asOf?: string };
 type Nav = "PIPELINE" | "GEM_JR" | "GEM" | "MASTER" | "WT" | "TRADING";
-type TopNav = "GOAL" | "SCANS" | "RESULTS" | "BACKUP" | "PDUFA" | "CALENDAR" | "RESTRICTIONS";
+type TopNav = "GOAL" | "SCANS" | "RESULTS" | "BACKUP" | "PDUFA" | "PREDICTION" | "CALENDAR" | "RESTRICTIONS";
 type Tags = { watch: string[]; trade: string[] };
 type PipelineSelection = { stages: string[]; dates: string[]; query: string; onlyBand: boolean; trial: TrialFilterValues; asOf?: string };
 const TAG_KEY = "pdufa_new_program_watch_trade_v1";
@@ -1761,18 +1761,20 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <button type="button" className={top==="RESULTS"?"nav-selected":""} aria-current={top==="RESULTS"?"page":undefined} onClick={()=>{setTop("RESULTS");setMobileNavOpen(false);}}>RESULTS</button>
       <button type="button" className={top==="BACKUP"?"nav-selected":""} aria-current={top==="BACKUP"?"page":undefined} onClick={()=>{setTop("BACKUP");setMobileNavOpen(false);}}>BACKUP</button>
       <button type="button" className={top==="PDUFA"?"nav-selected":""} onClick={()=>setTop("PDUFA")}>PDUFA</button>
+      <button type="button" className={top==="PREDICTION"?"nav-selected":""} aria-current={top==="PREDICTION"?"page":undefined} onClick={()=>{setTop("PREDICTION");setMobileNavOpen(false);}}>PREDICTION</button>
       <button type="button" className={top==="CALENDAR"?"nav-selected":""} onClick={()=>setTop("CALENDAR")}>PDUFA Calendar</button>
       
       <button type="button" className={top==="RESTRICTIONS"?"nav-selected":""} aria-current={top==="RESTRICTIONS"?"page":undefined} onClick={()=>{setTop("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
       <button type="button" className="secondary" disabled={refreshing} onClick={()=>setFetchVersion(v=>v+1)}>{refreshing ? (cachedAsOf ? "Verifying latest data…" : "Loading published candidates…") : "Load published candidates"}</button>
       <span className="workspace-stage">{cachedAsOf ? "CACHED SNAPSHOT · " + cachedAsOf + " · NOT VERIFIED CURRENT" : snapshot ? "Published " + snapshot.asOf : refreshing ? "Loading published candidates…" : "Candidate totals ready · Full lists on demand"} · No live orders</span>
     </div>
+    {top==="PREDICTION" && <section className="panel" aria-label="PREDICTION — HOP"><h2>PREDICTION</h2><p>Historical Outcome Prediction (HOP) · GEM JR, GEM and WT</p><p role="status">Historical comparisons and FDA approval predictions are under development. No validated predictions are available yet.</p><p>This independent research module will use historical FDA outcomes and current scientific evidence. Existing screening restrictions and FS/FA presets are unchanged.</p></section>}
     {top==="RESTRICTIONS" && <div aria-label="Restriction sub-tabs" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"12px 0"}}>
       <button type="button" aria-current={restrictionTab==="RESTRICTIONS"?"page":undefined} className={restrictionTab==="RESTRICTIONS"?"nav-selected":""} onClick={()=>{setRestrictionTab("RESTRICTIONS");setMobileNavOpen(false);}}>RESTRICTIONS</button>
       <button type="button" aria-current={restrictionTab==="PRESET"?"page":undefined} className={restrictionTab==="PRESET"?"nav-selected":""} onClick={()=>{setRestrictionTab("PRESET");setMobileNavOpen(false);}}>PRESET</button>
     </div>}
     {top==="RESTRICTIONS" && restrictionTab==="RESTRICTIONS" && <div aria-label="Disease and company tools" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,margin:"8px 0 14px"}}><button type="button" className={restrictionFocus==="DISEASE"?"nav-selected":""} aria-pressed={restrictionFocus==="DISEASE"} onClick={()=>setRestrictionFocus("DISEASE")}>DISEASE · 5,168</button><button type="button" className={restrictionFocus==="COMPANY"?"nav-selected":""} aria-pressed={restrictionFocus==="COMPANY"} onClick={()=>setRestrictionFocus("COMPANY")}>COMPANY ↔ DISEASE</button></div>}
-    {top!=="GOAL" && top!=="RESTRICTIONS" && top!=="SCANS" && <div className="nav-wrapper">
+    {top!=="GOAL" && top!=="RESTRICTIONS" && top!=="SCANS" && top!=="PREDICTION" && <div className="nav-wrapper">
       <div className="mobile-nav-toggle">
         <strong>Section: {top==="RESULTS"?"RESULTS":top==="CALENDAR"?"PDUFA Calendar":nav==="GEM_JR"?"GEM JR":nav==="MASTER"?"GOLD MASTER CHART":nav}</strong>
         <button type="button" aria-expanded={mobileNavOpen} aria-controls="pdufa-section-navigation"
